@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactos - CAU Villa Lugano</title>
+    <meta name="description" content="Contactá con el Centro de Aprendizaje Universitario Villa Lugano de la Universidad Siglo 21">
+    <!-- Seguridad: Forzar HTTPS (Excepto en desarrollo local) -->
+    <script>
+        const isLocal = ['localhost', '127.0.0.1', '::1'].includes(location.hostname) || location.hostname.startsWith('192.168.');
+        if (location.protocol === 'http:' && !isLocal) {
+            location.replace(`https://${location.host}${location.pathname}${location.search}`);
+        }
+    </script>
+    <!-- Incluir Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter (versátil y moderna) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-deep-dark-bg: #013729;
+            --color-card-bg: #1c2f31;
+            --color-highlight: #00c7b1;
+            --color-secondary-highlight: #48b3a4;
+            --color-text-light: #7ca19b;
+            --color-text-normal: white;
+            --color-dark-bg: #003f34;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-deep-dark-bg);
+            background: linear-gradient(135deg, var(--color-deep-dark-bg) 0%, #006c5b 50%, var(--color-deep-dark-bg) 100%);
+            background-size: 200% 200%;
+            animation: gradientBackground 15s ease infinite;
+            color: var(--color-text-normal);
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-navbar {
+            background-color: #051a1a;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid var(--color-highlight);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: stretch;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .navbar-link {
+            color: #e0f0ed;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 1rem 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover, .navbar-link.active {
+            background-color: var(--color-highlight);
+            color: #013729;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar-menu {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                overflow-y: auto;
+                background-color: #051a1a;
+                flex-direction: column;
+                padding-top: 60px;
+                z-index: 2100;
+            }
+
+            .navbar-menu.active {
+                display: flex;
+            }
+
+            .navbar-link {
+                width: 100%;
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
+                font-size: 1.1rem;
+                font-weight: 800;
+            }
+
+            .navbar-link:first-of-type {
+                border-top: 1px solid rgba(0, 199, 177, 0.5);
+            }
+
+            .menu-close-btn {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                color: white;
+                background: none;
+                border: none;
+                font-size: 2rem;
+                cursor: pointer;
+                padding: 0.5rem;
+                line-height: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menú">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+
+            <!-- Mobile Branding (Visible only on mobile) -->
+            <div class="flex lg:hidden flex-1 items-center justify-center gap-3 ml-0 overflow-hidden">
+                <div class="flex flex-col justify-center">
+                    <h1 class="font-black text-white leading-none uppercase tracking-tighter" style="font-size: 1.25rem !important; line-height: 1 !important;">CAU - VILLA LUGANO
+                    </h1>
+                    <p class="text-xs font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
+
+                </div>
+                <img src="imagenes/file-removebg-preview.png" alt="Logo CAU" class="h-10 w-10 object-contain"
+                    style="filter: brightness(0) invert(1);">
+            </div>
+
+            <!-- Links -->
+            <div class="navbar-menu" id="navbar-menu">
+                <button class="lg:hidden menu-close-btn" id="menu-close-btn" aria-label="Cerrar menú">×</button>
+                <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
+                <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
+                <a href="novedades.html" class="navbar-link">Novedades</a>
+                <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
+                <a href="contactos.html" class="navbar-link active">Contactos</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-black text-white mb-4">Contactanos</h1>
+            <p class="text-xl text-[#7ca19b] max-w-3xl mx-auto">
+                Estamos para ayudarte. Comunicate con nosotros por cualquiera de estos medios
+            </p>
+        </header>
+
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
+            <!-- Información de Contacto -->
+            <div class="space-y-6">
+                <div class="bg-[#1c2f31] rounded-lg p-6 shadow-2xl border-2 border-[#00c7b1]">
+                    <h2 class="text-2xl font-bold text-[#00c7b1] mb-6">📍 Información de Contacto</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">📱</span>
+                            <div>
+                                <h3 class="font-bold text-white">WhatsApp</h3>
+                                <a href="https://wa.me/5491234567890" class="text-[#7ca19b] hover:text-[#00c7b1]">+54 9 11 2345-6789</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">📧</span>
+                            <div>
+                                <h3 class="font-bold text-white">Email</h3>
+                                <a href="mailto:villalugano@ues21.edu.ar" class="text-[#7ca19b] hover:text-[#00c7b1]">villalugano@ues21.edu.ar</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">📍</span>
+                            <div>
+                                <h3 class="font-bold text-white">Dirección</h3>
+                                <p class="text-[#7ca19b]">Av. Fernández de la Cruz 4402<br>Villa Lugano, CABA</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">🕐</span>
+                            <div>
+                                <h3 class="font-bold text-white">Horarios de Atención</h3>
+                                <p class="text-[#7ca19b]">Lunes a Viernes: 9:00 - 20:00<br>Sábados: 9:00 - 13:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redes Sociales -->
+                <div class="bg-[#1c2f31] rounded-lg p-6 shadow-2xl border-2 border-[#48b3a4]">
+                    <h2 class="text-2xl font-bold text-[#48b3a4] mb-4">🌐 Seguinos en Redes</h2>
+                    <div class="flex gap-4">
+                        <a href="#" class="bg-[#00c7b1] text-[#013729] p-3 rounded-lg hover:bg-[#00e6cc] transition-all transform hover:scale-110">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="#" class="bg-[#00c7b1] text-[#013729] p-3 rounded-lg hover:bg-[#00e6cc] transition-all transform hover:scale-110">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón WhatsApp Grande -->
+            <div class="bg-gradient-to-br from-[#00c7b1] to-[#48b3a4] rounded-lg p-8 shadow-2xl flex flex-col items-center justify-center text-center">
+                <span class="text-8xl mb-4">💬</span>
+                <h2 class="text-3xl font-black text-[#013729] mb-4">¿Tenés dudas?</h2>
+                <p class="text-lg text-[#013729] mb-6">Escribinos por WhatsApp y te respondemos al instante</p>
+                <a href="https://wa.me/5491234567890?text=Hola,%20necesito%20información%20sobre%20las%20carreras" 
+                   class="bg-white text-[#013729] font-black px-8 py-4 rounded-lg text-xl hover:bg-[#013729] hover:text-white transition-all transform hover:scale-105 flex items-center gap-3">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    Chatear Ahora
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const menuCloseBtn = document.getElementById('menu-close-btn');
+        const navbarMenu = document.getElementById('navbar-menu');
+
+        mobileMenuBtn?.addEventListener('click', () => {
+            navbarMenu.classList.add('active');
+        });
+
+        menuCloseBtn?.addEventListener('click', () => {
+            navbarMenu.classList.remove('active');
+        });
+
+        // Close menu when clicking on a link
+        navbarMenu.querySelectorAll('.navbar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navbarMenu.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

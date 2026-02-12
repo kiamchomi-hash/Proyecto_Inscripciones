@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nosotros - CAU Villa Lugano</title>
+    <meta name="description" content="Conocé más sobre el Centro de Aprendizaje Universitario Villa Lugano de la Universidad Siglo 21">
+    <!-- Seguridad: Forzar HTTPS (Excepto en desarrollo local) -->
+    <script>
+        const isLocal = ['localhost', '127.0.0.1', '::1'].includes(location.hostname) || location.hostname.startsWith('192.168.');
+        if (location.protocol === 'http:' && !isLocal) {
+            location.replace(`https://${location.host}${location.pathname}${location.search}`);
+        }
+    </script>
+    <!-- Incluir Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter (versátil y moderna) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-deep-dark-bg: #013729;
+            --color-card-bg: #1c2f31;
+            --color-highlight: #00c7b1;
+            --color-secondary-highlight: #48b3a4;
+            --color-text-light: #7ca19b;
+            --color-text-normal: white;
+            --color-dark-bg: #003f34;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-deep-dark-bg);
+            background: linear-gradient(135deg, var(--color-deep-dark-bg) 0%, #006c5b 50%, var(--color-deep-dark-bg) 100%);
+            background-size: 200% 200%;
+            animation: gradientBackground 15s ease infinite;
+            color: var(--color-text-normal);
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-navbar {
+            background-color: #051a1a;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid var(--color-highlight);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: stretch;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .navbar-link {
+            color: #e0f0ed;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 1rem 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover, .navbar-link.active {
+            background-color: var(--color-highlight);
+            color: #013729;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar-menu {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                overflow-y: auto;
+                background-color: #051a1a;
+                flex-direction: column;
+                padding-top: 60px;
+                z-index: 2100;
+            }
+
+            .navbar-menu.active {
+                display: flex;
+            }
+
+            .navbar-link {
+                width: 100%;
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
+                font-size: 1.1rem;
+                font-weight: 800;
+            }
+
+            .navbar-link:first-of-type {
+                border-top: 1px solid rgba(0, 199, 177, 0.5);
+            }
+
+            .menu-close-btn {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                color: white;
+                background: none;
+                border: none;
+                font-size: 2rem;
+                cursor: pointer;
+                padding: 0.5rem;
+                line-height: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menú">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+
+            <!-- Mobile Branding (Visible only on mobile) -->
+            <div class="flex lg:hidden flex-1 items-center justify-center gap-3 ml-0 overflow-hidden">
+                <div class="flex flex-col justify-center">
+                    <h1 class="font-black text-white leading-none uppercase tracking-tighter" style="font-size: 1.25rem !important; line-height: 1 !important;">CAU - VILLA LUGANO
+                    </h1>
+                    <p class="text-xs font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
+
+                </div>
+                <img src="imagenes/file-removebg-preview.png" alt="Logo CAU" class="h-10 w-10 object-contain"
+                    style="filter: brightness(0) invert(1);">
+            </div>
+
+            <!-- Links -->
+            <div class="navbar-menu" id="navbar-menu">
+                <button class="lg:hidden menu-close-btn" id="menu-close-btn" aria-label="Cerrar menú">×</button>
+                <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
+                <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
+                <a href="novedades.html" class="navbar-link">Novedades</a>
+                <a href="sobre-nosotros.html" class="navbar-link active">Sobre Nosotros</a>
+                <a href="contactos.html" class="navbar-link">Contactos</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-black text-white mb-4">Sobre Nosotros</h1>
+            <p class="text-xl text-[#7ca19b] max-w-3xl mx-auto">
+                Somos el Centro Villa Lugano de la Universidad Siglo 21. Nuestra misión es brindar educación de calidad y acompañarte en tu camino hacia el éxito profesional.
+            </p>
+        </header>
+
+        <div class="max-w-5xl mx-auto space-y-8">
+            <!-- Misión -->
+            <div class="bg-[#1c2f31] rounded-lg p-8 shadow-2xl border-2 border-[#00c7b1]">
+                <h2 class="text-3xl font-bold text-[#00c7b1] mb-4 flex items-center gap-3">
+                    <span class="text-4xl">🎯</span> Nuestra Misión
+                </h2>
+                <p class="text-lg text-[#7ca19b] leading-relaxed">
+                    Brindar educación universitaria de excelencia, accesible y flexible, que permita a nuestros estudiantes desarrollar todo su potencial y alcanzar sus metas profesionales y personales.
+                </p>
+            </div>
+
+            <!-- Visión -->
+            <div class="bg-[#1c2f31] rounded-lg p-8 shadow-2xl border-2 border-[#48b3a4]">
+                <h2 class="text-3xl font-bold text-[#48b3a4] mb-4 flex items-center gap-3">
+                    <span class="text-4xl">👁️</span> Nuestra Visión
+                </h2>
+                <p class="text-lg text-[#7ca19b] leading-relaxed">
+                    Ser el centro de referencia en educación universitaria en Villa Lugano, reconocido por la calidad académica, el compromiso con nuestros estudiantes y la innovación educativa.
+                </p>
+            </div>
+
+            <!-- Valores -->
+            <div class="bg-[#1c2f31] rounded-lg p-8 shadow-2xl border-2 border-white">
+                <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                    <span class="text-4xl">⭐</span> Nuestros Valores
+                </h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-[#013729] p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-[#00c7b1] mb-2">💪 Excelencia</h3>
+                        <p class="text-[#7ca19b]">Compromiso con la calidad en todo lo que hacemos</p>
+                    </div>
+                    <div class="bg-[#013729] p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-[#00c7b1] mb-2">🤝 Cercanía</h3>
+                        <p class="text-[#7ca19b]">Atención personalizada y acompañamiento constante</p>
+                    </div>
+                    <div class="bg-[#013729] p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-[#00c7b1] mb-2">🚀 Innovación</h3>
+                        <p class="text-[#7ca19b]">Adaptación continua a las nuevas tecnologías</p>
+                    </div>
+                    <div class="bg-[#013729] p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-[#00c7b1] mb-2">🌟 Inclusión</h3>
+                        <p class="text-[#7ca19b]">Educación accesible para todos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="text-center bg-gradient-to-r from-[#00c7b1] to-[#48b3a4] rounded-lg p-8">
+                <h2 class="text-3xl font-black text-[#013729] mb-4">¿Querés formar parte?</h2>
+                <p class="text-lg text-[#013729] mb-6">Unite a nuestra comunidad educativa</p>
+                <a href="contactos.html" class="inline-block bg-white text-[#013729] font-black px-8 py-4 rounded-lg text-lg hover:bg-[#013729] hover:text-white transition-all transform hover:scale-105">
+                    Contactanos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const menuCloseBtn = document.getElementById('menu-close-btn');
+        const navbarMenu = document.getElementById('navbar-menu');
+
+        mobileMenuBtn?.addEventListener('click', () => {
+            navbarMenu.classList.add('active');
+        });
+
+        menuCloseBtn?.addEventListener('click', () => {
+            navbarMenu.classList.remove('active');
+        });
+
+        // Close menu when clicking on a link
+        navbarMenu.querySelectorAll('.navbar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navbarMenu.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

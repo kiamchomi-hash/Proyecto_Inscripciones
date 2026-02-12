@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novedades - CAU Villa Lugano</title>
+    <!-- Incluir Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-deep-dark-bg: #013729;
+            --color-card-bg: #1c2f31;
+            --color-highlight: #00c7b1;
+            --color-secondary-highlight: #48b3a4;
+            --color-text-light: #7ca19b;
+            --color-text-normal: white;
+            --color-dark-bg: #003f34;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-deep-dark-bg);
+            color: var(--color-text-normal);
+            min-height: 100vh;
+        }
+
+        .main-navbar {
+            background-color: #051a1a;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid var(--color-highlight);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: stretch;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .navbar-link {
+            color: #e0f0ed;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 1rem 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover, .navbar-link.active {
+            background-color: var(--color-highlight);
+            color: #013729;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+
+        .sidebar-block {
+            background: rgba(28, 47, 49, 0.4);
+            border: 1px solid rgba(0, 199, 177, 0.15);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar-menu {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background-color: #051a1a;
+                flex-direction: column;
+                padding-top: 60px;
+                z-index: 2100;
+            }
+
+            .navbar-menu.active {
+                display: flex;
+            }
+
+            .navbar-link {
+                width: 100%;
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
+                font-size: 1.1rem;
+                font-weight: 800;
+            }
+
+            .menu-close-btn {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                color: white;
+                font-size: 2rem;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+
+            <!-- Mobile Branding -->
+            <div class="flex lg:hidden flex-1 items-center justify-center gap-3 ml-0 overflow-hidden">
+                <div class="flex flex-col justify-center">
+                    <h1 class="font-black text-white leading-none uppercase tracking-tighter" style="font-size: 1.25rem !important; line-height: 1 !important;">CAU - VILLA LUGANO
+                    </h1>
+                    <p class="text-xs font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
+                </div>
+                <img src="imagenes/file-removebg-preview.png" alt="Logo CAU" class="h-10 w-10 object-contain" style="filter: brightness(0) invert(1);">
+            </div>
+
+            <!-- Links -->
+            <div class="navbar-menu" id="navbar-menu">
+                <button class="lg:hidden menu-close-btn" id="menu-close">×</button>
+                <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
+                <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
+                <a href="novedades.html" class="navbar-link active">Novedades</a>
+                <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
+                <a href="contactos.html" class="navbar-link">Contactos</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-16">
+        <header class="text-center mb-16">
+            <h2 class="text-5xl font-black text-white uppercase tracking-tighter mb-4">
+                Nove<span style="color: var(--color-highlight);">dades</span>
+            </h2>
+            <div class="h-1 w-24 bg-[#00c7b1] mx-auto"></div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- Aviso -->
+            <div class="sidebar-block p-8 border-2 border-[#00c7b1]/20 hover:border-[#00c7b1]/50 transition-all">
+                <span class="text-sm font-bold text-[#00c7b1] uppercase tracking-widest bg-[#00c7b1]/10 px-3 py-1 rounded-full text-xs">Aviso</span>
+                <h3 class="text-2xl font-bold text-white mt-4 mb-4">Inscripciones Abiertas 2026</h3>
+                <p class="text-[#7ca19b] leading-relaxed">
+                    Ya podés inscribirte para el primer semestre del próximo año. ¡Asegurá tu lugar!
+                </p>
+            </div>
+
+            <!-- Evento -->
+            <div class="sidebar-block p-8 border-2 border-[#00c7b1]/20 hover:border-[#00c7b1]/50 transition-all">
+                <span class="text-sm font-bold text-[#00c7b1] uppercase tracking-widest bg-[#00c7b1]/10 px-3 py-1 rounded-full text-xs">Evento</span>
+                <h3 class="text-2xl font-bold text-white mt-4 mb-4">Charla Informativa Online</h3>
+                <p class="text-[#7ca19b] leading-relaxed">
+                    Este jueves a las 18:30hs. Conocé todos los beneficios de estudiar en Siglo 21.
+                </p>
+            </div>
+
+            <!-- Tip -->
+            <div class="sidebar-block p-8 border-2 border-[#00c7b1]/20 hover:border-[#00c7b1]/50 transition-all">
+                <span class="text-sm font-bold text-[#00c7b1] uppercase tracking-widest bg-[#00c7b1]/10 px-3 py-1 rounded-full text-xs">Tip</span>
+                <h3 class="text-2xl font-bold text-white mt-4 mb-4">Beneficios por Pago Anticipado</h3>
+                <p class="text-[#7ca19b] leading-relaxed">
+                    Accedé a descuentos exclusivos abonando tu matrícula antes del 15 del mes.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const scrollBtn = document.getElementById('mobile-toggle');
+        const closeBtn = document.getElementById('menu-close');
+        const menu = document.getElementById('navbar-menu');
+
+        scrollBtn.addEventListener('click', () => menu.classList.add('active'));
+        closeBtn.addEventListener('click', () => menu.classList.remove('active'));
+    </script>
+</body>
+
+</html>

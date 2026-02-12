@@ -1,0 +1,363 @@
+﻿{
+            
+            "Abogacía": {
+                "level": "Grado", "duration": "5 años", "degree": "Abogado/a", "focus": "Derecho Civil, Penal y Comercial", "price": "AR$ 105.000 / Mes",
+                "description": "Formación integral en el marco legal para ejercer la defensa y asesoramiento en todas las ramas del derecho, con enfoque en la modalidad a distancia."
+            },
+            "Escribanía": {
+                "level": "Grado", "duration": "5 años", "degree": "Escribano/a Público/a", "focus": "Derecho Notarial y Registral", "price": "AR$ 108.000 / Mes",
+                "description": "Especialización en la fe pública, documentos notariales y gestión de registros, indispensable para la seguridad jurídica de actos y contratos."
+            },
+            "Contador Público": {
+                "level": "Grado", "duration": "4 años", "degree": "Contador/a Público/a", "focus": "Contabilidad, Impuestos, Auditoría y Finanzas", "price": "AR$ 98.000 / Mes",
+                "description": "Dominio de las normas contables, fiscales y de auditoría. Es la base para la toma de decisiones económicas y financieras en cualquier organización."
+            },
+            "Lic. En Administración": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Administración", "focus": "Estrategia, Liderazgo y Planificación Empresarial", "price": "AR$ 95.000 / Mes",
+                "description": "Preparación para liderar y gestionar organizaciones, optimizando recursos humanos, materiales y financieros en entornos cambiantes."
+            },
+            "Lic. en Finanzas": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Finanzas", "focus": "Mercados, Inversión, y Gestión de Riesgos", "price": "AR$ 102.000 / Mes",
+                "description": "Dominio de los mercados financieros, instrumentos de inversión y técnicas de gestión de riesgos para optimizar el rendimiento del capital."
+            },
+            "Actuario": {
+                "level": "Grado", "duration": "4 años", "degree": "Actuario/a", "focus": "Riesgo, Estadística, Seguros y Pensiones", "price": "AR$ 115.000 / Mes",
+                "description": "ACTUARIO"
+            },
+            "Lic. En Comercio Internacional": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. En Comercio Internacional", "focus": "Logística Global, Aduanas y Negocios Multilaterales", "price": "AR$ 97.000 / Mes",
+                "description": "Formación para operar y negociar en mercados globales, manejando regulaciones aduaneras y estrategias de importación/exportación."
+            },
+            "Lic. En Comercialización": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Comercialización", "focus": "Estrategia de Marca, Investigación de Mercado y Ventas", "price": "AR$ 96.000 / Mes",
+                "description": "Desarrollo de habilidades para crear, comunicar y entregar valor a los clientes, impulsando el crecimiento de la marca a través de canales digitales y tradicionales."
+            },
+            "Lic. en Negocios Digitales": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Negocios Digitales", "focus": "E-commerce, Transformación Digital y Modelos de Negocio Online", "price": "AR$ 101.000 / Mes",
+                "description": "Diseño e implementación de estrategias de negocios basadas en plataformas digitales, utilizando tecnologías de vanguardia para escalar operaciones."
+            },
+            "Licenciatura en Emprendimiento - CCC": {
+                "level": "Grado (CCC)", "duration": "2 años", "degree": "Lic. en Emprendimiento", "focus": "Innovación, Creación y Escalabilidad de Startups", "price": "AR$ 94.000 / Mes",
+                "description": "Carrera de Ciclo de Complementación Curricular enfocada en dotar a profesionales de herramientas para fundar y consolidar proyectos empresariales innovadores."
+            },
+            "Lic. en Desarrollo De Negocios Inmobiliarios": {
+                "level": "Grado", "duration": "2 años", "degree": "Lic. en D.N. Inmobiliarios", "focus": "Desarrollo, Gestión y Comercialización Inmobiliaria", "price": "AR$ 104.000 / Mes",
+                "description": "Formación integral en el negocio inmobiliario, desde la planificación y desarrollo hasta la comercialización y gestión de proyectos."
+            },
+
+            
+            "Licenciatura en Inteligencia Artificial y Robótica": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en IA y Robótica", "focus": "Machine Learning, Sistemas Autónomos y Big Data", "price": "AR$ 118.000 / Mes",
+                "description": "Formación en el desarrollo de algoritmos de aprendizaje profundo y diseño de sistemas robóticos inteligentes para la automatización avanzada."
+            },
+            "Licenciatura en Ciencias de Datos": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Ciencias de Datos", "focus": "Análisis Predictivo, Modelado Estadístico y Visualización", "price": "AR$ 110.000 / Mes",
+                "description": "Profesional en la extracción de conocimiento y valor de grandes volúmenes de datos, fundamental para la estrategia de cualquier empresa moderna."
+            },
+            "Licenciatura en Seguridad Informática": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Seguridad Informática", "focus": "Ciberseguridad, Hacking Ético y Protección de Sistemas", "price": "AR$ 109.000 / Mes",
+                "description": "Especialización en la protección de activos digitales, infraestructura de red y datos sensibles frente a amenazas cibernéticas."
+            },
+            "Lic. en Informática": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Informática", "focus": "Desarrollo de Software, Arquitectura de Sistemas y Programación", "price": "AR$ 100.000 / Mes",
+                "description": "Base sólida para el diseño, desarrollo e implementación de soluciones tecnológicas y sistemas de información en diversos sectores."
+            },
+            "Licenciatura en Matemática": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Matemática", "focus": "Modelado, Álgebra Aplicada y Análisis Numérico", "price": "AR$ 90.000 / Mes",
+                "description": "Profundización en las estructuras y el razonamiento matemático, clave para la investigación y resolución de problemas complejos en ciencia y tecnología."
+            },
+            "Lic. en Bioinformática": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Bioinformática", "focus": "Genómica, Biología Computacional y Análisis de Datos Biológicos", "price": "AR$ 112.000 / Mes",
+                "description": "Combina informática y biología para interpretar datos genéticos y moleculares, acelerando la investigación médica y farmacéutica."
+            },
+            "Lic. en Administración de Infraestructura Tecnológica": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Administración de Infraestructura Tecnológica", "focus": "Cloud Computing, Redes y Gestión de Servicios IT", "price": "AR$ 99.000 / Mes",
+                "description": "Gestión eficiente de la infraestructura tecnológica, asegurando la operatividad, escalabilidad y seguridad de los sistemas de una empresa."
+            },
+
+            
+            "Licenciatura en Logística Global": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Logística Global", "focus": "Cadena de Suministro, Distribución y Gestión de Almacenes", "price": "AR$ 95.500 / Mes",
+                "description": "Optimización de procesos de almacenamiento, transporte y distribución a nivel internacional, reduciendo costos y mejorando la eficiencia."
+            },
+            "Lic. En Gestión Ambiental": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Gestión Ambiental", "focus": "Sustentabilidad, Auditoría ISO y Desarrollo Sostenible", "price": "AR$ 97.500 / Mes",
+                "description": "Especialista en la formulación de políticas y proyectos ambientales, minimizando el impacto ecológico de las actividades empresariales."
+            },
+            "Lic. en Higiene, Seguridad y Medio ambiente del Trabajo": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Higiene y Seguridad", "focus": "Prevención de Riesgos, Normativas OHSAS y Ergonomía", "price": "AR$ 98.500 / Mes",
+                "description": "Creación de entornos laborales seguros y saludables, cumpliendo con la legislación vigente para prevenir accidentes y enfermedades profesionales."
+            },
+            "Lic. En Gestión Turística": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Gestión Turística", "focus": "Planificación de Destinos, Ecoturismo y Marketing Turístico", "price": "AR$ 94.000 / Mes",
+                "description": "Desarrollo y administración de proyectos turísticos innovadores, promoviendo destinos y servicios con enfoque en la experiencia del cliente."
+            },
+            "Lic. En Administración Hotelera": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Administración Hotelera", "focus": "Servicio al Cliente, F&B y Gestión de Alojamientos", "price": "AR$ 94.500 / Mes",
+                "description": "Liderazgo en la industria de la hospitalidad, gestionando operaciones de hoteles y complejos turísticos de alto nivel."
+            },
+            "Lic. En Gestión de Recursos Humanos": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en RRHH", "focus": "Talento, Capacitación, Compensaciones y Derecho Laboral", "price": "AR$ 96.000 / Mes",
+                "description": "Profesional clave en la atracción, desarrollo y retención del talento humano, fomentando un clima laboral productivo."
+            },
+            "Lic. en Gestión Deportiva": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Gestión Deportiva", "focus": "Gestión Deportiva, Eventos y Negocios", "price": "AR$ 95.000 / Mes",
+                "description": "Formación integral para la gestión, planificación y dirección de entidades, eventos y proyectos deportivos públicos y privados."
+            },
+            "Lic. en Administración Agraria": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Administración Agraria", "focus": "Agronegocios, Producción Sostenible y Mercados Agropecuarios", "price": "AR$ 95.800 / Mes",
+                "description": "Gestión económica y estratégica de empresas agropecuarias, optimizando recursos naturales y tecnológicos."
+            },
+            "Lic. en Administración de Servicios de Salud CCC": {
+                "level": "Grado (CCC)", "duration": "2 años", "degree": "Lic. en Adm. de Salud", "focus": "Gestión Hospitalaria, Calidad y Políticas de Salud", "price": "AR$ 92.500 / Mes",
+                "description": "Ciclo de complementación para profesionales de salud que deseen enfocarse en la administración, eficiencia y calidad de los servicios sanitarios."
+            },
+
+            
+            "Lic. en Ciencia Política y Gobierno": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Ciencia Política", "focus": "Análisis Político, Teoría de Gobierno y Relaciones de Poder", "price": "AR$ 93.000 / Mes",
+                "description": "Estudio de los sistemas políticos y la formulación de políticas públicas, preparando para roles en el sector público o consultoría."
+            },
+            "Lic. En Administración Pública": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Administración Pública", "focus": "Gestión Estatal, Transparencia y Servicios Públicos", "price": "AR$ 92.000 / Mes",
+                "description": "Especialización en la gestión eficiente de los recursos y servicios del Estado, orientada a la mejora continua de la administración pública."
+            },
+            "Lic. En Relaciones Internacionales": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en RRII", "focus": "Diplomacia, Geopolítica y Organismos Internacionales", "price": "AR$ 94.800 / Mes",
+                "description": "Análisis de los fenómenos globales, la diplomacia y las dinámicas entre estados y actores no estatales."
+            },
+            "Lic. en Criminología y Seguridad": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Criminología y Seguridad", "focus": "Análisis Criminal, Prevención y Seguridad Ciudadana", "price": "AR$ 96.500 / Mes",
+                "description": "Estudio científico del delito, el delincuente y la víctima, con enfoque en estrategias de prevención y gestión de la seguridad."
+            },
+            "Lic. en Periodismo": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Periodismo", "focus": "Investigación, Redacción Digital y Producción Multimedia", "price": "AR$ 91.000 / Mes",
+                "description": "Formación en la cobertura ética y rigurosa de noticias, con dominio de las herramientas digitales para la comunicación moderna."
+            },
+            "Lic. en Publicidad": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Publicidad", "focus": "Creatividad, Medios Digitales y Campañas Integrales", "price": "AR$ 95.000 / Mes",
+                "description": "Creación y gestión de campañas publicitarias efectivas, con foco en el impacto visual y la persuasión en diferentes plataformas."
+            },
+            "Lic. En Relaciones Públicas e Institucionales": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en RRPP e Institucionales", "focus": "Gestión de Crisis, Comunicación Estratégica y Reputación Corporativa", "price": "AR$ 93.500 / Mes",
+                "description": "Manejo de la comunicación estratégica para construir y mantener una imagen positiva y relaciones sólidas entre una organización y sus públicos."
+            },
+            "Lic. en Diseño y Animación Digital": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Diseño y Animación Digital", "focus": "Gráficos 3D, Motion Graphics y Producción Audiovisual", "price": "AR$ 103.000 / Mes",
+                "description": "Desarrollo de habilidades creativas y técnicas para la producción de contenidos animados y diseño interactivo en plataformas digitales."
+            },
+            "Lic. en Gerontología": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Gerontología", "focus": "Envejecimiento Activo, Políticas Geriátricas y Calidad de Vida", "price": "AR$ 97.000 / Mes",
+                "description": "Estudio multidisciplinario del proceso de envejecimiento, enfocado en el diseño de programas para mejorar la calidad de vida de los adultos mayores."
+            },
+            "Licenciatura en Terapia Ocupacional y Desarrollo Humano": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Terapia Ocupacional", "focus": "Rehabilitación, Autonomía Funcional e Inclusión Social", "price": "AR$ 98.000 / Mes",
+                "description": "Profesional que interviene para promover la salud y el bienestar a través de la ocupación, facilitando la participación en actividades de la vida diaria."
+            },
+            "Licenciatura en Antropología Organizacional": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Antropología Organizacional", "focus": "Cultura Corporativa, Clima Laboral y Comportamiento Humano", "price": "AR$ 95.000 / Mes",
+                "description": "Análisis de las dinámicas culturales internas de las empresas para mejorar la comunicación, la identidad y la productividad."
+            },
+            "Lic. En Educación (CCC)": {
+                "level": "Grado (CCC)", "duration": "2 años", "degree": "Lic. en Educación", "focus": "Didáctica, Gestión Educativa y Nuevas Metodologías", "price": "AR$ 89.000 / Mes",
+                "description": "Ciclo de complementación para docentes, enfocado en la profundización de estrategias pedagógicas y gestión de proyectos educativos."
+            },
+            "Licenciatura En Psicopedagogía (CCC)": {
+                "level": "Grado (CCC)", "duration": "2 años", "degree": "Lic. en Psicopedagogía", "focus": "Psicología Educativa, Aprendizaje y Desarrollo Infantil", "price": "AR$ 91.000 / Mes",
+                "description": "Ciclo de complementación para profesionales interesados en la integración de la psicología y la pedagogía, enfocándose en el apoyo al aprendizaje y el desarrollo emocional de estudiantes."
+            },
+            "Lic. en Psicopedagogía": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Psicopedagogía", "focus": "Intervención Psicopedagógica, Neuroanatomía, Psicología Evolutiva", "price": "AR$ 98.000 / Mes",
+                "description": "Formación para comprender y abordar los procesos de aprendizaje en todas las etapas de la vida, con un enfoque integral y mediado por la tecnología."
+            },
+            "Lic. en Educación y Nuevas Tecnologías": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Educación y Nuevas Tecnologías", "focus": "E-learning, Diseño Instruccional y Tecnología Educativa", "price": "AR$ 90.000 / Mes",
+                "description": "Especialización en la integración de herramientas digitales y plataformas virtuales en los procesos de enseñanza-aprendizaje."
+            },
+            "Lic en Nutrición": {
+                "level": "Grado", "duration": "4 años", "degree": "Lic. en Nutrición", "focus": "Nutrición, Bioquímica, Fisiopatología, Dietoterapia", "price": "AR$ 96.000 / Mes",
+                "description": "Formación integral para promover la salud a través de la alimentación, con un enfoque científico y humanístico en el tratamiento y prevención de enfermedades."
+            },
+
+            
+            "Martillero, Corredor Público y Corredor Inmobiliario": {
+                "level": "Pregrado (Tecnicatura)", "duration": "3 años", "degree": "Técnico Superior", "focus": "Tasación, Remate y Mediación Inmobiliaria", "price": "AR$ 85.000 / Mes",
+                "description": "Habilitación para realizar tasaciones, remates públicos y intermediación en compra-venta de propiedades.", "subjects": 4
+            },
+            "Procurador": {
+                "level": "Pregrado (Tecnicatura)", "duration": "3 años", "degree": "Procurador/a", "focus": "Gestión Judicial, Trámites Legales y Procedimientos", "price": "AR$ 86.000 / Mes",
+                "description": "Apoyo indispensable al abogado en la gestión de expedientes, presentación de escritos y seguimiento de causas en tribunales."
+            },
+            "Tec. En investigación de la escena del crimen": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Criminalística, Recolección de Evidencia y Cadena de Custodia", "price": "AR$ 88.000 / Mes",
+                "description": "Especialización en la preservación, análisis y documentación de la evidencia física en el lugar de los hechos."
+            },
+            "Tec. En Administración y Gestión Tributaria": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "Impuestos, Normativas Fiscales y Liquidación", "price": "AR$ 84.000 / Mes",
+                "description": "Manejo operativo de las obligaciones fiscales y tributarias, clave para el cumplimiento legal de empresas y personas."
+            },
+            "Tec. En Gestión de Empresas Familiares": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "Protocolo Familiar, Sucesión y Profesionalización", "price": "AR$ 83.000 / Mes",
+                "description": "Formación para administrar y resolver los desafíos únicos de las empresas donde conviven la gestión y los lazos de parentesco."
+            },
+            "Tec. Univ. En Administración y Gestión de Políticas Públicas": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Planificación Pública, Presupuesto y Evaluación de Programas", "price": "AR$ 82.000 / Mes",
+                "description": "Apoyo técnico en la implementación y seguimiento de políticas gubernamentales a nivel local y regional."
+            },
+            "Tec. En Responsabilidad y Gestión Social": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "RSE, Voluntariado Corporativo y Desarrollo Comunitario", "price": "AR$ 81.500 / Mes",
+                "description": "Diseño e implementación de programas de responsabilidad social empresarial y comunitaria."
+            },
+            "Tec. En Higiene y Seguridad Laboral": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Superior", "focus": "Riesgos Laborales, Primeros Auxilios y Planes de Emergencia", "price": "AR$ 87.500 / Mes",
+                "description": "Buenas prácticas de seguridad e Higiene"
+            },
+            "Tec. Univ. En Diseño y Animación Digital": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Modelado 2D/3D, Edición de Video y Post-producción", "price": "AR$ 89.000 / Mes",
+                "description": "Habilidades técnicas para la creación de piezas gráficas animadas, efectos visuales y contenido multimedia."
+            },
+            "Tec. En Marketing y Publicidad Digital": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "SEO/SEM, Redes Sociales y Email Marketing", "price": "AR$ 85.500 / Mes",
+                "description": "Especialista en la ejecución de estrategias de marketing digital, análisis de métricas y gestión de campañas en línea."
+            },
+            "Tec. Univ. En Recursos Turísticos": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Guía Turística, Patrimonio y Operación de Servicios", "price": "AR$ 83.500 / Mes",
+                "description": "Conocimiento en la valorización y promoción del patrimonio cultural y natural como recurso turístico."
+            },
+            "Tec. Univ. En Hidrocarburos y Geociencias": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Exploración, Perforación y Reservorios de Petróleo/Gas", "price": "AR$ 91.000 / Mes",
+                "description": "Apoyo técnico en la industria de la energía, con foco en la explotación y gestión de recursos geológicos."
+            },
+            "Tec. Univ. En Gestión y Auditorías Ambientales": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Monitoreo Ambiental, Legislación y Certificaciones", "price": "AR$ 86.500 / Mes",
+                "description": "Capacidad para realizar monitoreos de impacto y asistir en procesos de auditoría de gestión ambiental."
+            },
+            "Tec. En Dirección de Equipos de venta": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "Liderazgo Comercial, Negociación y Cierre de Ventas", "price": "AR$ 84.500 / Mes",
+                "description": "Formación en la motivación, capacitación y dirección estratégica de equipos comerciales de alto rendimiento."
+            },
+            "Tec. En Gestión Contable e impositiva": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Superior", "focus": "Registros, Balances y Liquidación de Sueldos", "price": "AR$ 85.800 / Mes",
+                "description": "Habilidades prácticas en el manejo de la documentación contable, registros y obligaciones impositivas básicas."
+            },
+            "Tec. En Relaciones Laborales": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "Contratos, Convenios Colectivos y Conflictos Laborales", "price": "AR$ 84.200 / Mes",
+                "description": "Especialista en la mediación de conflictos y el manejo de la documentación legal relacionada con el personal."
+            },
+            "Tec. En Dirección de Protocolo, Organización de Eventos y RRPP": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "Etiqueta, Ceremonial, Logística de Eventos", "price": "AR$ 83.800 / Mes",
+                "description": "Organización integral de eventos corporativos, sociales e institucionales bajo estrictos códigos de protocolo y ceremonial."
+            },
+            "Tec. Univ. En Gestión de Moda": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Tendencias, Producción y Marketing de Indumentaria", "price": "AR$ 87.000 / Mes",
+                "description": "Gestión de procesos creativos y comerciales dentro de la industria de la moda, desde el diseño hasta la comercialización."
+            },
+            "Tec. Univ. En Gestión del Clima Laboral de la Organización": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Universitario", "focus": "Encuestas de Clima, Bienestar y Engagement", "price": "AR$ 83.200 / Mes",
+                "description": "Herramientas para medir, analizar y mejorar la satisfacción y motivación de los empleados en la empresa."
+            },
+            "Tec. Univ. Promoción Comunitaria en Niñez y Adolescencia": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Derechos del Niño, Intervención Social y Prevención", "price": "AR$ 82.500 / Mes",
+                "description": "Diseño e implementación de programas de desarrollo y protección para niños y adolescentes en entornos comunitarios."
+            },
+            "Tec en Gestión Administrativas de Servicios de Salud": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2 años", "degree": "Técnico Superior", "focus": "Facturación Médica, Trámites de Obras Sociales y Turnos", "price": "AR$ 83.000 / Mes",
+                "description": "Manejo de la gestión administrativa en clínicas, hospitales y centros de salud, optimizando los flujos de trabajo."
+            },
+            "Tec. Univ. En Redes Informáticas y Telecomunicaciones": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Instalación de Redes, Soporte Técnico y VOIP", "price": "AR$ 87.800 / Mes",
+                "description": "Habilidades para instalar, configurar y mantener infraestructuras de red y sistemas de telecomunicación."
+            },
+            "Tec. Univ. en Administración de la Propiedad Horizontal y Conjuntos Inmobiliarios": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario", "focus": "Consorcios, Expensas, Reglamentos y Mantenimiento", "price": "AR$ 84.800 / Mes",
+                "description": "Administración legal, contable y operativa de consorcios y barrios cerrados."
+            },
+            "Tec. en Diseño y Desarrollo de Videojuegos": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Superior", "focus": "Programación de Juegos, Level Design y Narrativa Interactiva", "price": "AR$ 90.500 / Mes",
+                "description": "Formación técnica en las herramientas y lenguajes necesarios para la creación y desarrollo de videojuegos funcionales.", "subjects": 4
+            },
+            "Maestría en Innovación Educativa": {
+                "level": "Posgrado", "duration": "2 años + TFI", "degree": "Magister en Innovación Educativa", "focus": "Educación, Tecnología e Innovación", "price": "Consultar Aranceles",
+                "description": "La Maestría en Innovación Educativa busca formar profesionales capaces de liderar procesos de transformation pedagógica e institucional."
+            },
+            "Maestría en Criminología y Ciencias Forenses": {
+                "level": "Posgrado", "duration": "2 años", "degree": "Magíster en Criminología y Ciencias Forenses", "focus": "Criminología, Ciencias Forenses e Investigación Criminal", "price": "Consultar Aranceles",
+                "description": "Formación de Posgrado con validez oficial (R.M. 1820/2023), enfocada en los retos de la 4ta Revolución Industrial con un enfoque multidisciplinario."
+            },
+            "Nutrición Consciente-Mindset": {
+                "level": "Certificación", "duration": "4 meses", "degree": "Certificado", "focus": "Nutrición y Mindset", "price": "Consultar Aranceles",
+                "description": "El certificado en Nutrición Consciente-Mindset de la Alimentación aborda el funcionamiento del cuerpo humano y la relación entre nutrición y emociones."
+            },
+            "Gestión De Energías Renovables": {
+                "level": "Posgrado", "duration": "1 año", "degree": "Especialista en Gestión de Energías Renovables", "focus": "Energías Renovables y Sostenibilidad", "price": "Consultar Aranceles",
+                "description": "La Especialización en Gestión de Energías Renovables forma profesionales para liderar proyectos de energía sostenible."
+            },
+            "Especialización en Políticas Públicas de Seguridad y Criminología": {
+                "level": "Posgrado", "duration": "1 año + TFI", "degree": "Especialista en Políticas Públicas de Seguridad y Criminal", "focus": "Seguridad y Criminología", "price": "Consultar Aranceles",
+                "description": "La Especialización en Políticas Públicas de Seguridad y Criminología brinda formación avanzada en el análisis y diseño de políticas de seguridad."
+            },
+            "Especialización en Logística y Cadena de Suministro": {
+                "level": "Posgrado", "duration": "1 año", "degree": "Especialista en Logística y Cadena de Suministro", "focus": "Logística, Cadena de Suministro, Supply Chain", "price": "Consultar Aranceles",
+                "description": "La Especialización en Logística y Cadena de Suministro brinda formación avanzada en la gestión eficiente de flujos de productos y servicios."
+            },
+            "CURSO DE SEGURIDAD PRIVADA - NIVEL I": {
+                "level": "Curso", "duration": "3 meses", "degree": "Certificado", "focus": "Seguridad Privada", "price": "Consultar Aranceles",
+                "description": "El curso de Seguridad Privada - Nivel I brinda formación en técnicas de protección, vigilancia y prevención de riesgos."
+            },
+            "Curso en coaching nutricional": {
+                "level": "Curso", "duration": "2 meses / 50 hs", "degree": "Certificado", "focus": "Coaching Nutricional", "price": "Consultar Aranceles",
+                "description": "Programa de formación 100% online que te permite desarrollar competencias específicas en coaching nutricional, avalado por Universidad Siglo 21."
+            },
+            "Profesorado Universitario para Nivel Secundario y Superior": {
+                "level": "Grado (CCC)", "duration": "1.5 años", "degree": "Profesor Universitario", "focus": "Educación y Pedagogía", "price": "Consultar Aranceles",
+                "description": "Ciclo de complementación curricular enfocado en competencias de enseñanza y aprendizaje con foco en la creatividad e innovación."
+            },
+            "Estrategia para el Desarrollo del Fútbol Juvenil": {
+                "level": "APLV - Extragrado", "duration": "1 mes", "degree": "Certificado", "focus": "Fútbol Juvenil Sudamericano", "price": "Consultar Aranceles",
+                "description": "Formación especializada en la organización y estructura de clubes juveniles sudamericanos, ideal para profesionales del ámbito deportivo.", "subjects": 4
+            },
+            "Especialización en Negocios Internacionales": {
+                "level": "Posgrado", "duration": "1 año + TFI", "degree": "Especialista en Negocios Internacionales", "focus": "Comercio Exterior y Estrategia Global", "price": "Consultar Aranceles",
+                "description": "Formación avanzada en la gestión de cadenas globales de valor y estrategias de internacionalización de empresas.", "subjects": 4
+            },
+            "Curso de Comercio Internacional": {
+                "level": "APLV - Extragrado", "duration": "1 mes", "degree": "Certificado", "focus": "Procedimientos Operativos Globales", "price": "Consultar Aranceles",
+                "description": "Brinda conocimientos teórico-prácticos sobre los procedimientos operativos en negocios globales y mecanismos internacionales de comercialización.", "subjects": 4
+            },
+            "Certificado en Nutrición Deportiva en Fútbol": {
+                "level": "APLV - Extragrado", "duration": "4 meses", "degree": "Certificado", "focus": "Nutrición y Rendimiento en Fútbol", "price": "Consultar Aranceles",
+                "description": "Ideal para dominar los principios de nutrición y suplementación aplicados específicamente al rendimiento futbolístico.", "subjects": 4
+            },
+            "Prompt Engineering": {
+                "level": "APLV - Extragrado", "duration": "2 meses", "degree": "Certificado", "focus": "IA Generativa y Optimización de Prompts", "price": "Consultar Aranceles",
+                "description": "Desarrolla competencias específicas en IA para optimizar la interacción con modelos generativos.", "subjects": 2
+            },
+            "Tecnicatura Universitaria en Negocios Agroecológicos": {
+                "level": "Pregrado (Tecnicatura)", "duration": "2.5 años", "degree": "Técnico Universitario en Negocios Agroecológicos", "focus": "Sostenibilidad, Producción Agropecuaria y Gestión Ambiental", "price": "Consultar Aranceles",
+                "description": "Formación integral en la gestión de negocios basados en principios agroecológicos, enfocada en la producción sostenible y la eficiencia administrativa.", "subjects": 20
+            },
+            "Análisis de Negocios (Business Analysis)": {
+                "level": "APLV - Extragrado", "duration": "1 mes / 20 hs", "degree": "Certificado de 'Analista de Negocios'", "focus": "Project Management, PMI, Análisis de Negocios", "price": "Consultar Aranceles",
+                "description": "Diseñada bajo las buenas prácticas del PMI para optimizar la toma de decisiones y beneficios en proyectos organizacionales.", "subjects": 4
+            },
+            "Diplomatura en Láser y Tecnologías Médicas": {
+                "level": "APLV - Extragrado", "duration": "8 meses", "degree": "Diplomado en Láser y Tecnologías Médicas", "focus": "Tecnologías Médicas, Láser, Bioseguridad", "price": "Consultar Aranceles",
+                "description": "Diseñada específicamente para profesionales que buscan dominar el uso de tecnologías médicas, sus efectos en tejidos y las pautas de bioseguridad.", "subjects": 8
+            },
+            "Diplomatura en Liderazgo Coach e Inteligencia Emocional": {
+                "level": "APLV - Extragrado", "duration": "8 meses", "degree": "Diplomado en Liderazgo Coach e Inteligencia Emocional", "focus": "Liderazgo, Inteligencia Emocional, Coaching", "price": "Consultar Aranceles",
+                "description": "Programa de formación 100% online con encuentros sincrónicos para desarrollar competencias de liderazgo, inteligencia emocional y coaching.", "subjects": 8
+            },
+            "CERTIFICADO EN E-COMMERCE": {
+                "level": "APLV - Extragrado", "duration": "4 meses", "degree": "Certificado en E-Commerce", "focus": "Datos, Estrategia, Gestión de Ecommerce, Marketing Digital", "price": "Consultar Aranceles",
+                "description": "Programa de formación 100% online para desarrollar competencias específicas en ventas online y plataformas tecnológicas.", "subjects": 4
+            },
+            "Certificado en Asistencia y Cuidado de las Personas Mayores": {
+                "level": "APLV - Extragrado", "duration": "4 meses", "degree": "Certificado en Asistencia y Cuidado de las Personas Mayores", "focus": "Gerontología, Cuidado de Adultos Mayores, Salud", "price": "Consultar Aranceles",
+                "description": "Capacitación en la atención integral, higiene, recreación y apoyo en las actividades de la vida diaria de adultos mayores.", "subjects": 4
+            },
+            "Certificado en Social Media Management": {
+                "level": "APLV - Extragrado", "duration": "4 meses", "degree": "Certificado en Social Media Management", "focus": "Redes Sociales, Marketing Digital, IA Aplicada", "price": "Consultar Aranceles",
+                "description": "Diseñado para formar líderes en el área digital, brindando herramientas tecnológicas para el manejo, análisis y gestión profesional de redes sociales e IA.", "subjects": 4
+            }
+        }
