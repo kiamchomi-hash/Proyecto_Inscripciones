@@ -736,7 +736,39 @@
             }
         }
 
-        /* Carousel Logic for Top 5 on Small Screens */
+        /* Carousel — all resolutions */
+        #top-featured-container {
+            overflow: hidden !important;
+            position: relative;
+            padding-bottom: 0.25rem !important;
+        }
+
+        #top-featured-container .carousel-track {
+            display: flex;
+            width: max-content;
+        }
+
+        #top-featured-container .carousel-set {
+            display: flex;
+            gap: 0.75rem;
+            padding-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        #top-featured-container .carousel-set > * {
+            flex: 0 0 160px;
+        }
+
+        .carousel-track.marquee-animate {
+            animation: marquee-scroll var(--marquee-duration, 20s) linear infinite;
+        }
+
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(var(--marquee-offset, -50%)); }
+        }
+
+        /* Carousel — mobile overrides */
         @media (max-width: 640px) {
             .sticky-header-wrapper {
                 padding-top: 0.5rem;
@@ -748,25 +780,13 @@
                 /* Por encima del navbar para evitar que lo tape durante transiciones */
             }
 
-            #top-featured-container {
-                display: flex !important;
-                overflow-x: hidden !important;
-                /* Hide scrollbar completely but allow JS scroll */
-                flex-wrap: nowrap !important;
-                gap: 0.75rem !important;
-                padding-bottom: 0.25rem !important;
-                /* Remove snap for continuous belt effect */
-                scroll-snap-type: none !important;
-            }
-
-            #top-featured-container::-webkit-scrollbar {
-                display: none;
-            }
-
-            #top-featured-container>* {
+            #top-featured-container .carousel-set > * {
                 flex: 0 0 140px !important;
-                /* Width of each card */
-                min-width: 0 !important;
+            }
+
+            #top-featured-container .carousel-set {
+                gap: 0.5rem;
+                padding-right: 0.5rem;
             }
 
             /* Transform Filter Buttons into a 4x2 Grid (8 buttons total) */
@@ -811,13 +831,6 @@
             }
         }
 
-        /* Hide clones on Desktop */
-        @media (min-width: 641px) {
-            .mobile-clone {
-                display: none !important;
-            }
-        }
-
         /* Ultra small screens Fix (e.g. 250px-293px) */
         @media (max-width: 300px) {
             h1 {
@@ -854,22 +867,20 @@
                 height: 1.1rem;
             }
 
-            #top-featured-container {
+            #top-featured-container .carousel-set {
                 gap: 0.5rem !important;
+                padding-right: 0.5rem !important;
             }
 
-            /* Restore gap control */
-            #top-featured-container>* {
-                flex: 0 0 85% !important;
+            #top-featured-container .carousel-set>* {
+                flex: 0 0 120px !important;
             }
 
-            /* Show 1 card mainly */
-
-            #top-featured-container button {
+            #top-featured-container .carousel-set button {
                 padding: 0.4rem 0.2rem;
             }
 
-            #top-featured-container span {
+            #top-featured-container .carousel-set span {
                 font-size: 8px !important;
             }
         }
@@ -924,11 +935,9 @@
                 border-width: 1px !important;
             }
 
-            #top-featured-container>* {
-                flex: 0 0 90% !important;
+            #top-featured-container .carousel-set>* {
+                flex: 0 0 110px !important;
             }
-
-            /* Nearly full width */
 
             .filter-pill {
                 display: block;
@@ -1549,7 +1558,7 @@
         <div class="container mx-auto p-4 sm:p-6 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
 
             <!-- SECCIÓN TOP 5: TENDENCIAS EN ALZA (Prioridad a la izquierda) -->
-            <div class="flex-1 w-full md:max-w-4xl order-2 md:order-1 flex flex-col items-center">
+            <div class="flex-1 w-full md:max-w-4xl order-2 md:order-1 flex flex-col items-center min-w-0 overflow-hidden">
                 <div class="flex items-center gap-4 mb-4 justify-center w-full">
                     <!-- Icono de tendencia -->
                     <div class="p-2 rounded-full flex items-center justify-center shrink-0"
@@ -1565,7 +1574,7 @@
                     </h3>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 px-1" id="top-featured-container">
+                <div class="flex gap-3 px-1" id="top-featured-container" style="scroll-snap-type:none;-ms-overflow-style:none;scrollbar-width:none;">
                     <!-- Se cargará dinámicamente con JS -->
                 </div>
             </div>
@@ -7856,43 +7865,58 @@ Inicio de clases: Marzo 2026`;
             const container = document.getElementById('top-featured-container');
             if (!container) return;
 
-            // Obtener las top 5
             const sorted = Object.keys(careerClicks)
                 .sort((a, b) => careerClicks[b] - careerClicks[a])
                 .slice(0, 5);
 
-            // Duplicate list for infinite loop effect
-            const infiniteList = [...sorted, ...sorted];
+            function buildSetHTML(items) {
+                return items.map((name) => {
+                    let displayName = name;
+                    if (name === 'Martillero, Corredor Público y Corredor Inmobiliario') displayName = 'Martillero';
+                    if (name === 'Lic. En Comercialización') displayName = 'Marketing';
+                    if (name.length > 18) displayName = name.substring(0, 15) + '...';
+                    return `
+                        <button onclick="handleFeaturedClick('${name.replace(/'/g, "\\'")}')"
+                            class="group relative flex flex-col items-center justify-center p-3 rounded-lg border border-transparent hover:border-[#00c7b1] transition-all duration-300"
+                            style="background-color: rgba(28, 47, 49, 0.7);">
+                            <span class="text-[10px] sm:text-xs font-bold mb-1 text-center leading-tight h-8 flex items-center justify-center" style="color: white;" title="${name}">${displayName}</span>
+                            <div class="flex items-center gap-1 text-xs" style="color: #7ca19b;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <span class="font-mono">${careerClicks[name]}</span>
+                            </div>
+                        </button>`;
+                }).join('');
+            }
 
-            container.innerHTML = infiniteList.map((name, index) => {
-                // Formatear nombre para que quepa bien
-                let displayName = name;
-                if (name === 'Martillero, Corredor Público y Corredor Inmobiliario') displayName = 'Martillero';
-                if (name === 'Lic. En Comercialización') displayName = 'Marketing';
-                if (name.length > 18) displayName = name.substring(0, 15) + '...';
+            const setHTML = buildSetHTML(sorted);
 
-                // Mark clones (indices 5-9)
-                const isClone = index >= 5;
-                const cloneClass = isClone ? 'mobile-clone' : '';
+            // Render one set first to measure its width
+            container.innerHTML = `<div class="carousel-track"><div class="carousel-set">${setHTML}</div></div>`;
 
-                return `
-                    <button onclick="handleFeaturedClick('${name}')"
-                        class="group relative flex flex-col items-center justify-center p-3 rounded-lg border border-transparent hover:border-[#00c7b1] transition-all duration-300 ${cloneClass}"
-                        style="background-color: rgba(28, 47, 49, 0.7);">
-                        <span class="text-[10px] sm:text-xs font-bold mb-1 text-center leading-tight h-8 flex items-center justify-center" style="color: white;" title="${name}">${displayName}</span>
-                        <div class="flex items-center gap-1 text-xs" style="color: #7ca19b;">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            <span class="font-mono">${careerClicks[name]}</span>
-                        </div>
-                    </button>
-                `;
-            }).join('');
+            requestAnimationFrame(() => {
+                const track = container.querySelector('.carousel-track');
+                const firstSet = track.querySelector('.carousel-set');
+                if (!track || !firstSet) return;
 
-            // Restart scroll if function exists
-            if (typeof restartCarouselScroll === 'function') restartCarouselScroll();
+                const setWidth = firstSet.offsetWidth;
+                const viewWidth = container.offsetWidth;
+
+                // Need enough copies so content fills viewport + one full set for the loop
+                const copies = Math.ceil((viewWidth + setWidth) / setWidth) + 1;
+
+                let setsHTML = '';
+                for (let i = 0; i < copies; i++) {
+                    setsHTML += `<div class="carousel-set">${setHTML}</div>`;
+                }
+                track.innerHTML = setsHTML;
+
+                // Exact pixel offset = one set width, so the loop is seamless
+                track.style.setProperty('--marquee-offset', `-${setWidth}px`);
+                track.classList.add('marquee-animate');
+            });
         }
 
         function handleFeaturedClick(careerName) {
@@ -7939,79 +7963,7 @@ Inicio de clases: Marzo 2026`;
             }
         }
 
-        // Global reference to restart scroll
-        let restartCarouselScroll;
-
-        // Continuous Slow Auto-Scroll Logic for Top 5 Carousel
-        (function () {
-            const carousel = document.getElementById('top-featured-container');
-            let animationId;
-            let isPaused = false;
-            let isDragging = false;
-            let scrollAccumulator = 0;
-
-            function smoothScroll() {
-                if (window.innerWidth > 640 || isPaused || isDragging || !carousel) {
-                    cancelAnimationFrame(animationId);
-                    return;
-                }
-
-                // Increment accumulator
-                scrollAccumulator += 0.3; // Speed
-
-                // Handle Infinite Loop
-                // Reset if we pass the half-way mark (duplicate set)
-                // We access duplicates... scrollWidth/2 is roughly the wrap point
-                if (scrollAccumulator >= (carousel.scrollWidth / 2)) {
-                    scrollAccumulator -= (carousel.scrollWidth / 2);
-                    carousel.scrollLeft = scrollAccumulator;
-                } else {
-                    carousel.scrollLeft = scrollAccumulator;
-                }
-
-                animationId = requestAnimationFrame(smoothScroll);
-            }
-
-            restartCarouselScroll = function () {
-                cancelAnimationFrame(animationId);
-                setTimeout(() => {
-                    if (window.innerWidth <= 640 && carousel) {
-                        scrollAccumulator = carousel.scrollLeft; // Sync start
-                        smoothScroll();
-                    }
-                }, 100);
-            };
-
-            if (carousel) {
-                // Initial start
-                restartCarouselScroll();
-
-                window.addEventListener('resize', restartCarouselScroll);
-
-                carousel.addEventListener('mouseenter', () => isPaused = true);
-                carousel.addEventListener('mouseleave', () => {
-                    isPaused = false;
-                    scrollAccumulator = carousel.scrollLeft; // Sync on resume
-                    smoothScroll();
-                });
-
-                carousel.addEventListener('touchstart', () => {
-                    isDragging = true;
-                    isPaused = true;
-                });
-
-                carousel.addEventListener('touchend', () => {
-                    isDragging = false;
-                    setTimeout(() => {
-                        if (!isDragging) {
-                            isPaused = false;
-                            scrollAccumulator = carousel.scrollLeft; // Sync on resume
-                            smoothScroll();
-                        }
-                    }, 2000);
-                });
-            }
-        })();
+        // Carousel now uses pure CSS animation (marquee-scroll keyframes)
     </script>
 
     <div class="floating-actions">
