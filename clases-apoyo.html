@@ -85,20 +85,26 @@
             }
 
             .navbar-menu {
-                display: none;
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100vh;
+                overflow-y: auto;
                 background-color: #051a1a;
                 flex-direction: column;
                 padding-top: 60px;
                 z-index: 2100;
+                display: flex;
+                transform: translateX(-100%);
+                visibility: hidden;
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                            visibility 0.35s;
             }
 
             .navbar-menu.active {
-                display: flex;
+                transform: translateX(0);
+                visibility: visible;
             }
 
             .navbar-link {
@@ -109,13 +115,21 @@
                 font-weight: 800;
             }
 
+            .navbar-link:first-of-type {
+                border-top: 1px solid rgba(0, 199, 177, 0.5);
+            }
+
             .menu-close-btn {
                 position: absolute;
                 top: 1rem;
                 right: 1rem;
                 color: white;
+                background: none;
+                border: none;
                 font-size: 2rem;
+                cursor: pointer;
                 padding: 0.5rem;
+                line-height: 1;
             }
         }
     </style>
@@ -126,7 +140,10 @@
     <nav class="main-navbar">
         <div class="navbar-container">
             <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn" id="mobile-toggle">
+            <button class="mobile-menu-btn" id="mobile-toggle"
+                    aria-label="Abrir menú de navegación"
+                    aria-expanded="false"
+                    aria-controls="navbar-menu">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
@@ -143,8 +160,14 @@
             </div>
 
             <!-- Links -->
-            <div class="navbar-menu" id="navbar-menu">
-                <button class="lg:hidden menu-close-btn" id="menu-close">×</button>
+            <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
+                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
                 <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link active">Clases de Apoyo</a>
                 <a href="novedades.html" class="navbar-link">Novedades</a>
@@ -170,12 +193,66 @@
     </main>
 
     <script>
-        const scrollBtn = document.getElementById('mobile-toggle');
-        const closeBtn = document.getElementById('menu-close');
-        const menu = document.getElementById('navbar-menu');
+        (function() {
+            const toggle = document.getElementById('mobile-toggle');
+            const menu = document.getElementById('navbar-menu');
+            const closeBtn = document.getElementById('menu-close');
+            if (!toggle || !menu) return;
 
-        scrollBtn.addEventListener('click', () => menu.classList.add('active'));
-        closeBtn.addEventListener('click', () => menu.classList.remove('active'));
+            let lastFocused = null;
+
+            function openMenu() {
+                lastFocused = document.activeElement;
+                menu.classList.add('active');
+                toggle.setAttribute('aria-expanded', 'true');
+                document.body.classList.add('overflow-hidden');
+                closeBtn?.focus();
+            }
+
+            function closeMenu() {
+                menu.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+                document.body.classList.remove('overflow-hidden');
+                lastFocused?.focus();
+            }
+
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.contains('active') ? closeMenu() : openMenu();
+            });
+
+            closeBtn?.addEventListener('click', closeMenu);
+
+            document.addEventListener('click', (e) => {
+                if (menu.classList.contains('active') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && menu.classList.contains('active')) {
+                    closeMenu();
+                }
+            });
+
+            menu.querySelectorAll('.navbar-link').forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
+
+            menu.addEventListener('keydown', (e) => {
+                if (e.key !== 'Tab') return;
+                const focusable = menu.querySelectorAll('button, a[href]');
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            });
+        })();
     </script>
 </body>
 

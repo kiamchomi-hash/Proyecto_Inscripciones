@@ -84,28 +84,27 @@
             }
 
             .navbar-menu {
-                display: none;
                 position: fixed;
-                /* Fixed for full screen */
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100vh;
-                /* Full viewport height */
                 overflow-y: auto;
-                /* Scrollable if content is long */
                 background-color: #051a1a;
                 flex-direction: column;
                 padding-top: 60px;
-                /* Space for close button */
                 padding-bottom: 0;
-                /* Consume all space */
                 z-index: 2100;
-                /* Above the navbar itself */
+                display: flex;
+                transform: translateX(-100%);
+                visibility: hidden;
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                            visibility 0.35s;
             }
 
             .navbar-menu.active {
-                display: flex;
+                transform: translateX(0);
+                visibility: visible;
             }
 
             .navbar-link {
@@ -132,26 +131,6 @@
             .navbar-container {
                 justify-content: space-between;
                 min-height: 70px;
-            }
-
-            .navbar-mobile-header {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 3rem 1rem 2rem 1rem;
-                background: linear-gradient(to bottom, #082a2a, #051a1a);
-                /* Revert to original gradient */
-                border-bottom: 1px solid rgba(0, 199, 177, 0.2);
-                text-align: center;
-                position: relative;
-                /* For Close Button positioning */
-            }
-
-            .navbar-mobile-header h2 {
-                font-size: 1.5rem !important;
-                /* Enforce consistent size overriding global h2 media queries */
-                line-height: 1.2;
-                margin-top: 0.5rem;
             }
 
             .menu-close-btn {
@@ -1428,7 +1407,10 @@
     <nav class="main-navbar">
         <div class="navbar-container">
             <!-- Hamburger Button (Left) -->
-            <button class="mobile-menu-btn" id="mobile-toggle">
+            <button class="mobile-menu-btn" id="mobile-toggle"
+                    aria-label="Abrir menú de navegación"
+                    aria-expanded="false"
+                    aria-controls="navbar-menu">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -1455,19 +1437,14 @@
 
 
             <!-- Links -->
-            <div class="navbar-menu" id="navbar-menu">
-                <!-- Mobile header inside menu -->
-                <!-- Mobile header inside menu (Only Close Button) -->
-                <div class="lg:hidden navbar-mobile-header"
-                    style="position: absolute; top: 0; width: 100%; box-sizing: border-box; background: none; border: none; padding: 1rem; min-height: 60px; justify-content: flex-end; align-items: flex-end; z-index: 1001;">
-                    <button class="menu-close-btn" id="menu-close" style="position: relative; top: 0; right: 0;">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+            <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
+                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
 
                 <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
@@ -7699,47 +7676,66 @@ Inicio de clases: Marzo 2026`;
             }
 
             // Mobile menu toggle
-            const mobileToggle = document.getElementById('mobile-toggle');
-            const navbarMenu = document.getElementById('navbar-menu');
+            (function() {
+                const toggle = document.getElementById('mobile-toggle');
+                const menu = document.getElementById('navbar-menu');
+                const closeBtn = document.getElementById('menu-close');
+                if (!toggle || !menu) return;
 
-            if (mobileToggle && navbarMenu) {
-                const toggleMenu = (isOpen) => {
-                    if (isOpen) {
-                        navbarMenu.classList.add('active');
-                        document.body.classList.add('overflow-hidden');
-                    } else {
-                        navbarMenu.classList.remove('active');
-                        document.body.classList.remove('overflow-hidden');
-                    }
-                };
+                let lastFocused = null;
 
-                mobileToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isOpen = navbarMenu.classList.contains('active');
-                    toggleMenu(!isOpen);
-                });
-
-                const menuClose = document.getElementById('menu-close');
-                if (menuClose) {
-                    menuClose.addEventListener('click', () => {
-                        toggleMenu(false);
-                    });
+                function openMenu() {
+                    lastFocused = document.activeElement;
+                    menu.classList.add('active');
+                    toggle.setAttribute('aria-expanded', 'true');
+                    document.body.classList.add('overflow-hidden');
+                    closeBtn?.focus();
                 }
 
-                // Close menu when clicking outside
+                function closeMenu() {
+                    menu.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    document.body.classList.remove('overflow-hidden');
+                    lastFocused?.focus();
+                }
+
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.contains('active') ? closeMenu() : openMenu();
+                });
+
+                closeBtn?.addEventListener('click', closeMenu);
+
                 document.addEventListener('click', (e) => {
-                    if (navbarMenu.classList.contains('active') && !navbarMenu.contains(e.target) && !mobileToggle.contains(e.target)) {
-                        toggleMenu(false);
+                    if (menu.classList.contains('active') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+                        closeMenu();
                     }
                 });
 
-                // Close menu when clicking a link
-                navbarMenu.querySelectorAll('.navbar-link').forEach(link => {
-                    link.addEventListener('click', () => {
-                        toggleMenu(false);
-                    });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && menu.classList.contains('active')) {
+                        closeMenu();
+                    }
                 });
-            }
+
+                menu.querySelectorAll('.navbar-link').forEach(link => {
+                    link.addEventListener('click', closeMenu);
+                });
+
+                menu.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Tab') return;
+                    const focusable = menu.querySelectorAll('button, a[href]');
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+                    if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                });
+            })();
         });
 
         // 9. Funcionalidad dinámica para el Top 5
