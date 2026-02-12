@@ -49,3 +49,7 @@ Static website for **Universidad Siglo 21 - CAU Villa Lugano**, a distance learn
 - Drag-and-drop file upload
 - localStorage for user personalization
 - Fee calculator with discount logic
+
+## Last Verified
+
+- GitHub integration: 2026-02-12
