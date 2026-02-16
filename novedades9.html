@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es" style="overflow-x:hidden;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novedades - CAU Villa Lugano</title>
+    <!-- Incluir Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+        <!-- Navbar CSS compartido -->
+    <link rel="stylesheet" href="shared/navbar.css">
+
+    <style>
+        :root {
+            --color-deep-dark-bg: #013729;
+            --color-card-bg: #1c2f31;
+            --color-highlight: #00c7b1;
+            --color-secondary-highlight: #48b3a4;
+            --color-text-light: #7ca19b;
+            --color-text-normal: white;
+            --color-dark-bg: #003f34;
+            --news-hero-height: 440px;
+        }
+
+        html, body {
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-deep-dark-bg);
+            color: var(--color-text-normal);
+            min-height: 100vh;
+        }
+
+        .main-navbar {
+            background-color: #051a1a;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid var(--color-highlight);
+            transition: transform 0.3s ease;
+        }
+
+        .main-navbar.navbar-hidden {
+            transform: translateY(-100%);
+        }
+
+        .navbar-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            overflow: hidden;
+        }
+
+
+        .navbar-menu {
+            display: flex;
+            align-items: stretch;
+            flex-grow: 1;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        @media (min-width: 1025px) and (max-width: 1350px) {
+            .navbar-menu {
+                gap: 0;
+            }
+            .navbar-menu .navbar-link {
+                font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+                padding: 0.8rem clamp(0.3rem, 0.5vw, 0.7rem);
+                letter-spacing: 0.02em;
+            }
+            .navbar-menu .navbar-link.flag-link span {
+                font-size: clamp(0.7rem, 0.9vw, 0.85rem) !important;
+            }
+            .navbar-menu .navbar-link.flag-link span:last-child {
+                font-size: clamp(0.55rem, 0.7vw, 0.65rem) !important;
+            }
+        }
+
+
+        /* Bandera Argentina - fondo del link Identidad Argentina */
+        .flag-link {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            perspective: 400px;
+            white-space: normal;
+        }
+
+        .flag-link .flag-bg {
+            position: absolute;
+            inset: 0;
+            transform: rotateY(-12deg) rotateX(4deg);
+            transform-origin: left center;
+            overflow: hidden;
+            opacity: 0.18;
+            z-index: -1;
+            transition: opacity 0.4s ease, transform 0.5s ease;
+            box-shadow: inset -8px 0 18px rgba(0,0,0,0.25), inset 4px 0 10px rgba(255,255,255,0.08);
+        }
+
+
+
+        .flag-link .flag-band {
+            position: absolute;
+            left: 0;
+            width: 100%;
+        }
+
+        .flag-link .flag-band-top {
+            top: 0;
+            height: 33.33%;
+            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
+        }
+
+        .flag-link .flag-band-mid {
+            top: 33.33%;
+            height: 33.34%;
+            background: linear-gradient(100deg, #fff 0%, #f5f5f5 30%, #fff 55%, #f0f0f0 80%, #fff 100%);
+        }
+
+        .flag-link .flag-band-bot {
+            top: 66.67%;
+            height: 33.33%;
+            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
+        }
+
+        .flag-link .flag-sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 22px;
+            height: 22px;
+            z-index: 2;
+        }
+
+        .flag-link .flag-sun::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #F6B40E 35%, #FCDF73 65%, transparent 66%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .flag-sun::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg, #F6B40E 3deg, transparent 6deg,
+                transparent 22.5deg, #F6B40E 25.5deg, transparent 28.5deg,
+                transparent 45deg, #F6B40E 48deg, transparent 51deg,
+                transparent 67.5deg, #F6B40E 70.5deg, transparent 73.5deg,
+                transparent 90deg, #F6B40E 93deg, transparent 96deg,
+                transparent 112.5deg, #F6B40E 115.5deg, transparent 118.5deg,
+                transparent 135deg, #F6B40E 138deg, transparent 141deg,
+                transparent 157.5deg, #F6B40E 160.5deg, transparent 163.5deg,
+                transparent 180deg, #F6B40E 183deg, transparent 186deg,
+                transparent 202.5deg, #F6B40E 205.5deg, transparent 208.5deg,
+                transparent 225deg, #F6B40E 228deg, transparent 231deg,
+                transparent 247.5deg, #F6B40E 250.5deg, transparent 253.5deg,
+                transparent 270deg, #F6B40E 273deg, transparent 276deg,
+                transparent 292.5deg, #F6B40E 295.5deg, transparent 298.5deg,
+                transparent 315deg, #F6B40E 318deg, transparent 321deg,
+                transparent 337.5deg, #F6B40E 340.5deg, transparent 343.5deg
+            );
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Pliegues de tela - ondulación estática */
+        .flag-link .flag-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(100deg,
+                    rgba(255,255,255,0.15) 0%,
+                    transparent 18%,
+                    rgba(255,255,255,0.1) 35%,
+                    transparent 50%,
+                    rgba(255,255,255,0.08) 68%,
+                    transparent 82%,
+                    rgba(255,255,255,0.05) 100%
+                );
+            z-index: 3;
+        }
+
+        .flag-link .flag-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(100deg,
+                    rgba(0,0,0,0.1) 0%,
+                    transparent 12%,
+                    rgba(0,0,0,0.06) 28%,
+                    transparent 42%,
+                    rgba(0,0,0,0.08) 60%,
+                    transparent 75%,
+                    rgba(0,0,0,0.12) 100%
+                );
+            z-index: 4;
+        }
+
+
+
+.navbar-link {
+            color: #e0f0ed;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 1rem 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover {
+            background-color: var(--color-highlight);
+            color: #013729;
+        }
+
+        .navbar-link.active {
+            background-color: #6d2282;
+            color: #fff;
+        }
+
+        .navbar-social-icon {
+            width: clamp(22px, 2vw, 28px);
+            height: clamp(22px, 2vw, 28px);
+            min-width: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: #7ca19b;
+            transition: color 0.2s ease, background-color 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .navbar-social-icon.social-whatsapp:hover {
+            color: #25D366;
+            background-color: rgba(37, 211, 102, 0.1);
+        }
+
+        .navbar-social-icon.social-facebook:hover {
+            color: #1877F2;
+            background-color: rgba(24, 119, 242, 0.1);
+        }
+
+        .navbar-social-icon.social-instagram:hover {
+            color: #e6683c;
+            background-color: rgba(230, 104, 60, 0.1);
+        }
+
+        .flag-link .ribbon-new {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 55px;
+            height: 55px;
+            overflow: hidden;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .flag-link .ribbon-new span {
+            display: block;
+            position: absolute;
+            top: 8px;
+            right: -18px;
+            width: 80px;
+            padding: 2px 0;
+            background: #e53e3e;
+            color: #fff;
+            font-size: 0.5rem;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+
+        /* ── Entrance animations ── */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .news-animate {
+            opacity: 0;
+            animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .news-animate--d1 { animation-delay: 0.08s; }
+        .news-animate--d2 { animation-delay: 0.18s; }
+        .news-animate--d3 { animation-delay: 0.28s; }
+        .news-animate--d4 { animation-delay: 0.38s; }
+
+        /* ── News Cards ── */
+        .news-card {
+            background: var(--color-card-bg);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid rgba(0, 199, 177, 0.06);
+            transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+        }
+
+        .news-card:hover {
+            border-color: rgba(0, 199, 177, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 199, 177, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* ── Main Hero — image on top, content below ── */
+        .news-card--main {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .news-card--main .news-card__img {
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .news-card--main .news-card__body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem 1.5rem 1.5rem;
+        }
+
+        /* Pinned badge */
+        .news-pinned {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #013729;
+            background: var(--color-highlight);
+            padding: 0.3rem 0.75rem;
+            border-radius: 0.35rem;
+            box-shadow: 0 2px 12px rgba(0, 199, 177, 0.4);
+        }
+
+        .news-pinned svg {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+
+        /* ── Sub hero — horizontal card ── */
+        .news-card--sub {
+            flex: 1;
+            min-height: 0;
+        }
+
+        @media (min-width: 768px) {
+            .news-grid-page .news-card--sub {
+                min-height: calc((var(--news-hero-height) - 2rem) / 3);
+            }
+        }
+
+        .news-card--sub__inner {
+            display: flex;
+            height: 100%;
+        }
+
+        .news-card__img--sub {
+            width: 38%;
+            max-width: 200px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .news-card--sub .news-card__body {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ── Image placeholders ── */
+        .news-placeholder {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0c2b24;
+            overflow: hidden;
+        }
+
+        /* Subtle diagonal stripe pattern */
+        .news-placeholder::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 8px,
+                rgba(0, 199, 177, 0.03) 8px,
+                rgba(0, 199, 177, 0.03) 9px
+            );
+        }
+
+        /* Radial glow */
+        .news-placeholder::after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(0, 199, 177, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .news-placeholder--tall {
+            min-height: 100%;
+        }
+
+        .news-placeholder--short {
+            min-height: 100%;
+        }
+
+        /* Real images */
+        .news-card__img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .news-card:hover .news-card__img img {
+            transform: scale(1.05);
+        }
+
+        /* ── Date ── */
+        .news-date {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--color-secondary-highlight);
+            letter-spacing: 0.04em;
+            margin-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .news-date svg {
+            width: 0.8rem;
+            height: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .news-card--main .news-date {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* ── Titles ── */
+        .news-card__title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.35;
+            margin: 0;
+            transition: color 0.25s ease;
+        }
+
+        .news-card__title--main {
+            font-size: 1.65rem;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+        }
+
+        .news-card:hover .news-card__title {
+            color: var(--color-highlight);
+        }
+
+        /* ── Excerpt ── */
+        .news-card__excerpt {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.65;
+            margin-top: 0.75rem;
+        }
+
+        /* ── Tags ── */
+        .news-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.85rem;
+        }
+
+        .news-tag {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-highlight);
+            background: rgba(0, 199, 177, 0.08);
+            border: 1px solid rgba(0, 199, 177, 0.18);
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .news-card:hover .news-tag {
+            background: rgba(0, 199, 177, 0.15);
+            border-color: rgba(0, 199, 177, 0.35);
+        }
+
+        /* ── Pagination ── */
+        .news-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+            overflow-x: hidden;
+        }
+
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.25rem;
+            height: 2.25rem;
+            padding: 0 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #d0e8e4;
+            background: #0a2e28;
+            border: 1px solid rgba(0, 199, 177, 0.25);
+            border-radius: 0.4rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .page-btn:hover {
+            color: white;
+            background: rgba(0, 199, 177, 0.2);
+            border-color: rgba(0, 199, 177, 0.5);
+        }
+
+        .page-btn--active {
+            color: #013729;
+            background: var(--color-highlight);
+            border-color: var(--color-highlight);
+            pointer-events: none;
+        }
+
+        .page-btn--disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .page-btn--nav {
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0 0.75rem;
+            color: #d0e8e4;
+            background: #0a2e28;
+            border-color: rgba(0, 199, 177, 0.25);
+        }
+
+        .page-btn--nav svg {
+            width: 0.85rem;
+            height: 0.85rem;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .page-btn--nav:hover svg {
+            transform: translateX(2px);
+        }
+
+        .page-btn--back:hover svg {
+            transform: translateX(-2px);
+        }
+
+        .page-dots {
+            color: var(--color-text-light);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            padding: 0 0.4rem;
+            user-select: none;
+        }
+
+        /* Contenedor central de números: ancho fijo para que los nav no se muevan */
+        .page-numbers {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            width: 14.5rem;
+        }
+
+
+
+        /* ── Responsive ── */
+        @media (max-width: 767px) {
+            .news-card--sub__inner {
+                flex-direction: column;
+            }
+
+            .news-card__img--sub {
+                width: 100%;
+                max-width: none;
+                height: 140px;
+            }
+
+            .news-card__title--main {
+                font-size: 1.3rem;
+            }
+
+            /* Paginación mobile: solo iconos en nav, menos gap */
+            .news-pagination {
+                gap: 0.25rem;
+            }
+
+            .page-btn {
+                min-width: 2rem;
+                height: 2rem;
+                font-size: 0.75rem;
+                padding: 0 0.35rem;
+            }
+
+            .page-btn--nav span {
+                display: none;
+            }
+
+            .page-btn--nav {
+                padding: 0 0.5rem;
+            }
+
+            .page-numbers {
+                width: 8.75rem;
+                gap: 0.25rem;
+            }
+        }
+
+        /* Mobile Adjustments */
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar-menu {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                overflow-y: auto;
+                background-color: #051a1a;
+                flex-direction: column;
+                justify-content: flex-start;
+                gap: 0;
+                z-index: 2100;
+                display: flex;
+                transform: translateX(-100%);
+                visibility: hidden;
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                            visibility 0.35s;
+            }
+
+            .navbar-menu.active {
+                transform: translateX(0);
+                visibility: visible;
+            }
+
+
+
+        .navbar-link {
+                width: 100%;
+                padding: 1.25rem 2rem;
+                min-height: 56px;
+                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
+                display: flex;
+                align-items: center;
+                font-size: 1.1rem;
+                font-weight: 800;
+                justify-content: flex-start;
+            }
+
+            .navbar-link.flag-link {
+                text-align: left !important;
+                justify-content: flex-start !important;
+                align-items: flex-start !important;
+            }
+
+            .navbar-container {
+                justify-content: space-between;
+                min-height: 70px;
+            }
+
+            .menu-close-btn {
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
+                color: white;
+                background: none;
+                border: none;
+                font-size: 2rem;
+                cursor: pointer;
+                padding: 0.75rem;
+                line-height: 1;
+            }
+
+            .menu-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1.25rem 2rem;
+                border-bottom: 1px solid rgba(0, 199, 177, 0.3);
+                background: linear-gradient(to bottom, #082a2a, #051a1a);
+            }
+
+            .menu-header img {
+                height: 2.5rem;
+                width: 2.5rem;
+                object-fit: contain;
+                filter: brightness(0) invert(1);
+            }
+
+            .menu-header .menu-brand {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .menu-footer {
+                margin-top: auto;
+                padding: 1.5rem 2rem;
+                border-top: 1px solid rgba(0, 199, 177, 0.3);
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .menu-footer-links {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .menu-footer-link {
+                color: #7ca19b;
+                font-size: 0.875rem;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: color 0.2s;
+            }
+
+            .menu-footer-link:hover {
+                color: #00c7b1;
+            }
+
+            .menu-footer-social {
+                display: flex;
+                gap: 0.75rem;
+                padding-top: 0.5rem;
+            }
+
+            .menu-footer-social a {
+                color: #7ca19b;
+                transition: color 0.2s;
+            }
+
+            .menu-footer-social a:hover {
+                color: #00c7b1;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .navbar-container {
+                padding: 0 0.5rem;
+            }
+
+            .navbar-container img {
+                width: 1.75rem !important;
+                height: 1.75rem !important;
+                margin-right: 0.5rem !important;
+            }
+
+            .navbar-container .font-black {
+                font-size: 0.75rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-toggle"
+                    aria-label="Abrir menú de navegación"
+                    aria-expanded="false"
+                    aria-controls="navbar-menu">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <line x1="4" y1="7" x2="20" y2="7" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="4" y1="17" x2="20" y2="17" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+
+            <!-- Mobile Branding (Visible only on mobile) -->
+            <div class="flex lg:hidden flex-1 items-center overflow-hidden">
+                <!-- Espaciador izquierdo para centrar el bloque de texto -->
+                <div class="flex-1"></div>
+                
+                <div class="flex flex-col justify-center">
+                    <h1 class="font-black text-white leading-none uppercase tracking-tighter" style="font-size: 1.25rem !important; line-height: 1 !important;">CAU - VILLA LUGANO
+                    </h1>
+                    <p class="text-xs font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
+                </div>
+
+                <!-- Contenedor del logo: lo ubica en el centro del espacio restante a la derecha -->
+                <div class="flex-1 flex justify-center items-center">
+                    <img src="imagenes/file-removebg-preview.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="h-10 w-10 object-contain"
+                        style="filter: brightness(0) invert(1);" width="40" height="40">
+                </div>
+            </div>
+
+
+            <!-- Links -->
+            <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
+                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Menu header con branding -->
+                <div class="menu-header lg:hidden">
+                    <img src="imagenes/file-removebg-preview.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
+                    <div class="menu-brand">
+                        <span class="font-black text-white text-lg uppercase tracking-tighter leading-none">CAU - Villa Lugano</span>
+                        <span class="text-xs font-bold text-[#00c7b1] uppercase tracking-wider">Siglo 21</span>
+                    </div>
+                </div>
+
+                <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
+                <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
+                <a href="identidad-argentina.html" class="navbar-link flag-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
+                    <div class="flag-bg">
+                        <div class="flag-band flag-band-top"></div>
+                        <div class="flag-band flag-band-mid"></div>
+                        <div class="flag-band flag-band-bot"></div>
+                        <div class="flag-sun"></div>
+                    </div>
+                    <div class="ribbon-new"><span>Nuevo!</span></div>
+                    <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
+                </a>
+                <a href="novedades.html" class="navbar-link">Novedades</a>
+                <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
+                <a href="faq.html" class="navbar-link">Preguntas Frecuentes</a>
+                <a href="contactos.html" class="navbar-link">Contacto</a>
+
+                <!-- Menu footer -->
+                <div class="menu-footer lg:hidden">
+                    <div class="menu-footer-social" style="justify-content: center;">
+                        <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        </a>
+                        <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social icons (desktop) -->
+            <div class="navbar-social hidden lg:flex items-center flex-shrink-0" style="gap: 6px; margin-left: 8px;">
+                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp"
+                    class="navbar-social-icon social-whatsapp">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
+                <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook"
+                    class="navbar-social-icon social-facebook">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram"
+                    class="navbar-social-icon social-instagram">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="news-main" class="max-w-6xl mx-auto px-4 pt-4 pb-4">
+        <div class="md:hidden" style="margin-bottom:1rem;">
+            <nav aria-label="Paginación de novedades (superior)">
+                <div class="news-pagination" id="news-pagination-top"></div>
+            </nav>
+        </div>
+        <div id="news-content"></div>
+        <div style="margin-top:3.3rem;" class="hidden md:block">
+            <nav aria-label="Paginación de novedades">
+                <div class="news-pagination" id="news-pagination"></div>
+            </nav>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // -- Highlight Active Link --
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.navbar-link').forEach(link => {
+                const href = link.getAttribute('href');
+                let isActive = (href === currentPath);
+                
+                // Specific logic for Novedades pagination
+                if (currentPath.startsWith('novedades') && href === 'novedades.html') {
+                    isActive = true;
+                }
+                
+                if (isActive) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // -- Mobile Menu Logic --
+            const mobileToggle = document.getElementById('mobile-toggle');
+            const menuClose = document.getElementById('menu-close');
+            const navbarMenu = document.getElementById('navbar-menu');
+
+            if (mobileToggle && navbarMenu) {
+                mobileToggle.addEventListener('click', () => {
+                    navbarMenu.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+
+            if (menuClose && navbarMenu) {
+                menuClose.addEventListener('click', () => {
+                    navbarMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (navbarMenu && navbarMenu.classList.contains('active') && 
+                    !navbarMenu.contains(e.target) && 
+                    !mobileToggle.contains(e.target)) {
+                    navbarMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // -- Navbar Scroll Effect (Hide on Scroll Down) --
+            let lastScroll = 0;
+            const navbar = document.querySelector('.main-navbar');
+            if (navbar) {
+                window.addEventListener('scroll', () => {
+                    const currentScroll = window.pageYOffset;
+                    if (currentScroll <= 0) {
+                        navbar.classList.remove('navbar-hidden');
+                        return;
+                    }
+                    if (currentScroll > lastScroll && !navbar.classList.contains('navbar-hidden')) {
+                        navbar.classList.add('navbar-hidden');
+                    } else if (currentScroll < lastScroll && navbar.classList.contains('navbar-hidden')) {
+                        navbar.classList.remove('navbar-hidden');
+                    }
+                    lastScroll = currentScroll;
+                });
+            }
+        });
+
+        // ══════════════════════════════════════════════════════════
+        // ── NOVEDADES — Carga dinámica desde JSON (listo para DB)
+        // ══════════════════════════════════════════════════════════
+
+        // ── Config ──
+        const ITEMS_PAGE_1 = 3;       // sub-heroes en página 1 (+ pinned)
+        const ITEMS_PER_PAGE = 6;     // cards por página en páginas 2+
+        const MAX_VISIBLE_PAGES = 5;  // botones numéricos visibles en la ventana
+        const DATA_URL = 'novedades_data.json'; // Cambiar a URL de API cuando haya base de datos
+
+        // ── Detectar página actual desde el nombre del archivo ──
+        // novedades.html → 1, novedades2.html → 2, novedades3.html → 3, etc.
+        function detectCurrentPage() {
+            const path = window.location.pathname;
+            const filename = path.split('/').pop() || 'novedades.html';
+            const match = filename.match(/^novedades(\d+)\.html$/);
+            return match ? parseInt(match[1], 10) : 1;
+        }
+
+        // ── Generar nombre de archivo para una página ──
+        function pageFileName(page) {
+            return page === 1 ? 'novedades.html' : `novedades${page}.html`;
+        }
+
+        // ── Helpers ──
+        const calendarIcon = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
+        const imgPlaceholder = (size) => `<div class="news-placeholder" ${size ? `style="min-height:${size}"` : ''}><svg xmlns="http://www.w3.org/2000/svg" class="w-${size === '280px' ? '14' : '8'} h-${size === '280px' ? '14' : '8'} text-[#48b3a4]/20 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`;
+        const imgOrPlaceholder = (src, size) => src ? `<img src="${src}" alt="" loading="lazy">` : imgPlaceholder(size);
+
+        function formatDate(iso) {
+            const d = new Date(iso + 'T12:00:00');
+            return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function getTotalPages(newsItems) {
+            const remaining = Math.max(0, newsItems.length - ITEMS_PAGE_1);
+            return 1 + (Math.ceil(remaining / ITEMS_PER_PAGE) || 0);
+        }
+
+        // ── Render Page 1 (hero layout) ──
+        function renderPage1(pinnedNews, newsItems) {
+            const subs = newsItems.slice(0, ITEMS_PAGE_1);
+            let html = '<section class="news-heroes"><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+
+            html += `
+            <a href="${pinnedNews.href}" class="news-card news-card--main group block news-animate news-animate--d1">
+                <div class="news-card__img" style="position:relative;">
+                    ${imgOrPlaceholder(pinnedNews.img, '280px')}
+                    <div class="news-pinned">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+                        Destacado
+                    </div>
+                </div>
+                <div class="news-card__body">
+                    <time class="news-date" datetime="${pinnedNews.date}">${calendarIcon} ${formatDate(pinnedNews.date)}</time>
+                    <h3 class="news-card__title news-card__title--main">${pinnedNews.title}</h3>
+                    <p class="news-card__excerpt">${pinnedNews.excerpt}</p>
+                    <div class="news-tags"><span class="news-tag">${pinnedNews.tag}</span></div>
+                </div>
+            </a>`;
+
+            html += '<div class="flex flex-col gap-4">';
+            subs.forEach((item, i) => {
+                html += `
+                <a href="${item.href}" class="news-card news-card--sub group block news-animate news-animate--d${i + 2}">
+                    <div class="news-card--sub__inner">
+                        <div class="news-card__img news-card__img--sub">
+                            ${imgOrPlaceholder(item.img)}
+                        </div>
+                        <div class="news-card__body">
+                            <time class="news-date" datetime="${item.date}">${calendarIcon} ${formatDate(item.date)}</time>
+                            <h3 class="news-card__title">${item.title}</h3>
+                            <div class="news-tags"><span class="news-tag">${item.tag}</span></div>
+                        </div>
+                    </div>
+                </a>`;
+            });
+            html += '</div></div></section>';
+            return html;
+        }
+
+        // ── Render Pages 2+ (misma estructura y tamaño de card que página 1) ──
+        function renderSubCardHTML(item, delay) {
+            return `
+                <a href="${item.href}" class="news-card news-card--sub group block news-animate news-animate--d${delay}">
+                    <div class="news-card--sub__inner">
+                        <div class="news-card__img news-card__img--sub">
+                            ${imgOrPlaceholder(item.img)}
+                        </div>
+                        <div class="news-card__body">
+                            <time class="news-date" datetime="${item.date}">${calendarIcon} ${formatDate(item.date)}</time>
+                            <h3 class="news-card__title">${item.title}</h3>
+                            <div class="news-tags"><span class="news-tag">${item.tag}</span></div>
+                        </div>
+                    </div>
+                </a>`;
+        }
+
+        function renderGridPage(page, newsItems) {
+            const start = ITEMS_PAGE_1 + (page - 2) * ITEMS_PER_PAGE;
+            const items = newsItems.slice(start, start + ITEMS_PER_PAGE);
+            if (!items.length) return '<p style="color:var(--color-text-light);text-align:center;">No hay más novedades.</p>';
+
+            const left = items.slice(0, 3);
+            const right = items.slice(3, 6);
+
+            let html = '<section class="news-grid-page"><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+
+            html += '<div class="flex flex-col gap-4" style="min-height:var(--news-hero-height);">';
+            left.forEach((item, i) => { html += renderSubCardHTML(item, (i % 4) + 1); });
+            html += '</div>';
+
+            if (right.length) {
+                html += '<div class="flex flex-col gap-4" style="min-height:var(--news-hero-height);">';
+                right.forEach((item, i) => { html += renderSubCardHTML(item, ((i + 3) % 4) + 1); });
+                html += '</div>';
+            }
+
+            html += '</div></section>';
+            return html;
+        }
+
+        // ── Render Pagination con links a archivos HTML separados ──
+        // Desktop: hasta MAX_VISIBLE_PAGES números | Mobile: hasta 3 números
+        function renderPagination(current, total) {
+            if (total <= 1) return '';
+
+            const isMobile = window.innerWidth < 768;
+            const visiblePages = isMobile ? 3 : MAX_VISIBLE_PAGES;
+
+            const chevronLeft = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>';
+            const chevronRight = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>';
+            const chevronDoubleLeft = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 19l-7-7 7-7M19 19l-7-7 7-7"/></svg>';
+            const chevronDoubleRight = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>';
+
+            const prevPage = Math.max(1, current - 1);
+            const nextPage = Math.min(total, current + 1);
+            const disFirst = current === 1 ? ' page-btn--disabled' : '';
+            const disLast = current === total ? ' page-btn--disabled' : '';
+
+            let html = '';
+
+            // Primera
+            html += `<a href="${pageFileName(1)}" class="page-btn page-btn--nav page-btn--back${disFirst}" aria-label="Primera página">${chevronDoubleLeft}<span>Primera</span></a>`;
+            // Anterior
+            html += `<a href="${pageFileName(prevPage)}" class="page-btn page-btn--nav page-btn--back${disFirst}" aria-label="Anterior">${chevronLeft}<span>Ant.</span></a>`;
+
+            // Contenedor central de ancho fijo para que los nav no se muevan
+            let nums = '';
+
+            if (total <= visiblePages) {
+                for (let i = 1; i <= total; i++) {
+                    nums += i === current
+                        ? `<span class="page-btn page-btn--active" aria-current="page">${i}</span>`
+                        : `<a href="${pageFileName(i)}" class="page-btn">${i}</a>`;
+                }
+            } else if (current < visiblePages) {
+                for (let i = 1; i <= visiblePages; i++) {
+                    nums += i === current
+                        ? `<span class="page-btn page-btn--active" aria-current="page">${i}</span>`
+                        : `<a href="${pageFileName(i)}" class="page-btn">${i}</a>`;
+                }
+            } else {
+                let rangeStart = current - Math.floor(visiblePages / 2);
+                let rangeEnd = rangeStart + visiblePages - 1;
+                if (rangeEnd > total) { rangeEnd = total; rangeStart = total - visiblePages + 1; }
+
+                
+                for (let i = rangeStart; i <= rangeEnd; i++) {
+                    nums += i === current
+                        ? `<span class="page-btn page-btn--active" aria-current="page">${i}</span>`
+                        : `<a href="${pageFileName(i)}" class="page-btn">${i}</a>`;
+                }
+                
+            }
+
+            html += `<span class="page-numbers">${nums}</span>`;
+
+            // Siguiente
+            html += `<a href="${pageFileName(nextPage)}" class="page-btn page-btn--nav${disLast}" aria-label="Siguiente"><span>Sig.</span>${chevronRight}</a>`;
+            // Última
+            html += `<a href="${pageFileName(total)}" class="page-btn page-btn--nav${disLast}" aria-label="Última página"><span>Última</span>${chevronDoubleRight}</a>`;
+
+            return html;
+        }
+
+        // ── Inicialización: cargar datos y renderizar ──
+        async function initNovedades() {
+            const content = document.getElementById('news-content');
+            const pagination = document.getElementById('news-pagination');
+            const paginationTop = document.getElementById('news-pagination-top');
+            const currentPage = detectCurrentPage();
+
+            try {
+                const response = await fetch(DATA_URL);
+                if (!response.ok) throw new Error(`Error cargando novedades: ${response.status}`);
+                const data = await response.json();
+
+                const pinnedNews = data.pinned;
+                const newsItems = data.items;
+                const totalPages = getTotalPages(newsItems);
+
+                if (currentPage > totalPages && totalPages > 0) {
+                    window.location.href = pageFileName(totalPages);
+                    return;
+                }
+
+                if (currentPage === 1) {
+                    content.innerHTML = renderPage1(pinnedNews, newsItems);
+                    // Medir y guardar la altura real de la columna de sub-cards
+                    requestAnimationFrame(() => {
+                        const col = content.querySelector('.grid > .flex.flex-col');
+                        if (col) {
+                            const h = col.offsetHeight;
+                            localStorage.setItem('news-col-h', h);
+                            document.documentElement.style.setProperty('--news-hero-height', h + 'px');
+                        }
+                    });
+                } else {
+                    // Usar la altura medida de página 1 si existe
+                    const h = localStorage.getItem('news-col-h');
+                    if (h) document.documentElement.style.setProperty('--news-hero-height', h + 'px');
+                    content.innerHTML = renderGridPage(currentPage, newsItems);
+                }
+
+                // Renderizar paginación (abajo en desktop, arriba en mobile)
+                const paginationHTML = renderPagination(currentPage, totalPages);
+                pagination.innerHTML = paginationHTML;
+                paginationTop.innerHTML = paginationHTML;
+
+            } catch (err) {
+                console.error('Error cargando novedades:', err);
+                content.innerHTML = `
+                    <div style="text-align:center;padding:3rem 1rem;color:var(--color-text-light);">
+                        <p style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">No se pudieron cargar las novedades</p>
+                        <p style="font-size:0.85rem;">Intentá recargar la página en unos momentos.</p>
+                    </div>`;
+            }
+        }
+
+        // Iniciar
+        initNovedades();
+
+        // Re-renderizar solo al cambiar de ANCHO (no de alto, que cambia en mobile por la barra de dirección)
+        let lastWidth = window.innerWidth;
+        window.addEventListener('resize', () => {
+            if (window.innerWidth !== lastWidth) {
+                lastWidth = window.innerWidth;
+                localStorage.removeItem('news-col-h');
+                initNovedades();
+            }
+        });
+    </script>
+</body>
+
+</html>

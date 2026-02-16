@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos Identidad Argentina - CAU Villa Lugano</title>
+    <meta name="description" content="Cursos de Identidad Argentina del Centro de Aprendizaje Universitario Villa Lugano de la Universidad Siglo 21">
+    <!-- Seguridad: Forzar HTTPS (Excepto en desarrollo local) -->
+    <script>
+        const isLocal = ['localhost', '127.0.0.1', '::1'].includes(location.hostname) || location.hostname.startsWith('192.168.');
+        if (location.protocol === 'http:' && !isLocal) {
+            location.replace(`https://${location.host}${location.pathname}${location.search}`);
+        }
+    </script>
+    <!-- Incluir Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter (versátil y moderna) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+        <!-- Navbar CSS compartido -->
+    <link rel="stylesheet" href="shared/navbar.css">
+
+    <style>
+        :root {
+            --color-deep-dark-bg: #013729;
+            --color-card-bg: #1c2f31;
+            --color-highlight: #00c7b1;
+            --color-secondary-highlight: #48b3a4;
+            --color-text-light: #7ca19b;
+            --color-text-normal: white;
+            --color-dark-bg: #003f34;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-deep-dark-bg);
+            background: linear-gradient(135deg, var(--color-deep-dark-bg) 0%, #006c5b 50%, var(--color-deep-dark-bg) 100%);
+            background-size: 200% 200%;
+            animation: gradientBackground 15s ease infinite;
+            color: var(--color-text-normal);
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-navbar {
+            background-color: #051a1a;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid var(--color-highlight);
+            transition: transform 0.3s ease;
+        }
+
+        .main-navbar.navbar-hidden {
+            transform: translateY(-100%);
+        }
+
+        .navbar-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            overflow: hidden;
+        }
+
+
+        .navbar-menu {
+            display: flex;
+            align-items: stretch;
+            flex-grow: 1;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        @media (min-width: 1025px) and (max-width: 1350px) {
+            .navbar-menu {
+                gap: 0;
+            }
+            .navbar-menu .navbar-link {
+                font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+                padding: 0.8rem clamp(0.3rem, 0.5vw, 0.7rem);
+                letter-spacing: 0.02em;
+            }
+            .navbar-menu .navbar-link.flag-link span {
+                font-size: clamp(0.7rem, 0.9vw, 0.85rem) !important;
+            }
+            .navbar-menu .navbar-link.flag-link span:last-child {
+                font-size: clamp(0.55rem, 0.7vw, 0.65rem) !important;
+            }
+        }
+
+
+        /* Bandera Argentina - fondo del link Identidad Argentina */
+        .flag-link {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            perspective: 400px;
+            white-space: normal;
+        }
+
+        .flag-link .flag-bg {
+            position: absolute;
+            inset: 0;
+            transform: rotateY(-12deg) rotateX(4deg);
+            transform-origin: left center;
+            overflow: hidden;
+            opacity: 0.18;
+            z-index: -1;
+            transition: opacity 0.4s ease, transform 0.5s ease;
+            box-shadow: inset -8px 0 18px rgba(0,0,0,0.25), inset 4px 0 10px rgba(255,255,255,0.08);
+        }
+
+
+
+        .flag-link .flag-band {
+            position: absolute;
+            left: 0;
+            width: 100%;
+        }
+
+        .flag-link .flag-band-top {
+            top: 0;
+            height: 33.33%;
+            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
+        }
+
+        .flag-link .flag-band-mid {
+            top: 33.33%;
+            height: 33.34%;
+            background: linear-gradient(100deg, #fff 0%, #f5f5f5 30%, #fff 55%, #f0f0f0 80%, #fff 100%);
+        }
+
+        .flag-link .flag-band-bot {
+            top: 66.67%;
+            height: 33.33%;
+            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
+        }
+
+        .flag-link .flag-sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 22px;
+            height: 22px;
+            z-index: 2;
+        }
+
+        .flag-link .flag-sun::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #F6B40E 35%, #FCDF73 65%, transparent 66%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .flag-link .flag-sun::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg, #F6B40E 3deg, transparent 6deg,
+                transparent 22.5deg, #F6B40E 25.5deg, transparent 28.5deg,
+                transparent 45deg, #F6B40E 48deg, transparent 51deg,
+                transparent 67.5deg, #F6B40E 70.5deg, transparent 73.5deg,
+                transparent 90deg, #F6B40E 93deg, transparent 96deg,
+                transparent 112.5deg, #F6B40E 115.5deg, transparent 118.5deg,
+                transparent 135deg, #F6B40E 138deg, transparent 141deg,
+                transparent 157.5deg, #F6B40E 160.5deg, transparent 163.5deg,
+                transparent 180deg, #F6B40E 183deg, transparent 186deg,
+                transparent 202.5deg, #F6B40E 205.5deg, transparent 208.5deg,
+                transparent 225deg, #F6B40E 228deg, transparent 231deg,
+                transparent 247.5deg, #F6B40E 250.5deg, transparent 253.5deg,
+                transparent 270deg, #F6B40E 273deg, transparent 276deg,
+                transparent 292.5deg, #F6B40E 295.5deg, transparent 298.5deg,
+                transparent 315deg, #F6B40E 318deg, transparent 321deg,
+                transparent 337.5deg, #F6B40E 340.5deg, transparent 343.5deg
+            );
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Pliegues de tela - ondulación estática */
+        .flag-link .flag-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(95deg,
+                    rgba(255,255,255,0.15) 0%,
+                    transparent 18%,
+                    rgba(255,255,255,0.1) 35%,
+                    transparent 50%,
+                    rgba(255,255,255,0.08) 68%,
+                    transparent 82%,
+                    rgba(255,255,255,0.05) 100%
+                );
+            z-index: 3;
+        }
+
+        .flag-link .flag-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(100deg,
+                    rgba(0,0,0,0.1) 0%,
+                    transparent 12%,
+                    rgba(0,0,0,0.06) 28%,
+                    transparent 42%,
+                    rgba(0,0,0,0.08) 60%,
+                    transparent 75%,
+                    rgba(0,0,0,0.12) 100%
+                );
+            z-index: 4;
+        }
+
+
+
+.navbar-link {
+            color: #e0f0ed;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 1rem 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover {
+            background-color: var(--color-highlight);
+            color: #013729;
+        }
+
+        .navbar-link.active {
+            background-color: #6d2282;
+            color: #fff;
+        }
+
+        .navbar-social-icon {
+            width: clamp(22px, 2vw, 28px);
+            height: clamp(22px, 2vw, 28px);
+            min-width: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: #7ca19b;
+            transition: color 0.2s ease, background-color 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .navbar-social-icon.social-whatsapp:hover {
+            color: #25D366;
+            background-color: rgba(37, 211, 102, 0.1);
+        }
+
+        .navbar-social-icon.social-facebook:hover {
+            color: #1877F2;
+            background-color: rgba(24, 119, 242, 0.1);
+        }
+
+        .navbar-social-icon.social-instagram:hover {
+            color: #e6683c;
+            background-color: rgba(230, 104, 60, 0.1);
+        }
+
+        .flag-link .ribbon-new {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 55px;
+            height: 55px;
+            overflow: hidden;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .flag-link .ribbon-new span {
+            display: block;
+            position: absolute;
+            top: 8px;
+            right: -18px;
+            width: 80px;
+            padding: 2px 0;
+            background: #e53e3e;
+            color: #fff;
+            font-size: 0.5rem;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        }
+
+
+        /* Mobile Adjustments */
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar-menu {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                overflow-y: auto;
+                background-color: #051a1a;
+                flex-direction: column;
+                justify-content: flex-start;
+                gap: 0;
+                z-index: 2100;
+                display: flex;
+                transform: translateX(-100%);
+                visibility: hidden;
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                            visibility 0.35s;
+            }
+
+            .navbar-menu.active {
+                transform: translateX(0);
+                visibility: visible;
+            }
+
+
+
+        .navbar-link {
+                width: 100%;
+                padding: 1.25rem 2rem;
+                min-height: 56px;
+                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
+                display: flex;
+                align-items: center;
+                font-size: 1.1rem;
+                font-weight: 800;
+                justify-content: flex-start;
+            }
+
+            .navbar-link.flag-link {
+                text-align: left !important;
+                justify-content: flex-start !important;
+                align-items: flex-start !important;
+            }
+
+            .navbar-container {
+                justify-content: space-between;
+                min-height: 70px;
+            }
+
+            .menu-close-btn {
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
+                color: white;
+                background: none;
+                border: none;
+                font-size: 2rem;
+                cursor: pointer;
+                padding: 0.75rem;
+                line-height: 1;
+            }
+
+            .menu-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1.25rem 2rem;
+                border-bottom: 1px solid rgba(0, 199, 177, 0.3);
+                background: linear-gradient(to bottom, #082a2a, #051a1a);
+            }
+
+            .menu-header img {
+                height: 2.5rem;
+                width: 2.5rem;
+                object-fit: contain;
+                filter: brightness(0) invert(1);
+            }
+
+            .menu-header .menu-brand {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .menu-footer {
+                margin-top: auto;
+                padding: 1.5rem 2rem;
+                border-top: 1px solid rgba(0, 199, 177, 0.3);
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .menu-footer-links {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .menu-footer-link {
+                color: #7ca19b;
+                font-size: 0.875rem;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: color 0.2s;
+            }
+
+            .menu-footer-link:hover {
+                color: #00c7b1;
+            }
+
+            .menu-footer-social {
+                display: flex;
+                gap: 0.75rem;
+                padding-top: 0.5rem;
+            }
+
+            .menu-footer-social a {
+                color: #7ca19b;
+                transition: color 0.2s;
+            }
+
+            .menu-footer-social a:hover {
+                color: #00c7b1;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .navbar-container {
+                padding: 0 0.5rem;
+            }
+
+            .navbar-container img {
+                width: 1.75rem !important;
+                height: 1.75rem !important;
+                margin-right: 0.5rem !important;
+            }
+
+            .navbar-container .font-black {
+                font-size: 0.75rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-toggle"
+                    aria-label="Abrir menú de navegación"
+                    aria-expanded="false"
+                    aria-controls="navbar-menu">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <line x1="4" y1="7" x2="20" y2="7" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="4" y1="17" x2="20" y2="17" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+
+            <!-- Mobile Branding (Visible only on mobile) -->
+            <div class="flex lg:hidden flex-1 items-center overflow-hidden">
+                <!-- Espaciador izquierdo para centrar el bloque de texto -->
+                <div class="flex-1"></div>
+                
+                <div class="flex flex-col justify-center">
+                    <h1 class="font-black text-white leading-none uppercase tracking-tighter" style="font-size: 1.25rem !important; line-height: 1 !important;">CAU - VILLA LUGANO
+                    </h1>
+                    <p class="text-xs font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
+                </div>
+
+                <!-- Contenedor del logo: lo ubica en el centro del espacio restante a la derecha -->
+                <div class="flex-1 flex justify-center items-center">
+                    <img src="imagenes/file-removebg-preview.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="h-10 w-10 object-contain"
+                        style="filter: brightness(0) invert(1);" width="40" height="40">
+                </div>
+            </div>
+
+
+            <!-- Links -->
+            <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
+                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Menu header con branding -->
+                <div class="menu-header lg:hidden">
+                    <img src="imagenes/file-removebg-preview.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
+                    <div class="menu-brand">
+                        <span class="font-black text-white text-lg uppercase tracking-tighter leading-none">CAU - Villa Lugano</span>
+                        <span class="text-xs font-bold text-[#00c7b1] uppercase tracking-wider">Siglo 21</span>
+                    </div>
+                </div>
+
+                <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
+                <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
+                <a href="identidad-argentina.html" class="navbar-link flag-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
+                    <div class="flag-bg">
+                        <div class="flag-band flag-band-top"></div>
+                        <div class="flag-band flag-band-mid"></div>
+                        <div class="flag-band flag-band-bot"></div>
+                        <div class="flag-sun"></div>
+                    </div>
+                    <div class="ribbon-new"><span>Nuevo!</span></div>
+                    <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
+                </a>
+                <a href="novedades.html" class="navbar-link">Novedades</a>
+                <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
+                <a href="faq.html" class="navbar-link">Preguntas Frecuentes</a>
+                <a href="contactos.html" class="navbar-link">Contacto</a>
+
+                <!-- Menu footer -->
+                <div class="menu-footer lg:hidden">
+                    <div class="menu-footer-social" style="justify-content: center;">
+                        <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        </a>
+                        <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social icons (desktop) -->
+            <div class="navbar-social hidden lg:flex items-center flex-shrink-0" style="gap: 6px; margin-left: 8px;">
+                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp"
+                    class="navbar-social-icon social-whatsapp">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
+                <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook"
+                    class="navbar-social-icon social-facebook">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram"
+                    class="navbar-social-icon social-instagram">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="flex flex-col items-center justify-center min-h-[50vh] text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mb-6" style="color: var(--color-highlight);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+            </svg>
+            <h1 class="text-4xl font-black text-white mb-4 uppercase tracking-tighter">Cursos Identidad Argentina</h1>
+            <p class="text-xl font-bold mb-2" style="color: var(--color-highlight);">En construccion</p>
+            <p class="text-[#7ca19b] max-w-md">Estamos trabajando en esta seccion. Pronto estara disponible.</p>
+    </div>
+
+    <script>
+            // Mobile menu toggle and Active Link logic
+            (function() {
+                const toggle = document.getElementById('mobile-toggle');
+                const menu = document.getElementById('navbar-menu');
+                const closeBtn = document.getElementById('menu-close');
+                if (!toggle || !menu) return;
+
+                let lastFocused = null;
+
+                function openMenu() {
+                    lastFocused = document.activeElement;
+                    menu.classList.add('active');
+                    toggle.setAttribute('aria-expanded', 'true');
+                    document.body.classList.add('overflow-hidden');
+                    closeBtn?.focus();
+                }
+
+                function closeMenu() {
+                    menu.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    document.body.classList.remove('overflow-hidden');
+                    lastFocused?.focus();
+                }
+
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.contains('active') ? closeMenu() : openMenu();
+                });
+
+                closeBtn?.addEventListener('click', closeMenu);
+
+                document.addEventListener('click', (e) => {
+                    if (menu.classList.contains('active') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+                        closeMenu();
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && menu.classList.contains('active')) {
+                        closeMenu();
+                    }
+                });
+
+                menu.querySelectorAll('.navbar-link').forEach(link => {
+                    link.addEventListener('click', closeMenu);
+                });
+
+                menu.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Tab') return;
+                    const focusable = menu.querySelectorAll('button, a[href]');
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+                    if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                });
+
+                // Active Link logic
+                const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+                menu.querySelectorAll('.navbar-link').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === currentPath) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            })();
+    </script>
+</body>
+
+</html>
