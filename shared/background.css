@@ -1,0 +1,47 @@
+/* =========================================================
+   Fondo unificado — CAU Villa Lugano
+   Incluir en cualquier página con:
+     <link rel="stylesheet" href="shared/background.css">
+   ========================================================= */
+
+html {
+    background-color: #061716;
+    scrollbar-width: auto;
+    scrollbar-color: #00c7b1 #061716;
+}
+
+::-webkit-scrollbar { width: 14px; }
+::-webkit-scrollbar-track { background: #061716; }
+::-webkit-scrollbar-thumb { background: #00c7b1; }
+::-webkit-scrollbar-thumb:hover { background: #48b3a4; }
+
+body {
+    background-color: #061716;
+    position: relative;
+}
+
+/* Capa 1: degradé profundo con tonos teal */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(1100px 700px at 16% 6%,  rgba(0, 199, 177, 0.08) 0%, rgba(0, 199, 177, 0) 62%),
+        radial-gradient(1000px 700px at 50% 100%, rgba(0, 140, 125, 0.12) 0%, rgba(0, 140, 125, 0) 66%),
+        linear-gradient(170deg, #041211 0%, #071d1b 40%, #082422 72%, #061716 100%);
+}
+
+/* Capa 2: grilla sutil centrada */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.006) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.006) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
+}

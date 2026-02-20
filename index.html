@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+    <script>history.scrollRestoration = "manual";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oferta Académica Universidad Siglo 21 - CAU Villa Lugano</title>
@@ -15,11 +16,24 @@
     </script>
     <!-- Incluir Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fuentes: Crimson Pro (títulos, académica) y Atkinson Hyperlegible (cuerpo, legible) -->
+    <!-- Fuentes: Inter (cuerpo) y Atkinson Hyperlegible (píldoras) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@700;900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <style>
+        html {
+            scrollbar-gutter: stable;
+            overflow-x: clip;
+            background-color: #061716;
+            scrollbar-width: auto;
+            scrollbar-color: #00c7b1 #061716;
+        }
+
+        ::-webkit-scrollbar { width: 14px; }
+        ::-webkit-scrollbar-track { background: #061716; }
+        ::-webkit-scrollbar-thumb { background: #00c7b1; }
+        ::-webkit-scrollbar-thumb:hover { background: #48b3a4; }
+
         .main-navbar {
             background-color: #051a1a;
             position: sticky;
@@ -33,6 +47,18 @@
         .main-navbar.navbar-hidden {
             transform: translateY(-100%);
         }
+
+        .main-navbar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 100%;
+            width: calc(100vw - 100%);
+            background-color: #051a1a;
+            pointer-events: none;
+        }
+
 
         .navbar-container {
             width: 100%;
@@ -52,25 +78,7 @@
             min-width: 0;
         }
 
-        @media (min-width: 1025px) and (max-width: 1350px) {
-            .navbar-menu {
-                gap: 0;
-            }
-            .navbar-menu .navbar-link {
-                font-size: clamp(0.7rem, 0.9vw, 0.85rem);
-                padding: 0.8rem clamp(0.3rem, 0.5vw, 0.7rem);
-                letter-spacing: 0.02em;
-            }
-            .navbar-menu .navbar-link.flag-link span {
-                font-size: clamp(0.7rem, 0.9vw, 0.85rem) !important;
-            }
-            .navbar-menu .navbar-link.flag-link span:last-child {
-                font-size: clamp(0.55rem, 0.7vw, 0.65rem) !important;
-            }
-        }
-
-
-        /* Bandera Argentina - fondo del link Identidad Argentina */
+        /* Estilo para el link de Identidad Argentina */
         .flag-link {
             position: relative;
             overflow: hidden;
@@ -79,134 +87,7 @@
             white-space: normal;
         }
 
-        .flag-link .flag-bg {
-            position: absolute;
-            inset: 0;
-            transform: rotateY(-12deg) rotateX(4deg);
-            transform-origin: left center;
-            overflow: hidden;
-            opacity: 0.18;
-            z-index: -1;
-            transition: opacity 0.4s ease, transform 0.5s ease;
-            box-shadow: inset -8px 0 18px rgba(0,0,0,0.25), inset 4px 0 10px rgba(255,255,255,0.08);
-        }
-
-
-
-        .flag-link .flag-band {
-            position: absolute;
-            left: 0;
-            width: 100%;
-        }
-
-        .flag-link .flag-band-top {
-            top: 0;
-            height: 33.33%;
-            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
-        }
-
-        .flag-link .flag-band-mid {
-            top: 33.33%;
-            height: 33.34%;
-            background: linear-gradient(100deg, #fff 0%, #f5f5f5 30%, #fff 55%, #f0f0f0 80%, #fff 100%);
-        }
-
-        .flag-link .flag-band-bot {
-            top: 66.67%;
-            height: 33.33%;
-            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
-        }
-
-        .flag-link .flag-sun {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 22px;
-            height: 22px;
-            z-index: 2;
-        }
-
-        .flag-link .flag-sun::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 12px;
-            height: 12px;
-            background: radial-gradient(circle, #F6B40E 35%, #FCDF73 65%, transparent 66%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .flag-link .flag-sun::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 22px;
-            height: 22px;
-            background: conic-gradient(
-                from 0deg,
-                transparent 0deg, #F6B40E 3deg, transparent 6deg,
-                transparent 22.5deg, #F6B40E 25.5deg, transparent 28.5deg,
-                transparent 45deg, #F6B40E 48deg, transparent 51deg,
-                transparent 67.5deg, #F6B40E 70.5deg, transparent 73.5deg,
-                transparent 90deg, #F6B40E 93deg, transparent 96deg,
-                transparent 112.5deg, #F6B40E 115.5deg, transparent 118.5deg,
-                transparent 135deg, #F6B40E 138deg, transparent 141deg,
-                transparent 157.5deg, #F6B40E 160.5deg, transparent 163.5deg,
-                transparent 180deg, #F6B40E 183deg, transparent 186deg,
-                transparent 202.5deg, #F6B40E 205.5deg, transparent 208.5deg,
-                transparent 225deg, #F6B40E 228deg, transparent 231deg,
-                transparent 247.5deg, #F6B40E 250.5deg, transparent 253.5deg,
-                transparent 270deg, #F6B40E 273deg, transparent 276deg,
-                transparent 292.5deg, #F6B40E 295.5deg, transparent 298.5deg,
-                transparent 315deg, #F6B40E 318deg, transparent 321deg,
-                transparent 337.5deg, #F6B40E 340.5deg, transparent 343.5deg
-            );
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        /* Pliegues de tela - ondulación estática */
-        .flag-link .flag-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(95deg,
-                    rgba(255,255,255,0.15) 0%,
-                    transparent 18%,
-                    rgba(255,255,255,0.1) 35%,
-                    transparent 50%,
-                    rgba(255,255,255,0.08) 68%,
-                    transparent 82%,
-                    rgba(255,255,255,0.05) 100%
-                );
-            z-index: 3;
-        }
-
-        .flag-link .flag-bg::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(100deg,
-                    rgba(0,0,0,0.1) 0%,
-                    transparent 12%,
-                    rgba(0,0,0,0.06) 28%,
-                    transparent 42%,
-                    rgba(0,0,0,0.08) 60%,
-                    transparent 75%,
-                    rgba(0,0,0,0.12) 100%
-                );
-            z-index: 4;
-        }
-
-
-
-.navbar-link {
+        .navbar-link {
             color: #e0f0ed;
             text-decoration: none;
             font-weight: 700;
@@ -304,35 +185,27 @@
             color: #ffffff;
         }
 
-        .flag-link .ribbon-new {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 55px;
-            height: 55px;
-            overflow: hidden;
-            z-index: 10;
-            pointer-events: none;
+
+
+
+        /* Escalado horizontal del navbar en escritorios intermedios (sin cambiar la altura) */
+        @media (min-width: 1025px) and (max-width: 1199px) {
+            .navbar-link {
+                font-size: 0.72rem;
+                padding-left: 0.45rem;
+                padding-right: 0.45rem;
+                letter-spacing: 0.02em;
+            }
         }
 
-        .flag-link .ribbon-new span {
-            display: block;
-            position: absolute;
-            top: 8px;
-            right: -18px;
-            width: 80px;
-            padding: 2px 0;
-            background: #e53e3e;
-            color: #fff;
-            font-size: 0.5rem;
-            font-weight: 900;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            transform: rotate(45deg);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        @media (min-width: 1200px) and (max-width: 1379px) {
+            .navbar-link {
+                font-size: 0.78rem;
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+                letter-spacing: 0.03em;
+            }
         }
-
 
         /* Mobile Adjustments */
         .mobile-menu-btn {
@@ -353,7 +226,7 @@
                 left: 0;
                 width: 100%;
                 height: 100vh;
-                overflow-y: auto;
+                overflow-y: hidden;
                 background-color: #051a1a;
                 flex-direction: column;
                 justify-content: flex-start;
@@ -375,20 +248,27 @@
 
         .navbar-link {
                 width: 100%;
-                padding: 1.25rem 2rem;
-                min-height: 56px;
+                padding: 0 2rem;
+                flex: 1;
+                min-height: 0;
                 border-bottom: 1px solid rgba(0, 199, 177, 0.5);
                 display: flex;
                 align-items: center;
                 font-size: 1.1rem;
                 font-weight: 800;
-                justify-content: flex-start;
+                justify-content: center;
+                text-align: center;
+                white-space: normal;
             }
 
-            .navbar-link.flag-link {
-                text-align: left !important;
-                justify-content: flex-start !important;
-                align-items: flex-start !important;
+            .navbar-link:has(.flag-link) {
+                text-align: center !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+
+            .flag-link {
+                overflow: visible;
             }
 
             .navbar-container {
@@ -410,10 +290,11 @@
             }
 
             .menu-header {
+                flex-shrink: 0;
                 display: flex;
                 align-items: center;
                 gap: 1rem;
-                padding: 1.25rem 2rem;
+                padding: 0.875rem 2rem;
                 border-bottom: 1px solid rgba(0, 199, 177, 0.3);
                 background: linear-gradient(to bottom, #082a2a, #051a1a);
             }
@@ -431,12 +312,12 @@
             }
 
             .menu-footer {
-                margin-top: auto;
-                padding: 1.5rem 2rem;
+                flex-shrink: 0;
+                padding: 0.75rem 2rem;
                 border-top: 1px solid rgba(0, 199, 177, 0.3);
                 display: flex;
                 flex-direction: column;
-                gap: 1rem;
+                gap: 0.5rem;
             }
 
             .menu-footer-links {
@@ -466,12 +347,48 @@
             }
 
             .menu-footer-social a {
-                color: #7ca19b;
-                transition: color 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 0.5rem;
+                color: #ffffff;
+                border: 1px solid transparent;
+                transition: all 0.3s ease;
+            }
+
+            .menu-footer-social a[aria-label="WhatsApp"] {
+                background: rgba(37, 211, 102, 0.22);
+                border-color: rgba(37, 211, 102, 0.65);
+            }
+
+            .menu-footer-social a[aria-label="Facebook"] {
+                background: rgba(24, 119, 242, 0.22);
+                border-color: rgba(24, 119, 242, 0.65);
+            }
+
+            .menu-footer-social a[aria-label="Instagram"] {
+                background: rgba(214, 36, 159, 0.22);
+                border-color: rgba(214, 36, 159, 0.65);
             }
 
             .menu-footer-social a:hover {
-                color: #00c7b1;
+                transform: scale(1.05);
+                filter: brightness(1.2);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .navbar-link {
+                justify-content: flex-start;
+                text-align: left;
+            }
+
+            .navbar-link:has(.flag-link) {
+                justify-content: center !important;
+                text-align: left !important;
+                align-items: flex-start !important;
             }
         }
 
@@ -512,41 +429,43 @@
 
                 body {
                     font-family: 'Inter', sans-serif;
-                    background-color: var(--color-deep-dark-bg);
+                    background-color: #061716;
                     color: var(--color-text-normal);
-                    overflow-x: hidden;
+                    overflow-x: visible;
                     word-wrap: break-word;
                     overflow-wrap: break-word;
                     hyphens: auto;
                     line-height: 1.6;
+                    position: relative;
                 }
         
                 /* Aplica la fuente legible a las píldoras de filtro */
                 .filter-pill {
                     font-family: 'Atkinson Hyperlegible', sans-serif;
                 }
-        /* Degradado animado en capa fija para evitar repaint al hacer scroll */
+        /* Fondo CAU: degradé estático sobrio con profundidad */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: linear-gradient(160deg, #011d15 0%, var(--color-deep-dark-bg) 30%, var(--color-secondary-3) 60%, var(--color-deep-dark-bg) 100%);
-            background-size: 300% 300%;
-            animation: gradientBackground 20s ease infinite;
+            background:
+                radial-gradient(1100px 700px at 16% 6%, rgba(0, 199, 177, 0.08) 0%, rgba(0, 199, 177, 0) 62%),
+                radial-gradient(1000px 700px at 50% 100%, rgba(0, 140, 125, 0.12) 0%, rgba(0, 140, 125, 0) 66%),
+                linear-gradient(170deg, #041211 0%, #071d1b 40%, #082422 72%, #061716 100%);
         }
 
-        @keyframes gradientBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            body::before {
-                animation: none;
-                background: var(--color-deep-dark-bg);
-            }
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.006) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.006) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
         }
 
         .h1-elegant {
@@ -557,28 +476,33 @@
         }
 
         .career-name-list {
-            background-color: var(--color-card-bg);
+            --card-bg: #203646;
+            --card-hover-bg: #284154;
+            --card-border: rgba(123, 204, 255, 0.22);
+            background-color: var(--card-bg);
             color: var(--color-text-normal);
             transition: all 0.3s ease;
-            border: 1px solid rgba(0, 199, 177, 0.1);
+            border: 2px solid var(--card-border);
             border-radius: 0.5rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             text-align: left;
             overflow: hidden;
+            position: relative;
         }
 
         .career-name-list:hover {
-            transform: scale(1.02);
-            border-color: rgba(0, 199, 177, 0.3);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            background-color: #193636;
+            transform: none;
+            border-color: var(--color-highlight);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
         }
 
         .career-name-list.active {
-            background-color: var(--color-surface);
+            background-color: #193636;
             border-color: var(--color-highlight);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(0, 199, 177, 0.15), 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
         /* Highlight visual para cuando se viene desde "Lo más buscado" */
@@ -611,9 +535,9 @@
         }
 
         .career-name-list-mode-list:hover {
-            background: rgba(0, 199, 177, 0.04);
-            border-color: rgba(0, 199, 177, 0.3);
-            transform: translateX(4px);
+            background: rgba(0, 199, 177, 0.08);
+            border-color: #48b3a4;
+            transform: none;
         }
 
         .career-name-list-mode-list .career-name {
@@ -625,10 +549,27 @@
             min-width: 0;
         }
 
+        .career-prefix {
+            color: #00ffe1;
+        }
+
         .career-name-list-mode-list .detail-link {
             flex-shrink: 0;
             white-space: nowrap;
             display: inline-block;
+            color: #042620;
+            background: #00c7b1;
+            border: 1px solid #00c7b1;
+            box-shadow: none;
+            letter-spacing: 0.03em;
+            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .career-name-list-mode-list .detail-link:hover {
+            transform: none;
+            background: #009681;
+            border-color: #009681;
+            color: #ffffff;
         }
 
         /* Media query eliminada para evitar apilamiento vertical raro en resoluciones bajas */
@@ -674,8 +615,27 @@
         }
 
         .section-header-pill:hover {
-            transform: translateY(-3px);
             box-shadow: none;
+        }
+
+        .divider {
+            position: relative;
+            height: 2px !important;
+            background: rgba(72, 179, 164, 0.32) !important;
+            opacity: 1 !important;
+        }
+
+        .divider::after {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            transform: translateY(-50%) rotate(45deg);
+            background: linear-gradient(145deg, #48b3a4 0%, #00c7b1 100%);
+            box-shadow: none;
+            border-radius: 1px;
         }
 
         .detail-item {
@@ -780,7 +740,7 @@
             background-color: rgba(28, 47, 49, 0.7);
             color: var(--color-text-normal);
             border: 2px solid rgba(0, 199, 177, 0.25);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.03);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.03);
             transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
         }
 
@@ -792,7 +752,7 @@
         .search-form-wrapper input#search-input:focus-visible {
             outline: none;
             border-color: #00c7b1;
-            box-shadow: 0 0 0 3px rgba(0, 199, 177, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 1px rgba(0, 199, 177, 0.12), 0 1px 8px rgba(0, 0, 0, 0.18);
             background-color: rgba(28, 47, 49, 0.9);
         }
 
@@ -842,41 +802,40 @@
             padding: 10px 18px;
             min-height: 44px;
             border-radius: 9999px;
-            font-weight: 700;
+            font-weight: 650;
             font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-                transition: all 0.3s ease;
-                cursor: pointer;
-                                                                                                                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-                                                                                                                white-space: nowrap;
-                                                                                                            }        .filter-pill:hover {
-            background-color: var(--color-highlight);
-            color: var(--color-deep-dark-bg);
-
-            box-shadow: 0 4px 16px rgba(0, 199, 177, 0.3);
+            letter-spacing: 0.015em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+            white-space: nowrap;
         }
 
-        .filter-pill:active {
-
+        .filter-pill:hover {
+            background-color: var(--color-highlight);
+            color: var(--color-deep-dark-bg);
+            box-shadow: none;
         }
 
         .filter-pill.filter-pill-all {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: #9a9da3;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background-color: rgba(0, 199, 177, 0.12);
+            color: #00c7b1;
+            border: 1px solid rgba(0, 199, 177, 0.35);
         }
 
         .filter-pill.filter-pill-all:hover {
-            background-color: rgba(255, 255, 255, 0.85);
-            color: #1a1a1a;
+            background-color: var(--color-highlight);
+            color: var(--color-deep-dark-bg);
+            box-shadow: none;
         }
 
         .filter-pill.filter-pill-all.active {
             background-color: rgba(255, 255, 255, 0.9) !important;
             color: #1a1a1a !important;
             border-color: rgba(255, 255, 255, 0.6);
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1);
+            transform: none;
         }
 
         .filter-pill.featured {
@@ -885,7 +844,7 @@
             border: 1px solid #c9a03a;
             font-weight: 900;
             z-index: 2;
-            box-shadow: 0 2px 10px rgba(184, 146, 42, 0.3);
+            box-shadow: 0 1px 6px rgba(184, 146, 42, 0.22);
         }
 
         .filter-pill.featured:hover {
@@ -900,7 +859,8 @@
             border-color: rgba(255, 255, 255, 0.6);
             /* Mantenemos un poco de peso extra para destacar */
             font-weight: 800;
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1);
+            transform: none;
         }
 
         /* Ajuste para que no rompa la línea en la grilla */
@@ -1008,7 +968,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+            box-shadow: none;
         }
 
         .section-search-trigger:hover {
@@ -1016,7 +976,7 @@
             border-color: var(--color-highlight);
             color: var(--color-deep-dark-bg);
             transform: scale(1.1);
-            box-shadow: 0 4px 16px rgba(0, 199, 177, 0.6);
+            box-shadow: none;
         }
 
         .section-search-trigger svg {
@@ -1205,13 +1165,12 @@
             }
         }
 
-        /* Apply mobile design (4-column grid and small button styling) when buttons cannot fit on one line at desktop size */
-        /* Apply mobile design (4-column grid and small button styling) when buttons cannot fit on one line at desktop size */
+        /* Pildoras: grilla 4 columnas cuando no caben en una línea (≤1350px) */
         @media (max-width: 1350px) {
             .filter-container {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr); /* Enforce 4-column grid */
-                gap: 10px;
+                gap: 8px;
                 justify-items: center; /* Center grid items horizontally */
                 padding: 0 0.5rem; /* Ensure consistent padding */
             }
@@ -1221,15 +1180,15 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 0.55rem; /* Mobile font size */
-                letter-spacing: -0.04em; /* Mobile letter spacing */
-                padding: 4px 0px; /* Mobile padding */
+                font-size: 0.74rem;
+                letter-spacing: 0.01em;
+                padding: 7px 4px;
                 text-align: center;
                 border-width: 1px;
-                border-radius: 6px;
+                border-radius: 10px;
                 white-space: nowrap; /* Prevent any line breaks within words for mobile */
-                line-height: 1;
-                height: 36px; /* Mobile height */
+                line-height: 1.1;
+                min-height: 42px;
                 hyphens: none;
                 overflow: hidden;
                 text-overflow: ellipsis; /* Ensure text overflow is handled */
@@ -1256,12 +1215,10 @@
                 --carousel-gap: 8px;
             }
 
-            /* Transform Filter Buttons into a 4x2 Grid (8 buttons total) */
+            /* Ajustes de grilla para móvil: 2 columnas para celdas más anchas y texto legible */
             .filter-container {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 4px;
-                padding: 0 0.5rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
                 margin-bottom: 0;
             }
 
@@ -1270,19 +1227,15 @@
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                font-size: 0.55rem !important;
-                /* Further reduced to ensure "Especializaciones" fits */
-                letter-spacing: -0.04em !important;
-                /* Tighter spacing to reclaim width */
-                padding: 4px 0px !important;
+                font-size: 0.8rem !important;
+                letter-spacing: 0 !important;
+                padding: 8px 4px !important;
                 text-align: center !important;
                 border-width: 1px !important;
-                border-radius: 6px !important;
+                border-radius: 8px !important;
                 white-space: nowrap !important;
-                /* Prevent any line breaks within words */
-                line-height: 1 !important;
-                height: 36px !important;
-
+                line-height: 1.1 !important;
+                min-height: 42px !important;
                 hyphens: none !important;
                 overflow: hidden !important;
             }
@@ -1624,10 +1577,10 @@
 
         /* Favorites System Styles */
         .favorite-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 207, 51, 0.08);
+            border: 1px solid rgba(255, 207, 51, 0.45);
             cursor: pointer;
-            color: var(--color-text-light);
+            color: #ffcf33;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -1647,19 +1600,19 @@
         }
 
         .favorite-btn:hover {
-            background-color: rgba(230, 155, 5, 0.1);
-            border-color: rgba(230, 155, 5, 0.3);
-            color: var(--color-gold);
+            background-color: rgba(255, 207, 51, 0.12);
+            border-color: #ffcf33;
+            color: #ffd84a;
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: none;
         }
 
         .favorite-btn.is-favorite {
-            color: var(--color-gold);
-            background: rgba(230, 155, 5, 0.1);
-            border-color: rgba(230, 155, 5, 0.3);
-            filter: drop-shadow(0 0 6px rgba(230, 155, 5, 0.3));
-            animation: fav-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #ffd84a;
+            background: rgba(255, 207, 51, 0.16);
+            border-color: #ffcf33;
+            box-shadow: 0 0 0 1px rgba(255, 207, 51, 0.24);
+            filter: none;
         }
 
         .favorite-btn.is-favorite svg {
@@ -1695,10 +1648,23 @@
         }
 
         .footer-social-link:hover {
-            color: var(--color-accent);
-            background: rgba(0, 255, 225, 0.08);
-            border-color: rgba(0, 255, 225, 0.2);
+            color: #ffffff;
             transform: scale(1.05);
+        }
+
+        .footer-social-link.footer-whatsapp:hover {
+            background: rgba(37, 211, 102, 0.22);
+            border-color: rgba(37, 211, 102, 0.65);
+        }
+
+        .footer-social-link.footer-facebook:hover {
+            background: rgba(24, 119, 242, 0.22);
+            border-color: rgba(24, 119, 242, 0.65);
+        }
+
+        .footer-social-link.footer-instagram:hover {
+            background: rgba(214, 36, 159, 0.22);
+            border-color: rgba(214, 36, 159, 0.65);
         }
 
         /* Sidebar & Collapsible Panels */
@@ -1736,6 +1702,19 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+        }
+
+        .panel-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-left: auto;
+        }
+
+        #favorites-section.collapsed .btn-clear-favorites {
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
         }
 
         .panel-chevron {
@@ -1802,20 +1781,25 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             transition: background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-left: 1rem;
+            margin-left: 0.75rem;
+            margin-right: 0;
+            order: 0;
             box-sizing: border-box;
+            box-shadow: none;
+            filter: none;
         }
 
         .btn-clear-favorites:hover {
             background-color: #dc2626;
             color: white;
             border-color: #ef4444;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+            transform: none;
+            box-shadow: none;
+            filter: none;
         }
 
         .btn-clear-favorites:active {
-            transform: scale(0.95);
+            transform: none;
         }
 
         /* Adjustments for Favorites inside Sidebar */
@@ -1823,14 +1807,53 @@
             display: none;
             /* Controlled by .has-favorites */
             border-radius: 1.5rem;
-            background: rgba(28, 47, 49, 0.4);
-            border: 1px solid rgba(0, 199, 177, 0.1);
-            box-shadow: none;
+            background: linear-gradient(160deg, rgba(56, 40, 12, 0.7) 0%, rgba(43, 31, 10, 0.78) 100%);
+            border: 1px solid rgba(230, 155, 5, 0.42);
+            box-shadow: 0 10px 24px rgba(44, 26, 7, 0.32);
             /* Redundant sticky removed since parent column is now sticky */
         }
 
         .favorites-section.has-favorites {
             display: block;
+        }
+
+        #favorites-section .panel-header {
+            background: rgba(184, 146, 42, 0.16);
+            border-bottom: 1px solid rgba(230, 155, 5, 0.28);
+        }
+
+        #favorites-section .panel-header:hover {
+            background: rgba(184, 146, 42, 0.24);
+        }
+
+        #favorites-section .panel-title-wrapper h2 {
+            color: #ffe9b4;
+            position: relative;
+            padding-left: 0.7rem;
+        }
+
+        #favorites-section .panel-title-wrapper h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 3px;
+            height: 1.25em;
+            transform: translateY(-50%);
+            background: linear-gradient(180deg, #dab03a 0%, #e69b05 100%);
+            border-radius: 999px;
+            box-shadow: 0 0 8px rgba(230, 155, 5, 0.35);
+        }
+
+        #favorites-section .panel-chevron {
+            color: #f1c86c;
+        }
+
+        #favorites-count {
+            background-color: #e69b05 !important;
+            color: #211300 !important;
+            border: 1px solid rgba(255, 225, 155, 0.45);
+            box-shadow: 0 0 0 1px rgba(230, 155, 5, 0.24);
         }
 
         .favorites-grid {
@@ -1843,7 +1866,8 @@
             min-height: auto;
             flex-wrap: nowrap;
             gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.02) !important;
+            background: rgba(230, 155, 5, 0.09) !important;
+            border-color: rgba(230, 155, 5, 0.3);
         }
 
         .favorites-grid .career-name {
@@ -1851,14 +1875,59 @@
             min-width: 0;
         }
 
+        .favorites-grid .career-name-list:hover,
+        .favorites-grid .career-name-list-mode-list:hover {
+            background: rgba(230, 155, 5, 0.09) !important;
+            border-color: rgba(230, 155, 5, 0.3) !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .favorites-grid .career-name-list,
+        .favorites-grid .career-name-list-mode-list {
+            transition: none !important;
+        }
+
+        .favorites-grid .career-prefix {
+            color: #ffffff !important;
+        }
+
         .favorites-grid .favorite-btn {
             width: 32px;
             height: 32px;
+            background: transparent;
+            border-color: rgba(255, 207, 51, 0.55);
+            color: #ffcf33;
+            box-shadow: none;
+        }
+
+        .favorites-grid .favorite-btn:hover {
+            background: rgba(255, 207, 51, 0.1);
+            border-color: #ffcf33;
+            color: #ffd84a;
+        }
+
+        .favorites-grid .favorite-btn.is-favorite {
+            background: rgba(255, 207, 51, 0.14);
+            border-color: #ffcf33;
+            color: #ffd84a;
+            box-shadow: 0 0 0 1px rgba(255, 207, 51, 0.24);
+            filter: none;
         }
 
         .favorites-grid .detail-link {
             padding: 0.25rem 0.5rem !important;
             font-size: 0.75rem;
+            color: #2f2414;
+            background: #d9bf4f;
+            border: 1px solid #c7ad3f;
+        }
+
+        .favorites-grid .detail-link:hover {
+            background: #d9bf4f;
+            border-color: #c7ad3f;
+            color: #2f2414;
+            transform: none;
         }
 
         #sidebar-column {
@@ -1866,6 +1935,28 @@
             top: 3rem;
             height: fit-content;
             z-index: 10;
+        }
+
+        /* Estado automático: ocultar sidebar si las tarjetas no entran */
+        #sidebar-column.sidebar-auto-hidden {
+            display: none !important;
+        }
+
+        #careers-list-column.sidebar-expanded {
+            grid-column: span 3 / span 3;
+        }
+
+        /* Si no entra el sidebar, ocultar botón de favoritos en tarjetas */
+        .favorites-disabled .career-name-list .favorite-btn {
+            display: none !important;
+        }
+
+        /* Mobile: ocultar sidebar de favoritos */
+        @media (max-width: 1023px) {
+            #sidebar-column,
+            #favorites-section {
+                display: none !important;
+            }
         }
 
         /* Comparison Tool Styles */
@@ -2052,15 +2143,10 @@
 
                 <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
-                <a href="identidad-argentina.html" class="navbar-link flag-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
-                    <div class="flag-bg">
-                        <div class="flag-band flag-band-top"></div>
-                        <div class="flag-band flag-band-mid"></div>
-                        <div class="flag-band flag-band-bot"></div>
-                        <div class="flag-sun"></div>
+                <a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
+                    <div class="flag-link">
+                        <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
                     </div>
-                    <div class="ribbon-new"><span>Nuevo!</span></div>
-                    <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
                 </a>
                 <a href="novedades.html" class="navbar-link">Novedades</a>
                 <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
@@ -2475,17 +2561,19 @@
                                     <path
                                         d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                 </svg>
-                                <h2 class="text-xl font-bold text-white uppercase tracking-tight">Mis Favoritos</h2>
+                                <h2 class="text-xl font-bold text-white uppercase tracking-tight">Favoritos</h2>
                                 <span class="bg-[#00c7b1] text-[#013729] px-2 py-0.5 rounded-full text-xs font-bold"
                                     id="favorites-count">0</span>
+                            </div>
+                            <div class="panel-header-actions">
                                 <button onclick="event.stopPropagation(); favoritesManager.clearAll()"
                                     class="btn-clear-favorites" title="Quitar todos los favoritos">Limpiar</button>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 panel-chevron" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
                             </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 panel-chevron" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
                         </div>
                         <div class="panel-content">
                             <ul class="grid gap-3 favorites-grid mt-4" id="favorites-list">
@@ -2536,7 +2624,12 @@
                 // Si la sección estaba oculta por el filtro, mostrarla antes de hacer scroll
                 element.style.display = 'block';
 
-                const headerOffset = 180; // Ajuste para navbar + filter-bar sticky
+                // Offset dinámico: navbar + barra sticky de filtros
+                const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 60;
+                const stickyBar = document.querySelector('.sticky-header-wrapper');
+                const stickyHeight = stickyBar ? stickyBar.getBoundingClientRect().height : 0;
+                const headerOffset = navbarHeight + stickyHeight + 12;
+
                 const elementPosition = element.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -2546,6 +2639,56 @@
                 });
             }
         }
+
+        /**
+         * Scroll compartido: lleva la barra sticky al ras del navbar.
+         * Usada por filterByCategory y por el focus del buscador principal.
+         */
+        // Devuelve la posición Y absoluta de un elemento desde el top del documento,
+        // sumando la cadena completa de offsetTop. Inmune al scroll y al comportamiento sticky.
+        function getDocumentTop(el) {
+            let top = 0;
+            while (el) { top += el.offsetTop; el = el.offsetParent; }
+            return top;
+        }
+
+        function scrollToSearchBar() {
+            const stickyWrapper = document.querySelector('.sticky-header-wrapper');
+            if (!stickyWrapper) return;
+            const navbarHeight = parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--navbar-height')) || 60;
+
+            // display:none colapsa el espacio (no queda hueco en blanco visible).
+            // getDocumentTop se llama DESPUÉS para obtener la posición ya corregida.
+            const ofertaSection = stickyWrapper.previousElementSibling;
+            if (ofertaSection) ofertaSection.style.display = 'none';
+
+            const naturalTop = getDocumentTop(stickyWrapper);
+            const targetScrollY = naturalTop - navbarHeight;
+            if (Math.abs(window.pageYOffset - targetScrollY) > 1) {
+                window.scrollTo({ top: targetScrollY, behavior: 'instant' });
+            }
+        }
+
+        // Restaurar el encabezado de oferta cuando el usuario sube manualmente
+        // y el sticky vuelve a su posición natural (deja de estar pegado).
+        (function () {
+            const _sticky = document.querySelector('.sticky-header-wrapper');
+            const _oferta = _sticky && _sticky.previousElementSibling;
+            if (!_sticky || !_oferta) return;
+            let _raf;
+            window.addEventListener('scroll', function () {
+                cancelAnimationFrame(_raf);
+                _raf = requestAnimationFrame(function () {
+                    const navH = parseInt(getComputedStyle(document.documentElement)
+                        .getPropertyValue('--navbar-height')) || 60;
+                    // El sticky está en su posición natural (no pegado) cuando top > navbarHeight
+                    if (_sticky.getBoundingClientRect().top > navH + 1) {
+                        _oferta.style.display = '';
+                    }
+                });
+            }, { passive: true });
+        })();
 
         /**
          * Filtra las secciones para mostrar solo la categoría seleccionada.
@@ -2581,34 +2724,24 @@
                 }
             });
 
-            // 3. Scroll inteligente para enfocar los resultados (Corregido Robusto)
-            const stickyWrapper = document.querySelector('.sticky-header-wrapper');
-            if (stickyWrapper) {
-                // ESTRATEGIA: No confiar en la posición del stickyWrapper porque cambia al flotar.
-                // Buscar un punto de anclaje estable: El contenedor padre o el elemento anterior.
-                // En este caso, el header "Oferta Académica" es el elemento inmediatamente anterior.
-                let targetAnchor = 0;
-                
-                const previousElement = stickyWrapper.previousElementSibling;
-                if (previousElement && previousElement.tagName === 'SECTION') {
-                    // Si existe la sección anterior "Oferta Académica", vamos al final de ella
-                    targetAnchor = previousElement.offsetTop + previousElement.offsetHeight;
-                } else {
-                    // Fallback: usar el offsetTop del padre + padding si fuera necesario
-                   targetAnchor = stickyWrapper.parentElement ? stickyWrapper.parentElement.offsetTop : 0;
-                   // Ajuste manual basado en la estructura conocida (aprox 245px en desktop)
-                }
+            // 2b. Cerrar buscadores de sección que estén abiertos al cambiar de categoría
+            document.querySelectorAll('.section-search-wrapper.active').forEach(wrapper => {
+                const sec = wrapper.closest('[id]');
+                if (sec) toggleSectionSearch(sec.id, false);
+            });
 
-                // Altura del navbar para el offset
-                const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 60;
-                
-                // Calcular destino: Anclaje - Navbar
-                // Si el sticky ya está ocupando espacio, queremos que el inicio del sticky quede bajo el navbar.
-                // El "top" del sticky estático es exactamente donde termina el elemento anterior.
-                const targetScroll = targetAnchor - navbarHeight;
-                
-                window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+            // 3. Scroll al h2 de la sección: "Ver Todo" va a Licenciaturas (primera), el resto a la suya
+            const scrollTarget = categoryId === 'all' ? 'section-licenciaturas' : categoryId;
+            const targetSection = document.getElementById(scrollTarget);
+            if (targetSection) {
+                const navH = parseInt(getComputedStyle(document.documentElement)
+                    .getPropertyValue('--navbar-height')) || 60;
+                const stickyBar = document.querySelector('.sticky-header-wrapper');
+                const stickyH = stickyBar ? stickyBar.offsetHeight : 0;
+                const targetY = getDocumentTop(targetSection) - navH - stickyH - 12;
+                window.scrollTo({ top: targetY, behavior: 'instant' });
             }
+            requestAnimationFrame(adjustSidebarForCardsFit);
         }
 
         // Objeto de datos centralizado para todas las carreras (Grado y Pregrado)
@@ -2629,14 +2762,57 @@
             ],
             'maestrias-list': ['Maestría en Innovación Educativa', 'Maestría en Criminología y Ciencias Forenses'],
             'diplomaturas-list': ['Diplomatura en Láser y Tecnologías Médicas', 'Diplomatura en Liderazgo Coach e Inteligencia Emocional'],
-            'certificaciones-list': ['Nutrición Consciente-Mindset', 'CERTIFICADO EN E-COMMERCE', 'Certificado en Asistencia y Cuidado de las Personas Mayores', 'Certificado en Social Media Management'],
+            'certificaciones-list': ['Nutrición Consciente-Mindset', 'Certificado en E-Commerce', 'Certificado en Asistencia y Cuidado de las Personas Mayores', 'Certificado en Social Media Management'],
             'especializaciones-list': ['Gestión De Energías Renovables', 'Especialización en Políticas Públicas de Seguridad y Criminología', 'Especialización en Logística y Cadena de Suministro', 'Especialización en Negocios Internacionales'],
-            'cursos-list': ['CURSO DE SEGURIDAD PRIVADA - NIVEL I', 'Curso en coaching nutricional', 'Estrategia para el Desarrollo del Fútbol Juvenil', 'Curso de Comercio Internacional', 'Certificado en Nutrición Deportiva en Fútbol', 'Prompt Engineering', 'Análisis de Negocios (Business Analysis)']
+            'cursos-list': ['Curso de Seguridad Privada - Nivel I', 'Curso en coaching nutricional', 'Estrategia para el Desarrollo del Fútbol Juvenil', 'Curso de Comercio Internacional', 'Certificado en Nutrición Deportiva en Fútbol', 'Prompt Engineering', 'Análisis de Negocios (Business Analysis)']
         };
 
         const sectionCarreras = document.getElementById('section-carreras');
         const listContainers = document.querySelectorAll('.career-list-container');
+        const mainGridEl = document.getElementById('main-grid');
+        const careersListColumnEl = document.getElementById('careers-list-column');
+        const sidebarColumnEl = document.getElementById('sidebar-column');
         let activeElement = null; // Para rastrear el elemento activo (clicado)
+
+        function shouldHideSidebarForFit() {
+            if (!careersListColumnEl || !sidebarColumnEl || !mainGridEl) return false;
+            if (window.innerWidth < 1024) return true;
+
+            const hideThreshold = 760;
+            const showThreshold = 820;
+            const isSidebarHidden = sidebarColumnEl.classList.contains('sidebar-auto-hidden');
+            const cardsColumnWidth = careersListColumnEl.getBoundingClientRect().width;
+
+            // Histeresis para evitar "glitch": reglas distintas para ocultar y para volver a mostrar.
+            if (!isSidebarHidden) {
+                if (cardsColumnWidth < hideThreshold) return true;
+                const cards = document.querySelectorAll('.career-name-list-mode-list:not(.hidden)');
+                for (const card of cards) {
+                    if (card.scrollWidth > card.clientWidth + 1) return true;
+                }
+                return false;
+            }
+
+            // Si está oculto, solo volver a mostrar si el ancho proyectado con sidebar sigue siendo suficiente.
+            const mainWidth = mainGridEl.getBoundingClientRect().width;
+            const projectedCardsWidthWithSidebar = ((2 * mainWidth) - 32) / 3;
+            return projectedCardsWidthWithSidebar < showThreshold;
+        }
+
+        function adjustSidebarForCardsFit() {
+            if (!careersListColumnEl || !sidebarColumnEl) return;
+            const hideSidebar = shouldHideSidebarForFit();
+            sidebarColumnEl.classList.toggle('sidebar-auto-hidden', hideSidebar);
+            careersListColumnEl.classList.toggle('sidebar-expanded', hideSidebar);
+            document.body.classList.toggle('favorites-disabled', hideSidebar);
+        }
+
+        if (window.ResizeObserver && careersListColumnEl) {
+            const sidebarResizeObserver = new ResizeObserver(() => {
+                adjustSidebarForCardsFit();
+            });
+            sidebarResizeObserver.observe(careersListColumnEl);
+        }
 
         /**
          * Función para renderizar una lista de carreras en el DOM
@@ -2654,19 +2830,30 @@
             let cleanName = name;
             let prefix = '';
 
-            // Detectar prefijo base
-            if (name.startsWith('Lic.') || name.startsWith('Lic ')) {
-                prefix = 'Licenciatura';
-                cleanName = name.substring(4).trim();
-            } else if (name.startsWith('Licenciatura')) {
-                prefix = 'Licenciatura';
-                cleanName = name.substring(12).trim();
-            } else if (name.startsWith('Tec.') || name.startsWith('Tec ')) {
-                prefix = 'Tecnicatura';
-                cleanName = name.substring(4).trim();
-            } else if (name.startsWith('Tecnicatura')) {
-                prefix = 'Tecnicatura';
-                cleanName = name.substring(11).trim();
+            // Detectar prefijo base (insensible a mayúsculas y acentos)
+            const nameLower = name.toLowerCase();
+            const prefixMap = [
+                { match: 'lic.',             display: 'Licenciatura',    len: 4  },
+                { match: 'lic ',             display: 'Licenciatura',    len: 4  },
+                { match: 'licenciatura',     display: 'Licenciatura',    len: 12 },
+                { match: 'tec.',             display: 'Tecnicatura',     len: 4  },
+                { match: 'tec ',             display: 'Tecnicatura',     len: 4  },
+                { match: 'tecnicatura',      display: 'Tecnicatura',     len: 11 },
+                { match: 'maestría',         display: 'Maestría',        len: 8  },
+                { match: 'maestria',         display: 'Maestría',        len: 8  },
+                { match: 'especialización',  display: 'Especialización', len: 15 },
+                { match: 'especializacion',  display: 'Especialización', len: 15 },
+                { match: 'diplomatura',      display: 'Diplomatura',     len: 11 },
+                { match: 'certificado',      display: 'Certificado',     len: 11 },
+                { match: 'curso de ',        display: 'Curso de',        len: 9  },
+                { match: 'curso',            display: 'Curso',           len: 5  },
+            ];
+            for (const p of prefixMap) {
+                if (nameLower.startsWith(p.match)) {
+                    prefix = p.display;
+                    cleanName = name.substring(p.len).trim();
+                    break;
+                }
             }
 
             // Simplificación: Eliminar "Universitaria", "Universitario" o "Univ." del nombre limpio
@@ -2687,7 +2874,7 @@
 
         function getFormattedCareerHTML(name, query = '') {
             const { prefix, cleanName } = getCareerInfo(name);
-            const prefixClass = 'text-xs uppercase tracking-wider opacity-70 block text-[#00c7b1] font-bold';
+            const prefixClass = 'text-xs uppercase tracking-wider opacity-70 block font-bold career-prefix';
             const nameStyle = 'word-break: normal; overflow-wrap: break-word; hyphens: manual; -webkit-hyphens: manual;';
 
             const processText = (text) => query ? highlightText(text, query) : escapeHTML(text);
@@ -2727,10 +2914,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                             </svg>
                         </button>
-                        <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))" style="color: #1c2f31; background: linear-gradient(45deg, #48b3a4, #00c7b1, #00ffe1, #00c7b1, #48b3a4); background-size: 200% 200%; transition: background-position 0.3s ease, opacity 0.3s ease;">Ver Detalle</span>
+                        <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))">Ver detalles</span>
                     </div>
                 </li>
             `}).join('');
+            requestAnimationFrame(adjustSidebarForCardsFit);
         }
 
         /**
@@ -2802,8 +2990,8 @@
                 if (index > -1) {
                     this.favorites.splice(index, 1);
                 } else {
-                    if (this.favorites.length >= 5) {
-                        alert('Puedes agregar hasta un máximo de 5 carreras a tus favoritos.');
+                    if (this.favorites.length >= 4) {
+                        alert('Puedes agregar hasta un máximo de 4 carreras a tus favoritos.');
                         return;
                     }
                     this.favorites.push(name);
@@ -2867,7 +3055,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                     </svg>
                                 </button>
-                                <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))" style="color: #1c2f31; background: linear-gradient(45deg, #48b3a4, #00c7b1, #00ffe1, #00c7b1, #48b3a4); background-size: 200% 200%; transition: background-position 0.3s ease, opacity 0.3s ease;">Ver Detalle</span>
+                                <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))">Ver detalles</span>
                             </div>
                         </li>
                     `).join('');
@@ -2893,10 +3081,11 @@
         // Mantener --navbar-height SIEMPRE sincronizado con ResizeObserver
         const navbarEl = document.querySelector('.main-navbar');
         if (navbarEl && window.ResizeObserver) {
-            new ResizeObserver(() => {
+            const navbarResizeObserver = new ResizeObserver(() => {
                 const h = navbarEl.getBoundingClientRect().height;
                 document.documentElement.style.setProperty('--navbar-height', h + 'px');
-            }).observe(navbarEl);
+            });
+            navbarResizeObserver.observe(navbarEl);
         }
 
         // Lógica para esconder/mostrar navbar al scrollear (Solo Mobile)
@@ -2949,6 +3138,7 @@
                 if (stickyHeader) stickyHeader.style.transition = '';
                 lastScrollY = window.scrollY;
                 isResizing = false;
+                adjustSidebarForCardsFit();
             }, 150);
         });
 
@@ -2969,6 +3159,7 @@
                 immediateContainers.forEach(id => {
                     if (degreeCategories[id]) renderCareerList(id, degreeCategories[id]);
                 });
+                requestAnimationFrame(adjustSidebarForCardsFit);
 
                 // Lazy render: el resto se renderiza al entrar en viewport
                 const deferredContainers = Object.keys(degreeCategories)
@@ -2982,6 +3173,7 @@
                             if (!renderedSections.has(id) && degreeCategories[id]) {
                                 renderCareerList(id, degreeCategories[id]);
                                 renderedSections.add(id);
+                                requestAnimationFrame(adjustSidebarForCardsFit);
                             }
                             lazyObserver.unobserve(entry.target);
                         }
@@ -3007,6 +3199,7 @@
 
                 // Renderizar carreras destacadas
                 renderTopFeaturedCareers();
+                requestAnimationFrame(adjustSidebarForCardsFit);
 
                 console.log('App inicializada correctamente con datos externos.');
             } catch (error) {
@@ -3130,6 +3323,7 @@
                 searchResultsContainer.classList.add('hidden');
                 sections.forEach(s => s.classList.remove('hidden'));
                 if (filterContainer) filterContainer.style.display = '';
+                requestAnimationFrame(adjustSidebarForCardsFit);
                 return;
             }
 
@@ -3189,7 +3383,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                     </svg>
                                 </button>
-                                <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))" style="color: #1c2f31; background: linear-gradient(45deg, #48b3a4, #00c7b1, #00ffe1, #00c7b1, #48b3a4); background-size: 200% 200%; transition: background-position 0.3s ease, opacity 0.3s ease;">Ver Detalle</span>
+                                <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))">Ver detalles</span>
                             </div>
                         </li>
                     `}).join('');
@@ -3199,6 +3393,7 @@
                     searchResultsList.innerHTML = '';
                     noResultsMessage.classList.remove('hidden');
                 }
+                requestAnimationFrame(adjustSidebarForCardsFit);
             }, 300); // Debounce de 300ms
         }
 
@@ -3259,14 +3454,43 @@
         // 4. Asignar listeners al input de búsqueda para mover sidebar
         searchInput.addEventListener('input', searchCareers);
 
-        searchInput.addEventListener('focus', () => {
-            // Restore and fix scroll: scroll to the input but leaving space for the sticky navbar
-            setTimeout(() => {
-                const yOffset = -100; // Espacio extra para que no pegue arriba de todo (considerando navbar)
-                const y = searchInput.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                window.scrollTo({ top: y, behavior: 'smooth' });
-            }, 100);
-        });
+        // Scroll al buscador: detecta qué sección está visible en el viewport y va a su h2.
+        // Si el usuario está por encima de todas las secciones, va al buscador principal.
+        function scrollToCurrentSection() {
+            const sectionIds = [
+                'section-licenciaturas', 'section-tecnicaturas', 'section-maestrias',
+                'section-diplomaturas', 'section-certificaciones', 'section-especializaciones',
+                'section-cursos'
+            ];
+            const navH = parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--navbar-height')) || 60;
+            const stickyBar = document.querySelector('.sticky-header-wrapper');
+            const stickyH = stickyBar ? stickyBar.offsetHeight : 0;
+            const headerH = navH + stickyH + 12;
+
+            let currentSection = null;
+            let closestTop = -Infinity;
+            for (const id of sectionIds) {
+                const sec = document.getElementById(id);
+                if (!sec || sec.style.display === 'none') continue;
+                const top = sec.getBoundingClientRect().top;
+                if (top <= headerH && top > closestTop) {
+                    closestTop = top;
+                    currentSection = sec;
+                }
+            }
+
+            if (currentSection) {
+                window.scrollTo({ top: getDocumentTop(currentSection) - navH - stickyH - 12, behavior: 'instant' });
+            } else {
+                scrollToSearchBar();
+            }
+        }
+
+        // focus: cuando el input gana foco (primera vez)
+        // pointerdown: cuando ya tiene foco y se vuelve a clickear/tocar
+        searchInput.addEventListener('focus', scrollToCurrentSection);
+        searchInput.addEventListener('pointerdown', scrollToCurrentSection);
 
         searchInput.addEventListener('blur', () => {
             // Layout fijo
@@ -3364,6 +3588,8 @@
         ];
 
         function renderTopFeaturedCareers() {
+            if (renderTopFeaturedCareers._called) return;
+            renderTopFeaturedCareers._called = true;
             const container = document.getElementById('top-featured-container');
             if (!container) return;
 
@@ -3559,8 +3785,8 @@
         });
 
         btnWhatsapp.addEventListener('click', () => {
-            const modalTitle = document.getElementById('modal-title');
-            const careerName = modalTitle ? modalTitle.textContent : '';
+            const careerModal = document.getElementById('career-modal');
+            const careerName = careerModal ? (careerModal.dataset.careerName || '') : '';
             const isDefault = !careerName;
 
             let message = "Hola, me gustaría recibir más información sobre las carreras.";
@@ -3612,7 +3838,16 @@
             const modalMeta = document.getElementById('modal-meta');
             const modalContent = document.getElementById('modal-content');
 
-            modalTitle.textContent = careerName;
+            // Guardar el nombre completo para uso externo (ej: WhatsApp)
+            modal.dataset.careerName = careerName;
+
+            // Mostrar prefijo separado del nombre principal (igual que en las cards)
+            const { prefix: modalPrefix, cleanName: modalCleanName } = getCareerInfo(careerName);
+            if (modalPrefix) {
+                modalTitle.innerHTML = `<span class="block text-xs font-bold uppercase tracking-widest text-[#00ffe1] mb-0.5 leading-normal">${escapeHTML(modalPrefix)}</span><span class="block">${escapeHTML(modalCleanName)}</span>`;
+            } else {
+                modalTitle.textContent = careerName;
+            }
 
             // Metadata badges
             const metaItems = [
@@ -3675,8 +3910,8 @@
     </script>
 
     <!-- FOOTER -->
-    <footer style="background: linear-gradient(180deg, rgba(1,55,41,0.6) 0%, #011d15 100%); border-top: 1px solid rgba(0, 255, 225, 0.08);">
-        <div class="container mx-auto px-6 py-12">
+    <footer style="background: linear-gradient(180deg, rgba(6, 34, 31, 0.92) 0%, #081f1d 100%); border-top: 2px solid rgba(0, 199, 177, 0.26);">
+        <div class="container mx-auto px-6 py-14">
             <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
                 <!-- Brand -->
                 <div class="text-center md:text-left">
@@ -3685,23 +3920,23 @@
                 </div>
 
                 <!-- Social icons -->
-                <div class="flex items-center gap-3 mr-24">
+                <div class="flex items-center gap-3">
                     <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp"
-                        class="footer-social-link">
+                        class="footer-social-link footer-whatsapp">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                     </a>
                     <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook"
-                        class="footer-social-link">
+                        class="footer-social-link footer-facebook">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     </a>
                     <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram"
-                        class="footer-social-link">
+                        class="footer-social-link footer-instagram">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                     </a>
                 </div>
             </div>
 
-            <div class="mt-8 pt-6" style="border-top: 1px solid rgba(0, 255, 225, 0.06);">
+            <div class="mt-8 pt-6" style="border-top: 1px solid rgba(0, 199, 177, 0.16);">
                 <p class="text-center text-xs" style="color: var(--color-text-light);">
                     &copy; 2026 CAU Villa Lugano &mdash; Universidad Siglo 21. Todos los derechos reservados.
                 </p>

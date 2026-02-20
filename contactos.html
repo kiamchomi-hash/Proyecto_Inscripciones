@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+    <script>history.scrollRestoration = "manual";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto Universidad Siglo 21 - CAU Villa Lugano | Atención en Sede</title>
@@ -19,10 +20,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
         <!-- Navbar CSS compartido -->
     <link rel="stylesheet" href="shared/navbar.css">
+    <!-- Fondo CAU compartido -->
+    <link rel="stylesheet" href="shared/background.css">
 
     <style>
+        html {
+            overflow-x: clip;
+            overflow-y: scroll;
+            scrollbar-gutter: stable;
+        }
+
         :root {
-            --color-deep-dark-bg: #013729;
+            --color-deep-dark-bg: #061716;
             --color-card-bg: #1c2f31;
             --color-highlight: #00c7b1;
             --color-secondary-highlight: #48b3a4;
@@ -33,18 +42,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--color-deep-dark-bg);
-            background: linear-gradient(135deg, var(--color-deep-dark-bg) 0%, #006c5b 50%, var(--color-deep-dark-bg) 100%);
-            background-size: 200% 200%;
-            animation: gradientBackground 15s ease infinite;
             color: var(--color-text-normal);
-            overflow-x: hidden;
-        }
-
-        @keyframes gradientBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            overflow-x: visible;
         }
 
         .main-navbar {
@@ -77,23 +76,6 @@
             flex-grow: 1;
             justify-content: center;
             min-width: 0;
-        }
-
-        @media (min-width: 1025px) and (max-width: 1350px) {
-            .navbar-menu {
-                gap: 0;
-            }
-            .navbar-menu .navbar-link {
-                font-size: clamp(0.7rem, 0.9vw, 0.85rem);
-                padding: 0.8rem clamp(0.3rem, 0.5vw, 0.7rem);
-                letter-spacing: 0.02em;
-            }
-            .navbar-menu .navbar-link.flag-link span {
-                font-size: clamp(0.7rem, 0.9vw, 0.85rem) !important;
-            }
-            .navbar-menu .navbar-link.flag-link span:last-child {
-                font-size: clamp(0.55rem, 0.7vw, 0.65rem) !important;
-            }
         }
 
 
@@ -272,19 +254,54 @@
             flex-shrink: 0;
         }
 
+        /* Botón de WhatsApp destacado en navbar (Full Height) */
+        .navbar-social-icon.social-whatsapp {
+            background-color: #25D366;
+            color: #ffffff;
+            height: auto !important;
+            align-self: stretch;
+            width: 50px !important;
+            border-radius: 0;
+            margin: 0;
+        }
+
         .navbar-social-icon.social-whatsapp:hover {
-            color: #25D366;
-            background-color: rgba(37, 211, 102, 0.1);
+            background-color: #20bd5a;
+            color: #ffffff;
+        }
+
+        /* Facebook Highlight */
+        .navbar-social-icon.social-facebook {
+            background-color: rgba(24, 119, 242, 0.1);
+            color: #1877F2;
+            height: auto !important;
+            align-self: stretch;
+            width: 50px !important;
+            border-radius: 0;
+            margin: 0;
+            border-right: 1px solid rgba(0,0,0,0.1);
         }
 
         .navbar-social-icon.social-facebook:hover {
-            color: #1877F2;
-            background-color: rgba(24, 119, 242, 0.1);
+            background-color: #1877F2;
+            color: #ffffff;
+        }
+
+        /* Instagram Highlight */
+        .navbar-social-icon.social-instagram {
+            background-color: rgba(230, 104, 60, 0.1);
+            color: #e6683c;
+            height: auto !important;
+            align-self: stretch;
+            width: 50px !important;
+            border-radius: 0;
+            margin: 0;
         }
 
         .navbar-social-icon.social-instagram:hover {
-            color: #e6683c;
-            background-color: rgba(230, 104, 60, 0.1);
+            background-color: #e6683c;
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            color: #ffffff;
         }
 
         .flag-link .ribbon-new {
@@ -317,6 +334,26 @@
         }
 
 
+
+        /* Escalado horizontal del navbar en escritorios intermedios (sin cambiar la altura) */
+        @media (min-width: 1025px) and (max-width: 1199px) {
+            .navbar-link {
+                font-size: 0.72rem;
+                padding-left: 0.45rem;
+                padding-right: 0.45rem;
+                letter-spacing: 0.02em;
+            }
+        }
+
+        @media (min-width: 1200px) and (max-width: 1379px) {
+            .navbar-link {
+                font-size: 0.78rem;
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+                letter-spacing: 0.03em;
+            }
+        }
+
         /* Mobile Adjustments */
         .mobile-menu-btn {
             display: none;
@@ -336,7 +373,7 @@
                 left: 0;
                 width: 100%;
                 height: 100vh;
-                overflow-y: auto;
+                overflow-y: hidden;
                 background-color: #051a1a;
                 flex-direction: column;
                 justify-content: flex-start;
@@ -358,20 +395,27 @@
 
         .navbar-link {
                 width: 100%;
-                padding: 1.25rem 2rem;
-                min-height: 56px;
+                padding: 0 2rem;
+                flex: 1;
+                min-height: 0;
                 border-bottom: 1px solid rgba(0, 199, 177, 0.5);
                 display: flex;
                 align-items: center;
                 font-size: 1.1rem;
                 font-weight: 800;
-                justify-content: flex-start;
+                justify-content: center;
+                text-align: center;
+                white-space: normal;
             }
 
-            .navbar-link.flag-link {
-                text-align: left !important;
-                justify-content: flex-start !important;
-                align-items: flex-start !important;
+            .navbar-link:has(.flag-link) {
+                text-align: center !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+
+            .flag-link {
+                overflow: visible;
             }
 
             .navbar-container {
@@ -393,10 +437,11 @@
             }
 
             .menu-header {
+                flex-shrink: 0;
                 display: flex;
                 align-items: center;
                 gap: 1rem;
-                padding: 1.25rem 2rem;
+                padding: 0.875rem 2rem;
                 border-bottom: 1px solid rgba(0, 199, 177, 0.3);
                 background: linear-gradient(to bottom, #082a2a, #051a1a);
             }
@@ -414,12 +459,12 @@
             }
 
             .menu-footer {
-                margin-top: auto;
-                padding: 1.5rem 2rem;
+                flex-shrink: 0;
+                padding: 0.75rem 2rem;
                 border-top: 1px solid rgba(0, 199, 177, 0.3);
                 display: flex;
                 flex-direction: column;
-                gap: 1rem;
+                gap: 0.5rem;
             }
 
             .menu-footer-links {
@@ -449,12 +494,48 @@
             }
 
             .menu-footer-social a {
-                color: #7ca19b;
-                transition: color 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 0.5rem;
+                color: #ffffff;
+                border: 1px solid transparent;
+                transition: all 0.3s ease;
+            }
+
+            .menu-footer-social a[aria-label="WhatsApp"] {
+                background: rgba(37, 211, 102, 0.22);
+                border-color: rgba(37, 211, 102, 0.65);
+            }
+
+            .menu-footer-social a[aria-label="Facebook"] {
+                background: rgba(24, 119, 242, 0.22);
+                border-color: rgba(24, 119, 242, 0.65);
+            }
+
+            .menu-footer-social a[aria-label="Instagram"] {
+                background: rgba(214, 36, 159, 0.22);
+                border-color: rgba(214, 36, 159, 0.65);
             }
 
             .menu-footer-social a:hover {
-                color: #00c7b1;
+                transform: scale(1.05);
+                filter: brightness(1.2);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .navbar-link {
+                justify-content: flex-start;
+                text-align: left;
+            }
+
+            .navbar-link:has(.flag-link) {
+                justify-content: center !important;
+                text-align: left !important;
+                align-items: flex-start !important;
             }
         }
 
@@ -477,7 +558,7 @@
 </head>
 
 <body>
-    <nav class="main-navbar">
+        <nav class="main-navbar">
         <div class="navbar-container">
             <!-- Mobile Menu Button -->
             <button class="mobile-menu-btn" id="mobile-toggle"
@@ -532,20 +613,15 @@
 
                 <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
-                <a href="identidad-argentina.html" class="navbar-link flag-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
-                    <div class="flag-bg">
-                        <div class="flag-band flag-band-top"></div>
-                        <div class="flag-band flag-band-mid"></div>
-                        <div class="flag-band flag-band-bot"></div>
-                        <div class="flag-sun"></div>
+                <a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
+                    <div class="flag-link">
+                        <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
                     </div>
-                    <div class="ribbon-new"><span>Nuevo!</span></div>
-                    <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
                 </a>
                 <a href="novedades.html" class="navbar-link">Novedades</a>
                 <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
                 <a href="faq.html" class="navbar-link">Preguntas Frecuentes</a>
-                <a href="contactos.html" class="navbar-link">Contacto</a>
+                <a href="contactos.html" class="navbar-link active">Contacto</a>
 
                 <!-- Menu footer -->
                 <div class="menu-footer lg:hidden">
@@ -564,7 +640,7 @@
             </div>
 
             <!-- Social icons (desktop) -->
-            <div class="navbar-social hidden lg:flex items-center flex-shrink-0" style="gap: 6px; margin-left: 8px;">
+            <div class="navbar-social hidden lg:flex items-center flex-shrink-0" style="margin-left: 8px; align-self: stretch;">
                 <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp"
                     class="navbar-social-icon social-whatsapp">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -583,7 +659,7 @@
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-12">
-        <div class="flex flex-col items-center justify-center min-h-[50vh] text-center">
+        <div class="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] text-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mb-6" style="color: var(--color-highlight);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
             </svg>
@@ -667,6 +743,7 @@
                 });
             })();
     </script>
+
 </body>
 
 </html>

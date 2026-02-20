@@ -1,0 +1,44 @@
+/* =========================================================
+   Estilos globales compartidos – CAU Villa Lugano
+   Referenciado por todas las páginas excepto index.html
+   ========================================================= */
+
+/* overflow-x: visible para que el ::after del navbar
+   no sea recortado en el borde derecho del body */
+body {
+    overflow-x: visible;
+}
+
+/* Extiende el fondo del navbar al gutter del scrollbar */
+.main-navbar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 100%;
+    width: calc(100vw - 100%);
+    background-color: #051a1a;
+    pointer-events: none;
+}
+
+/* ── Scrollbar personalizado ───────────────────────────── */
+html {
+    scrollbar-width: auto;
+    scrollbar-color: #00c7b1 #061716;
+}
+
+::-webkit-scrollbar {
+    width: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: #061716;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #00c7b1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #48b3a4;
+}
