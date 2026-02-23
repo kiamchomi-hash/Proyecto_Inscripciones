@@ -32,10 +32,10 @@
 
         :root {
             --color-deep-dark-bg: #061716;
-            --color-card-bg: #1c2f31;
+            --color-card-bg: #1a3437;
             --color-highlight: #00c7b1;
-            --color-secondary-highlight: #48b3a4;
-            --color-text-light: #7ca19b;
+            --color-secondary-highlight: #5ecbb9;
+            --color-text-light: #96c2bb;
             --color-text-normal: white;
             --color-dark-bg: #003f34;
         }
@@ -554,6 +554,338 @@
                 font-size: 0.75rem !important;
             }
         }
+
+        /* ── FAQ Accordion ──────────────────────────────────── */
+        .faq-content {
+            transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease;
+        }
+
+        .faq-btn {
+            cursor: pointer;
+            transition: background 0.2s ease;
+            background: linear-gradient(to right, rgba(0,199,177,0.12) 66px, rgba(0,199,177,0.4) 66px, rgba(0,199,177,0.4) 68px, transparent 68px);
+        }
+
+        .faq-btn:hover {
+            background: linear-gradient(to right, rgba(0,199,177,0.22) 66px, rgba(0,199,177,0.55) 66px, rgba(0,199,177,0.55) 68px, rgba(0,199,177,0.09) 68px);
+        }
+
+        .faq-btn > span:nth-child(2) {
+            padding-left: 0.875rem;
+        }
+
+        /* Item 2 (contacto): el wrapper actúa como cabecera completa */
+        .faq-header-wrap {
+            cursor: pointer;
+            transition: background 0.2s ease;
+            background: linear-gradient(to right, rgba(0,199,177,0.12) 66px, rgba(0,199,177,0.4) 66px, rgba(0,199,177,0.4) 68px, transparent 68px);
+        }
+
+        .faq-header-wrap:hover {
+            background: linear-gradient(to right, rgba(0,199,177,0.22) 66px, rgba(0,199,177,0.55) 66px, rgba(0,199,177,0.55) 68px, rgba(0,199,177,0.09) 68px);
+        }
+
+        .faq-header-wrap .faq-btn {
+            background: transparent !important;
+        }
+
+        .faq-item.is-open .faq-header-wrap {
+            background: linear-gradient(to right, rgba(0,199,177,0.25) 66px, rgba(0,199,177,0.6) 66px, rgba(0,199,177,0.6) 68px, #1e3d3f 68px);
+        }
+
+        .faq-item {
+            transition: background 0.3s ease, border-color 0.3s ease;
+            border-radius: 0 !important;
+            border: none !important;
+            border-bottom: 2px solid rgba(0,199,177,0.22) !important;
+        }
+
+        .faq-item.is-open {
+            border-bottom: 2px solid rgba(0,199,177,0.6) !important;
+        }
+
+        .faq-item.is-open .faq-btn {
+            background: linear-gradient(to right, rgba(0,199,177,0.25) 66px, rgba(0,199,177,0.6) 66px, rgba(0,199,177,0.6) 68px, #1e3d3f 68px);
+        }
+
+        .faq-item.is-open .faq-content {
+            background: #162e30;
+        }
+
+        .faq-item.faq-hidden { display: none; }
+
+        .faq-item.is-open .contact-socials-header {
+            display: none;
+        }
+
+        .zona-card {
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            cursor: default;
+        }
+
+        .zona-card:hover {
+            background: rgba(0,199,177,0.16) !important;
+            border-color: rgba(0,199,177,0.6) !important;
+        }
+
+        .faq-content > div {
+            margin: 0.875rem;
+            padding: 1rem 1.25rem !important;
+            border-radius: 0.625rem;
+            border: 1px solid rgba(0,199,177,0.22);
+            background: rgba(0,20,25,0.45);
+        }
+
+        .faq-chevron {
+            flex-shrink: 0;
+            transition: transform 0.35s ease;
+        }
+
+        #faq-search:focus {
+            border-color: var(--cau-brand-green) !important;
+            box-shadow: 0 0 0 3px rgba(5,140,112,0.18);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.5rem 0.6rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            background: none;
+            text-align: left;
+            width: 100%;
+            color: #b8d4d0;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            font-family: inherit;
+        }
+
+        .sidebar-link:hover {
+            background-color: rgba(0,199,177,0.1);
+            color: #fff;
+        }
+
+        /* ── Modal ────────────────────────────────────────── */
+        #ask-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(0,10,10,0.82);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            backdrop-filter: blur(5px);
+        }
+
+        #ask-modal.open { display: flex; }
+
+        #ask-modal-box {
+            width: 100%;
+            max-width: 480px;
+            border-radius: 1.25rem;
+            padding: 0;
+            background: #122e2e;
+            border: 1px solid rgba(5,140,112,0.5);
+            position: relative;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+            overflow: hidden;
+        }
+
+        .ask-input {
+            width: 100%;
+            background: #1e3d35;
+            border: 1.5px solid rgba(0,199,177,0.3);
+            border-radius: 0.625rem;
+            padding: 0.75rem 1rem;
+            color: #d6eeea;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            font-family: inherit;
+            resize: none;
+        }
+
+        .ask-input::placeholder { color: #5a8a80; }
+        .ask-input:focus { border-color: var(--cau-brand-green); background: #234438; }
+        .ask-input[readonly] {
+            background: #0d1f18;
+            color: #3d6860;
+            border-color: rgba(0,199,177,0.15);
+            border-style: dashed;
+            cursor: default;
+        }
+
+        /* Cabecera del modal */
+        .ask-modal-header {
+            padding: 1.25rem 2rem;
+            border-radius: 1.25rem 1.25rem 0 0;
+            background: linear-gradient(135deg, #012a1f 0%, #0d3040 100%);
+            border-bottom: 1px solid rgba(0,199,177,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Slides — grid stacking: todos ocupan la misma celda,
+           el modal toma la altura del slide más alto siempre */
+        #ask-carousel-track {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+        .ask-slide {
+            grid-area: 1 / 1;
+            visibility: hidden;
+            pointer-events: none;
+            padding: 1.5rem 2rem 2rem;
+            box-sizing: border-box;
+        }
+        .ask-slide.active {
+            visibility: visible;
+            pointer-events: auto;
+            animation: ask-slide-in 0.2s ease;
+        }
+        #ask-slide-confirm.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        @keyframes ask-slide-in {
+            from { opacity: 0; transform: translateY(5px); }
+            to   { opacity: 1; transform: translateY(0);   }
+        }
+        .ask-modal-header-icon {
+            flex-shrink: 0;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.6rem;
+            background: rgba(0,199,177,0.15);
+            border: 1px solid rgba(0,199,177,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Botón "Publicar en la página" — teal */
+        #btn-mode-pub {
+            border: 1.5px solid rgba(0,199,177,0.4);
+            border-radius: 0.875rem;
+            padding: 1rem 0.75rem;
+            background: rgba(0,199,177,0.08);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            text-align: center;
+            width: 100%;
+            font-family: inherit;
+        }
+        #btn-mode-pub:hover {
+            background: rgba(0,199,177,0.18);
+            border-color: rgba(0,199,177,0.75);
+        }
+        #btn-mode-pub .ask-mode-btn-title { color: #4ddfd0; }
+
+        /* Botón "Respuesta personal" — ámbar */
+        #btn-mode-priv {
+            border: 1.5px solid rgba(218,176,58,0.4);
+            border-radius: 0.875rem;
+            padding: 1rem 0.75rem;
+            background: rgba(218,176,58,0.07);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            text-align: center;
+            width: 100%;
+            font-family: inherit;
+        }
+        #btn-mode-priv:hover {
+            background: rgba(218,176,58,0.16);
+            border-color: rgba(218,176,58,0.75);
+        }
+        #btn-mode-priv .ask-mode-btn-title { color: #e4c355; }
+        #btn-mode-priv .ask-mode-btn-desc  { color: #a89060; }
+
+        /* Alinear contenido de ambos botones */
+        #btn-mode-pub, #btn-mode-priv {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Estado deshabilitado */
+        #btn-mode-pub:disabled,
+        #btn-mode-priv:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+            pointer-events: none;
+        }
+
+        .ask-mode-btn-title {
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.25rem;
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .ask-mode-btn-desc {
+            font-size: 0.75rem;
+            color: #6a9b94;
+            line-height: 1.4;
+        }
+
+
+        .ask-back-btn {
+            background: rgba(0,199,177,0.07);
+            border: 1px solid rgba(0,199,177,0.2);
+            border-radius: 999px;
+            color: #7de8d8;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.3rem 0.85rem 0.3rem 0.6rem;
+            margin-bottom: 1rem;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+        .ask-back-btn:hover {
+            background: rgba(0,199,177,0.16);
+            border-color: rgba(0,199,177,0.45);
+            color: #00c7b1;
+        }
+
+        .ask-error {
+            color: #ff6e6e;
+            font-size: 0.78rem;
+            margin-top: 0.35rem;
+            display: none;
+        }
+        .ask-error.visible { display: block; }
+
+        .ask-toggle-contact {
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: 0.78rem;
+            cursor: pointer;
+            padding: 0.25rem 0 0;
+            font-family: inherit;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+        .ask-toggle-contact:hover { color: var(--color-highlight); }
+
     </style>
 </head>
 
@@ -575,21 +907,10 @@
             </button>
 
             <!-- Mobile Branding (Visible only on mobile) -->
-            <div class="flex lg:hidden flex-1 items-center overflow-hidden">
-                <!-- Espaciador izquierdo para centrar el bloque de texto -->
-                <div class="flex-1"></div>
-                
-                <div class="flex flex-col justify-center">
-                    <h1 class="font-black text-white leading-none uppercase tracking-tighter" style="font-size: 1.25rem !important; line-height: 1 !important;">CAU - VILLA LUGANO
-                    </h1>
-                    <p class="text-xs font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
-                </div>
-
-                <!-- Contenedor del logo: lo ubica en el centro del espacio restante a la derecha -->
-                <div class="flex-1 flex justify-center items-center">
-                    <img src="imagenes/file-removebg-preview.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="h-10 w-10 object-contain"
-                        style="filter: brightness(0) invert(1);" width="40" height="40">
-                </div>
+            <div class="flex lg:hidden flex-1 items-center min-w-0">
+                <h1 class="flex-1 text-center text-2xl md:text-3xl font-semibold unbounded-font text-white leading-none whitespace-nowrap">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h1>
+                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="flex-shrink-0 h-14 w-14 md:h-16 md:w-16 object-contain"
+                    style="filter: brightness(0) invert(1);" width="56" height="56">
             </div>
 
 
@@ -605,10 +926,9 @@
 
                 <!-- Menu header con branding -->
                 <div class="menu-header lg:hidden">
-                    <img src="imagenes/file-removebg-preview.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
+                    <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
                     <div class="menu-brand">
-                        <span class="font-black text-white text-lg uppercase tracking-tighter leading-none">CAU - Villa Lugano</span>
-                        <span class="text-xs font-bold text-[#00c7b1] uppercase tracking-wider">Siglo 21</span>
+                        <h2 class="text-3xl font-semibold unbounded-font text-white leading-none whitespace-nowrap">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h2>
                     </div>
                 </div>
 
@@ -658,17 +978,838 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container mx-auto px-4 py-12">
-        <div class="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mb-6" style="color: var(--color-highlight);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-            </svg>
-            <h1 class="text-4xl font-black text-white mb-4 uppercase tracking-tighter">Preguntas Frecuentes</h1>
-            <p class="text-xl font-bold mb-2" style="color: var(--color-highlight);">En construccion</p>
-            <p class="text-[#7ca19b] max-w-md">Estamos trabajando en esta seccion. Pronto estara disponible.</p>
+    <!-- FAQ Section -->
+    <section class="w-full px-4 pt-2 pb-14 md:pt-4 md:pb-16" style="background:#112828;">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- Buscador -->
+            <div class="relative max-w-3xl mx-auto mb-4">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none" style="color:var(--color-highlight);" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+                </svg>
+                <input id="faq-search" type="search" placeholder="¿Qué querés saber?" autocomplete="off"
+                    class="w-full pl-12 pr-4 py-3.5 rounded-xl text-white text-base outline-none"
+                    style="background:#0d2525;border:2px solid rgba(0,199,177,0.45);">
+            </div>
+            <p id="faq-no-results" class="text-center mb-6 hidden" style="color:var(--color-text-light);">
+                No se encontraron resultados. Intentá con otros términos.
+            </p>
+
+            <!-- Layout: Lista + Sidebar -->
+            <div class="flex flex-col lg:flex-row gap-6 items-start">
+
+                <!-- Botón hacer pregunta (solo mobile, aparece sobre las tarjetas) -->
+                <button type="button" class="btn-open-ask lg:hidden w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base"
+                    style="background:linear-gradient(135deg,var(--cau-brand-blue) 0%,var(--cau-brand-green) 100%);transition:filter 0.2s;"
+                    onmouseover="this.style.filter='brightness(1.15)'"
+                    onmouseout="this.style.filter='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Hacer una pregunta
+                </button>
+
+                <!-- ── Izquierda: Acordeón ────────────────── -->
+                <div class="flex-1 min-w-0" id="faq-list">
+
+                    <!-- 1 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="dónde queda cau villa lugano ubicacion direccion donde esta localizado cerca zona sur oeste caba mataderos liniers villa celina presencial sede" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">1</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Dónde queda el CAU Villa Lugano?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed space-y-3" style="color:#c8dedd;">
+                                <p>Nuestro CAU está ubicado en <strong style="color:var(--cau-brand-cream);">Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style="color:var(--cau-brand-cream);">Mataderos, Liniers y Villa Celina</strong>. Contactanos para confirmar dirección y horarios de atención.</p>
+                                <p style="font-size:0.78rem;color:#5a8a80;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:0.4rem;">cerca de</p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <!-- zona pin SVG reutilizable -->
+                                    <div class="zona-card flex items-center gap-3 px-3 py-2 rounded-lg" style="background:rgba(0,199,177,0.07);border:1px solid rgba(0,199,177,0.28);">
+                                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#00c7b1;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                                        <span class="font-semibold text-sm" style="color:#00c7b1;">Villa Lugano</span>
+                                    </div>
+                                    <div class="zona-card flex items-center gap-3 px-3 py-2 rounded-lg" style="background:rgba(0,199,177,0.07);border:1px solid rgba(0,199,177,0.28);">
+                                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#00c7b1;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                                        <span class="font-semibold text-sm" style="color:#00c7b1;">Mataderos</span>
+                                    </div>
+                                    <div class="zona-card flex items-center gap-3 px-3 py-2 rounded-lg" style="background:rgba(0,199,177,0.07);border:1px solid rgba(0,199,177,0.28);">
+                                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#00c7b1;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                                        <span class="font-semibold text-sm" style="color:#00c7b1;">Liniers</span>
+                                    </div>
+                                    <div class="zona-card flex items-center gap-3 px-3 py-2 rounded-lg" style="background:rgba(0,199,177,0.07);border:1px solid rgba(0,199,177,0.28);">
+                                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#00c7b1;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                                        <span class="font-semibold text-sm" style="color:#00c7b1;">Villa Celina</span>
+                                    </div>
+                                    <div class="zona-card flex items-center gap-3 px-3 py-2 rounded-lg" style="background:rgba(0,199,177,0.07);border:1px solid rgba(0,199,177,0.28);">
+                                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#00c7b1;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                                        <span class="font-semibold text-sm" style="color:#00c7b1;">Zona Sur del GBA</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-3 mt-3">
+                                    <div class="flex flex-col gap-2 flex-1">
+                                        <div class="rounded-lg overflow-hidden" style="height:220px;">
+                                            <iframe src="https://maps.google.com/maps?q=-34.686852,-58.477752&z=17&output=embed"
+                                                width="100%" height="220" style="border:0;display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                        </div>
+                                        <a href="https://www.google.com/maps/dir/?api=1&destination=-34.686852,-58.477752"
+                                            target="_blank" rel="noopener"
+                                            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm text-white"
+                                            style="background:linear-gradient(135deg,#1a3a6e 0%,#006655 100%);transition:filter 0.2s;"
+                                            onmouseover="this.style.filter='brightness(1.15)'"
+                                            onmouseout="this.style.filter='none'">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"/>
+                                            </svg>
+                                            Cómo llegar desde mi ubicación
+                                        </a>
+                                    </div>
+                                    <div class="hidden sm:block rounded-lg overflow-hidden flex-shrink-0" style="position:relative;width:180px;align-self:stretch;">
+                                        <img src="imagenes/gente/Foto-entrada.webp" alt="Entrada del CAU Villa Lugano" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:top;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="contacto contactarnos comunicarse hablar whatsapp telefono redes sociales facebook instagram llamar escribir mensaje" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <div class="faq-header-wrap flex items-center gap-2 pr-5">
+                            <button type="button" class="faq-btn flex items-center gap-4 text-left px-5 py-4 flex-1 min-w-0" aria-expanded="false">
+                                <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">2</span>
+                                <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Cómo me puedo contactar con ustedes?</span>
+                            </button>
+                            <div class="contact-socials-header flex items-center gap-1.5 flex-shrink-0">
+                                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp"
+                                   class="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
+                                   style="background:rgba(37,211,102,0.18);color:#25D366;border:1px solid rgba(37,211,102,0.5);">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                </a>
+                                <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook"
+                                   class="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
+                                   style="background:rgba(24,119,242,0.18);color:#1877F2;border:1px solid rgba(24,119,242,0.5);">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                </a>
+                                <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram"
+                                   class="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
+                                   style="background:rgba(230,104,60,0.18);color:#e6683c;border:1px solid rgba(230,104,60,0.5);">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                                </a>
+                            </div>
+                            <svg class="faq-chevron w-6 h-6 flex-shrink-0" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </div>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed space-y-2" style="color:#c8dedd;">
+                                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener"
+                                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-opacity hover:opacity-80"
+                                   style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);">
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#25D366;" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                    <span>
+                                        <span class="block font-semibold text-sm" style="color:#25D366;">WhatsApp</span>
+                                        <span class="block text-xs" style="color:#c8dedd;">11 6652-2722</span>
+                                    </span>
+                                </a>
+                                <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener"
+                                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-opacity hover:opacity-80"
+                                   style="background:rgba(24,119,242,0.1);border:1px solid rgba(24,119,242,0.3);">
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#1877F2;" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    <span>
+                                        <span class="block font-semibold text-sm" style="color:#1877F2;">Facebook</span>
+                                        <span class="block text-xs" style="color:#c8dedd;">ceducativovillalugano</span>
+                                    </span>
+                                </a>
+                                <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener"
+                                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-opacity hover:opacity-80"
+                                   style="background:rgba(230,104,60,0.1);border:1px solid rgba(230,104,60,0.3);">
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#e6683c;" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                                    <span>
+                                        <span class="block font-semibold text-sm" style="color:#e6683c;">Instagram</span>
+                                        <span class="block text-xs" style="color:#c8dedd;">@centroeducativovillalugano</span>
+                                    </span>
+                                </a>
+                                <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg"
+                                     style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);">
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" style="color:#ef4444;" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+                                    </svg>
+                                    <span>
+                                        <span class="block font-semibold text-sm" style="color:#ef4444;">Visitanos presencialmente</span>
+                                        <span class="block text-xs" style="color:#c8dedd;">CAU Villa Lugano — Guaminí 4876</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="requisitos inscripcion como inscribirse anotarse inicio empezar comenzar ingresar carrera secundario titulo anoto registro" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">3</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Cuáles son los requisitos de inscripción?<br>¿Cómo me inscribo?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed" style="color:#c8dedd;">
+                                <p>Para inscribirte es necesario haber <strong style="color:var(--cau-brand-cream);">finalizado el secundario</strong>. Podés iniciar el proceso <strong style="color:var(--cau-brand-cream);">sin necesidad de venir</strong> contactándonos por WhatsApp o redes, o si preferís, también podés hacerlo <strong style="color:var(--cau-brand-cream);">de forma presencial</strong> en el CAU.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="formas pago aranceles cuotas precio costo cuanto sale vale bimestral cuatrimestre tarjeta credito matricula financiacion mensual" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">4</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Qué formas de pago tiene la Universidad?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed space-y-3" style="color:#c8dedd;">
+                                <p><strong style="color:var(--cau-brand-cream);">Podés abonar los aranceles por cuatrimestre.</strong> Cada año tiene <strong style="color:var(--cau-brand-cream);">dos cuatrimestres</strong> y requiere una <strong style="color:var(--cau-brand-cream);">matrícula de inscripción</strong>. Podés pagar el <strong style="color:var(--cau-brand-cream);">cuatrimestre completo</strong> o de forma <strong style="color:var(--cau-brand-cream);">bimestral</strong>.</p>
+                                <p>También podés pagar en <strong style="color:var(--cau-brand-cream);">cuotas</strong> con <strong style="color:var(--cau-brand-cream);">tarjeta de crédito</strong> y otros medios de financiación, según la entidad bancaria o plataforma que elijas.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="validez titulos oficiales nacionales reconocido convalidar diploma grado certificado habilitante acreditado ministerio" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">5</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Qué validez tienen los títulos?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed" style="color:#c8dedd;">
+                                <p><strong style="color:var(--cau-brand-cream);">Todos los títulos de Universidad Siglo 21 son oficiales y tienen validez nacional</strong>. Están acreditados por la <strong style="color:var(--cau-brand-cream);">Secretaría de Educación</strong>, lo que garantiza que tu formación cumple los estándares académicos requeridos en todo el país.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="equivalencias otras universidades materias aprobadas convalidar transferir cambio universidad pasarme vengo historial academico" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">6</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Toman equivalencias de otras universidades?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed" style="color:#c8dedd;">
+                                <p>Sí. En Universidad Siglo 21 <strong style="color:var(--cau-brand-cream);">reconocemos equivalencias</strong> de numerosas universidades e instituciones educativas. Contactanos para analizar tu historial académico.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="becas descuentos rendimiento academico socioeconomico ayuda financiera reduccion precio barato subsidio porcentaje" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">7</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Otorgan becas?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed space-y-3" style="color:#c8dedd;">
+                                <p>Sí. Ofrecemos diversas opciones de becas para estudiantes con <strong style="color:var(--cau-brand-cream);">alto rendimiento académico, mejor promedio de secundaria</strong> y para quienes enfrentan <strong style="color:var(--cau-brand-cream);">dificultades socioeconómicas</strong>.</p>
+                                <p>Además contamos con beneficios, promociones y diferentes opciones de pago. Consultanos para conocer las que aplican a tu caso.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="nivelacion ingreso universitario primer año adaptacion ingresante sin examen introductorio curso introductorio" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">8</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Tengo que hacer curso de nivelación?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed" style="color:#c8dedd;">
+                                <p>No es obligatorio, aunque contamos con <strong style="color:var(--cau-brand-cream);">Universitarios 21</strong>, un programa para ingresantes de Grado y Pregrado que te ayuda a prepararte para el <strong style="color:var(--cau-brand-cream);">primer trayecto de tu carrera</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 9 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="modalidad distancia online campus virtual clases presenciales como se estudia horario estudiar casa internet plataforma" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">9</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Cómo funciona la modalidad a distancia?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed space-y-3" style="color:#c8dedd;">
+                                <p>La cursada es <strong style="color:var(--cau-brand-cream);">100% online</strong> a través del campus virtual de Siglo 21: clases grabadas, materiales, foros y evaluaciones desde cualquier dispositivo, a tu ritmo.</p>
+                                <p>El CAU Villa Lugano te acompaña con <strong style="color:var(--cau-brand-cream);">clases de apoyo presenciales</strong> para que no estés solo en el proceso.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="inscripcion online distancia no vivo cerca lejos remoto sin venir puedo anotarme desde casa virtual" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">10</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">¿Puedo inscribirme aunque no viva cerca?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed space-y-3" style="color:#c8dedd;">
+                                <p>Sí. Podés iniciar tu inscripción <strong style="color:var(--cau-brand-cream);">sin necesidad de venir al CAU</strong> — todo se gestiona por WhatsApp o redes sociales. La cursada también es completamente online a través del campus virtual de Siglo 21.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 11 -->
+                    <div class="faq-item rounded-xl overflow-hidden" data-q="cambio sede cau mude mudé mudé zona cercana otro cau transferir traslado cambiar centro aprendizaje universitario" style="background:var(--color-card-bg);border:1px solid rgba(0,199,177,0.28);border-left:none;">
+                        <button type="button" class="faq-btn w-full flex items-center gap-4 text-left px-5 py-4" aria-expanded="false">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:var(--cau-brand-green);">11</span>
+                            <span class="font-semibold flex-1 leading-snug text-base md:text-lg" style="color:#fff;">Me mudé a la zona y estaba en otro CAU.<br>¿Puedo cambiar de sede?</span>
+                            <svg class="faq-chevron w-6 h-6" style="color:var(--color-highlight);" fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+                                <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z"/>
+                            </svg>
+                        </button>
+                        <div class="faq-content overflow-hidden" style="max-height:0;opacity:0;">
+                            <div class="px-5 pb-5 pt-1 leading-relaxed space-y-3" style="color:#c8dedd;">
+                                <p>Sí, es posible. El cambio de CAU se gestiona directamente con nosotros. <strong style="color:var(--cau-brand-cream);">Tu historial académico y materias aprobadas se mantienen</strong> sin ningún inconveniente — la carrera sigue siendo la misma.</p>
+                                <p>Contactanos y te guiamos en el proceso de <strong style="color:var(--cau-brand-cream);">traslado de sede</strong> paso a paso.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- /faq-list -->
+
+                <!-- ── Derecha: Sidebar ──────────────────── -->
+                <aside class="w-full lg:w-80 xl:w-[340px] flex-shrink-0 flex flex-col gap-3 lg:sticky lg:top-20 lg:max-h-[calc(100vh-5.5rem)] lg:overflow-y-auto">
+
+                    <!-- Botón hacer pregunta -->
+                    <button type="button" id="btn-add-question"
+                        class="btn-open-ask hidden lg:flex w-full items-center justify-center gap-2 font-bold py-4 px-5 rounded-xl text-white text-base"
+                        style="background:linear-gradient(135deg,var(--cau-brand-blue) 0%,var(--cau-brand-green) 100%);transition:filter 0.2s;"
+                        onmouseover="this.style.filter='brightness(1.15)'"
+                        onmouseout="this.style.filter='none'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Hacer una pregunta
+                    </button>
+
+                    <!-- Preguntas recientes -->
+                    <div class="rounded-xl overflow-hidden" style="border:1px solid rgba(0,85,135,0.45);">
+                        <!-- Cabecera -->
+                        <div class="px-4 py-2.5" style="background:rgba(0,85,135,0.45);">
+                            <p class="text-xs font-semibold uppercase tracking-widest" style="color:var(--cau-brand-cream);letter-spacing:0.1em;padding-left:0.6rem;">Preguntas frecuentes</p>
+                        </div>
+                        <!-- Lista -->
+                        <div style="background:rgba(0,40,80,0.55);">
+                            <ul>
+                                <li style="border-bottom:1px solid rgba(0,199,177,0.12);">
+                                    <button class="sidebar-link py-2.5" data-faq-index="0">¿Dónde queda el CAU Villa Lugano?</button>
+                                </li>
+                                <li style="border-bottom:1px solid rgba(0,199,177,0.12);">
+                                    <button class="sidebar-link py-2.5" data-faq-index="1">¿Cómo contactarlos?</button>
+                                </li>
+                                <li style="border-bottom:1px solid rgba(0,199,177,0.12);">
+                                    <button class="sidebar-link py-2.5" data-faq-index="2">¿Cómo me inscribo?</button>
+                                </li>
+                                <li>
+                                    <button class="sidebar-link py-2.5" data-faq-index="3">¿Qué formas de pago hay?</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Contacto rápido -->
+                    <div class="rounded-xl p-4" style="background:rgba(5,140,112,0.18);border:1px solid rgba(5,140,112,0.5);">
+                        <p class="text-sm mb-2.5" style="color:#c8dedd;">¿No encontrás lo que buscás? Escribinos directamente.</p>
+                        <a href="https://wa.me/5491166522722" target="_blank" rel="noopener"
+                            class="flex items-center justify-center gap-2 font-semibold py-2.5 px-4 rounded-lg text-sm text-white w-full"
+                            style="background:#25D366;transition:background 0.2s;"
+                            onmouseover="this.style.background='#20bd5a'"
+                            onmouseout="this.style.background='#25D366'">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            Consultanos por WhatsApp
+                        </a>
+                    </div>
+
+                </aside>
+
+            </div><!-- /layout -->
+        </div><!-- /max-w -->
+    </section>
+
+    <!-- Modal: Hacer una pregunta (carrusel) -->
+    <div id="ask-modal" role="dialog" aria-modal="true" aria-labelledby="ask-modal-title">
+        <div id="ask-modal-box">
+
+            <!-- Cabecera fija (fuera del carrusel) -->
+            <div class="ask-modal-header">
+                <button type="button" id="ask-modal-close" aria-label="Cerrar"
+                    style="position:absolute;top:0.9rem;right:1rem;background:none;border:none;color:var(--color-text-light);cursor:pointer;font-size:1.5rem;line-height:1;padding:0.25rem;z-index:1;">×</button>
+                <div class="ask-modal-header-icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true" style="color:#00c7b1;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 id="ask-modal-title" class="font-bold leading-tight" style="color:#fff;font-size:1.05rem;">Hacé tu pregunta</h3>
+                    <span style="display:inline-flex;align-items:center;gap:0.3rem;background:rgba(0,199,177,0.12);border:1px solid rgba(0,199,177,0.28);border-radius:999px;padding:0.18rem 0.65rem;font-size:0.72rem;font-weight:600;color:#00c7b1;margin-top:0.25rem;">
+                        <span style="width:6px;height:6px;background:#00c7b1;border-radius:50%;flex-shrink:0;"></span>
+                        Te respondemos a la brevedad
+                    </span>
+                </div>
+            </div>
+
+            <!-- Carrusel -->
+            <div class="ask-carousel-wrapper">
+                <div id="ask-carousel-track">
+
+                    <!-- Slide 0: Escribir y elegir modo -->
+                    <div class="ask-slide">
+                        <div class="space-y-4">
+                            <div>
+                                <label for="ask-title" class="block text-sm font-semibold mb-1.5" style="color:#d6efed;">Título <span style="color:#00c7b1;">*</span></label>
+                                <input type="text" id="ask-title" class="ask-input" placeholder="Ej: ¿Cómo funcionan los pagos?">
+                            </div>
+                            <div>
+                                <label for="ask-question" class="block text-sm font-semibold mb-1.5" style="color:#d6efed;">Descripción <span class="font-normal" style="color:#4d8c85;">(opcional)</span></label>
+                                <textarea id="ask-question" class="ask-input" rows="3" placeholder="Contá con más detalle tu consulta…"></textarea>
+                            </div>
+<div class="grid grid-cols-2 gap-3">
+                                <button type="button" id="btn-mode-pub" disabled>
+                                    <div style="height:2.25rem;display:flex;align-items:center;justify-content:center;">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true" style="color:#00c7b1;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="ask-mode-btn-title">Publicar en la página</div>
+                                    <div class="ask-mode-btn-desc">Visible para todos. Te avisamos cuando sea respondida.</div>
+                                </button>
+                                <button type="button" id="btn-mode-priv" disabled>
+                                    <div style="height:2.25rem;display:flex;align-items:center;justify-content:center;">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" style="color:#dab03a;">
+                                            <circle cx="12" cy="7.5" r="3"/>
+                                            <path stroke-linecap="round" d="M5.5 21v-1a6.5 6.5 0 0113 0v1"/>
+                                            <path stroke-linecap="round" d="M7.6 7 A4.4 5 0 0 1 16.4 7"/>
+                                            <rect x="6.5" y="7" width="2.2" height="3.2" rx="1"/>
+                                            <rect x="15.3" y="7" width="2.2" height="3.2" rx="1"/>
+                                            <path stroke-linecap="round" d="M17.5 9.5c0.8 0.9 0.8 2.1 0 3"/>
+                                            <circle cx="17.7" cy="12.8" r="0.75" fill="#dab03a" stroke="none"/>
+                                        </svg>
+                                    </div>
+                                    <div class="ask-mode-btn-title">Respuesta personal</div>
+                                    <div class="ask-mode-btn-desc">Te contactamos directamente a la brevedad.</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 1: Publicar en la página -->
+                    <div class="ask-slide">
+                        <button type="button" id="ask-back-pub" class="ask-back-btn">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            Volver
+                        </button>
+                        <h3 class="text-base font-bold mb-1" style="color:#fff;">Publicar en la página</h3>
+                        <p class="text-sm mb-3" style="color:var(--color-text-light);">Tu pregunta quedará visible para otros visitantes. Te notificamos cuando sea respondida.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="ask-contact-pub" class="block text-sm font-semibold mb-1.5" style="color:#c8dedd;">Tu email <span style="color:var(--cau-brand-green);">*</span></label>
+                                <div style="position:relative;">
+                                    <input type="email" id="ask-contact-pub" class="ask-input" placeholder="tucorreo@gmail.com" autocomplete="email" style="width:100%;padding-right:5.5rem;">
+                                    <button type="button" id="ask-edit-pub" style="display:none;position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);min-width:3.8rem;text-align:center;font-size:0.78rem;font-weight:600;color:#00c7b1;background:rgba(0,199,177,0.12);border:1px solid rgba(0,199,177,0.35);border-radius:0.375rem;padding:0.25rem 0.4rem;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,199,177,0.25)'" onmouseout="this.style.background='rgba(0,199,177,0.12)'">Editar</button>
+                                    <button type="button" id="ask-confirm-pub" style="display:none;position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);min-width:3.8rem;text-align:center;font-size:0.78rem;font-weight:600;color:#013729;background:#00c7b1;border:1px solid #00c7b1;border-radius:0.375rem;padding:0.25rem 0.4rem;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#00b09c'" onmouseout="this.style.background='#00c7b1'">Listo</button>
+                                </div>
+                                <div id="ask-contact-pub-error" class="ask-error">Ingresá tu email para poder avisarte cuando sea respondida.</div>
+                            </div>
+                            <button type="button" id="ask-submit-pub"
+                                class="w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base"
+                                style="background:linear-gradient(135deg,var(--cau-brand-blue) 0%,var(--cau-brand-green) 100%);transition:filter 0.2s;"
+                                onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='none'">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                Publicar pregunta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Respuesta personal -->
+                    <div class="ask-slide">
+                        <button type="button" id="ask-back-priv" class="ask-back-btn">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            Volver
+                        </button>
+                        <h3 class="text-base font-bold mb-1" style="color:#fff;">Tus datos de contacto</h3>
+                        <p class="text-sm mb-3" style="color:var(--color-text-light);">Te respondemos a la brevedad por el medio que prefieras.</p>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="ask-name" class="block text-sm font-semibold mb-1.5" style="color:#c8dedd;">Tu nombre <span class="font-normal" style="color:var(--color-text-light);">(opcional)</span></label>
+                                <input type="text" id="ask-name" class="ask-input" placeholder="Ej: María García" autocomplete="name">
+                            </div>
+                            <div>
+                                <label for="ask-wa" class="block text-sm font-semibold mb-1.5" style="color:#c8dedd;">Tu WhatsApp o email <span style="color:var(--cau-brand-green);">*</span></label>
+                                <div style="position:relative;">
+                                    <input type="text" id="ask-wa" class="ask-input" placeholder="Ej: +54 9 11 1234-5678 ó tucorreo@gmail.com" autocomplete="off" style="width:100%;padding-right:5.5rem;">
+                                    <button type="button" id="ask-edit-priv" style="display:none;position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);min-width:3.8rem;text-align:center;font-size:0.78rem;font-weight:600;color:#00c7b1;background:rgba(0,199,177,0.12);border:1px solid rgba(0,199,177,0.35);border-radius:0.375rem;padding:0.25rem 0.4rem;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,199,177,0.25)'" onmouseout="this.style.background='rgba(0,199,177,0.12)'">Editar</button>
+                                    <button type="button" id="ask-confirm-priv" style="display:none;position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);min-width:3.8rem;text-align:center;font-size:0.78rem;font-weight:600;color:#013729;background:#00c7b1;border:1px solid #00c7b1;border-radius:0.375rem;padding:0.25rem 0.4rem;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#00b09c'" onmouseout="this.style.background='#00c7b1'">Listo</button>
+                                </div>
+                            </div>
+                            <div id="ask-contact-priv-error" class="ask-error">Ingresá un contacto para poder responderte.</div>
+                            <button type="button" id="ask-submit-priv"
+                                class="w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base"
+                                style="background:linear-gradient(135deg,var(--cau-brand-blue) 0%,var(--cau-brand-green) 100%);transition:filter 0.2s;"
+                                onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='none'">
+                                Enviar consulta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Confirmación (publicar) -->
+                    <div class="ask-slide" id="ask-slide-confirm" style="text-align:center;">
+                        <svg class="w-14 h-14 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--color-highlight);">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <h3 class="text-xl font-bold mb-2" style="color:#fff;">¡Consulta recibida!</h3>
+                        <p class="text-sm mb-6" style="color:var(--color-text-light);">Nos llegó tu pregunta y te respondemos a la brevedad. ¡Gracias!</p>
+                        <button type="button" id="ask-close-confirm"
+                            class="font-semibold py-2.5 px-6 rounded-xl text-white text-sm"
+                            style="background:rgba(0,199,177,0.2);border:1px solid rgba(0,199,177,0.45);cursor:pointer;transition:background 0.2s;"
+                            onmouseover="this.style.background='rgba(0,199,177,0.35)'" onmouseout="this.style.background='rgba(0,199,177,0.2)'">
+                            Cerrar
+                        </button>
+                    </div>
+
+                </div><!-- /track -->
+            </div><!-- /wrapper -->
+
         </div>
     </div>
+
+    <!-- FAQ Accordion JS -->
+    <script>
+        (function () {
+            var items = Array.from(document.querySelectorAll('#faq-list .faq-item'));
+
+            function openItem(item) {
+                var content = item.querySelector('.faq-content');
+                var chevron = item.querySelector('.faq-chevron');
+                var btn = item.querySelector('.faq-btn');
+                var contentH = content.scrollHeight;
+                content.style.maxHeight = contentH + 'px';
+                content.style.opacity = '1';
+                chevron.style.transform = 'rotate(180deg)';
+                btn.setAttribute('aria-expanded', 'true');
+                item.classList.add('is-open');
+
+                // Scroll condicional: solo si el item está fuera de la vista
+                // o si el contenido expandido se va de pantalla
+                var navbar = document.querySelector('.main-navbar');
+                var navH = (navbar ? navbar.offsetHeight : 0) + 8;
+                var rect = item.getBoundingClientRect();
+                var viewH = window.innerHeight;
+                var itemBelowFold = rect.top > viewH;
+                var contentOverflows = rect.bottom + contentH > viewH;
+                var headerBehindNavbar = rect.top < navH;
+                if (itemBelowFold || contentOverflows || headerBehindNavbar) {
+                    var targetY = window.scrollY + rect.top - navH;
+                    window.scrollTo({ top: targetY, behavior: 'smooth' });
+                }
+            }
+
+            function closeItem(item) {
+                var content = item.querySelector('.faq-content');
+                var chevron = item.querySelector('.faq-chevron');
+                var btn = item.querySelector('.faq-btn');
+                content.style.maxHeight = '0';
+                content.style.opacity = '0';
+                chevron.style.transform = 'rotate(0deg)';
+                btn.setAttribute('aria-expanded', 'false');
+                item.classList.remove('is-open');
+            }
+
+            // Abrir el item de ubicación solo la primera vez que se visita la página
+            if (!localStorage.getItem('faq-visited')) {
+                openItem(items[0]);
+                localStorage.setItem('faq-visited', '1');
+            }
+
+            // Accordion toggle
+            document.querySelectorAll('.faq-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var item = btn.closest('.faq-item');
+                    if (btn.getAttribute('aria-expanded') === 'true') {
+                        closeItem(item);
+                    } else {
+                        openItem(item);
+                    }
+                });
+            });
+
+            // En item #2 la flecha está fuera del botón; redirigir su click al botón
+            document.querySelectorAll('.faq-header-wrap .faq-chevron').forEach(function (chevron) {
+                chevron.addEventListener('click', function () {
+                    chevron.closest('.faq-header-wrap').querySelector('.faq-btn').click();
+                });
+            });
+
+            // Búsqueda difusa: normaliza tildes y tolera errores tipográficos
+            var search = document.getElementById('faq-search');
+            var noResults = document.getElementById('faq-no-results');
+
+            function normalize(s) {
+                return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            }
+
+            function levenshtein(a, b) {
+                var m = a.length, n = b.length, d = [], i, j;
+                for (i = 0; i <= m; i++) { d[i] = [i]; }
+                for (j = 0; j <= n; j++) { d[0][j] = j; }
+                for (i = 1; i <= m; i++)
+                    for (j = 1; j <= n; j++)
+                        d[i][j] = a[i-1] === b[j-1] ? d[i-1][j-1] : 1 + Math.min(d[i-1][j], d[i][j-1], d[i-1][j-1]);
+                return d[m][n];
+            }
+
+            function fuzzyMatch(query, haystack) {
+                if (!query) return true;
+                var words = normalize(query).split(/\s+/).filter(Boolean);
+                var hay = normalize(haystack);
+                var hayWords = hay.split(/\W+/).filter(Boolean);
+                return words.every(function (word) {
+                    if (hay.includes(word)) return true;
+                    if (word.length < 4) return false;
+                    var maxErr = word.length <= 6 ? 1 : 2;
+                    return hayWords.some(function (hw) {
+                        return hw.length >= 3 && levenshtein(word, hw) <= maxErr;
+                    });
+                });
+            }
+
+            if (search) {
+                search.addEventListener('input', function () {
+                    var q = search.value.trim();
+                    var visible = 0;
+                    items.forEach(function (item) {
+                        var haystack = (item.getAttribute('data-q') || '') + ' ' +
+                            item.querySelector('.faq-btn span.flex-1').textContent + ' ' +
+                            item.querySelector('.faq-content').textContent;
+                        var match = fuzzyMatch(q, haystack);
+                        item.classList.toggle('faq-hidden', !match);
+                        if (match) visible++;
+                    });
+                    if (noResults) noResults.classList.toggle('hidden', visible > 0);
+                });
+            }
+
+            // Recalcular max-height de items abiertos al redimensionar la ventana
+            window.addEventListener('resize', function () {
+                items.forEach(function (item) {
+                    if (item.querySelector('.faq-btn').getAttribute('aria-expanded') === 'true') {
+                        var content = item.querySelector('.faq-content');
+                        content.style.maxHeight = 'none';
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    }
+                });
+            });
+
+            // Sidebar links → open corresponding item
+            document.querySelectorAll('[data-faq-index]').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    var idx = parseInt(link.getAttribute('data-faq-index'), 10);
+                    var target = items[idx];
+                    if (!target) return;
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(function () {
+                        if (target.querySelector('.faq-btn').getAttribute('aria-expanded') !== 'true') {
+                            openItem(target);
+                        }
+                    }, 300);
+                });
+            });
+
+            // Modales
+            var modal = document.getElementById('ask-modal');
+            var btnsOpen = document.querySelectorAll('.btn-open-ask');
+            var btnClose = document.getElementById('ask-modal-close');
+
+            function goToSlide(n) {
+                document.querySelectorAll('.ask-slide').forEach(function (s, i) {
+                    s.classList.toggle('active', i === n);
+                });
+            }
+
+            function snapToSlide0() {
+                document.querySelectorAll('.ask-slide').forEach(function (s, i) {
+                    s.classList.toggle('active', i === 0);
+                });
+            }
+
+            function setError(id, visible) {
+                document.getElementById(id).classList.toggle('visible', visible);
+            }
+
+            function savedContact() {
+                return localStorage.getItem('faq-contact') || '';
+            }
+
+            function saveContact(val, name) {
+                localStorage.setItem('faq-contact', val);
+                if (name) localStorage.setItem('faq-contact-name', name);
+            }
+
+            function resetModal() {
+                snapToSlide0();
+                ['ask-title', 'ask-question', 'ask-contact-pub', 'ask-name', 'ask-wa'].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                document.getElementById('btn-mode-pub').disabled = true;
+                document.getElementById('btn-mode-priv').disabled = true;
+                document.getElementById('ask-contact-pub').readOnly = false;
+                document.getElementById('ask-edit-pub').style.display = 'none';
+                document.getElementById('ask-confirm-pub').style.display = 'none';
+                document.getElementById('ask-wa').readOnly = false;
+                document.getElementById('ask-edit-priv').style.display = 'none';
+                document.getElementById('ask-confirm-priv').style.display = 'none';
+                setError('ask-contact-pub-error', false);
+                setError('ask-contact-priv-error', false);
+            }
+
+            function closeModal() {
+                modal.classList.remove('open');
+                resetModal();
+            }
+
+            if (modal && btnsOpen.length) {
+                btnsOpen.forEach(function(btn) {
+                    btn.addEventListener('click', function () {
+                        resetModal();
+                        modal.classList.add('open');
+                        document.getElementById('ask-title').focus();
+                    });
+                });
+
+                // Habilitar botones solo cuando el título tenga ≥5 caracteres
+                document.getElementById('ask-title').addEventListener('input', function () {
+                    var ok = this.value.trim().length >= 5;
+                    document.getElementById('btn-mode-pub').disabled = !ok;
+                    document.getElementById('btn-mode-priv').disabled = !ok;
+                });
+
+                btnClose.addEventListener('click', closeModal);
+                modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') closeModal();
+                });
+
+                // Elegir modo: Publicar
+                document.getElementById('btn-mode-pub').addEventListener('click', function () {
+                    var title = document.getElementById('ask-title').value.trim();
+                    if (title.length < 5) { document.getElementById('ask-title').focus(); return; }
+                    var saved = savedContact();
+                    var pubInput = document.getElementById('ask-contact-pub');
+                    pubInput.value = saved;
+                    pubInput.readOnly = !!saved;
+                    document.getElementById('ask-edit-pub').style.display = saved ? '' : 'none';
+                    goToSlide(1);
+                    if (!saved) pubInput.focus();
+                });
+
+                // Elegir modo: Respuesta personal
+                document.getElementById('btn-mode-priv').addEventListener('click', function () {
+                    var title = document.getElementById('ask-title').value.trim();
+                    if (title.length < 5) { document.getElementById('ask-title').focus(); return; }
+                    var saved = savedContact();
+                    var privInput = document.getElementById('ask-wa');
+                    privInput.value = saved;
+                    privInput.readOnly = !!saved;
+                    document.getElementById('ask-edit-priv').style.display = saved ? '' : 'none';
+                    if (saved) {
+                        var savedName = localStorage.getItem('faq-contact-name') || '';
+                        if (savedName) document.getElementById('ask-name').value = savedName;
+                    }
+                    goToSlide(2);
+                    if (!saved) privInput.focus();
+                });
+
+                // Editar / Confirmar contacto guardado
+                document.getElementById('ask-edit-pub').addEventListener('click', function () {
+                    var input = document.getElementById('ask-contact-pub');
+                    input.readOnly = false;
+                    input.focus();
+                    input.select();
+                    this.style.display = 'none';
+                    document.getElementById('ask-confirm-pub').style.display = '';
+                });
+                document.getElementById('ask-confirm-pub').addEventListener('click', function () {
+                    var input = document.getElementById('ask-contact-pub');
+                    input.readOnly = true;
+                    this.style.display = 'none';
+                    document.getElementById('ask-edit-pub').style.display = '';
+                });
+
+                document.getElementById('ask-edit-priv').addEventListener('click', function () {
+                    var input = document.getElementById('ask-wa');
+                    input.readOnly = false;
+                    input.focus();
+                    input.select();
+                    this.style.display = 'none';
+                    document.getElementById('ask-confirm-priv').style.display = '';
+                });
+                document.getElementById('ask-confirm-priv').addEventListener('click', function () {
+                    var input = document.getElementById('ask-wa');
+                    input.readOnly = true;
+                    this.style.display = 'none';
+                    document.getElementById('ask-edit-priv').style.display = '';
+                });
+
+                // Volver al inicio desde publicar
+                document.getElementById('ask-back-pub').addEventListener('click', function () { goToSlide(0); });
+
+                // Volver al inicio desde personal
+                document.getElementById('ask-back-priv').addEventListener('click', function () { goToSlide(0); });
+
+                // Enviar: Publicar (TODO: backend pendiente)
+                document.getElementById('ask-submit-pub').addEventListener('click', function () {
+                    var contact = document.getElementById('ask-contact-pub').value.trim();
+                    if (!contact) { setError('ask-contact-pub-error', true); document.getElementById('ask-contact-pub').focus(); return; }
+                    setError('ask-contact-pub-error', false);
+                    saveContact(contact);
+                    goToSlide(3);
+                });
+
+                // Enviar: Personal (TODO: backend pendiente)
+                document.getElementById('ask-submit-priv').addEventListener('click', function () {
+                    var contactVal = document.getElementById('ask-wa').value.trim();
+                    if (!contactVal) { setError('ask-contact-priv-error', true); document.getElementById('ask-wa').focus(); return; }
+                    setError('ask-contact-priv-error', false);
+                    saveContact(contactVal, document.getElementById('ask-name').value.trim());
+                    goToSlide(3);
+                });
+
+                // Cerrar confirmación de publicar
+                document.getElementById('ask-close-confirm').addEventListener('click', closeModal);
+            }
+        })();
+    </script>
 
     <script>
             // Mobile menu toggle and Active Link logic
@@ -685,6 +1826,7 @@
                     menu.classList.add('active');
                     toggle.setAttribute('aria-expanded', 'true');
                     document.body.classList.add('overflow-hidden');
+                    document.documentElement.classList.add('overflow-hidden');
                     closeBtn?.focus();
                 }
 
@@ -692,6 +1834,7 @@
                     menu.classList.remove('active');
                     toggle.setAttribute('aria-expanded', 'false');
                     document.body.classList.remove('overflow-hidden');
+                    document.documentElement.classList.remove('overflow-hidden');
                     lastFocused?.focus();
                 }
 

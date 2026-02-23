@@ -3,6 +3,24 @@
    Referenciado por todas las páginas excepto index.html
    ========================================================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&display=swap');
+
+/* Paleta oficial CAU Villa Lugano */
+:root {
+    --cau-brand-teal:       #006c5b;
+    --cau-brand-blue:       #005587;
+    --cau-brand-green:      #058c70;
+    --cau-brand-dark-green: #046353;
+    --cau-brand-cream:      #fef8f4;
+    --cau-brand-deep-teal:  #0e6a5a;
+}
+
+
+
+.unbounded-font {
+    font-family: 'Unbounded', sans-serif;
+}
+
 /* overflow-x: visible para que el ::after del navbar
    no sea recortado en el borde derecho del body */
 body {
@@ -41,4 +59,10 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #48b3a4;
+}
+
+@media (max-width: 360px) {
+    .navbar-container {
+        padding: 0 0.5rem;
+    }
 }

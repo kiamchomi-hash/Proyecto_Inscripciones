@@ -19,7 +19,7 @@
     <!-- Fuentes: Inter (cuerpo) y Atkinson Hyperlegible (píldoras) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Inter:wght@100..900&family=Unbounded:wght@400;600&display=swap" rel="stylesheet">
     <style>
         html {
             scrollbar-gutter: stable;
@@ -392,19 +392,14 @@
             }
         }
 
-        @media (max-width: 320px) {
+        @media (max-width: 360px) {
             .navbar-container {
                 padding: 0 0.5rem;
             }
 
-            .navbar-container img {
-                width: 1.75rem !important;
-                height: 1.75rem !important;
-                margin-right: 0.5rem !important;
-            }
-
-            .navbar-container .font-black {
-                font-size: 0.75rem !important;
+            .navbar-container .mobile-logo {
+                width: 2.25rem !important;
+                height: 2.25rem !important;
             }
         }
 
@@ -425,6 +420,14 @@
             --color-gold-light: #dab03a;
             --color-surface: #162f2e;
             --color-special: #7c207b;
+
+            /* Paleta oficial CAU Villa Lugano */
+            --cau-brand-teal:       #006c5b;
+            --cau-brand-blue:       #005587;
+            --cau-brand-green:      #058c70;
+            --cau-brand-dark-green: #046353;
+            --cau-brand-cream:      #fef8f4;
+            --cau-brand-deep-teal:  #0e6a5a;
         }
 
                 body {
@@ -437,6 +440,9 @@
                     hyphens: auto;
                     line-height: 1.6;
                     position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 100vh;
                 }
         
                 /* Aplica la fuente legible a las píldoras de filtro */
@@ -772,6 +778,9 @@
             box-sizing: border-box; /* Keep this for consistent width calculation */
         }
 
+        /* Botón desplegable de filtros — oculto en escritorio, visible en mobile */
+        #filter-toggle-btn { display: none; }
+        #filter-toggle-wrapper { display: none; }
 
 
         .sticky-search-container {
@@ -1080,10 +1089,11 @@
         #top-featured-container {
             overflow: hidden !important;
             position: relative;
-            padding-bottom: 0.25rem !important;
+            padding: 0 0.75rem 0.25rem !important;
             width: 100% !important;
             max-width: 100%;
             margin: 0 auto;
+            box-sizing: border-box;
         }
 
         @media (min-width: 1025px) {
@@ -1215,11 +1225,52 @@
                 --carousel-gap: 8px;
             }
 
-            /* Ajustes de grilla para móvil: 2 columnas para celdas más anchas y texto legible */
+            /* Botón desplegable de filtros — visible solo en mobile */
+            #filter-toggle-wrapper { display: block; }
+            #filter-toggle-btn {
+                display: flex;
+                width: 100%;
+                align-items: center;
+                justify-content: space-between;
+                padding: 9px 14px;
+                background: rgba(0,199,177,0.08);
+                border: 1px solid rgba(0,199,177,0.35);
+                border-radius: 10px;
+                color: #00c7b1;
+                font-size: 0.82rem;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                cursor: pointer;
+                transition: background 0.2s;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            #filter-toggle-btn:active {
+                background: rgba(0,199,177,0.18);
+            }
+            #filter-toggle-arrow {
+                transition: transform 0.22s ease;
+                flex-shrink: 0;
+            }
+            #filter-toggle-btn[aria-expanded="true"] #filter-toggle-arrow {
+                transform: rotate(180deg);
+            }
+
+            /* Ajustes de grilla para móvil: 2 columnas, desplegable oculto por defecto */
             .filter-container {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 6px;
                 margin-bottom: 0;
+                max-height: 0;
+                overflow: hidden;
+                opacity: 0;
+                transition: max-height 0.28s ease, opacity 0.2s ease;
+                margin-top: 0;
+            }
+            .filter-container.filter-open {
+                max-height: 300px;
+                opacity: 1;
+                margin-top: 6px;
             }
 
             .filter-pill {
@@ -2070,19 +2121,54 @@
         }
         #career-modal .modal-panel {
             opacity: 0;
-            transform: scale(0.9);
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: opacity 0.3s ease;
         }
         #career-modal.modal-visible .modal-panel {
             opacity: 1;
-            transform: scale(1);
         }
         #career-modal.modal-closing .modal-backdrop {
             opacity: 0;
         }
         #career-modal.modal-closing .modal-panel {
             opacity: 0;
-            transform: scale(0.9);
+        }
+
+        /* Carrusel del modal */
+        #modal-carousel {
+            display: none;
+        }
+        #carousel-slides-inner {
+            display: flex;
+            height: 100%;
+            transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        .carousel-slide {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .carousel-slide {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .carousel-arrow:disabled { opacity: 0.25; cursor: default; }
+        .carousel-dot {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 50%;
+            background: rgba(0, 199, 177, 0.25);
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            border: none;
+            padding: 0;
+        }
+        .carousel-dot.active {
+            background: #00c7b1;
+            transform: scale(1.35);
         }
     </style>
 </head>
@@ -2104,21 +2190,10 @@
             </button>
 
             <!-- Mobile Branding (Visible only on mobile) -->
-            <div class="flex lg:hidden flex-1 items-center overflow-hidden">
-                <!-- Espaciador izquierdo para centrar el bloque de texto -->
-                <div class="flex-1"></div>
-                
-                <div class="flex flex-col justify-center">
-                    <h1 class="font-black text-white leading-none uppercase tracking-tighter" style="font-size: 1.25rem !important; line-height: 1 !important;">CAU - VILLA LUGANO
-                    </h1>
-                    <p class="text-xs font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
-                </div>
-
-                <!-- Contenedor del logo: lo ubica en el centro del espacio restante a la derecha -->
-                <div class="flex-1 flex justify-center items-center">
-                    <img src="imagenes/file-removebg-preview.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="h-10 w-10 object-contain"
-                        style="filter: brightness(0) invert(1);" width="40" height="40">
-                </div>
+            <div class="flex lg:hidden flex-1 items-center min-w-0">
+                <h1 class="flex-1 text-center text-2xl md:text-3xl whitespace-nowrap" style="font-family:'Unbounded',sans-serif;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h1>
+                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="mobile-logo flex-shrink-0 h-14 w-14 md:h-16 md:w-16 object-contain"
+                    style="filter: brightness(0) invert(1);" width="56" height="56">
             </div>
 
 
@@ -2134,10 +2209,9 @@
 
                 <!-- Menu header con branding -->
                 <div class="menu-header lg:hidden">
-                    <img src="imagenes/file-removebg-preview.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
+                    <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
                     <div class="menu-brand">
-                        <span class="font-black text-white text-lg uppercase tracking-tighter leading-none">CAU - Villa Lugano</span>
-                        <span class="text-xs font-bold text-[#00c7b1] uppercase tracking-wider">Siglo 21</span>
+                        <h2 style="font-family:'Unbounded',sans-serif;font-size:1.875rem;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h2>
                     </div>
                 </div>
 
@@ -2187,6 +2261,7 @@
         </div>
     </nav>
 
+    <main style="flex: 1;">
 
     <!-- Hero Section -->
     <header id="hero" class="w-full mb-0 shadow-2xl overflow-hidden"
@@ -2220,7 +2295,7 @@
 
             <!-- Bloque de Branding Premium (Desktop Only) -->
             <div class="hidden lg:flex items-center justify-center gap-8 order-1 lg:order-3">
-                <img src="imagenes/file-removebg-preview.png" alt="Logo CAU Villa Lugano - Universidad Siglo 21" class="w-24 h-24 object-contain"
+                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Universidad Siglo 21" class="w-24 h-24 object-contain"
                     style="filter: brightness(0) invert(1);" loading="lazy" width="96" height="96">
                 <div class="flex flex-col h-24 justify-between py-0.5">
                     <h1 class="text-2xl font-black text-white leading-none uppercase tracking-tighter">CAU - VILLA
@@ -2262,6 +2337,14 @@
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </form>
+                </div>
+
+                <!-- Botón desplegable de filtros (solo mobile) -->
+                <div id="filter-toggle-wrapper" style="padding: 0 0.5rem; width: 100%; box-sizing: border-box;">
+                    <button id="filter-toggle-btn" type="button" aria-expanded="false" aria-controls="filter-container">
+                        <span id="filter-toggle-label">Filtrar por tipo</span>
+                        <svg id="filter-toggle-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
                 </div>
 
                 <!-- Filtros rápidos -->
@@ -2737,11 +2820,26 @@
                 const navH = parseInt(getComputedStyle(document.documentElement)
                     .getPropertyValue('--navbar-height')) || 60;
                 const stickyBar = document.querySelector('.sticky-header-wrapper');
-                const stickyH = stickyBar ? stickyBar.offsetHeight : 0;
+                const filterCont = document.getElementById('filter-container');
+                // En mobile las pilloras se van a colapsar tras esta selección,
+                // así que descontamos su altura actual para no sobrecompensar
+                const filterH = (window.innerWidth <= 640 && filterCont)
+                    ? filterCont.offsetHeight : 0;
+                const stickyH = stickyBar ? (stickyBar.offsetHeight - filterH) : 0;
                 const targetY = getDocumentTop(targetSection) - navH - stickyH - 12;
                 window.scrollTo({ top: targetY, behavior: 'instant' });
             }
             requestAnimationFrame(adjustSidebarForCardsFit);
+
+            // En mobile: actualizar etiqueta y colapsar desplegable tras seleccionar filtro
+            if (window.innerWidth <= 640) {
+                const filterContainer = document.getElementById('filter-container');
+                const toggleBtn = document.getElementById('filter-toggle-btn');
+                const toggleLabel = document.getElementById('filter-toggle-label');
+                if (filterContainer) filterContainer.classList.remove('filter-open');
+                if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+                if (toggleLabel) toggleLabel.textContent = (categoryId === 'all' || !btn) ? 'Filtrar por tipo' : btn.textContent.trim();
+            }
         }
 
         // Objeto de datos centralizado para todas las carreras (Grado y Pregrado)
@@ -3201,6 +3299,13 @@
                 renderTopFeaturedCareers();
                 requestAnimationFrame(adjustSidebarForCardsFit);
 
+                // Auto-abrir modal si la URL tiene ?carrera=
+                const urlParams = new URLSearchParams(window.location.search);
+                const carreraParam = urlParams.get('carrera');
+                if (carreraParam && careersData[carreraParam]) {
+                    openCareerModal(carreraParam, careersData[carreraParam], careersData[carreraParam].fullText || '');
+                }
+
                 console.log('App inicializada correctamente con datos externos.');
             } catch (error) {
                 console.error('Fallo en la inicialización:', error);
@@ -3452,7 +3557,16 @@
         }
 
         // 4. Asignar listeners al input de búsqueda para mover sidebar
-        searchInput.addEventListener('input', searchCareers);
+        searchInput.addEventListener('input', function(e) {
+            searchCareers(e);
+            // En mobile, colapsar filtros al empezar a escribir
+            if (window.innerWidth <= 640 && e.target.value.length > 0) {
+                const filterContainer = document.getElementById('filter-container');
+                const toggleBtn = document.getElementById('filter-toggle-btn');
+                if (filterContainer) filterContainer.classList.remove('filter-open');
+                if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
 
         // Scroll al buscador: detecta qué sección está visible en el viewport y va a su h2.
         // Si el usuario está por encima de todas las secciones, va al buscador principal.
@@ -3514,6 +3628,7 @@
                     menu.classList.add('active');
                     toggle.setAttribute('aria-expanded', 'true');
                     document.body.classList.add('overflow-hidden');
+                    document.documentElement.classList.add('overflow-hidden');
                     closeBtn?.focus();
                 }
 
@@ -3521,6 +3636,7 @@
                     menu.classList.remove('active');
                     toggle.setAttribute('aria-expanded', 'false');
                     document.body.classList.remove('overflow-hidden');
+                    document.documentElement.classList.remove('overflow-hidden');
                     lastFocused?.focus();
                 }
 
@@ -3577,14 +3693,9 @@
         // 9. Funcionalidad dinámica para el Top 5
         // Lista manual de carreras destacadas (gestionada manualmente)
         const featuredCareers = [
-            'Abogacía',
-            'Contador Público',
-            'Martillero, Corredor Público y Corredor Inmobiliario',
-            'Licenciatura en Administración',
-            'Licenciatura en Comercialización',
-            'Licenciatura en Informática',
-            'Licenciatura en Gestión de Recursos Humanos',
-            'Licenciatura en Finanzas'
+            { name: 'Abogacía',                        label: 'Abogacía'  },
+            { name: 'Contador Público',                 label: 'Contador'  },
+            { name: 'Licenciatura en Comercialización', label: 'Marketing' }
         ];
 
         function renderTopFeaturedCareers() {
@@ -3595,21 +3706,8 @@
 
             const sorted = featuredCareers;
 
-            // Nombres cortos para el carrusel (máx ~20 chars)
-            function shortName(name) {
-                const { cleanName } = getCareerInfo(name);
-                let short = cleanName || name;
-                // Truncar en " y " o " e " si queda muy largo
-                if (short.length > 22) {
-                    const cut = short.search(/\s[ye]\s/i);
-                    if (cut > 5) short = short.substring(0, cut);
-                }
-                return short;
-            }
-
             function buildSetHTML(items) {
-                return items.map((name) => {
-                    const displayName = shortName(name);
+                return items.map(({ name, label }) => {
                     const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                     const imgPath = 'imagenes/imagenes_carreras/' + slug + '.webp';
                     return `
@@ -3617,7 +3715,7 @@
                             class="featured-career-card group relative flex items-center justify-center px-3 py-2 rounded-xl">
                             <div class="featured-bg" style="background-image: url('${imgPath}');"></div>
                             <div class="featured-overlay"></div>
-                            <span class="featured-text text-[11px] sm:text-xs font-semibold text-center leading-tight" style="color: rgba(255,255,255,0.92);" title="${name}">${displayName}</span>
+                            <span class="featured-text text-[11px] sm:text-xs font-semibold text-center leading-tight" style="color: rgba(255,255,255,0.92); white-space: nowrap;" title="${name}">${label}</span>
                         </button>`;
                 }).join('');
             }
@@ -3634,22 +3732,33 @@
                 const realCount = track.children.length;
                 if (!realCount) return;
 
-                const VISIBLE = 4;
+                const VISIBLE = 4; // Mantiene el tamaño original de tarjeta (1/4 del contenedor)
                 const gap = parseFloat(getComputedStyle(track).gap) || 12;
+
+                // Calcula el ancho de tarjeta igual que antes (como si hubiera 4 visibles)
+                // pero centra el track ya que sólo hay 3 tarjetas
+                function sizeCards() {
+                    const w = container.clientWidth;
+                    const cardW = Math.floor(((w - (VISIBLE - 1) * gap) / VISIBLE) * 100) / 100;
+                    Array.from(track.children).forEach(c => { c.style.width = cardW + 'px'; });
+                    return cardW;
+                }
+
+                sizeCards();
+
+                // Si todas las carreras caben a la vez, no hay nada que deslizar
+                if (realCount <= VISIBLE) {
+                    track.style.width = '100%';
+                    track.style.justifyContent = 'center';
+                    window.addEventListener('resize', () => { sizeCards(); });
+                    return;
+                }
 
                 // Clone enough cards so track never runs out while sliding forward
                 const needed = realCount + VISIBLE;
                 const originals = Array.from(track.children);
                 while (track.children.length < needed) {
                     track.appendChild(originals[track.children.length % realCount].cloneNode(true));
-                }
-
-                // Size every card so exactly VISIBLE fill the container edge-to-edge
-                function sizeCards() {
-                    const w = container.clientWidth;
-                    const cardW = Math.floor(((w - (VISIBLE - 1) * gap) / VISIBLE) * 100) / 100;
-                    Array.from(track.children).forEach(c => { c.style.width = cardW + 'px'; });
-                    return cardW;
                 }
 
                 let cardW = sizeCards();
@@ -3803,43 +3912,442 @@
 
     <!-- Modal para Información de Carreras -->
     <div id="career-modal" class="fixed inset-0 z-[5000] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div class="modal-backdrop absolute inset-0 bg-[#011a14]/90 backdrop-blur-md" onclick="closeCareerModal()"></div>
-        <div class="modal-panel relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,199,177,0.3)]">
+        <div class="modal-backdrop absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px]" onclick="closeCareerModal()"></div>
+        <div class="modal-panel relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl h-[90vh] sm:h-[92vh] max-h-[90vh] sm:max-h-[92vh] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,199,177,0.3)]">
             <!-- Header -->
-            <div class="p-5 sm:p-6 border-b border-[#00c7b1]/20 bg-[#051a1a]">
-                <div class="flex justify-between items-start gap-3">
-                    <h3 id="modal-title" class="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight"></h3>
-                    <button onclick="closeCareerModal()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-[#1c2f31] text-[#7ca19b] hover:text-white hover:bg-[#00c7b1]/20 transition-colors" aria-label="Cerrar">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+            <div class="px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
+                <div class="flex justify-between items-center gap-3">
+                    <h3 id="modal-title" class="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0"></h3>
+                    <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                        <img src="imagenes/Modales/Abogac%C3%ADa/logo_siglo.png" alt="Siglo 21" class="h-7 sm:h-9 w-auto object-contain block" onerror="this.onerror=null; this.src='imagenes/imagenes_cau/logoSiglo21.png'">
+                        <button onclick="closeCareerModal()" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-red-600/20 text-red-500 hover:bg-red-600/40 hover:text-red-400 transition-colors" aria-label="Cerrar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <!-- Metadata -->
                 <div id="modal-meta" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4"></div>
             </div>
-            <!-- Content -->
-            <div class="p-5 sm:p-8 overflow-y-auto custom-scrollbar flex-1">
+            <!-- Content (texto normal) -->
+            <div id="modal-text-view" class="p-5 sm:p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0">
                 <div id="modal-content" class="text-[#b4d3ce] text-base sm:text-lg leading-relaxed whitespace-pre-wrap">
                 </div>
             </div>
+            <!-- Content (carrusel — solo carreras especiales) -->
+            <div id="modal-carousel" class="flex-1 flex-col min-h-0" style="display:none">
+                <div class="flex-1 relative overflow-hidden min-h-0">
+                    <div id="carousel-slides-inner"></div>
+                </div>
+                
+                <!-- Navegación inferior (Anterior, Puntos, Siguiente) -->
+                <div class="flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-4 bg-[#011a14] border-t border-[#00c7b1]/15">
+                    <button id="carousel-prev" onclick="carouselNav(-1)" class="flex items-center gap-1 sm:gap-2 text-[#00c7b1] text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded border border-[#00c7b1]/30 hover:bg-[#00c7b1]/10 disabled:opacity-30 disabled:pointer-events-none transition-all">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        <span class="hidden min-[360px]:inline">Anterior</span>
+                    </button>
+                    
+                    <div id="carousel-dots" class="flex justify-center items-center gap-1.5 sm:gap-2.5"></div>
+                    
+                    <button id="carousel-next" onclick="carouselNav(1)" class="flex items-center gap-1 sm:gap-2 text-[#00c7b1] text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded bg-[#00c7b1]/10 border border-[#00c7b1]/50 hover:bg-[#00c7b1]/20 disabled:opacity-30 disabled:pointer-events-none transition-all">
+                        <span class="hidden min-[360px]:inline">Siguiente</span>
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
             <!-- Footer -->
-            <div class="p-4 bg-[#051a1a] border-t border-[#00c7b1]/20 flex justify-end gap-3">
-                <button onclick="copyModalText()" class="px-5 py-2 border border-[#00c7b1] text-[#00c7b1] font-bold rounded-lg hover:bg-[#00c7b1]/10 transition-colors text-sm">Copiar texto</button>
-                <button onclick="closeCareerModal()" class="px-6 py-2 bg-[#00c7b1] text-[#013729] font-bold rounded-lg hover:brightness-110 transition-colors text-sm">Cerrar</button>
+            <div class="p-4 bg-[#051a1a] border-t border-[#00c7b1]/20 flex flex-wrap gap-2 items-center">
+                <!-- Fila 1 en mobile / derecha en desktop: WhatsApp + Formulario -->
+                <div class="order-1 sm:order-2 w-full sm:w-auto flex items-center gap-2 justify-end sm:flex-shrink-0">
+                    <a id="modal-whatsapp-btn" href="#" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D366] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        WhatsApp
+                    </a>
+                    <button onclick="goToForm()" class="w-36 flex items-center justify-center gap-2 py-2 bg-[#6c2381] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Inscribite ya
+                    </button>
+                </div>
+                <!-- Fila 2 en mobile / izquierda en desktop: URL + Compartir -->
+                <div class="order-2 sm:order-1 w-full sm:flex-1 flex items-center gap-1.5 min-w-0">
+                    <input id="modal-share-url" type="text" readonly
+                        onclick="this.select()"
+                        placeholder="Abrí un modal para ver el enlace"
+                        title="Hacé click para seleccionar el enlace y copiarlo manualmente"
+                        class="flex-1 min-w-0 px-3 py-2 bg-[#013729] border border-[#00c7b1]/20 rounded-lg text-[#7ca19b] text-[11px] font-mono focus:outline-none focus:border-[#00c7b1]/50 cursor-text transition-colors truncate" />
+                    <button onclick="shareCareer(this)" title="Compartir enlace"
+                        class="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 bg-[#00c7b1] text-[#013729] font-bold rounded-lg hover:brightness-110 transition-colors text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        <span>Compartir</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        /* ── Slides del carrusel — HTML completo por carrera ───────────── */
+        const CAROUSEL_CAREERS = {
+            'Abogacía': [
+
+                /* ─ Slide 1: Portada ─────────────────────────────────────────── */
+                `<div class="flex flex-col md:flex-row h-full overflow-hidden">
+                  <div class="w-full h-full md:h-auto md:w-[42%] shrink-0 bg-[#011f17] overflow-hidden flex flex-col">
+                    <div class="px-[clamp(0.75rem,5vw,3rem)] pt-[clamp(0.75rem,3vh,1.5rem)] pb-[clamp(0.5rem,2vh,1rem)] flex flex-col h-full">
+                      <!-- TOP: logo + nivel/duración -->
+                      <div class="flex items-center gap-[clamp(0.4rem,1.5vw,1rem)] mb-[clamp(0.5rem,1.5vh,1rem)] flex-shrink-0">
+                        <img src="imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width="400" height="400" class="h-[clamp(1rem,3vh,2rem)] w-auto rounded block">
+                        <p class="text-[clamp(0.6rem,1.8vh,0.85rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-none md:leading-tight">Nivel de carrera: Grado<br><span class="text-white">Duración: 4 años</span></p>
+                      </div>
+                      <!-- MIDDLE: título + bullets (ocupa el espacio sobrante) -->
+                      <div class="flex-1 min-h-0 flex flex-col justify-center">
+                        <h2 class="text-[clamp(1.6rem,8vw,3.5rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[1] md:leading-normal mb-[clamp(0.3rem,1vh,0.75rem)] uppercase tracking-tighter w-full">ABOGACÍA</h2>
+                        <div class="w-[clamp(1.5rem,5vw,2rem)] h-[3px] bg-[#00c7b1] rounded-sm mb-[clamp(0.3rem,1.5vh,0.75rem)]"></div>
+                        <div class="flex flex-col gap-[clamp(0.3rem,1.2vh,0.75rem)]">
+                            <p class="text-[clamp(0.7rem,2.2vh,0.9rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Asesorá, defendé y actuá en ámbitos públicos, privados, provinciales, federales e&nbsp;internacionales.</p>
+                            <p class="text-[clamp(0.7rem,2.2vh,0.9rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Profundizar el cuerpo de normas jurídicas que permitan la convivencia armónica en&nbsp;el&nbsp;Estado.</p>
+                        </div>
+                      </div>
+                      <!-- BOTTOM: Título / Foco -->
+                      <div class="grid grid-cols-2 gap-[clamp(0.2rem,1vh,0.5rem)] border-t border-[#00c7b1]/20 pt-[clamp(0.4rem,1.5vh,0.75rem)] mt-auto flex-shrink-0">
+                          <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-[clamp(0.25rem,1.2vh,0.6rem)] flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
+                              <span class="block text-[clamp(0.45rem,1.4vh,0.55rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Título</span>
+                              <span class="block text-[clamp(0.6rem,2vh,0.95rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Abogado/a</span>
+                          </div>
+                          <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-[clamp(0.25rem,1.2vh,0.6rem)] flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
+                              <span class="block text-[clamp(0.45rem,1.4vh,0.55rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Foco</span>
+                              <span class="block text-[clamp(0.6rem,2vh,0.95rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Derecho</span>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex-1 relative overflow-hidden hidden md:block flex items-center justify-center bg-[#0c2b24]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-[#48b3a4]/20 absolute z-0 inset-0 m-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <img src="imagenes/Modales/Abogac%C3%ADa/Experiencia-universitaria-en-la-Siglo-21-donde-los-estudiantes-de-Abogacia-combinan-estudio-y-trabajo-3-1-905x1024.jpg" alt="" width="905" height="1024" class="absolute inset-0 w-full h-full object-cover object-top block z-10 opacity-0 transition-opacity duration-300" onload="this.classList.remove('opacity-0')" onerror="this.onerror=null; this.style.display='none'">
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#011f17] to-transparent w-1/3 z-20"></div>
+                    <div class="absolute bottom-3 right-3 bg-[#011f17]/75 backdrop-blur-sm border border-[#00c7b1]/20 rounded p-1 px-2 z-20">
+                      <p class="text-[0.47rem] text-[#00c7b1] tracking-widest uppercase m-0 font-semibold">CAU Villa Lugano</p>
+                    </div>
+                  </div>
+                </div>`,
+
+                /* ─ Slide 2: Modalidad ───────────────────────────────────────── */
+                `<div class="flex flex-col md:flex-row h-full overflow-hidden">
+                  <div class="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,18vh,12rem)] md:h-full flex items-center justify-center bg-[#0c2b24]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-[#48b3a4]/20 absolute z-0 inset-0 m-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <img src="imagenes/Modales/Abogac%C3%ADa/Abogac%C3%ADa.webp" alt="Modalidad" width="800" height="1200" class="absolute inset-0 w-full h-full object-cover object-[center_15%] block z-10 opacity-0 transition-opacity duration-300" onload="this.classList.remove('opacity-0')" onerror="this.onerror=null; this.style.display='none'">
+                    <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent w-full md:h-full z-20"></div>
+                  </div>
+                  <div class="flex-1 overflow-hidden flex flex-col justify-center">
+                    <div class="px-[clamp(0.75rem,5vw,3rem)] py-[clamp(0.75rem,3vh,1.5rem)] flex flex-col justify-center gap-[clamp(0.4rem,2vh,1.5rem)]">
+                      <div>
+                        <p class="text-[clamp(0.55rem,1.8vh,0.7rem)] font-bold tracking-widest text-[#00c7b1] uppercase mb-[clamp(0.1rem,0.5vh,0.5rem)] leading-none">Modalidad de cursado</p>
+                        <h3 class="text-[clamp(1rem,3.5vh,1.75rem)] font-black text-white uppercase tracking-wider mb-0 leading-[1.1] md:leading-tight">Distribuida Home Virtual</h3>
+                      </div>
+                      <div class="grid grid-cols-2 md:grid-cols-1 gap-[clamp(0.4rem,2vh,0.8rem)]">
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                          <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
+                          <span class="text-[#b4d3ce]"><b class="text-white">100% virtual</b><span class="hidden sm:inline"> &mdash; sin horarios fijos ni clases presenciales.</span></span>
+                        </div>
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                          <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
+                          <span class="text-[#b4d3ce]">Plataforma de aprendizaje activa <b class="text-white">las 24hs del día</b>.</span>
+                        </div>
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                          <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
+                          <span class="text-[#b4d3ce]">Cursá y rendí desde <b class="text-white">donde estés</b><span class="hidden sm:inline">, a tu ritmo.</span></span>
+                        </div>
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                          <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
+                          <span class="text-[#b4d3ce]">Necesitás <b class="text-white">notebook Windows o MAC</b> y cámara encendida.</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>`,
+
+                /* ─ Slide 3: Evaluación ──────────────────────────────────────── */
+                `<div style="display:flex;height:100%;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 3.5rem;gap:1rem;background:linear-gradient(145deg,#011f17 0%,#0c2920 100%);overflow-y:auto" class="custom-scrollbar">
+                  <div style="text-align:center">
+                    <p style="font-size:.48rem;font-weight:700;letter-spacing:.16em;color:#00c7b1;text-transform:uppercase;margin:0 0 .3rem 0">Proceso de evaluación</p>
+                    <h3 style="font-size:.95rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.07em;margin:0">¿Cómo te evaluamos?</h3>
+                  </div>
+                  <div style="display:flex;gap:.8rem;width:100%;max-width:27rem">
+                    <div style="flex:1;background:#1c2f31;border:1px solid rgba(0,199,177,.18);border-radius:.7rem;padding:1.1rem .75rem;text-align:center">
+                      <div style="font-size:2.2rem;font-weight:900;color:#00c7b1;line-height:1">2</div>
+                      <div style="font-size:.55rem;font-weight:600;color:#7ca19b;text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem;line-height:1.4">Exámenes<br>parciales</div>
+                      <div style="font-size:.52rem;color:#48b3a4;margin-top:.2rem">(1 por mes)</div>
+                    </div>
+                    <div style="flex:1;background:#1c2f31;border:1px solid rgba(0,199,177,.18);border-radius:.7rem;padding:1.1rem .75rem;text-align:center">
+                      <div style="font-size:2.2rem;font-weight:900;color:#00c7b1;line-height:1">4</div>
+                      <div style="font-size:.55rem;font-weight:600;color:#7ca19b;text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem;line-height:1.4">Trabajos<br>prácticos</div>
+                      <div style="font-size:.52rem;color:#48b3a4;margin-top:.2rem">(obligatorios)</div>
+                    </div>
+                    <div style="flex:1;background:rgba(0,199,177,.1);border:1.5px solid #00c7b1;border-radius:.7rem;padding:1.1rem .75rem;text-align:center">
+                      <div style="font-size:2.2rem;font-weight:900;color:#00c7b1;line-height:1">7<span style="font-size:1.2rem">+</span></div>
+                      <div style="font-size:.55rem;font-weight:600;color:#b4d3ce;text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem;line-height:1.4">Nota para<br>promocionar</div>
+                      <div style="font-size:.52rem;color:#00c7b1;margin-top:.2rem;font-weight:700">¡sin rendir final!</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:.35rem;flex-wrap:wrap;justify-content:center">
+                    <span style="background:rgba(0,199,177,.08);border:1px solid rgba(0,199,177,.22);color:#b4d3ce;font-size:.58rem;padding:.22rem .6rem;border-radius:2rem;font-weight:600">Múltiple choice</span>
+                    <span style="background:rgba(0,199,177,.08);border:1px solid rgba(0,199,177,.22);color:#b4d3ce;font-size:.58rem;padding:.22rem .6rem;border-radius:2rem;font-weight:600">Entorno seguro virtual</span>
+                    <span style="background:rgba(0,199,177,.08);border:1px solid rgba(0,199,177,.22);color:#b4d3ce;font-size:.58rem;padding:.22rem .6rem;border-radius:2rem;font-weight:600">Notebook obligatoria</span>
+                  </div>
+                  <p style="font-size:.67rem;color:#7ca19b;line-height:1.6;margin:0;text-align:center;max-width:21rem">Con <b style="color:#00c7b1">7 puntos o más</b> en los dos parciales, promocionás la materia y quedás eximido del examen final.</p>
+                </div>`,
+
+                /* ─ Slide 4: Plan de Estudios (mini-carousel interno) ───────── */
+                `<div style="display:flex;height:100%;flex-direction:column;padding:1.1rem 3.5rem .7rem;gap:.6rem;overflow:hidden">
+                  <div style="flex-shrink:0">
+                    <p style="font-size:.48rem;font-weight:700;letter-spacing:.16em;color:#00c7b1;text-transform:uppercase;margin:0 0 .18rem 0">Carrera de Grado &middot; 9 Cuatrimestres</p>
+                    <h3 style="font-size:.88rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.05em;margin:0">Plan de Estudios</h3>
+                  </div>
+                  <div style="flex:1;overflow:hidden;position:relative;min-height:0">
+                  <div id="plan-track" style="display:flex;height:100%;will-change:transform;transition:transform .35s cubic-bezier(.4,0,.2,1)">
+
+                  <!-- Página 1: 1° y 2° año -->
+                  <div style="flex-shrink:0;width:100%;height:100%;display:flex;gap:.65rem">
+                    <div style="flex:1;background:rgba(0,199,177,.04);border:1px solid rgba(0,199,177,.15);border-radius:.5rem;overflow:hidden;display:flex;flex-direction:column">
+                      <div style="background:rgba(0,199,177,.13);border-bottom:2px solid #00c7b1;padding:.3rem .7rem;flex-shrink:0"><p style="font-size:.65rem;font-weight:800;color:#00c7b1;text-transform:uppercase;letter-spacing:.1em;margin:0">1° Año</p></div>
+                      <div style="flex:1;overflow:hidden;padding:.5rem .7rem;display:flex;flex-direction:column;gap:.2rem">
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:0">1° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Introducción al Derecho</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Constitucional</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Historia del Derecho</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Introducción a la Filosofía</p>
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:.3rem 0 0 0;padding-top:.3rem;border-top:1px solid rgba(0,199,177,.1)">2° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Penal: Parte General</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Bases del Derecho Privado</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Oratoria</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Sociología General</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Principios de Economía</p>
+                      </div>
+                    </div>
+                    <div style="flex:1;background:rgba(0,199,177,.04);border:1px solid rgba(0,199,177,.15);border-radius:.5rem;overflow:hidden;display:flex;flex-direction:column">
+                      <div style="background:rgba(0,199,177,.13);border-bottom:2px solid #00c7b1;padding:.3rem .7rem;flex-shrink:0"><p style="font-size:.65rem;font-weight:800;color:#00c7b1;text-transform:uppercase;letter-spacing:.1em;margin:0">2° Año</p></div>
+                      <div style="flex:1;overflow:hidden;padding:.5rem .7rem;display:flex;flex-direction:column;gap:.2rem">
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:0">3° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Dcho. Público Prov. y Municipal</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Penal: Parte Especial</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Obligaciones</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Ambiental</p>
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:.3rem 0 0 0;padding-top:.3rem;border-top:1px solid rgba(0,199,177,.1)">4° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Administrativo</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Teoría General del Proceso</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Contratos</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Teoría de la Arg. Jurídica</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Penal Económico</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Página 2: 3° y 4° año -->
+                  <div style="flex-shrink:0;width:100%;height:100%;display:flex;gap:.65rem">
+                    <div style="flex:1;background:rgba(0,199,177,.04);border:1px solid rgba(0,199,177,.15);border-radius:.5rem;overflow:hidden;display:flex;flex-direction:column">
+                      <div style="background:rgba(0,199,177,.13);border-bottom:2px solid #00c7b1;padding:.3rem .7rem;flex-shrink:0"><p style="font-size:.65rem;font-weight:800;color:#00c7b1;text-transform:uppercase;letter-spacing:.1em;margin:0">3° Año</p></div>
+                      <div style="flex:1;overflow:hidden;padding:.5rem .7rem;display:flex;flex-direction:column;gap:.2rem">
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:0">5° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Internacional Público</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Dcho. Trabajo y Seg. Social</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derechos Reales</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Contratos de Empresa</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Proc. Civiles y Comerciales</p>
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:.3rem 0 0 0;padding-top:.3rem;border-top:1px solid rgba(0,199,177,.1)">6° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Tributario</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho de Familia</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Procesal Penal</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Personas Jurídicas</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Dcho. de Integración Regional</p>
+                      </div>
+                    </div>
+                    <div style="flex:1;background:rgba(0,199,177,.04);border:1px solid rgba(0,199,177,.15);border-radius:.5rem;overflow:hidden;display:flex;flex-direction:column">
+                      <div style="background:rgba(0,199,177,.13);border-bottom:2px solid #00c7b1;padding:.3rem .7rem;flex-shrink:0"><p style="font-size:.65rem;font-weight:800;color:#00c7b1;text-transform:uppercase;letter-spacing:.1em;margin:0">4° Año</p></div>
+                      <div style="flex:1;overflow:hidden;padding:.5rem .7rem;display:flex;flex-direction:column;gap:.2rem">
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:0">7° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Dcho. Banc. y Mer. de Cap.</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Procesal Público</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Sucesorio</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Concursos y Quiebras</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho de Daños</p>
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:.3rem 0 0 0;padding-top:.3rem;border-top:1px solid rgba(0,199,177,.1)">8° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derecho Internacional Privado</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Derechos Humanos</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Mediación y Arbitraje</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Ética y Deontología Prof.</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Dcho. del Consumidor</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Página 3: 5° año + extras -->
+                  <div style="flex-shrink:0;width:100%;height:100%;display:flex;gap:.65rem">
+                    <div style="flex:1;background:rgba(0,199,177,.04);border:1px solid rgba(0,199,177,.15);border-radius:.5rem;overflow:hidden;display:flex;flex-direction:column">
+                      <div style="background:rgba(0,199,177,.13);border-bottom:2px solid #00c7b1;padding:.3rem .7rem;flex-shrink:0"><p style="font-size:.65rem;font-weight:800;color:#00c7b1;text-transform:uppercase;letter-spacing:.1em;margin:0">5° Año</p></div>
+                      <div style="flex:1;overflow:hidden;padding:.5rem .7rem;display:flex;flex-direction:column;gap:.2rem">
+                        <p style="font-size:.57rem;color:#48b3a4;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:0">9° Cuatrimestre</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Práctica Profesional</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Seminario Final</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Examen Final Integrador II</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Práctica Solidaria</p>
+                        <p style="font-size:.75rem;color:#b4d3ce;line-height:1.4;margin:0">Electivas</p>
+                      </div>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:.65rem">
+                      <div style="flex:1;background:rgba(0,199,177,.06);border:1px solid rgba(0,199,177,.22);border-radius:.5rem;padding:.75rem 1rem;display:flex;flex-direction:column;justify-content:center">
+                        <p style="font-size:.58rem;font-weight:800;color:#00c7b1;text-transform:uppercase;letter-spacing:.1em;margin:0 0 .5rem 0">Dobles Titulaciones</p>
+                        <p style="font-size:.8rem;color:#b4d3ce;line-height:1.5;margin:0 0 .25rem 0">Lic. en Gestión de RRHH</p>
+                        <p style="font-size:.8rem;color:#b4d3ce;line-height:1.5;margin:0">Lic. en Criminología y Seguridad</p>
+                      </div>
+                      <div style="background:rgba(0,199,177,.06);border:1px solid rgba(0,199,177,.22);border-radius:.5rem;padding:.75rem 1rem">
+                        <p style="font-size:.58rem;font-weight:800;color:#00c7b1;text-transform:uppercase;letter-spacing:.1em;margin:0 0 .5rem 0">Título Adicional</p>
+                        <p style="font-size:.8rem;color:#b4d3ce;line-height:1.5;margin:0 0 .2rem 0">Escribanía</p>
+                        <p style="font-size:.63rem;color:#7ca19b;line-height:1.45;margin:0">Cursando un año más sobre el título de Abogado/a</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  </div><!-- /plan-track -->
+                  </div><!-- /overflow container -->
+
+                  <!-- Navegación interna del plan -->
+                  <div style="flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:.65rem;padding-top:.1rem">
+                    <button id="plan-prev" disabled onclick="planNav(-1)" style="width:1.6rem;height:1.6rem;border-radius:50%;background:rgba(1,31,23,.9);border:1px solid rgba(0,199,177,.3);color:#00c7b1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;opacity:.25">
+                      <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <div id="plan-dots" style="display:flex;gap:.5rem;align-items:center">
+                      <button onclick="planGoTo(0)" class="carousel-dot active" style="border:none;padding:0;cursor:pointer"></button>
+                      <button onclick="planGoTo(1)" class="carousel-dot" style="border:none;padding:0;cursor:pointer"></button>
+                      <button onclick="planGoTo(2)" class="carousel-dot" style="border:none;padding:0;cursor:pointer"></button>
+                    </div>
+                    <button id="plan-next" onclick="planNav(1)" style="width:1.6rem;height:1.6rem;border-radius:50%;background:rgba(1,31,23,.9);border:1px solid rgba(0,199,177,.3);color:#00c7b1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s">
+                      <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+
+                </div>`,
+
+                /* ─ Slide 5: Estudia con nosotros ───────────────────────────── */
+                `<div style="display:flex;height:100%;overflow:hidden">
+                  <div style="width:42%;flex-shrink:0;position:relative;overflow:hidden;background:#0c2b24;display:flex;align-items:center;justify-content:center">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width:3.5rem;height:3.5rem;color:rgba(72,179,164,0.2);position:absolute;z-index:0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <img src="imagenes/Modales/Abogac%C3%ADa/Edificio_siglo21_campus3.jpg" alt="Instituto" width="1024" height="683" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;z-index:10;opacity:0;transition:opacity 0.3s" onload="this.style.opacity=1" onerror="this.onerror=null; this.style.display='none'">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,#011f17 100%);z-index:20"></div>
+                  </div>
+                  <div style="flex:1;background:#011f17;padding:1.5rem 3.5rem 1.5rem 1.5rem;display:flex;flex-direction:column;justify-content:center;gap:1.5rem;overflow-y:auto" class="custom-scrollbar">
+                    <div>
+                      <p style="font-size:.5rem;font-weight:700;letter-spacing:.16em;color:#00c7b1;text-transform:uppercase;margin:0 0 .5rem 0">Beneficios Siglo 21</p>
+                      <h2 style="font-size:2rem;font-weight:900;color:#fff;line-height:1;margin:0;text-transform:uppercase;letter-spacing:-.02em">Estudiá<br><span style="color:#00c7b1">con nosotros</span></h2>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:1.2rem">
+                      <div style="display:flex;align-items:center;gap:.85rem">
+                        <div style="width:2.2rem;height:2.2rem;border-radius:50%;background:rgba(0,199,177,.1);display:flex;align-items:center;justify-content:center;color:#00c7b1;flex-shrink:0">
+                          <svg style="width:1.1rem;height:1.1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <span style="color:#fff;font-size:.85rem;font-weight:600">Está cerca de tu casa</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:.85rem">
+                        <div style="width:2.2rem;height:2.2rem;border-radius:50%;background:rgba(0,199,177,.1);display:flex;align-items:center;justify-content:center;color:#00c7b1;flex-shrink:0">
+                          <svg style="width:1.1rem;height:1.1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        </div>
+                        <span style="color:#fff;font-size:.85rem;font-weight:600">100% online</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:.85rem">
+                        <div style="width:2.2rem;height:2.2rem;border-radius:50%;background:rgba(0,199,177,.1);display:flex;align-items:center;justify-content:center;color:#00c7b1;flex-shrink:0">
+                          <svg style="width:1.1rem;height:1.1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </div>
+                        <span style="color:#fff;font-size:.85rem;font-weight:600">Te acompañamos en tus dudas</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>`,
+
+            ]
+        };
+
+        /* ── Estado y funciones del carrusel ───────────────────────────── */
+        let _cIdx = 0, _cTotal = 0;
+
+        function initCarousel(slides) {
+            _cIdx = 0;
+            _cTotal = slides.length;
+            _planIdx = 0;
+            const inner = document.getElementById('carousel-slides-inner');
+            inner.innerHTML = slides.map(html =>
+                `<div style="flex-shrink:0;width:100%;height:100%;overflow:hidden">${html}</div>`
+            ).join('');
+            const dots = document.getElementById('carousel-dots');
+            dots.innerHTML = slides.map((_, i) =>
+                `<button class="carousel-dot${i===0?' active':''}" onclick="goToSlide(${i})" aria-label="Slide ${i+1}"></button>`
+            ).join('');
+            _updateCarousel();
+        }
+
+        function _updateCarousel() {
+            document.getElementById('carousel-slides-inner').style.transform = `translateX(-${_cIdx * 100}%)`;
+            document.querySelectorAll('#carousel-dots .carousel-dot').forEach((d, i) => d.classList.toggle('active', i === _cIdx));
+            document.getElementById('carousel-prev').disabled = _cIdx === 0;
+            document.getElementById('carousel-next').disabled = _cIdx === _cTotal - 1;
+            // Ocultar el título en el slide 1 (index 0) porque ya aparece dentro del slide
+            const modalTitle = document.getElementById('modal-title');
+            if (modalTitle) modalTitle.style.visibility = _cIdx === 0 ? 'hidden' : 'visible';
+        }
+
+        /* ── Mini-carousel interno del Plan de Estudios ─────────────────── */
+        let _planIdx = 0;
+
+        function planNav(dir) {
+            _planIdx = Math.max(0, Math.min(2, _planIdx + dir));
+            _updatePlan();
+        }
+        function planGoTo(i) { _planIdx = i; _updatePlan(); }
+        function _updatePlan() {
+            const t = document.getElementById('plan-track');
+            if (!t) return;
+            t.style.transform = `translateX(-${_planIdx * 100}%)`;
+            document.querySelectorAll('#plan-dots .carousel-dot').forEach((d, i) => d.classList.toggle('active', i === _planIdx));
+            const prev = document.getElementById('plan-prev');
+            const next = document.getElementById('plan-next');
+            if (prev) { prev.disabled = _planIdx === 0; prev.style.opacity = _planIdx === 0 ? '.25' : '1'; }
+            if (next) { next.disabled = _planIdx === 2; next.style.opacity = _planIdx === 2 ? '.25' : '1'; }
+        }
+
+        function carouselNav(dir) {
+            _cIdx = Math.max(0, Math.min(_cTotal - 1, _cIdx + dir));
+            _updateCarousel();
+        }
+
+        function goToSlide(i) { _cIdx = i; _updateCarousel(); }
+
         function openCareerModal(careerName, data, fullText) {
             const modal = document.getElementById('career-modal');
             const modalTitle = document.getElementById('modal-title');
             const modalMeta = document.getElementById('modal-meta');
             const modalContent = document.getElementById('modal-content');
 
-            // Guardar el nombre completo para uso externo (ej: WhatsApp)
+            // Guardar el nombre completo para uso externo
             modal.dataset.careerName = careerName;
+
+            // Actualizar enlace WhatsApp del footer del modal
+            const modalWaBtn = document.getElementById('modal-whatsapp-btn');
+            if (modalWaBtn) {
+                const waMsg = `Hola, estoy interesado en ${careerName}`;
+                modalWaBtn.href = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
+            }
+
+            // Poblar input de URL compartible
+            const shareUrlInput = document.getElementById('modal-share-url');
+            if (shareUrlInput) {
+                shareUrlInput.value = `${window.location.origin}${window.location.pathname}?carrera=${encodeURIComponent(careerName)}`;
+            }
 
             // Mostrar prefijo separado del nombre principal (igual que en las cards)
             const { prefix: modalPrefix, cleanName: modalCleanName } = getCareerInfo(careerName);
@@ -3863,14 +4371,29 @@
                 </div>
             `).join('');
 
-            // Full text content
-            modalContent.textContent = fullText || data.description || 'Información no disponible aún para esta carrera.';
+            // Carrusel vs texto normal
+            const carouselDef  = CAROUSEL_CAREERS[careerName];
+            const textViewEl   = document.getElementById('modal-text-view');
+            const carouselEl   = document.getElementById('modal-carousel');
+            if (carouselDef) {
+                textViewEl.style.display  = 'none';
+                carouselEl.style.display  = 'flex';
+                carouselEl.style.flexDirection = 'column';
+                initCarousel(carouselDef);
+                modalMeta.style.display = 'none';
+            } else {
+                textViewEl.style.display  = '';
+                carouselEl.style.display  = 'none';
+                modalContent.textContent  = fullText || data.description || 'Información no disponible aún para esta carrera.';
+                modalMeta.style.display = '';
+            }
 
             modal.classList.remove('hidden', 'modal-closing');
             modal.classList.add('flex');
             modal.offsetHeight;
             modal.classList.add('modal-visible');
             document.body.classList.add('overflow-hidden');
+            document.documentElement.classList.add('overflow-hidden');
         }
 
         function closeCareerModal() {
@@ -3881,7 +4404,82 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex', 'modal-closing');
                 document.body.classList.remove('overflow-hidden');
+                document.documentElement.classList.remove('overflow-hidden');
             }, 300);
+        }
+
+        function goToForm() {
+            const careerModal = document.getElementById('career-modal');
+            const careerName = careerModal ? (careerModal.dataset.careerName || '') : '';
+            closeCareerModal();
+
+            if (careerName) {
+                selectCarrera(careerName);
+            }
+
+            // Forzar render de todas las secciones para estabilizar el layout.
+            if (window._renderAllSections) window._renderAllSections();
+
+            setTimeout(() => {
+                const section = document.getElementById('formulario');
+                const navbar  = document.querySelector('.main-navbar');
+                if (!section) return;
+                if (navbar) navbar.classList.remove('navbar-hidden');
+                const navbarH = navbar ? navbar.offsetHeight : 0;
+
+                // Paso 1: scroll instantáneo al destino calculado.
+                // El modal acaba de cerrarse; el salto no es visible.
+                window.scrollTo(0, Math.round(getDocumentTop(section) - navbarH));
+
+                // Paso 2: loop rAF que corrige instantáneamente mientras el catálogo
+                // re-virtualiza secciones (el layout sigue moviéndose por algunos frames).
+                // Cuando se estabiliza 5 frames seguidos, aplica un micro-ajuste suave final.
+                let stable = 0;
+                let iters  = 0;
+                const MAX  = 90; // tope de seguridad: ~1.5s a 60fps
+                (function correct() {
+                    iters++;
+                    const drift = Math.round(section.getBoundingClientRect().top - navbarH);
+                    if (Math.abs(drift) > 1) {
+                        window.scrollTo(0, Math.round(window.scrollY + drift));
+                        stable = 0;
+                    } else {
+                        stable++;
+                    }
+                    if (stable < 5 && iters < MAX) requestAnimationFrame(correct);
+                })();
+            }, 350);
+        }
+
+        function shareCareer(btn) {
+            const careerModal = document.getElementById('career-modal');
+            const careerName = careerModal ? (careerModal.dataset.careerName || '') : '';
+            if (!careerName) return;
+            const url = `${window.location.origin}${window.location.pathname}?carrera=${encodeURIComponent(careerName)}`;
+            if (navigator.share) {
+                // Mobile: abre el panel nativo de compartir del sistema
+                navigator.share({ title: careerName, url });
+            } else {
+                // Desktop: copia al portapapeles y muestra toast
+                navigator.clipboard.writeText(url).then(() => showShareToast(url));
+            }
+        }
+
+        function showShareToast(url) {
+            const toast = document.getElementById('share-toast');
+            const toastUrl = document.getElementById('share-toast-url');
+            if (!toast) return;
+            if (toastUrl) toastUrl.textContent = url;
+            toast.classList.remove('hidden', 'opacity-0', 'translate-y-4');
+            toast.classList.add('flex', 'opacity-100', 'translate-y-0');
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('flex', 'opacity-100', 'translate-y-0');
+                }, 400);
+            }, 3000);
         }
 
         function copyModalText() {
@@ -3898,6 +4496,206 @@
             });
         }
 
+        // ── FORMULARIO ──────────────────────────────────────────────────────────
+
+        function onTipoChange() {
+            // Mantenido por compatibilidad; ya no se usa en el flujo normal
+        }
+
+        const _tipoDisplayNames = {
+            'licenciaturas-list':   'Licenciaturas / Grado',
+            'pregrado-list':        'Tecnicaturas / Pregrado',
+            'maestrias-list':       'Maestrías',
+            'diplomaturas-list':    'Diplomaturas',
+            'certificaciones-list': 'Certificaciones',
+            'especializaciones-list': 'Especializaciones',
+            'cursos-list':          'Cursos'
+        };
+
+        function populateCarreraOptions(tipoKey, filter) {
+            const list = document.getElementById('form-carrera-list');
+            const source = tipoKey
+                ? (degreeCategories[tipoKey] || [])
+                : Object.values(degreeCategories).flat();
+            const careers = source.filter(c => c.toLowerCase().includes(filter.toLowerCase()));
+            list.innerHTML = careers.length
+                ? careers.map(c => `<div class="px-4 py-2.5 text-sm text-white hover:bg-[#00c7b1]/15 cursor-pointer border-b border-[#00c7b1]/10 last:border-0 transition-colors" onmousedown="selectCarrera('${c.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">${escapeHTML(c)}</div>`).join('')
+                : '<div class="px-4 py-3 text-sm text-[#7ca19b] text-center">Sin resultados</div>';
+        }
+
+        function showCarreraList() {
+            const tipo = document.getElementById('form-tipo').value;
+            populateCarreraOptions(tipo || null, document.getElementById('form-carrera-search').value);
+            document.getElementById('form-carrera-list').classList.remove('hidden');
+        }
+
+        function filterCarreraOptions() {
+            document.getElementById('formulario-carrera').value = '';
+            document.getElementById('form-tipo-display-container').classList.add('hidden');
+            const tipo = document.getElementById('form-tipo').value;
+            populateCarreraOptions(tipo || null, document.getElementById('form-carrera-search').value);
+            document.getElementById('form-carrera-list').classList.remove('hidden');
+        }
+
+        function selectCarrera(name) {
+            document.getElementById('form-carrera-search').value = name;
+            document.getElementById('formulario-carrera').value = name;
+            setTimeout(() => document.getElementById('form-carrera-list').classList.add('hidden'), 50);
+            // Detectar tipo y mostrarlo
+            for (const [key, list] of Object.entries(degreeCategories)) {
+                if (list.includes(name)) {
+                    document.getElementById('form-tipo').value = key;
+                    document.getElementById('form-tipo-text').value = _tipoDisplayNames[key] || key;
+                    document.getElementById('form-tipo-display-container').classList.remove('hidden');
+                    break;
+                }
+            }
+        }
+
+        // Cierra el dropdown de carrera al hacer click fuera
+        document.addEventListener('click', (e) => {
+            const root = document.getElementById('carrera-dropdown-root');
+            if (root && !root.contains(e.target)) {
+                document.getElementById('form-carrera-list')?.classList.add('hidden');
+            }
+        });
+
+        const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        const TEL_RE   = /^[\d\s\+\-\(\)]{6,}$/;
+
+        function updateContactRequired() {
+            const email = document.getElementById('form-email').value.trim();
+            const tel   = document.getElementById('form-telefono').value.trim();
+            const emailInput = document.getElementById('form-email');
+            const telInput   = document.getElementById('form-telefono');
+            const emailMark  = document.getElementById('email-required-mark');
+            const telMark    = document.getElementById('tel-required-mark');
+
+            // Si teléfono tiene valor, email deja de ser obligatorio (y viceversa)
+            emailInput.required = !tel;
+            telInput.required   = !email;
+            emailMark.style.opacity = tel ? '0.3' : '1';
+            telMark.style.opacity   = email ? '0.3' : '1';
+
+            // Validación visual de formato
+            const emailOk = !email || EMAIL_RE.test(email);
+            const telOk   = !tel   || TEL_RE.test(tel);
+            emailInput.style.borderColor = email && !emailOk ? 'rgba(248,113,113,0.6)' : '';
+            telInput.style.borderColor   = tel   && !telOk   ? 'rgba(248,113,113,0.6)' : '';
+
+            // Habilitar enviar solo si hay al menos un contacto válido
+            const submitBtn = document.getElementById('form-submit-btn');
+            if (submitBtn) {
+                const hasValidContact = (email && emailOk) || (tel && telOk);
+                submitBtn.disabled = !hasValidContact;
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const nombre   = document.getElementById('form-nombre').value.trim();
+            const apellido = document.getElementById('form-apellido').value.trim();
+            const email    = document.getElementById('form-email').value.trim();
+            const tel      = document.getElementById('form-telefono').value.trim();
+            let valid = true;
+
+            // Validar nombre y apellido
+            if (!nombre || !apellido) {
+                valid = false;
+            }
+            // Validar que al menos un contacto válido esté presente
+            const emailErr  = document.getElementById('email-error');
+            const telErr    = document.getElementById('tel-error');
+            const emailOk   = email && EMAIL_RE.test(email);
+            const telOk     = tel   && TEL_RE.test(tel);
+            if (!emailOk && !telOk) {
+                emailErr.classList.remove('hidden');
+                telErr.classList.remove('hidden');
+                valid = false;
+            } else {
+                emailErr.classList.add('hidden');
+                telErr.classList.add('hidden');
+            }
+
+            if (!valid) return;
+
+            // Placeholder: mostrar confirmación
+            const btn = e.target.querySelector('button[type="submit"]');
+            const original = btn.textContent;
+            btn.textContent = '¡Consulta enviada!';
+            btn.disabled = true;
+            btn.classList.add('opacity-70');
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.disabled = false;
+                btn.classList.remove('opacity-70');
+                e.target.reset();
+                document.getElementById('form-tipo').value = '';
+                document.getElementById('form-tipo-display-container').classList.add('hidden');
+                updateContactRequired();
+                document.querySelector('.main-navbar')?.classList.remove('navbar-hidden');
+            }, 3000);
+        }
+
+        // ── FIN FORMULARIO ───────────────────────────────────────────────────────
+
+        // Desplegable de filtros en mobile
+        (function() {
+            const toggleBtn = document.getElementById('filter-toggle-btn');
+            const filterContainer = document.getElementById('filter-container');
+            if (!toggleBtn || !filterContainer) return;
+
+            function isMobile() { return window.innerWidth <= 640; }
+
+            function openFilters() {
+                filterContainer.classList.add('filter-open');
+                toggleBtn.setAttribute('aria-expanded', 'true');
+            }
+            function closeFilters() {
+                filterContainer.classList.remove('filter-open');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+            }
+
+            // Al cargar en mobile: empezar expandido
+            if (isMobile()) openFilters();
+
+            // Al bajar un poco dentro de la lista de carreras: colapsar automáticamente (solo una vez)
+            let autoCollapseHandled = false;
+            window.addEventListener('scroll', function() {
+                if (!isMobile() || autoCollapseHandled) return;
+                const firstSection = document.getElementById('section-licenciaturas');
+                const threshold = firstSection
+                    ? (firstSection.getBoundingClientRect().top + window.scrollY + 120)
+                    : 500;
+                if (window.scrollY > threshold) {
+                    closeFilters();
+                    autoCollapseHandled = true;
+                }
+            }, { passive: true });
+
+            // Toggle manual: desde aquí el usuario decide, scroll ya no interfiere
+            toggleBtn.addEventListener('click', () => {
+                autoCollapseHandled = true;
+                const isOpen = filterContainer.classList.toggle('filter-open');
+                toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        })();
+
+        // Auto-ocultar navbar cuando el usuario focaliza el formulario
+        (function() {
+            const formSection = document.getElementById('formulario');
+            const navbar = document.querySelector('.main-navbar');
+            if (!formSection || !navbar) return;
+            formSection.addEventListener('focusin', () => {
+                navbar.classList.add('navbar-hidden');
+            });
+            formSection.addEventListener('focusout', (e) => {
+                if (!e.relatedTarget || !formSection.contains(e.relatedTarget)) {
+                    navbar.classList.remove('navbar-hidden');
+                }
+            });
+        })();
+
         // Cerrar modal con Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -3908,6 +4706,176 @@
             }
         });
     </script>
+
+    <!-- Toast: enlace copiado -->
+    <div id="share-toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[6000] opacity-0 translate-y-4 transition-all duration-300 flex-col items-center gap-1 px-5 py-3 rounded-2xl shadow-[0_8px_32px_rgba(0,199,177,0.35)] text-sm max-w-[90vw]" style="background: #013729; border: 1px solid rgba(0,199,177,0.4);">
+        <div class="flex items-center gap-2 text-[#00ffe1] font-black uppercase tracking-wider text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            ¡Enlace copiado!
+        </div>
+        <span id="share-toast-url" class="text-[#7ca19b] text-[10px] truncate w-full text-center max-w-xs"></span>
+    </div>
+
+    <!-- FORMULARIO DE CONTACTO -->
+    <section id="formulario" style="background: #162f2e; border-top: 2px solid #00c7b1;">
+        <div class="container mx-auto px-4 sm:px-6 py-4 sm:py-6 max-w-5xl">
+
+            <!-- Encabezado compacto -->
+            <div class="mb-3">
+                <p id="form-top-label" class="text-[#00ffe1] text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5">Contacto</p>
+                <h2 class="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-none">Formulario de Consulta</h2>
+            </div>
+
+            <!-- Tarjeta: 2 columnas en desktop, 1 en mobile -->
+            <div style="background: #1c3a38; border: 1px solid rgba(0,199,177,0.3); border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.35);">
+                <form id="consulta-form" novalidate onsubmit="handleFormSubmit(event)">
+
+                    <!-- Cuerpo: grid 2 columnas en md -->
+                    <div class="grid grid-cols-1 md:grid-cols-2" style="border-bottom: 1px solid rgba(0,199,177,0.15);">
+
+                        <!-- Col 1: Carrera -->
+                        <div class="px-3 sm:px-4 pt-3 pb-3 space-y-1.5" style="border-bottom: 1px solid rgba(0,199,177,0.15); border-right: none;">
+                            <p class="text-[9px] font-bold uppercase tracking-[0.18em] mb-0" style="color: rgba(0,199,177,0.8);">Carrera</p>
+
+                            <!-- Tipo (oculto; valor asignado por JS al seleccionar carrera) -->
+                            <div id="form-tipo-container" style="display:none" aria-hidden="true">
+                                <select id="form-tipo" style="color-scheme:dark;" tabindex="-1">
+                                    <option value=""></option>
+                                    <option value="licenciaturas-list">Licenciaturas / Grado</option>
+                                    <option value="pregrado-list">Tecnicaturas / Pregrado</option>
+                                    <option value="maestrias-list">Maestrías</option>
+                                    <option value="diplomaturas-list">Diplomaturas</option>
+                                    <option value="certificaciones-list">Certificaciones</option>
+                                    <option value="especializaciones-list">Especializaciones</option>
+                                    <option value="cursos-list">Cursos</option>
+                                </select>
+                            </div>
+
+                            <!-- Carrera con búsqueda (visible siempre) -->
+                            <div id="form-carrera-wrapper">
+                                <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">Carrera</label>
+                                <div class="relative" id="carrera-dropdown-root">
+                                    <div class="relative">
+                                        <input type="text" id="form-carrera-search" autocomplete="off"
+                                            placeholder="Buscar carrera..."
+                                            class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 pr-8 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                                            oninput="filterCarreraOptions()" onfocus="showCarreraList()" />
+                                        <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    </div>
+                                    <input type="hidden" id="formulario-carrera" />
+                                    <div id="form-carrera-list" class="hidden absolute z-20 w-full mt-1 bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg shadow-xl overflow-hidden" style="max-height:160px;overflow-y:auto;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Tipo detectado (solo lectura) -->
+                            <div id="form-tipo-display-container" class="hidden" aria-live="polite" aria-atomic="true">
+                                <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-tipo-text">Tipo de carrera</label>
+                                <div class="relative">
+                                    <input type="text" id="form-tipo-text" readonly tabindex="-1"
+                                        aria-label="Tipo de carrera detectado automáticamente"
+                                        class="w-full bg-[#0f2825]/50 border border-[#00c7b1]/15 rounded-lg pl-8 pr-3 py-1.5 text-sm text-[#7ca19b] cursor-default focus:outline-none" />
+                                    <svg aria-hidden="true" class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 014-4z"/></svg>
+                                </div>
+                            </div>
+
+                            <!-- Modalidad -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-modalidad">Modalidad</label>
+                                <div class="relative">
+                                    <select id="form-modalidad" style="color-scheme: dark;"
+                                        class="w-full appearance-none bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#00c7b1]/60 transition-colors cursor-pointer">
+                                        <option value="virtual">Educación Distribuida Home (Virtual)</option>
+                                    </select>
+                                    <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                            </div>
+
+                            <!-- Checkbox equivalencias -->
+                            <div class="flex items-center gap-2">
+                                <div class="relative flex-shrink-0">
+                                    <input type="checkbox" id="form-equivalencias"
+                                        class="peer w-4 h-4 appearance-none bg-[#0f2825] border border-[#00c7b1]/30 rounded checked:bg-[#00c7b1] checked:border-[#00c7b1] focus:outline-none cursor-pointer transition-colors" />
+                                    <svg class="pointer-events-none absolute inset-0 m-auto h-2.5 w-2.5 text-[#013729] opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <label for="form-equivalencias" class="text-xs text-[#c8deda] cursor-pointer leading-none">
+                                    Quiero acreditar equivalencias
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Col 2: Datos personales -->
+                        <div class="px-3 sm:px-4 pt-3 pb-3 space-y-1.5" style="border-left: 1px solid rgba(0,199,177,0.15);">
+                            <p class="text-[9px] font-bold uppercase tracking-[0.18em] mb-0" style="color: rgba(0,199,177,0.8);">Datos personales</p>
+
+                            <!-- Nombre + Apellido en la misma fila -->
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-nombre">Nombre <span class="text-red-400/80">*</span></label>
+                                    <input type="text" id="form-nombre" required placeholder="Nombre"
+                                        class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors" />
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-apellido">Apellido <span class="text-red-400/80">*</span></label>
+                                    <input type="text" id="form-apellido" required placeholder="Apellido"
+                                        class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors" />
+                                </div>
+                            </div>
+
+                            <!-- Contacto: email + teléfono agrupados -->
+                            <div class="space-y-1.5 rounded-lg p-2" style="border: 1.5px solid #00c7b1;">
+                                <p class="text-[10px] text-white leading-snug">Completá al menos uno para que podamos contactarte.</p>
+
+                                <!-- Email -->
+                                <div>
+                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-email">
+                                        Email <span id="email-required-mark" class="text-red-400/70 transition-opacity">*</span>
+                                    </label>
+                                    <input type="email" id="form-email" placeholder="tu@correo.com"
+                                        class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                                        oninput="updateContactRequired()" />
+                                </div>
+
+                                <!-- Teléfono -->
+                                <div>
+                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-telefono">
+                                        Teléfono <span id="tel-required-mark" class="text-red-400/70 transition-opacity">*</span>
+                                    </label>
+                                    <input type="tel" id="form-telefono" placeholder="11 1234-5678"
+                                        class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                                        oninput="updateContactRequired()" />
+                                </div>
+                            </div>
+
+                            <!-- Localidad -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-localidad">Localidad</label>
+                                <input type="text" id="form-localidad" placeholder="Tu ciudad o barrio"
+                                    class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors" />
+                            </div>
+
+                            <!-- Error de contacto -->
+                            <p id="email-error" class="hidden text-[11px] text-red-400">Completá el email o el teléfono.</p>
+                            <p id="tel-error" class="hidden"></p>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="px-3 sm:px-4 py-2.5 sm:py-3">
+                        <button id="form-submit-btn" type="submit" disabled
+                            class="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed"
+                            style="background: linear-gradient(90deg, #00c7b1, #009681); color: #013729; letter-spacing: 0.12em;">
+                            Enviar consulta
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </section>
+
+    </main>
 
     <!-- FOOTER -->
     <footer style="background: linear-gradient(180deg, rgba(6, 34, 31, 0.92) 0%, #081f1d 100%); border-top: 2px solid rgba(0, 199, 177, 0.26);">

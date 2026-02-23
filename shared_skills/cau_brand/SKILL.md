@@ -17,3 +17,13 @@ Notas de Diseño
 Estética moderna con preferencia por temas oscuros.
 
 Enfoque Mobile-first y accesibilidad.
+
+Ubicación
+Maps link: https://maps.app.goo.gl/oKRWJTPy59cT45xRA
+Maps embed: https://maps.google.com/maps?q=-34.686852,-58.477752&z=17&output=embed
+Coordenadas: -34.686852, -58.477752
+Zona: Villa Lugano, CABA. Cerca de Mataderos, Liniers, Villa Celina y Zona Sur del GBA.
+
+Botón primario (btn-cau-primary)
+Gradiente azul→verde, hover brightness(1.15). Añadir al CSS de la página donde se use:
+background: linear-gradient(135deg, var(--cau-brand-blue) 0%, var(--cau-brand-green) 100%)

@@ -1,0 +1,36 @@
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/contactform7/custom-styles/contact-form.php penumbra_edge_contact_form7_text_styles_1 function */
+.cf7_custom_style_1 input.wpcf7-form-control.wpcf7-text, .cf7_custom_style_1 input.wpcf7-form-control.wpcf7-number, .cf7_custom_style_1 input.wpcf7-form-control.wpcf7-date, .cf7_custom_style_1 textarea.wpcf7-form-control.wpcf7-textarea, .cf7_custom_style_1 select.wpcf7-form-control.wpcf7-select, .cf7_custom_style_1 input.wpcf7-form-control.wpcf7-quiz { color: #aaaaaa;border-color: rgba(119, 119, 119, 1);}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/contactform7/custom-styles/contact-form.php penumbra_edge_contact_form7_focus_styles_1 function */
+.cf7_custom_style_1 input.wpcf7-form-control.wpcf7-text:focus, .cf7_custom_style_1 input.wpcf7-form-control.wpcf7-number:focus, .cf7_custom_style_1 input.wpcf7-form-control.wpcf7-date:focus, .cf7_custom_style_1 textarea.wpcf7-form-control.wpcf7-textarea:focus, .cf7_custom_style_1 select.wpcf7-form-control.wpcf7-select:focus, .cf7_custom_style_1 input.wpcf7-form-control.wpcf7-quiz:focus { border-color: rgba(0, 0, 0, 1);}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/contactform7/custom-styles/contact-form.php penumbra_edge_contact_form7_button_styles_1 function */
+.cf7_custom_style_1 input.wpcf7-form-control.wpcf7-submit { border-color: rgba(0, 0, 0, 1);}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/contactform7/custom-styles/contact-form.php penumbra_edge_contact_form7_button_hover_styles_1 function */
+.cf7_custom_style_1 input.wpcf7-form-control.wpcf7-submit:not([disabled]):hover { border-color: rgba(255, 255, 255, 1);}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/contactform7/custom-styles/contact-form.php penumbra_edge_contact_form7_text_styles_2 function */
+.cf7_custom_style_2 input.wpcf7-form-control.wpcf7-text, .cf7_custom_style_2 input.wpcf7-form-control.wpcf7-number, .cf7_custom_style_2 input.wpcf7-form-control.wpcf7-date, .cf7_custom_style_2 textarea.wpcf7-form-control.wpcf7-textarea, .cf7_custom_style_2 select.wpcf7-form-control.wpcf7-select, .cf7_custom_style_2 input.wpcf7-form-control.wpcf7-quiz { color: #777777;background-color: rgba(246, 246, 246, 1);border-color: rgba(119, 119, 119, 1);}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/contactform7/custom-styles/contact-form.php penumbra_edge_contact_form7_focus_styles_2 function */
+.cf7_custom_style_2 input.wpcf7-form-control.wpcf7-text:focus, .cf7_custom_style_2 input.wpcf7-form-control.wpcf7-number:focus, .cf7_custom_style_2 input.wpcf7-form-control.wpcf7-date:focus, .cf7_custom_style_2 textarea.wpcf7-form-control.wpcf7-textarea:focus, .cf7_custom_style_2 select.wpcf7-form-control.wpcf7-select:focus, .cf7_custom_style_2 input.wpcf7-form-control.wpcf7-quiz:focus { background-color: rgba(239, 239, 239, 1);border-color: rgba(0, 0, 0, 1);}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/header/types/fixed-header/admin/custom-styles/fixed-header-custom-styles.php penumbra_edge_fixed_header_styles function */
+.edgtf-fixed-wrapper.fixed .edgtf-main-menu > ul > li > a { color: #ef3737;}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/header/types/top-header/admin/custom-styles/top-header-custom-styles.php penumbra_edge_header_top_bar_styles function */
+.edgtf-top-bar-background { height: 91px;}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/header/admin/custom-styles/header-custom-styles.php penumbra_edge_header_logo_area_styles function */
+.edgtf-header-centered .edgtf-logo-area .edgtf-logo-wrapper { padding: ;}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/header/admin/custom-styles/header-custom-styles.php penumbra_edge_main_menu_styles function */
+.edgtf-drop-down .narrow .second .inner ul, .edgtf-drop-down .wide .second .inner { background-color: rgba(255, 255, 255, 1);}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/search/admin/custom-styles/search-custom-styles.php penumbra_edge_search_opener_icon_size function */
+.edgtf-search-opener { font-size: 10px;}
+
+/* generated in /home/shakespearweb/public_html/wp-content/themes/penumbrawp/framework/modules/title/admin/custom-styles/title-custom-styles.php penumbra_edge_title_area_typography_style function */
+.edgtf-title-holder .edgtf-title-wrapper .edgtf-page-title { font-size: 28px;}
+
