@@ -1993,8 +1993,11 @@
             display: none !important;
         }
 
-        #careers-list-column.sidebar-expanded {
-            grid-column: span 3 / span 3;
+        /* Solo aplicar expansión en pantallas grandes donde hay 3 columnas */
+        @media (min-width: 1024px) {
+            #careers-list-column.sidebar-expanded {
+                grid-column: span 3 / span 3;
+            }
         }
 
         /* Si no entra el sidebar, ocultar botón de favoritos en tarjetas */
@@ -2315,13 +2318,7 @@
 
         <!-- SECCIÓN CARRERAS -->
         <div id="section-carreras" class="section-content active">
-            <!-- OFERTA ACADÉMICA: ENCABEZADO SEO (se va con el scroll) -->
-            <section aria-label="Oferta académica y buscador de carreras">
-                <div class="oferta-hero-heading">
-                    <h2>Oferta Académica</h2>
-                    <p>Explorá más de 60 carreras de grado, posgrado y formación continua</p>
-                </div>
-            </section>
+
 
             <!-- STICKY: BUSCADOR + FILTROS (queda fijo al hacer scroll) -->
             <div class="sticky-header-wrapper">
@@ -2874,16 +2871,23 @@
 
         function shouldHideSidebarForFit() {
             if (!careersListColumnEl || !sidebarColumnEl || !mainGridEl) return false;
+            // Mobile siempre oculta sidebar
             if (window.innerWidth < 1024) return true;
 
             const hideThreshold = 760;
             const showThreshold = 820;
             const isSidebarHidden = sidebarColumnEl.classList.contains('sidebar-auto-hidden');
-            const cardsColumnWidth = careersListColumnEl.getBoundingClientRect().width;
+            
+            // Proyección robusta: Usar window.innerWidth para evitar errores durante transiciones CSS
+            const mainPadding = window.innerWidth >= 1024 ? 64 : (window.innerWidth >= 640 ? 48 : 32);
+            const projectedMainWidth = Math.min(1280, window.innerWidth - mainPadding);
+            const projectedCardsWidth = (2 * projectedMainWidth - 32) / 3;
 
-            // Histeresis para evitar "glitch": reglas distintas para ocultar y para volver a mostrar.
             if (!isSidebarHidden) {
-                if (cardsColumnWidth < hideThreshold) return true;
+                // Si está visible, ocultar si el espacio proyectado es insuficiente
+                if (projectedCardsWidth < hideThreshold) return true;
+                
+                // Chequeo de seguridad: ¿alguna carta está desbordando realmente?
                 const cards = document.querySelectorAll('.career-name-list-mode-list:not(.hidden)');
                 for (const card of cards) {
                     if (card.scrollWidth > card.clientWidth + 1) return true;
@@ -2891,10 +2895,8 @@
                 return false;
             }
 
-            // Si está oculto, solo volver a mostrar si el ancho proyectado con sidebar sigue siendo suficiente.
-            const mainWidth = mainGridEl.getBoundingClientRect().width;
-            const projectedCardsWidthWithSidebar = ((2 * mainWidth) - 32) / 3;
-            return projectedCardsWidthWithSidebar < showThreshold;
+            // Si está oculto, solo volver a mostrar si el ancho proyectado es suficiente
+            return projectedCardsWidth < showThreshold;
         }
 
         function adjustSidebarForCardsFit() {
@@ -2903,6 +2905,15 @@
             sidebarColumnEl.classList.toggle('sidebar-auto-hidden', hideSidebar);
             careersListColumnEl.classList.toggle('sidebar-expanded', hideSidebar);
             document.body.classList.toggle('favorites-disabled', hideSidebar);
+        }
+
+        // Asegurar recalculo al finalizar cualquier transición en el grid
+        if (mainGridEl) {
+            mainGridEl.addEventListener('transitionend', (e) => {
+                if (e.propertyName === 'grid-template-columns' || e.propertyName === 'width') {
+                    adjustSidebarForCardsFit();
+                }
+            });
         }
 
         if (window.ResizeObserver && careersListColumnEl) {
@@ -3999,42 +4010,55 @@
 
                 /* ─ Slide 1: Portada ─────────────────────────────────────────── */
                 `<div class="flex flex-col md:flex-row h-full overflow-hidden">
-                  <div class="w-full h-full md:h-auto md:w-[42%] shrink-0 bg-[#011f17] overflow-hidden flex flex-col">
-                    <div class="px-[clamp(0.75rem,5vw,3rem)] pt-[clamp(0.75rem,3vh,1.5rem)] pb-[clamp(0.5rem,2vh,1rem)] flex flex-col h-full">
-                      <!-- TOP: logo + nivel/duración -->
-                      <div class="flex items-center gap-[clamp(0.4rem,1.5vw,1rem)] mb-[clamp(0.5rem,1.5vh,1rem)] flex-shrink-0">
-                        <img src="imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width="400" height="400" class="h-[clamp(1rem,3vh,2rem)] w-auto rounded block">
-                        <p class="text-[clamp(0.6rem,1.8vh,0.85rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-none md:leading-tight">Nivel de carrera: Grado<br><span class="text-white">Duración: 4 años</span></p>
-                      </div>
-                      <!-- MIDDLE: título + bullets (ocupa el espacio sobrante) -->
-                      <div class="flex-1 min-h-0 flex flex-col justify-center">
-                        <h2 class="text-[clamp(1.6rem,8vw,3.5rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[1] md:leading-normal mb-[clamp(0.3rem,1vh,0.75rem)] uppercase tracking-tighter w-full">ABOGACÍA</h2>
-                        <div class="w-[clamp(1.5rem,5vw,2rem)] h-[3px] bg-[#00c7b1] rounded-sm mb-[clamp(0.3rem,1.5vh,0.75rem)]"></div>
-                        <div class="flex flex-col gap-[clamp(0.3rem,1.2vh,0.75rem)]">
-                            <p class="text-[clamp(0.7rem,2.2vh,0.9rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Asesorá, defendé y actuá en ámbitos públicos, privados, provinciales, federales e&nbsp;internacionales.</p>
-                            <p class="text-[clamp(0.7rem,2.2vh,0.9rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Profundizar el cuerpo de normas jurídicas que permitan la convivencia armónica en&nbsp;el&nbsp;Estado.</p>
+                  <div class="flex-1 min-w-0 h-full md:h-auto bg-[#011f17] overflow-hidden flex flex-col relative z-30">
+                    <div class="px-[clamp(0.5rem,3vw,1.5rem)] pt-[clamp(0.2rem,1.2vh,0.8rem)] pb-[clamp(0.25rem,0.8vh,0.6rem)] flex flex-col justify-between h-full">
+                      <!-- TOP: logo + nivel/duración + Título Principal -->
+                      <div class="flex flex-col gap-[clamp(0.2rem,0.8vh,0.6rem)] flex-shrink-0">
+                        <div class="flex items-center gap-[clamp(0.6rem,2vw,1rem)] text-left">
+                          <img src="imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width="400" height="400" class="h-[clamp(1rem,2.6vh,1.8rem)] w-auto rounded block">
+                          <p class="text-[clamp(0.6rem,1.6vh,0.8rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
+                            <span>Nivel de carrera: Grado</span>
+                            <span class="block text-white">Duración: 4 años</span>
+                          </p>
+                        </div>
+                        
+                        <div class="mt-[clamp(0.2rem,0.8vh,0.5rem)] pt-[clamp(0.4rem,1.2vh,0.75rem)] border-t border-[#00c7b1]/20 flex flex-col items-center md:items-start text-center md:text-left">
+                          <h2 class="text-[clamp(1.6rem,9vw,3.6rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal mb-[clamp(0.15rem,0.6vh,0.4rem)] uppercase tracking-tighter w-full md:w-auto">ABOGACÍA</h2>
+                          <div class="w-[clamp(1.2rem,5vw,2.2rem)] h-[3px] bg-[#00c7b1] rounded-sm"></div>
                         </div>
                       </div>
-                      <!-- BOTTOM: Título / Foco -->
-                      <div class="grid grid-cols-2 gap-[clamp(0.2rem,1vh,0.5rem)] border-t border-[#00c7b1]/20 pt-[clamp(0.4rem,1.5vh,0.75rem)] mt-auto flex-shrink-0">
-                          <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-[clamp(0.25rem,1.2vh,0.6rem)] flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
-                              <span class="block text-[clamp(0.45rem,1.4vh,0.55rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Título</span>
-                              <span class="block text-[clamp(0.6rem,2vh,0.95rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Abogado/a</span>
+
+                      <!-- MIDDLE: bullets + Decorative Image for Mobile centrada -->
+                      <div class="flex-1 flex flex-col min-h-0 md:justify-center">
+                          <div class="flex flex-col gap-[clamp(0.25rem,0.7vh,0.6rem)] mt-[clamp(0.5rem,2vh,1rem)] md:mt-0">
+                              <p class="text-[clamp(0.68rem,1.9vh,0.85rem)] md:text-[clamp(0.7rem,2.2vh,0.95rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium hyphens-none break-words"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Asesorá, defendé y actuá en ámbitos públicos, privados, provinciales, federales e&nbsp;internacionales.</p>
+                              <p class="text-[clamp(0.68rem,1.9vh,0.85rem)] md:text-[clamp(0.7rem,2.2vh,0.95rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium hyphens-none break-words"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Profundizar el cuerpo de normas jurídicas que permitan la convivencia armónica en&nbsp;el&nbsp;Estado.</p>
                           </div>
-                          <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-[clamp(0.25rem,1.2vh,0.6rem)] flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
-                              <span class="block text-[clamp(0.45rem,1.4vh,0.55rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Foco</span>
-                              <span class="block text-[clamp(0.6rem,2vh,0.95rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Derecho</span>
+                          
+                          <!-- Mobile-Only Decorative Asset (Centered in remaining space) -->
+                          <div class="md:hidden flex-1 flex items-center justify-center min-h-0 py-2">
+                             <img src="imagenes/Modales/Abogac%C3%ADa/tarjeta_abogacia.png" alt="Insignia Abogacía" 
+                                  class="max-h-full w-full object-contain brightness-110 drop-shadow-[20px_0_15px_rgba(0,199,177,0.3)] drop-shadow-[-20px_0_15px_rgba(0,199,177,0.3)]">
+                          </div>
+                      </div>
+                      <!-- BOTTOM: Título / Foco -->
+                      <div class="grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
+                          <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
+                              <span class="block text-[clamp(0.4rem,1.2vh,0.5rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Título</span>
+                              <span class="block text-[clamp(0.6rem,1.8vh,0.9rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Abogado/a</span>
+                          </div>
+                          <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
+                              <span class="block text-[clamp(0.4rem,1.2vh,0.5rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Área</span>
+                              <span class="block text-[clamp(0.6rem,1.8vh,0.9rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Derecho</span>
                           </div>
                       </div>
                     </div>
                   </div>
-                  <div class="flex-1 relative overflow-hidden hidden md:block flex items-center justify-center bg-[#0c2b24]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-[#48b3a4]/20 absolute z-0 inset-0 m-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <img src="imagenes/Modales/Abogac%C3%ADa/Experiencia-universitaria-en-la-Siglo-21-donde-los-estudiantes-de-Abogacia-combinan-estudio-y-trabajo-3-1-905x1024.jpg" alt="" width="905" height="1024" class="absolute inset-0 w-full h-full object-cover object-top block z-10 opacity-0 transition-opacity duration-300" onload="this.classList.remove('opacity-0')" onerror="this.onerror=null; this.style.display='none'">
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#011f17] to-transparent w-1/3 z-20"></div>
-                    <div class="absolute bottom-3 right-3 bg-[#011f17]/75 backdrop-blur-sm border border-[#00c7b1]/20 rounded p-1 px-2 z-20">
-                      <p class="text-[0.47rem] text-[#00c7b1] tracking-widest uppercase m-0 font-semibold">CAU Villa Lugano</p>
-                    </div>
+                  <div class="hidden md:flex flex-none h-full overflow-hidden relative border-l border-[#00c7b1]/20">
+                    <!-- 100% Visible Image for Desktop (No gaps, No Cropping) -->
+                    <img src="imagenes/Modales/Abogac%C3%ADa/Experiencia-universitaria-en-la-Siglo-21-donde-los-estudiantes-de-Abogacia-combinan-estudio-y-trabajo-3-1-905x1024.jpg" alt="Abogacía" class="h-full w-auto object-contain block z-10 opacity-0 transition-opacity duration-[400ms]" onload="this.classList.remove('opacity-0')" onerror="this.onerror=null; this.style.display='none'">
+                  </div>
+                    
                   </div>
                 </div>`,
 
@@ -4394,6 +4418,9 @@
             modal.classList.add('modal-visible');
             document.body.classList.add('overflow-hidden');
             document.documentElement.classList.add('overflow-hidden');
+            
+            // El cambio de scrollbar puede afectar el ancho disponible; refrescar layout
+            requestAnimationFrame(adjustSidebarForCardsFit);
         }
 
         function closeCareerModal() {
@@ -4405,6 +4432,8 @@
                 modal.classList.remove('flex', 'modal-closing');
                 document.body.classList.remove('overflow-hidden');
                 document.documentElement.classList.remove('overflow-hidden');
+                // Refrescar layout tras recuperar el scrollbar
+                requestAnimationFrame(adjustSidebarForCardsFit);
             }, 300);
         }
 
