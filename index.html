@@ -5,7 +5,7 @@
     <script>history.scrollRestoration = "manual";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oferta Académica Universidad Siglo 21 - CAU Villa Lugano</title>
+    <title>Universidad Siglo 21 - CAU Villa Lugano: Oferta académica 2026</title>
     <meta name="description" content="Oferta académica Universidad Siglo 21 en Villa Lugano. Ideal para Zona Sur y Oeste: Celina, Madero, Tapiales, Soldati, Mataderos, Riachuelo, Budge.">
     <!-- Seguridad: Forzar HTTPS (Excepto en desarrollo local) -->
     <script>
@@ -18,6 +18,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fuentes: Inter (cuerpo) y Atkinson Hyperlegible (píldoras) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="shared/navbar.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Inter:wght@100..900&family=Unbounded:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -34,49 +35,12 @@
         ::-webkit-scrollbar-thumb { background: #00c7b1; }
         ::-webkit-scrollbar-thumb:hover { background: #48b3a4; }
 
-        .main-navbar {
-            background-color: #051a1a;
-            position: sticky;
-            top: 0;
-            z-index: 2000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            border-bottom: 2px solid var(--color-highlight);
-            transition: transform 0.3s ease;
-        }
-
-        .main-navbar.navbar-hidden {
-            transform: translateY(-100%);
-        }
-
-        .main-navbar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 100%;
-            width: calc(100vw - 100%);
-            background-color: #051a1a;
-            pointer-events: none;
-        }
 
 
-        .navbar-container {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
-            overflow: hidden;
-        }
 
 
-        .navbar-menu {
-            display: flex;
-            align-items: stretch;
-            flex-grow: 1;
-            justify-content: center;
-            min-width: 0;
-        }
+
+
 
         /* Estilo para el link de Identidad Argentina */
         .flag-link {
@@ -87,216 +51,73 @@
             white-space: normal;
         }
 
-        .navbar-link {
-            color: #e0f0ed;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 1rem 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-        }
 
-        .navbar-link:hover {
-            background-color: var(--color-highlight);
-            color: #013729;
-        }
 
-        .navbar-link.active {
-            background-color: #6d2282;
-            color: #fff;
-        }
 
-        .navbar-social-icon {
-            width: clamp(22px, 2vw, 28px);
-            height: clamp(22px, 2vw, 28px);
-            min-width: 22px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: #7ca19b;
-            transition: color 0.2s ease, background-color 0.2s ease;
-            flex-shrink: 0;
-        }
 
         /* Botón de WhatsApp destacado en navbar (Full Height) */
-        .navbar-social-icon.social-whatsapp {
-            background-color: #25D366;
-            color: #ffffff;
-            
-            /* Alto completo: 
-               1. auto !important para romper el height del clamp base.
-               2. align-self: stretch para estirarse en el flex padre.
-               Nota: El padre (.navbar-social) también debe tener align-self: stretch.
-            */
-            height: auto !important; 
-            align-self: stretch;
-            
-            /* Ancho idéntico a los demás iconos */
-            width: 50px !important;
-            
-            border-radius: 0; 
-            margin: 0;
-        }
 
-        .navbar-social-icon.social-whatsapp:hover {
-            background-color: #20bd5a; 
-            color: #ffffff;
-        }
 
         /* Facebook Highlight */
-        .navbar-social-icon.social-facebook {
-            background-color: rgba(24, 119, 242, 0.1); /* Tinte azul tenue como base */
-            color: #1877F2; /* Icono azul */
-            height: auto !important; 
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0; 
-            margin: 0;
-            border-right: 1px solid rgba(0,0,0,0.1);
-        }
 
-        .navbar-social-icon.social-facebook:hover {
-            background-color: #1877F2; /* Sólido al hacer hover */
-            color: #ffffff; /* Icono blanco */
-        }
 
         /* Instagram Highlight */
-        .navbar-social-icon.social-instagram {
-            background-color: rgba(230, 104, 60, 0.1); /* Tinte naranja/rojo tenue como base */
-            color: #e6683c; /* Icono naranja */
-            height: auto !important; 
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0; 
-            margin: 0;
-        }
-
-        .navbar-social-icon.social-instagram:hover {
-            background-color: #e6683c; /* Fallback for old browsers */
-            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-            color: #ffffff;
-        }
 
 
 
 
-        /* Escalado horizontal del navbar en escritorios intermedios (sin cambiar la altura) */
-        @media (min-width: 1025px) and (max-width: 1199px) {
-            .navbar-link {
-                font-size: 0.72rem;
-                padding-left: 0.45rem;
-                padding-right: 0.45rem;
-                letter-spacing: 0.02em;
+
+        /* Escalado fluido: todos los links siempre en una sola fila a cualquier ancho desktop.
+           clamp() escala font-size y padding continuamente de 1025px a 1700px
+           sin puntos de quiebre que provoquen desborde o solapamiento. */
+        @media (min-width: 1025px) {
+            .flag-link {
+                white-space: nowrap;
             }
+            /* flex-wrap: nowrap garantiza que ningún link baje a una segunda fila */
         }
 
-        @media (min-width: 1200px) and (max-width: 1379px) {
-            .navbar-link {
-                font-size: 0.78rem;
-                padding-left: 0.75rem;
-                padding-right: 0.75rem;
-                letter-spacing: 0.03em;
-            }
-        }
+        /* A ≥1700px hay espacio para centrar cada link con flex:1 */
+        
 
         /* Mobile Adjustments */
-        .mobile-menu-btn {
-            display: none;
-            color: white;
-            padding: 0.75rem;
-            cursor: pointer;
-        }
 
         @media (max-width: 1024px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .navbar-menu {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                overflow-y: hidden;
-                background-color: #051a1a;
-                flex-direction: column;
-                justify-content: flex-start;
-                gap: 0;
-                z-index: 2100;
-                display: flex;
-                transform: translateX(-100%);
-                visibility: hidden;
-                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                            visibility 0.35s;
-            }
-
-            .navbar-menu.active {
-                transform: translateX(0);
-                visibility: visible;
-            }
 
 
 
-        .navbar-link {
-                width: 100%;
-                padding: 0 2rem;
-                flex: 1;
-                min-height: 0;
-                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
-                display: flex;
-                align-items: center;
-                font-size: 1.1rem;
-                font-weight: 800;
-                justify-content: center;
-                text-align: center;
-                white-space: normal;
-            }
 
-            .navbar-link:has(.flag-link) {
-                text-align: center !important;
-                justify-content: center !important;
-                align-items: center !important;
-            }
+
+
 
             .flag-link {
                 overflow: visible;
             }
 
-            .navbar-container {
-                justify-content: space-between;
-                min-height: 70px;
-            }
 
             .menu-close-btn {
                 position: absolute;
-                top: 0.75rem;
                 right: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
                 color: white;
                 background: none;
                 border: none;
                 font-size: 2rem;
                 cursor: pointer;
-                padding: 0.75rem;
+                padding: 0.5rem;
                 line-height: 1;
             }
 
             .menu-header {
                 flex-shrink: 0;
+                position: relative;
                 display: flex;
                 align-items: center;
-                gap: 1rem;
-                padding: 0.875rem 2rem;
+                justify-content: center;
+                padding: 0.875rem 3.5rem;
                 border-bottom: 1px solid rgba(0, 199, 177, 0.3);
-                background: linear-gradient(to bottom, #082a2a, #051a1a);
+                background: #03100f;
             }
 
             .menu-header img {
@@ -315,6 +136,7 @@
                 flex-shrink: 0;
                 padding: 0.75rem 2rem;
                 border-top: 1px solid rgba(0, 199, 177, 0.3);
+                background: #03100f;
                 display: flex;
                 flex-direction: column;
                 gap: 0.5rem;
@@ -379,29 +201,9 @@
             }
         }
 
-        @media (max-width: 640px) {
-            .navbar-link {
-                justify-content: flex-start;
-                text-align: left;
-            }
+        
 
-            .navbar-link:has(.flag-link) {
-                justify-content: center !important;
-                text-align: left !important;
-                align-items: flex-start !important;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .navbar-container {
-                padding: 0 0.5rem;
-            }
-
-            .navbar-container .mobile-logo {
-                width: 2.25rem !important;
-                height: 2.25rem !important;
-            }
-        }
+        
 
         /* Brand color system — CAU Villa Lugano */
         :root {
@@ -428,6 +230,14 @@
             --cau-brand-dark-green: #046353;
             --cau-brand-cream:      #fef8f4;
             --cau-brand-deep-teal:  #0e6a5a;
+            --navbar-height: 60px;
+            --vh-safe: 1vh;
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --vh-safe: 5px; /* Freeze at 1% of 500px */
+            }
         }
 
                 body {
@@ -482,9 +292,9 @@
         }
 
         .career-name-list {
-            --card-bg: #203646;
-            --card-hover-bg: #284154;
-            --card-border: rgba(123, 204, 255, 0.22);
+            --card-bg: #193636;
+            --card-hover-bg: #062522;
+            --card-border: rgba(0, 199, 177, 0.22);
             background-color: var(--card-bg);
             color: var(--color-text-normal);
             transition: all 0.3s ease;
@@ -498,14 +308,13 @@
         }
 
         .career-name-list:hover {
-            background-color: #193636;
             transform: none;
             border-color: var(--color-highlight);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
         }
 
         .career-name-list.active {
-            background-color: #193636;
+            background-color: var(--card-hover-bg);
             border-color: var(--color-highlight);
             transform: none;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
@@ -606,12 +415,208 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         }
 
+        /* 2 columnas en desktop */
+        @media (min-width: 900px) {
+            .career-list-container:not(.mode-slideshow) {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        @media (min-width: 1600px) {
+            #main-grid {
+                grid-template-columns: 1fr 500px !important;
+            }
+            #sidebar-column {
+                display: block !important;
+            }
+        }
+
+        /* Sidebar benefit chips */
+        .sidebar-benefit-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(0,199,177,0.06);
+            border: 1px solid rgba(0,199,177,0.15);
+            border-radius: 0.75rem;
+            padding: 1.15rem 1.25rem;
+        }
+        .sidebar-benefit-icon {
+            color: #00c7b1;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 3.5rem;
+            min-height: 3.5rem;
+            background: rgba(0,199,177,0.1);
+            border: 1px solid rgba(0,199,177,0.2);
+            border-radius: 0.75rem;
+            padding: 0.6rem;
+        }
+        .sidebar-benefit-pct {
+            font-size: inherit;
+            font-weight: 800;
+            color: #00c7b1;
+        }
+        .sidebar-benefit-chip div:last-child strong {
+            display: block;
+            font-size: 1.05rem;
+            color: #e0e0e0;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+        .sidebar-benefit-chip div:last-child span {
+            display: block;
+            font-size: 0.88rem;
+            color: #c8d8d4;
+            line-height: 1.4;
+        }
+
+        /* === Formulario con imagen === */
+        .form-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+        .form-side-image {
+            display: none;
+        }
+        /* Animación éxito formulario */
+        .form-success-overlay {
+            position: absolute;
+            inset: 0;
+            background: #1c3a38;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: inherit;
+        }
+        .form-success-overlay.active {
+            transform: translateY(0);
+        }
+        .form-success-overlay.closing {
+            transform: translateY(-100%);
+            transition: transform 0.45s cubic-bezier(0.7, 0, 0.84, 0);
+        }
+        .form-success-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            text-align: center;
+        }
+        .form-success-circle {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: #00c7b1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: formSuccessPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+        }
+        .form-success-circle svg {
+            width: 2rem;
+            height: 2rem;
+            stroke-dasharray: 30;
+            stroke-dashoffset: 30;
+            animation: formSuccessCheck 0.4s ease 0.6s forwards;
+        }
+        .form-success-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            opacity: 0;
+            animation: formSuccessFade 0.3s ease 0.7s forwards;
+        }
+        .form-success-sub {
+            font-size: 0.9rem;
+            color: #7ca19b;
+            opacity: 0;
+            animation: formSuccessFade 0.3s ease 0.85s forwards;
+        }
+        @keyframes formSuccessPop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        @keyframes formSuccessCheck {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes formSuccessFade {
+            to { opacity: 1; }
+        }
+
+        /* Imagen de fondo difuminada para resoluciones sin imagen lateral */
+        .form-bg-image {
+            position: absolute;
+            inset: 0;
+            background: url('imagenes/imagenes_cau/Siglo21IMG_2555.jpg') center / cover no-repeat;
+            filter: blur(18px) brightness(0.35);
+            opacity: 0.45;
+            z-index: 0;
+        }
+        @media (min-width: 1600px) {
+            .form-layout-grid {
+                grid-template-columns: 5fr 4fr;
+                gap: 0;
+                align-items: stretch;
+            }
+            .form-content-col {
+                display: flex;
+                flex-direction: column;
+            }
+            .form-card {
+                border-right: none !important;
+                border-radius: 1rem 0 0 1rem !important;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            .form-card form {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            .form-card form > div:last-child {
+                margin-top: auto;
+            }
+            .form-card-header {
+                border-radius: 1rem 0 0 0 !important;
+            }
+            .form-side-image {
+                display: block;
+                position: relative;
+                overflow: hidden;
+                border-radius: 0 1rem 1rem 0;
+                border: 1px solid rgba(0,199,177,0.3);
+                border-left: none;
+            }
+            .form-side-image::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                width: 1px;
+                background: rgba(0,199,177,0.3);
+                z-index: 1;
+                pointer-events: none;
+            }
+            .form-bg-image {
+                display: none;
+            }
+        }
+
 
         .section-header-pill {
             background-color: var(--color-secondary-highlight);
             color: var(--color-dark-bg);
             font-weight: 800;
-            padding: 12px 28px;
+            padding: 0.75rem 1.75rem;
             border-radius: 9999px;
             margin-bottom: 2.5rem;
             display: inline-block;
@@ -713,33 +718,31 @@
             margin: 0 auto;
         }
 
-        .search-form-wrapper {
-            width: 100%;
+        .search-panel-wrapper {
+            display: flex;
+            flex-direction: column;
             padding: 0 1rem;
+            gap: 0;
+        }
+
+        .search-form-wrapper {
+            position: relative;
+            width: 100%;
+            padding: 0;
+            display: flex;
+            align-items: stretch;
+            gap: 0.5rem;
         }
 
         .search-form-wrapper form {
             position: relative;
-            max-width: 640px;
-            margin: 0 auto;
-        }
-
-        .search-form-wrapper .search-icon-left {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #7ca19b;
-            pointer-events: none;
-            transition: color 0.3s ease;
-            z-index: 2;
-            width: 18px;
-            height: 18px;
+            flex: 1;
+            min-width: 0;
         }
 
         .search-form-wrapper input#search-input {
             width: 100%;
-            padding: 10px 14px 10px 42px;
+            padding: 10px 42px 10px 14px;
             border-radius: 10px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -748,7 +751,13 @@
             border: 2px solid rgba(0, 199, 177, 0.25);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.03);
             transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            text-align: center;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            box-sizing: border-box;
         }
+
 
         .search-form-wrapper input#search-input::placeholder {
             color: #8ab5ad;
@@ -762,25 +771,218 @@
             background-color: rgba(28, 47, 49, 0.9);
         }
 
-        .search-form-wrapper input#search-input:focus-visible ~ .search-icon-left,
-        .search-form-wrapper form:focus-within .search-icon-left {
+
+        .filter-type-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.25s ease;
+        }
+        .filter-type-box.collapsed {
+            gap: 0;
+        }
+        .filter-type-box.collapsed .filter-accordion {
+            height: 0;
+            overflow: hidden;
+            visibility: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin: 0;
+            border-width: 0;
+            pointer-events: none;
+        }
+        .filter-toggle-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .filter-toggle-line {
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 199, 177, 0.18);
+            align-self: stretch;
+        }
+        .filter-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 5px 20px;
+            background: rgba(0, 199, 177, 0.12);
+            border: 1px solid rgba(0, 199, 177, 0.18);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
             color: #00c7b1;
+            font-size: 0.68rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .filter-toggle-arrow {
+            transition: transform 0.25s ease;
+        }
+        .filter-toggle-btn.collapsed .filter-toggle-arrow {
+            transform: rotate(180deg);
+        }
+        .filter-type-box .filter-accordion {
+            background: #03100e;
+            border: 1px solid rgba(0,199,177,0.18);
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
         }
 
         .filter-container {
-            display: flex; /* Revert to flex for default large screen behavior */
-            flex-wrap: wrap; /* Allow wrapping */
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            justify-content: center;
             width: 100%;
             margin-bottom: 0;
-            padding: 0 0.5rem;
-            box-sizing: border-box; /* Keep this for consistent width calculation */
+            box-sizing: border-box;
         }
 
-        /* Botón desplegable de filtros — oculto en escritorio, visible en mobile */
-        #filter-toggle-btn { display: none; }
-        #filter-toggle-wrapper { display: none; }
+        /* Botón mobile para plegar/desplegar filtros de tipo */
+        .filter-pills-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 6px 14px;
+            margin: 0 1rem;
+            border-radius: 8px;
+            background: rgba(0, 199, 177, 0.1);
+            border: 1px solid rgba(0, 199, 177, 0.25);
+            color: #00c7b1;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .filter-pills-toggle:active {
+            background: rgba(0, 199, 177, 0.2);
+        }
+        .filter-pills-toggle svg {
+            transition: transform 0.25s ease;
+        }
+        .filter-pills-toggle.collapsed svg {
+            transform: rotate(180deg);
+        }
+        @media (max-width: 640px) {
+            .filter-pills-toggle {
+                display: flex;
+            }
+            .filter-container.pills-hidden {
+                display: none;
+            }
+        }
+
+        /* Zona píldoras: mobile → columna full-width; desktop → tabla centrada al ancho de las píldoras */
+        .sticky-pills-zone {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .sticky-pills-zone.filters-collapsed {
+            gap: 0.5rem;
+        }
+
+        /* ── Acordeones de filtros ── */
+        .filter-accordion {
+            border-top: none;
+        }
+        .filter-accordion-header {
+            display: flex;
+            align-items: center;
+        }
+        .filter-accordion-header .filter-accordion-btn {
+            flex: 1;
+            min-width: 0;
+        }
+        .filter-single-clear {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            background: rgba(220, 60, 60, 0.10);
+            color: #e06060;
+            border: 1px solid rgba(220, 60, 60, 0.3);
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: left;
+        }
+        .filter-single-clear.inactive {
+            background: rgba(120, 130, 128, 0.10);
+            color: #6b7c78;
+            border-color: rgba(120, 130, 128, 0.25);
+            pointer-events: none;
+        }
+        .filter-accordion-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .filter-accordion-btn {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 6px;
+            background: transparent;
+            border: none;
+            color: #00c7b1;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .filter-accordion-btn:hover,
+        .filter-accordion-btn:active {
+            background: transparent;
+        }
+        .filter-accordion-title {
+            display: inline-block;
+            width: 6.5em;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .filter-accordion-hint {
+            font-weight: 400;
+            color: #5a7a74;
+            text-transform: none;
+            font-size: 0.72rem;
+            letter-spacing: 0;
+        }
+        .filter-accordion-btn[aria-expanded="true"] .filter-accordion-hint {
+            display: none;
+        }
+        .filter-accordion-arrow {
+            transition: transform 0.22s ease;
+            flex-shrink: 0;
+        }
+        .filter-accordion-btn[aria-expanded="true"] .filter-accordion-arrow {
+            transform: rotate(180deg);
+        }
+        .filter-accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.28s ease, opacity 0.2s ease, padding 0.28s ease;
+            padding: 0 6px;
+        }
+        .filter-accordion-body.open {
+            max-height: 500px;
+            opacity: 1;
+            padding: 0 6px 10px;
+        }
 
 
         .sticky-search-container {
@@ -808,8 +1010,8 @@
             background-color: rgba(200, 200, 210, 0.12);
             color: #c5c8ce;
             border: 1px solid rgba(200, 200, 210, 0.25);
-            padding: 10px 18px;
-            min-height: 44px;
+            padding: 0.625rem 1.125rem;
+            min-height: 2.75rem;
             border-radius: 9999px;
             font-weight: 650;
             font-size: 0.8rem;
@@ -822,9 +1024,7 @@
         }
 
         .filter-pill:hover {
-            background-color: var(--color-highlight);
-            color: var(--color-deep-dark-bg);
-            box-shadow: none;
+            background-color: rgba(200, 200, 210, 0.18);
         }
 
         .filter-pill.filter-pill-all {
@@ -834,9 +1034,7 @@
         }
 
         .filter-pill.filter-pill-all:hover {
-            background-color: var(--color-highlight);
-            color: var(--color-deep-dark-bg);
-            box-shadow: none;
+            background-color: rgba(0, 199, 177, 0.18);
         }
 
         .filter-pill.filter-pill-all.active {
@@ -848,18 +1046,16 @@
         }
 
         .filter-pill.featured {
-            background-color: #b8922a;
+            background-color: var(--cau-brand-green);
             color: #fff;
-            border: 1px solid #c9a03a;
+            border: 1px solid var(--cau-brand-dark-green);
             font-weight: 900;
             z-index: 2;
-            box-shadow: 0 1px 6px rgba(184, 146, 42, 0.22);
+            box-shadow: 0 1px 6px rgba(5, 140, 112, 0.22);
         }
 
         .filter-pill.featured:hover {
-            background-color: #c9a03a;
-            color: #fff;
-
+            opacity: 0.9;
         }
 
         .filter-pill.active {
@@ -872,8 +1068,88 @@
             transform: none;
         }
 
-        /* Ajuste para que no rompa la línea en la grilla */
-
+        .adv-filter-count-btn,
+        .adv-filter-clear {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .adv-filter-count-btn {
+            background: rgba(0, 199, 177, 0.10);
+            color: #00c7b1;
+            border: 1px solid rgba(0, 199, 177, 0.30);
+        }
+        .adv-filter-clear {
+            background: rgba(200, 200, 210, 0.08);
+            color: #5a7a74;
+            border: 1px solid rgba(200, 200, 210, 0.15);
+        }
+        .adv-filter-clear.has-filters {
+            background: rgba(220, 60, 60, 0.12);
+            color: #e06060;
+            border: 1px solid rgba(220, 60, 60, 0.4);
+        }
+        .afc-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.4em;
+            height: 1.4em;
+            border-radius: 50%;
+            font-size: 0.65rem;
+            font-weight: 800;
+            line-height: 1;
+            background: rgba(5, 140, 112, 0.35);
+            color: #4de8d2;
+            vertical-align: middle;
+            position: relative;
+            top: -0.05em;
+        }
+        .adv-filter-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .adv-filter-chip {
+            background-color: rgba(200, 200, 210, 0.12);
+            color: #c5c8ce;
+            border: 1px solid rgba(200, 200, 210, 0.25);
+            padding: 0.625rem 0.5rem;
+            min-height: 2.75rem;
+            border-radius: 9999px;
+            font-weight: 650;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.015em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        .adv-filter-chip:hover {
+            background-color: rgba(200, 200, 210, 0.18);
+        }
+        .adv-filter-chip.active {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            color: #1a1a1a !important;
+            border-color: rgba(255, 255, 255, 0.6);
+            font-weight: 800;
+            box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1);
+            transform: none;
+        }
 
         /* Búsqueda por sección */
         .section-header-container {
@@ -1010,6 +1286,9 @@
             }
         }
 
+        /* El h1 del navbar siempre queda fijo en text-2xl (1.5rem),
+           sin importar las reglas responsive de headings de contenido */
+
         @media (max-width: 540px) {
             .container {
                 padding-left: 0.75rem !important;
@@ -1034,6 +1313,13 @@
 
             header .p-6 {
                 padding: 1.5rem !important;
+            }
+        }
+
+        @media (max-width: 509px) {
+            #search-input {
+                text-align: center !important;
+                padding-left: 14px !important;
             }
         }
 
@@ -1085,93 +1371,176 @@
             }
         }
 
-        /* Carousel — all resolutions */
-        #top-featured-container {
-            overflow: hidden !important;
-            position: relative;
-            padding: 0 0.75rem 0.25rem !important;
-            width: 100% !important;
-            max-width: 100%;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
-
-        @media (min-width: 1025px) {
-            #top-featured-container {
-                max-width: 80%;
-                margin-left: 12%;
-                margin-right: 8%;
+        /* Hero: en la franja 1040–1260px el container de Tailwind queda centrado en 1024px
+           dejando espacio vacío a la derecha. Se libera el max-width para que el branding
+           quede alineado al borde derecho del viewport. */
+        @media (min-width: 1040px) and (max-width: 1260px) {
+            #hero-inner {
+                max-width: none;
             }
         }
 
-        #top-featured-container .carousel-track {
+        /* Carousel — all resolutions */
+        /* Banner Carousel Styles */
+        .banner-carousel-container {
+            width: 100%;
+            aspect-ratio: 3 / 1;
+            height: auto;
+            max-height: 140px; /* Matched to the height of the branding block (logo + text) */
+            overflow: hidden;
+            position: relative;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        /* Tablet: ~1/3 menos que el valor anterior (160 → 107) */
+        @media (max-width: 1023px) {
+            .banner-carousel-container {
+                max-height: 107px;
+            }
+        }
+
+        /* Mobile: ratio 2:1 para imágenes definitivas, 1/3 menos que antes (210 → 140) */
+        @media (max-width: 599px) {
+            .banner-carousel-container {
+                aspect-ratio: 2 / 1;
+                max-height: 140px;
+            }
+        }
+
+        .banner-carousel-track {
             display: flex;
-            gap: var(--carousel-gap, 12px);
-            width: max-content;
-            transition: transform 0.45s ease;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            height: 100%;
         }
 
-        #top-featured-container .carousel-track > * {
-            flex: none; /* width set by JS */
-        }
-
-        /* Featured career card */
-        .featured-career-card {
+        .banner-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
             position: relative;
             overflow: hidden;
-            background: rgba(28, 47, 49, 0.9);
-            border: 1px solid rgba(0, 199, 177, 0.3);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-            transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
-            height: 64px;
-            box-sizing: border-box;
-        }
-        .featured-career-card .featured-bg {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            filter: brightness(1.3) saturate(1.1);
-            transition: opacity 0.3s ease-out;
-        }
-        .featured-career-card:hover .featured-bg,
-        .featured-career-card:active .featured-bg {
-            opacity: 1;
-        }
-        .featured-career-card .featured-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(1, 26, 20, 0.65);
-            opacity: 0;
-            transition: opacity 0.3s ease-out;
-        }
-        .featured-career-card:hover .featured-overlay,
-        .featured-career-card:active .featured-overlay {
-            opacity: 1;
-        }
-        .featured-career-card .featured-text {
-            position: relative;
-            z-index: 1;
-        }
-        .featured-career-card:hover {
-            border-color: rgba(0, 199, 177, 0.7);
-            box-shadow: 0 2px 12px rgba(0, 199, 177, 0.15);
-        }
-        .featured-career-card:focus-visible {
-            outline: 2px solid #00c7b1;
-            outline-offset: 2px;
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .featured-career-card .featured-bg,
-            .featured-career-card .featured-overlay {
-                transition: none;
-            }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            #top-featured-container .carousel-track {
-                transition: none;
+        .banner-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Placeholder mientras se preparan las imágenes definitivas */
+        .banner-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            background: #0d2420;
+            border: 1.5px dashed rgba(0, 199, 177, 0.35);
+            border-radius: 6px;
+            color: rgba(0, 199, 177, 0.55);
+            font-family: monospace;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 0.5rem;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .banner-placeholder strong {
+            font-size: 0.8rem;
+            color: rgba(0, 199, 177, 0.8);
+        }
+
+        /* Banner 3 — Beneficios por convenio */
+        .banner-benefits-slide {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0d2420 0%, #091c1a 100%);
+            border: 1.5px solid rgba(0, 199, 177, 0.25);
+            border-radius: 6px;
+            padding: 0.65rem 1.25rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .bbs-header {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.6rem;
+            font-weight: 900;
+            color: rgba(0, 199, 177, 0.85);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            flex-shrink: 0;
+        }
+        .bbs-items {
+            display: flex;
+            gap: 0.65rem;
+            align-items: stretch;
+        }
+        .bbs-chip {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: rgba(0, 199, 177, 0.06);
+            border: 1px solid rgba(0, 199, 177, 0.18);
+            border-radius: 8px;
+            padding: 0.4rem 0.75rem;
+            min-width: 0;
+        }
+        .bbs-discount {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #00c7b1;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .bbs-chip-text strong {
+            display: block;
+            font-size: 0.62rem;
+            font-weight: 800;
+            color: #daeae8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .bbs-chip-text span {
+            display: block;
+            font-size: 0.56rem;
+            color: #7ca19b;
+            line-height: 1.3;
+        }
+        @media (max-width: 599px) {
+            .banner-benefits-slide { padding: 0.5rem 0.75rem; gap: 0.35rem; }
+            .bbs-items { gap: 0.4rem; }
+            .bbs-chip { padding: 0.3rem 0.5rem; gap: 0.35rem; }
+            .bbs-discount { font-size: 0.9rem; }
+            .bbs-chip-text strong { font-size: 0.55rem; }
+            .bbs-chip-text span { font-size: 0.5rem; }
+        }
+
+
+        /* Desktop ≥1351px: la zona toma el ancho exacto de la fila de píldoras
+           y el buscador hereda ese mismo ancho alineándose píxel a píxel */
+        @media (min-width: 1351px) {
+            .sticky-pills-zone {
+                width: max-content;
+                align-self: center;
+            }
+            .filter-container {
+                flex-wrap: nowrap !important;
+            }
+            .search-panel-wrapper {
+                padding: 0;
             }
         }
 
@@ -1179,14 +1548,18 @@
         @media (max-width: 1350px) {
             .filter-container {
                 display: grid;
-                grid-template-columns: repeat(4, 1fr); /* Enforce 4-column grid */
+                grid-template-columns: repeat(4, 1fr);
                 gap: 8px;
-                justify-items: center; /* Center grid items horizontally */
-                padding: 0 0.5rem; /* Ensure consistent padding */
+            }
+            .adv-filter-options {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 8px;
             }
 
-            .filter-pill {
-                width: 100%; /* In a grid, this makes it fill the cell */
+            .filter-pill,
+            .adv-filter-chip {
+                width: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -1196,15 +1569,13 @@
                 text-align: center;
                 border-width: 1px;
                 border-radius: 10px;
-                white-space: nowrap; /* Prevent any line breaks within words for mobile */
+                white-space: nowrap;
                 line-height: 1.1;
                 min-height: 42px;
                 hyphens: none;
                 overflow: hidden;
-                text-overflow: ellipsis; /* Ensure text overflow is handled */
+                text-overflow: ellipsis;
             }
-
-
         }
 
 
@@ -1225,55 +1596,30 @@
                 --carousel-gap: 8px;
             }
 
-            /* Botón desplegable de filtros — visible solo en mobile */
-            #filter-toggle-wrapper { display: block; }
-            #filter-toggle-btn {
-                display: flex;
-                width: 100%;
-                align-items: center;
-                justify-content: space-between;
-                padding: 9px 14px;
-                background: rgba(0,199,177,0.08);
-                border: 1px solid rgba(0,199,177,0.35);
-                border-radius: 10px;
-                color: #00c7b1;
-                font-size: 0.82rem;
-                font-weight: 700;
-                letter-spacing: 0.04em;
-                cursor: pointer;
-                transition: background 0.2s;
-                user-select: none;
-                -webkit-user-select: none;
+            /* Contenedor visual para toggle + pills en mobile */
+            .filter-type-box {
+                margin: 6px 1rem 0;
+                gap: 8px;
             }
-            #filter-toggle-btn:active {
-                background: rgba(0,199,177,0.18);
-            }
-            #filter-toggle-arrow {
-                transition: transform 0.22s ease;
-                flex-shrink: 0;
-            }
-            #filter-toggle-btn[aria-expanded="true"] #filter-toggle-arrow {
-                transform: rotate(180deg);
+            .filter-type-box .filter-accordion {
+                border: 1px solid rgba(0,199,177,0.3);
+                padding: 0.5rem;
             }
 
-            /* Ajustes de grilla para móvil: 2 columnas, desplegable oculto por defecto */
+            /* Ajustes de grilla para móvil */
             .filter-container {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 6px;
                 margin-bottom: 0;
-                max-height: 0;
-                overflow: hidden;
-                opacity: 0;
-                transition: max-height 0.28s ease, opacity 0.2s ease;
-                margin-top: 0;
             }
-            .filter-container.filter-open {
-                max-height: 300px;
-                opacity: 1;
-                margin-top: 6px;
+            .adv-filter-options {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                gap: 6px;
+                margin-bottom: 0;
             }
 
-            .filter-pill {
+            .filter-pill,
+            .adv-filter-chip {
                 width: 100% !important;
                 display: flex !important;
                 align-items: center !important;
@@ -1309,11 +1655,6 @@
                 font-size: 0.8rem !important;
             }
 
-            .search-form-wrapper .search-icon-left {
-                left: 10px;
-                width: 16px;
-                height: 16px;
-            }
         }
 
         /* Ultra small screens Fix (e.g. 250px-293px) */
@@ -1367,25 +1708,10 @@
 
         /* Extreme Micro-Resolutions (100px - 200px) */
         @media (max-width: 250px) {
-            .navbar-container .flex-col {
-                display: none !important;
-            }
 
             /* Hide brand text */
-            .navbar-container img {
-                width: 1.5rem !important;
-                height: 1.5rem !important;
-                margin-right: 0 !important;
-            }
 
-            .mobile-menu-btn {
-                padding: 0.25rem;
-            }
 
-            .mobile-menu-btn svg {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
 
             .container {
                 padding: 0.2rem !important;
@@ -1445,9 +1771,6 @@
         }
 
         @media (max-width: 150px) {
-            .navbar-container {
-                padding: 0 0.1rem !important;
-            }
 
             .career-name-list-mode-list {
                 gap: 0.5rem;
@@ -1602,86 +1925,21 @@
         }
 
         /* Loading spinner en el input de búsqueda */
-        .search-loading {
-            position: relative;
-        }
-
-        .search-loading::after {
-            content: '';
+        .search-icon-right {
             position: absolute;
-            right: 1rem;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--color-highlight);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            color: #7ca19b;
+            pointer-events: none;
+            z-index: 3;
+            width: 18px;
+            height: 18px;
+            transition: color 0.3s ease;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Favorites System Styles */
-        .favorite-btn {
-            background: rgba(255, 207, 51, 0.08);
-            border: 1px solid rgba(255, 207, 51, 0.45);
-            cursor: pointer;
-            color: #ffcf33;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 44px;
-            height: 44px;
-            border-radius: 0.5rem;
-            padding: 0;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .favorite-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: none;
-            transition: all 0.3s ease;
-        }
-
-        .favorite-btn:hover {
-            background-color: rgba(255, 207, 51, 0.12);
-            border-color: #ffcf33;
-            color: #ffd84a;
-            transform: scale(1.05);
-            box-shadow: none;
-        }
-
-        .favorite-btn.is-favorite {
-            color: #ffd84a;
-            background: rgba(255, 207, 51, 0.16);
-            border-color: #ffcf33;
-            box-shadow: 0 0 0 1px rgba(255, 207, 51, 0.24);
-            filter: none;
-        }
-
-        .favorite-btn.is-favorite svg {
-            fill: currentColor;
-        }
-
-        @keyframes fav-pop {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.3);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        .search-form-wrapper form:focus-within .search-icon-right {
+            color: #00c7b1;
         }
 
         /* Footer social links */
@@ -1732,6 +1990,82 @@
 
         .sidebar-block:hover {
             border-color: rgba(0, 199, 177, 0.2);
+        }
+
+        /* Sidebar Widgets Styles */
+        .sidebar-widgets-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: calc(var(--navbar-height, 60px) + 220px);
+        }
+
+
+        /* Benefits Widget */
+        .benefits-widget {
+            background: rgba(22, 47, 46, 0.4);
+            border: 1px solid rgba(0, 199, 177, 0.1);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+        }
+
+        .benefits-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #00c7b1;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .benefit-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .benefit-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 199, 177, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00c7b1;
+            flex-shrink: 0;
+        }
+
+        .benefit-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .benefit-label {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+        }
+
+        .benefit-value {
+            font-size: 0.9rem;
+            color: #b0c9c4;
+            line-height: 1.4;
+        }
+
+        .discount-highlight {
+            color: #00c7b1;
+            font-weight: 900;
         }
 
         .panel-header {
@@ -1819,198 +2153,14 @@
             overflow: hidden !important;
         }
 
-        /* Clear Favorites Button Style */
-        .btn-clear-favorites {
-            background-color: rgba(220, 38, 38, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #f87171;
-            padding: 0.5rem 0.85rem;
-            min-height: 44px;
-            border-radius: 9999px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-left: 0.75rem;
-            margin-right: 0;
-            order: 0;
-            box-sizing: border-box;
-            box-shadow: none;
-            filter: none;
-        }
 
-        .btn-clear-favorites:hover {
-            background-color: #dc2626;
-            color: white;
-            border-color: #ef4444;
-            transform: none;
-            box-shadow: none;
-            filter: none;
-        }
-
-        .btn-clear-favorites:active {
-            transform: none;
-        }
-
-        /* Adjustments for Favorites inside Sidebar */
-        .favorites-section {
-            display: none;
-            /* Controlled by .has-favorites */
-            border-radius: 1.5rem;
-            background: linear-gradient(160deg, rgba(56, 40, 12, 0.7) 0%, rgba(43, 31, 10, 0.78) 100%);
-            border: 1px solid rgba(230, 155, 5, 0.42);
-            box-shadow: 0 10px 24px rgba(44, 26, 7, 0.32);
-            /* Redundant sticky removed since parent column is now sticky */
-        }
-
-        .favorites-section.has-favorites {
-            display: block;
-        }
-
-        #favorites-section .panel-header {
-            background: rgba(184, 146, 42, 0.16);
-            border-bottom: 1px solid rgba(230, 155, 5, 0.28);
-        }
-
-        #favorites-section .panel-header:hover {
-            background: rgba(184, 146, 42, 0.24);
-        }
-
-        #favorites-section .panel-title-wrapper h2 {
-            color: #ffe9b4;
-            position: relative;
-            padding-left: 0.7rem;
-        }
-
-        #favorites-section .panel-title-wrapper h2::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 3px;
-            height: 1.25em;
-            transform: translateY(-50%);
-            background: linear-gradient(180deg, #dab03a 0%, #e69b05 100%);
-            border-radius: 999px;
-            box-shadow: 0 0 8px rgba(230, 155, 5, 0.35);
-        }
-
-        #favorites-section .panel-chevron {
-            color: #f1c86c;
-        }
-
-        #favorites-count {
-            background-color: #e69b05 !important;
-            color: #211300 !important;
-            border: 1px solid rgba(255, 225, 155, 0.45);
-            box-shadow: 0 0 0 1px rgba(230, 155, 5, 0.24);
-        }
-
-        .favorites-grid {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-        }
-
-        .favorites-grid .career-name-list {
-            padding: 0.75rem 1rem;
-            min-height: auto;
-            flex-wrap: nowrap;
-            gap: 0.5rem;
-            background: rgba(230, 155, 5, 0.09) !important;
-            border-color: rgba(230, 155, 5, 0.3);
-        }
-
-        .favorites-grid .career-name {
-            font-size: 0.95rem;
-            min-width: 0;
-        }
-
-        .favorites-grid .career-name-list:hover,
-        .favorites-grid .career-name-list-mode-list:hover {
-            background: rgba(230, 155, 5, 0.09) !important;
-            border-color: rgba(230, 155, 5, 0.3) !important;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .favorites-grid .career-name-list,
-        .favorites-grid .career-name-list-mode-list {
-            transition: none !important;
-        }
-
-        .favorites-grid .career-prefix {
-            color: #ffffff !important;
-        }
-
-        .favorites-grid .favorite-btn {
-            width: 32px;
-            height: 32px;
-            background: transparent;
-            border-color: rgba(255, 207, 51, 0.55);
-            color: #ffcf33;
-            box-shadow: none;
-        }
-
-        .favorites-grid .favorite-btn:hover {
-            background: rgba(255, 207, 51, 0.1);
-            border-color: #ffcf33;
-            color: #ffd84a;
-        }
-
-        .favorites-grid .favorite-btn.is-favorite {
-            background: rgba(255, 207, 51, 0.14);
-            border-color: #ffcf33;
-            color: #ffd84a;
-            box-shadow: 0 0 0 1px rgba(255, 207, 51, 0.24);
-            filter: none;
-        }
-
-        .favorites-grid .detail-link {
-            padding: 0.25rem 0.5rem !important;
-            font-size: 0.75rem;
-            color: #2f2414;
-            background: #d9bf4f;
-            border: 1px solid #c7ad3f;
-        }
-
-        .favorites-grid .detail-link:hover {
-            background: #d9bf4f;
-            border-color: #c7ad3f;
-            color: #2f2414;
-            transform: none;
-        }
 
         #sidebar-column {
             position: sticky;
-            top: 3rem;
+            top: var(--sidebar-sticky-top, 200px);
             height: fit-content;
             z-index: 10;
-        }
-
-        /* Estado automático: ocultar sidebar si las tarjetas no entran */
-        #sidebar-column.sidebar-auto-hidden {
-            display: none !important;
-        }
-
-        /* Solo aplicar expansión en pantallas grandes donde hay 3 columnas */
-        @media (min-width: 1024px) {
-            #careers-list-column.sidebar-expanded {
-                grid-column: span 3 / span 3;
-            }
-        }
-
-        /* Si no entra el sidebar, ocultar botón de favoritos en tarjetas */
-        .favorites-disabled .career-name-list .favorite-btn {
-            display: none !important;
-        }
-
-        /* Mobile: ocultar sidebar de favoritos */
-        @media (max-width: 1023px) {
-            #sidebar-column,
-            #favorites-section {
-                display: none !important;
-            }
+            display: none;
         }
 
         /* Comparison Tool Styles */
@@ -2173,6 +2323,25 @@
             background: #00c7b1;
             transform: scale(1.35);
         }
+
+        /* ── Escala global desktop ≥1380px ────────────────────────────
+           Simula el efecto de zoom 120% del navegador sin usar la
+           propiedad zoom (que rompe layouts con vw/100%).
+           Al subir la base rem de 16px → 19.2px, todos los valores
+           en rem (tipografía, paddings, gaps de Tailwind) escalan
+           proporcionalmente. El container se amplía para compensar
+           el mayor ancho disponible en pantallas grandes.
+        ─────────────────────────────────────────────────────────────── */
+        @media (min-width: 1380px) {
+            html {
+                font-size: 120%;
+            }
+
+            /* 1536px (máx Tailwind 2xl) × 1.2 = 1843px → 1840px */
+            .container {
+                max-width: 1840px;
+            }
+        }
     </style>
 </head>
 
@@ -2194,37 +2363,33 @@
 
             <!-- Mobile Branding (Visible only on mobile) -->
             <div class="flex lg:hidden flex-1 items-center min-w-0">
-                <h1 class="flex-1 text-center text-2xl md:text-3xl whitespace-nowrap" style="font-family:'Unbounded',sans-serif;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h1>
-                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="mobile-logo flex-shrink-0 h-14 w-14 md:h-16 md:w-16 object-contain"
+                <h1 class="flex-1 text-center text-2xl whitespace-nowrap" style="font-family:'Unbounded',sans-serif;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h1>
+                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="mobile-logo flex-shrink-0 h-14 w-14 object-contain"
                     style="filter: brightness(0) invert(1);" width="56" height="56">
             </div>
 
 
             <!-- Links -->
             <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
-                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
                 <!-- Menu header con branding -->
                 <div class="menu-header lg:hidden">
-                    <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
-                    <div class="menu-brand">
-                        <h2 style="font-family:'Unbounded',sans-serif;font-size:1.875rem;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h2>
-                    </div>
+                    <h2 style="font-family:'Unbounded',sans-serif;font-size:1.875rem;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h2>
+                    <button class="menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
 
-                <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
+                <a href="index.html" class="navbar-link active">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
-                <a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
+                <!-- IDENTIDAD ARGENTINA — comentado, posible uso futuro
+<a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
                     <div class="flag-link">
                         <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
                     </div>
                 </a>
+-->
                 <a href="novedades.html" class="navbar-link">Novedades</a>
                 <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
                 <a href="faq.html" class="navbar-link">Preguntas Frecuentes</a>
@@ -2269,43 +2434,78 @@
     <!-- Hero Section -->
     <header id="hero" class="w-full mb-0 shadow-2xl overflow-hidden"
         style="background-color: #013729; border-bottom: 3px solid var(--color-highlight);">
-        <div class="container mx-auto p-4 sm:p-6 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12">
+        <div id="hero-inner" class="mx-auto w-full p-4 sm:p-6 xl:px-20 flex flex-col xl:flex-row items-center justify-start gap-6 xl:gap-8">
 
-            <!-- SECCIÓN TOP 5: TENDENCIAS EN ALZA (Prioridad a la izquierda) -->
-            <div class="flex-1 w-full lg:max-w-4xl order-2 lg:order-1 flex flex-col items-center min-w-0 overflow-hidden">
-                <div class="flex items-center gap-4 mb-4 justify-center w-full">
-                    <!-- Icono de tendencia -->
-                    <div class="p-2 rounded-full flex items-center justify-center shrink-0"
-                        style="background: rgba(0, 255, 225, 0.08); border: 1px solid rgba(0, 255, 225, 0.2);">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" style="color: var(--color-accent);" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
+            <!-- SECCIÓN BANNERS: CENTRADA -->
+            <div class="flex-1 w-full xl:max-w-4xl order-2 xl:order-1 flex flex-col items-center min-w-0 overflow-hidden">
+                <div class="banner-carousel-container">
+                    <div class="banner-carousel-track" id="banner-track">
+                        <div class="banner-slide">
+                            <div class="banner-placeholder">
+                                <strong>Banner 1</strong>
+                                <span>Desktop 1400 × 163 px</span>
+                                <span>Mobile &nbsp;750 × 375 px</span>
+                            </div>
+                        </div>
+                        <div class="banner-slide">
+                            <div class="banner-placeholder">
+                                <strong>Banner 2</strong>
+                                <span>Desktop 1400 × 163 px</span>
+                                <span>Mobile &nbsp;750 × 375 px</span>
+                            </div>
+                        </div>
+                        <div class="banner-slide">
+                            <div class="banner-benefits-slide">
+                                <div class="bbs-header">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    Beneficios por convenio
+                                </div>
+                                <div class="bbs-items">
+                                    <div class="bbs-chip">
+                                        <div class="bbs-discount">10%</div>
+                                        <div class="bbs-chip-text">
+                                            <strong>Deportistas Federados</strong>
+                                            <span>bonificación en aranceles</span>
+                                        </div>
+                                    </div>
+                                    <div class="bbs-chip">
+                                        <div class="bbs-discount">10%</div>
+                                        <div class="bbs-chip-text">
+                                            <strong>Organización Amiga</strong>
+                                            <span>familias y empresas con convenio</span>
+                                        </div>
+                                    </div>
+                                    <div class="bbs-chip">
+                                        <div class="bbs-discount">10%</div>
+                                        <div class="bbs-chip-text">
+                                            <strong>Amigo Referido</strong>
+                                            <span>para quien recomienda y el ingresante</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-sm md:text-base font-black uppercase tracking-tighter text-white">
-                        Lo más buscado
-                    </h3>
-                </div>
-
-                <div id="top-featured-container" class="w-full">
-                    <!-- Se cargará dinámicamente con JS -->
                 </div>
             </div>
 
             <!-- Separator 2 (Desktop only) -->
-            <div class="hidden lg:block lg:order-2 w-px bg-white opacity-10 h-32 self-center mx-6"></div>
+            <div class="hidden xl:block xl:order-2 w-px bg-white opacity-10 h-32 self-center mx-3"></div>
 
             <!-- Bloque de Branding Premium (Desktop Only) -->
-            <div class="hidden lg:flex items-center justify-center gap-8 order-1 lg:order-3">
+            <div class="hidden xl:flex items-center justify-center gap-8 order-1 xl:order-3 shrink-0">
                 <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Universidad Siglo 21" class="w-24 h-24 object-contain"
                     style="filter: brightness(0) invert(1);" loading="lazy" width="96" height="96">
-                <div class="flex flex-col h-24 justify-between py-0.5">
-                    <h1 class="text-2xl font-black text-white leading-none uppercase tracking-tighter">CAU - VILLA
-                        LUGANO</h1>
-                    <p class="text-xl font-black text-[#00c7b1] uppercase tracking-wider leading-none">SIGLO 21</p>
-                    <span class="text-xl font-bold text-white uppercase leading-none tracking-tight">30 años de
-                        experiencia</span>
+                <div class="flex flex-col h-auto justify-center gap-1 py-1 min-w-[200px]">
+                    <h1 class="text-xl md:text-2xl font-black text-white leading-tight uppercase tracking-tighter whitespace-nowrap">
+                        CAU - VILLA LUGANO
+                    </h1>
+                    <p class="text-lg md:text-xl font-black text-[#00c7b1] uppercase tracking-wider leading-none">
+                        SIGLO 21
+                    </p>
+                    <span class="text-lg md:text-xl font-bold text-white uppercase leading-none tracking-tight">
+                        30 años de experiencia
+                    </span>
                 </div>
             </div>
 
@@ -2313,7 +2513,7 @@
     </header>
 
 
-    <div class="container mx-auto pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8">
+    <div class="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20">
 
 
         <!-- SECCIÓN CARRERAS -->
@@ -2322,51 +2522,122 @@
 
             <!-- STICKY: BUSCADOR + FILTROS (queda fijo al hacer scroll) -->
             <div class="sticky-header-wrapper">
-                <!-- Buscador semántico -->
+              <div class="sticky-pills-zone">
+
+                <!-- Wrapper: buscador + panel (sin gap entre ellos) -->
+                <div class="search-panel-wrapper">
                 <div class="search-form-wrapper">
                     <form role="search" aria-label="Buscar carrera" onsubmit="return false;">
-                        <input type="search" id="search-input" name="buscar-carrera" placeholder="Buscar carrera..."
+                        <input type="text" id="search-input" name="buscar-carrera" placeholder="Buscar carrera, revisa nuestra oferta académica"
                             aria-label="Buscar carrera" autocomplete="off">
-                        <svg class="search-icon-left" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                        <svg class="search-icon-right" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                             stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </form>
-                </div>
-
-                <!-- Botón desplegable de filtros (solo mobile) -->
-                <div id="filter-toggle-wrapper" style="padding: 0 0.5rem; width: 100%; box-sizing: border-box;">
-                    <button id="filter-toggle-btn" type="button" aria-expanded="false" aria-controls="filter-container">
-                        <span id="filter-toggle-label">Filtrar por tipo</span>
-                        <svg id="filter-toggle-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    <!-- COMENTADO TEMPORALMENTE: botones de filtros
+                    <button class="adv-filter-count-btn" id="adv-filter-count-btn">
+                      Filtros <span class="afc-badge">0</span>
                     </button>
+                    <button class="adv-filter-clear" id="adv-filter-clear-btn" onclick="clearAdvFilters()">
+                      Borrar filtros
+                    </button>
+                    -->
                 </div>
 
-                <!-- Filtros rápidos -->
-                <div class="filter-container" id="filter-container">
-                    <button onclick="filterByCategory('all', this)" class="filter-pill filter-pill-all active">Ver Todo</button>
-                    <button onclick="filterByCategory('section-licenciaturas', this)"
-                        class="filter-pill featured">Licenciaturas</button>
-                    <button onclick="filterByCategory('section-tecnicaturas', this)"
-                        class="filter-pill featured">Tecnicaturas</button>
-                    <button onclick="filterByCategory('section-maestrias', this)" class="filter-pill">Maestrías</button>
-                    <button onclick="filterByCategory('section-diplomaturas', this)"
-                        class="filter-pill">Diplomaturas</button>
-                    <button onclick="filterByCategory('section-certificaciones', this)"
-                        class="filter-pill">Certificaciones</button>
-                    <button onclick="filterByCategory('section-especializaciones', this)"
-                        class="filter-pill">Especializaciones</button>
-                    <button onclick="filterByCategory('section-cursos', this)" class="filter-pill">Cursos</button>
+                </div><!-- /.search-panel-wrapper -->
+
+                <!-- Toggle mobile para filtros de tipo -->
+                <button class="filter-pills-toggle" id="filter-pills-toggle" onclick="toggleFilterPills()">
+                  <span id="filter-pills-toggle-text">Ocultar filtros</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+
+                <!-- Filtro de tipo (pills) directamente bajo el buscador -->
+                <div class="filter-container" id="filter-container" style="padding: 0 1rem;">
+                  <button onclick="filterByCategory('all', this)" class="filter-pill filter-pill-all active">Ver Todo</button>
+                  <button onclick="filterByCategory('section-licenciaturas', this)" class="filter-pill featured">Licenciaturas</button>
+                  <button onclick="filterByCategory('section-tecnicaturas', this)" class="filter-pill featured">Tecnicaturas</button>
+                  <button onclick="filterByCategory('section-maestrias', this)" class="filter-pill">Maestrías</button>
+                  <button onclick="filterByCategory('section-diplomaturas', this)" class="filter-pill">Diplomaturas</button>
+                  <button onclick="filterByCategory('section-certificaciones', this)" class="filter-pill">Certificaciones</button>
+                  <button onclick="filterByCategory('section-especializaciones', this)" class="filter-pill">Especializaciones</button>
+                  <button onclick="filterByCategory('section-cursos', this)" class="filter-pill">Cursos</button>
                 </div>
-            </div>
+
+                <!-- COMENTADO TEMPORALMENTE: acordeones de filtros (Área, Duración, Tipo en acordeón) + toggle
+                <div class="filter-type-box">
+                  <div class="filter-accordion">
+                    <div class="filter-accordion-header">
+                      <button class="filter-accordion-btn" onclick="toggleFilterAccordion(this)" aria-expanded="false">
+                        <span><span class="filter-accordion-title">Área</span> <span class="filter-accordion-hint">| Derecho, Salud, Tecnología...</span></span>
+                        <span class="filter-accordion-right">
+                          <span class="filter-single-clear inactive" id="clear-area" onclick="event.stopPropagation(); clearSingleFilter('area')">Borrar filtro</span>
+                          <svg class="filter-accordion-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="filter-accordion-body">
+                      <div class="adv-filter-options" id="adv-area-options"></div>
+                    </div>
+                  </div>
+                  <div class="filter-accordion">
+                    <div class="filter-accordion-header">
+                      <button class="filter-accordion-btn" onclick="toggleFilterAccordion(this)" aria-expanded="false">
+                        <span><span class="filter-accordion-title">Duración</span> <span class="filter-accordion-hint">| 1 año, 2 años, 4 años...</span></span>
+                        <span class="filter-accordion-right">
+                          <span class="filter-single-clear inactive" id="clear-duracion" onclick="event.stopPropagation(); clearSingleFilter('duracion')">Borrar filtro</span>
+                          <svg class="filter-accordion-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="filter-accordion-body">
+                      <div class="adv-filter-options" id="adv-duracion-options"></div>
+                    </div>
+                  </div>
+                  <div class="filter-accordion" id="filter-accordion-tipo">
+                    <div class="filter-accordion-header">
+                      <button class="filter-accordion-btn" onclick="toggleFilterAccordion(this)" aria-expanded="false">
+                        <span><span class="filter-accordion-title">Tipo</span> <span class="filter-accordion-hint">| Licenciaturas, Tecnicaturas, Cursos...</span></span>
+                        <span class="filter-accordion-right">
+                          <span class="filter-single-clear inactive" id="clear-tipo" onclick="event.stopPropagation(); clearSingleFilter('tipo')">Borrar filtro</span>
+                          <svg class="filter-accordion-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="filter-accordion-body">
+                      <div class="filter-container">
+                        <button onclick="filterByCategory('all', this)" class="filter-pill filter-pill-all active">Ver Todo</button>
+                        <button onclick="filterByCategory('section-licenciaturas', this)" class="filter-pill featured">Licenciaturas</button>
+                        <button onclick="filterByCategory('section-tecnicaturas', this)" class="filter-pill featured">Tecnicaturas</button>
+                        <button onclick="filterByCategory('section-maestrias', this)" class="filter-pill">Maestrías</button>
+                        <button onclick="filterByCategory('section-diplomaturas', this)" class="filter-pill">Diplomaturas</button>
+                        <button onclick="filterByCategory('section-certificaciones', this)" class="filter-pill">Certificaciones</button>
+                        <button onclick="filterByCategory('section-especializaciones', this)" class="filter-pill">Especializaciones</button>
+                        <button onclick="filterByCategory('section-cursos', this)" class="filter-pill">Cursos</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="filter-toggle-wrap" id="filter-toggle-wrap">
+                  <div class="filter-toggle-line"></div>
+                  <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilterBox()">
+                    <span id="filter-toggle-text">Ocultar filtros</span>
+                    <svg class="filter-toggle-arrow" id="filter-toggle-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                  </button>
+                </div>
+                FIN COMENTADO TEMPORALMENTE -->
+              </div><!-- /.sticky-pills-zone -->
+
+            </div><!-- /.sticky-header-wrapper -->
 
             <!-- CONTENEDOR PRINCIPAL: LISTA + PANEL LATERAL -->
-            <div id="main-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-8 transition-all duration-500">
+            <div id="main-grid" class="transition-all duration-500" style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
 
-                <!-- COLUMNA IZQUIERDA (LISTADO DE CARRERAS) -->
-                <div id="careers-list-column" class="lg:col-span-2 transition-all duration-500" style="min-height: 100vh;">
+                <!-- LISTADO DE CARRERAS -->
+                <div id="careers-list-column" class="transition-all duration-500" style="min-height: 100vh;">
 
                     <!-- CONTENEDOR DE RESULTADOS DE BÚSQUEDA (OCULTO POR DEFECTO) -->
                     <div id="search-results-container" class="hidden mb-12">
@@ -2379,7 +2650,7 @@
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
-                            <h4 class="text-2xl font-bold text-white">Resultados de búsqueda</h4>
+                            <h4 id="search-results-title" class="text-2xl font-bold text-white">Resultados de búsqueda</h4>
                         </div>
                         <ul id="search-results-list"
                             class="grid grid-cols-1 md:grid-cols-2 gap-8 career-list-container">
@@ -2629,39 +2900,49 @@
 
                 </div>
 
-                <!-- COLUMNA DERECHA (PANEL DE INFORMACIÓN DINÁMICA) -->
-                <aside id="sidebar-column" class="lg:col-span-1 hidden lg:block transition-all duration-500">
-
-                    <!-- SISTEMA DE FAVORITOS (COLAPSABLE) -->
-                    <section id="favorites-section" class="sidebar-block favorites-section">
-                        <div class="panel-header" onclick="togglePanel('favorites-section')">
-                            <div class="panel-title-wrapper">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#FFD700]"
-                                    fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                </svg>
-                                <h2 class="text-xl font-bold text-white uppercase tracking-tight">Favoritos</h2>
-                                <span class="bg-[#00c7b1] text-[#013729] px-2 py-0.5 rounded-full text-xs font-bold"
-                                    id="favorites-count">0</span>
+                <!-- COLUMNA DERECHA: SIDEBAR DESCUENTOS (solo ≥1440px) -->
+                <aside id="sidebar-column" class="hidden">
+                    <div style="background: linear-gradient(135deg, rgba(0,199,177,0.08), rgba(0,199,177,0.03)); border: 1px solid rgba(0,199,177,0.18); border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem;">
+                        <div style="display: flex; align-items: center; gap: 0.6rem; color: #00c7b1; font-weight: 700; font-size: 1.15rem; letter-spacing: 0.02em;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                            Beneficios
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                            <div class="sidebar-benefit-chip">
+                                <div class="sidebar-benefit-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <strong>Deportistas Federados</strong>
+                                    <span><b class="sidebar-benefit-pct">10%</b> bonificación en aranceles</span>
+                                </div>
                             </div>
-                            <div class="panel-header-actions">
-                                <button onclick="event.stopPropagation(); favoritesManager.clearAll()"
-                                    class="btn-clear-favorites" title="Quitar todos los favoritos">Limpiar</button>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 panel-chevron" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
+                            <div class="sidebar-benefit-chip">
+                                <div class="sidebar-benefit-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="3" width="16" height="18"/><line x1="4" y1="21" x2="20" y2="21"/><rect x="7" y="6" width="3" height="3"/><rect x="14" y="6" width="3" height="3"/><rect x="7" y="12" width="3" height="3"/><rect x="14" y="12" width="3" height="3"/><rect x="10" y="18" width="4" height="3"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <strong>Organización Amiga</strong>
+                                    <span><b class="sidebar-benefit-pct">10%</b> familias y empresas con convenio</span>
+                                </div>
+                            </div>
+                            <div class="sidebar-benefit-chip">
+                                <div class="sidebar-benefit-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <strong>Amigo Referido</strong>
+                                    <span><b class="sidebar-benefit-pct">10%</b> para quien recomienda y el ingresante</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="panel-content">
-                            <ul class="grid gap-3 favorites-grid mt-4" id="favorites-list">
-                                <!-- Los favoritos se inyectarán aquí -->
-                            </ul>
-                        </div>
-                    </section>
-
+                    </div>
                 </aside>
 
             </div>
@@ -2732,7 +3013,14 @@
             return top;
         }
 
+        // Flag para prevenir que el navbar se oculte durante desplazamientos programáticos
+        let _lockNavbarVisibility = false;
+
         function scrollToSearchBar() {
+            const navbar = document.querySelector('.main-navbar');
+            if (navbar) navbar.classList.remove('navbar-hidden');
+            _lockNavbarVisibility = true;
+
             const stickyWrapper = document.querySelector('.sticky-header-wrapper');
             if (!stickyWrapper) return;
             const navbarHeight = parseInt(getComputedStyle(document.documentElement)
@@ -2748,6 +3036,8 @@
             if (Math.abs(window.pageYOffset - targetScrollY) > 1) {
                 window.scrollTo({ top: targetScrollY, behavior: 'instant' });
             }
+            // Liberar el bloqueo tras un breve delay para que el evento scroll termine
+            setTimeout(() => { _lockNavbarVisibility = false; }, 100);
         }
 
         // Restaurar el encabezado de oferta cuando el usuario sube manualmente
@@ -2773,7 +3063,191 @@
         /**
          * Filtra las secciones para mostrar solo la categoría seleccionada.
          */
-        function filterByCategory(categoryId, btn) {
+        /* ══════════════════════════════════════════════════════════════
+           FILTROS AVANZADOS
+           ══════════════════════════════════════════════════════════════ */
+
+        // Mapa área → nombres de carreras. Completar las listas cuando estén listas.
+        const AREA_CAREERS = {
+            // 'Derecho':              ['Abogacía', 'Escribanía'],
+            // 'Ciencias Económicas':  ['Contador Público', 'Licenciatura en Finanzas', ...],
+            // 'Tecnología':           [...],
+            // 'Comunicación':         [...],
+            // 'Salud':                [...],
+            // 'Educación':            [...],
+            // 'Diseño':               [...],
+            'Marketing':  [],   // lista vacía = chip visible pero sin filtrar aún
+            'Derecho':    [],   // lista vacía = chip visible pero sin filtrar aún
+        };
+
+        // Estado de filtros avanzados (null = no aplicado)
+        let _advFilters = { tipo: null, area: null, duracion: null };
+
+        function setAdvFilter(key, value, btn) {
+            // Toggle: si ya estaba activo, lo apaga
+            if (_advFilters[key] === value) {
+                _advFilters[key] = null;
+                btn.classList.remove('active');
+            } else {
+                // Desactivar chip previo del mismo grupo
+                btn.closest('.adv-filter-options')
+                    .querySelectorAll('.adv-filter-chip')
+                    .forEach(c => c.classList.remove('active'));
+                _advFilters[key] = value;
+                btn.classList.add('active');
+            }
+            _updateAdvBadge();
+            applyAdvancedFilters();
+        }
+
+        function clearAdvFilters() {
+            _advFilters = { tipo: null, area: null, duracion: null };
+            document.querySelectorAll('.adv-filter-chip').forEach(c => c.classList.remove('active'));
+            _updateAdvBadge();
+            // Restaurar cards ocultas por filtros avanzados
+            document.querySelectorAll('.career-name-list.hidden').forEach(el => el.classList.remove('hidden'));
+            // Volver a "Ver Todo" en las píldoras rápidas
+            const verTodoBtn = document.querySelector('#filter-container .filter-pill-all');
+            filterByCategory('all', verTodoBtn, true);
+        }
+
+        function _updateAdvBadge() {
+            const count = [_advFilters.tipo, _advFilters.area, _advFilters.duracion].filter(Boolean).length;
+            const countBtn = document.getElementById('adv-filter-count-btn');
+            const clearBtn = document.getElementById('adv-filter-clear-btn');
+            if (countBtn) countBtn.querySelector('.afc-badge').textContent = count;
+            if (clearBtn) clearBtn.classList.toggle('has-filters', count > 0);
+            // Activar/desactivar botones individuales de borrar
+            ['area', 'duracion', 'tipo'].forEach(key => {
+                const el = document.getElementById('clear-' + key);
+                if (el) el.classList.toggle('inactive', !_advFilters[key]);
+            });
+        }
+
+        function clearSingleFilter(key) {
+            _advFilters[key] = null;
+            if (key === 'area') {
+                document.querySelectorAll('#adv-area-options .adv-filter-chip').forEach(c => c.classList.remove('active'));
+            } else if (key === 'duracion') {
+                document.querySelectorAll('#adv-duracion-options .adv-filter-chip').forEach(c => c.classList.remove('active'));
+            } else if (key === 'tipo') {
+                const verTodoBtn = document.querySelector('#filter-container .filter-pill-all');
+                document.querySelectorAll('#filter-container .filter-pill').forEach(p => p.classList.remove('active'));
+                if (verTodoBtn) verTodoBtn.classList.add('active');
+            }
+            _updateAdvBadge();
+            applyAdvancedFilters();
+        }
+
+        function applyAdvancedFilters() {
+            const { tipo, area, duracion } = _advFilters;
+            const hasAny = tipo || area || duracion;
+
+            if (!hasAny) {
+                // Sin filtros avanzados: restaurar vista normal
+                filterByCategory('all', null, true);
+                return;
+            }
+
+            if (window._renderAllSections) window._renderAllSections();
+
+            const sections = [
+                'section-licenciaturas', 'section-tecnicaturas', 'section-maestrias',
+                'section-diplomaturas', 'section-certificaciones', 'section-especializaciones',
+                'section-cursos'
+            ];
+
+            // Mostrar/ocultar secciones por tipo
+            sections.forEach(id => {
+                const sec = document.getElementById(id);
+                if (sec) {
+                    sec.style.display = (!tipo || id === tipo) ? 'block' : 'none';
+                    if (!tipo || id === tipo) {
+                        setTimeout(() => sec.style.opacity = '1', 10);
+                    }
+                }
+            });
+
+            // Filtrar cards individuales por área y duración
+            document.querySelectorAll('.career-name-list').forEach(card => {
+                const name = card.dataset.careerName;
+                const data = careersData[name];
+                if (!data) { card.classList.add('hidden'); return; }
+
+                let ok = true;
+                if (area) {
+                    const lista = AREA_CAREERS[area] || [];
+                    if (lista.length > 0 && !lista.includes(name)) ok = false;
+                }
+                if (ok && duracion && data.duration && data.duration !== duracion) ok = false;
+
+                card.classList.toggle('hidden', !ok);
+            });
+
+            // Actualizar píldoras rápidas
+            document.querySelectorAll('#filter-container .filter-pill').forEach(p => {
+                p.classList.remove('active');
+                if (!tipo && p.classList.contains('filter-pill-all')) {
+                    p.classList.add('active');
+                } else if (tipo && p.getAttribute('onclick')?.includes(tipo)) {
+                    p.classList.add('active');
+                }
+            });
+
+            requestAnimationFrame(adjustSidebarForCardsFit);
+        }
+
+        // Genera los chips de Área y Duración una vez cargado careersData
+        function _buildAdvPanelOptions() {
+            // Área
+            const areaEl = document.getElementById('adv-area-options');
+            if (areaEl) {
+                const areas = Object.keys(AREA_CAREERS);
+                areaEl.innerHTML = areas.length
+                    ? areas.map(a =>
+                        `<button class="adv-filter-chip" onclick="setAdvFilter('area','${a.replace(/'/g,"\\'")}',this)">${a}</button>`
+                      ).join('')
+                    : '<span style="font-size:0.68rem;color:#7ca19b;font-style:italic">Las áreas se configurarán próximamente</span>';
+            }
+            // Duración — valores únicos ordenados de mayor a menor
+            const durEl = document.getElementById('adv-duracion-options');
+            if (durEl && careersData) {
+                const toMonths = s => {
+                    const y = s.match(/(\d+)\s*a[ñn]/i);
+                    const m = s.match(/(\d+)\s*mes/i);
+                    return (y ? parseInt(y[1]) * 12 : 0) + (m ? parseInt(m[1]) : 0);
+                };
+                const uniq = [...new Set(Object.values(careersData).map(d => d.duration).filter(Boolean))]
+                    .filter(d => !/tfi/i.test(d) && !/\bhs\b/i.test(d));
+                uniq.sort((a, b) => toMonths(b) - toMonths(a));
+                durEl.innerHTML = uniq.map(d =>
+                    `<button class="adv-filter-chip" onclick="setAdvFilter('duracion','${d.replace(/'/g,"\\'")}',this)">${d}</button>`
+                ).join('');
+            }
+        }
+
+        function filterByCategory(categoryId, btn, _skipAdvClear = false) {
+            // Actualizar el estado de tipo de carrera
+            _advFilters.tipo = categoryId === 'all' ? null : categoryId;
+            _updateAdvBadge();
+
+            // Si hay búsqueda activa, re-ejecutar para combinar texto + tipo
+            const searchQuery = document.getElementById('search-input').value.trim();
+            if (searchQuery !== '') {
+                // Actualizar botones activos
+                const btnContainer = document.getElementById('filter-container');
+                if (btnContainer) {
+                    btnContainer.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+                }
+                if (btn) btn.classList.add('active');
+                else if (categoryId === 'all') {
+                    const pAll = document.querySelector('.filter-pill-all');
+                    if (pAll) pAll.classList.add('active');
+                }
+                searchCareers();
+                return;
+            }
+
             // Forzar render de secciones lazy si se filtra una categoría específica
             if (categoryId !== 'all' && window._renderAllSections) window._renderAllSections();
             const sections = [
@@ -2789,6 +3263,13 @@
                 buttons.forEach(b => b.classList.remove('active'));
             }
             if (btn) btn.classList.add('active');
+            else if (categoryId === 'all') {
+                const pAll = document.querySelector('.filter-pill-all');
+                if (pAll) pAll.classList.add('active');
+            } else {
+                const matching = document.querySelector(`.filter-pill[onclick*="${categoryId}"]`);
+                if (matching) matching.classList.add('active');
+            }
 
             // 2. Mostrar/Ocultar secciones
             sections.forEach(id => {
@@ -2804,38 +3285,51 @@
                 }
             });
 
+            // Re-aplicar ocultamiento individual de cards por area/duracion
+            document.querySelectorAll('.career-name-list').forEach(card => {
+                const name = card.dataset.careerName;
+                const data = careersData[name];
+                if (!data) { card.classList.add('hidden'); return; }
+
+                let ok = true;
+                if (_advFilters.area) {
+                    const lista = AREA_CAREERS[_advFilters.area] || [];
+                    if (lista.length > 0 && !lista.includes(name)) ok = false;
+                }
+                if (ok && _advFilters.duracion && data.duration && data.duration !== _advFilters.duracion) ok = false;
+
+                card.classList.toggle('hidden', !ok);
+            });
+
             // 2b. Cerrar buscadores de sección que estén abiertos al cambiar de categoría
             document.querySelectorAll('.section-search-wrapper.active').forEach(wrapper => {
                 const sec = wrapper.closest('[id]');
                 if (sec) toggleSectionSearch(sec.id, false);
             });
 
-            // 3. Scroll al h2 de la sección: "Ver Todo" va a Licenciaturas (primera), el resto a la suya
-            const scrollTarget = categoryId === 'all' ? 'section-licenciaturas' : categoryId;
-            const targetSection = document.getElementById(scrollTarget);
-            if (targetSection) {
-                const navH = parseInt(getComputedStyle(document.documentElement)
-                    .getPropertyValue('--navbar-height')) || 60;
-                const stickyBar = document.querySelector('.sticky-header-wrapper');
-                const filterCont = document.getElementById('filter-container');
-                // En mobile las pilloras se van a colapsar tras esta selección,
-                // así que descontamos su altura actual para no sobrecompensar
-                const filterH = (window.innerWidth <= 640 && filterCont)
-                    ? filterCont.offsetHeight : 0;
-                const stickyH = stickyBar ? (stickyBar.offsetHeight - filterH) : 0;
-                const targetY = getDocumentTop(targetSection) - navH - stickyH - 12;
-                window.scrollTo({ top: targetY, behavior: 'instant' });
+            // 3. Scroll: si hay búsqueda activa → ir a "Resultados de búsqueda", si no → al h2 de la sección
+            if (!_skipAdvClear) {
+                const searchResultsEl = document.getElementById('search-results-container');
+                const isSearching = searchResultsEl && !searchResultsEl.classList.contains('hidden');
+                const scrollEl = isSearching
+                    ? searchResultsEl
+                    : document.getElementById(categoryId === 'all' ? 'section-licenciaturas' : categoryId);
+                if (scrollEl) {
+                    const navH = parseInt(getComputedStyle(document.documentElement)
+                        .getPropertyValue('--navbar-height')) || 60;
+                    const stickyBar = document.querySelector('.sticky-header-wrapper');
+                    const stickyH = stickyBar ? stickyBar.offsetHeight : 0;
+                    const targetY = getDocumentTop(scrollEl) - navH - stickyH - 12;
+                    _scrollingProgrammatically = true;
+                    window.scrollTo({ top: targetY, behavior: 'instant' });
+                    setTimeout(() => { _scrollingProgrammatically = false; }, 300);
+                }
             }
             requestAnimationFrame(adjustSidebarForCardsFit);
 
-            // En mobile: actualizar etiqueta y colapsar desplegable tras seleccionar filtro
-            if (window.innerWidth <= 640) {
-                const filterContainer = document.getElementById('filter-container');
-                const toggleBtn = document.getElementById('filter-toggle-btn');
-                const toggleLabel = document.getElementById('filter-toggle-label');
-                if (filterContainer) filterContainer.classList.remove('filter-open');
-                if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
-                if (toggleLabel) toggleLabel.textContent = (categoryId === 'all' || !btn) ? 'Filtrar por tipo' : btn.textContent.trim();
+            // En mobile: colapsar acordeón de Tipo tras seleccionar filtro
+            if (window.innerWidth <= 640 && !_skipAdvClear) {
+                closeAllFilterAccordions();
             }
         }
 
@@ -2866,62 +3360,26 @@
         const listContainers = document.querySelectorAll('.career-list-container');
         const mainGridEl = document.getElementById('main-grid');
         const careersListColumnEl = document.getElementById('careers-list-column');
-        const sidebarColumnEl = document.getElementById('sidebar-column');
+        function adjustSidebarForCardsFit() {} // no-op: sidebar ahora es puro CSS
+
+        // Calcular top sticky del sidebar dinámicamente
+        function updateSidebarStickyTop() {
+            const navbar = document.querySelector('.main-navbar');
+            const stickyBar = document.querySelector('.sticky-header-wrapper');
+            const navH = navbar ? navbar.getBoundingClientRect().height : 60;
+            const stickyH = stickyBar ? stickyBar.getBoundingClientRect().height : 0;
+            document.documentElement.style.setProperty('--sidebar-sticky-top', (navH + stickyH + 16) + 'px');
+        }
+        updateSidebarStickyTop();
+        window.addEventListener('resize', updateSidebarStickyTop);
+        // Recalcular también al scrollear (throttled) por si el sticky header cambia de tamaño
+        let _stickyThrottle = false;
+        window.addEventListener('scroll', () => {
+            if (_stickyThrottle) return;
+            _stickyThrottle = true;
+            requestAnimationFrame(() => { updateSidebarStickyTop(); _stickyThrottle = false; });
+        }, { passive: true });
         let activeElement = null; // Para rastrear el elemento activo (clicado)
-
-        function shouldHideSidebarForFit() {
-            if (!careersListColumnEl || !sidebarColumnEl || !mainGridEl) return false;
-            // Mobile siempre oculta sidebar
-            if (window.innerWidth < 1024) return true;
-
-            const hideThreshold = 760;
-            const showThreshold = 820;
-            const isSidebarHidden = sidebarColumnEl.classList.contains('sidebar-auto-hidden');
-            
-            // Proyección robusta: Usar window.innerWidth para evitar errores durante transiciones CSS
-            const mainPadding = window.innerWidth >= 1024 ? 64 : (window.innerWidth >= 640 ? 48 : 32);
-            const projectedMainWidth = Math.min(1280, window.innerWidth - mainPadding);
-            const projectedCardsWidth = (2 * projectedMainWidth - 32) / 3;
-
-            if (!isSidebarHidden) {
-                // Si está visible, ocultar si el espacio proyectado es insuficiente
-                if (projectedCardsWidth < hideThreshold) return true;
-                
-                // Chequeo de seguridad: ¿alguna carta está desbordando realmente?
-                const cards = document.querySelectorAll('.career-name-list-mode-list:not(.hidden)');
-                for (const card of cards) {
-                    if (card.scrollWidth > card.clientWidth + 1) return true;
-                }
-                return false;
-            }
-
-            // Si está oculto, solo volver a mostrar si el ancho proyectado es suficiente
-            return projectedCardsWidth < showThreshold;
-        }
-
-        function adjustSidebarForCardsFit() {
-            if (!careersListColumnEl || !sidebarColumnEl) return;
-            const hideSidebar = shouldHideSidebarForFit();
-            sidebarColumnEl.classList.toggle('sidebar-auto-hidden', hideSidebar);
-            careersListColumnEl.classList.toggle('sidebar-expanded', hideSidebar);
-            document.body.classList.toggle('favorites-disabled', hideSidebar);
-        }
-
-        // Asegurar recalculo al finalizar cualquier transición en el grid
-        if (mainGridEl) {
-            mainGridEl.addEventListener('transitionend', (e) => {
-                if (e.propertyName === 'grid-template-columns' || e.propertyName === 'width') {
-                    adjustSidebarForCardsFit();
-                }
-            });
-        }
-
-        if (window.ResizeObserver && careersListColumnEl) {
-            const sidebarResizeObserver = new ResizeObserver(() => {
-                adjustSidebarForCardsFit();
-            });
-            sidebarResizeObserver.observe(careersListColumnEl);
-        }
 
         /**
          * Función para renderizar una lista de carreras en el DOM
@@ -3008,9 +3466,6 @@
             container.className = `grid gap-4 career-list-container mb-6 ${listClasses}`;
 
             container.innerHTML = sortedNames.map(name => {
-                const isFav = favoritesManager ? favoritesManager.isFavorite(name) : false;
-                const favClass = isFav ? 'is-favorite' : '';
-
                 return `
                 <li class="rounded-xl career-name-list career-name-list-mode-list group p-4 flex items-center justify-between gap-4 cursor-pointer" data-career-name="${escapeHTML(name)}" onclick="handleCareerClick(this)">
                     <div class="flex-grow">
@@ -3018,11 +3473,6 @@
                     </div>
 
                     <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                         <button class="favorite-btn hidden sm:flex ${favClass}" onclick="event.stopPropagation(); favoritesManager.toggle('${escapeHTML(name)}')" title="${isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}" aria-label="${isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                            </svg>
-                        </button>
                         <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))">Ver detalles</span>
                     </div>
                 </li>
@@ -3079,102 +3529,7 @@
 
         }
 
-        /**
-         * Clase para gestionar el sistema de Favoritos
-         */
-        class FavoritesManager {
-            constructor() {
-                this.favorites = JSON.parse(localStorage.getItem('user_favorites') || '[]');
-                this.section = document.getElementById('favorites-section');
-                this.list = document.getElementById('favorites-list');
-                this.count = document.getElementById('favorites-count');
-            }
 
-            isFavorite(name) {
-                return this.favorites.includes(name);
-            }
-
-            toggle(name) {
-                const index = this.favorites.indexOf(name);
-                if (index > -1) {
-                    this.favorites.splice(index, 1);
-                } else {
-                    if (this.favorites.length >= 4) {
-                        alert('Puedes agregar hasta un máximo de 4 carreras a tus favoritos.');
-                        return;
-                    }
-                    this.favorites.push(name);
-                }
-                this.save();
-                this.updateUI();
-
-                // Actualizar iconos en todas las listas visibles de forma explícita
-                const isNowFavorite = this.isFavorite(name);
-                document.querySelectorAll(`.career-name-list[data-career-name="${name}"] .favorite-btn`).forEach(btn => {
-                    if (isNowFavorite) {
-                        btn.classList.add('is-favorite');
-                    } else {
-                        btn.classList.remove('is-favorite');
-                    }
-                });
-            }
-
-            clearAll() {
-                if (this.favorites.length === 0) return;
-
-                if (confirm('¿Estás seguro de que deseas quitar todos los favoritos?')) {
-                    this.favorites = [];
-                    this.save();
-                    this.updateUI();
-
-                    // Actualizar todos los iconos en las listas
-                    document.querySelectorAll('.favorite-btn.is-favorite').forEach(btn => {
-                        btn.classList.remove('is-favorite');
-                    });
-                }
-            }
-
-            save() {
-                localStorage.setItem('user_favorites', JSON.stringify(this.favorites));
-            }
-
-            updateUI() {
-                if (!this.list) return;
-
-                if (this.favorites.length === 0) {
-                    this.section.style.display = 'none';
-                    this.list.innerHTML = '';
-                } else {
-                    this.section.style.display = 'block';
-                    this.count.textContent = this.favorites.length;
-
-                    // Ordenar favoritos por peso visual (longitud de nombre) para consistencia
-                    const getWeight = (n) => getCareerInfo(n).cleanName.length;
-                    const sortedFavs = [...this.favorites].sort((a, b) => getWeight(a) - getWeight(b));
-
-                    this.list.innerHTML = sortedFavs.map(name => `
-                        <li class="rounded-xl career-name-list career-name-list-mode-list group p-4 flex items-center justify-between gap-4 cursor-pointer" data-career-name="${escapeHTML(name)}" onclick="handleCareerClick(this)">
-                            <div class="flex-grow">
-                                ${getFormattedCareerHTML(name)}
-                            </div>
-
-                            <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                                <button class="favorite-btn is-favorite" onclick="event.stopPropagation(); favoritesManager.toggle('${escapeHTML(name)}')" aria-label="Quitar de favoritos">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                    </svg>
-                                </button>
-                                <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))">Ver detalles</span>
-                            </div>
-                        </li>
-                    `).join('');
-                }
-            }
-        }
-
-        let favoritesManager;
-
-        let comparisonManager; // Se mantiene por compatibilidad si es referenciado, pero sin lógica activa.
 
         // Medir navbar y sincronizar --navbar-height + --full-width
         function syncNavbarHeight() {
@@ -3202,7 +3557,7 @@
         let isResizing = false;
 
         window.addEventListener('scroll', () => {
-            if (isResizing || window.innerWidth > 640) return;
+            if (isResizing || _lockNavbarVisibility || window.innerWidth > 640) return;
 
             const navbar = document.querySelector('.main-navbar');
             const stickyHeader = document.querySelector('.sticky-header-wrapper');
@@ -3258,10 +3613,7 @@
                 const response = await fetch('datos_carreras.json');
                 if (!response.ok) throw new Error('Error al cargar datos de carreras');
                 careersData = await response.json();
-
-                // Inicializar gestor de favoritos
-                favoritesManager = new FavoritesManager();
-                favoritesManager.updateUI();
+                _buildAdvPanelOptions();
 
                 // Renderizar solo las primeras secciones visibles de inmediato
                 const immediateContainers = ['licenciaturas-list'];
@@ -3306,8 +3658,8 @@
                     });
                 };
 
-                // Renderizar carreras destacadas
-                renderTopFeaturedCareers();
+                // Inicializar carrusel de banners del header
+                initializeBannerCarousel();
                 requestAnimationFrame(adjustSidebarForCardsFit);
 
                 // Auto-abrir modal si la URL tiene ?carrera=
@@ -3434,81 +3786,116 @@
             if (query === '') {
                 // Cancelar cualquier búsqueda pendiente
                 clearTimeout(searchTimeout);
-                // Sin búsqueda: restaurar vista original inmediatamente
-                searchInput.parentElement.classList.remove('search-loading');
+                // Sin búsqueda: restaurar vista original
                 searchResultsContainer.classList.add('hidden');
-                sections.forEach(s => s.classList.remove('hidden'));
-                if (filterContainer) filterContainer.style.display = '';
+                sections.forEach(s => {
+                    s.classList.remove('hidden');
+                    s.style.display = '';
+                    s.style.opacity = '';
+                    // Restaurar cards: quitar hidden y limpiar highlights
+                    s.querySelectorAll('.career-name-list').forEach(card => {
+                        card.classList.remove('hidden');
+                        const name = card.dataset.careerName;
+                        if (name) {
+                            const contentDiv = card.querySelector('.flex-grow');
+                            if (contentDiv) contentDiv.innerHTML = getFormattedCareerHTML(name);
+                        }
+                    });
+                });
+                // Re-aplicar filtro de tipo si hay uno activo
+                if (_advFilters.tipo) {
+                    filterByCategory(_advFilters.tipo, null, true);
+                }
+                if (filterContainer) {
+                    filterContainer.style.visibility = '';
+                    filterContainer.style.pointerEvents = '';
+                }
                 requestAnimationFrame(adjustSidebarForCardsFit);
                 return;
             }
 
-            // Mostrar loading state
-            searchInput.parentElement.classList.add('search-loading');
 
-            // Ocultar filtros durante la búsqueda
-            if (filterContainer) filterContainer.style.display = 'none';
 
-            // Simular delay de búsqueda para mostrar el loader (en producción esto sería real)
+            // COMENTADO TEMPORALMENTE: ocultar filtros durante la búsqueda
+            // if (filterContainer) {
+            //     filterContainer.style.visibility = 'hidden';
+            //     filterContainer.style.pointerEvents = 'none';
+            // }
+
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 const searchResultsContainer = document.getElementById('search-results-container');
                 const searchResultsList = document.getElementById('search-results-list');
                 const noResultsMessage = document.getElementById('no-results-message');
                 const sectionCarreras = document.getElementById('section-carreras');
+                const activeTipo = _advFilters.tipo;
 
-                // Ocultar secciones originales y mostrar contenedor de resultados
-                if (sectionCarreras) {
-                    const sections = sectionCarreras.querySelectorAll('.career-section');
-                    sections.forEach(s => s.classList.add('hidden'));
-                }
+                // Siempre mostrar el contenedor de resultados de búsqueda
                 if (searchResultsContainer) searchResultsContainer.classList.remove('hidden');
 
-                // Buscar con fuzzy matching
+                // Generar resultados de búsqueda (sin filtrar por tipo)
                 const getWeight = (n) => getCareerInfo(n).cleanName.length;
-
-                const searchResults = Object.keys(careersData).map(name => ({
-                    name,
-                    relevance: calculateRelevance(name, query),
-                    weight: getWeight(name)
-                })).filter(result => result.relevance > 0)
+                const searchResults = Object.keys(careersData)
+                    .map(name => ({
+                        name,
+                        relevance: calculateRelevance(name, query),
+                        weight: getWeight(name)
+                    })).filter(result => result.relevance > 0)
                     .sort((a, b) => {
-                        // Primero por relevancia
                         if (b.relevance !== a.relevance) return b.relevance - a.relevance;
-                        // Tie-breaker: peso visual (longitud)
                         return a.weight - b.weight;
                     });
-
-                searchInput.parentElement.classList.remove('search-loading');
 
                 if (searchResults.length > 0) {
                     noResultsMessage.classList.add('hidden');
                     searchResultsList.innerHTML = searchResults.map(result => {
-                        const isFav = favoritesManager ? favoritesManager.isFavorite(result.name) : false;
-                        const favClass = isFav ? 'is-favorite' : '';
-
                         return `
                         <li class="rounded-xl career-name-list career-name-list-mode-list group p-4 flex items-center justify-between gap-4 cursor-pointer" data-career-name="${escapeHTML(result.name)}" onclick="handleCareerClick(this)">
                             <div class="flex-grow">
                                 ${getFormattedCareerHTML(result.name, query)}
                             </div>
-
                             <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                                <button class="favorite-btn hidden sm:flex ${favClass}" onclick="event.stopPropagation(); favoritesManager.toggle('${escapeHTML(result.name)}')" title="${isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}" aria-label="${isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                    </svg>
-                                </button>
                                 <span class="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center" onclick="event.stopPropagation(); handleCareerClick(this.closest('.career-name-list'))">Ver detalles</span>
                             </div>
                         </li>
                     `}).join('');
-
-                    // Los listeners ahora se manejan vía atributos 'onclick' en el HTML generado
                 } else {
                     searchResultsList.innerHTML = '';
                     noResultsMessage.classList.remove('hidden');
                 }
+
+                // Mostrar/ocultar secciones según filtro de tipo
+                if (sectionCarreras) {
+                    if (activeTipo) {
+                        // Hay filtro de tipo: mostrar solo esa sección, con cards filtradas por la query
+                        sectionCarreras.querySelectorAll('section').forEach(s => {
+                            if (s.id === activeTipo) {
+                                s.classList.remove('hidden');
+                                s.style.display = 'block';
+                                s.style.opacity = '1';
+                                // Filtrar cards y resaltar texto de las visibles
+                                s.querySelectorAll('.career-name-list').forEach(card => {
+                                    const name = card.dataset.careerName;
+                                    if (!name) { card.classList.add('hidden'); return; }
+                                    const relevance = calculateRelevance(name, query);
+                                    if (relevance <= 0) {
+                                        card.classList.add('hidden');
+                                    } else {
+                                        card.classList.remove('hidden');
+                                        const contentDiv = card.querySelector('.flex-grow');
+                                        if (contentDiv) contentDiv.innerHTML = getFormattedCareerHTML(name, query);
+                                    }
+                                });
+                            } else {
+                                s.classList.add('hidden');
+                            }
+                        });
+                    } else {
+                        // Sin filtro de tipo: ocultar todas las secciones
+                        sectionCarreras.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+                    }
+                }
+
                 requestAnimationFrame(adjustSidebarForCardsFit);
             }, 300); // Debounce de 300ms
         }
@@ -3570,12 +3957,9 @@
         // 4. Asignar listeners al input de búsqueda para mover sidebar
         searchInput.addEventListener('input', function(e) {
             searchCareers(e);
-            // En mobile, colapsar filtros al empezar a escribir
+            // En mobile, colapsar acordeones al empezar a escribir
             if (window.innerWidth <= 640 && e.target.value.length > 0) {
-                const filterContainer = document.getElementById('filter-container');
-                const toggleBtn = document.getElementById('filter-toggle-btn');
-                if (filterContainer) filterContainer.classList.remove('filter-open');
-                if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+                closeAllFilterAccordions();
             }
         });
 
@@ -3606,7 +3990,14 @@
             }
 
             if (currentSection) {
+                const navbar = document.querySelector('.main-navbar');
+                if (navbar) navbar.classList.remove('navbar-hidden');
+                _lockNavbarVisibility = true;
+
+                _scrollingProgrammatically = true;
                 window.scrollTo({ top: getDocumentTop(currentSection) - navH - stickyH - 12, behavior: 'instant' });
+
+                setTimeout(() => { _lockNavbarVisibility = false; _scrollingProgrammatically = false; }, 300);
             } else {
                 scrollToSearchBar();
             }
@@ -3621,6 +4012,37 @@
             // Layout fijo
         });
 
+
+        // Placeholder del input de búsqueda según ancho de pantalla
+        (function() {
+            const input = document.getElementById('search-input');
+            if (!input) return;
+            const FULL = 'Buscar carrera, revisa nuestra oferta académica';
+            const SHORT = 'Buscar carrera...';
+            function updatePlaceholder() {
+                input.placeholder = window.innerWidth < 768 ? SHORT : FULL;
+            }
+            updatePlaceholder();
+            window.addEventListener('resize', updatePlaceholder);
+        })();
+
+        // Fijar ancho mínimo de sticky-pills-zone en desktop para que no se achique al buscar
+        (function() {
+            const zone = document.querySelector('.sticky-pills-zone');
+            if (!zone) return;
+            function lockWidth() {
+                if (window.innerWidth >= 1351) {
+                    zone.style.minWidth = zone.offsetWidth + 'px';
+                } else {
+                    zone.style.minWidth = '';
+                }
+            }
+            window.addEventListener('load', lockWidth);
+            window.addEventListener('resize', () => {
+                zone.style.minWidth = '';
+                requestAnimationFrame(lockWidth);
+            });
+        })();
 
         // 8. Inicializar la vista al cargar la página
         document.addEventListener('DOMContentLoaded', () => {
@@ -3703,136 +4125,70 @@
 
         // 9. Funcionalidad dinámica para el Top 5
         // Lista manual de carreras destacadas (gestionada manualmente)
-        const featuredCareers = [
-            { name: 'Abogacía',                        label: 'Abogacía'  },
-            { name: 'Contador Público',                 label: 'Contador'  },
-            { name: 'Licenciatura en Comercialización', label: 'Marketing' }
-        ];
+        // Lógica del Carrusel de Banners (Header)
+        let currentBannerIndex = 0;
+        let bannerInterval = null;
 
-        function renderTopFeaturedCareers() {
-            if (renderTopFeaturedCareers._called) return;
-            renderTopFeaturedCareers._called = true;
-            const container = document.getElementById('top-featured-container');
-            if (!container) return;
+        function initializeBannerCarousel() {
+            const track = document.getElementById('banner-track');
+            if (!track) return;
 
-            const sorted = featuredCareers;
+            // Iniciar auto-slide cada 6 segundos
+            startBannerInterval();
 
-            function buildSetHTML(items) {
-                return items.map(({ name, label }) => {
-                    const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-                    const imgPath = 'imagenes/imagenes_carreras/' + slug + '.webp';
-                    return `
-                        <button onclick="handleFeaturedClick('${name.replace(/'/g, "\\'")}')"
-                            class="featured-career-card group relative flex items-center justify-center px-3 py-2 rounded-xl">
-                            <div class="featured-bg" style="background-image: url('${imgPath}');"></div>
-                            <div class="featured-overlay"></div>
-                            <span class="featured-text text-[11px] sm:text-xs font-semibold text-center leading-tight" style="color: rgba(255,255,255,0.92); white-space: nowrap;" title="${name}">${label}</span>
-                        </button>`;
-                }).join('');
+            // Pausar al pasar el mouse por encima
+            const container = track.parentElement;
+            container.addEventListener('mouseenter', stopBannerInterval);
+            container.addEventListener('mouseleave', startBannerInterval);
+
+            // Soporte para gestos táctiles (touch)
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            container.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            container.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleBannerSwipe();
+            }, {passive: true});
+
+            function handleBannerSwipe() {
+                if (touchEndX < touchStartX - 50) goToBanner((currentBannerIndex + 1) % 2);
+                if (touchEndX > touchStartX + 50) goToBanner((currentBannerIndex - 1 + 2) % 2);
             }
+        }
 
-            const setHTML = buildSetHTML(sorted);
+        function goToBanner(index) {
+            const track = document.getElementById('banner-track');
+            if (!track) return;
 
-            // Render cards in the track
-            container.innerHTML = `<div class="carousel-track">${setHTML}</div>`;
+            currentBannerIndex = index;
+            track.style.transform = `translateX(-${index * 100}%)`;
 
-            // Double rAF ensures layout is fully computed before measuring
-            requestAnimationFrame(() => { requestAnimationFrame(() => {
-                const track = container.querySelector('.carousel-track');
-                if (!track) return;
-                const realCount = track.children.length;
-                if (!realCount) return;
+            // Reiniciar el intervalo
+            stopBannerInterval();
+            startBannerInterval();
+        }
 
-                const VISIBLE = 4; // Mantiene el tamaño original de tarjeta (1/4 del contenedor)
-                const gap = parseFloat(getComputedStyle(track).gap) || 12;
+        function startBannerInterval() {
+            if (bannerInterval) return;
+            bannerInterval = setInterval(() => {
+                currentBannerIndex = (currentBannerIndex + 1) % 2;
+                goToBanner(currentBannerIndex);
+            }, 6000);
+        }
 
-                // Calcula el ancho de tarjeta igual que antes (como si hubiera 4 visibles)
-                // pero centra el track ya que sólo hay 3 tarjetas
-                function sizeCards() {
-                    const w = container.clientWidth;
-                    const cardW = Math.floor(((w - (VISIBLE - 1) * gap) / VISIBLE) * 100) / 100;
-                    Array.from(track.children).forEach(c => { c.style.width = cardW + 'px'; });
-                    return cardW;
-                }
+        function stopBannerInterval() {
+            clearInterval(bannerInterval);
+            bannerInterval = null;
+        }
 
-                sizeCards();
-
-                // Si todas las carreras caben a la vez, no hay nada que deslizar
-                if (realCount <= VISIBLE) {
-                    track.style.width = '100%';
-                    track.style.justifyContent = 'center';
-                    window.addEventListener('resize', () => { sizeCards(); });
-                    return;
-                }
-
-                // Clone enough cards so track never runs out while sliding forward
-                const needed = realCount + VISIBLE;
-                const originals = Array.from(track.children);
-                while (track.children.length < needed) {
-                    track.appendChild(originals[track.children.length % realCount].cloneNode(true));
-                }
-
-                let cardW = sizeCards();
-                let index = 0;
-                let intervalId = null;
-                let isTransitioning = false;
-
-                function getStep() { return cardW + gap; }
-
-                function slide() {
-                    if (isTransitioning) return;
-                    index++;
-                    isTransitioning = true;
-                    track.style.transition = 'transform 0.45s ease';
-                    track.style.transform = `translateX(-${index * getStep()}px)`;
-                }
-
-                track.addEventListener('transitionend', () => {
-                    isTransitioning = false;
-                    if (index >= realCount) {
-                        track.style.transition = 'none';
-                        index = 0;
-                        track.style.transform = 'translateX(0)';
-                        void track.offsetWidth;
-                    }
-                });
-
-                // Recalculate on resize
-                let resizeTimer;
-                window.addEventListener('resize', () => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(() => {
-                        cardW = sizeCards();
-                        track.style.transition = 'none';
-                        track.style.transform = `translateX(-${index * getStep()}px)`;
-                        void track.offsetWidth;
-                    }, 100);
-                });
-
-                function startAutoplay() {
-                    if (intervalId) return;
-                    intervalId = setInterval(slide, 3000);
-                }
-
-                function stopAutoplay() {
-                    clearInterval(intervalId);
-                    intervalId = null;
-                }
-
-                container.addEventListener('mouseenter', stopAutoplay);
-                container.addEventListener('mouseleave', startAutoplay);
-                container.addEventListener('touchstart', stopAutoplay, { passive: true });
-                container.addEventListener('touchend', () => setTimeout(startAutoplay, 2000), { passive: true });
-
-                // Pause when tab is not visible
-                document.addEventListener('visibilitychange', () => {
-                    document.hidden ? stopAutoplay() : startAutoplay();
-                });
-
-                const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-                if (!mq.matches && !document.hidden) startAutoplay();
-                mq.addEventListener('change', e => e.matches ? stopAutoplay() : startAutoplay());
-            }); });
+        function handleFeaturedClick(name) {
+            if (careersData[name]) {
+                openCareerModal(name, careersData[name], careersData[name].fullText || '');
+            }
         }
 
         function handleFeaturedClick(careerName) {
@@ -3892,13 +4248,21 @@
         // 10. Botones Flotantes (Ir Arriba y WhatsApp)
         const btnScrollTop = document.getElementById('btn-scroll-top');
         const btnWhatsapp = document.getElementById('btn-whatsapp');
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                btnScrollTop.classList.add('visible');
-            } else {
-                btnScrollTop.classList.remove('visible');
+
+        function _updateScrollTopBtn() {
+            const scrolled = window.pageYOffset > 300;
+            let hideForForm = false;
+            if (window.innerWidth < 1024) {
+                const formEl = document.getElementById('formulario');
+                if (formEl) {
+                    const rect = formEl.getBoundingClientRect();
+                    hideForForm = rect.top < window.innerHeight && rect.bottom > 0;
+                }
             }
-        });
+            btnScrollTop.classList.toggle('visible', scrolled && !hideForForm);
+        }
+
+        window.addEventListener('scroll', _updateScrollTopBtn);
 
         btnScrollTop.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3924,14 +4288,14 @@
     <!-- Modal para Información de Carreras -->
     <div id="career-modal" class="fixed inset-0 z-[5000] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="modal-backdrop absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px]" onclick="closeCareerModal()"></div>
-        <div class="modal-panel relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl h-[90vh] sm:h-[92vh] max-h-[90vh] sm:max-h-[92vh] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,199,177,0.3)]">
+        <div class="modal-panel relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl h-[calc(90*var(--vh-safe))] sm:h-[calc(92*var(--vh-safe))] max-h-[calc(90*var(--vh-safe))] sm:max-h-[calc(92*var(--vh-safe))] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,199,177,0.3)]">
             <!-- Header -->
-            <div class="px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
+            <div class="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
                 <div class="flex justify-between items-center gap-3">
                     <h3 id="modal-title" class="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0"></h3>
                     <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                         <img src="imagenes/Modales/Abogac%C3%ADa/logo_siglo.png" alt="Siglo 21" class="h-7 sm:h-9 w-auto object-contain block" onerror="this.onerror=null; this.src='imagenes/imagenes_cau/logoSiglo21.png'">
-                        <button onclick="closeCareerModal()" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-red-600/20 text-red-500 hover:bg-red-600/40 hover:text-red-400 transition-colors" aria-label="Cerrar">
+                        <button id="modal-close-btn" onclick="closeCareerModal()" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-red-600/20 text-red-500 hover:bg-red-600/40 hover:text-red-400 transition-colors" aria-label="Cerrar">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -3953,7 +4317,7 @@
                 </div>
                 
                 <!-- Navegación inferior (Anterior, Puntos, Siguiente) -->
-                <div class="flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-4 bg-[#011a14] border-t border-[#00c7b1]/15">
+                <div class="flex-shrink-0 flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-4 bg-[#011a14] border-t border-[#00c7b1]/15">
                     <button id="carousel-prev" onclick="carouselNav(-1)" class="flex items-center gap-1 sm:gap-2 text-[#00c7b1] text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded border border-[#00c7b1]/30 hover:bg-[#00c7b1]/10 disabled:opacity-30 disabled:pointer-events-none transition-all">
                         <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                         <span class="hidden min-[360px]:inline">Anterior</span>
@@ -3968,7 +4332,7 @@
                 </div>
             </div>
             <!-- Footer -->
-            <div class="p-4 bg-[#051a1a] border-t border-[#00c7b1]/20 flex flex-wrap gap-2 items-center">
+            <div class="flex-shrink-0 p-4 bg-[#051a1a] border-t border-[#00c7b1]/20 flex flex-wrap gap-2 items-center">
                 <!-- Fila 1 en mobile / derecha en desktop: WhatsApp + Formulario -->
                 <div class="order-1 sm:order-2 w-full sm:w-auto flex items-center gap-2 justify-end sm:flex-shrink-0">
                     <a id="modal-whatsapp-btn" href="#" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D366] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm">
@@ -4011,28 +4375,28 @@
                 /* ─ Slide 1: Portada ─────────────────────────────────────────── */
                 `<div class="flex flex-col md:flex-row h-full overflow-hidden">
                   <div class="flex-1 min-w-0 h-full md:h-auto bg-[#011f17] overflow-hidden flex flex-col relative z-30">
-                    <div class="px-[clamp(0.5rem,3vw,1.5rem)] pt-[clamp(0.2rem,1.2vh,0.8rem)] pb-[clamp(0.25rem,0.8vh,0.6rem)] flex flex-col justify-between h-full">
+                    <div class="px-[clamp(0.5rem,3vw,1.5rem)] pt-[clamp(0.2rem,calc(1.2*var(--vh-safe)),0.8rem)] pb-[clamp(0.25rem,calc(0.8*var(--vh-safe)),0.6rem)] flex flex-col justify-between h-full">
                       <!-- TOP: logo + nivel/duración + Título Principal -->
-                      <div class="flex flex-col gap-[clamp(0.2rem,0.8vh,0.6rem)] flex-shrink-0">
+                      <div class="flex flex-col gap-[clamp(0.2rem,calc(0.8*var(--vh-safe)),0.6rem)] flex-shrink-0">
                         <div class="flex items-center gap-[clamp(0.6rem,2vw,1rem)] text-left">
-                          <img src="imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width="400" height="400" class="h-[clamp(1rem,2.6vh,1.8rem)] w-auto rounded block">
-                          <p class="text-[clamp(0.6rem,1.6vh,0.8rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
+                          <img src="imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width="400" height="400" class="h-[clamp(1rem,calc(2.6*var(--vh-safe)),1.8rem)] w-auto rounded block">
+                          <p class="text-[clamp(0.6rem,calc(1.6*var(--vh-safe)),0.8rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
                             <span>Nivel de carrera: Grado</span>
                             <span class="block text-white">Duración: 4 años</span>
                           </p>
                         </div>
                         
-                        <div class="mt-[clamp(0.2rem,0.8vh,0.5rem)] pt-[clamp(0.4rem,1.2vh,0.75rem)] border-t border-[#00c7b1]/20 flex flex-col items-center md:items-start text-center md:text-left">
-                          <h2 class="text-[clamp(1.6rem,9vw,3.6rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal mb-[clamp(0.15rem,0.6vh,0.4rem)] uppercase tracking-tighter w-full md:w-auto">ABOGACÍA</h2>
+                        <div class="mt-[clamp(0.2rem,calc(0.8*var(--vh-safe)),0.5rem)] pt-[clamp(0.4rem,calc(1.2*var(--vh-safe)),0.75rem)] border-t border-[#00c7b1]/20 flex flex-col items-center md:items-start text-center md:text-left">
+                          <h2 class="text-[clamp(1.6rem,9vw,3.6rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal mb-[clamp(0.15rem,calc(0.6*var(--vh-safe)),0.4rem)] uppercase tracking-tighter w-full md:w-auto">ABOGACÍA</h2>
                           <div class="w-[clamp(1.2rem,5vw,2.2rem)] h-[3px] bg-[#00c7b1] rounded-sm"></div>
                         </div>
                       </div>
 
                       <!-- MIDDLE: bullets + Decorative Image for Mobile centrada -->
                       <div class="flex-1 flex flex-col min-h-0 md:justify-center">
-                          <div class="flex flex-col gap-[clamp(0.25rem,0.7vh,0.6rem)] mt-[clamp(0.5rem,2vh,1rem)] md:mt-0">
-                              <p class="text-[clamp(0.68rem,1.9vh,0.85rem)] md:text-[clamp(0.7rem,2.2vh,0.95rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium hyphens-none break-words"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Asesorá, defendé y actuá en ámbitos públicos, privados, provinciales, federales e&nbsp;internacionales.</p>
-                              <p class="text-[clamp(0.68rem,1.9vh,0.85rem)] md:text-[clamp(0.7rem,2.2vh,0.95rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium hyphens-none break-words"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Profundizar el cuerpo de normas jurídicas que permitan la convivencia armónica en&nbsp;el&nbsp;Estado.</p>
+                          <div class="flex flex-col gap-[clamp(0.25rem,calc(0.7*var(--vh-safe)),0.6rem)] mt-[clamp(0.5rem,calc(2*var(--vh-safe)),1rem)] md:mt-0">
+                              <p class="text-[clamp(0.68rem,calc(1.9*var(--vh-safe)),0.85rem)] md:text-[clamp(0.7rem,calc(2.2*var(--vh-safe)),0.95rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium hyphens-none break-words"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Asesorá, defendé y actuá en ámbitos públicos, privados, provinciales, federales e&nbsp;internacionales.</p>
+                              <p class="text-[clamp(0.68rem,calc(1.9*var(--vh-safe)),0.85rem)] md:text-[clamp(0.7rem,calc(2.2*var(--vh-safe)),0.95rem)] text-[#e0f0ed] leading-snug md:leading-relaxed m-0 font-medium hyphens-none break-words"><span class="text-[#00c7b1] font-bold mr-1">&bull;</span> Profundizar el cuerpo de normas jurídicas que permitan la convivencia armónica en&nbsp;el&nbsp;Estado.</p>
                           </div>
                           
                           <!-- Mobile-Only Decorative Asset (Centered in remaining space) -->
@@ -4044,12 +4408,12 @@
                       <!-- BOTTOM: Título / Foco -->
                       <div class="grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
                           <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
-                              <span class="block text-[clamp(0.4rem,1.2vh,0.5rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Título</span>
-                              <span class="block text-[clamp(0.6rem,1.8vh,0.9rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Abogado/a</span>
+                              <span class="block text-[clamp(0.4rem,calc(1.2*var(--vh-safe)),0.5rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Título</span>
+                              <span class="block text-[clamp(0.6rem,calc(1.8*var(--vh-safe)),0.9rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Abogado/a</span>
                           </div>
                           <div class="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
-                              <span class="block text-[clamp(0.4rem,1.2vh,0.5rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Área</span>
-                              <span class="block text-[clamp(0.6rem,1.8vh,0.9rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Derecho</span>
+                              <span class="block text-[clamp(0.4rem,calc(1.2*var(--vh-safe)),0.5rem)] font-bold uppercase tracking-widest text-[#00c7b1]">Área</span>
+                              <span class="block text-[clamp(0.6rem,calc(1.8*var(--vh-safe)),0.9rem)] text-white font-extrabold mt-0.5 leading-none md:leading-tight">Derecho</span>
                           </div>
                       </div>
                     </div>
@@ -4064,31 +4428,31 @@
 
                 /* ─ Slide 2: Modalidad ───────────────────────────────────────── */
                 `<div class="flex flex-col md:flex-row h-full overflow-hidden">
-                  <div class="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,18vh,12rem)] md:h-full flex items-center justify-center bg-[#0c2b24]">
+                  <div class="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,calc(18*var(--vh-safe)),12rem)] md:h-full flex items-center justify-center bg-[#0c2b24]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-[#48b3a4]/20 absolute z-0 inset-0 m-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <img src="imagenes/Modales/Abogac%C3%ADa/Abogac%C3%ADa.webp" alt="Modalidad" width="800" height="1200" class="absolute inset-0 w-full h-full object-cover object-[center_15%] block z-10 opacity-0 transition-opacity duration-300" onload="this.classList.remove('opacity-0')" onerror="this.onerror=null; this.style.display='none'">
                     <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent w-full md:h-full z-20"></div>
                   </div>
                   <div class="flex-1 overflow-hidden flex flex-col justify-center">
-                    <div class="px-[clamp(0.75rem,5vw,3rem)] py-[clamp(0.75rem,3vh,1.5rem)] flex flex-col justify-center gap-[clamp(0.4rem,2vh,1.5rem)]">
+                    <div class="px-[clamp(0.75rem,5vw,3rem)] py-[clamp(0.75rem,calc(3*var(--vh-safe)),1.5rem)] flex flex-col justify-center gap-[clamp(0.4rem,calc(2*var(--vh-safe)),1.5rem)]">
                       <div>
-                        <p class="text-[clamp(0.55rem,1.8vh,0.7rem)] font-bold tracking-widest text-[#00c7b1] uppercase mb-[clamp(0.1rem,0.5vh,0.5rem)] leading-none">Modalidad de cursado</p>
-                        <h3 class="text-[clamp(1rem,3.5vh,1.75rem)] font-black text-white uppercase tracking-wider mb-0 leading-[1.1] md:leading-tight">Distribuida Home Virtual</h3>
+                        <p class="text-[clamp(0.55rem,calc(1.8*var(--vh-safe)),0.7rem)] font-bold tracking-widest text-[#00c7b1] uppercase mb-[clamp(0.1rem,calc(0.5*var(--vh-safe)),0.5rem)] leading-none">Modalidad de cursado</p>
+                        <h3 class="text-[clamp(1rem,calc(3.5*var(--vh-safe)),1.75rem)] font-black text-white uppercase tracking-wider mb-0 leading-[1.1] md:leading-tight">Distribuida Home Virtual</h3>
                       </div>
-                      <div class="grid grid-cols-2 md:grid-cols-1 gap-[clamp(0.4rem,2vh,0.8rem)]">
-                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                      <div class="grid grid-cols-2 md:grid-cols-1 gap-[clamp(0.4rem,calc(2*var(--vh-safe)),0.8rem)]">
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,calc(2.2*var(--vh-safe)),0.95rem)] leading-snug">
                           <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
                           <span class="text-[#b4d3ce]"><b class="text-white">100% virtual</b><span class="hidden sm:inline"> &mdash; sin horarios fijos ni clases presenciales.</span></span>
                         </div>
-                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,calc(2.2*var(--vh-safe)),0.95rem)] leading-snug">
                           <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
                           <span class="text-[#b4d3ce]">Plataforma de aprendizaje activa <b class="text-white">las 24hs del día</b>.</span>
                         </div>
-                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,calc(2.2*var(--vh-safe)),0.95rem)] leading-snug">
                           <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
                           <span class="text-[#b4d3ce]">Cursá y rendí desde <b class="text-white">donde estés</b><span class="hidden sm:inline">, a tu ritmo.</span></span>
                         </div>
-                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,2.2vh,0.95rem)] leading-snug">
+                        <div class="flex items-start gap-1 md:gap-2 text-[clamp(0.65rem,calc(2.2*var(--vh-safe)),0.95rem)] leading-snug">
                           <span class="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
                           <span class="text-[#b4d3ce]">Necesitás <b class="text-white">notebook Windows o MAC</b> y cámara encendida.</span>
                         </div>
@@ -4299,6 +4663,7 @@
 
         /* ── Estado y funciones del carrusel ───────────────────────────── */
         let _cIdx = 0, _cTotal = 0;
+        let _modalTrigger = null; // Elemento que abrió el modal, para restaurar foco al cerrar
 
         function initCarousel(slides) {
             _cIdx = 0;
@@ -4418,7 +4783,14 @@
             modal.classList.add('modal-visible');
             document.body.classList.add('overflow-hidden');
             document.documentElement.classList.add('overflow-hidden');
-            
+
+            // Guardar el elemento que abrió el modal y mover el foco al botón cerrar
+            _modalTrigger = document.activeElement;
+            requestAnimationFrame(() => {
+                const closeBtn = document.getElementById('modal-close-btn');
+                if (closeBtn) closeBtn.focus();
+            });
+
             // El cambio de scrollbar puede afectar el ancho disponible; refrescar layout
             requestAnimationFrame(adjustSidebarForCardsFit);
         }
@@ -4432,6 +4804,11 @@
                 modal.classList.remove('flex', 'modal-closing');
                 document.body.classList.remove('overflow-hidden');
                 document.documentElement.classList.remove('overflow-hidden');
+                // Restaurar foco al elemento que abrió el modal
+                if (_modalTrigger) {
+                    _modalTrigger.focus();
+                    _modalTrigger = null;
+                }
                 // Refrescar layout tras recuperar el scrollbar
                 requestAnimationFrame(adjustSidebarForCardsFit);
             }, 300);
@@ -4466,6 +4843,9 @@
                 let stable = 0;
                 let iters  = 0;
                 const MAX  = 90; // tope de seguridad: ~1.5s a 60fps
+                
+                _lockNavbarVisibility = true; // <--- Bloquear ocultamiento
+                
                 (function correct() {
                     iters++;
                     const drift = Math.round(section.getBoundingClientRect().top - navbarH);
@@ -4475,7 +4855,12 @@
                     } else {
                         stable++;
                     }
-                    if (stable < 5 && iters < MAX) requestAnimationFrame(correct);
+                    if (stable < 5 && iters < MAX) {
+                        requestAnimationFrame(correct);
+                    } else {
+                        // Desbloquear cuando el scroll se estabiliza o llegamos al tope
+                        _lockNavbarVisibility = false;
+                    }
                 })();
             }, 350);
         }
@@ -4526,10 +4911,6 @@
         }
 
         // ── FORMULARIO ──────────────────────────────────────────────────────────
-
-        function onTipoChange() {
-            // Mantenido por compatibilidad; ya no se usa en el flujo normal
-        }
 
         const _tipoDisplayNames = {
             'licenciaturas-list':   'Licenciaturas / Grado',
@@ -4628,10 +5009,7 @@
             const tel      = document.getElementById('form-telefono').value.trim();
             let valid = true;
 
-            // Validar nombre y apellido
-            if (!nombre || !apellido) {
-                valid = false;
-            }
+            // Nombre y apellido son opcionales
             // Validar que al menos un contacto válido esté presente
             const emailErr  = document.getElementById('email-error');
             const telErr    = document.getElementById('tel-error');
@@ -4648,65 +5026,143 @@
 
             if (!valid) return;
 
-            // Placeholder: mostrar confirmación
-            const btn = e.target.querySelector('button[type="submit"]');
-            const original = btn.textContent;
-            btn.textContent = '¡Consulta enviada!';
-            btn.disabled = true;
-            btn.classList.add('opacity-70');
+            // Animación de éxito estilo MercadoPago
+            const formCol = document.querySelector('.form-content-col');
+            if (!formCol) return;
+            formCol.style.position = 'relative';
+            formCol.style.overflow = 'hidden';
+
+            const overlay = document.createElement('div');
+            overlay.className = 'form-success-overlay';
+            overlay.innerHTML = `
+                <div class="form-success-content">
+                    <div class="form-success-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#013729" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <p class="form-success-title">Formulario enviado</p>
+                    <p class="form-success-sub">Nos contactaremos pronto</p>
+                </div>
+            `;
+            formCol.appendChild(overlay);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                overlay.classList.add('active');
+            });
+
             setTimeout(() => {
-                btn.textContent = original;
-                btn.disabled = false;
-                btn.classList.remove('opacity-70');
-                e.target.reset();
-                document.getElementById('form-tipo').value = '';
-                document.getElementById('form-tipo-display-container').classList.add('hidden');
-                updateContactRequired();
-                document.querySelector('.main-navbar')?.classList.remove('navbar-hidden');
-            }, 3000);
+                overlay.classList.remove('active');
+                overlay.classList.add('closing');
+                overlay.addEventListener('transitionend', () => {
+                    overlay.remove();
+                    formCol.style.overflow = '';
+                    e.target.reset();
+                    document.getElementById('form-tipo').value = '';
+                    document.getElementById('form-tipo-display-container').classList.add('hidden');
+                    updateContactRequired();
+                    document.querySelector('.main-navbar')?.classList.remove('navbar-hidden');
+                }, { once: true });
+            }, 3500);
         }
 
         // ── FIN FORMULARIO ───────────────────────────────────────────────────────
 
-        // Desplegable de filtros en mobile
+        // Toggle de acordeones de filtros
+        function toggleFilterAccordion(btn) {
+            const header = btn.closest('.filter-accordion-header');
+            const body = header ? header.nextElementSibling : btn.nextElementSibling;
+            const isOpen = body.classList.toggle('open');
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
+        function closeAllFilterAccordions() {
+            document.querySelectorAll('.filter-accordion-body.open').forEach(body => {
+                body.classList.remove('open');
+                const prev = body.previousElementSibling;
+                const btn = prev.classList.contains('filter-accordion-header')
+                    ? prev.querySelector('.filter-accordion-btn') : prev;
+                btn.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        let _filtersCollapsed = false;
+        let _filtersManualOpen = false; // true si el usuario eligió mantenerlos abiertos
+        let _scrollingProgrammatically = false; // true durante scrolls automáticos
+
+        function setFiltersCollapsed(collapsed) {
+            if (collapsed === _filtersCollapsed) return;
+            _filtersCollapsed = collapsed;
+            const box = document.querySelector('.filter-type-box');
+            const btn = document.getElementById('filter-toggle-btn');
+            const text = document.getElementById('filter-toggle-text');
+            const zone = document.querySelector('.sticky-pills-zone');
+            if (!box || !btn) return;
+            box.classList.toggle('collapsed', collapsed);
+            btn.classList.toggle('collapsed', collapsed);
+            text.textContent = collapsed ? 'Mostrar filtros' : 'Ocultar filtros';
+            if (zone) zone.classList.toggle('filters-collapsed', collapsed);
+        }
+
+        function toggleFilterBox() {
+            const willCollapse = !_filtersCollapsed;
+            _filtersManualOpen = !willCollapse;
+            setFiltersCollapsed(willCollapse);
+        }
+
+        function toggleFilterPills() {
+            const container = document.getElementById('filter-container');
+            const toggleBtn = document.getElementById('filter-pills-toggle');
+            const toggleText = document.getElementById('filter-pills-toggle-text');
+            if (!container || !toggleBtn) return;
+            const isHidden = container.classList.toggle('pills-hidden');
+            toggleBtn.classList.toggle('collapsed', isHidden);
+            toggleText.textContent = isHidden ? 'Mostrar filtros' : 'Ocultar filtros';
+        }
+
+        // Auto-ocultar filtros al hacer scroll hacia abajo
         (function() {
-            const toggleBtn = document.getElementById('filter-toggle-btn');
-            const filterContainer = document.getElementById('filter-container');
-            if (!toggleBtn || !filterContainer) return;
-
-            function isMobile() { return window.innerWidth <= 640; }
-
-            function openFilters() {
-                filterContainer.classList.add('filter-open');
-                toggleBtn.setAttribute('aria-expanded', 'true');
-            }
-            function closeFilters() {
-                filterContainer.classList.remove('filter-open');
-                toggleBtn.setAttribute('aria-expanded', 'false');
-            }
-
-            // Al cargar en mobile: empezar expandido
-            if (isMobile()) openFilters();
-
-            // Al bajar un poco dentro de la lista de carreras: colapsar automáticamente (solo una vez)
-            let autoCollapseHandled = false;
-            window.addEventListener('scroll', function() {
-                if (!isMobile() || autoCollapseHandled) return;
-                const firstSection = document.getElementById('section-licenciaturas');
-                const threshold = firstSection
-                    ? (firstSection.getBoundingClientRect().top + window.scrollY + 120)
-                    : 500;
-                if (window.scrollY > threshold) {
-                    closeFilters();
-                    autoCollapseHandled = true;
-                }
+            let lastScrollY = window.scrollY;
+            const threshold = 80;
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const currentY = window.scrollY;
+                    if (!_filtersManualOpen && !_scrollingProgrammatically && currentY > threshold && currentY > lastScrollY) {
+                        setFiltersCollapsed(true);
+                    }
+                    lastScrollY = currentY;
+                    ticking = false;
+                });
             }, { passive: true });
+        })();
 
-            // Toggle manual: desde aquí el usuario decide, scroll ya no interfiere
-            toggleBtn.addEventListener('click', () => {
-                autoCollapseHandled = true;
-                const isOpen = filterContainer.classList.toggle('filter-open');
-                toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        // En desktop: abrir acordeón de Tipo por defecto y mantenerlo al redimensionar
+        (function() {
+            function syncTipoAccordion() {
+                const tipoAcc = document.getElementById('filter-accordion-tipo');
+                if (!tipoAcc) return;
+                const btn = tipoAcc.querySelector('.filter-accordion-btn');
+                const body = tipoAcc.querySelector('.filter-accordion-body');
+                if (!btn || !body) return;
+                if (window.innerWidth > 640) {
+                    // En desktop: siempre mostrar filtros y abrir acordeón Tipo
+                    setFiltersCollapsed(false);
+                    btn.setAttribute('aria-expanded', 'true');
+                    body.classList.add('open');
+                } else {
+                    btn.setAttribute('aria-expanded', 'false');
+                    body.classList.remove('open');
+                }
+            }
+            syncTipoAccordion();
+            let _resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(_resizeTimer);
+                _resizeTimer = setTimeout(syncTipoAccordion, 150);
             });
         })();
 
@@ -4725,12 +5181,27 @@
             });
         })();
 
-        // Cerrar modal con Escape
+        // Cerrar modal con Escape + focus trap con Tab
         document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('career-modal');
+            if (modal.classList.contains('hidden')) return;
+
             if (e.key === 'Escape') {
-                const modal = document.getElementById('career-modal');
-                if (!modal.classList.contains('hidden')) {
-                    closeCareerModal();
+                closeCareerModal();
+                return;
+            }
+
+            if (e.key === 'Tab') {
+                const focusable = Array.from(
+                    modal.querySelectorAll('a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])')
+                ).filter(el => el.offsetParent !== null);
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last  = focusable[focusable.length - 1];
+                if (e.shiftKey) {
+                    if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+                } else {
+                    if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
                 }
             }
         });
@@ -4748,26 +5219,26 @@
     </div>
 
     <!-- FORMULARIO DE CONTACTO -->
-    <section id="formulario" style="background: #162f2e; border-top: 2px solid #00c7b1;">
-        <div class="container mx-auto px-4 sm:px-6 py-4 sm:py-6 max-w-5xl">
+    <section id="formulario" class="form-section-wrapper" style="border-top: 2px solid #00c7b1; position: relative; overflow: hidden; background: #162f2e;">
+        <!-- Imagen de fondo para mobile/tablet -->
+        <div class="form-bg-image" aria-hidden="true"></div>
+        <div class="form-layout-grid mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6" style="position: relative; z-index: 1;">
 
-            <!-- Encabezado compacto -->
-            <div class="mb-3">
-                <p id="form-top-label" class="text-[#00ffe1] text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5">Contacto</p>
-                <h2 class="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-none">Formulario de Consulta</h2>
-            </div>
-
+          <div class="form-content-col">
             <!-- Tarjeta: 2 columnas en desktop, 1 en mobile -->
-            <div style="background: #1c3a38; border: 1px solid rgba(0,199,177,0.3); border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.35);">
+            <div class="form-card" style="background: #1c3a38; border: 1px solid rgba(0,199,177,0.3); border-radius: 1rem;">
                 <form id="consulta-form" novalidate onsubmit="handleFormSubmit(event)">
+
+                    <!-- Header del formulario -->
+                    <div class="form-card-header px-3 sm:px-4 pt-4 pb-3" style="background: rgba(0,0,0,0.35); border-bottom: 1px solid rgba(0,199,177,0.15); border-radius: 1rem 1rem 0 0;">
+                        <h2 class="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center"><span class="text-white">FORMULARIO DE </span><span class="text-[#00c7b1]">CONTACTO</span></h2>
+                    </div>
 
                     <!-- Cuerpo: grid 2 columnas en md -->
                     <div class="grid grid-cols-1 md:grid-cols-2" style="border-bottom: 1px solid rgba(0,199,177,0.15);">
 
                         <!-- Col 1: Carrera -->
-                        <div class="px-3 sm:px-4 pt-3 pb-3 space-y-1.5" style="border-bottom: 1px solid rgba(0,199,177,0.15); border-right: none;">
-                            <p class="text-[9px] font-bold uppercase tracking-[0.18em] mb-0" style="color: rgba(0,199,177,0.8);">Carrera</p>
-
+                        <div class="px-3 sm:px-4 pt-3 pb-3 space-y-2" style="border-bottom: 1px solid rgba(0,199,177,0.15); border-right: none;">
                             <!-- Tipo (oculto; valor asignado por JS al seleccionar carrera) -->
                             <div id="form-tipo-container" style="display:none" aria-hidden="true">
                                 <select id="form-tipo" style="color-scheme:dark;" tabindex="-1">
@@ -4784,11 +5255,11 @@
 
                             <!-- Carrera con búsqueda (visible siempre) -->
                             <div id="form-carrera-wrapper">
-                                <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">Carrera</label>
+                                <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">Seleccionar formación</label>
                                 <div class="relative" id="carrera-dropdown-root">
                                     <div class="relative">
                                         <input type="text" id="form-carrera-search" autocomplete="off"
-                                            placeholder="Buscar carrera..."
+                                            placeholder="Seleccionar..."
                                             class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 pr-8 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                                             oninput="filterCarreraOptions()" onfocus="showCarreraList()" />
                                         <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -4836,17 +5307,15 @@
 
                         <!-- Col 2: Datos personales -->
                         <div class="px-3 sm:px-4 pt-3 pb-3 space-y-1.5" style="border-left: 1px solid rgba(0,199,177,0.15);">
-                            <p class="text-[9px] font-bold uppercase tracking-[0.18em] mb-0" style="color: rgba(0,199,177,0.8);">Datos personales</p>
-
                             <!-- Nombre + Apellido en la misma fila -->
                             <div class="grid grid-cols-2 gap-1.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-nombre">Nombre <span class="text-red-400/80">*</span></label>
+                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-nombre">Nombre</label>
                                     <input type="text" id="form-nombre" required placeholder="Nombre"
                                         class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors" />
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-apellido">Apellido <span class="text-red-400/80">*</span></label>
+                                    <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-apellido">Apellido</label>
                                     <input type="text" id="form-apellido" required placeholder="Apellido"
                                         class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors" />
                                 </div>
@@ -4854,14 +5323,17 @@
 
                             <!-- Contacto: email + teléfono agrupados -->
                             <div class="space-y-1.5 rounded-lg p-2" style="border: 1.5px solid #00c7b1;">
-                                <p class="text-[10px] text-white leading-snug">Completá al menos uno para que podamos contactarte.</p>
+                                <p class="text-[12px] text-white leading-snug flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c7b1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                    Solo necesitamos un dato de contacto para escribirte (el resto es opcional)
+                                </p>
 
                                 <!-- Email -->
                                 <div>
                                     <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-email">
                                         Email <span id="email-required-mark" class="text-red-400/70 transition-opacity">*</span>
                                     </label>
-                                    <input type="email" id="form-email" placeholder="tu@correo.com"
+                                    <input type="email" id="form-email" placeholder="Ejemplo: tu@correo.com"
                                         class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                                         oninput="updateContactRequired()" />
                                 </div>
@@ -4871,7 +5343,7 @@
                                     <label class="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" for="form-telefono">
                                         Teléfono <span id="tel-required-mark" class="text-red-400/70 transition-opacity">*</span>
                                     </label>
-                                    <input type="tel" id="form-telefono" placeholder="11 1234-5678"
+                                    <input type="tel" id="form-telefono" placeholder="Ejemplo: 11 1234-5678"
                                         class="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                                         oninput="updateContactRequired()" />
                                 </div>
@@ -4900,6 +5372,13 @@
                     </div>
 
                 </form>
+            </div>
+          </div>
+
+            <!-- Imagen lateral desktop -->
+            <div class="form-side-image" aria-hidden="true">
+                <img src="imagenes/imagenes_cau/Siglo21IMG_2555.jpg" alt="" loading="lazy"
+                    style="width: 100%; height: 100%; object-fit: cover; object-position: right center;">
             </div>
         </div>
     </section>

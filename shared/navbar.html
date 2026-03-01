@@ -15,38 +15,33 @@
 
             <!-- Mobile Branding (Visible only on mobile) -->
             <div class="flex lg:hidden flex-1 items-center min-w-0">
-                <h1 class="flex-1 text-center text-2xl md:text-3xl font-semibold unbounded-font text-white leading-none whitespace-nowrap">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h1>
-                <img src="imagenes/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="flex-shrink-0 h-14 w-14 md:h-16 md:w-16 object-contain"
+                <h1 class="flex-1 text-center text-2xl whitespace-nowrap" style="font-family:'Unbounded',sans-serif;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h1>
+                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="mobile-logo flex-shrink-0 h-14 w-14 object-contain"
                     style="filter: brightness(0) invert(1);" width="56" height="56">
             </div>
 
 
             <!-- Links -->
             <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
-                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
                 <!-- Menu header con branding -->
                 <div class="menu-header lg:hidden">
-                    <img src="imagenes/imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
-                    <div class="menu-brand">
-                        <h2 class="text-3xl font-semibold unbounded-font text-white leading-none">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h2>
-                    </div>
+                    <h2 style="font-family:'Unbounded',sans-serif;font-size:1.875rem;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h2>
+                    <button class="menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
-                
-                <a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
+                <!-- IDENTIDAD ARGENTINA — comentado, posible uso futuro
+<a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
                     <div class="flag-link">
                         <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
                     </div>
                 </a>
+-->
                 <a href="novedades.html" class="navbar-link">Novedades</a>
                 <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
                 <a href="faq.html" class="navbar-link">Preguntas Frecuentes</a>

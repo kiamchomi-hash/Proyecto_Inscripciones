@@ -1,68 +1,347 @@
 /* =========================================================
-   Estilos globales compartidos – CAU Villa Lugano
-   Referenciado por todas las páginas excepto index.html
+   Estilos maestros del Navbar – CAU Villa Lugano
+   Centralizado desde index.html para consistencia total
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&display=swap");
 
-/* Paleta oficial CAU Villa Lugano */
 :root {
-    --cau-brand-teal:       #006c5b;
-    --cau-brand-blue:       #005587;
-    --cau-brand-green:      #058c70;
-    --cau-brand-dark-green: #046353;
-    --cau-brand-cream:      #fef8f4;
-    --cau-brand-deep-teal:  #0e6a5a;
+  --cau-brand-teal: #006c5b;
+  --cau-brand-blue: #005587;
+  --cau-brand-green: #058c70;
+  --cau-brand-dark-green: #046353;
+  --cau-brand-cream: #fef8f4;
+  --cau-brand-deep-teal: #0e6a5a;
+    --color-highlight: #00c7b1;
+    --navbar-height: 60px;
 }
 
+/* ── Escala global desktop ≥1380px ─────────────────────────────
+   Simula el efecto de zoom 120% del navegador al subir la base rem.
+   Mantenido aquí para consistencia total entre todas las páginas.
+─────────────────────────────────────────────────────────────── */
+@media (min-width: 1380px) {
+    html {
+        font-size: 120% !important;
+    }
+}
 
-
+/* Helper for Unbounded font across all pages */
 .unbounded-font {
-    font-family: 'Unbounded', sans-serif;
+  font-family: "Unbounded", sans-serif;
 }
 
-/* overflow-x: visible para que el ::after del navbar
-   no sea recortado en el borde derecho del body */
-body {
-    overflow-x: visible;
-}
-
-/* Extiende el fondo del navbar al gutter del scrollbar */
-.main-navbar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 100%;
-    width: calc(100vw - 100%);
-    background-color: #051a1a;
-    pointer-events: none;
-}
-
-/* ── Scrollbar personalizado ───────────────────────────── */
+/* ── Scrollbar global ──────────────────────────────────── */
 html {
-    scrollbar-width: auto;
-    scrollbar-color: #00c7b1 #061716;
+  scrollbar-gutter: stable;
+  background-color: #061716;
+  scrollbar-width: auto;
+  scrollbar-color: #00c7b1 #061716;
 }
 
 ::-webkit-scrollbar {
-    width: 14px;
+  width: 14px;
 }
-
 ::-webkit-scrollbar-track {
-    background: #061716;
+  background: #061716;
 }
-
 ::-webkit-scrollbar-thumb {
-    background: #00c7b1;
+  background: #00c7b1;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: #48b3a4;
+  background: #48b3a4;
 }
 
-@media (max-width: 360px) {
-    .navbar-container {
-        padding: 0 0.5rem;
-    }
+/* ── Navbar Base ───────────────────────────────────────── */
+.main-navbar {
+  background-color: #051a1a;
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  border-bottom: 2px solid var(--color-highlight);
+  transition: transform 0.3s ease;
+}
+
+.main-navbar.navbar-hidden {
+  transform: translateY(-100%);
+}
+
+.main-navbar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: calc(100vw - 100%);
+  background-color: #051a1a;
+  pointer-events: none;
+}
+
+.navbar-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  overflow: hidden;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: stretch;
+  flex-grow: 1;
+  justify-content: flex-start;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.navbar-link {
+  color: #e0f0ed;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 1rem 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  display: flex;
+    align-items: center;
+    white-space: nowrap;
+    line-height: 1.4 !important; /* Altura de línea fija para evitar variaciones entre body */
+}
+
+.navbar-link:hover {
+  background-color: var(--color-highlight);
+  color: #013729;
+}
+
+.navbar-link.active {
+  background-color: #6d2282;
+  color: #fff;
+}
+
+/* ── Social Icons (Desktop) ────────────────────────────── */
+.navbar-social-icon {
+  width: clamp(22px, 2vw, 28px);
+  height: clamp(22px, 2vw, 28px);
+  min-width: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #7ca19b;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.navbar-social-icon.social-whatsapp {
+  background-color: #25d366;
+  color: #ffffff;
+  height: auto !important;
+  align-self: stretch;
+  width: 3.125rem !important;
+  border-radius: 0;
+  margin: 0;
+}
+
+.navbar-social-icon.social-whatsapp:hover {
+  background-color: #20bd5a;
+  color: #ffffff;
+}
+
+.navbar-social-icon.social-facebook {
+  background-color: rgba(24, 119, 242, 0.1);
+  color: #1877f2;
+  height: auto !important;
+  align-self: stretch;
+  width: 3.125rem !important;
+  border-radius: 0;
+  margin: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.navbar-social-icon.social-facebook:hover {
+  background-color: #1877f2;
+  color: #ffffff;
+}
+
+.navbar-social-icon.social-instagram {
+  background-color: rgba(230, 104, 60, 0.1);
+  color: #e6683c;
+  height: auto !important;
+  align-self: stretch;
+  width: 3.125rem !important;
+  border-radius: 0;
+  margin: 0;
+}
+
+.navbar-social-icon.social-instagram:hover {
+  background: radial-gradient(
+    circle at 30% 107%,
+    #fdf497 0%,
+    #fdf497 5%,
+    #fd5949 45%,
+    #d6249f 60%,
+    #285aeb 90%
+  );
+  color: #ffffff;
+}
+
+/* ── Fluid Layout (Desktop) ────────────────────────────── */
+@media (min-width: 1025px) {
+  .navbar-menu {
+    padding-left: 1rem;
+  }
+  .navbar-container {
+    flex-wrap: nowrap;
+  }
+  .navbar-link {
+    font-size: clamp(0.65rem, calc(0.474vw + 0.346rem), 0.85rem);
+    padding-left: clamp(0.35rem, calc(2.133vw - 1.016rem), 1.25rem);
+    padding-right: clamp(0.35rem, calc(2.133vw - 1.016rem), 1.25rem);
+    letter-spacing: 0.03em;
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 1700px) {
+  .navbar-link {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* ── Responsivo / Mobile Menu ──────────────────────────── */
+.mobile-menu-btn {
+  display: none;
+  color: white;
+  padding: 0.75rem;
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .navbar-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #051a1a;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    z-index: 2100;
+    display: flex;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0.35s;
+  }
+
+  .navbar-menu.active {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .navbar-link {
+    width: 100%;
+    padding: 0 2rem;
+    flex: 1;
+    min-height: 58px;
+    border-bottom: 1px solid rgba(0, 199, 177, 0.5);
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .menu-header {
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 3.5rem;
+    border-bottom: 1px solid rgba(0, 199, 177, 0.3);
+    background: #03100f;
+  }
+
+  .menu-close-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+  }
+
+  .menu-footer {
+    flex-shrink: 0;
+    padding: 0.75rem 2rem;
+    border-top: 1px solid rgba(0, 199, 177, 0.3);
+    background: #03100f;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .menu-footer-social {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+    justify-content: center;
+  }
+
+  .menu-footer-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .menu-footer-social a[aria-label="WhatsApp"] {
+    background: rgba(37, 211, 102, 0.22);
+    border-color: rgba(37, 211, 102, 0.65);
+  }
+  .menu-footer-social a[aria-label="Facebook"] {
+    background: rgba(24, 119, 242, 0.22);
+    border-color: rgba(24, 119, 242, 0.65);
+  }
+  .menu-footer-social a[aria-label="Instagram"] {
+    background: rgba(214, 36, 159, 0.22);
+    border-color: rgba(214, 36, 159, 0.65);
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar-link {
+    justify-content: flex-start;
+    text-align: left;
+  }
 }

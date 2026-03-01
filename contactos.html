@@ -30,6 +30,7 @@
             scrollbar-gutter: stable;
         }
 
+
         :root {
             --color-deep-dark-bg: #061716;
             --color-card-bg: #1c2f31;
@@ -46,37 +47,10 @@
             overflow-x: visible;
         }
 
-        .main-navbar {
-            background-color: #051a1a;
-            position: sticky;
-            top: 0;
-            z-index: 2000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            border-bottom: 2px solid var(--color-highlight);
-            transition: transform 0.3s ease;
-        }
-
-        .main-navbar.navbar-hidden {
-            transform: translateY(-100%);
-        }
-
-        .navbar-container {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
-            overflow: hidden;
-        }
 
 
-        .navbar-menu {
-            display: flex;
-            align-items: stretch;
-            flex-grow: 1;
-            justify-content: center;
-            min-width: 0;
-        }
+
+
 
 
         /* Bandera Argentina - fondo del link Identidad Argentina */
@@ -215,94 +189,18 @@
 
 
 
-.navbar-link {
-            color: #e0f0ed;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 1rem 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-        }
 
-        .navbar-link:hover {
-            background-color: var(--color-highlight);
-            color: #013729;
-        }
 
-        .navbar-link.active {
-            background-color: #6d2282;
-            color: #fff;
-        }
 
-        .navbar-social-icon {
-            width: clamp(22px, 2vw, 28px);
-            height: clamp(22px, 2vw, 28px);
-            min-width: 22px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: #7ca19b;
-            transition: color 0.2s ease, background-color 0.2s ease;
-            flex-shrink: 0;
-        }
 
         /* Botón de WhatsApp destacado en navbar (Full Height) */
-        .navbar-social-icon.social-whatsapp {
-            background-color: #25D366;
-            color: #ffffff;
-            height: auto !important;
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0;
-            margin: 0;
-        }
 
-        .navbar-social-icon.social-whatsapp:hover {
-            background-color: #20bd5a;
-            color: #ffffff;
-        }
 
         /* Facebook Highlight */
-        .navbar-social-icon.social-facebook {
-            background-color: rgba(24, 119, 242, 0.1);
-            color: #1877F2;
-            height: auto !important;
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0;
-            margin: 0;
-            border-right: 1px solid rgba(0,0,0,0.1);
-        }
 
-        .navbar-social-icon.social-facebook:hover {
-            background-color: #1877F2;
-            color: #ffffff;
-        }
 
         /* Instagram Highlight */
-        .navbar-social-icon.social-instagram {
-            background-color: rgba(230, 104, 60, 0.1);
-            color: #e6683c;
-            height: auto !important;
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0;
-            margin: 0;
-        }
 
-        .navbar-social-icon.social-instagram:hover {
-            background-color: #e6683c;
-            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-            color: #ffffff;
-        }
 
         .flag-link .ribbon-new {
             position: absolute;
@@ -336,114 +234,48 @@
 
 
         /* Escalado horizontal del navbar en escritorios intermedios (sin cambiar la altura) */
-        @media (min-width: 1025px) and (max-width: 1199px) {
-            .navbar-link {
-                font-size: 0.72rem;
-                padding-left: 0.45rem;
-                padding-right: 0.45rem;
-                letter-spacing: 0.02em;
-            }
-        }
+        
 
-        @media (min-width: 1200px) and (max-width: 1379px) {
-            .navbar-link {
-                font-size: 0.78rem;
-                padding-left: 0.75rem;
-                padding-right: 0.75rem;
-                letter-spacing: 0.03em;
-            }
-        }
+        
 
         /* Mobile Adjustments */
-        .mobile-menu-btn {
-            display: none;
-            color: white;
-            padding: 0.75rem;
-            cursor: pointer;
-        }
 
-        @media (max-width: 1024px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .navbar-menu {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                overflow-y: hidden;
-                background-color: #051a1a;
-                flex-direction: column;
-                justify-content: flex-start;
-                gap: 0;
-                z-index: 2100;
-                display: flex;
-                transform: translateX(-100%);
-                visibility: hidden;
-                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                            visibility 0.35s;
-            }
-
-            .navbar-menu.active {
-                transform: translateX(0);
-                visibility: visible;
-            }
+        @media (max-width: 1023px) {
 
 
 
-        .navbar-link {
-                width: 100%;
-                padding: 0 2rem;
-                flex: 1;
-                min-height: 0;
-                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
-                display: flex;
-                align-items: center;
-                font-size: 1.1rem;
-                font-weight: 800;
-                justify-content: center;
-                text-align: center;
-                white-space: normal;
-            }
 
-            .navbar-link:has(.flag-link) {
-                text-align: center !important;
-                justify-content: center !important;
-                align-items: center !important;
-            }
+
+
 
             .flag-link {
                 overflow: visible;
             }
 
-            .navbar-container {
-                justify-content: space-between;
-                min-height: 70px;
-            }
 
             .menu-close-btn {
                 position: absolute;
-                top: 0.75rem;
                 right: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
                 color: white;
                 background: none;
                 border: none;
                 font-size: 2rem;
                 cursor: pointer;
-                padding: 0.75rem;
+                padding: 0.5rem;
                 line-height: 1;
             }
 
             .menu-header {
                 flex-shrink: 0;
+                position: relative;
                 display: flex;
                 align-items: center;
-                gap: 1rem;
-                padding: 0.875rem 2rem;
+                justify-content: center;
+                padding: 0.875rem 3.5rem;
                 border-bottom: 1px solid rgba(0, 199, 177, 0.3);
-                background: linear-gradient(to bottom, #082a2a, #051a1a);
+                background: #03100f;
             }
 
             .menu-header img {
@@ -462,6 +294,7 @@
                 flex-shrink: 0;
                 padding: 0.75rem 2rem;
                 border-top: 1px solid rgba(0, 199, 177, 0.3);
+                background: #03100f;
                 display: flex;
                 flex-direction: column;
                 gap: 0.5rem;
@@ -526,34 +359,9 @@
             }
         }
 
-        @media (max-width: 640px) {
-            .navbar-link {
-                justify-content: flex-start;
-                text-align: left;
-            }
+        
 
-            .navbar-link:has(.flag-link) {
-                justify-content: center !important;
-                text-align: left !important;
-                align-items: flex-start !important;
-            }
-        }
-
-        @media (max-width: 320px) {
-            .navbar-container {
-                padding: 0 0.5rem;
-            }
-
-            .navbar-container img {
-                width: 1.75rem !important;
-                height: 1.75rem !important;
-                margin-right: 0.5rem !important;
-            }
-
-            .navbar-container .font-black {
-                font-size: 0.75rem !important;
-            }
-        }
+        
     </style>
 </head>
 
@@ -575,37 +383,33 @@
 
             <!-- Mobile Branding (Visible only on mobile) -->
             <div class="flex lg:hidden flex-1 items-center min-w-0">
-                <h1 class="flex-1 text-center text-2xl md:text-3xl font-semibold unbounded-font text-white leading-none whitespace-nowrap">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h1>
-                <img src="imagenes/imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="flex-shrink-0 h-14 w-14 md:h-16 md:w-16 object-contain"
+                <h1 class="flex-1 text-center text-2xl whitespace-nowrap" style="font-family:'Unbounded',sans-serif;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h1>
+                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="mobile-logo flex-shrink-0 h-14 w-14 object-contain"
                     style="filter: brightness(0) invert(1);" width="56" height="56">
             </div>
 
 
             <!-- Links -->
             <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
-                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
                 <!-- Menu header con branding -->
                 <div class="menu-header lg:hidden">
-                    <img src="imagenes/imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
-                    <div class="menu-brand">
-                        <h2 class="text-3xl font-semibold unbounded-font text-white leading-none whitespace-nowrap">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h2>
-                    </div>
+                    <h2 style="font-family:'Unbounded',sans-serif;font-size:1.875rem;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h2>
+                    <button class="menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link">Clases de Apoyo</a>
-                <a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
+                <!-- IDENTIDAD ARGENTINA — comentado, posible uso futuro
+<a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
                     <div class="flag-link">
                         <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
                     </div>
                 </a>
+-->
                 <a href="novedades.html" class="navbar-link">Novedades</a>
                 <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
                 <a href="faq.html" class="navbar-link">Preguntas Frecuentes</a>

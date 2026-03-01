@@ -1,735 +1,967 @@
 <!DOCTYPE html>
 <html lang="es">
-
+ 
 <head>
     <script>history.scrollRestoration = "manual";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clases de Apoyo - CAU Villa Lugano</title>
-    <meta name="description" content="Clases de apoyo pedagogo-académico en el Centro Villa Lugano de la Universidad Siglo 21">
-    <!-- Incluir Tailwind CSS CDN -->
+    <meta name="description" content="Apoyo pedagógico y académico en Villa Lugano. Clases de Matemática, Lengua, Inglés y más.">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fuente Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-        <!-- Navbar CSS compartido -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Unbounded:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+ 
     <link rel="stylesheet" href="shared/navbar.css">
-    <!-- Fondo CAU compartido -->
     <link rel="stylesheet" href="shared/background.css">
-
+ 
     <style>
-        html {
-            overflow-x: clip;
-            overflow-y: scroll;
-            scrollbar-gutter: stable;
-        }
-
         :root {
-            --color-deep-dark-bg: #061716;
+            --color-deep-dark-bg: #013729;
             --color-card-bg: #1c2f31;
             --color-highlight: #00c7b1;
             --color-secondary-highlight: #48b3a4;
             --color-text-light: #7ca19b;
             --color-text-normal: white;
-            --color-dark-bg: #003f34;
+            --color-accent: #00ffe1;
+            --color-surface: #162f2e;
+            --color-gold: #e69b05;
+            --color-special: #7c207b;
+            --cau-brand-blue: #005587;
+            --cau-brand-green: #058c70;
+            --navbar-height: 60px;
+            --sidebar-w: 230px;
+            --mat-accent: #00c7b1;
         }
-
+ 
+        * { box-sizing: border-box; }
+ 
         body {
-            font-family: 'Inter', sans-serif;
-            color: var(--color-text-normal);
-            min-height: 100vh;
-        }
-
-        .main-navbar {
-            background-color: #051a1a;
-            position: sticky;
-            top: 0;
-            z-index: 2000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            border-bottom: 2px solid var(--color-highlight);
-            transition: transform 0.3s ease;
-        }
-
-        .main-navbar.navbar-hidden {
-            transform: translateY(-100%);
-        }
-
-        .navbar-container {
-            width: 100%;
+            font-family: 'DM Sans', sans-serif;
+            color: white;
+            height: 100vh;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
+            flex-direction: column;
             overflow: hidden;
         }
-
-
-        .navbar-menu {
-            display: flex;
-            align-items: stretch;
-            flex-grow: 1;
-            justify-content: center;
-            min-width: 0;
+ 
+        /* ════════════════════════════════════════
+           LAYOUT SHELL
+           ════════════════════════════════════════ */
+        .shell {
+            flex: 1; min-height: 0;
+            display: flex; flex-direction: column;
+            max-width: 1600px; width: 100%;
+            margin: 0 auto; padding: 0.35rem;
         }
-
-
-        /* Bandera Argentina - fondo del link Identidad Argentina */
-        .flag-link {
-            position: relative;
+ 
+        .frame {
+            flex: 1; min-height: 0;
+            display: flex; flex-direction: column;
+            border-radius: 0.6rem;
             overflow: hidden;
-            z-index: 1;
-            perspective: 400px;
-            white-space: normal;
+            background: #091a18;
         }
-
-        .flag-link .flag-bg {
-            position: absolute;
-            inset: 0;
-            transform: rotateY(-12deg) rotateX(4deg);
-            transform-origin: left center;
-            overflow: hidden;
-            opacity: 0.18;
-            z-index: -1;
-            transition: opacity 0.4s ease, transform 0.5s ease;
-            box-shadow: inset -8px 0 18px rgba(0,0,0,0.25), inset 4px 0 10px rgba(255,255,255,0.08);
+ 
+        @media (min-width: 1024px) {
+            .frame { flex-direction: row; }
         }
-
-
-
-        .flag-link .flag-band {
-            position: absolute;
-            left: 0;
-            width: 100%;
-        }
-
-        .flag-link .flag-band-top {
-            top: 0;
-            height: 33.33%;
-            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
-        }
-
-        .flag-link .flag-band-mid {
-            top: 33.33%;
-            height: 33.34%;
-            background: linear-gradient(100deg, #fff 0%, #f5f5f5 30%, #fff 55%, #f0f0f0 80%, #fff 100%);
-        }
-
-        .flag-link .flag-band-bot {
-            top: 66.67%;
-            height: 33.33%;
-            background: linear-gradient(100deg, #74ACDF 0%, #8BC4F0 40%, #74ACDF 70%, #6BA0D0 100%);
-        }
-
-        .flag-link .flag-sun {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 22px;
-            height: 22px;
-            z-index: 2;
-        }
-
-        .flag-link .flag-sun::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 12px;
-            height: 12px;
-            background: radial-gradient(circle, #F6B40E 35%, #FCDF73 65%, transparent 66%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .flag-link .flag-sun::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 22px;
-            height: 22px;
-            background: conic-gradient(
-                from 0deg,
-                transparent 0deg, #F6B40E 3deg, transparent 6deg,
-                transparent 22.5deg, #F6B40E 25.5deg, transparent 28.5deg,
-                transparent 45deg, #F6B40E 48deg, transparent 51deg,
-                transparent 67.5deg, #F6B40E 70.5deg, transparent 73.5deg,
-                transparent 90deg, #F6B40E 93deg, transparent 96deg,
-                transparent 112.5deg, #F6B40E 115.5deg, transparent 118.5deg,
-                transparent 135deg, #F6B40E 138deg, transparent 141deg,
-                transparent 157.5deg, #F6B40E 160.5deg, transparent 163.5deg,
-                transparent 180deg, #F6B40E 183deg, transparent 186deg,
-                transparent 202.5deg, #F6B40E 205.5deg, transparent 208.5deg,
-                transparent 225deg, #F6B40E 228deg, transparent 231deg,
-                transparent 247.5deg, #F6B40E 250.5deg, transparent 253.5deg,
-                transparent 270deg, #F6B40E 273deg, transparent 276deg,
-                transparent 292.5deg, #F6B40E 295.5deg, transparent 298.5deg,
-                transparent 315deg, #F6B40E 318deg, transparent 321deg,
-                transparent 337.5deg, #F6B40E 340.5deg, transparent 343.5deg
-            );
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        /* Pliegues de tela - ondulación estática */
-        .flag-link .flag-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(95deg,
-                    rgba(255,255,255,0.15) 0%,
-                    transparent 18%,
-                    rgba(255,255,255,0.1) 35%,
-                    transparent 50%,
-                    rgba(255,255,255,0.08) 68%,
-                    transparent 82%,
-                    rgba(255,255,255,0.05) 100%
-                );
-            z-index: 3;
-        }
-
-        .flag-link .flag-bg::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(100deg,
-                    rgba(0,0,0,0.1) 0%,
-                    transparent 12%,
-                    rgba(0,0,0,0.06) 28%,
-                    transparent 42%,
-                    rgba(0,0,0,0.08) 60%,
-                    transparent 75%,
-                    rgba(0,0,0,0.12) 100%
-                );
-            z-index: 4;
-        }
-
-
-
-.navbar-link {
-            color: #e0f0ed;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 1rem 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
+ 
+        /* ════════════════════════════════════════
+           SIDEBAR
+           ════════════════════════════════════════ */
+        .sidebar {
             display: flex;
-            align-items: center;
-            white-space: nowrap;
-        }
-
-        .navbar-link:hover {
-            background-color: var(--color-highlight);
-            color: #013729;
-        }
-
-        .navbar-link.active {
-            background-color: #6d2282;
-            color: #fff;
-        }
-
-        .navbar-social-icon {
-            width: clamp(22px, 2vw, 28px);
-            height: clamp(22px, 2vw, 28px);
-            min-width: 22px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: #7ca19b;
-            transition: color 0.2s ease, background-color 0.2s ease;
+            background: #051211;
             flex-shrink: 0;
         }
-
-        /* Botón de WhatsApp destacado en navbar (Full Height) */
-        .navbar-social-icon.social-whatsapp {
-            background-color: #25D366;
-            color: #ffffff;
-            height: auto !important;
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0;
-            margin: 0;
+ 
+        @media (max-width: 1023px) {
+            .sidebar {
+                overflow-x: auto; scrollbar-width: none;
+                border-bottom: 3px solid var(--mat-accent);
+            }
+            .sidebar::-webkit-scrollbar { display: none; }
         }
-
-        .navbar-social-icon.social-whatsapp:hover {
-            background-color: #20bd5a;
-            color: #ffffff;
+ 
+        @media (min-width: 1024px) {
+            .sidebar {
+                flex-direction: column;
+                width: var(--sidebar-w);
+                min-width: var(--sidebar-w);
+            }
         }
-
-        /* Facebook Highlight */
-        .navbar-social-icon.social-facebook {
-            background-color: rgba(24, 119, 242, 0.1);
-            color: #1877F2;
-            height: auto !important;
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0;
-            margin: 0;
-            border-right: 1px solid rgba(0,0,0,0.1);
+ 
+        .sb-btn {
+            flex: 1;
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.65rem 1.15rem;
+            background: transparent; border: none; cursor: pointer;
+            color: #6b8f8a;
+            position: relative;
+            transition: color 0.25s, background 0.25s;
+            min-width: 130px;
         }
-
-        .navbar-social-icon.social-facebook:hover {
-            background-color: #1877F2;
-            color: #ffffff;
+ 
+        @media (min-width: 1024px) {
+            .sb-btn {
+                min-width: unset;
+                padding: 0 1.25rem;
+            }
         }
-
-        /* Instagram Highlight */
-        .navbar-social-icon.social-instagram {
-            background-color: rgba(230, 104, 60, 0.1);
-            color: #e6683c;
-            height: auto !important;
-            align-self: stretch;
-            width: 50px !important;
-            border-radius: 0;
-            margin: 0;
-        }
-
-        .navbar-social-icon.social-instagram:hover {
-            background-color: #e6683c;
-            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-            color: #ffffff;
-        }
-
-        .flag-link .ribbon-new {
+ 
+        .sb-btn__bar {
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 55px;
-            height: 55px;
+            background: var(--mat-accent);
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+ 
+        /* Mobile: bottom bar */
+        @media (max-width: 1023px) {
+            .sb-btn__bar {
+                bottom: 0; left: 10%; right: 10%; height: 3px;
+                transform: scaleX(0);
+            }
+        }
+ 
+        /* Desktop: left bar */
+        @media (min-width: 1024px) {
+            .sb-btn__bar {
+                left: 0; top: 15%; bottom: 15%; width: 4px;
+                transform: scaleY(0);
+                border-radius: 0 3px 3px 0;
+            }
+        }
+ 
+        .sb-btn__dot {
+            width: 8px; height: 8px;
+            border-radius: 2px;
+            background: currentColor;
+            opacity: 0.4;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+ 
+        .sb-btn__txt {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+ 
+        @media (min-width: 1024px) {
+            .sb-btn__txt { white-space: normal; }
+        }
+ 
+        .sb-btn:hover { color: #a0c5c0; background: rgba(255,255,255,0.02); }
+ 
+        .sb-btn.on {
+            color: white;
+            background: rgba(0,199,177,0.06);
+        }
+ 
+        .sb-btn.on .sb-btn__bar {
+            transform: scaleX(1);
+        }
+ 
+        @media (min-width: 1024px) {
+            .sb-btn.on .sb-btn__bar { transform: scaleY(1); }
+        }
+ 
+        .sb-btn.on .sb-btn__dot {
+            opacity: 1;
+            background: var(--mat-accent);
+            box-shadow: 0 0 6px var(--mat-accent);
+        }
+ 
+        /* ════════════════════════════════════════
+           CONTENT BODY
+           ════════════════════════════════════════ */
+        .body {
+            flex: 1; min-height: 0;
+            display: flex; flex-direction: column;
             overflow: hidden;
-            z-index: 10;
+        }
+ 
+        @media (max-width: 1023px) {
+            .body {
+                overflow-y: auto; scrollbar-width: none;
+            }
+            .body::-webkit-scrollbar { display: none; }
+        }
+ 
+        .panel {
+            display: flex; flex-direction: column;
+            flex: 1; min-height: 0;
+            animation: fadeUp 0.35s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+ 
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+ 
+        /* ──────────────────────────────────────
+           ROW 1 — Temas + Carrusel
+           ────────────────────────────────────── */
+        .r1 {
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            background: #0d2624;
+        }
+ 
+        @media (min-width: 1024px) {
+            .r1 { grid-template-columns: 1fr 340px; }
+        }
+ 
+        .r1-temas {
+            padding: 0.75rem 1.2rem;
+        }
+ 
+        .lbl {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: var(--mat-accent);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+ 
+        .pills {
+            display: flex; flex-wrap: wrap; gap: 0.35rem;
+        }
+ 
+        .pill {
+            font-family: 'Atkinson Hyperlegible', sans-serif;
+            font-size: 0.75rem; font-weight: 700;
+            padding: 0.4rem 0.85rem;
+            border-radius: 9999px;
+            background: rgba(0,199,177,0.12);
+            color: #b8e4de;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
+            transition: all 0.2s;
+        }
+ 
+        .pill:hover {
+            background: var(--color-highlight);
+            color: #051211;
+        }
+ 
+        /* Carrusel de imágenes */
+        .r1-carousel {
+            position: relative;
+            overflow: hidden;
+            min-height: 130px;
+            background: #081c1a;
+            border-left: 1px solid rgba(255,255,255,0.04);
+        }
+ 
+        @media (max-width: 1023px) {
+            .r1-carousel {
+                min-height: 160px;
+                border-left: none;
+                border-top: 1px solid rgba(255,255,255,0.04);
+            }
+        }
+ 
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            position: absolute; inset: 0;
+            transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+        }
+ 
+        .carousel-track img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+            display: block;
+        }
+ 
+        .carousel-dots {
+            position: absolute; bottom: 8px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 5px; z-index: 2;
+        }
+ 
+        .carousel-dots button {
+            width: 7px; height: 7px;
+            border-radius: 50%; border: none;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.25s;
+            padding: 0;
+        }
+ 
+        .carousel-dots button.on {
+            background: var(--color-accent);
+            box-shadow: 0 0 6px rgba(0,255,225,0.5);
+            width: 18px; border-radius: 4px;
+        }
+ 
+        .carousel-nav {
+            position: absolute; top: 50%; right: 8px;
+            transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 4px; z-index: 2;
+        }
+ 
+        .carousel-nav button {
+            width: 24px; height: 24px;
+            border-radius: 4px; border: none;
+            background: rgba(0,0,0,0.5);
+            color: white; cursor: pointer;
+            font-size: 0.7rem;
+            display: grid; place-items: center;
+            transition: background 0.2s;
+            backdrop-filter: blur(4px);
+        }
+ 
+        .carousel-nav button:hover { background: rgba(0,199,177,0.6); }
+ 
+        /* ──────────────────────────────────────
+           ROW 2 — Calendario + Logros
+           ────────────────────────────────────── */
+        .r2 {
+            flex: 1; min-height: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+ 
+        @media (min-width: 1024px) {
+            .r2 { grid-template-columns: 1fr 1fr; }
+        }
+ 
+        .r2-cal {
+            padding: 0.75rem 1.2rem;
+            display: flex; flex-direction: column;
+            background: #091a18;
+            min-height: 0;
+        }
+ 
+        @media (min-width: 1024px) {
+            .r2-cal {
+                border-right: 1px solid rgba(255,255,255,0.04);
+                overflow-y: auto; scrollbar-width: none;
+            }
+            .r2-cal::-webkit-scrollbar { display: none; }
+        }
+ 
+        /* ── Calendario rediseñado ── */
+        .cal-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .cal-block { flex-shrink: 0; }
+
+        .cal-block__head {
+            display: flex;
+            align-items: baseline;
+            gap: 0.35rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .cal-block__month {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .cal-block__year {
+            font-size: 0.58rem;
+            font-weight: 600;
+            color: #3d7a72;
+        }
+
+        .cg {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .cg-h {
+            text-align: center;
+            font-size: 0.5rem;
+            font-weight: 800;
+            color: var(--color-highlight);
+            padding: 0 0 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid rgba(0,199,177,0.1);
+            margin-bottom: 1px;
+        }
+
+        .cg-d {
+            text-align: center;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 4px 0;
+            border-radius: 5px;
+            color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.02);
+            position: relative;
+            transition: background 0.15s;
+        }
+
+        .cg-d:hover:not(.past):not(.empty) {
+            background: rgba(0,199,177,0.08);
+        }
+
+        .cg-d.empty { background: none; }
+
+        .cg-d.past {
+            background: #111f1e;
+            color: #283d3b;
             pointer-events: none;
         }
 
-        .flag-link .ribbon-new span {
-            display: block;
-            position: absolute;
-            top: 8px;
-            right: -18px;
-            width: 80px;
-            padding: 2px 0;
-            background: #e53e3e;
-            color: #fff;
-            font-size: 0.5rem;
+        .cg-d.today {
+            background: var(--color-highlight);
+            color: #051211;
             font-weight: 900;
-            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,199,177,0.4);
+        }
+
+        .cg-d.tutor {
+            background: rgba(0,199,177,0.1);
+            color: var(--color-accent);
+            font-weight: 700;
+            border: 1px solid rgba(0,199,177,0.25);
+        }
+
+        .cg-d.tutor.past {
+            border-color: transparent;
+            color: #283d3b;
+            background: #111f1e;
+        }
+
+        .cal-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,199,177,0.15), transparent);
+            margin: 0.1rem 0;
+        }
+
+        .cal-ref {
+            display: flex;
+            gap: 0.65rem;
+            font-size: 0.52rem;
+            font-weight: 700;
+            color: #4c7a72;
+            margin-top: auto;
+            padding-top: 0.2rem;
+        }
+
+        .cal-ref span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .cal-ref .sq {
+            width: 9px;
+            height: 9px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .cal-ref .sq-t {
+            background: rgba(0,199,177,0.1);
+            border: 1px solid rgba(0,199,177,0.25);
+        }
+
+        .cal-ref .sq-h {
+            background: var(--color-highlight);
+        }
+
+        .cal-ref .sq-p {
+            background: #111f1e;
+        }
+ 
+        /* Logros */
+        .r2-logros {
+            padding: 0.75rem 1.2rem;
+            display: flex; flex-direction: column;
+            align-items: center;
+            text-align: center; gap: 0.5rem;
+            background: #0b1f1d;
+        }
+ 
+        .big-num {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 0.9;
+            color: var(--color-accent);
+            text-shadow: 0 0 40px rgba(0,255,225,0.15);
+            letter-spacing: -0.04em;
+        }
+ 
+        .big-label {
+            font-size: 0.72rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            transform: rotate(45deg);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            letter-spacing: 0.15em;
+            color: #5ea69d;
+        }
+ 
+        .big-sub {
+            font-size: 0.58rem;
+            color: #3d7a72;
+            font-weight: 500;
+        }
+ 
+        .mini-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 36px;
         }
 
-
-
-        /* Escalado horizontal del navbar en escritorios intermedios (sin cambiar la altura) */
-        @media (min-width: 1025px) and (max-width: 1199px) {
-            .navbar-link {
-                font-size: 0.72rem;
-                padding-left: 0.45rem;
-                padding-right: 0.45rem;
-                letter-spacing: 0.02em;
-            }
+        .mini-bars span {
+            width: 14px;
+            border-radius: 2px 2px 0 0;
+            background: rgba(0,199,177,0.12);
         }
 
-        @media (min-width: 1200px) and (max-width: 1379px) {
-            .navbar-link {
-                font-size: 0.78rem;
-                padding-left: 0.75rem;
-                padding-right: 0.75rem;
-                letter-spacing: 0.03em;
-            }
+        .mini-bars span.hi {
+            background: var(--color-highlight);
         }
-
-        /* Mobile Adjustments */
-        .mobile-menu-btn {
-            display: none;
+        .btn-cta {
+            margin-top: auto;
+            padding: 0.6rem 1.8rem;
+            background: linear-gradient(135deg, var(--cau-brand-blue), var(--cau-brand-green));
             color: white;
-            padding: 0.75rem;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.6rem; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            border-radius: 6px; border: none;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
-
-        @media (max-width: 1024px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .navbar-menu {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                overflow-y: hidden;
-                background-color: #051a1a;
-                flex-direction: column;
-                justify-content: flex-start;
-                gap: 0;
-                z-index: 2100;
-                display: flex;
-                transform: translateX(-100%);
-                visibility: hidden;
-                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                            visibility 0.35s;
-            }
-
-            .navbar-menu.active {
-                transform: translateX(0);
-                visibility: visible;
-            }
-
-
-
-        .navbar-link {
-                width: 100%;
-                padding: 0 2rem;
-                flex: 1;
-                min-height: 0;
-                border-bottom: 1px solid rgba(0, 199, 177, 0.5);
-                display: flex;
-                align-items: center;
-                font-size: 1.1rem;
-                font-weight: 800;
-                justify-content: center;
-                text-align: center;
-                white-space: normal;
-            }
-
-            .navbar-link:has(.flag-link) {
-                text-align: center !important;
-                justify-content: center !important;
-                align-items: center !important;
-            }
-
-            .flag-link {
-                overflow: visible;
-            }
-
-            .navbar-container {
-                justify-content: space-between;
-                min-height: 70px;
-            }
-
-            .menu-close-btn {
-                position: absolute;
-                top: 0.75rem;
-                right: 0.75rem;
-                color: white;
-                background: none;
-                border: none;
-                font-size: 2rem;
-                cursor: pointer;
-                padding: 0.75rem;
-                line-height: 1;
-            }
-
-            .menu-header {
-                flex-shrink: 0;
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                padding: 0.875rem 2rem;
-                border-bottom: 1px solid rgba(0, 199, 177, 0.3);
-                background: linear-gradient(to bottom, #082a2a, #051a1a);
-            }
-
-            .menu-header img {
-                height: 2.5rem;
-                width: 2.5rem;
-                object-fit: contain;
-                filter: brightness(0) invert(1);
-            }
-
-            .menu-header .menu-brand {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .menu-footer {
-                flex-shrink: 0;
-                padding: 0.75rem 2rem;
-                border-top: 1px solid rgba(0, 199, 177, 0.3);
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .menu-footer-links {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .menu-footer-link {
-                color: #7ca19b;
-                font-size: 0.875rem;
-                text-decoration: none;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                transition: color 0.2s;
-            }
-
-            .menu-footer-link:hover {
-                color: #00c7b1;
-            }
-
-            .menu-footer-social {
-                display: flex;
-                gap: 0.75rem;
-                padding-top: 0.5rem;
-            }
-
-            .menu-footer-social a {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 40px;
-                height: 40px;
-                border-radius: 0.5rem;
-                color: #ffffff;
-                border: 1px solid transparent;
-                transition: all 0.3s ease;
-            }
-
-            .menu-footer-social a[aria-label="WhatsApp"] {
-                background: rgba(37, 211, 102, 0.22);
-                border-color: rgba(37, 211, 102, 0.65);
-            }
-
-            .menu-footer-social a[aria-label="Facebook"] {
-                background: rgba(24, 119, 242, 0.22);
-                border-color: rgba(24, 119, 242, 0.65);
-            }
-
-            .menu-footer-social a[aria-label="Instagram"] {
-                background: rgba(214, 36, 159, 0.22);
-                border-color: rgba(214, 36, 159, 0.65);
-            }
-
-            .menu-footer-social a:hover {
-                transform: scale(1.05);
-                filter: brightness(1.2);
-            }
+ 
+        .btn-cta:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(5,140,112,0.4);
         }
-
-        @media (max-width: 640px) {
-            .navbar-link {
-                justify-content: flex-start;
-                text-align: left;
-            }
-
-            .navbar-link:has(.flag-link) {
-                justify-content: center !important;
-                text-align: left !important;
-                align-items: flex-start !important;
-            }
+ 
+        /* ──────────────────────────────────────
+           ROW 3 — Contacto
+           ────────────────────────────────────── */
+        .r3 {
+            flex-shrink: 0;
+            display: flex; flex-direction: column;
+            gap: 0.7rem; align-items: center;
+            padding: 0.5rem 1.2rem;
+            background: var(--color-deep-dark-bg);
         }
-
-        @media (max-width: 320px) {
-            .navbar-container {
-                padding: 0 0.5rem;
-            }
-
-            .navbar-container img {
-                width: 1.75rem !important;
-                height: 1.75rem !important;
-                margin-right: 0.5rem !important;
-            }
-
-            .navbar-container .font-black {
-                font-size: 0.75rem !important;
-            }
+ 
+        @media (min-width: 768px) {
+            .r3 { flex-direction: row; justify-content: space-between; }
+        }
+ 
+        .loc {
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+ 
+        .loc__icon {
+            width: 34px; height: 34px;
+            display: grid; place-items: center;
+            border-radius: 6px;
+            background: var(--color-highlight);
+            flex-shrink: 0;
+        }
+ 
+        .loc__icon svg {
+            width: 16px; height: 16px;
+            color: var(--color-deep-dark-bg);
+            stroke-width: 2.5;
+        }
+ 
+        .loc__sup {
+            display: block;
+            font-size: 0.5rem; font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--color-secondary-highlight);
+        }
+ 
+        .loc__addr {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.95rem; font-weight: 700;
+        }
+ 
+        .wa {
+            display: inline-flex; align-items: center; gap: 0.55rem;
+            background: #25D366; color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none; font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37,211,102,0.25);
+        }
+ 
+        .wa:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(37,211,102,0.4);
+        }
+ 
+        .wa svg { width: 22px; height: 22px; flex-shrink: 0; }
+ 
+        .wa__lines {
+            display: flex; flex-direction: column;
+            text-align: left; line-height: 1.15;
+        }
+ 
+        .wa__top {
+            font-size: 0.5rem; font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em; opacity: 0.85;
+        }
+ 
+        .wa__bot {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.68rem; font-weight: 600;
         }
     </style>
 </head>
-
+ 
 <body>
-        <nav class="main-navbar">
+    <!-- ── Navbar ── -->
+    <nav class="main-navbar">
         <div class="navbar-container">
-            <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn" id="mobile-toggle"
-                    aria-label="Abrir menú de navegación"
-                    aria-expanded="false"
-                    aria-controls="navbar-menu">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+            <button class="mobile-menu-btn" id="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="navbar-menu">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <line x1="4" y1="7" x2="20" y2="7" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="4" y1="17" x2="20" y2="17" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="4" y1="12" x2="20" y2="12" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="4" y1="17" x2="20" y2="17" stroke-width="2" stroke-linecap="round"/>
                 </svg>
             </button>
-
-            <!-- Mobile Branding (Visible only on mobile) -->
             <div class="flex lg:hidden flex-1 items-center min-w-0">
-                <h1 class="flex-1 text-center text-2xl md:text-3xl font-semibold unbounded-font text-white leading-none whitespace-nowrap">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h1>
-                <img src="imagenes/imagenes/imagenes_cau/logo_cau.png" alt="Logo del Centro de Aprendizaje Universitario Villa Lugano" class="flex-shrink-0 h-14 w-14 md:h-16 md:w-16 object-contain"
-                    style="filter: brightness(0) invert(1);" width="56" height="56">
+                <h1 class="flex-1 text-center text-2xl whitespace-nowrap" style="font-family:'Unbounded',sans-serif;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h1>
+                <img src="imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano" class="mobile-logo flex-shrink-0 h-14 w-14 object-contain" style="filter: brightness(0) invert(1);" width="56" height="56">
             </div>
-
-
-            <!-- Links -->
             <div class="navbar-menu" id="navbar-menu" role="dialog" aria-label="Menú de navegación">
-                <button class="lg:hidden menu-close-btn" id="menu-close" aria-label="Cerrar menú">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
-                <!-- Menu header con branding -->
                 <div class="menu-header lg:hidden">
-                    <img src="imagenes/imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU Villa Lugano - Siglo 21" loading="lazy" width="40" height="40">
-                    <div class="menu-brand">
-                        <h2 class="text-3xl font-semibold unbounded-font text-white leading-none whitespace-nowrap">CAU <span class="text-[#00c7b1] unbounded-font">Siglo 21</span></h2>
-                    </div>
+                    <h2 style="font-family:'Unbounded',sans-serif;font-size:1.875rem;font-weight:600;color:white;line-height:1;">CAU <span style="font-family:'Unbounded',sans-serif;color:#00c7b1;">Siglo 21</span></h2>
+                    <button class="menu-close-btn" id="menu-close" aria-label="Cerrar menú">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
-
                 <a href="index.html" class="navbar-link">INICIO/CARRERAS</a>
                 <a href="clases-apoyo.html" class="navbar-link active">Clases de Apoyo</a>
-                <a href="identidad-argentina.html" class="navbar-link" style="flex-direction:column;line-height:1.1;text-align:center;justify-content:center;">
-                    <div class="flag-link">
-                        <span style="display:block;">Cursos</span><span style="display:block;font-size:0.65rem;opacity:0.75;">Identidad Argentina</span>
-                    </div>
-                </a>
                 <a href="novedades.html" class="navbar-link">Novedades</a>
                 <a href="sobre-nosotros.html" class="navbar-link">Sobre Nosotros</a>
                 <a href="faq.html" class="navbar-link">Preguntas Frecuentes</a>
                 <a href="contactos.html" class="navbar-link">Contacto</a>
-
-                <!-- Menu footer -->
                 <div class="menu-footer lg:hidden">
                     <div class="menu-footer-social" style="justify-content: center;">
-                        <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                        </a>
-                        <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                        </a>
-                        <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                        </a>
+                        <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                        <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                        <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
                     </div>
                 </div>
             </div>
-
-            <!-- Social icons (desktop) -->
-            <div class="navbar-social hidden lg:flex items-center flex-shrink-0" style="margin-left: 8px; align-self: stretch;">
-                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp"
-                    class="navbar-social-icon social-whatsapp">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                </a>
-                <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook"
-                    class="navbar-social-icon social-facebook">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                </a>
-                <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram"
-                    class="navbar-social-icon social-instagram">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                </a>
+            <div class="navbar-social hidden lg:flex items-center flex-shrink-0" style="margin-left:8px;align-self:stretch;">
+                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp" class="navbar-social-icon social-whatsapp"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook" class="navbar-social-icon social-facebook"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram" class="navbar-social-icon social-instagram"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
             </div>
         </div>
     </nav>
-
-    <main class="container mx-auto px-4 py-16 max-w-4xl">
-        <header class="text-center mb-12">
-            <h2 class="text-5xl font-black text-white uppercase tracking-tighter mb-4">
-                Clases de <span style="color: var(--color-highlight);">Apoyo</span>
-            </h2>
-            <div class="h-1 w-24 bg-[#00c7b1] mx-auto"></div>
-        </header>
-
-        <div class="bg-[#1c2f31] rounded-2xl p-10 shadow-2xl border-2 border-[#00c7b1]/30">
-            <p class="text-xl text-[#7ca19b] leading-relaxed text-center">
-                ¿Necesitás ayuda con alguna materia? En el Centro Villa Lugano ofrecemos clases de apoyo pedagogo-académico para que puedas avanzar en tu carrera con confianza. Contamos con tutores especializados en diversas áreas.
-            </p>
+ 
+    <main class="shell">
+        <div class="frame">
+            <nav class="sidebar" id="sidebar"></nav>
+            <section class="body" id="content"></section>
         </div>
     </main>
-
+ 
     <script>
-            // Mobile menu toggle and Active Link logic
-            (function() {
-                const toggle = document.getElementById('mobile-toggle');
-                const menu = document.getElementById('navbar-menu');
-                const closeBtn = document.getElementById('menu-close');
-                if (!toggle || !menu) return;
+        const M = [
+            {
+                id: 'mat', name: 'Matemática',
+                topics: ['Cálculo y Álgebra', 'Análisis de Funciones', 'Estadística', 'Geometría Analítica', 'Matemática Financiera', 'Probabilidad'],
+                imgs: [
+                    'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&q=75',
+                    'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=75',
+                    'https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&q=75'
+                ],
+                approved: 142, tutorDays: [1, 3, 5]
+            },
+            {
+                id: 'len', name: 'Lengua',
+                topics: ['Análisis Gramatical', 'Comprensión Lectora', 'Literatura Argentina', 'Escritura Académica'],
+                imgs: [
+                    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=75',
+                    'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=75',
+                    'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=75'
+                ],
+                approved: 128, tutorDays: [2, 4]
+            },
+            {
+                id: 'comp', name: 'Computación',
+                topics: ['Lógica de Programación', 'Bases de Datos', 'Desarrollo Web', 'Excel Avanzado'],
+                imgs: [
+                    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=75',
+                    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&q=75',
+                    'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600&q=75'
+                ],
+                approved: 95, tutorDays: [1, 4, 6]
+            },
+            {
+                id: 'eng', name: 'Inglés',
+                topics: ['Phonetics & Speaking', 'Grammar Structures', 'Technical Vocabulary', 'Listening Skills'],
+                imgs: [
+                    'https://images.unsplash.com/photo-1543167664-40d2aea7d031?w=600&q=75',
+                    'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=600&q=75',
+                    'https://images.unsplash.com/photo-1546410531-bb4caa6b3241?w=600&q=75'
+                ],
+                approved: 110, tutorDays: [2, 3, 5]
+            },
+            {
+                id: 'art', name: 'Arte',
+                topics: ['Historia del Arte', 'Composición Visual', 'Técnicas de Ilustración', 'Diseño Gráfico Base'],
+                imgs: [
+                    'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=75',
+                    'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=75',
+                    'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&q=75'
+                ],
+                approved: 76, tutorDays: [3, 5]
+            },
+            {
+                id: 'sec', name: 'Apoyo Secundario',
+                topics: ['Técnicas de Estudio', 'Orientación Vocacional', 'Nivelación General', 'Hábitos de Aprendizaje'],
+                imgs: [
+                    'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=75',
+                    'https://images.unsplash.com/photo-1491843351663-73149e21751d?w=600&q=75',
+                    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=75'
+                ],
+                approved: 210, tutorDays: [1, 2, 3, 4, 5]
+            }
+        ];
+ 
+        const WA = '5491166522722';
+        let carouselTimer = null;
+ 
+        function init() {
+            const sb = document.getElementById('sidebar');
+            sb.innerHTML = M.map((m, i) => `
+                <button class="sb-btn${i === 0 ? ' on' : ''}" data-id="${m.id}">
+                    <span class="sb-btn__bar"></span>
+                    <span class="sb-btn__dot"></span>
+                    <span class="sb-btn__txt">${m.name}</span>
+                </button>`).join('');
+ 
+            sb.addEventListener('click', e => {
+                const b = e.target.closest('.sb-btn');
+                if (!b) return;
+                sb.querySelectorAll('.sb-btn').forEach(x => x.classList.remove('on'));
+                b.classList.add('on');
+                show(b.dataset.id);
+            });
+ 
+            show(M[0].id);
+        }
+ 
+        function show(id) {
+            if (carouselTimer) clearInterval(carouselTimer);
+            const m = M.find(x => x.id === id);
+ 
+            document.getElementById('content').innerHTML = `
+            <div class="panel">
+                <div class="r1">
+                    <div class="r1-temas">
+                        <span class="lbl">Temas de estudio</span>
+                        <div class="pills">${m.topics.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+                    </div>
+                    <div class="r1-carousel" id="carousel">
+                        <div class="carousel-track" id="ctrack">
+                            ${m.imgs.map(src => `<img src="${src}" alt="${m.name}" loading="lazy">`).join('')}
+                        </div>
+                        <div class="carousel-dots" id="cdots">
+                            ${m.imgs.map((_, i) => `<button data-i="${i}" class="${i === 0 ? 'on' : ''}"></button>`).join('')}
+                        </div>
+                        <div class="carousel-nav">
+                            <button id="cprev">&uarr;</button>
+                            <button id="cnext">&darr;</button>
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="r2">
+                    <div class="r2-cal">
+                        <span class="lbl">Tutorías del mes</span>
+                        ${cal(m.tutorDays)}
+                    </div>
+                    <div class="r2-logros">
+                        <span class="lbl">Logros</span>
+                        <div class="big-num" id="ctr">${m.approved}</div>
+                        <div class="big-label">Alumnos aprobados</div>
+                        <div class="big-sub">rindieron y aprobaron sus exámenes</div>
+                        <div class="mini-bars" id="mbars"></div>
+                        <button onclick="alert('Funcionalidad de reserva próximamente')" class="btn-cta">Reservar Turno</button>
+                    </div>
+                </div>
+ 
+                <div class="r3">
+                    <div class="loc">
+                        <div class="loc__icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+                        <div><span class="loc__sup">Ubicación</span><span class="loc__addr">Guaminí 4876</span></div>
+                    </div>
+                    <a href="https://wa.me/${WA}" target="_blank" rel="noopener" class="wa">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        <div class="wa__lines"><span class="wa__top">${m.name}</span><span class="wa__bot">Consultar por WhatsApp</span></div>
+                    </a>
+                </div>
+            </div>`;
+ 
+            countUp('ctr', m.approved, 900);
+            initCarousel(m.imgs.length);
 
-                let lastFocused = null;
+            // Mini barras decorativas para llenar logros
+            const bars = document.getElementById('mbars');
+            if (bars) {
+                const heights = [40, 65, 50, 80, 55, 90, 70, 100, 60, 75, 85, 95];
+                bars.innerHTML = heights.map((h, i) =>
+                    `<span style="height:${h}%" class="${i >= heights.length - 3 ? 'hi' : ''}"></span>`
+                ).join('');
+            }
+        }
+ 
+        function initCarousel(total) {
+            let cur = 0;
+            const track = document.getElementById('ctrack');
+            const dots = document.getElementById('cdots');
+            if (!track || !dots) return;
+ 
+            function go(i) {
+                cur = ((i % total) + total) % total;
+                track.style.transform = `translateX(-${cur * 100}%)`;
+                dots.querySelectorAll('button').forEach((d, idx) => d.classList.toggle('on', idx === cur));
+            }
+ 
+            document.getElementById('cnext')?.addEventListener('click', () => go(cur + 1));
+            document.getElementById('cprev')?.addEventListener('click', () => go(cur - 1));
+            dots.addEventListener('click', e => {
+                const b = e.target.closest('button[data-i]');
+                if (b) go(+b.dataset.i);
+            });
+ 
+            carouselTimer = setInterval(() => go(cur + 1), 4000);
+        }
+ 
+        function cal(days) {
+            const n = new Date(), y = n.getFullYear(), mo = n.getMonth();
+            const today = n.getDate();
+            const mn = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const dn = ['Do','Lu','Ma','Mi','Ju','Vi','Sa'];
 
-                function openMenu() {
-                    lastFocused = document.activeElement;
-                    menu.classList.add('active');
-                    toggle.setAttribute('aria-expanded', 'true');
-                    document.body.classList.add('overflow-hidden');
-                    document.documentElement.classList.add('overflow-hidden');
-                    closeBtn?.focus();
-                }
+            // Mes actual
+            const tot1 = new Date(y, mo + 1, 0).getDate();
+            const off1 = new Date(y, mo, 1).getDay();
 
-                function closeMenu() {
-                    menu.classList.remove('active');
-                    toggle.setAttribute('aria-expanded', 'false');
-                    document.body.classList.remove('overflow-hidden');
-                    document.documentElement.classList.remove('overflow-hidden');
-                    lastFocused?.focus();
-                }
+            // Mes siguiente (primeros 15 días)
+            const nextMo = (mo + 1) % 12;
+            const nextY = mo === 11 ? y + 1 : y;
+            const off2 = new Date(nextY, nextMo, 1).getDay();
 
-                toggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    menu.classList.contains('active') ? closeMenu() : openMenu();
-                });
+            let h = '<div class="cal-section">';
 
-                closeBtn?.addEventListener('click', closeMenu);
+            // ── Mes actual ──
+            h += '<div class="cal-block">';
+            h += '<div class="cal-block__head">';
+            h += '<span class="cal-block__month">' + mn[mo] + '</span>';
+            h += '<span class="cal-block__year">' + y + '</span>';
+            h += '</div>';
+            h += '<div class="cg">';
+            dn.forEach(d => h += '<div class="cg-h">' + d + '</div>');
+            for (let i = 0; i < off1; i++) h += '<div class="cg-d empty"></div>';
+            for (let d = 1; d <= tot1; d++) {
+                const dow = new Date(y, mo, d).getDay();
+                const isPast = d < today;
+                const isToday = d === today;
+                const isTutor = days.includes(dow);
+                let c = 'cg-d';
+                if (isPast) c += ' past' + (isTutor ? ' tutor' : '');
+                else if (isToday) c += ' today';
+                else if (isTutor) c += ' tutor';
+                h += '<div class="' + c + '">' + d + '</div>';
+            }
+            h += '</div></div>';
 
-                document.addEventListener('click', (e) => {
-                    if (menu.classList.contains('active') && !menu.contains(e.target) && !toggle.contains(e.target)) {
-                        closeMenu();
-                    }
-                });
+            // Separador
+            h += '<div class="cal-divider"></div>';
 
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && menu.classList.contains('active')) {
-                        closeMenu();
-                    }
-                });
+            // ── Mes siguiente (1-15) ──
+            h += '<div class="cal-block">';
+            h += '<div class="cal-block__head">';
+            h += '<span class="cal-block__month">' + mn[nextMo] + '</span>';
+            h += '<span class="cal-block__year">' + nextY + '</span>';
+            h += '</div>';
+            h += '<div class="cg">';
+            dn.forEach(d => h += '<div class="cg-h">' + d + '</div>');
+            for (let i = 0; i < off2; i++) h += '<div class="cg-d empty"></div>';
+            for (let d = 1; d <= 15; d++) {
+                const dow = new Date(nextY, nextMo, d).getDay();
+                const isTutor = days.includes(dow);
+                let c = 'cg-d';
+                if (isTutor) c += ' tutor';
+                h += '<div class="' + c + '">' + d + '</div>';
+            }
+            h += '</div></div>';
 
-                menu.querySelectorAll('.navbar-link').forEach(link => {
-                    link.addEventListener('click', closeMenu);
-                });
+            // Leyenda
+            h += '<div class="cal-ref">';
+            h += '<span><span class="sq sq-t"></span>Tutoría</span>';
+            h += '<span><span class="sq sq-h"></span>Hoy</span>';
+            h += '<span><span class="sq sq-p"></span>Pasado</span>';
+            h += '</div>';
 
-                menu.addEventListener('keydown', (e) => {
-                    if (e.key !== 'Tab') return;
-                    const focusable = menu.querySelectorAll('button, a[href]');
-                    const first = focusable[0];
-                    const last = focusable[focusable.length - 1];
-                    if (e.shiftKey && document.activeElement === first) {
-                        e.preventDefault();
-                        last.focus();
-                    } else if (!e.shiftKey && document.activeElement === last) {
-                        e.preventDefault();
-                        first.focus();
-                    }
-                });
-
-                // Active Link logic
-                const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-                menu.querySelectorAll('.navbar-link').forEach(link => {
-                    const href = link.getAttribute('href');
-                    if (href === currentPath) {
-                        link.classList.add('active');
-                    } else {
-                        link.classList.remove('active');
-                    }
-                });
+            h += '</div>';
+            return h;
+        }
+ 
+        function countUp(id, target, ms) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let v = 0; const inc = target / (ms / 16);
+            (function t() {
+                v += inc;
+                if (v >= target) { el.textContent = target; return; }
+                el.textContent = Math.floor(v);
+                requestAnimationFrame(t);
             })();
+        }
+ 
+        document.addEventListener('DOMContentLoaded', init);
+ 
+        // Mobile menu
+        const toggle = document.getElementById('mobile-toggle');
+        const navMenu = document.getElementById('navbar-menu');
+        const menuClose = document.getElementById('menu-close');
+        toggle?.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            toggle.setAttribute('aria-expanded', navMenu.classList.contains('active'));
+        });
+        menuClose?.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+        });
     </script>
-
 </body>
-
-</html>
+ 
+</html> 
