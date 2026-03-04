@@ -53,6 +53,7 @@
             background-color: var(--bg-main);
             color: var(--text-main);
             height: 100vh;
+            height: 100dvh;
             width: 100vw;
             overflow: hidden;
         }
@@ -61,6 +62,7 @@
             display: grid;
             grid-template-rows: 70px 1fr 70px;
             height: 100vh;
+            height: 100dvh;
             width: 100vw;
         }
 
@@ -278,6 +280,38 @@
         .desc-item strong {
             color: var(--primary-teal);
             font-weight: 700;
+        }
+
+        .construction-banner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            color: var(--accent-gold);
+            opacity: 0.9;
+        }
+
+        .construction-icon {
+            margin-bottom: 2vh;
+            filter: drop-shadow(0 0 10px rgba(230, 155, 5, 0.3));
+        }
+
+        .construction-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1vh;
+        }
+
+        .construction-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-width: 80%;
         }
 
         .cal-outer-container {
@@ -568,6 +602,35 @@
             box-shadow: 0 4px 12px rgba(0, 199, 177, 0.2);
         }
 
+        /* Ajustes para Mobile */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-rows: 60px 1fr 80px; /* Ajuste altura header/footer */
+            }
+            
+            .footer-bar {
+                padding: 0 15px;
+                flex-direction: column;
+                justify-content: center;
+                gap: 5px;
+            }
+
+            .footer-info {
+                display: none; /* Ocultar info secundaria en mobile para dar espacio */
+            }
+
+            .wa-link {
+                width: 100%;
+                max-width: 330px;
+                font-size: 0.6rem;
+                padding: 6px 12px;
+            }
+
+            .sidebar {
+                border-right: none;
+            }
+        }
+
         #status-msg {
             position: fixed;
             bottom: 90px;
@@ -676,6 +739,14 @@
                         <button class="btn-cta" onclick="showMessage('Sistema de gestión en mantenimiento temporal.')">Ingresar al Sistema</button>
                     </div>
                 </div>
+
+                <div id="construction-panel" class="construction-banner" style="display: none; height: 100%; justify-content: center; background: rgba(0,0,0,0.1);">
+                    <svg class="construction-icon" width="80" height="80" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L1 21h22L12 2zm0 3.45L20.14 19H3.86L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z"/>
+                    </svg>
+                    <div class="construction-title" style="font-size: 1.5rem;">Sección en Construcción</div>
+                    <div class="construction-text" style="font-size: 0.9rem; margin-top: 10px;">Estamos trabajando intensamente en esta sección para brindarte el mejor contenido.<br>¡Vuelve pronto!</div>
+                </div>
             </div>
         </main>
     </div>
@@ -703,9 +774,9 @@
         mat: { nombre: "Liliana", wa: "5491166522722", label: "Matemática", tel: "+54 9 11 6652-2722", desc: ["Asistencia integral en: <strong>Ecuaciones, Funciones, Geometría y Razonamiento Lógico</strong>.", "Preparación técnica para <strong>exámenes finales y trabajos prácticos</strong>.", "Material de apoyo exclusivo basado en <strong>guías de estudio oficiales</strong>."] },
         len: { nombre: "Julieta", wa: "5491100000000", label: "Lengua", tel: "+54 9 11 0000-0000", desc: ["Ayuda en: <strong>Análisis sintáctico, Ortografía, Gramática y Comprensión de textos</strong>.", "Preparación para <strong>exámenes y trabajos prácticos</strong> académicos.", "Práctica con modelos de evaluación y <strong>guías de estudio</strong> vigentes."] },
         comp: { nombre: "Matías", wa: "5491111111111", label: "Computación", tel: "+54 9 11 1111-1111", desc: ["Capacitación en <strong>Herramientas Ofimáticas, Sistemas Operativos e Internet</strong>.", "Apoyo en <strong>proyectos digitales y alfabetización informática</strong>.", "Optimización del uso de <strong>plataformas educativas y software específico</strong>."] },
-        eng: { nombre: "Inglés", wa: "5491122222222", label: "Inglés", tel: "+54 9 11 2222-2222", desc: ["Refuerzo en <strong>Grammar, Vocabulary, Speaking y Listening comprehension</strong>.", "Preparación para <strong>certificaciones internacionales y exámenes escolares</strong>.", "Práctica intensiva con <strong>audios y lecturas graduadas</strong>."] },
+        eng: { nombre: "Inglés", wa: "5491122222222", label: "Inglés", tel: "+54 9 11 2222-2222", enConstruccion: true, desc: [] },
         art: { nombre: "Gabriela", wa: "5491133333333", label: "Arte", tel: "+54 9 11 3333-3333", desc: ["Exploración de <strong>Técnicas Visuales, Historia del Arte y Expresión Creativa</strong>.", "Apoyo en <strong>proyectos artísticos escolares y carpetas técnicas</strong>.", "Desarrollo de <strong>habilidades estéticas y análisis compositivo</strong>."] },
-        sec: { nombre: "Apoyo", wa: "5491144444444", label: "Apoyo", tel: "+54 9 11 4444-4444", desc: ["Seguimiento de <strong>todas las áreas del currículo secundario</strong>.", "Técnicas de <strong>estudio, organización del tiempo y síntesis de contenidos</strong>.", "Acompaenamiento personalizado para <strong>fortalecer el aprendizaje</strong>."] }
+        sec: { nombre: "Apoyo", wa: "5491144444444", label: "Apoyo", tel: "+54 9 11 4444-4444", enConstruccion: true, desc: [] }
     };
 
     /**
@@ -804,7 +875,28 @@
         btn.classList.add('on');
         document.getElementById('header-current-materia').textContent = data.nombre;
         const list = document.getElementById('main-desc-list');
-        list.innerHTML = data.desc.map(item => `<li class="desc-item">${item}</li>`).join('');
+        const r1 = document.querySelector('.r1');
+        const r2 = document.querySelector('.r2');
+        const constPanel = document.getElementById('construction-panel');
+
+        if (data.enConstruccion) {
+            r1.style.display = 'none';
+            r2.style.display = 'none';
+            constPanel.style.display = 'flex';
+        } else {
+            r1.style.display = 'grid';
+            r2.style.display = 'grid';
+            constPanel.style.display = 'none';
+            // Restaurar estructura original si se cambió por el banner en versiones anteriores (limpieza preventiva)
+            if (!list) {
+                const container = document.querySelector('.desc-container');
+                container.innerHTML = `<ul class="desc-list" id="main-desc-list"></ul>`;
+                const newList = document.getElementById('main-desc-list');
+                newList.innerHTML = data.desc.map(item => `<li class="desc-item">${item}</li>`).join('');
+            } else {
+                list.innerHTML = data.desc.map(item => `<li class="desc-item">${item}</li>`).join('');
+            }
+        }
         const waLink = document.getElementById('global-wa-link');
         const waText = document.getElementById('wa-button-text');
         waLink.href = `https://wa.me/${data.wa}`;
