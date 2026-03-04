@@ -56,6 +56,7 @@
             height: 100dvh;
             width: 100vw;
             overflow: hidden;
+            position: fixed; /* Prevents bounce scroll and helps with address bar issues */
         }
 
         .app-container {
@@ -602,35 +603,6 @@
             box-shadow: 0 4px 12px rgba(0, 199, 177, 0.2);
         }
 
-        /* Ajustes para Mobile */
-        @media (max-width: 768px) {
-            .app-container {
-                grid-template-rows: 60px 1fr 80px; /* Ajuste altura header/footer */
-            }
-            
-            .footer-bar {
-                padding: 0 15px;
-                flex-direction: column;
-                justify-content: center;
-                gap: 5px;
-            }
-
-            .footer-info {
-                display: none; /* Ocultar info secundaria en mobile para dar espacio */
-            }
-
-            .wa-link {
-                width: 100%;
-                max-width: 330px;
-                font-size: 0.6rem;
-                padding: 6px 12px;
-            }
-
-            .sidebar {
-                border-right: none;
-            }
-        }
-
         #status-msg {
             position: fixed;
             bottom: 90px;
@@ -644,6 +616,77 @@
             font-weight: 600;
             display: none;
             z-index: 1000;
+        }
+
+        /* Ajustes Críticos para Mobile */
+        @media only screen and (max-width: 768px) {
+            html, body {
+                height: 100% !important;
+                height: 100dvh !important;
+                overflow: hidden !important;
+                position: fixed !important;
+                width: 100vw !important;
+            }
+
+            .app-container {
+                display: grid !important;
+                grid-template-rows: 60px 1fr 85px !important;
+                grid-template-columns: 100% !important;
+                height: 100% !important;
+                height: 100dvh !important;
+            }
+
+            header.app-header {
+                grid-template-columns: 1fr !important;
+                height: 60px !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+
+            .header-brand-box {
+                display: none !important;
+            }
+
+            .app-body {
+                display: block !important;
+                height: 100% !important;
+                overflow: hidden !important;
+            }
+
+            nav.sidebar {
+                display: none !important;
+            }
+
+            main.main-content {
+                width: 100% !important;
+                height: 100% !important;
+                display: block !important;
+            }
+
+            footer.footer-bar {
+                display: flex !important;
+                padding: 10px 15px !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                height: 85px !important;
+                gap: 8px !important;
+                width: 100% !important;
+            }
+
+            .footer-info {
+                display: none !important;
+            }
+
+            a.wa-link {
+                display: flex !important;
+                width: 95% !important;
+                max-width: 320px !important;
+                font-size: 0.65rem !important;
+                padding: 10px 12px !important;
+                justify-content: center !important;
+                margin: 0 auto !important;
+            }
         }
     </style>
 </head>
