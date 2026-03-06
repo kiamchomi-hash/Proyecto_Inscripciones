@@ -1,0 +1,44 @@
+{
+  "name": "pagina_siglo21",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "server:build": "tsc -p tsconfig.server.json",
+    "server:start": "node dist/server.js",
+    "server:dev": "npx ts-node -P tsconfig.server.json src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiamchomi-hash/Proyecto_Inscripciones.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/kiamchomi-hash/Proyecto_Inscripciones/issues"
+  },
+  "homepage": "https://github.com/kiamchomi-hash/Proyecto_Inscripciones#readme",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "express": "^5.2.1",
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.3.5",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "tailwindcss": "^4.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
- 
+
 <head>
     <script>history.scrollRestoration = "manual";</script>
     <meta charset="UTF-8">
@@ -11,10 +11,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&family=Unbounded:wght@400;600;700;800;900&display=swap" rel="stylesheet">
- 
+
     <link rel="stylesheet" href="shared/navbar.css">
     <link rel="stylesheet" href="shared/background.css">
- 
+
     <style>
         :root {
             --color-deep-dark-bg: #013729;
@@ -30,617 +30,716 @@
             --cau-brand-blue: #005587;
             --cau-brand-green: #058c70;
             --navbar-height: 60px;
-            --sidebar-w: 230px;
-            --mat-accent: #00c7b1;
+
+            /* Paleta prueba2 */
+            --primary-teal: #00c7b1;
+            --primary-dark: #013729;
+            --primary-mid: #008c7d;
+            --primary-accent: #009681;
+            --primary-deep: #006c5b;
+            --selected-bg: #00c7b1;
+            --selected-text: #042926;
+            --hover-bg: #0d2a28;
+            --hover-text: #07bfc5;
+            --bg-main: #162f2e;
+            --bg-temas: #0e1918;
+            --bg-sidebar: #051b1b;
+            --bg-footer: #013729;
+            --text-main: #e7d6b4;
+            --text-muted: #87a89e;
+            --accent-gold: #e69b05;
+            --accent-slate: #718096;
+            --border-light: rgba(0, 199, 177, 0.1);
+            --border-visible: rgba(0, 199, 177, 0.7);
+            --transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            --sidebar-width: 180px;
         }
- 
-        * { box-sizing: border-box; }
- 
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
         body {
-            font-family: 'DM Sans', sans-serif;
-            color: white;
+            background-color: var(--color-deep-dark-bg);
+            color: var(--text-main);
             height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        .page-wrapper {
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
             overflow: hidden;
         }
- 
-        /* ════════════════════════════════════════
-           LAYOUT SHELL
-           ════════════════════════════════════════ */
-        .shell {
-            flex: 1; min-height: 0;
-            display: flex; flex-direction: column;
-            max-width: 1600px; width: 100%;
-            margin: 0 auto; padding: 0.35rem;
-        }
- 
-        .frame {
-            flex: 1; min-height: 0;
-            display: flex; flex-direction: column;
-            border-radius: 0.6rem;
-            overflow: hidden;
-            background: #091a18;
-        }
- 
-        @media (min-width: 1024px) {
-            .frame { flex-direction: row; }
-        }
- 
-        /* ════════════════════════════════════════
-           SIDEBAR
-           ════════════════════════════════════════ */
-        .sidebar {
-            display: flex;
-            background: #051211;
-            flex-shrink: 0;
-        }
- 
-        @media (max-width: 1023px) {
-            .sidebar {
-                overflow-x: auto; scrollbar-width: none;
-                border-bottom: 3px solid var(--mat-accent);
-            }
-            .sidebar::-webkit-scrollbar { display: none; }
-        }
- 
-        @media (min-width: 1024px) {
-            .sidebar {
-                flex-direction: column;
-                width: var(--sidebar-w);
-                min-width: var(--sidebar-w);
-            }
-        }
- 
-        .sb-btn {
+
+        .contained-frame {
             flex: 1;
-            display: flex; align-items: center; gap: 0.75rem;
-            padding: 0.65rem 1.15rem;
-            background: transparent; border: none; cursor: pointer;
-            color: #6b8f8a;
+            min-height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            padding: 0.5rem;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-rows: 55px 1fr 55px;
+            width: 100%;
+            max-width: 1400px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .app-header {
+            background: var(--bg-sidebar);
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            border-bottom: 1px solid var(--border-light);
+            z-index: 300;
+        }
+
+        .header-brand-box {
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            border-right: 1px solid var(--border-light);
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .header-brand__main {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        .header-current-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .header-brand__current {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--primary-teal);
+            text-align: center;
+        }
+
+        .app-body {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: #051211;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-light);
+            height: 100%;
+        }
+
+        .sb-btn {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            cursor: pointer;
+            border: none;
+            background: #051211;
+            color: var(--text-muted);
+            transition: var(--transition);
             position: relative;
-            transition: color 0.25s, background 0.25s;
-            min-width: 130px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
- 
-        @media (min-width: 1024px) {
-            .sb-btn {
-                min-width: unset;
-                padding: 0 1.25rem;
-            }
-        }
- 
+
         .sb-btn__bar {
             position: absolute;
-            background: var(--mat-accent);
-            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0%;
+            background: var(--primary-teal);
+            transition: var(--transition);
         }
- 
-        /* Mobile: bottom bar */
-        @media (max-width: 1023px) {
-            .sb-btn__bar {
-                bottom: 0; left: 10%; right: 10%; height: 3px;
-                transform: scaleX(0);
-            }
-        }
- 
-        /* Desktop: left bar */
-        @media (min-width: 1024px) {
-            .sb-btn__bar {
-                left: 0; top: 15%; bottom: 15%; width: 4px;
-                transform: scaleY(0);
-                border-radius: 0 3px 3px 0;
-            }
-        }
- 
+
         .sb-btn__dot {
-            width: 8px; height: 8px;
-            border-radius: 2px;
-            background: currentColor;
-            opacity: 0.4;
-            transition: all 0.3s;
-            flex-shrink: 0;
+            width: 5px;
+            height: 5px;
+            background: #203646;
+            border-radius: 50%;
+            margin-right: 12px;
+            transition: var(--transition);
         }
- 
+
         .sb-btn__txt {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 0.7rem;
             font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.4px;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
         }
- 
-        @media (min-width: 1024px) {
-            .sb-btn__txt { white-space: normal; }
+
+        .sb-btn:hover {
+            color: var(--text-main);
+            background: #0a1716;
         }
- 
-        .sb-btn:hover { color: #a0c5c0; background: rgba(255,255,255,0.02); }
- 
+
         .sb-btn.on {
-            color: white;
-            background: rgba(0,199,177,0.06);
+            color: #fff;
+            background: #051d1a;
         }
- 
-        .sb-btn.on .sb-btn__bar {
-            transform: scaleX(1);
-        }
- 
-        @media (min-width: 1024px) {
-            .sb-btn.on .sb-btn__bar { transform: scaleY(1); }
-        }
- 
-        .sb-btn.on .sb-btn__dot {
-            opacity: 1;
-            background: var(--mat-accent);
-            box-shadow: 0 0 6px var(--mat-accent);
-        }
- 
-        /* ════════════════════════════════════════
-           CONTENT BODY
-           ════════════════════════════════════════ */
-        .body {
-            flex: 1; min-height: 0;
-            display: flex; flex-direction: column;
+
+        .sb-btn.on .sb-btn__bar { height: 40%; }
+        .sb-btn.on .sb-btn__dot { background: var(--primary-teal); box-shadow: 0 0 8px var(--primary-teal); }
+
+        .main-content {
+            background: var(--bg-main);
+            height: 100%;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
- 
-        @media (max-width: 1023px) {
-            .body {
-                overflow-y: auto; scrollbar-width: none;
-            }
-            .body::-webkit-scrollbar { display: none; }
-        }
- 
+
         .panel {
-            display: flex; flex-direction: column;
-            flex: 1; min-height: 0;
-            animation: fadeUp 0.35s cubic-bezier(0.4,0,0.2,1) forwards;
-        }
- 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(6px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
- 
-        /* ──────────────────────────────────────
-           ROW 1 — Temas + Carrusel
-           ────────────────────────────────────── */
-        .r1 {
-            flex-shrink: 0;
-            display: grid;
-            grid-template-columns: 1fr;
-            background: #0d2624;
-        }
- 
-        @media (min-width: 1024px) {
-            .r1 { grid-template-columns: 1fr 340px; }
-        }
- 
-        .r1-temas {
-            padding: 0.75rem 1.2rem;
-        }
- 
-        .lbl {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 0.55rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.22em;
-            color: var(--mat-accent);
-            margin-bottom: 0.4rem;
-            display: block;
-        }
- 
-        .pills {
-            display: flex; flex-wrap: wrap; gap: 0.35rem;
-        }
- 
-        .pill {
-            font-family: 'Atkinson Hyperlegible', sans-serif;
-            font-size: 0.75rem; font-weight: 700;
-            padding: 0.4rem 0.85rem;
-            border-radius: 9999px;
-            background: rgba(0,199,177,0.12);
-            color: #b8e4de;
-            border: none;
-            text-transform: uppercase;
-            letter-spacing: 0.01em;
-            transition: all 0.2s;
-        }
- 
-        .pill:hover {
-            background: var(--color-highlight);
-            color: #051211;
-        }
- 
-        /* Carrusel de imágenes */
-        .r1-carousel {
-            position: relative;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out;
             overflow: hidden;
-            min-height: 130px;
-            background: #081c1a;
-            border-left: 1px solid rgba(255,255,255,0.04);
         }
- 
-        @media (max-width: 1023px) {
-            .r1-carousel {
-                min-height: 160px;
-                border-left: none;
-                border-top: 1px solid rgba(255,255,255,0.04);
-            }
+
+        .panel.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
- 
+
+        .r1 {
+            display: grid;
+            grid-template-columns: 50% 50%;
+            flex: 4;
+            min-height: 0;
+            border-bottom: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .r2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 0;
+            background: rgba(0,0,0,0.18);
+            flex: 5;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .carousel-container {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
         .carousel-track {
             display: flex;
             height: 100%;
-            position: absolute; inset: 0;
-            transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+            transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
         }
- 
-        .carousel-track img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            flex-shrink: 0;
-            display: block;
-        }
- 
-        .carousel-dots {
-            position: absolute; bottom: 8px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 5px; z-index: 2;
-        }
- 
-        .carousel-dots button {
-            width: 7px; height: 7px;
-            border-radius: 50%; border: none;
-            background: rgba(255,255,255,0.3);
-            cursor: pointer;
-            transition: all 0.25s;
-            padding: 0;
-        }
- 
-        .carousel-dots button.on {
-            background: var(--color-accent);
-            box-shadow: 0 0 6px rgba(0,255,225,0.5);
-            width: 18px; border-radius: 4px;
-        }
- 
-        .carousel-nav {
-            position: absolute; top: 50%; right: 8px;
-            transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 4px; z-index: 2;
-        }
- 
-        .carousel-nav button {
-            width: 24px; height: 24px;
-            border-radius: 4px; border: none;
-            background: rgba(0,0,0,0.5);
-            color: white; cursor: pointer;
-            font-size: 0.7rem;
-            display: grid; place-items: center;
-            transition: background 0.2s;
-            backdrop-filter: blur(4px);
-        }
- 
-        .carousel-nav button:hover { background: rgba(0,199,177,0.6); }
- 
-        /* ──────────────────────────────────────
-           ROW 2 — Calendario + Logros
-           ────────────────────────────────────── */
-        .r2 {
-            flex: 1; min-height: 0;
-            display: grid;
-            grid-template-columns: 1fr;
-        }
- 
-        @media (min-width: 1024px) {
-            .r2 { grid-template-columns: 1fr 1fr; }
-        }
- 
-        .r2-cal {
-            padding: 0.75rem 1.2rem;
-            display: flex; flex-direction: column;
-            background: #091a18;
-            min-height: 0;
-        }
- 
-        @media (min-width: 1024px) {
-            .r2-cal {
-                border-right: 1px solid rgba(255,255,255,0.04);
-                overflow-y: auto; scrollbar-width: none;
-            }
-            .r2-cal::-webkit-scrollbar { display: none; }
-        }
- 
-        /* ── Calendario rediseñado ── */
-        .cal-section {
+        .carousel-slide { min-width: 100%; height: 100%; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: contain; }
+
+        .r1-temas {
+            background: var(--bg-temas);
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .desc-container {
             flex: 1;
-            min-height: 0;
-        }
-
-        .cal-block { flex-shrink: 0; }
-
-        .cal-block__head {
             display: flex;
-            align-items: baseline;
-            gap: 0.35rem;
-            margin-bottom: 0.35rem;
+            flex-direction: column;
+            padding: 1vh 25px;
+            margin: 1.5vh 20px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0, 199, 177, 0.1);
+            overflow: hidden;
         }
 
-        .cal-block__month {
-            font-family: 'Unbounded', sans-serif;
+        .desc-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-evenly;
+        }
+
+        .desc-item {
+            position: relative;
+            padding-left: 35px;
+            font-size: clamp(0.7rem, 1.8vh, 1rem);
+            line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        .desc-item::before {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 0.6em;
+            width: 7px;
+            height: 7px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary-teal);
+        }
+
+        .desc-item strong {
+            color: var(--primary-teal);
+            font-weight: 700;
+        }
+
+        .construction-banner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            color: var(--accent-gold);
+            opacity: 0.9;
+        }
+
+        .construction-icon {
+            margin-bottom: 2vh;
+            filter: drop-shadow(0 0 10px rgba(230, 155, 5, 0.3));
+        }
+
+        .construction-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1vh;
+        }
+
+        .construction-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-width: 80%;
+        }
+
+        .cal-outer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 0;
+            width: 100%;
+            padding: 8px 15px;
+            overflow: hidden;
+        }
+
+        .cal-box {
+            background: rgba(0, 0, 0, 0.12);
+            border: 1.5px solid var(--border-visible);
+            border-radius: 12px;
+            padding: 0;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 199, 177, 0.05);
+            position: relative;
+        }
+
+        .cal-header-days {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            background: rgba(0, 199, 177, 0.04);
+            border-bottom: 1.5px solid var(--border-visible);
+            padding-left: 0;
+            flex-shrink: 0;
+        }
+
+        .cal-h {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary-teal);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            padding: 8px 0;
+            position: relative;
+        }
+
+        .cal-rows-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-left: 0;
+            position: relative;
+        }
+
+        .cal-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .loader-ring {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-light);
+            border-top: 2px solid var(--primary-teal);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .cal-week-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .cal-week-label {
+            display: flex;
+            align-items: stretch;
+            height: 1.8rem;
+            width: 100%;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: transparent;
+            border-bottom: 1px solid rgba(0, 199, 177, 0.1);
+            position: relative;
+            z-index: 5;
+        }
+
+        .cal-month-tag {
+            background: var(--accent-slate);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 25%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding: 0 4px;
+        }
+
+        .cal-week-text {
+            background: rgba(113, 128, 150, 0.15);
+            color: #ffffff;
             font-size: 0.68rem;
             font-weight: 700;
-            color: white;
-        }
-
-        .cal-block__year {
-            font-size: 0.58rem;
-            font-weight: 600;
-            color: #3d7a72;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 25px 0 15px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
+            width: fit-content;
         }
 
         .cg {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
-        }
-
-        .cg-h {
-            text-align: center;
-            font-size: 0.5rem;
-            font-weight: 800;
-            color: var(--color-highlight);
-            padding: 0 0 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            border-bottom: 1px solid rgba(0,199,177,0.1);
-            margin-bottom: 1px;
+            grid-template-columns: repeat(5, 1fr);
+            flex: 1;
+            padding: 0;
+            margin: -1.5px 0 0 0;
+            z-index: 1;
         }
 
         .cg-d {
-            text-align: center;
-            font-size: 0.68rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
             font-weight: 600;
-            padding: 4px 0;
-            border-radius: 5px;
-            color: rgba(255,255,255,0.5);
-            background: rgba(255,255,255,0.02);
+            background: rgba(255,255,255,0.01);
+            border-top: 1px solid transparent;
+            border-left: 1px solid transparent;
+            border-right: 1px solid rgba(0, 199, 177, 0.1);
+            border-bottom: 1px solid rgba(0, 199, 177, 0.1);
+            transition: var(--transition);
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+            height: 100%;
             position: relative;
-            transition: background 0.15s;
         }
 
-        .cg-d:hover:not(.past):not(.empty) {
-            background: rgba(0,199,177,0.08);
+        .cg-d:nth-child(5n) { border-right: none; }
+
+        .cg-d:hover:not(.past):not(.selected) {
+            background: var(--hover-bg) !important;
+            color: var(--hover-text) !important;
+            border-color: rgba(7, 191, 197, 0.6) !important;
+            z-index: 10;
         }
 
-        .cg-d.empty { background: none; }
+        .cg-d.selected {
+            background: var(--selected-bg) !important;
+            color: var(--selected-text) !important;
+            font-weight: 800 !important;
+            border-bottom-color: transparent !important;
+            z-index: 2;
+        }
+
+        .cg-d.selected:not(:nth-child(5n+1)) {
+            border-left: 1px solid rgba(4, 41, 38, 0.15) !important;
+        }
+
+        .cg-d.past + .cg-d.selected {
+            border-left: 1px solid transparent !important;
+        }
+
+        .cg-d.selected:hover {
+            background: #00b09d !important;
+        }
 
         .cg-d.past {
-            background: #111f1e;
-            color: #283d3b;
+            color: rgba(255, 255, 255, 0.1) !important;
+            background: rgba(255, 255, 255, 0.005) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+            cursor: not-allowed;
             pointer-events: none;
+            z-index: 1;
         }
 
-        .cg-d.today {
-            background: var(--color-highlight);
-            color: #051211;
-            font-weight: 900;
-            box-shadow: 0 2px 8px rgba(0,199,177,0.4);
-        }
-
-        .cg-d.tutor {
-            background: rgba(0,199,177,0.1);
-            color: var(--color-accent);
-            font-weight: 700;
-            border: 1px solid rgba(0,199,177,0.25);
-        }
-
-        .cg-d.tutor.past {
-            border-color: transparent;
-            color: #283d3b;
-            background: #111f1e;
-        }
-
-        .cal-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0,199,177,0.15), transparent);
-            margin: 0.1rem 0;
-        }
-
-        .cal-ref {
+        .r2-gestion {
             display: flex;
-            gap: 0.65rem;
-            font-size: 0.52rem;
-            font-weight: 700;
-            color: #4c7a72;
-            margin-top: auto;
-            padding-top: 0.2rem;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            min-height: 0;
+            padding: 0 8%;
+            border-left: 1px solid rgba(0, 199, 177, 0.1);
+            overflow: hidden;
         }
 
-        .cal-ref span {
+        .lbl { font-size: 0.65rem; font-weight: 800; color: var(--primary-teal); text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 1vh; }
+
+        .footer-bar {
+            background: var(--bg-footer);
+            border-top: 1px solid var(--border-light);
             display: flex;
             align-items: center;
-            gap: 3px;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 200;
         }
 
-        .cal-ref .sq {
-            width: 9px;
-            height: 9px;
-            border-radius: 3px;
-            display: inline-block;
-        }
-
-        .cal-ref .sq-t {
-            background: rgba(0,199,177,0.1);
-            border: 1px solid rgba(0,199,177,0.25);
-        }
-
-        .cal-ref .sq-h {
-            background: var(--color-highlight);
-        }
-
-        .cal-ref .sq-p {
-            background: #111f1e;
-        }
- 
-        /* Logros */
-        .r2-logros {
-            padding: 0.75rem 1.2rem;
-            display: flex; flex-direction: column;
-            align-items: center;
-            text-align: center; gap: 0.5rem;
-            background: #0b1f1d;
-        }
- 
-        .big-num {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 4rem;
-            font-weight: 900;
-            line-height: 0.9;
-            color: var(--color-accent);
-            text-shadow: 0 0 40px rgba(0,255,225,0.15);
-            letter-spacing: -0.04em;
-        }
- 
-        .big-label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: #5ea69d;
-        }
- 
-        .big-sub {
-            font-size: 0.58rem;
-            color: #3d7a72;
-            font-weight: 500;
-        }
- 
-        .mini-bars {
+        .footer-info {
             display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 36px;
+            align-items: center;
+            gap: 30px;
         }
 
-        .mini-bars span {
-            width: 14px;
-            border-radius: 2px 2px 0 0;
-            background: rgba(0,199,177,0.12);
+        .info-item {
+            display: flex;
+            flex-direction: column;
         }
 
-        .mini-bars span.hi {
-            background: var(--color-highlight);
-        }
-        .btn-cta {
-            margin-top: auto;
-            padding: 0.6rem 1.8rem;
-            background: linear-gradient(135deg, var(--cau-brand-blue), var(--cau-brand-green));
-            color: white;
-            font-family: 'Unbounded', sans-serif;
-            font-size: 0.6rem; font-weight: 700;
+        .info-item__label {
+            font-size: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.14em;
-            border-radius: 6px; border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            color: var(--primary-teal);
+            font-weight: 800;
+            margin-bottom: 1px;
         }
- 
-        .btn-cta:hover {
-            filter: brightness(1.2);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(5,140,112,0.4);
+
+        .info-item__val {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-main);
         }
- 
-        /* ──────────────────────────────────────
-           ROW 3 — Contacto
-           ────────────────────────────────────── */
-        .r3 {
-            flex-shrink: 0;
-            display: flex; flex-direction: column;
-            gap: 0.7rem; align-items: center;
-            padding: 0.5rem 1.2rem;
-            background: var(--color-deep-dark-bg);
-        }
- 
-        @media (min-width: 768px) {
-            .r3 { flex-direction: row; justify-content: space-between; }
-        }
- 
-        .loc {
-            display: flex; align-items: center; gap: 0.6rem;
-        }
- 
-        .loc__icon {
-            width: 34px; height: 34px;
-            display: grid; place-items: center;
-            border-radius: 6px;
-            background: var(--color-highlight);
-            flex-shrink: 0;
-        }
- 
-        .loc__icon svg {
-            width: 16px; height: 16px;
-            color: var(--color-deep-dark-bg);
-            stroke-width: 2.5;
-        }
- 
-        .loc__sup {
-            display: block;
-            font-size: 0.5rem; font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: var(--color-secondary-highlight);
-        }
- 
-        .loc__addr {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 0.95rem; font-weight: 700;
-        }
- 
-        .wa {
-            display: inline-flex; align-items: center; gap: 0.55rem;
-            background: #25D366; color: white;
-            padding: 0.5rem 1rem;
+
+        .wa-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            text-decoration: none;
+            color: #FFFFFF;
+            background: #25D366;
+            padding: 8px 18px;
             border-radius: 8px;
-            text-decoration: none; font-weight: 700;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(37,211,102,0.25);
-        }
- 
-        .wa:hover {
-            filter: brightness(1.1);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(37,211,102,0.4);
-        }
- 
-        .wa svg { width: 22px; height: 22px; flex-shrink: 0; }
- 
-        .wa__lines {
-            display: flex; flex-direction: column;
-            text-align: left; line-height: 1.15;
-        }
- 
-        .wa__top {
-            font-size: 0.5rem; font-weight: 800;
+            font-weight: 800;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.08em; opacity: 0.85;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            width: 330px;
+            white-space: nowrap;
         }
- 
-        .wa__bot {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 0.68rem; font-weight: 600;
+
+        .wa-sep {
+            opacity: 0.4;
+            font-weight: 400;
+            margin: 0 4px;
+        }
+
+        .btn-cta {
+            width: 100%;
+            padding: 1.5vh;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary-mid);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .btn-cta:hover {
+            background: var(--primary-teal);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 199, 177, 0.2);
+        }
+
+        #status-msg {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            background: var(--primary-dark);
+            color: #00ffe1;
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 1px solid var(--primary-teal);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: none;
+            z-index: 1000;
+        }
+
+        /* Ajustes para Mobile */
+        @media only screen and (max-width: 768px) {
+            html, body {
+                height: 100% !important;
+                height: 100dvh !important;
+                overflow: hidden !important;
+                position: fixed !important;
+                width: 100vw !important;
+            }
+
+            .contained-frame {
+                padding: 0 !important;
+            }
+
+            .app-container {
+                display: grid !important;
+                grid-template-rows: 50px 1fr 70px !important;
+                grid-template-columns: 100% !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+
+            header.app-header {
+                grid-template-columns: 1fr !important;
+                height: 50px !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+
+            .header-brand-box {
+                display: none !important;
+            }
+
+            .app-body {
+                display: block !important;
+                height: 100% !important;
+                overflow: hidden !important;
+            }
+
+            nav.sidebar {
+                display: none !important;
+            }
+
+            main.main-content {
+                width: 100% !important;
+                height: 100% !important;
+                display: block !important;
+            }
+
+            footer.footer-bar {
+                display: flex !important;
+                padding: 8px 15px !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                height: 70px !important;
+                gap: 6px !important;
+                width: 100% !important;
+            }
+
+            .footer-info {
+                display: none !important;
+            }
+
+            a.wa-link {
+                display: flex !important;
+                width: 95% !important;
+                max-width: 320px !important;
+                font-size: 0.65rem !important;
+                padding: 10px 12px !important;
+                justify-content: center !important;
+                margin: 0 auto !important;
+            }
         }
     </style>
 </head>
- 
 <body>
-    <!-- ── Navbar ── -->
+
+    <!-- Navbar -->
     <nav class="main-navbar">
         <div class="navbar-container">
             <button class="mobile-menu-btn" id="mobile-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="navbar-menu">
@@ -682,286 +781,289 @@
             </div>
         </div>
     </nav>
- 
-    <main class="shell">
-        <div class="frame">
-            <nav class="sidebar" id="sidebar"></nav>
-            <section class="body" id="content"></section>
+
+    <!-- Contenido principal (prueba2) -->
+    <div id="status-msg">Mensaje Institucional</div>
+
+    <div class="page-wrapper">
+        <div class="contained-frame">
+        <div class="app-container">
+            <header class="app-header">
+                <div class="header-brand-box">
+                    <span class="header-brand__main">Centro Educativo<br>Villa Lugano</span>
+                </div>
+                <div class="header-current-box">
+                    <span class="header-brand__current" id="header-current-materia">Matemática</span>
+                </div>
+            </header>
+
+            <div class="app-body">
+                <nav class="sidebar">
+                    <button class="sb-btn on" data-id="mat" onclick="selectMateria(this)">
+                        <span class="sb-btn__bar"></span><span class="sb-btn__dot"></span>
+                        <span class="sb-btn__txt">Matemática</span>
+                    </button>
+                    <button class="sb-btn" data-id="len" onclick="selectMateria(this)">
+                        <span class="sb-btn__bar"></span><span class="sb-btn__dot"></span>
+                        <span class="sb-btn__txt">Lengua</span>
+                    </button>
+                    <button class="sb-btn" data-id="comp" onclick="selectMateria(this)">
+                        <span class="sb-btn__bar"></span><span class="sb-btn__dot"></span>
+                        <span class="sb-btn__txt">Computación</span>
+                    </button>
+                    <button class="sb-btn" data-id="eng" onclick="selectMateria(this)">
+                        <span class="sb-btn__bar"></span><span class="sb-btn__dot"></span>
+                        <span class="sb-btn__txt">Inglés</span>
+                    </button>
+                    <button class="sb-btn" data-id="art" onclick="selectMateria(this)">
+                        <span class="sb-btn__bar"></span><span class="sb-btn__dot"></span>
+                        <span class="sb-btn__txt">Arte</span>
+                    </button>
+                    <button class="sb-btn" data-id="sec" onclick="selectMateria(this)">
+                        <span class="sb-btn__bar"></span><span class="sb-btn__dot"></span>
+                        <span class="sb-btn__txt">Apoyo Secundario</span>
+                    </button>
+                    <div style="flex:1"></div>
+                </nav>
+
+                <main class="main-content">
+                    <div class="panel active" id="panel-main">
+                        <div class="r1">
+                            <div class="carousel-container">
+                                <div class="carousel-track" id="main-track">
+                                    <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1000&q=80" alt="Apoyo Escolar"></div>
+                                    <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1000&q=80" alt="Estudio"></div>
+                                </div>
+                            </div>
+                            <div class="r1-temas">
+                                <div class="desc-container">
+                                    <ul class="desc-list" id="main-desc-list">
+                                        <li class="desc-item">Asistencia integral en: <strong>Ecuaciones, Funciones, Geometría y Razonamiento Lógico</strong>.</li>
+                                        <li class="desc-item">Preparación técnica para <strong>exámenes finales y trabajos prácticos</strong>.</li>
+                                        <li class="desc-item">Material de apoyo exclusivo basado en <strong>guías de estudio oficiales</strong>.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="r2">
+                            <div class="cal-outer-container">
+                                <div class="cal-box">
+                                    <header class="cal-header-days">
+                                        <div class="cal-h">Lu</div>
+                                        <div class="cal-h">Ma</div>
+                                        <div class="cal-h">Mi</div>
+                                        <div class="cal-h">Ju</div>
+                                        <div class="cal-h">Vi</div>
+                                    </header>
+
+                                    <div class="cal-rows-container" id="calendar-body">
+                                        <div class="cal-loading-overlay">
+                                            <div class="loader-ring"></div>
+                                            <span style="font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase;">Sincronizando Buenos Aires...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="r2-gestion">
+                                <span class="lbl">Gestión de Alumnos</span>
+                                <h2 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 1.5vh; font-weight: 700;">Portal de Turnos</h2>
+                                <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 3vh;">
+                                    Acceda al sistema de reserva de consultas presenciales, visualice su progreso académico
+                                    y gestione las entregas pendientes de sus asignaturas.
+                                </p>
+                                <button class="btn-cta" onclick="showMessage('Sistema de gestión en mantenimiento temporal.')">Ingresar al Sistema</button>
+                            </div>
+                        </div>
+
+                        <div id="construction-panel" class="construction-banner" style="display: none; height: 100%; justify-content: center; background: rgba(0,0,0,0.1);">
+                            <svg class="construction-icon" width="80" height="80" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L1 21h22L12 2zm0 3.45L20.14 19H3.86L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z"/>
+                            </svg>
+                            <div class="construction-title" style="font-size: 1.5rem;">Sección en Construcción</div>
+                            <div class="construction-text" style="font-size: 0.9rem; margin-top: 10px;">Estamos trabajando intensamente en esta sección para brindarte el mejor contenido.<br>¡Vuelve pronto!</div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <footer class="footer-bar">
+                <div class="footer-info">
+                    <div class="info-item">
+                        <span class="info-item__label">Ubicación</span>
+                        <span class="info-item__val">Guaminí 4876, Villa Lugano</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-item__label">Sede</span>
+                        <span class="info-item__val">Villa Lugano</span>
+                    </div>
+                </div>
+                <a href="https://wa.me/5491166522722" id="global-wa-link" target="_blank" class="wa-link">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+                    <span id="wa-button-text">Liliana <span class="wa-sep"> | </span> +54 9 11 6652-2722</span>
+                </a>
+            </footer>
         </div>
-    </main>
- 
-    <script>
-        const M = [
-            {
-                id: 'mat', name: 'Matemática',
-                topics: ['Cálculo y Álgebra', 'Análisis de Funciones', 'Estadística', 'Geometría Analítica', 'Matemática Financiera', 'Probabilidad'],
-                imgs: [
-                    'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&q=75',
-                    'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=75',
-                    'https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&q=75'
-                ],
-                approved: 142, tutorDays: [1, 3, 5]
-            },
-            {
-                id: 'len', name: 'Lengua',
-                topics: ['Análisis Gramatical', 'Comprensión Lectora', 'Literatura Argentina', 'Escritura Académica'],
-                imgs: [
-                    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=75',
-                    'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=75',
-                    'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=75'
-                ],
-                approved: 128, tutorDays: [2, 4]
-            },
-            {
-                id: 'comp', name: 'Computación',
-                topics: ['Lógica de Programación', 'Bases de Datos', 'Desarrollo Web', 'Excel Avanzado'],
-                imgs: [
-                    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=75',
-                    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&q=75',
-                    'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600&q=75'
-                ],
-                approved: 95, tutorDays: [1, 4, 6]
-            },
-            {
-                id: 'eng', name: 'Inglés',
-                topics: ['Phonetics & Speaking', 'Grammar Structures', 'Technical Vocabulary', 'Listening Skills'],
-                imgs: [
-                    'https://images.unsplash.com/photo-1543167664-40d2aea7d031?w=600&q=75',
-                    'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=600&q=75',
-                    'https://images.unsplash.com/photo-1546410531-bb4caa6b3241?w=600&q=75'
-                ],
-                approved: 110, tutorDays: [2, 3, 5]
-            },
-            {
-                id: 'art', name: 'Arte',
-                topics: ['Historia del Arte', 'Composición Visual', 'Técnicas de Ilustración', 'Diseño Gráfico Base'],
-                imgs: [
-                    'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=75',
-                    'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=75',
-                    'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&q=75'
-                ],
-                approved: 76, tutorDays: [3, 5]
-            },
-            {
-                id: 'sec', name: 'Apoyo Secundario',
-                topics: ['Técnicas de Estudio', 'Orientación Vocacional', 'Nivelación General', 'Hábitos de Aprendizaje'],
-                imgs: [
-                    'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=75',
-                    'https://images.unsplash.com/photo-1491843351663-73149e21751d?w=600&q=75',
-                    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=75'
-                ],
-                approved: 210, tutorDays: [1, 2, 3, 4, 5]
-            }
+        </div>
+    </div>
+
+<script>
+    const contentData = {
+        mat: { nombre: "Liliana", wa: "5491166522722", label: "Matemática", tel: "+54 9 11 6652-2722", desc: ["Asistencia integral en: <strong>Ecuaciones, Funciones, Geometría y Razonamiento Lógico</strong>.", "Preparación técnica para <strong>exámenes finales y trabajos prácticos</strong>.", "Material de apoyo exclusivo basado en <strong>guías de estudio oficiales</strong>."] },
+        len: { nombre: "Julieta", wa: "5491100000000", label: "Lengua", tel: "+54 9 11 0000-0000", desc: ["Ayuda en: <strong>Análisis sintáctico, Ortografía, Gramática y Comprensión de textos</strong>.", "Preparación para <strong>exámenes y trabajos prácticos</strong> académicos.", "Práctica con modelos de evaluación y <strong>guías de estudio</strong> vigentes."] },
+        comp: { nombre: "Matías", wa: "5491111111111", label: "Computación", tel: "+54 9 11 1111-1111", desc: ["Capacitación en <strong>Herramientas Ofimáticas, Sistemas Operativos e Internet</strong>.", "Apoyo en <strong>proyectos digitales y alfabetización informática</strong>.", "Optimización del uso de <strong>plataformas educativas y software específico</strong>."] },
+        eng: { nombre: "Inglés", wa: "5491122222222", label: "Inglés", tel: "+54 9 11 2222-2222", enConstruccion: true, desc: [] },
+        art: { nombre: "Gabriela", wa: "5491133333333", label: "Arte", tel: "+54 9 11 3333-3333", desc: ["Exploración de <strong>Técnicas Visuales, Historia del Arte y Expresión Creativa</strong>.", "Apoyo en <strong>proyectos artísticos escolares y carpetas técnicas</strong>.", "Desarrollo de <strong>habilidades estéticas y análisis compositivo</strong>."] },
+        sec: { nombre: "Apoyo", wa: "5491144444444", label: "Apoyo", tel: "+54 9 11 4444-4444", enConstruccion: true, desc: [] }
+    };
+
+    async function getBuenosAiresTime() {
+        const endpoints = [
+            'https://worldtimeapi.org/api/timezone/America/Argentina/Buenos_Aires',
+            'https://timeapi.io/api/Time/current/zone?timeZone=America/Argentina/Buenos_Aires'
         ];
- 
-        const WA = '5491166522722';
-        let carouselTimer = null;
- 
-        function init() {
-            const sb = document.getElementById('sidebar');
-            sb.innerHTML = M.map((m, i) => `
-                <button class="sb-btn${i === 0 ? ' on' : ''}" data-id="${m.id}">
-                    <span class="sb-btn__bar"></span>
-                    <span class="sb-btn__dot"></span>
-                    <span class="sb-btn__txt">${m.name}</span>
-                </button>`).join('');
- 
-            sb.addEventListener('click', e => {
-                const b = e.target.closest('.sb-btn');
-                if (!b) return;
-                sb.querySelectorAll('.sb-btn').forEach(x => x.classList.remove('on'));
-                b.classList.add('on');
-                show(b.dataset.id);
-            });
- 
-            show(M[0].id);
-        }
- 
-        function show(id) {
-            if (carouselTimer) clearInterval(carouselTimer);
-            const m = M.find(x => x.id === id);
- 
-            document.getElementById('content').innerHTML = `
-            <div class="panel">
-                <div class="r1">
-                    <div class="r1-temas">
-                        <span class="lbl">Temas de estudio</span>
-                        <div class="pills">${m.topics.map(t => `<span class="pill">${t}</span>`).join('')}</div>
-                    </div>
-                    <div class="r1-carousel" id="carousel">
-                        <div class="carousel-track" id="ctrack">
-                            ${m.imgs.map(src => `<img src="${src}" alt="${m.name}" loading="lazy">`).join('')}
-                        </div>
-                        <div class="carousel-dots" id="cdots">
-                            ${m.imgs.map((_, i) => `<button data-i="${i}" class="${i === 0 ? 'on' : ''}"></button>`).join('')}
-                        </div>
-                        <div class="carousel-nav">
-                            <button id="cprev">&uarr;</button>
-                            <button id="cnext">&darr;</button>
-                        </div>
-                    </div>
-                </div>
- 
-                <div class="r2">
-                    <div class="r2-cal">
-                        <span class="lbl">Tutorías del mes</span>
-                        ${cal(m.tutorDays)}
-                    </div>
-                    <div class="r2-logros">
-                        <span class="lbl">Logros</span>
-                        <div class="big-num" id="ctr">${m.approved}</div>
-                        <div class="big-label">Alumnos aprobados</div>
-                        <div class="big-sub">rindieron y aprobaron sus exámenes</div>
-                        <div class="mini-bars" id="mbars"></div>
-                        <button onclick="alert('Funcionalidad de reserva próximamente')" class="btn-cta">Reservar Turno</button>
-                    </div>
-                </div>
- 
-                <div class="r3">
-                    <div class="loc">
-                        <div class="loc__icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
-                        <div><span class="loc__sup">Ubicación</span><span class="loc__addr">Guaminí 4876</span></div>
-                    </div>
-                    <a href="https://wa.me/${WA}" target="_blank" rel="noopener" class="wa">
-                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                        <div class="wa__lines"><span class="wa__top">${m.name}</span><span class="wa__bot">Consultar por WhatsApp</span></div>
-                    </a>
-                </div>
-            </div>`;
- 
-            countUp('ctr', m.approved, 900);
-            initCarousel(m.imgs.length);
 
-            // Mini barras decorativas para llenar logros
-            const bars = document.getElementById('mbars');
-            if (bars) {
-                const heights = [40, 65, 50, 80, 55, 90, 70, 100, 60, 75, 85, 95];
-                bars.innerHTML = heights.map((h, i) =>
-                    `<span style="height:${h}%" class="${i >= heights.length - 3 ? 'hi' : ''}"></span>`
-                ).join('');
+        for (const url of endpoints) {
+            try {
+                const response = await fetch(url, { signal: AbortSignal.timeout(4000) });
+                if (!response.ok) continue;
+                const data = await response.json();
+                const dateStr = data.datetime || data.dateTime;
+                if (dateStr) return new Date(dateStr);
+            } catch (e) {
+                console.warn(`Falla en endpoint: ${url}`);
             }
         }
- 
-        function initCarousel(total) {
-            let cur = 0;
-            const track = document.getElementById('ctrack');
-            const dots = document.getElementById('cdots');
-            if (!track || !dots) return;
- 
-            function go(i) {
-                cur = ((i % total) + total) % total;
-                track.style.transform = `translateX(-${cur * 100}%)`;
-                dots.querySelectorAll('button').forEach((d, idx) => d.classList.toggle('on', idx === cur));
-            }
- 
-            document.getElementById('cnext')?.addEventListener('click', () => go(cur + 1));
-            document.getElementById('cprev')?.addEventListener('click', () => go(cur - 1));
-            dots.addEventListener('click', e => {
-                const b = e.target.closest('button[data-i]');
-                if (b) go(+b.dataset.i);
-            });
- 
-            carouselTimer = setInterval(() => go(cur + 1), 4000);
+
+        try {
+            const options = { timeZone: 'America/Argentina/Buenos_Aires', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            const formatter = new Intl.DateTimeFormat([], options);
+            const parts = formatter.formatToParts(new Date());
+            const d = {};
+            parts.forEach(p => d[p.type] = p.value);
+            return new Date(d.year, d.month - 1, d.day, d.hour, d.minute, d.second);
+        } catch (e) {
+            return new Date();
         }
- 
-        function cal(days) {
-            const n = new Date(), y = n.getFullYear(), mo = n.getMonth();
-            const today = n.getDate();
-            const mn = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-            const dn = ['Do','Lu','Ma','Mi','Ju','Vi','Sa'];
+    }
 
-            // Mes actual
-            const tot1 = new Date(y, mo + 1, 0).getDate();
-            const off1 = new Date(y, mo, 1).getDay();
+    async function renderCalendar() {
+        const calendarBody = document.getElementById('calendar-body');
+        if (!calendarBody) return;
 
-            // Mes siguiente (primeros 15 días)
-            const nextMo = (mo + 1) % 12;
-            const nextY = mo === 11 ? y + 1 : y;
-            const off2 = new Date(nextY, nextMo, 1).getDay();
+        const officialTime = await getBuenosAiresTime();
+        const today = new Date(officialTime.getFullYear(), officialTime.getMonth(), officialTime.getDate());
+        const currentDayOfWeek = today.getDay();
 
-            let h = '<div class="cal-section">';
+        let diffToMonday = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
+        const anchorMonday = new Date(today);
+        anchorMonday.setDate(today.getDate() + diffToMonday);
 
-            // ── Mes actual ──
-            h += '<div class="cal-block">';
-            h += '<div class="cal-block__head">';
-            h += '<span class="cal-block__month">' + mn[mo] + '</span>';
-            h += '<span class="cal-block__year">' + y + '</span>';
-            h += '</div>';
-            h += '<div class="cg">';
-            dn.forEach(d => h += '<div class="cg-h">' + d + '</div>');
-            for (let i = 0; i < off1; i++) h += '<div class="cg-d empty"></div>';
-            for (let d = 1; d <= tot1; d++) {
-                const dow = new Date(y, mo, d).getDay();
-                const isPast = d < today;
-                const isToday = d === today;
-                const isTutor = days.includes(dow);
-                let c = 'cg-d';
-                if (isPast) c += ' past' + (isTutor ? ' tutor' : '');
-                else if (isToday) c += ' today';
-                else if (isTutor) c += ' tutor';
-                h += '<div class="' + c + '">' + d + '</div>';
+        const labels = ["Semana Actual", "Próxima Semana", "Semana Siguiente"];
+        let html = '';
+
+        for (let i = 0; i < 3; i++) {
+            const weekMonday = new Date(anchorMonday);
+            weekMonday.setDate(anchorMonday.getDate() + (i * 7));
+            const monthName = weekMonday.toLocaleString('es-ES', { month: 'long' });
+
+            html += `
+                <div class="cal-week-section">
+                    <div class="cal-week-label">
+                        <div class="cal-month-tag">${monthName}</div>
+                        <div class="cal-week-text">${labels[i]}</div>
+                    </div>
+                    <div class="cg">
+            `;
+
+            for (let d = 0; d < 5; d++) {
+                const cellDate = new Date(weekMonday);
+                cellDate.setDate(weekMonday.getDate() + d);
+                const isPast = cellDate < today;
+                const dayNum = cellDate.getDate().toString().padStart(2, '0');
+                html += `<div class="cg-d ${isPast ? 'past' : ''}" onclick="toggleDaySelection(this)">${dayNum}</div>`;
             }
-            h += '</div></div>';
+            html += `</div></div>`;
+        }
+        calendarBody.innerHTML = html;
+    }
 
-            // Separador
-            h += '<div class="cal-divider"></div>';
+    function showMessage(text) {
+        const msg = document.getElementById('status-msg');
+        msg.textContent = text;
+        msg.style.display = 'block';
+        setTimeout(() => { msg.style.display = 'none'; }, 4000);
+    }
 
-            // ── Mes siguiente (1-15) ──
-            h += '<div class="cal-block">';
-            h += '<div class="cal-block__head">';
-            h += '<span class="cal-block__month">' + mn[nextMo] + '</span>';
-            h += '<span class="cal-block__year">' + nextY + '</span>';
-            h += '</div>';
-            h += '<div class="cg">';
-            dn.forEach(d => h += '<div class="cg-h">' + d + '</div>');
-            for (let i = 0; i < off2; i++) h += '<div class="cg-d empty"></div>';
-            for (let d = 1; d <= 15; d++) {
-                const dow = new Date(nextY, nextMo, d).getDay();
-                const isTutor = days.includes(dow);
-                let c = 'cg-d';
-                if (isTutor) c += ' tutor';
-                h += '<div class="' + c + '">' + d + '</div>';
+    function toggleDaySelection(element) {
+        if(element.classList.contains('past')) return;
+        element.classList.toggle('selected');
+    }
+
+    function selectMateria(btn) {
+        const id = btn.getAttribute('data-id');
+        const data = contentData[id];
+        document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        document.getElementById('header-current-materia').textContent = data.nombre;
+        const list = document.getElementById('main-desc-list');
+        const r1 = document.querySelector('.r1');
+        const r2 = document.querySelector('.r2');
+        const constPanel = document.getElementById('construction-panel');
+
+        if (data.enConstruccion) {
+            r1.style.display = 'none';
+            r2.style.display = 'none';
+            constPanel.style.display = 'flex';
+        } else {
+            r1.style.display = 'grid';
+            r2.style.display = 'grid';
+            constPanel.style.display = 'none';
+            if (!list) {
+                const container = document.querySelector('.desc-container');
+                container.innerHTML = `<ul class="desc-list" id="main-desc-list"></ul>`;
+                const newList = document.getElementById('main-desc-list');
+                newList.innerHTML = data.desc.map(item => `<li class="desc-item">${item}</li>`).join('');
+            } else {
+                list.innerHTML = data.desc.map(item => `<li class="desc-item">${item}</li>`).join('');
             }
-            h += '</div></div>';
-
-            // Leyenda
-            h += '<div class="cal-ref">';
-            h += '<span><span class="sq sq-t"></span>Tutoría</span>';
-            h += '<span><span class="sq sq-h"></span>Hoy</span>';
-            h += '<span><span class="sq sq-p"></span>Pasado</span>';
-            h += '</div>';
-
-            h += '</div>';
-            return h;
         }
- 
-        function countUp(id, target, ms) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            let v = 0; const inc = target / (ms / 16);
-            (function t() {
-                v += inc;
-                if (v >= target) { el.textContent = target; return; }
-                el.textContent = Math.floor(v);
-                requestAnimationFrame(t);
-            })();
-        }
- 
-        document.addEventListener('DOMContentLoaded', init);
- 
-        // Mobile menu
-        const toggle = document.getElementById('mobile-toggle');
-        const navMenu = document.getElementById('navbar-menu');
-        const menuClose = document.getElementById('menu-close');
-        toggle?.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            toggle.setAttribute('aria-expanded', navMenu.classList.contains('active'));
-        });
-        menuClose?.addEventListener('click', () => {
-            navMenu.classList.remove('active');
-            toggle.setAttribute('aria-expanded', 'false');
-        });
-    </script>
+        const waLink = document.getElementById('global-wa-link');
+        const waText = document.getElementById('wa-button-text');
+        waLink.href = `https://wa.me/${data.wa}`;
+        waText.innerHTML = `${data.nombre} <span class="wa-sep"> | </span> ${data.tel}`;
+        document.querySelectorAll('.cg-d').forEach(d => d.classList.remove('selected'));
+    }
+
+    let currentSlide = 0;
+    function startAutoPlay() {
+        const track = document.getElementById('main-track');
+        if(!track) return;
+        setInterval(() => {
+            const count = track.children.length;
+            currentSlide = (currentSlide + 1) % count;
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }, 5000);
+    }
+
+    window.onload = function() {
+        renderCalendar();
+        startAutoPlay();
+    };
+
+    // Mobile menu
+    const toggle = document.getElementById('mobile-toggle');
+    const navMenu = document.getElementById('navbar-menu');
+    const menuClose = document.getElementById('menu-close');
+    toggle?.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', navMenu.classList.contains('active'));
+    });
+    menuClose?.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+        toggle.setAttribute('aria-expanded', 'false');
+    });
+</script>
+
 </body>
- 
-</html> 
+</html>

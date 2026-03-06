@@ -8,38 +8,64 @@ Static website for **Universidad Siglo 21 - CAU Villa Lugano**, a distance learn
 
 ## Running the Site
 
-No build step — open any `.html` file directly in a browser, or serve with any static file server:
-
 ```bash
-python3 -m http.server 8080
-# then open http://localhost:8080
+# Development (TypeScript directo)
+npm run dev
+
+# Producción (compilar primero)
+npm run build
+npm start
+
+# Compilar Tailwind CSS
+npm run css:build        # una vez
+npm run css:watch        # modo watch
+
+# El servidor corre en http://localhost:8080
 ```
 
 ## Tech Stack
 
-- **Frontend:** Vanilla HTML/CSS/JavaScript (ES6+)
-- **Styling:** Tailwind CSS (via CDN) + custom CSS variables
-- **Fonts:** Google Fonts — Inter (body), Atkinson Hyperlegible (pill tags)
-- **OCR:** Tesseract.js v4 (CDN, used in `index.html`)
+- **Frontend:** HTML/CSS/JavaScript (ES6+), migrando a TypeScript
+- **Backend:** Node.js + Express (TypeScript)
+- **Styling:** Tailwind CSS v4 (local via @tailwindcss/cli) + custom CSS variables
+- **Validación:** Zod (schemas para datos JSON)
+- **HTTP Client:** Axios (disponible, migración gradual desde fetch)
+- **Fonts:** Google Fonts — Inter (body), Atkinson Hyperlegible (pill tags), Unbounded (headings)
 - **Language:** All UI text and code comments are in Spanish (es-ES)
 
 ## Project Structure
 
 ```
-├── index.html              # Main page — careers catalog, enrollment form, OCR tool
-├── clases-apoyo.html       # Support classes page
+├── src/
+│   ├── server.ts           # Express server (sirve estáticos + API endpoints)
+│   ├── schemas.ts          # Zod schemas para datos_carreras y novedades_data
+│   └── styles/
+│       └── input.css       # Tailwind CSS entrada
+├── dist/                   # TypeScript compilado (gitignored)
+├── public/
+│   └── styles.css          # Tailwind CSS compilado (gitignored)
+├── index.html              # Main page — careers catalog, enrollment form
+├── clases-apoyo.html       # Support classes page (panel institucional)
 ├── contactos.html          # Contact page
 ├── faq.html                # FAQ page
 ├── sobre-nosotros.html     # About us page
 ├── novedades.html          # News page (page 1 of 10)
 ├── novedades2–10.html      # Paginated news pages
-├── datos_carreras.json     # Academic programs data (60+ entries), loaded at runtime
-├── novedades_data.json     # News items data, loaded at runtime by novedades*.html
+├── datos_carreras.json     # Academic programs data (60+ entries)
+├── novedades_data.json     # News items data
 ├── shared/
-│   ├── navbar.html         # Navbar markup (manually copied into each page)
-│   └── navbar.css          # Shared navbar styles (linked from most pages)
-└── imagenes/               # Image assets
+│   ├── navbar.html         # Navbar markup (canonical source)
+│   ├── navbar.css          # Shared navbar styles
+│   └── background.css      # Shared background styles
+├── imagenes/               # Image assets
+├── package.json            # npm config
+└── tsconfig.json           # TypeScript config
 ```
+
+## API Endpoints
+
+- `GET /api/carreras` — returns validated careers data (Zod)
+- `GET /api/novedades` — returns validated news data (Zod)
 
 ## Architecture Patterns
 
@@ -64,11 +90,11 @@ Defined in `:root` on each page:
 | `--color-text-light` | `#7ca19b` | Muted text |
 
 ### JavaScript
-All JS is inline `<script>` at the bottom of each HTML file — no separate `.js` files.
+Currently inline `<script>` at the bottom of each HTML file. Gradual migration to separate `.ts` files planned.
 
 ### Data Files
-- `datos_carreras.json` — fetched at runtime by `index.html` to render the careers catalog
-- `novedades_data.json` — fetched at runtime by `novedades*.html` to render news items; has a `pinned` object + `items` array
+- `datos_carreras.json` — fetched at runtime by `index.html`, validated by `CarrerasDataSchema`
+- `novedades_data.json` — fetched at runtime by `novedades*.html`, validated by `NovedadesDataSchema`
 
 ### novedades Pages
 News is split into 10 static HTML pages (`novedades.html`, `novedades2.html` … `novedades10.html`). Pagination logic runs in the inline JS of each page, deriving the current page number from the filename.
@@ -76,7 +102,6 @@ News is split into 10 static HTML pages (`novedades.html`, `novedades2.html` …
 ## Key Features (in index.html)
 
 - Fuzzy search (Levenshtein distance) over careers catalog
-- OCR via Tesseract.js for extracting prices from uploaded images
 - Drag-and-drop file upload
 - Fee calculator with discount logic
 - `localStorage` for user preferences
