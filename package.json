@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/kiamchomi-hash/Proyecto_Inscripciones#readme",
   "dependencies": {
+    "@next/third-parties": "^16.1.6",
     "@supabase/supabase-js": "^2.98.0",
     "@tailwindcss/postcss": "^4.2.1",
     "axios": "^1.13.6",

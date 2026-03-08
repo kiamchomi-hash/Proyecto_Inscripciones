@@ -71,3 +71,7 @@ Fidelidad visual                   ❌  No aplica aún
   formacion, cambia el texto seleccionar formacion por buscar carrera 
 -acreditar equivalencias si no en base de datos
 - detener carrouselle
+
+-favicon
+-cambiar svg deportistas federados
+-botón de formulario no lleva exactamente a formulario

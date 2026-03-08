@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Unbounded } from 'next/font/google';
 import Navbar from '@/components/navbar';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import './globals.css';
 import './navbar.css';
 
@@ -10,7 +11,11 @@ const unbounded = Unbounded({ subsets: ['latin'], variable: '--font-unbounded', 
 export const metadata: Metadata = {
   title: { default: 'CAU Villa Lugano - Universidad Siglo 21', template: '%s | CAU Villa Lugano' },
   description: 'Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21.',
+  verification: {
+    google: 'google2ba266d8a709b848',
+  },
 };
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +23,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <Navbar />
         {children}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
+
     </html>
   );
 }
