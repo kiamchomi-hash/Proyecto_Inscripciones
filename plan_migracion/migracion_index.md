@@ -58,3 +58,16 @@ Fidelidad visual                   ❌  No aplica aún
 - Formulario de inscripción con validación Zod
 - Usar next/image para imágenes de carreras
 - Considerar shadcn/ui para formularios y cards de carreras
+
+## Pendientes
+- Todos los modales correctos
+- revisar logica de ordenamiento
+- Mejorar responsive
+- Poner el botón de tipo de carrera en el formulario
+- Filtro por area (medicina, finanzas) en el buscador
+- carrouselle agregar inscribete ya y arreglar responsive
+- modales, agregar un modal de inscribete ya y los descuentos
+-  excelente, por ultimo, bloquear el tipo de carrera en el formulario no tiene sentido, quita esa funcion y en desktop hazlo un botón desplegable, del mismo tamaño que seleccionar
+  formacion, cambia el texto seleccionar formacion por buscar carrera 
+-acreditar equivalencias si no en base de datos
+- detener carrouselle
