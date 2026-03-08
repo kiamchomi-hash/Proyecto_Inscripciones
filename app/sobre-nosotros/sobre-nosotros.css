@@ -1,0 +1,144 @@
+/* ── Badge shimmer ─────────────────────────────────────── */
+.sn-badge {
+  background: linear-gradient(135deg, rgba(0, 199, 177, 0.15) 0%, rgba(0, 255, 225, 0.08) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+.sn-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 199, 177, 0.12), transparent);
+  animation: sn-shimmer 3s ease-in-out infinite;
+}
+@keyframes sn-shimmer {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+/* ── Glass card base ──────────────────────────────────── */
+.sn-glass {
+  background: linear-gradient(160deg, rgba(28, 47, 49, 0.9) 0%, rgba(22, 47, 46, 0.7) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+/* ── Feature cards ────────────────────────────────────── */
+.sn-feature-card {
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+.sn-feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(160deg, rgba(0, 199, 177, 0.12) 0%, rgba(4, 99, 83, 0.25) 100%);
+  transition: opacity 0.3s ease;
+}
+.sn-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 199, 177, 0.1), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.sn-feature-card:hover::before {
+  opacity: 1;
+}
+.sn-feature-card > * {
+  position: relative;
+  z-index: 1;
+}
+.sn-feature-card:hover .sn-icon-ring {
+  background: rgba(0, 199, 177, 0.25) !important;
+  box-shadow: 0 0 20px rgba(0, 199, 177, 0.2);
+}
+
+/* ── Glow divider ─────────────────────────────────────── */
+.sn-glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 199, 177, 0.4) 50%, transparent 100%);
+}
+
+/* ── Image containers ─────────────────────────────────── */
+.sn-img-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+.sn-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(6, 23, 22, 0.75) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+/* ── Stat card top accent ─────────────────────────────── */
+.sn-stat {
+  position: relative;
+  overflow: hidden;
+}
+.sn-stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00c7b1, #00ffe1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.sn-stat:hover::before {
+  opacity: 1;
+}
+
+/* ── Checklist items ──────────────────────────────────── */
+.sn-check-item {
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+.sn-check-item:hover {
+  transform: translateX(4px);
+  background-color: rgba(0, 199, 177, 0.05);
+}
+
+/* ── Map card gradient border ─────────────────────────── */
+.sn-map-card {
+  position: relative;
+  overflow: hidden;
+}
+.sn-map-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(160deg, rgba(0, 199, 177, 0.2), transparent 40%, transparent 60%, rgba(0, 199, 177, 0.1));
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── WhatsApp glow ────────────────────────────────────── */
+.sn-whatsapp-btn {
+  position: relative;
+}
+.sn-whatsapp-btn::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  opacity: 0;
+  z-index: -1;
+  filter: blur(12px);
+  transition: opacity 0.3s ease;
+}
+.sn-whatsapp-btn:hover::after {
+  opacity: 0.5;
+}
+

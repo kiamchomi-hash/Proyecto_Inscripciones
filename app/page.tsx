@@ -1,25 +1,38 @@
 import type { Metadata } from 'next';
+import { supabase } from '@/lib/supabase';
+import type { Carrera } from '@/components/index/types';
+import Hero from '@/components/index/hero';
+import CareersCatalog from '@/components/index/careers-catalog';
+import EnrollmentForm from '@/components/index/enrollment-form';
+import IndexFooter from '@/components/index/footer';
+import './index.css';
 
 export const metadata: Metadata = {
-  title: 'Inicio - Carreras Universitarias',
-  description: 'Explora mas de 60 carreras universitarias a distancia en CAU Villa Lugano, Universidad Siglo 21.',
+  title: 'Universidad Siglo 21 - CAU Villa Lugano: Oferta academica 2026',
+  description: 'Oferta academica Universidad Siglo 21 en Villa Lugano. Ideal para Zona Sur y Oeste: Celina, Madero, Tapiales, Soldati, Mataderos, Riachuelo, Budge.',
 };
 
-export default function HomePage() {
+export const revalidate = 3600; // revalidate every hour
+
+export default async function HomePage() {
+  const { data: carreras, error } = await supabase
+    .from('carreras')
+    .select('*')
+    .eq('activa', true)
+    .order('orden', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching carreras:', error.message);
+  }
+
+  const carrerasData: Carrera[] = carreras || [];
+
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] text-center">
-        <h1 className="text-4xl font-black text-white mb-4 uppercase tracking-tighter">
-          Carreras Universitarias
-        </h1>
-        <p className="text-xl font-bold mb-2" style={{ color: 'var(--color-highlight)' }}>
-          Catalogo de carreras
-        </p>
-        <p className="text-[#7ca19b] max-w-md mb-8">
-          La pagina principal con el catalogo completo de carreras se esta migrando a React.
-          Mientras tanto, el contenido completo sigue disponible en la version estatica.
-        </p>
-      </div>
-    </div>
+    <main className="flex-1">
+      <Hero />
+      <CareersCatalog carreras={carrerasData} />
+      <EnrollmentForm carreras={carrerasData} />
+      <IndexFooter />
+    </main>
   );
 }

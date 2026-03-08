@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from './icons';
 
 const NAV_LINKS = [
@@ -23,8 +23,23 @@ const SOCIALS = [
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  // Keep --navbar-height in sync with actual navbar size
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const h = Math.round(entry.contentRect.height);
+      document.documentElement.style.setProperty('--navbar-height', h + 'px');
+    });
+    ro.observe(nav);
+    // Set initial value
+    document.documentElement.style.setProperty('--navbar-height', nav.offsetHeight + 'px');
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -49,7 +64,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="main-navbar">
+    <nav ref={navRef} className="main-navbar">
       <div className="navbar-container">
         {/* Mobile toggle */}
         <button

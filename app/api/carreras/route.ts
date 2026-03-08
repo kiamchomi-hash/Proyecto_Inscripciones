@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getCarreras } from '@/lib/data';
 
+// TODO: conectar a Supabase tabla `carreras`
 export function GET() {
-  try {
-    const data = getCarreras();
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json({ error: 'Datos de carreras invalidos' }, { status: 500 });
-  }
+  return NextResponse.json({ error: 'Endpoint pendiente de migración a Supabase' }, { status: 501 });
 }

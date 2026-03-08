@@ -1,0 +1,407 @@
+'use client';
+
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
+import { type Carrera, CATEGORIES, getCategoryForCarrera } from './types';
+
+interface Props {
+  carreras: Carrera[];
+}
+
+export default function EnrollmentForm({ carreras }: Props) {
+  const [selectedCarrera, setSelectedCarrera] = useState('');
+  const [carreraSearch, setCarreraSearch] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedTipo, setSelectedTipo] = useState('');
+  const [equivalencias, setEquivalencias] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [localidad, setLocalidad] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Display categories (exclude 'all')
+  const formCategories = useMemo(() => CATEGORIES.filter(c => c.id !== 'all'), []);
+
+  // Detect category from selected carrera
+  const detectedCategory = useMemo(() => {
+    if (!selectedCarrera) return '';
+    const found = carreras.find(c => c.nombre === selectedCarrera);
+    if (!found) return '';
+    return getCategoryForCarrera(found);
+  }, [selectedCarrera, carreras]);
+
+  // The active filter: if carrera is selected, lock to its category; otherwise use manual selection
+  const activeFilter = detectedCategory || selectedTipo;
+
+  // Filtered carrera list for dropdown
+  const filteredCarreras = useMemo(() => {
+    let list = carreras;
+    if (activeFilter) {
+      const cat = CATEGORIES.find(c => c.id === activeFilter);
+      if (cat) {
+        list = list.filter(c => getCategoryForCarrera(c) === activeFilter);
+      }
+    }
+    if (carreraSearch.trim()) {
+      const q = carreraSearch.toLowerCase();
+      list = list.filter(c => c.nombre.toLowerCase().includes(q));
+    }
+    return list;
+  }, [carreras, carreraSearch, activeFilter]);
+
+  // Form validity: need nombre and at least email or telefono
+  const isValid = nombre.trim() && (email.trim() || telefono.trim());
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const selectCarrera = useCallback((nombre: string) => {
+    setSelectedCarrera(nombre);
+    setCarreraSearch(nombre);
+    setShowDropdown(false);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid || submitting) return;
+
+    setSubmitting(true);
+    setError('');
+
+    const { error: insertError } = await supabase.from('consultas').insert({
+      carrera: selectedCarrera || null,
+      tipo: activeFilter ? (CATEGORIES.find(c => c.id === activeFilter)?.label || activeFilter) : null,
+      modalidad: 'virtual',
+      equivalencias,
+      nombre: nombre.trim(),
+      apellido: apellido.trim(),
+      email: email.trim() || null,
+      telefono: telefono.trim() || null,
+      localidad: localidad.trim() || null,
+    });
+
+    setSubmitting(false);
+
+    if (insertError) {
+      setError('Hubo un error al enviar. Intenta de nuevo o contactanos por WhatsApp.');
+      console.error('Form submit error:', insertError.message);
+      return;
+    }
+
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+      setSelectedCarrera('');
+      setCarreraSearch('');
+      setSelectedTipo('');
+      setNombre('');
+      setApellido('');
+      setEmail('');
+      setTelefono('');
+      setLocalidad('');
+      setEquivalencias(false);
+    }, 4000);
+  };
+
+  return (
+    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid #00c7b1', background: '#162f2e' }}>
+      <div className="mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
+        <div className="relative" style={{ background: '#1c3a38', border: '1px solid rgba(0,199,177,0.3)', borderRadius: '1rem' }}>
+
+          {/* Success overlay */}
+          {success && (
+            <div className="form-success-overlay active">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <div className="w-16 h-16 rounded-full bg-[#00c7b1] flex items-center justify-center" style={{ animation: 'formSuccessPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both' }}>
+                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3} style={{ strokeDasharray: 30, strokeDashoffset: 30, animation: 'formSuccessCheck 0.4s ease 0.6s forwards' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="text-xl font-black text-white uppercase tracking-tight" style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 0.7s forwards' }}>
+                  Consulta enviada
+                </p>
+                <p className="text-sm text-[#7ca19b]" style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 0.85s forwards' }}>
+                  Nos comunicaremos a la brevedad
+                </p>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} noValidate>
+
+            {/* Header */}
+            <div className="px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(0,199,177,0.15)', borderRadius: '1rem 1rem 0 0' }}>
+              <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center">
+                <span className="text-white">FORMULARIO DE </span>
+                <span className="text-[#00c7b1]">CONTACTO</span>
+              </h2>
+            </div>
+
+            {/* Body: 2 columns on md */}
+            <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(0,199,177,0.15)' }}>
+
+              {/* Col 1: Carrera selection */}
+              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderBottom: '1px solid rgba(0,199,177,0.15)' }}>
+
+                {/* Carrera searchable dropdown + tipo filter */}
+                <div ref={dropdownRef}>
+                  <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">
+                    Seleccionar formación
+                  </label>
+
+                  {/* Search + mobile tipo side by side */}
+                  <div className="flex gap-1.5">
+                    <div className="relative flex-1 min-w-0">
+                      <input
+                        type="text"
+                        value={carreraSearch}
+                        onChange={e => { setCarreraSearch(e.target.value); setSelectedCarrera(''); setShowDropdown(true); }}
+                        onFocus={() => setShowDropdown(true)}
+                        placeholder="Seleccionar..."
+                        autoComplete="off"
+                        className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 pr-8 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                      />
+                      <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+
+                      {showDropdown && (
+                        <div className="absolute z-20 w-full mt-1 bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg shadow-xl overflow-hidden" style={{ maxHeight: 160, overflowY: 'auto' }}>
+                          {filteredCarreras.map(c => (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => selectCarrera(c.nombre)}
+                              className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[#00c7b1]/10 transition-colors"
+                            >
+                              {c.nombre}
+                            </button>
+                          ))}
+                          {filteredCarreras.length === 0 && (
+                            <div className="px-3 py-2 text-sm text-[#7ca19b]">Sin resultados</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Mobile tipo selector */}
+                    <div className="relative md:hidden shrink-0">
+                      <select
+                        value={activeFilter}
+                        disabled={!!detectedCategory}
+                        onChange={e => { setSelectedTipo(e.target.value); setSelectedCarrera(''); setCarreraSearch(''); }}
+                        className={`appearance-none bg-[#0f2825] border rounded-lg pl-2.5 pr-7 py-1.5 text-xs font-bold focus:outline-none transition-colors ${
+                          detectedCategory
+                            ? 'border-[#00c7b1]/50 text-[#00c7b1] opacity-70 cursor-not-allowed'
+                            : activeFilter
+                              ? 'border-[#00c7b1]/50 text-[#00c7b1] cursor-pointer'
+                              : 'border-[#00c7b1]/25 text-[#7ca19b] cursor-pointer'
+                        }`}
+                        style={{ colorScheme: 'dark' }}
+                      >
+                        <option value="">Todos</option>
+                        {formCategories.map(c => (
+                          <option key={c.id} value={c.id}>{c.label}</option>
+                        ))}
+                      </select>
+                      <svg className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Desktop tipo pills */}
+                  <div className="hidden md:flex flex-wrap gap-1.5 mt-2">
+                    <button
+                      type="button"
+                      disabled={!!detectedCategory}
+                      onClick={() => { setSelectedTipo(''); setSelectedCarrera(''); setCarreraSearch(''); }}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                        !activeFilter
+                          ? 'bg-[#00c7b1] text-[#013729]'
+                          : 'bg-[#0f2825] text-[#7ca19b] border border-[#00c7b1]/20 hover:border-[#00c7b1]/50 hover:text-[#00c7b1]'
+                      } ${detectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      Todos
+                    </button>
+                    {formCategories.map(c => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        disabled={!!detectedCategory}
+                        onClick={() => { setSelectedTipo(prev => prev === c.id ? '' : c.id); setSelectedCarrera(''); setCarreraSearch(''); }}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                          activeFilter === c.id
+                            ? 'bg-[#00c7b1] text-[#013729]'
+                            : 'bg-[#0f2825] text-[#7ca19b] border border-[#00c7b1]/20 hover:border-[#00c7b1]/50 hover:text-[#00c7b1]'
+                        } ${detectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {c.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Modalidad */}
+                <div>
+                  <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">
+                    Modalidad
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="w-full appearance-none bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#00c7b1]/60 transition-colors cursor-pointer"
+                      style={{ colorScheme: 'dark' }}
+                      defaultValue="virtual"
+                    >
+                      <option value="virtual">Educacion Distribuida Home (Virtual)</option>
+                    </select>
+                    <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Equivalencias checkbox */}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      id="form-equivalencias"
+                      checked={equivalencias}
+                      onChange={e => setEquivalencias(e.target.checked)}
+                      className="peer w-4 h-4 appearance-none bg-[#0f2825] border border-[#00c7b1]/30 rounded checked:bg-[#00c7b1] checked:border-[#00c7b1] focus:outline-none cursor-pointer transition-colors"
+                    />
+                    <svg className="pointer-events-none absolute inset-0 m-auto h-2.5 w-2.5 text-[#013729] opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <label htmlFor="form-equivalencias" className="text-xs text-[#c8deda] cursor-pointer leading-none">
+                    Quiero acreditar equivalencias
+                  </label>
+                </div>
+              </div>
+
+              {/* Col 2: Personal data */}
+              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-1.5" style={{ borderLeft: '1px solid rgba(0,199,177,0.15)' }}>
+                {/* Nombre + Apellido */}
+                <div className="grid grid-cols-2 gap-1.5">
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-nombre">Nombre</label>
+                    <input
+                      type="text"
+                      id="form-nombre"
+                      required
+                      placeholder="Nombre"
+                      value={nombre}
+                      onChange={e => setNombre(e.target.value)}
+                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-apellido">Apellido</label>
+                    <input
+                      type="text"
+                      id="form-apellido"
+                      required
+                      placeholder="Apellido"
+                      value={apellido}
+                      onChange={e => setApellido(e.target.value)}
+                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Contact info box */}
+                <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid #00c7b1' }}>
+                  <p className="text-[12px] text-white leading-snug flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c7b1" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4" />
+                      <path d="M12 8h.01" />
+                    </svg>
+                    Solo necesitamos un dato de contacto para escribirte (el resto es opcional)
+                  </p>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-email">
+                      Email {!telefono.trim() && <span className="text-red-400/70">*</span>}
+                    </label>
+                    <input
+                      type="email"
+                      id="form-email"
+                      placeholder="Ejemplo: tu@correo.com"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-telefono">
+                      Telefono {!email.trim() && <span className="text-red-400/70">*</span>}
+                    </label>
+                    <input
+                      type="tel"
+                      id="form-telefono"
+                      placeholder="Ejemplo: 11 1234-5678"
+                      value={telefono}
+                      onChange={e => setTelefono(e.target.value)}
+                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Localidad */}
+                <div>
+                  <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-localidad">Localidad</label>
+                  <input
+                    type="text"
+                    id="form-localidad"
+                    placeholder="Tu ciudad o barrio"
+                    value={localidad}
+                    onChange={e => setLocalidad(e.target.value)}
+                    className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                  />
+                </div>
+
+                {/* Error */}
+                {error && (
+                  <p className="text-[11px] text-red-400">{error}</p>
+                )}
+                {!isValid && (nombre.trim() || email.trim() || telefono.trim()) && (
+                  <p className="text-[11px] text-red-400">Completa el nombre y al menos email o telefono.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Submit */}
+            <div className="px-3 sm:px-4 py-2.5 sm:py-3">
+              <button
+                type="submit"
+                disabled={!isValid || submitting}
+                className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: 'linear-gradient(90deg, #00c7b1, #009681)', color: '#013729', letterSpacing: '0.12em' }}
+              >
+                {submitting ? 'Enviando...' : 'Enviar consulta'}
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
