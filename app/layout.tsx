@@ -3,6 +3,7 @@ import { Inter, Unbounded } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import './navbar.css';
 
@@ -28,7 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
         <Analytics />
+        <SpeedInsights />
       </body>
+
 
 
     </html>
