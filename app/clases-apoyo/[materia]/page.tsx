@@ -70,10 +70,16 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
     .eq('activa', true)
     .order('orden', { ascending: true });
 
+  const processedMaterias = (materias ?? []).map(m => ({
+    ...m,
+    whatsapp: '5491166522722',
+    telefono_display: '+54 9 11 6652-2722' // Formato amigable para el usuario
+  }));
+
   return (
     <ClasesApoyoPage
       calendarWeeks={calendarWeeks}
-      materiasData={materias ?? []}
+      materiasData={processedMaterias}
       initialSlug={materia}
     />
   );
