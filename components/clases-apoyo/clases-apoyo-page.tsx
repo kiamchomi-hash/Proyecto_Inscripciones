@@ -518,17 +518,15 @@ function SidebarButton({ label, active, onClick }: { label: string; active: bool
 /* ── Main Page Component ── */
 export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSlug }: { calendarWeeks: CalendarWeek[]; materiasData: MateriaDB[]; initialSlug?: string }) {
   const router = useRouter();
-  const initialIdx = initialSlug ? materiasData.findIndex(m => m.slug === initialSlug) : -1;
-  const [activeIdx, setActiveIdx] = useState<number | null>(initialIdx >= 0 ? initialIdx : null);
-
-  useEffect(() => {
-    setActiveIdx(initialIdx >= 0 ? initialIdx : null);
-  }, [initialIdx]);
+  const activeIdx = initialSlug ? materiasData.findIndex(m => m.slug === initialSlug) : null;
 
   const switchMateria = useCallback((i: number) => {
-    setActiveIdx(i);
     const slug = materiasData[i]?.slug;
-    if (slug) router.replace(`/clases-apoyo/${slug}`, { scroll: false });
+    if (slug) {
+      router.replace(`/clases-apoyo/${slug}`, { scroll: false });
+    } else {
+      router.replace('/clases-apoyo', { scroll: false });
+    }
   }, [materiasData, router]);
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
   const [requestDone, setRequestDone] = useState(false);
@@ -595,7 +593,7 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
           {/* Header */}
           <header className="ca-header">
             <button
-              onClick={() => { setActiveIdx(null); router.replace('/clases-apoyo', { scroll: false }); }}
+              onClick={() => { router.replace('/clases-apoyo', { scroll: false }); }}
               className="ca-header-brand flex items-center justify-center px-4 cursor-pointer transition-opacity hover:opacity-80"
               style={{ background: 'rgba(0,0,0,0.15)', borderRightWidth: '1px', borderRightStyle: 'solid', borderRightColor: 'var(--ca-border-light)' }}
             >
