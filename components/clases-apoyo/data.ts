@@ -35,8 +35,8 @@ export const materias: Record<string, MateriaData> = {
       "Práctica con modelos de evaluación y <strong>guías de estudio</strong> vigentes.",
     ],
     images: [
-      "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1000&q=80",
-      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1000&q=80",
+      "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1000&q=80", // Books/Studying
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1000&q=80", // Writing/Pen
     ],
   },
   comp: {
@@ -50,8 +50,8 @@ export const materias: Record<string, MateriaData> = {
       "Optimización del uso de <strong>plataformas educativas y software específico</strong>.",
     ],
     images: [
-      "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1000&q=80",
-      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1000&q=80",
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1000&q=80", // Coding/Laptop
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1000&q=80", // Modern Tech
     ],
   },
   eng: {
@@ -74,8 +74,8 @@ export const materias: Record<string, MateriaData> = {
       "Desarrollo de <strong>habilidades estéticas y análisis compositivo</strong>.",
     ],
     images: [
-      "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1000&q=80",
-      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1000&q=80",
+      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1000&q=80", // Painting/Art
+      "https://images.unsplash.com/photo-1460661419201-fd4ce18686cf?w=1000&q=80", // Creative supplies
     ],
   },
   sec: {
