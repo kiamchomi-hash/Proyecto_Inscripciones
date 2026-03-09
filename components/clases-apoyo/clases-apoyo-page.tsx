@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 
 export interface CalendarWeek {
@@ -67,8 +68,15 @@ function Carousel({ images }: { images: string[] }) {
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {images.map((src, i) => (
-          <div key={i} className="min-w-full h-full">
-            <img src={src} alt="Apoyo Escolar" className="w-full h-full object-contain" />
+          <div key={i} className="relative min-w-full h-full">
+            <Image
+              src={src}
+              alt="Apoyo Escolar"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain"
+              priority={i === 0}
+            />
           </div>
         ))}
       </div>
@@ -401,6 +409,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
               <button
                 disabled={perDayIdx === 0}
                 onClick={() => setPerDayIdx(prev => prev - 1)}
+                aria-label="Ver día anterior"
                 className="w-6 h-6 rounded-full flex items-center justify-center transition-colors disabled:opacity-20"
                 style={{ background: 'rgba(0,199,177,0.15)', color: 'var(--ca-teal)' }}
               >
@@ -412,6 +421,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
               <button
                 disabled={perDayIdx === selectedDays.length - 1}
                 onClick={() => setPerDayIdx(prev => prev + 1)}
+                aria-label="Ver día siguiente"
                 className="w-6 h-6 rounded-full flex items-center justify-center transition-colors disabled:opacity-20"
                 style={{ background: 'rgba(0,199,177,0.15)', color: 'var(--ca-teal)' }}
               >
@@ -507,7 +517,12 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
 /* ── Sidebar Button ── */
 function SidebarButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <button className={`ca-sb-btn ${active ? 'on' : ''}`} onClick={onClick}>
+    <button
+      className={`ca-sb-btn ${active ? 'on' : ''}`}
+      onClick={onClick}
+      role="tab"
+      aria-selected={active}
+    >
       <span className="ca-sb-bar" />
       <span className="ca-sb-dot" />
       <span className="font-bold text-[0.72rem] uppercase tracking-wide">{label}</span>
@@ -573,11 +588,13 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
       <div className="flex-1 min-h-0 flex justify-center items-stretch p-2 md:p-2 max-md:p-0 max-md:overflow-visible">
         <div className="ca-app w-full max-w-[1400px]">
           {/* Mobile tabs (above header) */}
-          <div className="ca-mobile-tabs overflow-x-auto" style={{ background: '#051211', borderBottom: '1px solid var(--ca-border-light)' }}>
+          <div className="ca-mobile-tabs overflow-x-auto" role="tablist" style={{ background: '#051211', borderBottom: '1px solid var(--ca-border-light)' }}>
             {materiasData.map((m, i) => (
               <button
                 key={m.id}
                 onClick={() => switchMateria(i)}
+                role="tab"
+                aria-selected={activeIdx === i}
                 className="ca-mobile-tab flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors"
                 style={{
                   color: activeIdx === i ? '#fff' : 'var(--ca-text-muted)',
@@ -597,8 +614,14 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
               className="ca-header-brand flex items-center justify-center px-4 cursor-pointer transition-opacity hover:opacity-80"
               style={{ background: 'rgba(0,0,0,0.15)', borderRightWidth: '1px', borderRightStyle: 'solid', borderRightColor: 'var(--ca-border-light)' }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU — Volver al inicio" className="h-8 brightness-0 invert opacity-90" />
+            <div className="relative h-8 w-32">
+              <Image
+                src="/imagenes/imagenes_cau/logo_cau.png"
+                alt="Logo CAU — Volver al inicio"
+                fill
+                className="object-contain brightness-0 invert opacity-90"
+              />
+            </div>
             </button>
             <div className="flex items-center justify-center w-full">
               <span className="text-base font-bold uppercase tracking-widest" style={{ color: 'var(--ca-teal)' }}>
@@ -610,7 +633,7 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
           {/* Body */}
           <div className="ca-body">
             {/* Sidebar */}
-            <nav className="ca-sidebar">
+            <nav className="ca-sidebar" role="tablist" aria-orientation="vertical">
               {materiasData.map((m, i) => (
                 <SidebarButton
                   key={m.id}
@@ -651,12 +674,14 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
                 >
                   <div className="flex flex-col items-center text-center w-full max-w-3xl">
                     <div className="flex items-center gap-4 md:gap-6 mb-5 md:mb-8">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative w-16 h-16 md:w-24 md:h-24">
+                      <Image
                         src="/imagenes/imagenes_cau/logo_cau.png"
                         alt="Logo Centro Educativo Villa Lugano"
-                        className="w-16 h-16 md:w-24 md:h-24 brightness-0 invert opacity-90"
+                        fill
+                        className="object-contain brightness-0 invert opacity-90"
                       />
+                    </div>
                       <div className="text-left">
                         <span className="block text-xl md:text-3xl font-black uppercase tracking-tight leading-tight" style={{ color: 'var(--ca-text-main)' }}>
                           Centro Educativo
