@@ -18,6 +18,7 @@ html {
   overflow-x: clip;
   scrollbar-gutter: stable;
   background-color: #061716;
+  scroll-behavior: smooth;
 }
 
 body {

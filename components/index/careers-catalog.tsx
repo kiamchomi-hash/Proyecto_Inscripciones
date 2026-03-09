@@ -97,7 +97,7 @@ export default function CareersCatalog({ carreras }: Props) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCarrera, setSelectedCarrera] = useState<Carrera | null>(null);
-  const [pillsHidden, setPillsHidden] = useState(false);
+  const [pillsHidden, setPillsHidden] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
 

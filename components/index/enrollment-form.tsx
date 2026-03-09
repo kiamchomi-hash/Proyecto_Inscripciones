@@ -117,7 +117,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   };
 
   return (
-    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid #00c7b1', background: '#162f2e' }}>
+    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid #00c7b1', background: '#162f2e', scrollMarginTop: '100px' }}>
       <div className="mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
         <div className="relative" style={{ background: '#1c3a38', border: '1px solid rgba(0,199,177,0.3)', borderRadius: '1rem' }}>
 
