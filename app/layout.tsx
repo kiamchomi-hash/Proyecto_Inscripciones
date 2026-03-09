@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   verification: {
     google: 'google2ba266d8a709b848',
   },
+  icons: {
+    icon: '/favicon.webp',
+  },
 };
 
 
