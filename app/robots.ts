@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/api/',
+      disallow: ['/api/', '/migracion_pendiente/'],
     },
     sitemap: 'https://www.siglo21sur.com/sitemap.xml',
   };
