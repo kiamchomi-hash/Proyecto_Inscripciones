@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     google: 'google2ba266d8a709b848',
   },
   icons: {
-    icon: '/favicon.webp',
+    icon: '/icon.png',
   },
 };
 
