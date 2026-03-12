@@ -15,7 +15,7 @@ const NAV_LINKS = [
 ];
 
 const SOCIALS = [
-  { href: 'https://wa.me/5491166522722', label: 'WhatsApp', Icon: WhatsAppIcon, cssClass: 'social-whatsapp' },
+  { href: 'https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta', label: 'WhatsApp', Icon: WhatsAppIcon, cssClass: 'social-whatsapp' },
   { href: 'https://www.facebook.com/ceducativovillalugano/', label: 'Facebook', Icon: FacebookIcon, cssClass: 'social-facebook' },
   { href: 'https://www.instagram.com/centroeducativovillalugano/', label: 'Instagram', Icon: InstagramIcon, cssClass: 'social-instagram' },
 ];

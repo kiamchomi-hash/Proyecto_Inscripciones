@@ -75,7 +75,7 @@ export default function AbogaciaModal({ onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [handleClose]);
 
-  const waMsg = 'Hola, estoy interesado en Abogacía';
+  const waMsg = 'Hola, me gustaría recibir más información sobre Abogacía';
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}${window.location.pathname}?carrera=${encodeURIComponent('Abogacía')}`

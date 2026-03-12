@@ -182,7 +182,7 @@ export default function CarouselModal({ carrera, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [handleClose]);
 
-  const waMsg = `Hola, estoy interesado en ${carrera.nombre}`;
+  const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}${window.location.pathname}?carrera=${carreraToSlug(carrera.nombre)}`

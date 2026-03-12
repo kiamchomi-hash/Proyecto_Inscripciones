@@ -86,7 +86,7 @@ export default function CareerModal({ carrera, onClose }: Props) {
   }, [handleClose]);
 
   // WhatsApp link
-  const waMsg = `Hola, estoy interesado en ${carrera.nombre}`;
+  const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
 
   // Share URL

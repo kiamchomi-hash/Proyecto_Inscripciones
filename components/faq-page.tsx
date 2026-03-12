@@ -287,7 +287,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
           </button>
           {!isOpen && (
             <div className="contact-socials-header flex items-center gap-1.5 flex-shrink-0">
-              <a href="https://wa.me/5491166522722" target="_blank" rel="noopener" aria-label="WhatsApp" onClick={e => e.stopPropagation()}
+              <a href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta" target="_blank" rel="noopener" aria-label="WhatsApp" onClick={e => e.stopPropagation()}
                 className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
                 style={{ background: 'rgba(37,211,102,0.18)', color: '#25D366', border: '1px solid rgba(37,211,102,0.5)' }}>
                 <WhatsAppIcon className="w-4 h-4" />

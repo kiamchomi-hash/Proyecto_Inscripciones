@@ -92,7 +92,7 @@ export default function SobreNosotrosPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <a
-            href="https://wa.me/5491166522722"
+            href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
             target="_blank"
             rel="noopener"
             className="sn-whatsapp-btn inline-flex items-center gap-3 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
@@ -396,7 +396,7 @@ export default function SobreNosotrosPage() {
               </p>
               <div className="flex flex-col gap-2.5 w-full">
                 <a
-                  href="https://wa.me/5491166522722"
+                  href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
                   target="_blank"
                   rel="noopener"
                   className="sn-whatsapp-btn inline-flex items-center justify-center gap-3 w-full py-3 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
