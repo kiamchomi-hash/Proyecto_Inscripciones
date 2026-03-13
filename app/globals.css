@@ -17,7 +17,6 @@
 html {
   overflow-x: clip;
   background-color: #061716;
-  scroll-behavior: smooth;
 }
 
 @media (min-width: 641px) {
