@@ -328,7 +328,7 @@ export default function CareersCatalog({ carreras }: Props) {
                 <div className="sidebar-benefit-chip">
                   <div className="sidebar-benefit-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="15" cy="3.5" r="2.5"/><path d="M6 21l2-6 3.5 2V21"/><path d="M15.5 9.5L18 12l3-1.5"/><path d="M8 15l2.5-4.5L15.5 9 13 6.5 9 8l-3 3"/>
+                      <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M4.93 19.07l4.24-4.24"/><path d="M14.83 9.17l4.24-4.24"/>
                     </svg>
                   </div>
                   <div>
