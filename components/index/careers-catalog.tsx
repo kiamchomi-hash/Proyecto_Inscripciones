@@ -398,8 +398,8 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
   return (
     <section id={`section-${sectionId}`} className="mb-10">
       <div className="section-header-container">
-        <div className="flex items-center gap-3 mb-2">
-          <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2 min-w-0">
+          <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 truncate">
             {title}
             {accent && (
               <> / <span style={{ color: 'var(--color-highlight)' }}>{accent}</span></>
@@ -407,7 +407,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
           </h2>
           <button
             onClick={() => setShowSearch(!showSearch)}
-            className="p-1.5 rounded-full hover:bg-[#00c7b1]/10 transition-colors"
+            className="p-1.5 rounded-full hover:bg-[#00c7b1]/10 transition-colors shrink-0"
             title={`Buscar en ${title}`}
             aria-label={`Buscar en ${title}`}
           >
@@ -458,7 +458,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
       className="career-card group"
       onClick={() => onClick(carrera)}
     >
-      <div className="flex-grow relative">
+      <div className="flex-grow relative min-w-0">
         {prefix && (
           <span className="career-prefix block mb-0.5">{prefix}</span>
         )}
@@ -466,7 +466,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
           {cleanName}
         </span>
       </div>
-      <span className="hidden sm:inline-block text-xs font-bold detail-link px-4 py-2 rounded-lg cursor-pointer text-center">
+      <span className="text-[0.65rem] min-[380px]:text-xs font-bold detail-link px-2 min-[380px]:px-4 py-1.5 min-[380px]:py-2 rounded-lg cursor-pointer text-center">
         Ver detalles
       </span>
     </li>

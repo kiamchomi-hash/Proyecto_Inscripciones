@@ -309,11 +309,6 @@
 
 /* ≤640px: mobile — search wrapper full-bleed, toggle visible, grid 2 columns */
 @media (max-width: 640px) {
-  .sticky-search-wrapper {
-    border-left: none;
-    border-right: none;
-    border-radius: 0;
-  }
   .filter-pills-toggle {
     display: flex;
   }
@@ -324,7 +319,6 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
     margin-bottom: 0;
-    padding: 0;
   }
   .filter-pill {
     width: 100% !important;
@@ -398,6 +392,7 @@
 .detail-link {
   flex-shrink: 0;
   white-space: nowrap;
+  display: inline-block;
   color: #042620;
   background: #00c7b1;
   border: 1px solid #00c7b1;
