@@ -201,7 +201,7 @@ export default function CareersCatalog({ carreras }: Props) {
 
   return (
     <>
-      <div className="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20">
+      <div className="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20 overflow-x-hidden">
 
         {/* Scroll anchor (non-sticky, keeps its natural position) */}
         <div ref={scrollAnchorRef} aria-hidden="true" />
@@ -281,7 +281,7 @@ export default function CareersCatalog({ carreras }: Props) {
                   </h4>
                 </div>
                 {searchResults.length > 0 ? (
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                     {searchResults.map(c => (
                       <CareerCard key={c.id} carrera={c} onClick={handleCareerClick} />
                     ))}
@@ -440,7 +440,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
         <div className="flex-grow h-px section-divider" />
       </div>
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0 mb-6">
         {filteredCarreras.map(c => (
           <CareerCard key={c.id} carrera={c} onClick={onCareerClick} />
         ))}
