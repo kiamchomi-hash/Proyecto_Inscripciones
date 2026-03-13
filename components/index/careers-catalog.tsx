@@ -201,7 +201,7 @@ export default function CareersCatalog({ carreras }: Props) {
 
   return (
     <>
-      <div className="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20 overflow-x-hidden">
+      <div className="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20">
 
         {/* Scroll anchor (non-sticky, keeps its natural position) */}
         <div ref={scrollAnchorRef} aria-hidden="true" />
@@ -210,7 +210,7 @@ export default function CareersCatalog({ carreras }: Props) {
         <div className="sticky-search-wrapper">
           <div className="sticky-pills-zone">
             {/* Search bar */}
-            <div className="relative w-full" style={{ padding: '0 1rem' }}>
+            <div className="relative w-full search-input-wrapper">
               <form role="search" aria-label="Buscar carrera" onSubmit={e => e.preventDefault()}>
                 <input
                   ref={searchInputRef}

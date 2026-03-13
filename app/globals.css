@@ -20,10 +20,8 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (min-width: 769px) {
-  html {
-    scrollbar-gutter: stable;
-  }
+@media (min-width: 641px) {
+  html { scrollbar-gutter: stable; }
 }
 
 body {
@@ -31,6 +29,7 @@ body {
   color: var(--color-text-normal);
   background-color: #061716;
   position: relative;
+  overflow-x: hidden;
 }
 
 /* Capa 1: degrade profundo con tonos teal */
