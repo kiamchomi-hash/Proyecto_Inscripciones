@@ -456,7 +456,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
 // Individual career card
 function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carrera) => void }) {
   const { prefix, cleanName } = getCareerInfo(carrera);
-  const badge = carrera.nueva ? 'Nueva' : carrera.destacada ? 'Destacada' : null;
+  const badge = carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
 
   return (
     <li
