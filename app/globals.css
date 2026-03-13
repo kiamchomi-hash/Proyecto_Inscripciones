@@ -29,7 +29,6 @@ body {
   color: var(--color-text-normal);
   background-color: #061716;
   position: relative;
-  overflow-x: hidden;
 }
 
 /* Capa 1: degrade profundo con tonos teal */

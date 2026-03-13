@@ -54,18 +54,9 @@ export default function CareerModal({ carrera, onClose }: Props) {
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
     closeBtnRef.current?.focus();
-    // Prevent background scroll without breaking sticky navbar
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.top = `-${window.scrollY}px`;
+    document.documentElement.style.overflow = 'hidden';
     return () => {
-      const scrollY = Math.abs(parseInt(document.body.style.top || '0'));
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-      window.scrollTo(0, scrollY);
+      document.documentElement.style.overflow = '';
     };
   }, []);
 

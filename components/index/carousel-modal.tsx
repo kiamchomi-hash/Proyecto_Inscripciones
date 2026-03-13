@@ -156,18 +156,9 @@ export default function CarouselModal({ carrera, onClose }: Props) {
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
     closeBtnRef.current?.focus();
-    const scrollY = window.scrollY;
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     return () => {
-      const y = Math.abs(parseInt(document.body.style.top || '0'));
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-      window.scrollTo(0, y);
+      document.documentElement.style.overflow = '';
     };
   }, []);
 
