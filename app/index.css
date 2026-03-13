@@ -122,7 +122,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   text-align: left;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   padding: 1rem 1.25rem;
   display: flex;
@@ -134,6 +134,33 @@
   border-color: #00c7b1;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
   background: rgba(0, 199, 177, 0.08);
+}
+
+/* Career badge (Nueva / Destacada) */
+.career-badge {
+  position: absolute;
+  top: -1px;
+  right: 1.25rem;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  line-height: 1.2;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.career-badge--nueva {
+  background: #00c7b1;
+  color: #013729;
+}
+
+.career-badge--destacada {
+  background: #f5a623;
+  color: #1a1a0e;
 }
 
 /* Career prefix */

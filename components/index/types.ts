@@ -61,6 +61,8 @@ export interface Carrera {
   slides: CarreraSlide[] | null;
   orden: number;
   activa: boolean;
+  destacada: boolean;
+  nueva: boolean;
 }
 
 export interface CarreraCategory {

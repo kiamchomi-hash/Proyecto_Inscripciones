@@ -456,12 +456,18 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
 // Individual career card
 function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carrera) => void }) {
   const { prefix, cleanName } = getCareerInfo(carrera);
+  const badge = carrera.nueva ? 'Nueva' : carrera.destacada ? 'Destacada' : null;
 
   return (
     <li
       className="career-card group"
       onClick={() => onClick(carrera)}
     >
+      {badge && (
+        <span className={`career-badge ${carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
+          {badge}
+        </span>
+      )}
       <div className="flex-grow relative min-w-0">
         {prefix && (
           <span className="career-prefix block mb-0.5">{prefix}</span>
