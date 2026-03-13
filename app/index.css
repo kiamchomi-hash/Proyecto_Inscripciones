@@ -646,3 +646,62 @@ mark {
     0 1px 8px rgba(0, 0, 0, 0.18);
   background-color: rgba(28, 47, 49, 0.9);
 }
+
+/* === Form with side image === */
+.form-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.form-side-image {
+  display: none;
+}
+
+@media (min-width: 1600px) {
+  .form-layout-grid {
+    grid-template-columns: 5fr 4fr;
+    gap: 0;
+    align-items: stretch;
+  }
+  .form-content-col {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-card {
+    border-right: none !important;
+    border-radius: 1rem 0 0 1rem !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .form-card form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .form-card form > div:last-child {
+    margin-top: auto;
+  }
+  .form-card-header {
+    border-radius: 1rem 0 0 0 !important;
+  }
+  .form-side-image {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 1rem 1rem 0;
+    border: 1px solid rgba(0, 199, 177, 0.3);
+    border-left: none;
+  }
+  .form-side-image::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    background: rgba(0, 199, 177, 0.3);
+    z-index: 1;
+    pointer-events: none;
+  }
+}

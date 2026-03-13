@@ -91,26 +91,27 @@ export default function Hero() {
               <div className="banner-slide">
                 <div className="w-full h-full relative min-h-[120px] bg-[#ebfcf4] overflow-hidden flex flex-row items-center w-full">
                   
-                  {/* ZONA 1 (Estrictamente ~25-30%): Tarjetas de Crédito */}
-                  <div className="relative z-10 w-[30%] md:w-[25%] lg:w-[22%] shrink-0 h-full flex items-center justify-center bg-teal-600 [border-radius:0_15px_15px_0/0_50%_50%_0] md:[border-radius:0_30px_30px_0/0_50%_50%_0] lg:[border-radius:0_50px_50px_0/0_50%_50%_0] shadow-[5px_0_30px_rgba(13,148,136,0.2)]">
-                    
-                    {/* Tarjetas achicadas en xl porque la pantalla se divide */}
-                    <div className="relative flex items-center justify-center w-[75px] h-[75px] sm:w-[100px] sm:h-[100px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px] xl:w-[140px] xl:h-[140px] 2xl:w-[180px] 2xl:h-[180px] pb-1 sm:pb-0">
-                      {/* Tarjeta de atrás (Azul clásico) */}
-                      <svg className="w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 md:w-32 md:h-32 lg:w-40 lg:h-40 xl:w-28 xl:h-28 2xl:w-40 2xl:h-40 absolute transform -rotate-12 -translate-x-1 -translate-y-1 sm:-translate-x-2 sm:-translate-y-2 drop-shadow-xl" viewBox="0 0 100 65" fill="none">
+                  {/* ZONA 1: Círculo real recortado por overflow-hidden — solo el arco derecho ) es visible */}
+                  <div className="relative z-10 shrink-0 h-full flex items-center justify-center overflow-hidden" style={{ width: '25%', minWidth: '90px' }}>
+                    {/* Círculo grande desplazado a la izquierda. overflow-hidden del contenedor recorta todo salvo el arco derecho ) */}
+                    <div
+                      className="absolute rounded-full bg-teal-600 shadow-[5px_0_30px_rgba(13,148,136,0.2)]"
+                      style={{ width: '220%', aspectRatio: '1', left: '-120%', top: '50%', transform: 'translateY(-50%)' }}
+                    />
+                    {/* Tarjetas encima del arco */}
+                    <div className="relative z-10 flex items-center justify-center w-[60px] h-[60px] sm:w-[85px] sm:h-[85px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] xl:w-[115px] xl:h-[115px] 2xl:w-[150px] 2xl:h-[150px]">
+                      <svg className="w-[3.5rem] h-[3.5rem] sm:w-16 sm:h-16 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-24 xl:h-24 2xl:w-36 2xl:h-36 absolute transform -rotate-12 -translate-x-1 -translate-y-1 sm:-translate-x-2 sm:-translate-y-2 drop-shadow-xl" viewBox="0 0 100 65" fill="none">
                         <rect x="0" y="0" width="100" height="65" rx="8" fill="#2563eb"/>
                         <rect x="0" y="12" width="100" height="15" fill="#111827"/>
                         <rect x="10" y="38" width="30" height="5" rx="2.5" fill="#94a3b8"/>
                         <rect x="10" y="48" width="45" height="5" rx="2.5" fill="#64748b"/>
                       </svg>
-
-                      {/* Tarjeta de frente */}
-                      <svg className="w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 md:w-32 md:h-32 lg:w-40 lg:h-40 xl:w-28 xl:h-28 2xl:w-40 2xl:h-40 absolute transform rotate-6 translate-x-2 translate-y-2 drop-shadow-2xl" viewBox="0 0 100 65" fill="none">
-                        <rect x="0" y="0" width="100" height="65" rx="8" fill="#00c7b1"/>
+                      <svg className="w-[3.5rem] h-[3.5rem] sm:w-16 sm:h-16 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-24 xl:h-24 2xl:w-36 2xl:h-36 absolute transform rotate-6 translate-x-2 translate-y-2 drop-shadow-2xl" viewBox="0 0 100 65" fill="none">
+                        <rect x="0" y="0" width="100" height="65" rx="8" fill="#f0f4f8"/>
                         <rect x="12" y="15" width="16" height="12" rx="2" fill="#fbbf24"/>
                         <path d="M16 15v12M24 15v12M12 21h16" stroke="#b45309" strokeWidth="1" opacity="0.4"/>
-                        <rect x="12" y="38" width="60" height="6" rx="3" fill="#ffffff" />
-                        <rect x="12" y="50" width="35" height="4" rx="2" fill="#ffffff" fillOpacity="0.8"/>
+                        <rect x="12" y="38" width="45" height="5" rx="2.5" fill="#cbd5e1" />
+                        <rect x="12" y="48" width="30" height="4" rx="2" fill="#e2e8f0"/>
                         <circle cx="70" cy="46" r="9" fill="#EB001B" />
                         <circle cx="82" cy="46" r="9" fill="#F79E1B" />
                       </svg>

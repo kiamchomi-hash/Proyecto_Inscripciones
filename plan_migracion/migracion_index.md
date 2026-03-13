@@ -1,8 +1,8 @@
 # Migración — index.html → app/page.tsx
 
-Estado: PLACEHOLDER
+Estado: EN PROGRESO (avanzado)
 
-Archivos: app/page.tsx (placeholder)
+Archivos: app/page.tsx, components/index/*.tsx, app/index.css
 HTML original: migracion_pendiente/index.html (la página más compleja del sitio)
 
 ---
@@ -11,17 +11,17 @@ HTML original: migracion_pendiente/index.html (la página más compleja del siti
 
 ### Fase 1 — Base
 
-Tailwind CSS ❌ Solo clases básicas en el placeholder
+Tailwind CSS ✅ Uso extensivo de utilities en todos los componentes + app/index.css para estilos custom
 
 ### Fase 2 — Lenguaje
 
-TypeScript ✅ Archivo .tsx
-Axios ❌ No se usa — el original hacía fetch a datos_carreras.json
-Zod ❌ No se usa — el original validaba con schemas.ts via Express
+TypeScript ✅ Archivo .tsx con tipos (Carrera, CarreraSlide, etc.)
+Axios ❌ No se usa — datos se obtienen via Supabase client directamente
+Zod ❌ No se usa — validación server-side pendiente
 
 ### Fase 3 — Framework
 
-React + Next.js ⚠️ Componente existe pero es solo texto placeholder
+React + Next.js ✅ Server Component (page.tsx) + Client Components (hero, careers-catalog, enrollment-form, modales, footer)
 Zustand ❌ No se usa
 
 ### Fase 4 — UI
@@ -31,7 +31,7 @@ shadcn/ui ❌ No se usa
 
 ### Fase 5 — Backend
 
-Supabase (PostgreSQL) ❌ No conectado — datos_carreras.json (60+ carreras) sin migrar a BD
+Supabase (PostgreSQL) ✅ Conectado — page.tsx hace query a tabla `carreras`, enrollment-form inserta en tabla `consultas`
 
 ### Fase 6 — Extras
 
@@ -42,46 +42,46 @@ Tauri ❌ No aplica
 
 ## Auditoría general
 
-Estructura HTML → JSX ❌ Solo placeholder, no hay componentes migrados
-Estilos → Tailwind ❌ Nada migrado
-JavaScript → React state ❌ Lógica compleja sin migrar: búsqueda fuzzy (Levenshtein), drag-and-drop, calculadora de aranceles, localStorage
-Datos ❌ datos_carreras.json (60+ carreras) sin migrar a Supabase
-Interactividad ❌ Buscador, filtros, formulario de inscripción, calculadora, upload de archivos — todo pendiente
-Responsive ❌ No aplica aún
-Accesibilidad ❌ No aplica aún
+Estructura HTML → JSX ✅ Componentes: Hero, CareersCatalog, CareerSection, CareerCard, CareerModal, CarouselModal, EnrollmentForm, IndexFooter
+Estilos → Tailwind ✅ Utilities + app/index.css para estilos custom (carousel, sticky, pills, cards)
+JavaScript → React state ✅ Búsqueda fuzzy (Levenshtein) migrada, filtros por categoría, modales con animación, formulario con state
+Datos ✅ Carreras desde Supabase (tabla `carreras`), consultas se insertan en tabla `consultas`
+Interactividad ✅ Buscador con fuzzy search, filtros por categoría (pills), formulario de contacto con validación, modales de carrera (simple + carousel con slides)
+Drag-and-drop ❌ No migrado (upload de archivos del original)
+Calculadora de aranceles ❌ No migrada
+localStorage ❌ No migrado (preferencias de usuario del original)
+Responsive ✅ Diseño responsive con breakpoints sm/md/lg/xl/2xl en todos los componentes
+Accesibilidad ⚠️ Parcial — aria-labels en buscador y modales, role="dialog", pero sin audit completo
 SEO ✅ Metadata con title y description
-Rendimiento ❌ No aplica aún
-Fidelidad visual ❌ No aplica aún
+Rendimiento ✅ Server Component para data fetching, revalidate=3600, next/image en Hero
+Fidelidad visual ✅ Carrusel hero (3 slides), catálogo de carreras con cards, sidebar de beneficios, modales con slides (portada/modalidad/evaluación/plan/cierre), formulario de contacto, footer
 
 ---
 
 ## Sugerencias de mejora
 
-- Migrar datos_carreras.json a tabla carreras en Supabase
-- Reimplementar búsqueda fuzzy (Levenshtein) como hook React o con Zustand
-- Calculadora de aranceles como componente independiente
-- Drag-and-drop de archivos con react-dropzone o similar
-- Formulario de inscripción con validación Zod
-- Usar next/image para imágenes de carreras
-- Considerar shadcn/ui para formularios y cards de carreras
+- ~~Migrar datos_carreras.json a tabla carreras en Supabase~~ ✅ Hecho
+- ~~Reimplementar búsqueda fuzzy (Levenshtein) como hook React o con Zustand~~ ✅ Hecho (inline en careers-catalog.tsx)
+- Calculadora de aranceles como componente independiente ❌ Pendiente
+- Drag-and-drop de archivos con react-dropzone o similar ❌ Pendiente
+- ~~Formulario de inscripción con validación~~ ✅ Hecho (validación manual, Zod pendiente)
+- ~~Usar next/image para imágenes de carreras~~ ✅ Parcial (usado en Hero, modales usan <img>)
+- Considerar shadcn/ui para formularios y cards de carreras ❌ Pendiente
 
 ## Pendientes
 
-- Todos los modales correctos
-- revisar logica de ordenamiento
-- Mejorar responsive
-- Poner el botón de tipo de carrera en el formulario
-- Filtro por area (medicina, finanzas) en el buscador
-- carrouselle agregar inscribete ya y arreglar responsive
-- modales, agregar un modal de inscribete ya y los descuentos
--  excelente, por ultimo, bloquear el tipo de carrera en el formulario no tiene sentido, quita esa funcion y en desktop hazlo un botón desplegable, del mismo tamaño que seleccionar
-  formacion, cambia el texto seleccionar formacion por buscar carrera
-  -acreditar equivalencias si no en base de datos
-- detener carrouselle
-
--favicon
--cambiar svg deportistas federados
--botón de formulario no lleva exactamente a formulario
--poner badget de nuevo o descuento
-
-- ~~falta botón ir arriba~~
+- ✅ Todos los modales correctos (CareerModal + CarouselModal con slides: portada, modalidad, evaluacion, plan_estudios, cierre)
+- ✅ revisar logica de ordenamiento (ordenado por `orden` desde Supabase + por largo de nombre dentro de categoria)
+- ✅ Mejorar responsive (breakpoints sm/md/lg/xl/2xl en todos los componentes)
+- ✅ Poner el botón de tipo de carrera en el formulario (pills desktop + select mobile)
+- ❌ Filtro por area (medicina, finanzas) en el buscador
+- ✅ carrouselle agregar inscribete ya y arreglar responsive (slide 1 tiene boton "Ir al Formulario", responsive con touch swipe)
+- ✅ modales, agregar un modal de inscribete ya y los descuentos (boton "Inscribite ya" en footer de modales + slide cierre con beneficios)
+- ✅ bloquear el tipo de carrera en el formulario (tipo se auto-detecta de carrera seleccionada, pills desktop + select mobile)
+- ✅ acreditar equivalencias (checkbox en formulario, se envia a Supabase)
+- ✅ detener carrouselle (pause on hover/touch)
+- ✅ favicon
+- ❌ cambiar svg deportistas federados
+- ✅ boton de formulario lleva al formulario (scrollMarginTop + href="#formulario")
+- ❌ poner badge de nuevo o descuento
+- ~~falta botón ir arriba~~ ✅

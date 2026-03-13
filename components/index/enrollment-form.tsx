@@ -13,6 +13,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [carreraSearch, setCarreraSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedTipo, setSelectedTipo] = useState('');
+  const [showTipoDropdown, setShowTipoDropdown] = useState(false);
   const [equivalencias, setEquivalencias] = useState(false);
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
@@ -23,6 +24,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const tipoDropdownRef = useRef<HTMLDivElement>(null);
 
   // Display categories (exclude 'all')
   const formCategories = useMemo(() => CATEGORIES.filter(c => c.id !== 'all'), []);
@@ -35,8 +37,8 @@ export default function EnrollmentForm({ carreras }: Props) {
     return getCategoryForCarrera(found);
   }, [selectedCarrera, carreras]);
 
-  // The active filter: if carrera is selected, lock to its category; otherwise use manual selection
-  const activeFilter = detectedCategory || selectedTipo;
+  // The active filter: manual selection always wins, fallback to detected
+  const activeFilter = selectedTipo || detectedCategory;
 
   // Filtered carrera list for dropdown
   const filteredCarreras = useMemo(() => {
@@ -57,11 +59,14 @@ export default function EnrollmentForm({ carreras }: Props) {
   // Form validity: need nombre and at least email or telefono
   const isValid = nombre.trim() && (email.trim() || telefono.trim());
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setShowDropdown(false);
+      }
+      if (tipoDropdownRef.current && !tipoDropdownRef.current.contains(e.target as Node)) {
+        setShowTipoDropdown(false);
       }
     };
     document.addEventListener('mousedown', handler);
@@ -117,9 +122,10 @@ export default function EnrollmentForm({ carreras }: Props) {
   };
 
   return (
-    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid #00c7b1', background: '#162f2e', scrollMarginTop: '100px' }}>
-      <div className="mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
-        <div className="relative" style={{ background: '#1c3a38', border: '1px solid rgba(0,199,177,0.3)', borderRadius: '1rem' }}>
+    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid #00c7b1', background: '#162f2e', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
+      <div className="form-layout-grid mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
+        <div className="form-content-col">
+        <div className="form-card relative" style={{ background: '#1c3a38', border: '1px solid rgba(0,199,177,0.3)', borderRadius: '1rem' }}>
 
           {/* Success overlay */}
           {success && (
@@ -143,7 +149,7 @@ export default function EnrollmentForm({ carreras }: Props) {
           <form onSubmit={handleSubmit} noValidate>
 
             {/* Header */}
-            <div className="px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(0,199,177,0.15)', borderRadius: '1rem 1rem 0 0' }}>
+            <div className="form-card-header px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(0,199,177,0.15)', borderRadius: '1rem 1rem 0 0' }}>
               <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center">
                 <span className="text-white">FORMULARIO DE </span>
                 <span className="text-[#00c7b1]">CONTACTO</span>
@@ -159,10 +165,10 @@ export default function EnrollmentForm({ carreras }: Props) {
                 {/* Carrera searchable dropdown + tipo filter */}
                 <div ref={dropdownRef}>
                   <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">
-                    Seleccionar formación
+                    Seleccionar carrera
                   </label>
 
-                  {/* Search + mobile tipo side by side */}
+                  {/* Search + tipo side by side */}
                   <div className="flex gap-1.5">
                     <div className="relative flex-1 min-w-0">
                       <input
@@ -170,8 +176,9 @@ export default function EnrollmentForm({ carreras }: Props) {
                         value={carreraSearch}
                         onChange={e => { setCarreraSearch(e.target.value); setSelectedCarrera(''); setShowDropdown(true); }}
                         onFocus={() => setShowDropdown(true)}
-                        placeholder="Seleccionar..."
+                        placeholder="Buscar carrera..."
                         autoComplete="off"
+                        maxLength={100}
                         className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 pr-8 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                       />
                       <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -185,7 +192,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                               key={c.id}
                               type="button"
                               onClick={() => selectCarrera(c.nombre)}
-                              className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[#00c7b1]/10 transition-colors"
+                              className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[#00c7b1]/10 transition-colors border-b border-[#00c7b1]/15 last:border-b-0"
                             >
                               {c.nombre}
                             </button>
@@ -197,61 +204,45 @@ export default function EnrollmentForm({ carreras }: Props) {
                       )}
                     </div>
 
-                    {/* Mobile tipo selector */}
-                    <div className="relative md:hidden shrink-0">
-                      <select
-                        value={activeFilter}
-                        disabled={!!detectedCategory}
-                        onChange={e => { setSelectedTipo(e.target.value); setSelectedCarrera(''); setCarreraSearch(''); }}
-                        className={`appearance-none bg-[#0f2825] border rounded-lg pl-2.5 pr-7 py-1.5 text-xs font-bold focus:outline-none transition-colors ${
-                          detectedCategory
-                            ? 'border-[#00c7b1]/50 text-[#00c7b1] opacity-70 cursor-not-allowed'
-                            : activeFilter
-                              ? 'border-[#00c7b1]/50 text-[#00c7b1] cursor-pointer'
-                              : 'border-[#00c7b1]/25 text-[#7ca19b] cursor-pointer'
+                    {/* Tipo selector (custom dropdown) */}
+                    <div className="relative shrink-0" ref={tipoDropdownRef}>
+                      <button
+                        type="button"
+                        onClick={() => setShowTipoDropdown(!showTipoDropdown)}
+                        className={`bg-[#0f2825] border rounded-lg pl-2.5 pr-7 py-1.5 text-sm font-bold focus:outline-none transition-colors cursor-pointer h-full text-left ${
+                          activeFilter
+                            ? 'border-[#00c7b1]/50 text-[#00c7b1]'
+                            : 'border-[#00c7b1]/25 text-[#7ca19b]'
                         }`}
-                        style={{ colorScheme: 'dark' }}
                       >
-                        <option value="">Todos</option>
-                        {formCategories.map(c => (
-                          <option key={c.id} value={c.id}>{c.label}</option>
-                        ))}
-                      </select>
-                      <svg className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        {activeFilter ? (formCategories.find(c => c.id === activeFilter)?.label || 'Todos') : 'Todos'}
+                      </button>
+                      <svg className={`pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60 transition-transform ${showTipoDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
-                    </div>
-                  </div>
 
-                  {/* Desktop tipo pills */}
-                  <div className="hidden md:flex flex-wrap gap-1.5 mt-2">
-                    <button
-                      type="button"
-                      disabled={!!detectedCategory}
-                      onClick={() => { setSelectedTipo(''); setSelectedCarrera(''); setCarreraSearch(''); }}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors ${
-                        !activeFilter
-                          ? 'bg-[#00c7b1] text-[#013729]'
-                          : 'bg-[#0f2825] text-[#7ca19b] border border-[#00c7b1]/20 hover:border-[#00c7b1]/50 hover:text-[#00c7b1]'
-                      } ${detectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      Todos
-                    </button>
-                    {formCategories.map(c => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        disabled={!!detectedCategory}
-                        onClick={() => { setSelectedTipo(prev => prev === c.id ? '' : c.id); setSelectedCarrera(''); setCarreraSearch(''); }}
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors ${
-                          activeFilter === c.id
-                            ? 'bg-[#00c7b1] text-[#013729]'
-                            : 'bg-[#0f2825] text-[#7ca19b] border border-[#00c7b1]/20 hover:border-[#00c7b1]/50 hover:text-[#00c7b1]'
-                        } ${detectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      >
-                        {c.label}
-                      </button>
-                    ))}
+                      {showTipoDropdown && (
+                        <div className="absolute z-20 w-full mt-1 bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg shadow-xl overflow-hidden right-0 min-w-[140px]" style={{ maxHeight: 200, overflowY: 'auto' }}>
+                          <button
+                            type="button"
+                            onClick={() => { setSelectedTipo(''); setSelectedCarrera(''); setCarreraSearch(''); setShowTipoDropdown(false); }}
+                            className={`w-full text-left px-3 py-1.5 text-sm transition-colors border-b border-[#00c7b1]/15 ${!activeFilter ? 'text-[#00c7b1] bg-[#00c7b1]/10' : 'text-white hover:bg-[#00c7b1]/10'}`}
+                          >
+                            Todos
+                          </button>
+                          {formCategories.map((c, i) => (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => { setSelectedTipo(c.id); setSelectedCarrera(''); setCarreraSearch(''); setShowTipoDropdown(false); }}
+                              className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${i < formCategories.length - 1 ? 'border-b border-[#00c7b1]/15' : ''} ${activeFilter === c.id ? 'text-[#00c7b1] bg-[#00c7b1]/10' : 'text-white hover:bg-[#00c7b1]/10'}`}
+                            >
+                              {c.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -307,6 +298,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                       placeholder="Nombre"
                       value={nombre}
                       onChange={e => setNombre(e.target.value)}
+                      maxLength={100}
                       className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                     />
                   </div>
@@ -319,6 +311,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                       placeholder="Apellido"
                       value={apellido}
                       onChange={e => setApellido(e.target.value)}
+                      maxLength={100}
                       className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                     />
                   </div>
@@ -345,6 +338,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                       placeholder="Ejemplo: tu@correo.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
+                      maxLength={100}
                       className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                     />
                   </div>
@@ -359,6 +353,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                       placeholder="Ejemplo: 11 1234-5678"
                       value={telefono}
                       onChange={e => setTelefono(e.target.value)}
+                      maxLength={100}
                       className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                     />
                   </div>
@@ -373,6 +368,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     placeholder="Tu ciudad o barrio"
                     value={localidad}
                     onChange={e => setLocalidad(e.target.value)}
+                    maxLength={100}
                     className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
                   />
                 </div>
@@ -400,6 +396,17 @@ export default function EnrollmentForm({ carreras }: Props) {
             </div>
 
           </form>
+        </div>
+        </div>
+
+        {/* Side image (visible >= 1600px) */}
+        <div className="form-side-image" aria-hidden="true">
+          <img
+            src="/imagenes/imagenes_cau/Siglo21IMG_2555.jpg"
+            alt=""
+            loading="lazy"
+            className="w-full h-full object-cover object-right-center"
+          />
         </div>
       </div>
     </section>

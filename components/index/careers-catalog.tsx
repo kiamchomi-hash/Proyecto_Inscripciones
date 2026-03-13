@@ -75,7 +75,7 @@ function parseCareerName(name: string): { prefix: string; cleanName: string } {
     }
   }
 
-  cleanName = cleanName.replace(/Universitaria|Universitario|Univ\./g, '').replace(/\s*\(CCC\)/gi, '').replace(/\s*-\s*CCC\b/gi, '').replace(/\s+CCC$/i, '').replace(/\s\s+/g, ' ').trim();
+  cleanName = cleanName.replace(/Universitaria|Universitario|Univ\./g, '').replace(/\s\s+/g, ' ').trim();
 
   if (cleanName.toLowerCase().startsWith('en ')) {
     prefix += ' en';
