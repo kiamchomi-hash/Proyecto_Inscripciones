@@ -10,7 +10,7 @@ const NAV_LINKS = [
   { href: '/clases-apoyo', label: 'Clases de Apoyo' },
   { href: '/novedades/1', label: 'Novedades' },
   { href: '/sobre-nosotros', label: 'Sobre Nosotros' },
-  { href: '/faq', label: 'Preguntas Frecuentes' },
+  { href: '/faq', label: 'Preguntas Frecuentes', shortLabel: 'FAQ' },
   { href: '/contactos', label: 'Contacto' },
 ];
 
@@ -27,6 +27,10 @@ export default function Navbar() {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
+  // Track which links are overflowing to swap to short labels
+  const [overflowing, setOverflowing] = useState<Set<string>>(new Set());
+  const measureRefs = useRef<Map<string, HTMLSpanElement>>(new Map());
+
   // Keep --navbar-height in sync with actual navbar size
   useEffect(() => {
     const nav = navRef.current;
@@ -38,6 +42,35 @@ export default function Navbar() {
     ro.observe(nav);
     // Set initial value
     document.documentElement.style.setProperty('--navbar-height', nav.offsetHeight + 'px');
+    return () => ro.disconnect();
+  }, []);
+
+  // Detect text overflow using hidden measurement spans (always contain the full label)
+  useEffect(() => {
+    const els = Array.from(measureRefs.current.entries());
+    if (els.length === 0) return;
+
+    const check = () => {
+      const next = new Set<string>();
+      for (const [href, span] of els) {
+        const link = span.parentElement;
+        if (!link) continue;
+        const style = getComputedStyle(link);
+        const available = link.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        if (span.offsetWidth > available) next.add(href);
+      }
+      setOverflowing(prev => {
+        if (prev.size === next.size && [...prev].every(h => next.has(h))) return prev;
+        return next;
+      });
+    };
+
+    // Observe the parent links for size changes
+    const ro = new ResizeObserver(check);
+    for (const [, span] of els) {
+      if (span.parentElement) ro.observe(span.parentElement);
+    }
+    check();
     return () => ro.disconnect();
   }, []);
 
@@ -100,14 +133,26 @@ export default function Navbar() {
             </button>
           </div>
 
-          {NAV_LINKS.map(({ href, label }) => (
+          {NAV_LINKS.map(({ href, label, shortLabel }) => (
             <Link
               key={href}
               href={href}
               className={`navbar-link${isActive(href) ? ' active' : ''}`}
               onClick={closeMenu}
             >
-              {label}
+              {shortLabel && overflowing.has(href) ? shortLabel : label}
+              {shortLabel && (
+                <span
+                  ref={(el: HTMLSpanElement | null) => {
+                    if (el) measureRefs.current.set(href, el);
+                    else measureRefs.current.delete(href);
+                  }}
+                  aria-hidden
+                  style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', pointerEvents: 'none' }}
+                >
+                  {label}
+                </span>
+              )}
             </Link>
           ))}
 
