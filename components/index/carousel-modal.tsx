@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug } from './types';
 
 interface Props {
@@ -59,86 +61,711 @@ function getCleanName(carrera: Carrera): { prefix: string; cleanName: string } {
   return { prefix, cleanName };
 }
 
-// ── Mini plan carousel ──
-function PlanCarousel({ paginas }: { paginas: SlidePlanEstudios['paginas'] }) {
-  const [idx, setIdx] = useState(0);
-  const total = paginas.length;
+// ── Flatten paginas into individual year panels + extras ──
+interface YearPanel {
+  tipo: 'year';
+  año: string;
+  cuatrimestres: { label: string; materias: string[] }[];
+}
+interface ExtrasPanel {
+  tipo: 'extras';
+  extras: { titulo: string; items: string[]; nota?: string }[];
+}
+type Panel = YearPanel | ExtrasPanel;
 
-  return (
-    <div className="flex-1 flex flex-col overflow-hidden min-h-0 gap-2">
-      <div className="flex-1 overflow-hidden relative min-h-0">
-        <div className="flex h-full transition-transform duration-350 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${idx * 100}%)` }}>
-          {paginas.map((page, pi) => (
-            <div key={pi} className="flex-shrink-0 w-full h-full flex gap-2.5">
-              {/* Izquierda */}
-              <div className="flex-1 bg-[#00c7b1]/4 border border-[#00c7b1]/15 rounded-lg overflow-hidden flex flex-col">
-                <div className="bg-[#00c7b1]/13 border-b-2 border-[#00c7b1] px-3 py-1 flex-shrink-0">
-                  <p className="text-xs font-extrabold text-[#00c7b1] uppercase tracking-widest">{page.izquierda.año}</p>
-                </div>
-                <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-0.5 custom-scrollbar">
-                  {page.izquierda.cuatrimestres.map((c, ci) => (
-                    <div key={ci}>
-                      {ci > 0 && <div className="border-t border-[#00c7b1]/10 my-1 pt-1" />}
-                      <p className="text-[0.65rem] text-[#48b3a4] font-bold uppercase tracking-wider">{c.label}</p>
-                      {c.materias.map((m, mi) => (
-                        <p key={mi} className="text-sm text-[#b4d3ce] leading-relaxed">{m}</p>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+function flattenPaginas(paginas: SlidePlanEstudios['paginas']): Panel[] {
+  const panels: Panel[] = [];
+  for (const page of paginas) {
+    if (page.izquierda) panels.push({ tipo: 'year', año: page.izquierda.año, cuatrimestres: page.izquierda.cuatrimestres });
+    if (page.derecha) panels.push({ tipo: 'year', año: page.derecha.año, cuatrimestres: page.derecha.cuatrimestres });
+    if (page.extras) panels.push({ tipo: 'extras', extras: page.extras });
+  }
+  return panels;
+}
+
+// ── Panel content renderer (shared between mobile & desktop) ──
+function PanelContent({ panel, showTitle }: { panel: Panel; showTitle?: boolean }) {
+  if (panel.tipo === 'year') {
+    return (
+      <>
+        {showTitle && (
+          <p className="text-[0.85rem] md:text-base font-black text-white uppercase tracking-wider mb-2 pb-1" style={{ borderBottom: '1px solid rgba(0,199,177,0.15)' }}>{panel.año}</p>
+        )}
+        {/* Mobile: stacked; Desktop: side by side */}
+        <div className="md:grid md:gap-4" style={{ gridTemplateColumns: `repeat(${panel.cuatrimestres.length}, 1fr)` }}>
+          {panel.cuatrimestres.map((c, ci) => (
+            <div key={ci}>
+              {/* Mobile separator between cuatrimestres */}
+              {ci > 0 && (
+                <div className="my-3 h-[2px] rounded-full md:hidden" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.35) 0%, rgba(0,199,177,0.08) 60%, transparent 100%)' }} />
+              )}
+              <p className="text-[0.6rem] md:text-[0.75rem] font-bold uppercase tracking-[0.1em] mb-1 text-[#00c7b1]">{c.label}</p>
+              <div className="flex flex-col gap-0.5">
+                {c.materias.map((m, mi) => (
+                  <div key={mi} className="flex items-start gap-2">
+                    <span className="w-1 h-1 rounded-full mt-[0.45rem] md:mt-[0.55rem] flex-shrink-0 bg-[#00c7b1]/40" />
+                    <p className="text-[0.78rem] md:text-[0.95rem] text-[#c8d8d4] leading-relaxed">{m}</p>
+                  </div>
+                ))}
               </div>
-              {/* Derecha */}
-              {page.derecha ? (
-                <div className="flex-1 bg-[#00c7b1]/4 border border-[#00c7b1]/15 rounded-lg overflow-hidden flex flex-col">
-                  <div className="bg-[#00c7b1]/13 border-b-2 border-[#00c7b1] px-3 py-1 flex-shrink-0">
-                    <p className="text-xs font-extrabold text-[#00c7b1] uppercase tracking-widest">{page.derecha.año}</p>
-                  </div>
-                  <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-0.5 custom-scrollbar">
-                    {page.derecha.cuatrimestres.map((c, ci) => (
-                      <div key={ci}>
-                        {ci > 0 && <div className="border-t border-[#00c7b1]/10 my-1 pt-1" />}
-                        <p className="text-[0.65rem] text-[#48b3a4] font-bold uppercase tracking-wider">{c.label}</p>
-                        {c.materias.map((m, mi) => (
-                          <p key={mi} className="text-sm text-[#b4d3ce] leading-relaxed">{m}</p>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : page.extras ? (
-                <div className="flex-1 flex flex-col gap-2.5">
-                  {page.extras.map((extra, ei) => (
-                    <div key={ei} className="bg-[#00c7b1]/6 border border-[#00c7b1]/22 rounded-lg p-3 flex flex-col justify-center">
-                      <p className="text-[0.65rem] font-extrabold text-[#00c7b1] uppercase tracking-widest mb-2">{extra.titulo}</p>
-                      {extra.items.map((item, ii) => (
-                        <p key={ii} className="text-sm text-[#b4d3ce] leading-relaxed">{item}</p>
-                      ))}
-                      {extra.nota && <p className="text-xs text-[#7ca19b] leading-snug mt-1">{extra.nota}</p>}
-                    </div>
-                  ))}
-                </div>
-              ) : null}
             </div>
           ))}
         </div>
-      </div>
-      {total > 1 && (
-        <div className="flex-shrink-0 flex items-center justify-center gap-2.5 pt-1">
-          <button onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx === 0}
-            className="w-6 h-6 rounded-full bg-[#013729] border border-[#00c7b1]/30 text-[#00c7b1] flex items-center justify-center disabled:opacity-25 transition-opacity">
-            <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-          </button>
-          <div className="flex gap-2 items-center">
-            {paginas.map((_, i) => (
-              <button key={i} onClick={() => setIdx(i)} className={`carousel-dot ${idx === i ? 'active' : ''}`} />
+      </>
+    );
+  }
+  return (
+    <>
+      {panel.extras.map((extra, ei) => (
+        <div key={ei} className="mb-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[0.5rem] text-[#00c7b1]">✦</span>
+            <p className="text-[0.65rem] md:text-[0.75rem] font-extrabold text-[#00c7b1] uppercase tracking-[0.1em]">{extra.titulo}</p>
+          </div>
+          <div className="pl-5 flex flex-col gap-0.5">
+            {extra.items.map((item, ii) => (
+              <div key={ii} className="flex items-start gap-2">
+                <span className="w-1 h-1 rounded-full mt-[0.45rem] md:mt-[0.55rem] flex-shrink-0 bg-[#00c7b1]/35" />
+                <p className="text-[0.78rem] md:text-[0.95rem] text-[#c8d8d4] leading-relaxed">{item}</p>
+              </div>
             ))}
           </div>
-          <button onClick={() => setIdx(i => Math.min(total - 1, i + 1))} disabled={idx === total - 1}
-            className="w-6 h-6 rounded-full bg-[#013729] border border-[#00c7b1]/30 text-[#00c7b1] flex items-center justify-center disabled:opacity-25 transition-opacity">
-            <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-          </button>
+          {extra.nota && <p className="text-[0.7rem] text-[#7ca19b] leading-snug mt-1.5 pl-5 italic">{extra.nota}</p>}
         </div>
-      )}
+      ))}
+    </>
+  );
+}
+
+// ── PDF download helper (in-page, no new window) ──
+function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
+  const yearPanels = panels.filter(p => p.tipo === 'year') as YearPanel[];
+  const extrasPanels = panels.filter(p => p.tipo === 'extras') as ExtrasPanel[];
+  const allExtras = extrasPanels.flatMap(p => p.extras);
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const marginL = 18;
+  const marginR = 18;
+  const contentW = pageW - marginL - marginR;
+  let y = 20;
+
+  const checkPage = (needed: number) => {
+    if (y + needed > doc.internal.pageSize.getHeight() - 15) {
+      doc.addPage();
+      y = 20;
+    }
+  };
+
+  // Title
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.setTextColor(1, 55, 41); // #013729
+  doc.text(carreraNombre.toUpperCase(), marginL, y);
+  y += 8;
+
+  // Subtitle
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
+  doc.text('PLAN DE ESTUDIOS', marginL, y);
+  y += 3;
+  doc.setDrawColor(0, 199, 177); // #00c7b1
+  doc.setLineWidth(0.6);
+  doc.line(marginL, y, marginL + contentW, y);
+  y += 10;
+
+  // Years — 3 per page, then new page
+  const renderYear = (panel: YearPanel) => {
+    // Year header with teal left bar
+    doc.setFillColor(232, 245, 243);
+    doc.rect(marginL, y - 4, contentW, 8, 'F');
+    doc.setFillColor(0, 199, 177);
+    doc.rect(marginL, y - 4, 1.2, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(1, 55, 41);
+    doc.text(panel.año.toUpperCase(), marginL + 4, y + 1);
+    y += 10;
+
+    for (const cuatri of panel.cuatrimestres) {
+      checkPage(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(0, 85, 135); // #005587
+      doc.text(cuatri.label.toUpperCase(), marginL + 5, y);
+      y += 4;
+
+      for (const materia of cuatri.materias) {
+        checkPage(6);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(51, 51, 51);
+        doc.setFillColor(0, 199, 177);
+        doc.circle(marginL + 7, y - 1, 0.8, 'F');
+        doc.text(materia, marginL + 11, y);
+        y += 4.5;
+      }
+      y += 2;
+    }
+    y += 3;
+  };
+
+  // Page 1: years 1-3
+  for (let i = 0; i < Math.min(3, yearPanels.length); i++) {
+    renderYear(yearPanels[i]);
+  }
+
+  // Page 2: years 4+
+  if (yearPanels.length > 3) {
+    doc.addPage();
+    y = 20;
+    for (let i = 3; i < yearPanels.length; i++) {
+      renderYear(yearPanels[i]);
+    }
+  }
+
+  // Page 3: Extras
+  if (allExtras.length > 0) {
+    doc.addPage();
+    y = 20;
+  }
+  for (const extra of allExtras) {
+    checkPage(20);
+    doc.setFillColor(232, 245, 243);
+    doc.rect(marginL, y - 4, contentW, 8, 'F');
+    doc.setFillColor(0, 199, 177);
+    doc.rect(marginL, y - 4, 1.2, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(1, 55, 41);
+    doc.text(extra.titulo.toUpperCase(), marginL + 4, y + 1);
+    y += 10;
+
+    for (const item of extra.items) {
+      checkPage(6);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(51, 51, 51);
+      doc.setFillColor(0, 199, 177);
+      doc.circle(marginL + 7, y - 1, 0.8, 'F');
+      doc.text(item, marginL + 11, y);
+      y += 4.5;
+    }
+
+    if (extra.nota) {
+      checkPage(6);
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(8.5);
+      doc.setTextColor(100, 100, 100);
+      doc.text(extra.nota, marginL + 5, y);
+      y += 5;
+    }
+    y += 3;
+  }
+
+  doc.save(`Plan de Estudios - ${carreraNombre}.pdf`);
+}
+
+// ── Summary cards view ──
+function PlanResumenCards({ panels, tituloOtorgado }: { panels: Panel[]; tituloOtorgado: string }) {
+  const yearPanels = panels.filter(p => p.tipo === 'year') as YearPanel[];
+  const extrasPanels = panels.filter(p => p.tipo === 'extras') as ExtrasPanel[];
+  const allExtras = extrasPanels.flatMap(p => p.extras);
+  const totalMaterias = yearPanels.reduce((sum, yp) => sum + yp.cuatrimestres.reduce((s, c) => s + c.materias.length, 0), 0);
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Both rows in a single inline-flex block so they align and center as a unit */}
+      <div className="inline-flex flex-col gap-3 mx-auto">
+        {/* Row 1: Materias > 1° > 2° > 3° */}
+        <div className="flex items-center flex-wrap gap-1.5 md:gap-0 md:flex-nowrap">
+          <div className="rounded-xl w-20 h-20 flex flex-col items-center justify-center" style={{
+            background: 'linear-gradient(135deg, #00c7b1, #009681)',
+          }}>
+            <p className="text-[0.55rem] font-bold text-[#013729]/80 uppercase tracking-wider leading-none">Materias</p>
+            <span className="text-2xl font-black text-[#013729] leading-none mt-0.5">{totalMaterias}</span>
+          </div>
+          {yearPanels.slice(0, 3).map((yp, i) => {
+            const count = yp.cuatrimestres.reduce((s, c) => s + c.materias.length, 0);
+            return (
+              <span key={i} className="contents">
+                <svg className="hidden md:block w-5 h-10 flex-shrink-0 mx-1.5" viewBox="0 0 20 40" fill="none">
+                  <path d="M1 6L7 20L1 34" stroke="rgba(0,199,177,0.25)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M7 6L13 20L7 34" stroke="rgba(0,199,177,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M13 6L19 20L13 34" stroke="rgba(0,199,177,0.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <div className="rounded-xl w-20 h-20 flex flex-col items-center justify-center" style={{
+                  background: 'rgba(0,199,177,0.06)',
+                  border: '1px solid rgba(0,199,177,0.12)',
+                }}>
+                  <p className="text-[0.55rem] font-bold text-white/80 uppercase tracking-wider leading-none">{i + 1}° Año</p>
+                  <span className="text-2xl font-black text-[#00c7b1] leading-none mt-0.5">{count}</span>
+                  <p className="text-[0.45rem] font-extrabold text-white/70 uppercase tracking-wider leading-none mt-0.5">materias</p>
+                </div>
+              </span>
+            );
+          })}
+        </div>
+        {/* Row 2: 4° > 5° > Título */}
+        <div className="flex items-center flex-wrap gap-1.5 md:gap-0 md:flex-nowrap">
+          {yearPanels.slice(3).map((yp, i) => {
+            const count = yp.cuatrimestres.reduce((s, c) => s + c.materias.length, 0);
+            const yearNum = i + 4;
+            return (
+              <span key={i} className="contents">
+                {i > 0 && (
+                  <svg className="hidden md:block w-5 h-10 flex-shrink-0 mx-1.5" viewBox="0 0 20 40" fill="none">
+                    <path d="M1 6L7 20L1 34" stroke="rgba(0,199,177,0.25)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M7 6L13 20L7 34" stroke="rgba(0,199,177,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M13 6L19 20L13 34" stroke="rgba(0,199,177,0.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                <div className="rounded-xl w-20 h-20 flex flex-col items-center justify-center" style={{
+                  background: 'rgba(0,199,177,0.06)',
+                  border: '1px solid rgba(0,199,177,0.12)',
+                }}>
+                  <p className="text-[0.55rem] font-bold text-white/80 uppercase tracking-wider leading-none">{yearNum}° Año</p>
+                  <span className="text-2xl font-black text-[#00c7b1] leading-none mt-0.5">{count}</span>
+                  <p className="text-[0.45rem] font-extrabold text-white/70 uppercase tracking-wider leading-none mt-0.5">materias</p>
+                </div>
+              </span>
+            );
+          })}
+          <svg className="hidden md:block w-5 h-10 flex-shrink-0 mx-1.5" viewBox="0 0 20 40" fill="none">
+            <path d="M1 6L7 20L1 34" stroke="rgba(0,199,177,0.25)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7 6L13 20L7 34" stroke="rgba(0,199,177,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M13 6L19 20L13 34" stroke="rgba(0,199,177,0.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {/* Título card — mobile: fixed 2 cards width, desktop: flex-1 to fill remaining */}
+          <div className="rounded-xl h-20 w-[166px] md:w-auto md:flex-1 px-4 flex flex-col items-center justify-center" style={{
+            background: 'linear-gradient(135deg, #5d4594, #323955)',
+            border: '1px solid rgba(93,69,148,0.45)',
+          }}>
+            <div className="inline-flex items-center gap-1 leading-none">
+              <svg className="w-3 h-3 text-white/80 flex-shrink-0 -mt-px" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" />
+              </svg>
+              <span className="text-[0.55rem] font-bold text-white/80 uppercase tracking-wider">Título</span>
+            </div>
+            <p className="text-[0.75rem] font-black text-white leading-tight text-center mt-1">{tituloOtorgado}</p>
+          </div>
+        </div>
+        {/* Extras row — inside the same inline-flex so it matches width */}
+        {allExtras.length > 0 && (
+          <>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="flex-1 h-px" style={{ background: 'rgba(0,199,177,0.15)' }} />
+              <p className="text-[0.6rem] font-extrabold uppercase tracking-[0.12em] text-white/80">Extras</p>
+              <div className="flex-1 h-px" style={{ background: 'rgba(0,199,177,0.15)' }} />
+            </div>
+            <div className="flex gap-2">
+              {allExtras.map((extra, ei) => (
+                <div key={`e${ei}`} className="flex-1 rounded-xl relative pt-4 pb-2.5 px-3 flex flex-col items-start" style={{
+                  background: 'rgba(0,199,177,0.04)',
+                  border: '1px solid rgba(0,199,177,0.1)',
+                }}>
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[0.6rem] font-extrabold uppercase tracking-wider whitespace-nowrap" style={{
+                    background: '#082422',
+                    color: '#00c7b1',
+                    border: '1px solid rgba(0,199,177,0.2)',
+                  }}>{extra.titulo}</span>
+                  {extra.items.map((item, ii) => (
+                    <p key={ii} className="text-[0.7rem] text-white/80 leading-relaxed">
+                      <span className="text-[#00c7b1]/70 mr-1">•</span>{item}
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Plan panels: left=year buttons, right=content ──
+function PlanPanels({ paginas, carreraNombre, tituloOtorgado }: { paginas: SlidePlanEstudios['paginas']; carreraNombre: string; tituloOtorgado: string }) {
+  const panels = flattenPaginas(paginas);
+  // -2 = resumen, -1 = show all, >= 0 = specific panel
+  const [active, setActive] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [currentVisibleIdx, setCurrentVisibleIdx] = useState(0);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+
+  const showAll = active === -1;
+  const showResumen = active === -2;
+  const activePanel = active >= 0 ? panels[active] : null;
+  const activeLabel = activePanel
+    ? (activePanel.tipo === 'year' ? activePanel.año : 'Extras')
+    : showAll ? 'Plan Completo' : 'Resumen';
+
+  // Reset scroll state when switching views
+  useEffect(() => {
+    setCurrentVisibleIdx(0);
+    setIsAtBottom(false);
+    const container = scrollContainerRef.current;
+    if (container) container.scrollTop = 0;
+  }, [active]);
+
+  // Get visible panel elements (not inside display:none)
+  const getVisiblePanelEls = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return [];
+    return Array.from(container.querySelectorAll<HTMLDivElement>('[data-panel-idx]'))
+      .filter(el => el.offsetParent !== null);
+  }, []);
+
+  // Get element's top offset relative to the scroll container
+  const getOffsetInContainer = useCallback((el: HTMLElement) => {
+    const container = scrollContainerRef.current;
+    if (!container) return 0;
+    return el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+  }, []);
+
+  // Scroll to a specific panel — precise alignment
+  const scrollToPanel = useCallback((idx: number) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    if (idx === 0) {
+      container.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const els = getVisiblePanelEls();
+    const el = els.find(e => e.dataset.panelIdx === String(idx));
+    if (el) {
+      const sep = el.querySelector<HTMLDivElement>('[data-sep]');
+      if (sep) {
+        const sepTop = sep.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+        container.scrollTo({ top: sepTop, behavior: 'smooth' });
+      } else {
+        container.scrollTo({ top: getOffsetInContainer(el), behavior: 'smooth' });
+      }
+    }
+  }, [getVisiblePanelEls, getOffsetInContainer]);
+
+  // Track visible panel + detect bottom during scroll
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const onScroll = () => {
+      const els = getVisiblePanelEls();
+      const scrollTop = container.scrollTop;
+      let closest = 0;
+      let closestDist = Infinity;
+      els.forEach(el => {
+        const idx = Number(el.dataset.panelIdx);
+        const top = getOffsetInContainer(el);
+        const dist = Math.abs(top - scrollTop);
+        if (dist < closestDist) { closestDist = dist; closest = idx; }
+      });
+      setCurrentVisibleIdx(closest);
+      // Detect if scrolled to bottom (within 60px tolerance)
+      const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+      setIsAtBottom(atBottom);
+    };
+    container.addEventListener('scroll', onScroll, { passive: true });
+    return () => container.removeEventListener('scroll', onScroll);
+  }, [showAll, getVisiblePanelEls, getOffsetInContainer]);
+
+  // Next panel info for the floating button
+  const nextIdx = currentVisibleIdx + 1;
+  const hasNext = nextIdx < panels.length;
+  const nextPanel = hasNext ? panels[nextIdx] : null;
+  const nextLabel = nextPanel ? (nextPanel.tipo === 'year' ? nextPanel.año : 'Extras') : null;
+
+  // Floating button: show "Volver al inicio" when at bottom, otherwise "Ver X"
+  const showFloatingNav = showAll || (typeof window !== 'undefined' && window.innerWidth < 768);
+
+  return (
+    <div className="flex-1 flex flex-col md:flex-row gap-0 min-h-0 overflow-hidden md:rounded-xl md:border md:border-[#00c7b1]/20" style={{
+      background: 'linear-gradient(160deg, rgba(18,46,46,0.4) 0%, rgba(10,30,28,0.6) 100%)',
+    }}>
+      {/* Year buttons — horizontal on mobile, vertical sidebar on desktop */}
+      <div className="flex-shrink-0 flex flex-row items-center md:items-stretch md:flex-col gap-1 md:gap-0.5 md:w-[160px] md:py-1.5 md:px-1.5 md:overflow-hidden md:border-r md:border-[#00c7b1]/12 px-1.5 py-1.5 overflow-x-auto md:overflow-x-hidden" style={{
+        background: 'linear-gradient(180deg, rgba(1,42,31,0.35) 0%, rgba(6,28,26,0.5) 100%)',
+      }}>
+        {/* Ver plan completo — desktop only */}
+        <button
+          onClick={() => setActive(-1)}
+          className="hidden md:flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer transition-all duration-300 flex-shrink-0"
+          style={showAll ? {
+            background: 'linear-gradient(135deg, #008c7d, #006c5b)',
+            border: '1px solid rgba(0,199,177,0.3)',
+            boxShadow: '0 2px 8px rgba(0,199,177,0.15)',
+          } : {
+            background: 'linear-gradient(135deg, #046353, #058c70)',
+            border: '1px solid rgba(0,199,177,0.2)',
+          }}
+        >
+          <svg className="w-3 h-3 flex-shrink-0 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
+          <span className="text-[0.56rem] font-bold uppercase tracking-wider whitespace-nowrap text-white">Plan completo</span>
+        </button>
+
+        <div className="hidden md:block mx-1.5 my-px h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.12) 0%, transparent 80%)' }} />
+
+        {/* Year buttons — minimalist inactive, solid brand when active */}
+        {panels.map((panel, i) => {
+          const isDesktopActive = i === active;
+          const isMobileActive = i === currentVisibleIdx;
+          const label = panel.tipo === 'year' ? panel.año : 'Extras';
+          const handleClick = () => {
+            if (typeof window !== 'undefined' && window.innerWidth < 768) {
+              scrollToPanel(i);
+            } else {
+              setActive(i);
+            }
+          };
+          return (
+            <span key={i} className="contents">
+              {/* Mobile button */}
+              <button
+                onClick={handleClick}
+                className={`md:hidden px-3 py-2.5 min-h-[44px] rounded flex items-center justify-center cursor-pointer transition-all duration-200 flex-shrink-0 ${
+                  isMobileActive ? '' : 'border border-[#00c7b1]/30'
+                }`}
+                style={isMobileActive ? {
+                  background: 'linear-gradient(135deg, #008c7d, #006c5b)',
+                  border: '1px solid rgba(0,199,177,0.5)',
+                  boxShadow: '0 2px 8px rgba(0,199,177,0.2)',
+                } : undefined}
+              >
+                <span className={`text-[0.55rem] leading-none font-bold uppercase tracking-wider whitespace-nowrap ${
+                  isMobileActive ? 'text-white' : 'text-[#00c7b1]'
+                }`}>
+                  {label}
+                </span>
+              </button>
+              {/* Desktop button */}
+              <button
+                onClick={handleClick}
+                className={`hidden md:block px-2 py-1.5 rounded-lg text-center cursor-pointer transition-all duration-200 flex-shrink-0 ${
+                  isDesktopActive ? '' : 'border border-[#00c7b1]/30 hover:bg-[#00c7b1]/15 hover:border-[#00c7b1]/50'
+                }`}
+                style={isDesktopActive ? {
+                  background: 'linear-gradient(135deg, #008c7d, #006c5b)',
+                  border: '1px solid rgba(0,199,177,0.5)',
+                  boxShadow: '0 2px 10px rgba(0,199,177,0.2)',
+                } : undefined}
+              >
+                <span className={`text-[0.6rem] font-bold uppercase tracking-[0.06em] whitespace-nowrap ${
+                  isDesktopActive ? 'text-white' : 'text-[#00c7b1]'
+                }`}>
+                  {label}
+                </span>
+              </button>
+            </span>
+          );
+        })}
+
+        {/* Resumen button — below extras, desktop only */}
+        <div className="hidden md:block mx-1.5 my-px h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.12) 0%, transparent 80%)' }} />
+        <button
+          onClick={() => setActive(-2)}
+          className="hidden md:flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg cursor-pointer transition-all duration-200 flex-shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, #5d4594, #323955)',
+            border: '1px solid rgba(93,69,148,0.45)',
+            boxShadow: showResumen ? '0 2px 10px rgba(93,69,148,0.3)' : undefined,
+          }}
+        >
+          <svg className="w-3 h-3 flex-shrink-0 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span className="text-[0.6rem] font-bold uppercase tracking-[0.06em] whitespace-nowrap text-white">Resumen</span>
+        </button>
+      </div>
+
+      {/* Right: content area */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-xl md:rounded-none border border-[#00c7b1]/15 md:border-0 relative" style={{
+        background: 'linear-gradient(160deg, rgba(18,46,46,0.3) 0%, rgba(10,30,28,0.5) 100%)',
+      }}>
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at 10% 20%, rgba(0,199,177,0.03) 0%, transparent 60%)',
+        }} />
+        {/* Header bar — desktop only */}
+        <div className="hidden md:flex flex-shrink-0 items-center gap-2.5 px-5 py-2 relative z-10" style={{
+          background: 'linear-gradient(135deg, rgba(1,42,31,0.5) 0%, rgba(13,48,64,0.3) 100%)',
+          borderBottom: '1px solid rgba(0,199,177,0.12)',
+        }}>
+          <p className="text-sm font-extrabold text-white uppercase tracking-[0.08em]">{activeLabel}</p>
+          <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.15) 0%, transparent 80%)' }} />
+        </div>
+
+        {/* Scrollable content */}
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 py-3 flex flex-col gap-2 custom-scrollbar relative z-10">
+          {/* Mobile: always all panels + resumen at bottom */}
+          <div className="md:hidden flex flex-col gap-2">
+            {panels.map((panel, i) => (
+              <div key={i} data-panel-idx={i}>
+                {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
+                <PanelContent panel={panel} showTitle />
+              </div>
+            ))}
+            <div data-resumen-mobile className="flex items-center gap-2.5 px-1 py-2 mt-3">
+              <div className="flex-1 h-px" style={{ background: 'linear-gradient(270deg, rgba(0,199,177,0.15) 0%, transparent 80%)' }} />
+              <p className="text-sm font-extrabold text-white uppercase tracking-[0.08em]">Resumen</p>
+              <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.15) 0%, transparent 80%)' }} />
+            </div>
+            <div className="pb-16">
+              <PlanResumenCards panels={panels} tituloOtorgado={tituloOtorgado} />
+            </div>
+          </div>
+          {/* Desktop: resumen, showAll, or single panel */}
+          <div className="hidden md:block">
+            {showResumen ? (
+              <PlanResumenCards panels={panels} tituloOtorgado={tituloOtorgado} />
+            ) : showAll ? (
+              <div>
+                {panels.map((panel, i) => (
+                  <div key={i} data-panel-idx={i}>
+                    {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
+                    <PanelContent panel={panel} showTitle />
+                  </div>
+                ))}
+                <div data-resumen-header className="flex items-center gap-2.5 px-1 py-2 mt-4">
+                  <div className="flex-1 h-px" style={{ background: 'linear-gradient(270deg, rgba(0,199,177,0.15) 0%, transparent 80%)' }} />
+                  <p className="text-sm font-extrabold text-white uppercase tracking-[0.08em]">Resumen</p>
+                  <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.15) 0%, transparent 80%)' }} />
+                </div>
+                <div className="pb-6">
+                  <PlanResumenCards panels={panels} tituloOtorgado={tituloOtorgado} />
+                </div>
+              </div>
+            ) : (
+              activePanel && <PanelContent panel={activePanel} />
+            )}
+          </div>
+        </div>
+
+        {/* Top+bottom fade overlays on mobile */}
+        <div className="md:hidden absolute top-0 left-0 right-0 h-4 z-10 pointer-events-none" style={{
+          background: 'linear-gradient(to bottom, rgba(10,30,28,0.7) 0%, transparent 100%)',
+        }} />
+        <div className="md:hidden absolute bottom-0 left-0 right-0 h-10 z-10 pointer-events-none" style={{
+          background: 'linear-gradient(to top, rgba(10,30,28,0.85) 0%, transparent 100%)',
+        }} />
+
+        {/* Floating nav button — mobile */}
+        {!showResumen && (
+          <button
+            onClick={() => {
+              if (isAtBottom) {
+                scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              } else if (!hasNext) {
+                // Scroll to resumen
+                const container = scrollContainerRef.current;
+                if (container) {
+                  const resumenHeader = container.querySelector<HTMLElement>('[data-resumen-mobile]');
+                  if (resumenHeader) {
+                    const headerTop = resumenHeader.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+                    container.scrollTo({ top: headerTop, behavior: 'smooth' });
+                  }
+                }
+              } else {
+                scrollToPanel(nextIdx);
+              }
+            }}
+            className="absolute bottom-3 right-5 z-20 flex items-center gap-2 px-3.5 py-2 rounded-full cursor-pointer transition-all duration-300 md:hidden group"
+            style={{
+              background: isAtBottom
+                ? 'linear-gradient(135deg, #00c7b1, #009681)'
+                : !hasNext
+                  ? 'linear-gradient(135deg, #5d4594, #323955)'
+                  : 'linear-gradient(135deg, #00c7b1, #009681)',
+              boxShadow: isAtBottom || hasNext
+                ? '0 4px 24px rgba(0,199,177,0.3), 0 2px 8px rgba(0,0,0,0.3)'
+                : '0 4px 24px rgba(93,69,148,0.3), 0 2px 8px rgba(0,0,0,0.3)',
+            }}
+          >
+            {isAtBottom ? (
+              <>
+                <svg className="w-3.5 h-3.5 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+                <span className="text-[0.6rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Inicio</span>
+              </>
+            ) : !hasNext ? (
+              <>
+                <span className="text-[0.6rem] font-black uppercase tracking-wider text-white whitespace-nowrap">Ver resumen</span>
+                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </>
+            ) : (
+              <>
+                <span className="text-[0.6rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
+                  Ver {nextLabel}
+                </span>
+                <svg className="w-3.5 h-3.5 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </>
+            )}
+          </button>
+        )}
+
+        {/* Floating nav button — desktop showAll */}
+        {showAll && !showResumen && (currentVisibleIdx > 0 || hasNext) && (
+          <button
+            onClick={() => {
+              if (isAtBottom) {
+                scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              } else if (!hasNext) {
+                // Scroll to resumen header
+                const container = scrollContainerRef.current;
+                if (container) {
+                  const resumenHeader = container.querySelector<HTMLElement>('[data-resumen-header]');
+                  if (resumenHeader) {
+                    const headerBottom = resumenHeader.getBoundingClientRect().bottom - container.getBoundingClientRect().top + container.scrollTop;
+                    container.scrollTo({ top: headerBottom, behavior: 'smooth' });
+                  }
+                }
+              } else {
+                scrollToPanel(nextIdx);
+              }
+            }}
+            className="absolute bottom-3 right-6 z-20 hidden md:flex items-center gap-2 px-4 py-2.5 rounded-full cursor-pointer transition-all duration-300 hover:brightness-110 group"
+            style={{
+              background: isAtBottom
+                ? 'linear-gradient(135deg, #00c7b1, #009681)'
+                : !hasNext
+                  ? 'linear-gradient(135deg, #5d4594, #323955)'
+                  : 'linear-gradient(135deg, #00c7b1, #009681)',
+              boxShadow: isAtBottom || hasNext
+                ? '0 4px 24px rgba(0,199,177,0.3), 0 2px 8px rgba(0,0,0,0.3)'
+                : '0 4px 24px rgba(93,69,148,0.3), 0 2px 8px rgba(0,0,0,0.3)',
+            }}
+          >
+            {isAtBottom ? (
+              <>
+                <svg className="w-4 h-4 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+                <span className="text-[0.65rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Volver al inicio</span>
+              </>
+            ) : !hasNext ? (
+              <>
+                <span className="text-[0.65rem] font-black uppercase tracking-wider text-white whitespace-nowrap">Ver resumen</span>
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </>
+            ) : (
+              <>
+                <span className="text-[0.65rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
+                  Ver {nextLabel}
+                </span>
+                <svg className="w-4 h-4 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </>
+            )}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -207,10 +834,10 @@ export default function CarouselModal({ carrera, onClose }: Props) {
         </div>
 
         {/* Slides */}
-        <div className="flex-1 min-h-0 overflow-hidden relative">
-          <div className="flex h-full transition-transform duration-350 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
+        <div className="flex-1 min-h-0 overflow-hidden relative" style={{ contain: 'strict' }}>
+          <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
-              <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden">
+              <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
                 {renderSlide(slide, carrera)}
               </div>
             ))}
@@ -288,36 +915,52 @@ function renderSlide(slide: CarreraSlide, carrera: Carrera) {
 function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePortada; carrera: Carrera }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
-      <div className="flex-1 flex flex-col justify-between p-6 sm:p-8 md:p-10 gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-hidden">
-        <div className="flex flex-col gap-[clamp(0.2rem,0.8vh,0.6rem)]">
-          <div className="flex items-center gap-[clamp(0.6rem,2vw,1rem)] text-left">
-            <img src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" className="h-[clamp(1rem,2.6vh,1.8rem)] w-auto rounded block" />
-            <p className="text-[clamp(0.6rem,1.6vh,0.8rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
-              <span>Nivel de carrera: {carrera.nivel}</span>
-              <span className="block text-white">Duración: {carrera.duracion}</span>
-            </p>
-          </div>
-          <div className="pt-[clamp(0.4rem,1.2vh,0.75rem)] border-t border-[#00c7b1]/20 flex flex-col items-center md:items-start text-center md:text-left">
-            <h2 className="text-[clamp(1.6rem,9vw,3.6rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{carrera.nombre.toUpperCase()}</h2>
-            <div className="w-[clamp(1.2rem,5vw,2.2rem)] h-[3px] bg-[#00c7b1] rounded-sm mt-1" />
-          </div>
+      <div className="flex-1 flex flex-col md:justify-between p-6 sm:p-8 md:p-10 md:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-hidden">
+        {/* Mobile: two zones - content (grows, centers children) + image/badges (fixed bottom) */}
+        {/* Desktop: all sequential with justify-between */}
+
+        <div className="flex-shrink-0 flex items-center gap-[clamp(0.6rem,2vw,1rem)] text-left">
+          <img src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" className="h-[clamp(1rem,2.6vh,1.8rem)] w-auto rounded block" />
+          <p className="text-[clamp(0.6rem,1.6vh,0.8rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
+            <span>Nivel de carrera: {carrera.nivel}</span>
+            <span className="block text-white">Duración: {carrera.duracion}</span>
+          </p>
         </div>
-        <div className="flex flex-col gap-2">
+
+        <div className="flex-shrink-0 flex items-center justify-center md:justify-start border-t border-[#00c7b1]/20 pt-6 md:pt-1 mt-2 md:mt-0 gap-3">
+          <div className="w-[4px] h-[clamp(1.6rem,8vw,3rem)] bg-[#00c7b1] rounded-sm flex-shrink-0" />
+          <h2 className="text-[clamp(1.6rem,9vw,3.6rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{carrera.nombre.toUpperCase()}</h2>
+        </div>
+
+        <div className="flex-1 flex flex-col justify-start pt-8 gap-3 md:gap-2 md:flex-initial md:justify-start md:pt-0">
           {slide.bullets.map((b, i) => (
-            <p key={i} className="text-sm md:text-base text-[#e0f0ed] leading-snug font-medium">
+            <p key={i} className="text-xl md:text-base text-[#e0f0ed] leading-relaxed md:leading-snug font-medium">
               <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
             </p>
           ))}
         </div>
-        {slide.imagen_mobile && (
-          <div className="md:hidden flex-1 flex items-center justify-center min-h-0 py-2">
-            <img src={encodeImagePath(slide.imagen_mobile!)} alt={carrera.nombre} className="max-h-full w-full object-contain" />
-          </div>
-        )}
+
+        <div className="md:hidden flex-shrink-0 flex flex-col gap-2">
+          {slide.imagen_mobile && (
+            <div className="flex items-end justify-center">
+              <img src={encodeImagePath(slide.imagen_mobile!)} alt={carrera.nombre} className="max-h-[30vh] w-full object-contain" />
+            </div>
+          )}
+          {slide.badges && (
+            <div className="grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2">
+              {slide.badges.map((badge, i) => (
+                <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
+                  <span className="block text-[0.5rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
+                  <span className="block text-sm text-white font-extrabold mt-0.5">{badge.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         {slide.badges && (
-          <div className="grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
+          <div className="hidden md:grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
             {slide.badges.map((badge, i) => (
-              <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
+              <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-start text-left">
                 <span className="block text-[0.5rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
                 <span className="block text-sm text-white font-extrabold mt-0.5">{badge.value}</span>
               </div>
@@ -326,8 +969,8 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         )}
       </div>
       {slide.imagen_desktop && (
-        <div className="hidden md:flex flex-none h-full overflow-hidden relative border-l border-[#00c7b1]/20" style={{ width: '42%' }}>
-          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className="absolute inset-0 w-full h-full object-cover object-top block" />
+        <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-[#00c7b1]/20" style={{ width: '42%' }}>
+          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className="w-full h-full object-cover object-top block" />
         </div>
       )}
     </div>
@@ -339,8 +982,8 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
       {slide.imagen && (
         <div className="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,18vh,12rem)] md:h-full">
-          <img src={encodeImagePath(slide.imagen!)} alt="Modalidad" className="absolute inset-0 w-full h-full object-cover object-[center_15%] block" />
-          <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent z-20" />
+          <img src={encodeImagePath(slide.imagen!)} alt="Modalidad" className="w-full h-full object-cover object-[center_15%] block" />
+          <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent z-20 pointer-events-none" />
         </div>
       )}
       <div className="flex-1 overflow-hidden flex flex-col justify-center">
@@ -369,17 +1012,17 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
 
 function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluacion }) {
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6 sm:p-10 gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
-      <div className="text-center">
+    <div className="h-full flex flex-col items-center justify-center p-4 sm:p-10 gap-3 sm:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
+      <div className="text-center flex-shrink-0">
         <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-1">Proceso de evaluacion</p>
-        <h3 className="text-lg font-black text-white uppercase tracking-wider">¿Como te evaluamos?</h3>
+        <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">¿Como te evaluamos?</h3>
       </div>
-      <div className="flex gap-3 w-full max-w-md">
+      <div className="flex gap-1.5 sm:gap-3 w-full max-w-md">
         {slide.cards.map((card, i) => (
-          <div key={i} className={`flex-1 rounded-xl p-4 text-center ${card.accent ? 'bg-[#00c7b1]/10 border-[1.5px] border-[#00c7b1]' : 'bg-[#1c2f31] border border-[#00c7b1]/18'}`}>
-            <div className="text-4xl font-black text-[#00c7b1] leading-none">{card.numero}</div>
-            <div className="text-[0.65rem] font-semibold text-[#7ca19b] uppercase tracking-wider mt-1 whitespace-pre-line">{card.label}</div>
-            <div className={`text-[0.6rem] mt-0.5 ${card.accent ? 'text-[#00c7b1] font-bold' : 'text-[#48b3a4]'}`}>{card.sub}</div>
+          <div key={i} className={`flex-1 min-w-0 rounded-xl p-1.5 sm:p-4 text-center ${card.accent ? 'bg-[#00c7b1]/10 border-[1.5px] border-[#00c7b1]' : 'bg-[#1c2f31] border border-[#00c7b1]/18'}`}>
+            <div className="text-2xl sm:text-4xl font-black text-[#00c7b1] leading-none">{card.numero}</div>
+            <div className="text-[0.45rem] sm:text-[0.65rem] font-semibold text-[#7ca19b] uppercase tracking-normal sm:tracking-wider mt-1 whitespace-pre-line">{card.label}</div>
+            <div className={`text-[0.45rem] sm:text-[0.6rem] mt-0.5 ${card.accent ? 'text-[#00c7b1] font-bold' : 'text-[#48b3a4]'}`}>{card.sub}</div>
           </div>
         ))}
       </div>
@@ -394,13 +1037,45 @@ function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluaci
 }
 
 function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: Carrera }) {
+  const panels = flattenPaginas(slide.paginas);
+
   return (
-    <div className="h-full flex flex-col p-5 sm:p-6 gap-3 overflow-hidden">
-      <div className="flex-shrink-0">
-        <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-0.5">{carrera.nivel} · {carrera.duracion}</p>
-        <h3 className="text-lg font-black text-white uppercase tracking-wider">Plan de Estudios</h3>
+    <div className="h-full flex flex-col p-4 sm:p-6 gap-3 overflow-hidden" style={{
+      background: 'linear-gradient(170deg, #041211 0%, #071d1b 30%, #082422 60%, #061716 100%)',
+      backfaceVisibility: 'hidden',
+      transform: 'translateZ(0)',
+    }}>
+      <div className="flex-shrink-0 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{
+          background: 'rgba(0,199,177,0.08)',
+          border: '1px solid rgba(0,199,177,0.18)',
+        }}>
+          <svg className="w-3.5 h-3.5 text-[#00c7b1]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[0.5rem] font-bold tracking-[0.14em] uppercase text-[#9ac5be]">{carrera.nivel} · {carrera.duracion}</p>
+          <h3 className="text-sm md:text-base font-black text-white uppercase tracking-wider leading-tight">Plan de Estudios</h3>
+        </div>
+        <button
+          onClick={() => downloadPlanPDF(panels, carrera.nombre)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[0.58rem] md:text-[0.63rem] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer flex-shrink-0 hover:brightness-115"
+          style={{
+            background: 'linear-gradient(135deg, #005587, #058c70)',
+            color: 'white',
+            border: '1px solid rgba(0,199,177,0.25)',
+          }}
+        >
+          <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span className="hidden sm:inline">Descargar Plan de Estudio</span>
+          <span className="sm:hidden">Descargar</span>
+          <span className="px-1.5 py-0.5 rounded text-[0.5rem] font-black tracking-wider" style={{ background: '#c0392b', color: 'white' }}>PDF</span>
+        </button>
       </div>
-      <PlanCarousel paginas={slide.paginas} />
+      <PlanPanels paginas={slide.paginas} carreraNombre={carrera.nombre} tituloOtorgado={carrera.titulo} />
     </div>
   );
 }
@@ -410,8 +1085,8 @@ function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
     <div className="h-full flex overflow-hidden">
       {slide.imagen && (
         <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24]">
-          <img src={encodeImagePath(slide.imagen!)} alt="Instituto" className="absolute inset-0 w-full h-full object-cover block" />
-          <div className="absolute inset-0 z-20" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
+          <img src={encodeImagePath(slide.imagen!)} alt="Instituto" className="w-full h-full object-cover block" />
+          <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}
       <div className="flex-1 bg-[#011f17] p-6 sm:p-10 flex flex-col justify-center gap-6 overflow-y-auto custom-scrollbar">

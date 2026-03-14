@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Unbounded } from 'next/font/google';
 import Navbar from '@/components/navbar';
-import ScrollToTop from '@/components/scroll-to-top';
+import ScrollToTop, { ScrollResetOnLoad } from '@/components/scroll-to-top';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -33,7 +33,11 @@ export const metadata: Metadata = {
     google: 'google2ba266d8a709b848',
   },
   icons: {
-    icon: '/icon.png',
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/icon.png', sizes: '48x48', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
   },
 };
 
@@ -45,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <Navbar />
         {children}
+        <ScrollResetOnLoad />
         <ScrollToTop />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

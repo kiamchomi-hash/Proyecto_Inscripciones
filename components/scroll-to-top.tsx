@@ -2,6 +2,16 @@
 
 import { useState, useEffect } from 'react';
 
+export function ScrollResetOnLoad() {
+  useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  }, []);
+  return null;
+}
+
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
 

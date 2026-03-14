@@ -68,7 +68,7 @@ export default function Hero() {
               <div className="banner-slide">
                 <div className="w-full h-full relative min-h-[120px] bg-[#40826d] overflow-hidden flex flex-col items-center justify-center p-2 sm:p-4">
                   <h2 
-                    className="text-white font-black text-[1.4rem] min-[380px]:text-[1.8rem] sm:text-[2.5rem] md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl text-center tracking-tight uppercase whitespace-nowrap"
+                    className="text-white font-black text-[1.15rem] min-[380px]:text-[1.8rem] sm:text-[2.5rem] md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl text-center tracking-tight uppercase whitespace-nowrap"
                     style={{ textShadow: "1px 1px 0 #4b5563, 2px 2px 0 #374151, 3px 3px 0 #1f2937, 4px 4px 0 #111827, 4px 4px 10px rgba(0,0,0,0.6)" }}
                   >
                     Inscripciones 2026
@@ -90,23 +90,23 @@ export default function Hero() {
               {/* Slide 2: Cuotas (100% Vectorial y Adaptable) */}
               <div className="banner-slide">
                 <div className="w-full h-full relative min-h-[120px] bg-[#ebfcf4] overflow-hidden flex flex-row items-center w-full">
-                  
+
                   {/* ZONA 1: Círculo real recortado por overflow-hidden — solo el arco derecho ) es visible */}
-                  <div className="relative z-10 shrink-0 h-full flex items-center justify-center overflow-hidden" style={{ width: '25%', minWidth: '90px' }}>
+                  <div className="relative z-10 shrink-0 h-full flex items-center justify-center overflow-hidden w-[18%] sm:w-[25%]" style={{ minWidth: '55px' }}>
                     {/* Círculo grande desplazado a la izquierda. overflow-hidden del contenedor recorta todo salvo el arco derecho ) */}
                     <div
                       className="absolute rounded-full bg-teal-600 shadow-[5px_0_30px_rgba(13,148,136,0.2)]"
                       style={{ width: '220%', aspectRatio: '1', left: '-120%', top: '50%', transform: 'translateY(-50%)' }}
                     />
                     {/* Tarjetas encima del arco */}
-                    <div className="relative z-10 flex items-center justify-center w-[60px] h-[60px] sm:w-[85px] sm:h-[85px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] xl:w-[115px] xl:h-[115px] 2xl:w-[150px] 2xl:h-[150px]">
-                      <svg className="w-[3.5rem] h-[3.5rem] sm:w-16 sm:h-16 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-24 xl:h-24 2xl:w-36 2xl:h-36 absolute transform -rotate-12 -translate-x-1 -translate-y-1 sm:-translate-x-2 sm:-translate-y-2 drop-shadow-xl" viewBox="0 0 100 65" fill="none">
+                    <div className="relative z-10 flex items-center justify-center w-[55px] h-[55px] sm:w-[85px] sm:h-[85px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] xl:w-[115px] xl:h-[115px] 2xl:w-[150px] 2xl:h-[150px]">
+                      <svg className="w-[3.2rem] h-[3.2rem] sm:w-16 sm:h-16 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-24 xl:h-24 2xl:w-36 2xl:h-36 absolute transform -rotate-12 -translate-x-1 -translate-y-1 sm:-translate-x-2 sm:-translate-y-2 drop-shadow-xl" viewBox="0 0 100 65" fill="none">
                         <rect x="0" y="0" width="100" height="65" rx="8" fill="#2563eb"/>
                         <rect x="0" y="12" width="100" height="15" fill="#111827"/>
                         <rect x="10" y="38" width="30" height="5" rx="2.5" fill="#94a3b8"/>
                         <rect x="10" y="48" width="45" height="5" rx="2.5" fill="#64748b"/>
                       </svg>
-                      <svg className="w-[3.5rem] h-[3.5rem] sm:w-16 sm:h-16 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-24 xl:h-24 2xl:w-36 2xl:h-36 absolute transform rotate-6 translate-x-2 translate-y-2 drop-shadow-2xl" viewBox="0 0 100 65" fill="none">
+                      <svg className="w-[3.2rem] h-[3.2rem] sm:w-16 sm:h-16 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-24 xl:h-24 2xl:w-36 2xl:h-36 absolute transform rotate-6 translate-x-2 translate-y-2 drop-shadow-2xl" viewBox="0 0 100 65" fill="none">
                         <rect x="0" y="0" width="100" height="65" rx="8" fill="#f0f4f8"/>
                         <rect x="12" y="15" width="16" height="12" rx="2" fill="#fbbf24"/>
                         <path d="M16 15v12M24 15v12M12 21h16" stroke="#b45309" strokeWidth="1" opacity="0.4"/>
@@ -119,24 +119,24 @@ export default function Hero() {
                   </div>
 
                   {/* ZONA 2 (Centro Elástico): Textos Principales */}
-                  <div className="relative z-20 flex-1 min-w-0 h-full flex flex-row items-center justify-center pr-2 pl-1 sm:pl-2 px-1">
-                    <div className="flex flex-row items-center justify-center min-w-0 shrink-0">
+                  <div className="relative z-20 flex-1 min-w-0 h-full flex flex-row items-center justify-center pr-1 pl-1 sm:pl-2 sm:pr-2">
+                    <div className="flex flex-row items-center justify-center min-w-0">
                       {/* En XL el texto DEBE achicarse porque la columna derecha reduce el carrusel */}
-                      <span className="text-[3rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[7rem] xl:text-[5.5rem] 2xl:text-[7.5rem] font-black text-teal-600 leading-[0.85] tracking-tighter drop-shadow-sm shrink-0">
+                      <span className="text-[3.2rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[7rem] xl:text-[5.5rem] 2xl:text-[7.5rem] font-black text-teal-600 leading-[0.85] tracking-tighter drop-shadow-sm shrink-0">
                         6
                       </span>
-                      <div className="flex flex-col justify-center ml-1 sm:ml-2 md:ml-4 py-1 shrink-0">
-                        <span className="text-[0.7rem] sm:text-[1rem] md:text-[1.4rem] lg:text-[1.8rem] xl:text-[1.4rem] 2xl:text-[2rem] font-black uppercase tracking-widest leading-none text-slate-800 whitespace-nowrap">Cuotas</span>
-                        <span className="text-[0.7rem] sm:text-[1rem] md:text-[1.4rem] lg:text-[1.8rem] xl:text-[1.4rem] 2xl:text-[2rem] font-black uppercase tracking-widest leading-none text-slate-800 whitespace-nowrap mt-0.5 md:mt-1">Sin Interés</span>
+                      <div className="flex flex-col justify-center ml-1 sm:ml-2 md:ml-4 py-1">
+                        <span className="text-[0.9rem] sm:text-[1rem] md:text-[1.4rem] lg:text-[1.8rem] xl:text-[1.4rem] 2xl:text-[2rem] font-black uppercase tracking-wide sm:tracking-widest leading-none text-slate-800 whitespace-nowrap">Cuotas</span>
+                        <span className="text-[0.9rem] sm:text-[1rem] md:text-[1.4rem] lg:text-[1.8rem] xl:text-[1.4rem] 2xl:text-[2rem] font-black uppercase tracking-wide sm:tracking-widest leading-none text-slate-800 whitespace-nowrap mt-0.5 md:mt-1">Sin Interés</span>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* ZONA 3 (Fluida ~25-30%): Caja Extra */}
-                  <div className="relative z-20 w-[30%] lg:w-[25%] xl:w-[22%] shrink-0 h-full flex items-center justify-center px-1 sm:px-2 md:px-4">
-                    <div className="flex flex-col items-center justify-center bg-teal-600 border border-teal-500 rounded-md md:rounded-xl p-1 sm:px-2 md:px-3 py-1.5 md:py-2.5 shadow-md w-full max-w-[150px] md:max-w-[180px] lg:max-w-[200px] xl:max-w-[170px] 2xl:max-w-[220px]">
-                      <span className="text-teal-100 font-bold text-[7px] sm:text-[8px] md:text-[10px] lg:text-[12px] xl:text-[9.5px] 2xl:text-[13px] tracking-widest uppercase mb-[1px] text-center w-full truncate">Pagando con</span>
-                      <span className="text-white font-black text-[8px] sm:text-[10px] md:text-[12px] lg:text-[15px] xl:text-[11.5px] 2xl:text-[16px] uppercase text-center leading-tight wrap-break-word w-full">Tarjetas<br className="sm:hidden lg:block xl:hidden 2xl:block"/> Bancarias</span>
+                  <div className="relative z-20 w-[28%] sm:w-[30%] lg:w-[25%] xl:w-[22%] shrink-0 h-full flex items-center justify-center px-1 sm:px-2 md:px-4">
+                    <div className="flex flex-col items-center justify-center bg-teal-600 border border-teal-500 rounded-md md:rounded-xl px-1.5 sm:px-2 md:px-3 py-1.5 sm:py-1.5 md:py-2.5 shadow-md w-full max-w-[150px] md:max-w-[180px] lg:max-w-[200px] xl:max-w-[170px] 2xl:max-w-[220px]">
+                      <span className="text-teal-100 font-bold text-[6px] min-[375px]:text-[7.5px] sm:text-[8px] md:text-[10px] lg:text-[12px] xl:text-[9.5px] 2xl:text-[13px] tracking-normal sm:tracking-widest uppercase mb-[1px] text-center w-full">Pagando con</span>
+                      <span className="text-white font-black text-[7px] min-[375px]:text-[9.5px] sm:text-[10px] md:text-[12px] lg:text-[15px] xl:text-[11.5px] 2xl:text-[16px] uppercase text-center leading-[1.15] min-[375px]:leading-tight wrap-break-word w-full">Tarjetas Bancarias</span>
                     </div>
                   </div>
 

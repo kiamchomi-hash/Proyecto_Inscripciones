@@ -327,8 +327,17 @@ export default function CareersCatalog({ carreras }: Props) {
               <div className="flex flex-col gap-3.5">
                 <div className="sidebar-benefit-chip">
                   <div className="sidebar-benefit-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M4.93 19.07l4.24-4.24"/><path d="M14.83 9.17l4.24-4.24"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 100 100" fill="none">
+                      <defs>
+                        <clipPath id="tennis-clip">
+                          <circle cx="50" cy="50" r="46"/>
+                        </clipPath>
+                      </defs>
+                      <circle cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="3"/>
+                      <g clipPath="url(#tennis-clip)" stroke="currentColor" strokeWidth="3">
+                        <path d="M 18,8 Q 30,50 18,92"/>
+                        <path d="M 82,8 Q 70,50 82,92"/>
+                      </g>
                     </svg>
                   </div>
                   <div>
@@ -411,11 +420,11 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
           </h2>
           <button
             onClick={() => setShowSearch(!showSearch)}
-            className="p-1.5 rounded-full hover:bg-[#00c7b1]/10 transition-colors shrink-0"
+            className={`p-1.5 rounded-lg shadow-sm transition-colors shrink-0 ${showSearch ? 'bg-[#00c7b1] hover:bg-[#00c7b1]/80' : 'bg-white/90 hover:bg-white/60'}`}
             title={`Buscar en ${title}`}
             aria-label={`Buscar en ${title}`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#00c7b1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${showSearch ? 'text-white' : 'text-[#013729]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>

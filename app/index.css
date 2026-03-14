@@ -16,6 +16,7 @@
 
 .banner-slide {
   min-width: 100%;
+  max-width: 100%;
   flex-shrink: 0;
 }
 

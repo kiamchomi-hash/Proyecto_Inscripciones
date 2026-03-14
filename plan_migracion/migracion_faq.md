@@ -76,3 +76,6 @@ CAPTCHA / Rate limit               ⚠️  Cloudflare Turnstile planificado pero
 
 ### Analytics
 - Tracking de clics — Guardar en Supabase qué preguntas se abren más. Reordenar automáticamente por popularidad
+
+## Pendiente
+cuando coloque el mail avisarle que se respondió al mail, con la respuesta correspondiente
