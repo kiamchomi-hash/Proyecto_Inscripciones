@@ -85,18 +85,64 @@
 /* ── Instagram card ───────────────────────────────────── */
 .ct-channel-instagram {
   background: linear-gradient(160deg, rgba(28, 47, 49, 0.8) 0%, rgba(22, 47, 46, 0.5) 100%);
-  border: 1px solid rgba(214, 36, 159, 0.15);
+  border: 1px solid transparent;
   color: #D6249F;
 }
 .ct-channel-instagram::before {
   background: linear-gradient(160deg, rgba(131, 58, 180, 0.08) 0%, rgba(253, 29, 29, 0.08) 50%, rgba(252, 176, 69, 0.06) 100%);
 }
-.ct-channel-instagram:hover {
-  border-color: rgba(214, 36, 159, 0.35);
+.ct-channel-instagram::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(160deg, rgba(131, 58, 180, 0.4), rgba(253, 29, 29, 0.3), rgba(252, 176, 69, 0.25));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
-.ct-channel-instagram:hover .ct-icon-ring {
-  background: rgba(214, 36, 159, 0.2) !important;
+.ct-channel-instagram:hover::after {
+  background: linear-gradient(160deg, rgba(131, 58, 180, 0.7), rgba(253, 29, 29, 0.55), rgba(252, 176, 69, 0.45));
+}
+
+/* ── Instagram icon ring with gradient border ─────────── */
+.ct-ig-icon-ring {
+  background: linear-gradient(135deg, rgba(131, 58, 180, 0.15), rgba(253, 29, 29, 0.12), rgba(252, 176, 69, 0.1));
+  border: 1px solid rgba(214, 36, 159, 0.3);
+  position: relative;
+}
+.ct-ig-icon-ring svg {
+  fill: url(#ig-gradient);
+}
+.ct-channel-instagram:hover .ct-ig-icon-ring {
+  background: linear-gradient(135deg, rgba(131, 58, 180, 0.25), rgba(253, 29, 29, 0.2), rgba(252, 176, 69, 0.15)) !important;
   box-shadow: 0 0 20px rgba(214, 36, 159, 0.15);
+}
+
+/* ── Instagram gradient text ──────────────────────────── */
+.ct-ig-gradient-text {
+  background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Instagram gradient tags ──────────────────────────── */
+.ct-ig-tag {
+  position: relative;
+  background: linear-gradient(135deg, rgba(131, 58, 180, 0.12), rgba(253, 29, 29, 0.08), rgba(252, 176, 69, 0.06));
+  border: 1px solid rgba(131, 58, 180, 0.3);
+}
+.ct-ig-tag span {
+  background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ── CTA button glow effects ─────────────────────────── */

@@ -161,7 +161,7 @@ export default function ContactoPageContent() {
               <a
                 href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
                 target="_blank"
-                rel="noopener"
+                rel="noopener nofollow"
                 className="ct-btn-whatsapp flex items-center justify-center gap-2 w-full py-3 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 "
                 style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
               >
@@ -216,7 +216,7 @@ export default function ContactoPageContent() {
                   key={post.href}
                   href={post.href}
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener nofollow"
                   className="ct-post-card ct-post-fb group block rounded-xl overflow-hidden"
                 >
                   {/* Header */}
@@ -265,7 +265,7 @@ export default function ContactoPageContent() {
               <a
                 href="https://www.facebook.com/ceducativovillalugano/"
                 target="_blank"
-                rel="noopener"
+                rel="noopener nofollow"
                 className="ct-btn-facebook flex items-center justify-center gap-2 w-full py-3 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 "
                 style={{ background: 'linear-gradient(135deg, #1877F2 0%, #0d5bbf 100%)' }}
               >
@@ -276,18 +276,27 @@ export default function ContactoPageContent() {
           </div>
 
           {/* ── Instagram ───────────────────────────────────── */}
+          {/* SVG gradient definition for Instagram icon */}
+          <svg width="0" height="0" style={{ position: 'absolute' }}>
+            <defs>
+              <linearGradient id="ig-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#833AB4" />
+                <stop offset="50%" stopColor="#FD1D1D" />
+                <stop offset="100%" stopColor="#FCB045" />
+              </linearGradient>
+            </defs>
+          </svg>
           <div className="ct-channel-card ct-channel-instagram rounded-2xl overflow-hidden flex flex-col">
             {/* Header */}
             <div className="flex items-center gap-4 p-6 pb-0">
               <div
-                className="ct-icon-ring w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'rgba(214,36,159,0.12)', border: '1px solid rgba(214,36,159,0.3)' }}
+                className="ct-icon-ring ct-ig-icon-ring w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
               >
                 <InstagramIcon className="w-6 h-6" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">Instagram</h2>
-                <p className="text-xs font-semibold" style={{ color: '#D6249F' }}>@centroeducativovillalugano</p>
+                <p className="ct-ig-gradient-text text-xs font-semibold">@centroeducativovillalugano</p>
               </div>
             </div>
 
@@ -300,13 +309,11 @@ export default function ContactoPageContent() {
 
             {/* Tags */}
             <div className="px-6 pb-3 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{ color: '#D6249F', background: 'rgba(214,36,159,0.08)', border: '1px solid rgba(214,36,159,0.2)' }}>
-                Carreras
+              <span className="ct-ig-tag inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold">
+                <span>Carreras</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{ color: '#D6249F', background: 'rgba(214,36,159,0.08)', border: '1px solid rgba(214,36,159,0.2)' }}>
-                Inscripciones
+              <span className="ct-ig-tag inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold">
+                <span>Inscripciones</span>
               </span>
             </div>
 
@@ -320,7 +327,7 @@ export default function ContactoPageContent() {
                   key={post.href}
                   href={post.href}
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener nofollow"
                   className="ct-post-card ct-post-ig group block rounded-xl overflow-hidden"
                 >
                   {/* Header */}
@@ -356,7 +363,7 @@ export default function ContactoPageContent() {
                 <a
                   href="https://www.instagram.com/centroeducativovillalugano/"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener nofollow"
                   className="ct-post-card ct-post-ig group block rounded-xl overflow-hidden"
                 >
                   <div
@@ -387,7 +394,7 @@ export default function ContactoPageContent() {
               <a
                 href="https://www.instagram.com/centroeducativovillalugano/"
                 target="_blank"
-                rel="noopener"
+                rel="noopener nofollow"
                 className="ct-btn-instagram flex items-center justify-center gap-2 w-full py-3 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 "
                 style={{ background: 'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)' }}
               >
@@ -438,7 +445,7 @@ export default function ContactoPageContent() {
             <a
               href="https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7"
               target="_blank"
-              rel="noopener"
+              rel="noopener nofollow"
               className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full font-bold text-sm text-white transition-all hover:brightness-110 mt-1"
               style={{ background: 'rgba(239,68,68,0.85)' }}
             >

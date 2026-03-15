@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
 
 export interface CalendarWeek {
@@ -191,6 +192,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [showInputError, setShowInputError] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const hours = buildHours(modoManana);
   const cols = modoManana ? 'grid-cols-4' : 'grid-cols-3';
   const soloDigitos = telefono.replace(/[\s\-\+]/g, '');
@@ -216,6 +218,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   };
 
   const handleChooseSame = async () => {
+    if (!turnstileToken) { setError('Esperá a que se complete la verificación.'); return; }
     setError(null);
     const horarios = Array.from(selectedHours).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`);
     const dias = selectedDays.map(d => d.num);
@@ -223,7 +226,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
       materia_id: materiaId, dias, horarios, nombre: nombre.trim(), telefono: telefono.trim(),
     });
     if (e) setError('Error al enviar. Intente más tarde.');
-    else { setSubmittedDays([...selectedDays]); setMode('done'); onDone(); }
+    else { setSubmittedDays([...selectedDays]); setMode('done'); setTurnstileToken(null); onDone(); }
   };
 
   const handleChoosePerDay = () => {
@@ -235,6 +238,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   };
 
   const handleSubmitPerDay = async () => {
+    if (!turnstileToken) { setError('Esperá a que se complete la verificación.'); return; }
     setError(null);
     const rows = selectedDays.map(day => ({
       materia_id: materiaId,
@@ -248,7 +252,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
 
     const { error: e } = await supabase.from('solicitudes_clase').insert(rows);
     if (e) setError('Error al enviar. Intente más tarde.');
-    else { setSubmittedDays(rows.map(r => selectedDays.find(d => d.num === r.dias[0])!)); setMode('done'); onDone(); }
+    else { setSubmittedDays(rows.map(r => selectedDays.find(d => d.num === r.dias[0])!)); setMode('done'); setTurnstileToken(null); onDone(); }
   };
 
   const canProceed = selectedHours.size > 0 && selectedDays.length > 0;
@@ -317,6 +321,19 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
             className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
             style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.2)', color: 'var(--ca-text-main)' }}
             onFocus={onInteract}
+          />
+        </div>
+      )}
+
+      {/* Turnstile CAPTCHA — aparece al completar datos */}
+      {mode !== 'done' && selectedHours.size > 0 && datosCompletos && !turnstileToken && (
+        <div className="px-3 flex justify-center">
+          <Turnstile
+            sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+            theme="dark"
+            size="compact"
           />
         </div>
       )}
@@ -740,7 +757,7 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
               <a
                 href={`https://wa.me/${materia.whatsapp}`}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer nofollow"
                 className="ca-wa-link"
               >
                 <WhatsAppIcon />
