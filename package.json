@@ -40,10 +40,10 @@
     "zod": "^4.3.6"
   },
   "browserslist": [
-    "last 2 Chrome versions",
-    "last 2 Firefox versions",
-    "last 2 Safari versions",
-    "last 2 Edge versions"
+    "Chrome >= 97",
+    "Firefox >= 104",
+    "Safari >= 15.4",
+    "Edge >= 97"
   ],
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.1",
