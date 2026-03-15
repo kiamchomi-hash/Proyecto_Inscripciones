@@ -1,7 +1,7 @@
 /* ── FAQ — Solo estilos que NO se pueden hacer con Tailwind ── */
 
 .faq-section {
-  background: #112828;
+  background: transparent;
 }
 
 /* Accordion transitions */

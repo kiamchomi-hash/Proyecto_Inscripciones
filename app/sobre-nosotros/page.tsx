@@ -412,7 +412,7 @@ export default function SobreNosotrosPage() {
                   Contactanos
                 </a>
                 <a
-                  href="/clases-apoyo/art"
+                  href="/clases-apoyo/arte"
                   className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-full font-semibold text-sm transition-all hover:brightness-110"
                   style={{ color: '#00c7b1', border: '1px solid rgba(0,199,177,0.3)', background: 'rgba(0,199,177,0.06)' }}
                 >
@@ -422,7 +422,7 @@ export default function SobreNosotrosPage() {
                   Taller de arte
                 </a>
                 <a
-                  href="/clases-apoyo/len"
+                  href="/clases-apoyo/lengua"
                   className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-full font-semibold text-sm transition-all hover:brightness-110"
                   style={{ color: '#00c7b1', border: '1px solid rgba(0,199,177,0.3)', background: 'rgba(0,199,177,0.06)' }}
                 >
@@ -441,7 +441,7 @@ export default function SobreNosotrosPage() {
       <div className="sn-glow-line mb-10" />
 
       {/* ─── MAP ──────────────────────────────────────────── */}
-      <section className="sn-map-card sn-glass rounded-2xl p-6 sm:p-10 mb-10">
+      <section className="sn-map-card sn-glass rounded-2xl p-6 sm:p-10 mb-0">
         <div className="flex flex-col gap-6">
           {/* Header */}
           <div className="flex items-center gap-3">
