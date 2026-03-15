@@ -29,6 +29,16 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  padding: 0;
+  box-sizing: content-box;
+  /* Área táctil mínima 44px sin cambiar tamaño visual */
+  position: relative;
+}
+
+.carousel-dot::before {
+  content: '';
+  position: absolute;
+  inset: -18px;
 }
 
 .carousel-dot.active {
@@ -81,7 +91,7 @@
 }
 
 .career-badge--nueva {
-  background: #e53e3e;
+  background: #c53030;
   color: #fff;
 }
 

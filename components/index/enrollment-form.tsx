@@ -252,11 +252,12 @@ export default function EnrollmentForm({ carreras }: Props) {
 
                 {/* Modalidad */}
                 <div>
-                  <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">
+                  <label htmlFor="form-modalidad" className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">
                     Modalidad
                   </label>
                   <div className="relative">
                     <select
+                      id="form-modalidad"
                       className="w-full appearance-none bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#00c7b1]/60 transition-colors cursor-pointer"
                       style={{ colorScheme: 'dark' }}
                       defaultValue="virtual"
