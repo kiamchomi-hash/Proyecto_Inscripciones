@@ -7,3 +7,6 @@
 -revisar que es kuberneets y preguntar que se puede agregar
 -revisar lo de el certificado sshl o algo así
 -testsprites y preguntar que mcps pueden servir para el proyecto
+- no indexar whatsappx
+
+pedir acceso a la ubicación cuando toque el botón de como llegar

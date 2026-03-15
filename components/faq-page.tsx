@@ -54,7 +54,7 @@ function SocialLink({ href, label, color, bgColor, borderColor, icon, children }
 const FAQ_ITEMS: FaqItem[] = [
   {
     question: '¿Dónde queda el CAU Villa Lugano?',
-    keywords: 'dónde queda cau villa lugano ubicacion direccion donde esta localizado cerca zona sur oeste caba mataderos liniers villa celina presencial sede',
+    keywords: 'dónde queda cau villa lugano ubicacion direccion donde esta localizado cerca zona sur oeste caba mataderos liniers villa celina villa soldati comuna 8 presencial sede',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
         <p>Nuestro CAU está ubicado en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Mataderos, Liniers y Villa Celina</strong>. Contactanos para confirmar dirección y horarios de atención.</p>
@@ -65,6 +65,8 @@ const FAQ_ITEMS: FaqItem[] = [
           <ZonaCard name="Liniers" />
           <ZonaCard name="Villa Celina" />
           <ZonaCard name="Zona Sur del GBA" />
+          <ZonaCard name="Comuna 8" />
+          <ZonaCard name="Villa Soldati" />
         </div>
         <div className="flex flex-col sm:flex-row gap-3 mt-3">
           <div className="flex flex-col gap-2 flex-1">

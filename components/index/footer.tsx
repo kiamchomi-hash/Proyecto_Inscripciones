@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function IndexFooter() {
   return (
     <footer style={{ background: 'linear-gradient(180deg, rgba(6, 34, 31, 0.92) 0%, #081f1d 100%)', borderTop: '2px solid rgba(0, 199, 177, 0.26)' }}>
@@ -8,6 +10,14 @@ export default function IndexFooter() {
             <p className="text-lg font-black text-white uppercase tracking-tighter">CAU Villa Lugano</p>
             <p className="text-sm mt-1 font-normal text-[#7ca19b]">Universidad Siglo 21</p>
           </div>
+
+          {/* Site links */}
+          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium" aria-label="Enlaces del sitio">
+            <Link href="/sobre-nosotros" className="text-[#7ca19b] hover:text-white transition-colors">Sobre Nosotros</Link>
+            <Link href="/clases-apoyo" className="text-[#7ca19b] hover:text-white transition-colors">Clases de Apoyo</Link>
+            <Link href="/faq" className="text-[#7ca19b] hover:text-white transition-colors">Preguntas Frecuentes</Link>
+            <Link href="/contacto" className="text-[#7ca19b] hover:text-white transition-colors">Contacto</Link>
+          </nav>
 
           {/* Social icons */}
           <div className="flex items-center gap-3">

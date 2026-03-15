@@ -13,6 +13,18 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/contactos',
+        destination: '/contacto',
+        permanent: true,
+      },
+      // Redirect non-www to www
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'siglo21sur.com' }],
+        destination: 'https://www.siglo21sur.com/:path*',
+        permanent: true,
+      },
     ];
   },
 };

@@ -91,3 +91,7 @@ Fidelidad visual                   ✅  Tema oscuro, gradientes sutiles, glow di
 
 ### Backend
 - Contenido desde Supabase — Mover textos, features y checklist a una tabla para editar sin tocar código
+
+## PEndiente
+
+corregir enlaces

@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { href: '/novedades/1', label: 'Novedades' },
   { href: '/sobre-nosotros', label: 'Sobre Nosotros' },
   { href: '/faq', label: 'Preguntas Frecuentes', shortLabel: 'FAQ' },
-  { href: '/contactos', label: 'Contacto' },
+  { href: '/contacto', label: 'Contacto' },
 ];
 
 const SOCIALS = [

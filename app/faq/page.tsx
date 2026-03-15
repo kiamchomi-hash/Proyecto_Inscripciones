@@ -6,6 +6,9 @@ import './faq.css';
 export const metadata: Metadata = {
   title: 'Preguntas Frecuentes',
   description: 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano. La universidad cerca de Celina y todo Zona Sur/Oeste.',
+  alternates: {
+    canonical: '/faq',
+  },
 };
 
 export default async function FaqPage() {

@@ -5,6 +5,9 @@ import './sobre-nosotros.css';
 export const metadata: Metadata = {
   title: 'Sobre Nosotros',
   description: 'Conocé el Centro de Aprendizaje Universitario Villa Lugano. Capacitaciones, carreras universitarias con Siglo 21, talleres y más.',
+  alternates: {
+    canonical: '/sobre-nosotros',
+  },
 };
 
 /* ── Data ────────────────────────────────────────────────── */

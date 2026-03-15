@@ -31,10 +31,6 @@ const PLAN_PAGES = [
     left: { year: '5° Año', semesters: [
       { label: '9° Cuatrimestre', subjects: ['Práctica Profesional', 'Seminario Final', 'Examen Final Integrador II', 'Práctica Solidaria', 'Electivas'] },
     ]},
-    extras: [
-      { title: 'Dobles Titulaciones', items: ['Lic. en Gestión de RRHH', 'Lic. en Criminología y Seguridad'] },
-      { title: 'Título Adicional', items: ['Escribanía'], note: 'Cursando un año más sobre el título de Abogado/a' },
-    ],
   },
 ];
 
@@ -273,18 +269,6 @@ export default function AbogaciaModal({ onClose }: Props) {
                               </div>
                             ))}
                           </div>
-                        </div>
-                      ) : page.extras ? (
-                        <div className="flex-1 flex flex-col gap-2.5">
-                          {page.extras.map((extra, ei) => (
-                            <div key={ei} className="bg-[#00c7b1]/6 border border-[#00c7b1]/22 rounded-lg p-3 flex flex-col justify-center">
-                              <p className="text-[0.65rem] font-extrabold text-[#00c7b1] uppercase tracking-widest mb-2">{extra.title}</p>
-                              {extra.items.map((item, ii) => (
-                                <p key={ii} className="text-sm text-[#b4d3ce] leading-relaxed">{item}</p>
-                              ))}
-                              {extra.note && <p className="text-xs text-[#7ca19b] leading-snug mt-1">{extra.note}</p>}
-                            </div>
-                          ))}
                         </div>
                       ) : null}
                     </div>

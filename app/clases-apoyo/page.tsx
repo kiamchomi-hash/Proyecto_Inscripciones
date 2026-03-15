@@ -6,6 +6,9 @@ import './clases-apoyo.css';
 export const metadata: Metadata = {
   title: 'Clases de Apoyo',
   description: 'Apoyo pedagógico y académico en Villa Lugano. Clases de Matemática, Lengua, Inglés y más.',
+  alternates: {
+    canonical: '/clases-apoyo',
+  },
 };
 
 export const dynamic = 'force-dynamic';
