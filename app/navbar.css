@@ -3,7 +3,7 @@
    Centralizado desde index.html para consistencia total
    ========================================================= */
 
-@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Inter:wght@100..900&family=Unbounded:wght@400;600&display=swap");
+/* Fonts loaded via next/font/google in layout.tsx (self-hosted, no render-blocking request) */
 
 :root {
   --cau-brand-teal: #006c5b;
@@ -24,11 +24,6 @@
     html {
         font-size: 120% !important;
     }
-}
-
-/* Helper for Unbounded font across all pages */
-.unbounded-font {
-  font-family: "Unbounded", sans-serif;
 }
 
 /* ── Scrollbar global ──────────────────────────────────── */
