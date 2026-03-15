@@ -411,7 +411,7 @@ export default function EnrollmentForm({ carreras }: Props) {
         <div className="form-side-image" aria-hidden="true">
           <img
             src="/imagenes/imagenes_cau/Siglo21IMG_2555.jpg"
-            alt=""
+            alt="Estudiantes en el Centro de Aprendizaje Universitario Villa Lugano"
             loading="lazy"
             className="w-full h-full object-cover object-right-center"
           />

@@ -115,17 +115,17 @@ export default function Navbar() {
 
         {/* Mobile branding */}
         <div className="flex lg:hidden flex-1 items-center min-w-0">
-          <h1 className="flex-1 text-center text-2xl whitespace-nowrap" style={{ fontFamily: "'Unbounded',sans-serif", fontWeight: 600, color: 'white', lineHeight: 1 }}>
+          <span className="flex-1 text-center text-2xl whitespace-nowrap" style={{ fontFamily: "'Unbounded',sans-serif", fontWeight: 600, color: 'white', lineHeight: 1 }}>
             CAU <span style={{ fontFamily: "'Unbounded',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
-          </h1>
+          </span>
         </div>
 
         {/* Menu */}
         <div className={`navbar-menu${menuOpen ? ' active' : ''}`} role="dialog" aria-label="Menu de navegacion" onClick={(e) => e.stopPropagation()}>
           <div className="menu-header lg:hidden">
-            <h2 style={{ fontFamily: "'Unbounded',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
+            <span style={{ fontFamily: "'Unbounded',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
               CAU <span style={{ fontFamily: "'Unbounded',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
-            </h2>
+            </span>
             <button className="menu-close-btn" aria-label="Cerrar menu" onClick={closeMenu}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
