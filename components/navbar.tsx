@@ -159,7 +159,7 @@ export default function Navbar() {
           <div className="menu-footer lg:hidden">
             <div className="menu-footer-social" style={{ justifyContent: 'center' }}>
               {SOCIALS.map(({ href, label, Icon }) => (
-                <a key={label} href={href} target="_blank" rel="noopener" aria-label={label}>
+                <a key={label} href={href} target="_blank" rel="noopener nofollow" aria-label={label}>
                   <Icon />
                 </a>
               ))}
@@ -170,7 +170,7 @@ export default function Navbar() {
         {/* Desktop socials */}
         <div className="navbar-social hidden lg:flex items-center flex-shrink-0" style={{ marginLeft: 8, alignSelf: 'stretch' }}>
           {SOCIALS.map(({ href, label, Icon, cssClass }) => (
-            <a key={label} href={href} target="_blank" rel="noopener" aria-label={label} className={`navbar-social-icon ${cssClass}`}>
+            <a key={label} href={href} target="_blank" rel="noopener nofollow" aria-label={label} className={`navbar-social-icon ${cssClass}`}>
               <Icon className="w-4 h-4" />
             </a>
           ))}

@@ -97,7 +97,7 @@ export default function SobreNosotrosPage() {
           <a
             href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
             target="_blank"
-            rel="noopener"
+            rel="noopener nofollow"
             className="sn-whatsapp-btn inline-flex items-center gap-3 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
             style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
           >
@@ -199,7 +199,7 @@ export default function SobreNosotrosPage() {
               <a
                 href="https://wa.me/5491166522722"
                 target="_blank"
-                rel="noopener"
+                rel="noopener nofollow"
                 className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm text-white transition-all hover:brightness-110"
                 style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
               >
@@ -279,7 +279,7 @@ export default function SobreNosotrosPage() {
           <a
             href="https://21.edu.ar/carreras-y-programas"
             target="_blank"
-            rel="noopener"
+            rel="noopener nofollow"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm text-white transition-all hover:brightness-110 hover:scale-[1.02]"
             style={{ background: 'linear-gradient(135deg, #006c5b 0%, #00c7b1 100%)' }}
           >
@@ -401,8 +401,8 @@ export default function SobreNosotrosPage() {
                 <a
                   href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
                   target="_blank"
-                  rel="noopener"
-                  className="sn-whatsapp-btn inline-flex items-center justify-center gap-3 w-full py-3 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
+                  rel="noopener nofollow"
+                  className="sn-whatsapp-btn inline-flex items-center gap-3 w-full py-3 px-5 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
                   style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -413,23 +413,33 @@ export default function SobreNosotrosPage() {
                 </a>
                 <a
                   href="/clases-apoyo/arte"
-                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-full font-semibold text-sm transition-all hover:brightness-110"
-                  style={{ color: '#00c7b1', border: '1px solid rgba(0,199,177,0.3)', background: 'rgba(0,199,177,0.06)' }}
+                  className="inline-flex items-center gap-3 w-full py-2.5 px-5 rounded-full font-bold text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
+                  style={{ color: '#fff', background: 'linear-gradient(135deg, #e65c00 0%, #f9a825 100%)', border: 'none' }}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
                   </svg>
                   Taller de arte
                 </a>
                 <a
                   href="/clases-apoyo/lengua"
-                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-full font-semibold text-sm transition-all hover:brightness-110"
-                  style={{ color: '#00c7b1', border: '1px solid rgba(0,199,177,0.3)', background: 'rgba(0,199,177,0.06)' }}
+                  className="inline-flex items-center gap-3 w-full py-2.5 px-5 rounded-full font-bold text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
+                  style={{ color: '#fff', background: 'linear-gradient(135deg, #7b1fa2 0%, #ba68c8 100%)', border: 'none' }}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                   </svg>
                   Taller de lectura
+                </a>
+                <a
+                  href="/clases-apoyo"
+                  className="inline-flex items-center gap-3 w-full py-2.5 px-5 rounded-full font-bold text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
+                  style={{ color: '#fff', background: 'linear-gradient(135deg, #005587 0%, #058c70 100%)', border: 'none' }}
+                >
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                  </svg>
+                  Clases de apoyo
                 </a>
               </div>
             </div>
@@ -509,7 +519,7 @@ export default function SobreNosotrosPage() {
                 <a
                   href="https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener nofollow"
                   className="md:hidden flex items-center justify-center gap-2 w-full py-3 rounded-lg font-bold text-sm text-white transition-all hover:brightness-110 mb-0"
                   style={{ background: 'linear-gradient(135deg, var(--cau-brand-blue) 0%, var(--cau-brand-green) 100%)' }}
                 >
@@ -537,7 +547,7 @@ export default function SobreNosotrosPage() {
             <a
               href="https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7"
               target="_blank"
-              rel="noopener"
+              rel="noopener nofollow"
               className="hidden md:flex items-center justify-center gap-2 w-full py-3 rounded-lg font-bold text-sm text-white transition-all hover:brightness-110"
               style={{ background: 'linear-gradient(135deg, var(--cau-brand-blue) 0%, var(--cau-brand-green) 100%)' }}
             >

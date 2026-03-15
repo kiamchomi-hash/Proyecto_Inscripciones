@@ -246,18 +246,21 @@ export default function CareersCatalog({ carreras }: Props) {
             <button
               className={`filter-pills-toggle ${pillsHidden ? 'collapsed' : ''}`}
               onClick={() => setPillsHidden(!pillsHidden)}
+              aria-label={pillsHidden ? 'Mostrar filtros de categoría' : 'Ocultar filtros de categoría'}
+              aria-expanded={!pillsHidden}
             >
               <span>{pillsHidden ? 'Mostrar filtros' : 'Ocultar filtros'}</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
             </button>
 
             {/* Category pills */}
-            <div className={`filter-container ${pillsHidden ? 'pills-hidden' : ''}`}>
+            <div className={`filter-container ${pillsHidden ? 'pills-hidden' : ''}`} role="group" aria-label="Filtros de categoría">
               {visibleCategories.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat.id)}
                   className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''}`}
+                  aria-pressed={activeCategory === cat.id}
                 >
                   {cat.label}
                 </button>

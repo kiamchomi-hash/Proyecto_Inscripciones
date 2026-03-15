@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import Image from 'next/image';
+import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
 import { type Carrera, CATEGORIES, getCategoryForCarrera } from './types';
 
@@ -23,6 +25,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const tipoDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -86,6 +89,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid || submitting) return;
+    if (!turnstileToken) { setError('Esperá a que se complete la verificación.'); return; }
 
     setSubmitting(true);
     setError('');
@@ -111,6 +115,7 @@ export default function EnrollmentForm({ carreras }: Props) {
     }
 
     setSuccess(true);
+    setTurnstileToken(null);
     setTimeout(() => {
       setSuccess(false);
       setSelectedCarrera('');
@@ -391,11 +396,24 @@ export default function EnrollmentForm({ carreras }: Props) {
               </div>
             </div>
 
+            {/* Turnstile CAPTCHA */}
+            {isValid && !turnstileToken && (
+              <div className="px-3 sm:px-4 pt-2 flex justify-center">
+                <Turnstile
+                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                  onVerify={setTurnstileToken}
+                  onExpire={() => setTurnstileToken(null)}
+                  theme="dark"
+                  size="compact"
+                />
+              </div>
+            )}
+
             {/* Submit */}
             <div className="px-3 sm:px-4 py-2.5 sm:py-3">
               <button
                 type="submit"
-                disabled={!isValid || submitting}
+                disabled={!isValid || submitting || !turnstileToken}
                 className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: 'linear-gradient(90deg, #00c7b1, #009681)', color: '#013729', letterSpacing: '0.12em' }}
               >
@@ -408,12 +426,12 @@ export default function EnrollmentForm({ carreras }: Props) {
         </div>
 
         {/* Side image (visible >= 1600px) */}
-        <div className="form-side-image" aria-hidden="true">
-          <img
+        <div className="form-side-image relative" aria-hidden="true">
+          <Image
             src="/imagenes/imagenes_cau/Siglo21IMG_2555.jpg"
             alt="Estudiantes en el Centro de Aprendizaje Universitario Villa Lugano"
-            loading="lazy"
-            className="w-full h-full object-cover object-right-center"
+            fill
+            className="object-cover object-right-center"
           />
         </div>
       </div>

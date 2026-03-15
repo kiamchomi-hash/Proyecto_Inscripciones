@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { Turnstile } from 'react-turnstile';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from './icons';
 import { supabase } from '@/lib/supabase';
 
@@ -40,7 +41,7 @@ function SocialLink({ href, label, color, bgColor, borderColor, icon, children }
   icon: React.ReactNode; children: React.ReactNode;
 }) {
   return (
-    <a href={href} target="_blank" rel="noopener" aria-label={label}
+    <a href={href} target="_blank" rel="noopener nofollow" aria-label={label}
       className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-opacity hover:opacity-80"
       style={{ background: bgColor, border: `1px solid ${borderColor}` }}>
       <span className="w-5 h-5 flex-shrink-0" style={{ color }}>{icon}</span>
@@ -76,7 +77,7 @@ const FAQ_ITEMS: FaqItem[] = [
                 width="100%" height="220" style={{ border: 0, display: 'block' }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
-            <a href="https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7" target="_blank" rel="noopener"
+            <a href="https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7" target="_blank" rel="noopener nofollow"
               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm text-white hover:brightness-115"
               style={{ background: 'linear-gradient(135deg,#1a3a6e 0%,#006655 100%)' }}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -294,17 +295,17 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
           </button>
           {!isOpen && (
             <div className="contact-socials-header flex items-center gap-1.5 flex-shrink-0">
-              <a href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta" target="_blank" rel="noopener" aria-label="WhatsApp" onClick={e => e.stopPropagation()}
+              <a href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta" target="_blank" rel="noopener nofollow" aria-label="WhatsApp" onClick={e => e.stopPropagation()}
                 className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
                 style={{ background: 'rgba(37,211,102,0.18)', color: '#25D366', border: '1px solid rgba(37,211,102,0.5)' }}>
                 <WhatsAppIcon className="w-4 h-4" />
               </a>
-              <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener" aria-label="Facebook" onClick={e => e.stopPropagation()}
+              <a href="https://www.facebook.com/ceducativovillalugano/" target="_blank" rel="noopener nofollow" aria-label="Facebook" onClick={e => e.stopPropagation()}
                 className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
                 style={{ background: 'rgba(24,119,242,0.18)', color: '#1877F2', border: '1px solid rgba(24,119,242,0.5)' }}>
                 <FacebookIcon className="w-4 h-4" />
               </a>
-              <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener" aria-label="Instagram" onClick={e => e.stopPropagation()}
+              <a href="https://www.instagram.com/centroeducativovillalugano/" target="_blank" rel="noopener nofollow" aria-label="Instagram" onClick={e => e.stopPropagation()}
                 className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
                 style={{ background: 'rgba(230,104,60,0.18)', color: '#e6683c', border: '1px solid rgba(230,104,60,0.5)' }}>
                 <InstagramIcon className="w-4 h-4" />
@@ -408,9 +409,11 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   }
 
   const [submitting, setSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   async function submitPub() {
     if (!contactPub.trim()) { setErrorPub(true); return; }
+    if (!turnstileToken) return;
     if (!checkRateLimit()) { setRateLimited(true); return; }
     const t = title.trim().slice(0, 120);
     const d = desc.trim().slice(0, 500) || null;
@@ -427,11 +430,13 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     if (error) { setErrorPub(true); return; }
     recordSubmission();
     localStorage.setItem('faq-contact', c);
+    setTurnstileToken(null);
     setSlide(3);
   }
 
   async function submitPriv() {
     if (!contactPriv.trim()) { setErrorPriv(true); return; }
+    if (!turnstileToken) return;
     if (!checkRateLimit()) { setRateLimited(true); return; }
     const t = title.trim().slice(0, 120);
     const d = desc.trim().slice(0, 500) || null;
@@ -451,6 +456,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     recordSubmission();
     localStorage.setItem('faq-contact', c);
     if (n) localStorage.setItem('faq-contact-name', n);
+    setTurnstileToken(null);
     setSlide(3);
   }
 
@@ -548,7 +554,12 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                 <div className={`text-xs mt-1 text-red-400 ${errorPub ? 'block' : 'hidden'}`}>Ingresá tu email para poder avisarte cuando sea respondida.</div>
                 <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
               </div>
-              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPub} disabled={submitting}>
+              {contactPub.trim() && !turnstileToken && (
+                <div className="flex justify-center mb-2">
+                  <Turnstile sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} theme="dark" size="compact" />
+                </div>
+              )}
+              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPub} disabled={submitting || !turnstileToken}>
                 {submitting ? 'Enviando...' : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Publicar pregunta</>)}
               </button>
             </div>
@@ -582,7 +593,12 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               </div>
               <div className={`text-xs mt-1 text-red-400 ${errorPriv ? 'block' : 'hidden'}`}>Ingresá un contacto para poder responderte.</div>
               <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
-              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPriv} disabled={submitting}>
+              {contactPriv.trim() && !turnstileToken && (
+                <div className="flex justify-center mb-2">
+                  <Turnstile sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} theme="dark" size="compact" />
+                </div>
+              )}
+              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPriv} disabled={submitting || !turnstileToken}>
                 {submitting ? 'Enviando...' : 'Enviar consulta'}
               </button>
             </div>
@@ -859,7 +875,7 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
               {/* WhatsApp contact */}
               <div className="rounded-xl p-4" style={{ background: 'rgba(5,140,112,0.18)', border: '1px solid rgba(5,140,112,0.5)' }}>
                 <p className="text-sm mb-2.5" style={{ color: '#c8dedd' }}>¿No encontrás lo que buscás? Escribinos directamente.</p>
-                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener"
+                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener nofollow"
                   className="flex items-center justify-center gap-2 font-semibold py-2.5 px-4 rounded-lg text-sm text-white w-full hover:brightness-110"
                   style={{ background: '#25D366' }}>
                   <WhatsAppIcon className="w-4 h-4" />

@@ -283,7 +283,7 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
             <a
               href={waHref}
               target="_blank"
-              rel="noopener"
+              rel="noopener nofollow"
               className="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D366] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
