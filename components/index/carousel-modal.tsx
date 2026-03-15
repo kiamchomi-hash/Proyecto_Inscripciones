@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug } from './types';
 
 interface Props {
@@ -117,7 +115,10 @@ function PanelContent({ panel, showTitle }: { panel: Panel; showTitle?: boolean 
 }
 
 // ── PDF download helper (in-page, no new window) ──
-function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
+async function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
+  const jsPDFModule = await import('jspdf');
+  const jsPDF = jsPDFModule.default ?? jsPDFModule.jsPDF;
+  await import('jspdf-autotable');
   const yearPanels = panels.filter(p => p.tipo === 'year') as YearPanel[];
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
