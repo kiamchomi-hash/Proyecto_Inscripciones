@@ -1,0 +1,143 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - Next.js 16 (App Router)
+  - React 19
+  - Tailwind CSS v4
+  - Supabase (PostgreSQL)
+  - Vercel Analytics
+  - Google Analytics
+routes:
+  - path: /
+    file: app/page.tsx
+    auth_required: false
+    description: Home page with hero, careers catalog, enrollment form and footer
+  - path: /faq
+    file: app/faq/page.tsx
+    auth_required: false
+    description: Frequently asked questions page fetched from Supabase
+  - path: /clases-apoyo
+    file: app/clases-apoyo/page.tsx
+    auth_required: false
+    description: Support classes listing with weekly calendar
+  - path: /clases-apoyo/[materia]
+    file: app/clases-apoyo/[materia]/page.tsx
+    auth_required: false
+    description: Individual subject detail page
+  - path: /novedades/[page]
+    file: app/novedades/[page]/page.tsx
+    auth_required: false
+    description: News page (stub, pending Supabase migration)
+  - path: /sobre-nosotros
+    file: app/sobre-nosotros/page.tsx
+    auth_required: false
+    description: About us static content page
+  - path: /contacto
+    file: app/contacto/page.tsx
+    auth_required: false
+    description: Contact information page with WhatsApp, social links, and address
+features:
+  - name: Navigation Bar
+    description: Responsive navbar with links to all sections and social media icons (WhatsApp, Facebook, Instagram). Hamburger menu on mobile.
+    files:
+      - components/navbar.tsx
+      - app/navbar.css
+    entry_route: /
+    user_interactions:
+      - Click navigation links to go to different pages
+      - Open/close mobile hamburger menu
+      - Click social media icons (WhatsApp, Facebook, Instagram)
+    api_calls: []
+    auth_required: false
+  - name: Careers Catalog
+    description: Browse academic programs by category with fuzzy search, filter by type (grado, pregrado, diplomatura, certificado), and view career details in a modal
+    files:
+      - components/index/careers-catalog.tsx
+      - components/index/career-modal.tsx
+      - components/index/carousel-modal.tsx
+      - components/index/types.ts
+    entry_route: /
+    user_interactions:
+      - Filter careers by category tabs
+      - Search careers with text input (fuzzy match)
+      - Click a career card to open detail modal
+      - Navigate carousel modal between careers
+      - Close modal
+    api_calls: []
+    auth_required: false
+  - name: Enrollment Form
+    description: Form to submit enrollment interest. Fields for name, surname, email, phone, city, career selection with search dropdown, and career type filter
+    files:
+      - components/index/enrollment-form.tsx
+    entry_route: /
+    user_interactions:
+      - Fill nombre (first name) input
+      - Fill apellido (last name) input
+      - Fill email input
+      - Fill telefono (phone) input
+      - Fill localidad (city) input
+      - Select career type from dropdown
+      - Search and select a career from dropdown
+      - Toggle equivalencias checkbox
+      - Click submit button to send enrollment
+      - See success or error message
+    api_calls:
+      - method: POST
+        endpoint: Supabase insert (inscripciones table)
+    auth_required: false
+  - name: FAQ Page
+    description: Accordion-style frequently asked questions fetched from Supabase
+    files:
+      - components/faq-page.tsx
+      - app/faq/page.tsx
+      - app/faq/faq.css
+    entry_route: /faq
+    user_interactions:
+      - Click a question to expand/collapse the answer
+      - Submit a new question via form
+    api_calls: []
+    auth_required: false
+  - name: Support Classes
+    description: Browse available tutoring subjects with a weekly calendar view
+    files:
+      - components/clases-apoyo/clases-apoyo-page.tsx
+      - app/clases-apoyo/page.tsx
+      - app/clases-apoyo/clases-apoyo.css
+    entry_route: /clases-apoyo
+    user_interactions:
+      - View list of available subjects
+      - Navigate weekly calendar
+      - Click a subject to see detail page
+    api_calls: []
+    auth_required: false
+  - name: Contact Page
+    description: Contact info with address, WhatsApp link, social media, and location details
+    files:
+      - components/contacto/contacto-page.tsx
+      - app/contacto/page.tsx
+    entry_route: /contacto
+    user_interactions:
+      - View contact information
+      - Click WhatsApp link
+      - Click social media links
+    api_calls: []
+    auth_required: false
+  - name: About Us Page
+    description: Static page describing the CAU Villa Lugano educational center
+    files:
+      - app/sobre-nosotros/page.tsx
+      - app/sobre-nosotros/sobre-nosotros.css
+    entry_route: /sobre-nosotros
+    user_interactions:
+      - Read about the institution
+      - View feature cards
+    api_calls: []
+    auth_required: false
+known_limitations:
+  - issue: News page is a stub not connected to database
+    location: app/novedades/[page]/page.tsx
+    impact: Shows placeholder text, no real content
+  - issue: API routes return 501 Not Implemented
+    location: app/api/carreras/route.ts, app/api/novedades/route.ts
+    impact: API endpoints are non-functional stubs

@@ -8,6 +8,13 @@ import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug 
 interface Props {
   carrera: Carrera;
   onClose: () => void;
+  onNextCarrera?: () => void;
+  onPrevCarrera?: () => void;
+  hasNextCarrera?: boolean;
+  hasPrevCarrera?: boolean;
+  nextCarreraName?: string;
+  prevCarreraName?: string;
+  initiallyVisible?: boolean;
 }
 
 // Encode path segments with special chars (tildes, spaces) while preserving slashes
@@ -503,10 +510,10 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
 }
 
 // ── Main carousel modal ──
-export default function CarouselModal({ carrera, onClose }: Props) {
+export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevCarrera, hasNextCarrera, hasPrevCarrera, nextCarreraName, prevCarreraName, initiallyVisible = false }: Props) {
   const slides = carrera.slides!;
   const [slideIdx, setSlideIdx] = useState(0);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(initiallyVisible);
   const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const totalSlides = slides.length;
@@ -542,10 +549,62 @@ export default function CarouselModal({ carrera, onClose }: Props) {
     <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       <div className={`absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`} onClick={handleClose} />
 
-      <div className={`relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl
+      {/* Layout: modal + flechas absolutas */}
+      <div className={`relative z-10 flex flex-col items-center w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:max-w-none md:w-auto transition-all duration-300 ${visible && !closing ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-5 scale-[0.97]'}`}>
+
+        {/* Mobile: navegación arriba del modal */}
+        {(hasPrevCarrera || hasNextCarrera) && (
+          <div className="md:hidden w-full flex items-center justify-between gap-2 px-1 pb-2">
+            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30">
+              <button
+                onClick={() => { if (onPrevCarrera) { onPrevCarrera(); setSlideIdx(0); } }}
+                disabled={!hasPrevCarrera}
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                <span>Anterior carrera</span>
+              </button>
+            </div>
+            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30">
+              <button
+                onClick={() => { if (onNextCarrera) { onNextCarrera(); setSlideIdx(0); } }}
+                disabled={!hasNextCarrera}
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                <span>Siguiente carrera</span>
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop: flecha izquierda (absoluta) */}
+        {hasPrevCarrera && onPrevCarrera && (
+          <button
+            onClick={() => { onPrevCarrera(); setSlideIdx(0); }}
+            className="group hidden md:flex absolute right-full top-1/2 -translate-y-1/2 items-center gap-1 py-2 px-2.5 h-[28vh] rounded-l-xl bg-[#0a1f1d]/90 border border-r-0 border-[#00c7b1]/40 text-[#00c7b1] hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
+            aria-label={`Carrera anterior: ${prevCarreraName}`}
+          >
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            <span className="text-[0.65rem] font-bold uppercase tracking-wider leading-tight opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden" style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', maxHeight: '24vh', textOverflow: 'ellipsis' }}>{prevCarreraName}</span>
+          </button>
+        )}
+
+        {/* Desktop: flecha derecha (absoluta) */}
+        {hasNextCarrera && onNextCarrera && (
+          <button
+            onClick={() => { onNextCarrera(); setSlideIdx(0); }}
+            className="group hidden md:flex absolute left-full top-1/2 -translate-y-1/2 items-center gap-1 py-2 px-2.5 h-[28vh] rounded-r-xl bg-[#0a1f1d]/90 border border-l-0 border-[#00c7b1]/40 text-[#00c7b1] hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
+            aria-label={`Carrera siguiente: ${nextCarreraName}`}
+          >
+            <span className="text-[0.65rem] font-bold uppercase tracking-wider leading-tight opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden" style={{ writingMode: 'vertical-lr', maxHeight: '24vh', textOverflow: 'ellipsis' }}>{nextCarreraName}</span>
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        )}
+
+      <div className={`relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full md:w-[min(64rem,75vw)]
         h-[90vh] sm:h-[92vh] max-h-[90vh] sm:max-h-[92vh] overflow-hidden flex flex-col
-        shadow-[0_0_50px_rgba(0,199,177,0.3)] transition-all duration-300
-        ${visible && !closing ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-5 scale-[0.97]'}`}>
+        shadow-[0_0_50px_rgba(0,199,177,0.3)]`}>
 
         {/* Header */}
         <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
@@ -627,6 +686,8 @@ export default function CarouselModal({ carrera, onClose }: Props) {
             </div>
           </div>
         </div>
+      </div>
+
       </div>
     </div>
   );

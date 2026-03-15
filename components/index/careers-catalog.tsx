@@ -100,6 +100,7 @@ export default function CareersCatalog({ carreras }: Props) {
   const [pillsHidden, setPillsHidden] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
+  const isNavigatingRef = useRef(false);
 
   // Scroll so the sticky wrapper sits right below the navbar
   const scrollToSearchBar = useCallback(() => {
@@ -205,7 +206,7 @@ export default function CareersCatalog({ carreras }: Props) {
 
   return (
     <>
-      <div className="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20">
+      <div className="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20" data-testid="careers-catalog">
 
         {/* Scroll anchor (non-sticky, keeps its natural position) */}
         <div ref={scrollAnchorRef} aria-hidden="true" />
@@ -375,19 +376,27 @@ export default function CareersCatalog({ carreras }: Props) {
       </div>
 
       {/* Career Modal */}
-      {selectedCarrera && (
-        selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
-          <CarouselModal
-            carrera={selectedCarrera}
-            onClose={() => setSelectedCarrera(null)}
-          />
+      {selectedCarrera && (() => {
+        const idx = carreras.findIndex(c => c.id === selectedCarrera.id);
+        const hasPrev = idx > 0;
+        const hasNext = idx >= 0 && idx < carreras.length - 1;
+        const navigate = (carrera: Carrera) => { isNavigatingRef.current = true; setSelectedCarrera(carrera); };
+        const navProps = {
+          onClose: () => { isNavigatingRef.current = false; setSelectedCarrera(null); },
+          onNextCarrera: hasNext ? () => navigate(carreras[idx + 1]) : undefined,
+          onPrevCarrera: hasPrev ? () => navigate(carreras[idx - 1]) : undefined,
+          hasNextCarrera: hasNext,
+          hasPrevCarrera: hasPrev,
+          nextCarreraName: hasNext ? carreras[idx + 1].nombre : undefined,
+          prevCarreraName: hasPrev ? carreras[idx - 1].nombre : undefined,
+          initiallyVisible: isNavigatingRef.current,
+        };
+        return selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
+          <CarouselModal carrera={selectedCarrera} {...navProps} />
         ) : (
-          <CareerModal
-            carrera={selectedCarrera}
-            onClose={() => setSelectedCarrera(null)}
-          />
-        )
-      )}
+          <CareerModal carrera={selectedCarrera} {...navProps} />
+        );
+      })()}
     </>
   );
 }
@@ -470,6 +479,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
   return (
     <li
       className="career-card group"
+      data-testid="career-card"
       onClick={() => onClick(carrera)}
     >
       {badge && (

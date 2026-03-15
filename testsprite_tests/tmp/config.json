@@ -1,0 +1,18 @@
+{
+  "status": "init",
+  "scope": "codebase",
+  "type": "frontend",
+  "localEndpoint": "http://localhost:3000/",
+  "serverPort": 36087,
+  "executionArgs": {
+    "projectName": "Pagina_Siglo21",
+    "projectPath": "/home/coco/Escritorio/Pagina_Siglo21",
+    "testIds": [],
+    "additionalInstruction": "The site is in Spanish (es-AR). No login is required. The site runs on localhost:3000.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-X-qRFQwcSCB_XOKhD7MraXSlSZ2cbyIlyTb4FRtOdVYfeO0xiDogustYWduL7eoeA3PbR7REN18O8DXuOI-2RxsJbT0VTA-g7eTvglHi3jZPPI7x60BMUip0gEXBjmNiXeg"
+    }
+  },
+  "proxy": "http://a92e1643-10eb-4408-aca4-10c818e44ace:4C7VaImxtwIC7L93CNmw0qiY99RW8Qei@tun.testsprite.com:8080"
+}

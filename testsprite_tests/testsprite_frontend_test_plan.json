@@ -1,0 +1,1690 @@
+[
+  {
+    "id": "TC001",
+    "title": "Navbar link navigates from Home to FAQ",
+    "description": "Verifies that clicking the FAQ link in the top navigation loads the /faq page.",
+    "category": "Navigation Bar",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"top navigation bar\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"FAQ\" in the top navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/faq\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"FAQ\""
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Navbar link navigates from Home to Sobre Nosotros",
+    "description": "Verifies that clicking the About link in the top navigation loads the /sobre-nosotros page.",
+    "category": "Navigation Bar",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"top navigation bar\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Sobre nosotros\" in the top navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sobre-nosotros\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sobre\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Navbar link navigates from Home to Contacto",
+    "description": "Verifies that clicking the Contact link in the top navigation loads the /contacto page.",
+    "category": "Navigation Bar",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"top navigation bar\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Contacto\" in the top navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/contacto\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"WhatsApp\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Mobile hamburger menu opens and navigates to Clases de Apoyo",
+    "description": "Verifies that the mobile hamburger menu can be opened and used to navigate to /clases-apoyo.",
+    "category": "Navigation Bar",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"hamburger menu button\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"hamburger menu\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"mobile navigation menu\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Clases de apoyo\" in the mobile navigation menu"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/clases-apoyo\""
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Social icon WhatsApp is present and appears clickable",
+    "description": "Verifies the WhatsApp social media icon is visible in the navigation and can be clicked (without validating new-tab behavior).",
+    "category": "Navigation Bar",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"WhatsApp social icon\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"WhatsApp\" social icon"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"top navigation bar\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Social icons Facebook and Instagram are visible in navbar",
+    "description": "Verifies that Facebook and Instagram icons are displayed in the top navigation on the home page.",
+    "category": "Navigation Bar",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Facebook social icon\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Instagram social icon\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"WhatsApp social icon\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Filter careers by category tab and fuzzy search shows matching cards",
+    "description": "Verifies that selecting the 'grado' tab and searching 'Administración' filters the careers list to relevant results.",
+    "category": "Careers Catalog",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the careers catalog category tab \"grado\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"Administración\" into the careers search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Administración\" is visible within the filtered career cards area"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"At least one career card\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Switching category tabs updates the careers list",
+    "description": "Verifies that changing category tabs changes the visible set of career cards.",
+    "category": "Careers Catalog",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the careers catalog category tab \"grado\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"At least one career card\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the careers catalog category tab \"pregrado\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"At least one career card\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the careers catalog category tab \"diplomatura\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"At least one career card\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Search with gibberish shows No results state",
+    "description": "Verifies that searching for a non-matching term shows a clear empty state message.",
+    "category": "Careers Catalog",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"asdlkfj\" into the careers search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No results\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Career cards list\" is not visible"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Open career detail modal from a career card",
+    "description": "Verifies that clicking a career card opens the career detail modal with content visible.",
+    "category": "Careers Catalog",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the careers catalog section"
+      },
+      {
+        "type": "action",
+        "description": "Click a visible career card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Career detail modal\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Modal close button\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Carousel navigation in modal moves to next career and modal can be closed",
+    "description": "Verifies modal carousel next navigation changes the visible career and closing returns to the catalog view.",
+    "category": "Careers Catalog",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the careers catalog section"
+      },
+      {
+        "type": "action",
+        "description": "Click a visible career card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Career detail modal\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the carousel \"Next\" control in the modal"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Career detail modal\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the modal close button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Career detail modal\" is not visible"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Search input filtering persists when changing category tab",
+    "description": "Verifies that an active search term continues filtering results after switching category tabs.",
+    "category": "Careers Catalog",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Admin\" into the careers search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"At least one career card\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the careers catalog category tab \"certificado\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"At least one career card\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Clearing search restores the full catalog list for the selected category",
+    "description": "Verifies that removing the search term returns the careers list to the default state for the current category.",
+    "category": "Careers Catalog",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the careers catalog category tab \"grado\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"asdlkfj\" into the careers search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No results\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"\" into the careers search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No results\" is not visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"At least one career card\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Graceful handling when a career detail modal fails to open",
+    "description": "Verifies the UI handles a failed modal-open attempt gracefully by showing an error message or keeping the page responsive without a broken overlay.",
+    "category": "Careers Catalog",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the careers catalog section"
+      },
+      {
+        "type": "action",
+        "description": "Click a visible career card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Career detail modal\" is visible or Verify text \"Error\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Careers catalog section\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Submit enrollment successfully with 'grado' + 'Administración' and equivalencias checked",
+    "description": "Verifies a user can complete and submit the enrollment form and sees a success confirmation.",
+    "category": "Enrollment Form",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Juan\" into the \"Nombre\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Pérez\" into the \"Apellido\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"juan.perez+test@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click the submit button to send enrollment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success message confirming submission is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Full form completion including phone, city, career type filter, career search, and equivalencias toggle",
+    "description": "Verifies all fields and controls can be used end-to-end before submitting and receiving success confirmation.",
+    "category": "Enrollment Form",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Type \"María\" into the \"Nombre\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Gómez\" into the \"Apellido\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"maria.gomez+test@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Select \"grado\" from the career type dropdown"
+      },
+      {
+        "type": "action",
+        "description": "Search for \"Administración\" in the career selector and select it"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Submit successfully with equivalencias checked",
+    "description": "Verifies the equivalencias checkbox can be toggled on and the submission still succeeds.",
+    "category": "Enrollment Form",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Lucía\" into the \"Nombre\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Fernández\" into the \"Apellido\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"lucia.fernandez+test@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Toggle the \"Equivalencias\" checkbox"
+      },
+      {
+        "type": "action",
+        "description": "Click the submit button to send enrollment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success message confirming submission is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Validation: email is required",
+    "description": "Verifies the form blocks submission and shows a validation error when email is missing.",
+    "category": "Enrollment Form",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Sofía\" into the \"Nombre\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"López\" into the \"Apellido\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click the submit button to send enrollment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Email\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error for the email field is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Validation: invalid email format is rejected",
+    "description": "Verifies the form shows an error when the email format is invalid.",
+    "category": "Enrollment Form",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Diego\" into the \"Nombre\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Martínez\" into the \"Apellido\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"not-an-email\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click the submit button to send enrollment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error for the email field is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Career type filter narrows available careers in the career selector",
+    "description": "Verifies selecting a career type affects what can be found/selected in the career search dropdown.",
+    "category": "Enrollment Form",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Select \"grado\" from the career type dropdown"
+      },
+      {
+        "type": "action",
+        "description": "Search for \"Administración\" in the career selector"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Administración\" is visible in the career search results"
+      },
+      {
+        "type": "action",
+        "description": "Select \"Administración\" from the career search results"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected career value shows \"Administración\""
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Career selector search with no matches shows empty-state feedback",
+    "description": "Verifies the career search dropdown provides visible feedback when no careers match the search term.",
+    "category": "Enrollment Form",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Search for \"CarreraInexistente123\" in the career selector"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty-state message (for example, \"Sin resultados\" or \"No results\") is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Form resets or remains stable after successful submission",
+    "description": "Verifies the page remains usable after a successful submission and the form is not left in a broken state.",
+    "category": "Enrollment Form",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the enrollment form section"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Valentina\" into the \"Nombre\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Ruiz\" into the \"Apellido\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"valentina.ruiz+test@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click the submit button to send enrollment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success message confirming submission is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the enrollment form section is still visible on the page"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "FAQ page loads and displays a list of questions",
+    "description": "Verifies that the FAQ page renders and shows an initial list of FAQ questions.",
+    "category": "FAQ Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"FAQ\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Preguntas\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least one FAQ question item is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Expand an FAQ question to reveal its answer",
+    "description": "Verifies that clicking a question expands it and shows an answer beneath the question.",
+    "category": "FAQ Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least one FAQ question item is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the first visible FAQ question item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an answer text block is visible directly under the opened question"
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "Collapse an expanded FAQ question by clicking it again",
+    "description": "Verifies that an expanded question collapses and the answer is no longer visible after clicking the same question again.",
+    "category": "FAQ Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least one FAQ question item is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the first visible FAQ question item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an answer text block is visible directly under the opened question"
+      },
+      {
+        "type": "action",
+        "description": "Click the same FAQ question item again"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the answer text block under that question is not visible"
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "Only one FAQ answer is shown when switching between questions",
+    "description": "Verifies that opening a different question hides the previously opened answer (accordion behavior).",
+    "category": "FAQ Page",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least two FAQ question items are visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the first visible FAQ question item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an answer text block is visible under the first question"
+      },
+      {
+        "type": "action",
+        "description": "Click the second visible FAQ question item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an answer text block is visible under the second question"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the answer text block under the first question is not visible"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "Submit a new FAQ question successfully",
+    "description": "Verifies that the new-question form can be submitted with valid inputs and a success confirmation is shown.",
+    "category": "FAQ Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"New question\" form section is visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Nombre\" (or \"Name\") field with \"Test Usuario\""
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Email\" field with \"test.usuario@example.com\""
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Pregunta\" (or \"Question\") field with \"¿Cuáles son los horarios de atención?\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Enviar\" (or \"Submit\") button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Gracias\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"enviada\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "Show validation error when submitting with a missing required field",
+    "description": "Verifies that the form shows a validation error when a required field is not provided.",
+    "category": "FAQ Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"New question\" form section is visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Nombre\" (or \"Name\") field with \"Test Usuario\""
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Email\" field with \"test.usuario@example.com\""
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Pregunta\" (or \"Question\") field with \"\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Enviar\" (or \"Submit\") button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"obligatorio\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC029",
+    "title": "Form rejects invalid email format",
+    "description": "Verifies that entering an invalid email format triggers an error and prevents successful submission.",
+    "category": "FAQ Page",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"New question\" form section is visible"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Nombre\" (or \"Name\") field with \"Test Usuario\""
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Email\" field with \"correo-invalido\""
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Pregunta\" (or \"Question\") field with \"¿Dónde se encuentra la sede?\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Enviar\" (or \"Submit\") button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Email\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"válido\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC030",
+    "title": "FAQ page still allows accordion interaction after scrolling to the form and back",
+    "description": "Verifies that accordion interactions work after scrolling down to the submission form and returning to the questions list.",
+    "category": "FAQ Page",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /faq"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least one FAQ question item is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the \"New question\" form section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"New question\" form section is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the top of the FAQ list"
+      },
+      {
+        "type": "action",
+        "description": "Click the first visible FAQ question item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an answer text block is visible directly under the opened question"
+      }
+    ]
+  },
+  {
+    "id": "TC031",
+    "title": "Support Classes page shows a list of available subjects",
+    "description": "Verifies the Support Classes page loads and displays the subjects list.",
+    "category": "Support Classes",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clases-apoyo"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/clases-apoyo\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Clases de apoyo\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Subjects list\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC032",
+    "title": "Weekly calendar navigates to next week from Support Classes page",
+    "description": "Verifies the weekly calendar updates when moving to the next week.",
+    "category": "Support Classes",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clases-apoyo"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Current week label\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Next week\" control in the weekly calendar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Current week label\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text in \"Current week label\" has changed from the previously shown week"
+      }
+    ]
+  },
+  {
+    "id": "TC033",
+    "title": "Open a subject detail page from the subjects list",
+    "description": "Verifies that clicking a subject navigates to a subject detail page and shows details.",
+    "category": "Support Classes",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clases-apoyo"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Subjects list\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the first subject in the subjects list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/clases-apoyo/\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Subject detail\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Subject title\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC034",
+    "title": "Subject detail page provides a clear not-found message for invalid subject",
+    "description": "Verifies that an invalid subject route shows a user-friendly not-found/404 message.",
+    "category": "Support Classes",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clases-apoyo"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Subjects list\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Next week\" control in the weekly calendar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /clases-apoyo/materia-inexistente"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/clases-apoyo/materia-inexistente\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Subject not found\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Not found message\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC035",
+    "title": "Support Classes page remains usable when navigating weeks multiple times",
+    "description": "Verifies that repeated week navigation does not break the calendar view or page content.",
+    "category": "Support Classes",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clases-apoyo"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Next week\" control in the weekly calendar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Next week\" control in the weekly calendar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Subjects list\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC036",
+    "title": "Support Classes page handles empty or missing subjects list gracefully",
+    "description": "Verifies the UI shows a clear empty-state message if no subjects are available.",
+    "category": "Support Classes",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /clases-apoyo"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/clases-apoyo\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Subjects list\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify either text \"No hay materias disponibles\" is visible or at least one subject item is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Weekly calendar\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC037",
+    "title": "Contact Page loads and displays key contact information",
+    "description": "Verifies the Contact Page renders and shows the main contact sections (WhatsApp, social links, and address/location info).",
+    "category": "Contact Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contacto"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/contacto\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"Contacto\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"WhatsApp\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Facebook\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Dirección\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC038",
+    "title": "Contact Page shows address/location details in readable form",
+    "description": "Verifies the address/location section is present and includes human-readable location details.",
+    "category": "Contact Page",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contacto"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Dirección\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the \"Dirección\" section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Address/location details block\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Address/location details block\" contains visible text"
+      }
+    ]
+  },
+  {
+    "id": "TC039",
+    "title": "Multiple contact channels are visible without interaction",
+    "description": "Verifies the page exposes at least two contact channels (WhatsApp + a social link) at the same time for quick access.",
+    "category": "Contact Page",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contacto"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"WhatsApp\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Facebook\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Social links section\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Contact information section\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC040",
+    "title": "Load About Us page and verify primary institutional headings/content are visible",
+    "description": "Verifies the About Us page renders its main institutional content and headings for visitors.",
+    "category": "About Us Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sobre-nosotros"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sobre-nosotros\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"Sobre\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sobre\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"CAU\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"main content section\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC041",
+    "title": "About Us page: feature cards are visible after scrolling",
+    "description": "Verifies a visitor can scroll to the feature cards section and see multiple feature cards.",
+    "category": "About Us Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sobre-nosotros"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sobre-nosotros\""
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"feature cards\" section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature cards\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature card\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature card\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC042",
+    "title": "About Us page: feature cards contain readable text labels",
+    "description": "Verifies the feature cards include visible text so users can understand the center’s highlights.",
+    "category": "About Us Page",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sobre-nosotros"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"feature cards\" section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature cards\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature card title\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature card description\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Misión\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC043",
+    "title": "About Us page: images missing should not break layout (placeholders/structure visible)",
+    "description": "Verifies that if images fail to load, the page still shows visible placeholders or a stable layout without missing content blocks.",
+    "category": "About Us Page",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sobre-nosotros"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sobre-nosotros\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"hero/intro section\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sobre\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"feature cards\" section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature cards\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC044",
+    "title": "About Us page: page remains readable when scrolled from top to bottom",
+    "description": "Verifies users can scroll through the About Us content without losing key sections or encountering blank areas.",
+    "category": "About Us Page",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sobre-nosotros"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"top heading\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"middle content\" section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"middle content\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"feature cards\" section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"feature cards\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"page footer\" section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"footer\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC045",
+    "title": "About Us page: navigation link from Home to About Us works",
+    "description": "Verifies a visitor can reach About Us via visible site navigation starting from the Home page.",
+    "category": "About Us Page",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Sobre nosotros\" in the site navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sobre-nosotros\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sobre\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"main content section\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC046",
+    "title": "Home loads and hero CTA is visible",
+    "description": "Verifies the home page renders the hero section with a visible call-to-action button.",
+    "category": "Home Page (Hero & Footer)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Hero section\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Hero call-to-action button\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC047",
+    "title": "Hero CTA scrolls/navigates to enrollment form",
+    "description": "Verifies clicking the hero call-to-action takes the user to the enrollment form section on the home page.",
+    "category": "Home Page (Hero & Footer)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Hero call-to-action button\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Hero call-to-action button\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Enrollment form\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Inscripción\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC048",
+    "title": "Footer is reachable and visible on Home",
+    "description": "Verifies the footer is present and contains institutional links.",
+    "category": "Home Page (Hero & Footer)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"Footer\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Footer\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Footer link to Sobre nosotros\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC049",
+    "title": "Footer link navigates to Sobre nosotros page",
+    "description": "Verifies a footer institutional link takes the user from Home to the About Us page.",
+    "category": "Home Page (Hero & Footer)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"Footer\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Sobre nosotros\" in the footer"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sobre-nosotros\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"Sobre\""
+      }
+    ]
+  },
+  {
+    "id": "TC050",
+    "title": "Footer link to Contacto page works from Home",
+    "description": "Verifies the footer provides a working navigation path to the Contact page.",
+    "category": "Home Page (Hero & Footer)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"Footer\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Contacto\" in the footer"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/contacto\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Contact information section\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC051",
+    "title": "Scroll-to-top control in footer returns to hero",
+    "description": "Verifies the footer scroll-to-top behavior brings the user back to the top hero area.",
+    "category": "Home Page (Hero & Footer)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to \"Footer\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Scroll to top\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Scroll to top\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Hero section\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC052",
+    "title": "Hero CTA does not appear broken (negative guard)",
+    "description": "Verifies that clicking the hero CTA results in a visible page change (enrollment form appears), guarding against a broken CTA.",
+    "category": "Home Page (Hero & Footer)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Hero call-to-action button\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Hero call-to-action button\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Enrollment form\" is visible"
+      }
+    ]
+  }
+]
