@@ -1,0 +1,111 @@
+/* ── Novedades — Solo estilos que NO se pueden hacer con Tailwind ── */
+
+/* Entrance animation */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.news-animate {
+  opacity: 0;
+  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.news-animate--d1 { animation-delay: 0.08s; }
+.news-animate--d2 { animation-delay: 0.18s; }
+.news-animate--d3 { animation-delay: 0.28s; }
+.news-animate--d4 { animation-delay: 0.38s; }
+.news-animate--d5 { animation-delay: 0.48s; }
+.news-animate--d6 { animation-delay: 0.58s; }
+
+/* Card hover */
+.news-card {
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+}
+.news-card:hover {
+  border-color: rgba(0, 199, 177, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 199, 177, 0.1);
+  transform: translateY(-3px);
+}
+.news-card:hover .news-card__title {
+  color: var(--color-highlight);
+}
+.news-card:hover .news-card__img img {
+  transform: scale(1.05);
+}
+.news-card:hover .news-tag {
+  background: rgba(0, 199, 177, 0.15);
+  border-color: rgba(0, 199, 177, 0.35);
+}
+
+/* Image zoom transition */
+.news-card__img img {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Title color transition */
+.news-card__title {
+  transition: color 0.25s ease;
+}
+
+/* Tag transition */
+.news-tag {
+  transition: background 0.2s, border-color 0.2s;
+}
+
+/* Placeholder pattern */
+.news-placeholder {
+  position: relative;
+  overflow: hidden;
+  background: #0c2b24;
+}
+.news-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(0, 199, 177, 0.03) 8px,
+    rgba(0, 199, 177, 0.03) 9px
+  );
+}
+.news-placeholder::after {
+  content: '';
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(0, 199, 177, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* Pagination buttons */
+.page-btn {
+  transition: all 0.25s ease;
+}
+.page-btn:hover {
+  color: white;
+  background: rgba(0, 199, 177, 0.2);
+  border-color: rgba(0, 199, 177, 0.5);
+}
+.page-btn--nav:hover svg {
+  transform: translateX(2px);
+}
+.page-btn--back:hover svg {
+  transform: translateX(-2px);
+}
+.page-btn--nav svg,
+.page-btn--back svg {
+  transition: transform 0.2s ease;
+}
+
+/* Mobile pagination: hide nav text, keep icons */
+@media (max-width: 767px) {
+  .page-btn--nav span,
+  .page-btn--back span {
+    display: none;
+  }
+}

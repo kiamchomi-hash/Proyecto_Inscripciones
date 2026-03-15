@@ -401,7 +401,7 @@ export default function ContactoPageContent() {
       </section>
 
       {/* ─── SEDE + MAPA ────────────────────────────────────── */}
-      <section className="mb-10">
+      <section className="mb-0">
         <div className="flex flex-col md:flex-row gap-0 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.06)' }}>
           {/* Info */}
           <div className="flex-1 p-5 sm:p-6 flex flex-col items-center justify-center gap-3 text-center">

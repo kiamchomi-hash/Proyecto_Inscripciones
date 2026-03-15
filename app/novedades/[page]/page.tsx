@@ -1,16 +1,89 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import NovedadesPage from '@/components/novedades/novedades-page';
+import type { Novedad } from '@/components/novedades/novedades-page';
+import '../novedades.css';
 
-export const metadata: Metadata = {
-  title: 'Novedades',
-  description: 'Ultimas novedades del CAU Villa Lugano - Universidad Siglo 21.',
-};
+const ITEMS_PAGE_1 = 3;
+const ITEMS_PER_PAGE = 6;
 
-// TODO: conectar a Supabase tabla `novedades`
-export default function NovedadesPage() {
+export const revalidate = 3600;
+
+export async function generateMetadata({ params }: { params: Promise<{ page: string }> }): Promise<Metadata> {
+  const { page } = await params;
+  const pageNum = parseInt(page, 10);
+  const suffix = pageNum > 1 ? ` — Página ${pageNum}` : '';
+  return {
+    title: `Novedades${suffix}`,
+    description: 'Últimas novedades del CAU Villa Lugano — Universidad Siglo 21.',
+    alternates: { canonical: `/novedades/${page}` },
+  };
+}
+
+export default async function Page({ params }: { params: Promise<{ page: string }> }) {
+  const { page } = await params;
+  const pageNum = parseInt(page, 10);
+  if (isNaN(pageNum) || pageNum < 1) notFound();
+
+  // Contar items activos no-fijados para calcular total de páginas
+  const { count: totalCount } = await supabase
+    .from('novedades')
+    .select('id', { count: 'exact', head: true })
+    .eq('publicada', true)
+    .eq('pinned', false);
+
+  const total = totalCount ?? 0;
+  const totalPages = Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
+
+  if (pageNum > totalPages) notFound();
+
+  let pinnedItem: Novedad | null = null;
+  let items: Novedad[] = [];
+
+  if (pageNum === 1) {
+    // Obtener novedad fijada
+    const { data: pinnedData } = await supabase
+      .from('novedades')
+      .select('id, titulo, extracto, fecha, tag, imagen_url, href, pinned')
+      .eq('publicada', true)
+      .eq('pinned', true)
+      .order('fecha', { ascending: false })
+      .limit(1)
+      .single();
+
+    pinnedItem = pinnedData as Novedad | null;
+
+    // Obtener primeras 3 no-fijadas
+    const { data: itemsData } = await supabase
+      .from('novedades')
+      .select('id, titulo, extracto, fecha, tag, imagen_url, href, pinned')
+      .eq('publicada', true)
+      .eq('pinned', false)
+      .order('fecha', { ascending: false })
+      .range(0, ITEMS_PAGE_1 - 1);
+
+    items = (itemsData ?? []) as Novedad[];
+  } else {
+    // Páginas 2+: offset después de los items de página 1
+    const offset = ITEMS_PAGE_1 + (pageNum - 2) * ITEMS_PER_PAGE;
+    const { data: itemsData } = await supabase
+      .from('novedades')
+      .select('id, titulo, extracto, fecha, tag, imagen_url, href, pinned')
+      .eq('publicada', true)
+      .eq('pinned', false)
+      .order('fecha', { ascending: false })
+      .range(offset, offset + ITEMS_PER_PAGE - 1);
+
+    items = (itemsData ?? []) as Novedad[];
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-2xl font-bold text-white mb-4">Novedades</h1>
-      <p style={{ color: 'var(--color-text-light)' }}>Sección en desarrollo. Próximamente conectada a la base de datos.</p>
-    </div>
+    <NovedadesPage
+      pinnedItem={pinnedItem}
+      items={items}
+      currentPage={pageNum}
+      totalPages={totalPages}
+    />
   );
 }
