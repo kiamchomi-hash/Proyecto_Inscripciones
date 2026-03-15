@@ -56,8 +56,12 @@ export default function EnrollmentForm({ carreras }: Props) {
     return list;
   }, [carreras, carreraSearch, activeFilter]);
 
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
+
   // Form validity: need nombre and at least email or telefono
-  const isValid = nombre.trim() && (email.trim() || telefono.trim());
+  const isValid = nombre.trim() && (email.trim() || telefono.trim()) && !emailInvalid;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -339,8 +343,11 @@ export default function EnrollmentForm({ carreras }: Props) {
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       maxLength={100}
-                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                      className={`w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors ${emailInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60'}`}
                     />
+                    {emailInvalid && (
+                      <p className="text-[11px] text-red-400 mt-0.5">El formato del email no es válido.</p>
+                    )}
                   </div>
 
                   <div>

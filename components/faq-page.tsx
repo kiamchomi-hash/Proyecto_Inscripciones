@@ -255,9 +255,14 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
     if (isOpen) {
       el.style.maxHeight = el.scrollHeight + 'px';
       el.style.opacity = '1';
+      el.removeAttribute('hidden');
     } else {
       el.style.maxHeight = '0';
       el.style.opacity = '0';
+      // After transition ends, set hidden for accessibility
+      const onEnd = () => { if (!isOpen) el.setAttribute('hidden', ''); };
+      el.addEventListener('transitionend', onEnd, { once: true });
+      return () => el.removeEventListener('transitionend', onEnd);
     }
   }, [isOpen]);
 
