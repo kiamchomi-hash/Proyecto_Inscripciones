@@ -40,8 +40,6 @@ export default function Navbar() {
       document.documentElement.style.setProperty('--navbar-height', h + 'px');
     });
     ro.observe(nav);
-    // Set initial value
-    document.documentElement.style.setProperty('--navbar-height', nav.offsetHeight + 'px');
     return () => ro.disconnect();
   }, []);
 
@@ -51,17 +49,19 @@ export default function Navbar() {
     if (els.length === 0) return;
 
     const check = () => {
-      const next = new Set<string>();
-      for (const [href, span] of els) {
-        const link = span.parentElement;
-        if (!link) continue;
-        const style = getComputedStyle(link);
-        const available = link.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-        if (span.offsetWidth > available) next.add(href);
-      }
-      setOverflowing(prev => {
-        if (prev.size === next.size && [...prev].every(h => next.has(h))) return prev;
-        return next;
+      requestAnimationFrame(() => {
+        const next = new Set<string>();
+        for (const [href, span] of els) {
+          const link = span.parentElement;
+          if (!link) continue;
+          const style = getComputedStyle(link);
+          const available = link.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+          if (span.offsetWidth > available) next.add(href);
+        }
+        setOverflowing(prev => {
+          if (prev.size === next.size && [...prev].every(h => next.has(h))) return prev;
+          return next;
+        });
       });
     };
 
