@@ -38,6 +38,7 @@ export const metadata: Metadata = {
       { url: '/icon.png', sizes: '48x48', type: 'image/png' },
     ],
     shortcut: '/favicon.ico',
+    apple: '/imagenes/imagenes_cau/logo_cau.png',
   },
 };
 

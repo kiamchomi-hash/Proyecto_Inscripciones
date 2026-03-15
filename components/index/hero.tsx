@@ -144,8 +144,9 @@ export default function Hero() {
             loading="lazy"
           />
           <div className="flex flex-col h-auto justify-center gap-1 py-1 min-w-[200px]">
-            <h1 className="text-xl md:text-2xl font-black text-white leading-tight uppercase tracking-tighter whitespace-nowrap">
-              CAU - VILLA LUGANO
+            <h1 className="font-black text-white leading-tight uppercase tracking-tighter whitespace-nowrap">
+              <span className="text-xl md:text-2xl">CAU - VILLA LUGANO</span>
+              <span className="block text-[0.65rem] md:text-xs font-semibold tracking-wide text-white/70 mt-0.5">Centro de Aprendizaje Universitario</span>
             </h1>
             <p className="text-lg md:text-xl font-black text-[#00c7b1] uppercase tracking-wider leading-none">
               SIGLO 21
