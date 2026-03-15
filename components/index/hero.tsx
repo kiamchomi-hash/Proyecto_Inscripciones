@@ -81,8 +81,8 @@ export default function Hero() {
 
                 {/* ZONA 3 (Fluida ~25-30%): Caja Extra */}
                 <div className="relative z-20 w-[28%] sm:w-[30%] lg:w-[25%] xl:w-[22%] shrink-0 h-full flex items-center justify-center px-1 sm:px-2 md:px-4">
-                  <div className="flex flex-col items-center justify-center bg-teal-600 border border-teal-500 rounded-md md:rounded-xl px-1.5 sm:px-2 md:px-3 py-1.5 sm:py-1.5 md:py-2.5 shadow-md w-full max-w-[150px] md:max-w-[180px] lg:max-w-[200px] xl:max-w-[170px] 2xl:max-w-[220px]">
-                    <span className="text-teal-100 font-bold text-[6px] min-[375px]:text-[7.5px] sm:text-[8px] md:text-[10px] lg:text-[12px] xl:text-[9.5px] 2xl:text-[13px] tracking-normal sm:tracking-widest uppercase mb-[1px] text-center w-full">Pagando con</span>
+                  <div className="flex flex-col items-center justify-center bg-teal-700 border border-teal-600 rounded-md md:rounded-xl px-1.5 sm:px-2 md:px-3 py-1.5 sm:py-1.5 md:py-2.5 shadow-md w-full max-w-[150px] md:max-w-[180px] lg:max-w-[200px] xl:max-w-[170px] 2xl:max-w-[220px]">
+                    <span className="text-white font-bold text-[6px] min-[375px]:text-[7.5px] sm:text-[8px] md:text-[10px] lg:text-[12px] xl:text-[9.5px] 2xl:text-[13px] tracking-normal sm:tracking-widest uppercase mb-[1px] text-center w-full">Pagando con</span>
                     <span className="text-white font-black text-[7px] min-[375px]:text-[9.5px] sm:text-[10px] md:text-[12px] lg:text-[15px] xl:text-[11.5px] 2xl:text-[16px] uppercase text-center leading-[1.15] min-[375px]:leading-tight wrap-break-word w-full">Tarjetas Bancarias</span>
                   </div>
                 </div>
