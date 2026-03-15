@@ -63,14 +63,12 @@ export default function HeroCarousel({ children }: Props) {
         {children}
       </div>
 
-      {/* Dots */}
-      <div className="flex justify-center gap-2 py-2">
+      {/* Dots (solo indicadores visuales, no interactivos) */}
+      <div className="flex justify-center gap-2 py-2" aria-hidden="true">
         {Array.from({ length: totalSlides }).map((_, i) => (
-          <button
+          <div
             key={i}
             className={`carousel-dot ${i === currentSlide ? 'active' : ''}`}
-            onClick={() => setCurrentSlide(i)}
-            aria-label={`Slide ${i + 1}`}
           />
         ))}
       </div>
