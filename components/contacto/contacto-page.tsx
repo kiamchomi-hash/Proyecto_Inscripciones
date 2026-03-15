@@ -220,7 +220,7 @@ export default function ContactoPageContent() {
                   className="ct-post-card ct-post-fb group block rounded-xl overflow-hidden"
                 >
                   {/* Header */}
-                  <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: '#111a1b' }}>
+                  <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: '#1a1a1a' }}>
                     <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
                       style={{ background: '#ffffff', padding: '1px' }}>
                       <Image
@@ -310,10 +310,10 @@ export default function ContactoPageContent() {
             {/* Tags */}
             <div className="px-6 pb-3 flex flex-wrap gap-2">
               <span className="ct-ig-tag inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold">
-                <span>Carreras</span>
+                Carreras
               </span>
               <span className="ct-ig-tag inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold">
-                <span>Inscripciones</span>
+                Inscripciones
               </span>
             </div>
 
@@ -331,7 +331,7 @@ export default function ContactoPageContent() {
                   className="ct-post-card ct-post-ig group block rounded-xl overflow-hidden"
                 >
                   {/* Header */}
-                  <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: '#111a1b' }}>
+                  <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: '#1a1a1a' }}>
                     <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
                       style={{ background: '#ffffff', padding: '1px' }}>
                       <Image
@@ -409,22 +409,22 @@ export default function ContactoPageContent() {
 
       {/* ─── SEDE + MAPA ────────────────────────────────────── */}
       <section className="mb-0">
-        <div className="flex flex-col md:flex-row gap-0 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.06)' }}>
+        <div className="ct-visitanos flex flex-col md:flex-row gap-0 rounded-2xl overflow-hidden" style={{ background: 'rgba(0,199,177,0.04)' }}>
           {/* Info */}
           <div className="flex-1 p-5 sm:p-6 flex flex-col items-center justify-center gap-3 text-center">
             <div className="flex flex-col items-center gap-2">
               <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#ef4444' }}>
+                style={{ background: 'rgba(0,199,177,0.15)', border: '1px solid rgba(0,199,177,0.3)' }}>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#00c7b1' }}>
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
                 </svg>
               </div>
-              <p className="text-sm font-bold" style={{ color: '#ef4444' }}>Visitanos presencialmente</p>
+              <p className="text-sm font-bold" style={{ color: '#00c7b1' }}>Visitanos presencialmente</p>
               <p className="text-base font-black text-white tracking-tight">Guaminí 4876, Villa Lugano, CABA</p>
             </div>
 
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ color: '#ef4444' }}>
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ color: '#00c7b1' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
               <span className="text-xs font-semibold" style={{ color: '#c8dedd' }}>Lun a Vie, 8 a 20 hs</span>
@@ -435,7 +435,7 @@ export default function ContactoPageContent() {
                 <span
                   key={z}
                   className="px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{ color: '#e69b05', background: 'rgba(230,155,5,0.1)', border: '1px solid rgba(230,155,5,0.25)' }}
+                  style={{ color: '#00c7b1', background: 'rgba(0,199,177,0.08)', border: '1px solid rgba(0,199,177,0.2)' }}
                 >
                   {z}
                 </span>
@@ -447,7 +447,7 @@ export default function ContactoPageContent() {
               target="_blank"
               rel="noopener nofollow"
               className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full font-bold text-sm text-white transition-all hover:brightness-110 mt-1"
-              style={{ background: 'rgba(239,68,68,0.85)' }}
+              style={{ background: 'linear-gradient(135deg, #00c7b1 0%, #058c70 100%)' }}
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7" />

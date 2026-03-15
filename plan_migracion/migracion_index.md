@@ -12,7 +12,3 @@ HTML original: migracion_pendiente/index.html
 ### Funcionalidades no migradas
 - Filtro por área (medicina, finanzas) en el buscador
 
-### Mejoras pendientes
-- Cambiar SVG deportistas federados
-- Poner badge de nuevo o descuento en carreras
-
