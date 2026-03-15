@@ -40,7 +40,7 @@ const ZONAS = ['Villa Lugano', 'Mataderos', 'Liniers', 'Villa Celina', 'Ciudad M
 
 export default function ContactoPageContent() {
   return (
-    <main className="max-w-6xl mx-auto px-5 sm:px-8">
+    <main className="max-w-6xl mx-auto px-5 sm:px-8 pb-8">
 
       {/* Spacer */}
       <div className="pt-2" />
