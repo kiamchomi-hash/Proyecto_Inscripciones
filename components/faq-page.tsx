@@ -252,15 +252,22 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
+
     if (isOpen) {
+      // Remove hidden before measuring if it was there (accessibility fallback)
+      el.removeAttribute('hidden');
+      // Set to current scrollHeight
       el.style.maxHeight = el.scrollHeight + 'px';
       el.style.opacity = '1';
-      el.removeAttribute('hidden');
     } else {
       el.style.maxHeight = '0';
       el.style.opacity = '0';
-      // After transition ends, set hidden for accessibility
-      const onEnd = () => { if (!isOpen) el.setAttribute('hidden', ''); };
+      
+      const onEnd = () => {
+        if (!isOpen && el) {
+          el.setAttribute('hidden', '');
+        }
+      };
       el.addEventListener('transitionend', onEnd, { once: true });
       return () => el.removeEventListener('transitionend', onEnd);
     }
@@ -315,7 +322,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
             <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
           </svg>
         </div>
-        <div ref={contentRef} className="faq-content overflow-hidden" style={{ maxHeight: 0, opacity: 0 }}>
+        <div ref={contentRef} className="faq-content">
           {item.content}
         </div>
       </div>
@@ -333,7 +340,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
           <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
         </svg>
       </button>
-      <div ref={contentRef} className="faq-content overflow-hidden" style={{ maxHeight: 0, opacity: 0 }}>
+      <div ref={contentRef} className="faq-content">
         {item.content}
       </div>
     </div>
@@ -616,11 +623,17 @@ function UserQuestionItem({ q, displayIndex, isOpen, onToggle }: { q: UserQuesti
     const el = contentRef.current;
     if (!el) return;
     if (isOpen) {
+      el.removeAttribute('hidden');
       el.style.maxHeight = el.scrollHeight + 'px';
       el.style.opacity = '1';
     } else {
       el.style.maxHeight = '0';
       el.style.opacity = '0';
+      const onEnd = () => {
+        if (!isOpen && el) el.setAttribute('hidden', '');
+      };
+      el.addEventListener('transitionend', onEnd, { once: true });
+      return () => el.removeEventListener('transitionend', onEnd);
     }
   }, [isOpen]);
 
@@ -635,7 +648,7 @@ function UserQuestionItem({ q, displayIndex, isOpen, onToggle }: { q: UserQuesti
           <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
         </svg>
       </button>
-      <div ref={contentRef} className="faq-content overflow-hidden" style={{ maxHeight: 0, opacity: 0 }}>
+      <div ref={contentRef} className="faq-content">
         <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
           {q.descripcion && (
             <p style={{ color: '#e0f0ee' }}>{q.descripcion}</p>
