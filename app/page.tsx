@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import type { Carrera } from '@/components/index/types';
@@ -30,7 +31,9 @@ export default async function HomePage() {
   return (
     <main className="flex-1">
       <Hero />
-      <CareersCatalog carreras={carrerasData} />
+      <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center"><div className="w-10 h-10 border-4 border-[#00c7b1] border-t-transparent rounded-full animate-spin"></div></div>}>
+        <CareersCatalog carreras={carrerasData} />
+      </Suspense>
       <EnrollmentForm carreras={carrerasData} />
       <IndexFooter />
     </main>
