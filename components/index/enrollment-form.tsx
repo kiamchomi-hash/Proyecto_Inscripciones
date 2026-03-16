@@ -24,7 +24,6 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-
   const dropdownRef = useRef<HTMLDivElement>(null);
   const tipoDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +61,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
 
-  // Form validity: need at least email or telefono
+  // Form validity: at least email or telefono, and email must be valid
   const isValid = (email.trim() || telefono.trim()) && !emailInvalid;
 
   // Close dropdowns on outside click
@@ -301,7 +300,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     <input
                       type="text"
                       id="form-nombre"
-                      placeholder="Opcional"
+                      placeholder="Nombre"
                       value={nombre}
                       onChange={e => setNombre(e.target.value)}
                       maxLength={100}
@@ -313,7 +312,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     <input
                       type="text"
                       id="form-apellido"
-                      placeholder="Opcional"
+                      placeholder="Apellido"
                       value={apellido}
                       onChange={e => setApellido(e.target.value)}
                       maxLength={100}
@@ -390,7 +389,6 @@ export default function EnrollmentForm({ carreras }: Props) {
                 )}
               </div>
             </div>
-
 
 
             {/* Submit */}
