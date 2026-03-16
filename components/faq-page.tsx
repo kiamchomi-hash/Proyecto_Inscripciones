@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Turnstile } from 'react-turnstile';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from './icons';
 import { supabase } from '@/lib/supabase';
 
@@ -409,11 +408,9 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   }
 
   const [submitting, setSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   async function submitPub() {
     if (!contactPub.trim()) { setErrorPub(true); return; }
-    if (!turnstileToken) return;
     if (!checkRateLimit()) { setRateLimited(true); return; }
     const t = title.trim().slice(0, 120);
     const d = desc.trim().slice(0, 500) || null;
@@ -430,13 +427,11 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     if (error) { setErrorPub(true); return; }
     recordSubmission();
     localStorage.setItem('faq-contact', c);
-    setTurnstileToken(null);
     setSlide(3);
   }
 
   async function submitPriv() {
     if (!contactPriv.trim()) { setErrorPriv(true); return; }
-    if (!turnstileToken) return;
     if (!checkRateLimit()) { setRateLimited(true); return; }
     const t = title.trim().slice(0, 120);
     const d = desc.trim().slice(0, 500) || null;
@@ -456,7 +451,6 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     recordSubmission();
     localStorage.setItem('faq-contact', c);
     if (n) localStorage.setItem('faq-contact-name', n);
-    setTurnstileToken(null);
     setSlide(3);
   }
 
@@ -554,12 +548,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                 <div className={`text-xs mt-1 text-red-400 ${errorPub ? 'block' : 'hidden'}`}>Ingresá tu email para poder avisarte cuando sea respondida.</div>
                 <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
               </div>
-              {contactPub.trim() && !turnstileToken && (
-                <div className="flex justify-center mb-2">
-                  <Turnstile sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} theme="dark" size="compact" />
-                </div>
-              )}
-              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPub} disabled={submitting || !turnstileToken}>
+              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPub} disabled={submitting}>
                 {submitting ? 'Enviando...' : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Publicar pregunta</>)}
               </button>
             </div>
@@ -593,12 +582,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               </div>
               <div className={`text-xs mt-1 text-red-400 ${errorPriv ? 'block' : 'hidden'}`}>Ingresá un contacto para poder responderte.</div>
               <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
-              {contactPriv.trim() && !turnstileToken && (
-                <div className="flex justify-center mb-2">
-                  <Turnstile sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} theme="dark" size="compact" />
-                </div>
-              )}
-              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPriv} disabled={submitting || !turnstileToken}>
+              <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPriv} disabled={submitting}>
                 {submitting ? 'Enviando...' : 'Enviar consulta'}
               </button>
             </div>

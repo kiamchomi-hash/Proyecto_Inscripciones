@@ -191,12 +191,11 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [showInputError, setShowInputError] = useState(false);
-
   const hours = buildHours(modoManana);
   const cols = modoManana ? 'grid-cols-4' : 'grid-cols-3';
   const soloDigitos = telefono.replace(/[\s\-\+]/g, '');
   const telefonoValido = soloDigitos.length >= 8 && /^\d+$/.test(soloDigitos.slice(-8));
-  const datosCompletos = nombre.trim().length >= 2 && telefonoValido;
+  const datosCompletos = telefonoValido;
 
   const toggleHour = (i: number) => {
     setSelectedHours(prev => {
@@ -221,11 +220,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
     const horarios = Array.from(selectedHours).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`);
     const dias = selectedDays.map(d => d.num);
     const { error: e } = await supabase.from('solicitudes_clase').insert({
-      materia_id: materiaId, 
-      dias, 
-      horarios, 
-      nombre: nombre.trim(), 
-      telefono: telefono.trim(),
+      materia_id: materiaId, dias, horarios, nombre: nombre.trim() || null, telefono: telefono.trim(),
     });
     if (e) setError('Error al enviar. Intente más tarde.');
     else { setSubmittedDays([...selectedDays]); setMode('done'); onDone(); }
@@ -245,7 +240,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
       materia_id: materiaId,
       dias: [day.num],
       horarios: Array.from(perDayHours[day.num] || []).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`),
-      nombre: nombre.trim(),
+      nombre: nombre.trim() || null,
       telefono: telefono.trim(),
     })).filter(r => r.horarios.length > 0);
 
@@ -327,7 +322,6 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
       )}
 
 
-
       {/* Zona inferior — cambia según el modo */}
       <div className="px-3 pb-3 flex flex-col gap-2 ca-schedule-transition">
         {mode === 'done' ? (
@@ -368,7 +362,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
                   : 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)',
               }}
             >
-              {showInputError && !datosCompletos ? 'Completá nombre y teléfono' : 'Solicitar clase'}
+            {showInputError && !datosCompletos ? 'Completá el teléfono' : 'Solicitar clase'}
             </button>
             {showInputError && !datosCompletos && (
               <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#ff6b6b' }}>
@@ -490,7 +484,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
                   : 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)',
               }}
             >
-              {showInputError && !datosCompletos ? 'Completá nombre y teléfono' : 'Confirmar solicitud'}
+              {showInputError && !datosCompletos ? 'Completá el teléfono' : 'Confirmar solicitud'}
             </button>
             {showInputError && !datosCompletos && (
               <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#ff6b6b' }}>
