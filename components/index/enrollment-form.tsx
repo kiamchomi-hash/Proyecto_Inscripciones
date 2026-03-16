@@ -272,20 +272,20 @@ export default function EnrollmentForm({ carreras }: Props) {
                 </div>
 
                 {/* Equivalencias checkbox */}
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-shrink-0">
+                <div className="flex items-center gap-2 py-0.5">
+                  <div className="relative flex items-center justify-center flex-shrink-0 w-4 h-4">
                     <input
                       type="checkbox"
                       id="form-equivalencias"
                       checked={equivalencias}
                       onChange={e => setEquivalencias(e.target.checked)}
-                      className="peer w-4 h-4 appearance-none bg-[#0f2825] border border-[#00c7b1]/30 rounded checked:bg-[#00c7b1] checked:border-[#00c7b1] focus:outline-none cursor-pointer transition-colors"
+                      className="peer w-full h-full appearance-none bg-[#0f2825] border border-[#00c7b1]/30 rounded checked:bg-[#00c7b1] checked:border-[#00c7b1] focus:outline-none cursor-pointer transition-colors"
                     />
                     <svg className="pointer-events-none absolute inset-0 m-auto h-2.5 w-2.5 text-[#013729] opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <label htmlFor="form-equivalencias" className="text-xs text-[#c8deda] cursor-pointer leading-none">
+                  <label htmlFor="form-equivalencias" className="text-xs text-[#c8deda] cursor-pointer">
                     Quiero acreditar equivalencias
                   </label>
                 </div>
