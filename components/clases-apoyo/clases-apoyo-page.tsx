@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
 
 export interface CalendarWeek {
@@ -192,12 +191,12 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [showInputError, setShowInputError] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   const hours = buildHours(modoManana);
   const cols = modoManana ? 'grid-cols-4' : 'grid-cols-3';
   const soloDigitos = telefono.replace(/[\s\-\+]/g, '');
   const telefonoValido = soloDigitos.length >= 8 && /^\d+$/.test(soloDigitos.slice(-8));
-  const datosCompletos = telefonoValido;
+  const datosCompletos = nombre.trim().length >= 2 && telefonoValido;
 
   const toggleHour = (i: number) => {
     setSelectedHours(prev => {
@@ -218,7 +217,6 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   };
 
   const handleChooseSame = async () => {
-    if (!turnstileToken) { setError('Esperá a que se complete la verificación.'); return; }
     setError(null);
     const horarios = Array.from(selectedHours).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`);
     const dias = selectedDays.map(d => d.num);
@@ -226,11 +224,11 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
       materia_id: materiaId, 
       dias, 
       horarios, 
-      nombre: nombre.trim() || null, 
+      nombre: nombre.trim(), 
       telefono: telefono.trim(),
     });
     if (e) setError('Error al enviar. Intente más tarde.');
-    else { setSubmittedDays([...selectedDays]); setMode('done'); setTurnstileToken(null); onDone(); }
+    else { setSubmittedDays([...selectedDays]); setMode('done'); onDone(); }
   };
 
   const handleChoosePerDay = () => {
@@ -242,13 +240,12 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   };
 
   const handleSubmitPerDay = async () => {
-    if (!turnstileToken) { setError('Esperá a que se complete la verificación.'); return; }
     setError(null);
     const rows = selectedDays.map(day => ({
       materia_id: materiaId,
       dias: [day.num],
       horarios: Array.from(perDayHours[day.num] || []).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`),
-      nombre: nombre.trim() || null,
+      nombre: nombre.trim(),
       telefono: telefono.trim(),
     })).filter(r => r.horarios.length > 0);
 
@@ -256,7 +253,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
 
     const { error: e } = await supabase.from('solicitudes_clase').insert(rows);
     if (e) setError('Error al enviar. Intente más tarde.');
-    else { setSubmittedDays(rows.map(r => selectedDays.find(d => d.num === r.dias[0])!)); setMode('done'); setTurnstileToken(null); onDone(); }
+    else { setSubmittedDays(rows.map(r => selectedDays.find(d => d.num === r.dias[0])!)); setMode('done'); onDone(); }
   };
 
   const canProceed = selectedHours.size > 0 && selectedDays.length > 0;
@@ -310,7 +307,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
         <div className="px-3 flex gap-2 mb-2 max-md:mb-3 ca-slide-in">
           <input
             type="text"
-            placeholder="Nombre (Opcional)"
+            placeholder="Nombre"
             value={nombre}
             onChange={e => { setNombre(e.target.value); if (showInputError) setShowInputError(false); }}
             className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
@@ -329,18 +326,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
         </div>
       )}
 
-      {/* Turnstile CAPTCHA — aparece al completar datos */}
-      {mode !== 'done' && selectedHours.size > 0 && datosCompletos && !turnstileToken && (
-        <div className="px-3 flex justify-center">
-          <Turnstile
-            sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-            onVerify={setTurnstileToken}
-            onExpire={() => setTurnstileToken(null)}
-            theme="dark"
-            size="compact"
-          />
-        </div>
-      )}
+
 
       {/* Zona inferior — cambia según el modo */}
       <div className="px-3 pb-3 flex flex-col gap-2 ca-schedule-transition">
@@ -382,11 +368,15 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
                   : 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)',
               }}
             >
-              {showInputError && !datosCompletos ? 'Ingresá tu teléfono' : 'Solicitar clase'}
+              {showInputError && !datosCompletos ? 'Completá nombre y teléfono' : 'Solicitar clase'}
             </button>
             {showInputError && !datosCompletos && (
               <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#ff6b6b' }}>
-                Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx
+                {nombre.trim().length < 2 && telefono.trim().length === 0
+                  ? 'Ingresá tu nombre y teléfono para continuar.'
+                  : nombre.trim().length < 2
+                  ? 'Ingresá tu nombre (mínimo 2 caracteres).'
+                  : 'Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx'}
               </div>
             )}
             {selectedHours.size > 0 && !showInputError && (
@@ -469,7 +459,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
             <div className="flex gap-2 mb-1 max-md:mb-2">
               <input
                 type="text"
-                placeholder="Nombre (Opcional)"
+                placeholder="Nombre"
                 value={nombre}
                 onChange={e => { setNombre(e.target.value); if (showInputError) setShowInputError(false); }}
                 className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
@@ -500,11 +490,15 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
                   : 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)',
               }}
             >
-              {showInputError && !datosCompletos ? 'Ingresá tu teléfono' : 'Confirmar solicitud'}
+              {showInputError && !datosCompletos ? 'Completá nombre y teléfono' : 'Confirmar solicitud'}
             </button>
             {showInputError && !datosCompletos && (
               <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#ff6b6b' }}>
-                Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx
+                {nombre.trim().length < 2 && telefono.trim().length === 0
+                  ? 'Ingresá tu nombre y teléfono para continuar.'
+                  : nombre.trim().length < 2
+                  ? 'Ingresá tu nombre (mínimo 2 caracteres).'
+                  : 'Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx'}
               </div>
             )}
             <button
