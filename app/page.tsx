@@ -8,7 +8,7 @@ import IndexFooter from '@/components/index/footer';
 import './index.css';
 
 export const metadata: Metadata = {
-  title: 'Universidad Siglo 21 - CAU Villa Lugano: Oferta académica 2026',
+  title: 'Universidad Siglo 21 CAU Villa Lugano | Oferta académica 2026',
   description: 'Oferta académica Universidad Siglo 21 en Villa Lugano. Ideal para Zona Sur y Oeste: Celina, Madero, Tapiales, Soldati, Mataderos, Riachuelo, Budge.',
 };
 
