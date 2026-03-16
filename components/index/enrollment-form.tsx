@@ -63,8 +63,8 @@ export default function EnrollmentForm({ carreras }: Props) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
 
-  // Form validity: need nombre and at least email or telefono
-  const isValid = nombre.trim() && (email.trim() || telefono.trim()) && !emailInvalid;
+  // Form validity: need at least email or telefono
+  const isValid = (email.trim() || telefono.trim()) && !emailInvalid;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -99,8 +99,8 @@ export default function EnrollmentForm({ carreras }: Props) {
       tipo: activeFilter ? (CATEGORIES.find(c => c.id === activeFilter)?.label || activeFilter) : null,
       modalidad: 'virtual',
       equivalencias,
-      nombre: nombre.trim(),
-      apellido: apellido.trim(),
+      nombre: nombre.trim() || null,
+      apellido: apellido.trim() || null,
       email: email.trim() || null,
       telefono: telefono.trim() || null,
       localidad: localidad.trim() || null,
@@ -304,8 +304,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     <input
                       type="text"
                       id="form-nombre"
-                      required
-                      placeholder="Nombre"
+                      placeholder="Opcional"
                       value={nombre}
                       onChange={e => setNombre(e.target.value)}
                       maxLength={100}
@@ -317,8 +316,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     <input
                       type="text"
                       id="form-apellido"
-                      required
-                      placeholder="Apellido"
+                      placeholder="Opcional"
                       value={apellido}
                       onChange={e => setApellido(e.target.value)}
                       maxLength={100}
@@ -390,8 +388,8 @@ export default function EnrollmentForm({ carreras }: Props) {
                 {error && (
                   <p className="text-[11px] text-red-400">{error}</p>
                 )}
-                {!isValid && (nombre.trim() || email.trim() || telefono.trim()) && (
-                  <p className="text-[11px] text-red-400">Completa el nombre y al menos email o telefono.</p>
+                {!isValid && (email.trim() || telefono.trim()) && (
+                  <p className="text-[11px] text-red-400">Completa al menos email o telefono.</p>
                 )}
               </div>
             </div>
