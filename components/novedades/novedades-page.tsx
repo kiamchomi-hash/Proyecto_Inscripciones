@@ -165,7 +165,7 @@ function Pagination({ current, total }: { current: number; total: number }) {
   const mobilePages = getRange(MAX_MOBILE);
 
   const btnBase = "inline-flex items-center justify-center min-w-9 h-9 px-2 text-sm font-bold rounded-md";
-  const btnStyle = { color: '#d0e8e4', background: '#0a2e28', border: '1px solid rgba(0,199,177,0.25)' };
+  const btnStyle = { color: '#ffffff', background: '#07241f', border: '1px solid rgba(0,199,177,0.4)' };
   const btnActive = { color: '#013729', background: 'var(--color-highlight)', borderColor: 'var(--color-highlight)' };
 
   return (
