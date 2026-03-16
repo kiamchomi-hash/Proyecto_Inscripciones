@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug } from './types';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug } from './types';
 import CareerModal from './career-modal';
 import CarouselModal from './carousel-modal';
 
@@ -91,9 +92,10 @@ function parseCareerName(name: string): { prefix: string; cleanName: string } {
 
 interface Props {
   carreras: Carrera[];
+  initialSlug?: string;
 }
 
-export default function CareersCatalog({ carreras }: Props) {
+export default function CareersCatalog({ carreras, initialSlug }: Props) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCarrera, setSelectedCarrera] = useState<Carrera | null>(null);
@@ -101,6 +103,9 @@ export default function CareersCatalog({ carreras }: Props) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
   const isNavigatingRef = useRef(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Scroll so the sticky wrapper sits right below the navbar
   const scrollToSearchBar = useCallback(() => {
@@ -166,8 +171,24 @@ export default function CareersCatalog({ carreras }: Props) {
   }, [scrollToSearchBar]);
 
   const handleCareerClick = useCallback((carrera: Carrera) => {
+    // Update URL to the shareable path when clicking a career card
+    const slug = carreraToSlug(carrera.nombre);
+    router.push(`/carrera/${slug}`, { scroll: false });
     setSelectedCarrera(carrera);
-  }, []);
+  }, [router]);
+
+  const handleModalClose = useCallback(() => {
+    setSelectedCarrera(null);
+    isNavigatingRef.current = false;
+    
+    // Sync URL back to Home if we are in a career route or have query params
+    const currentPath = window.location.pathname;
+    const currentSearch = window.location.search;
+    
+    if (currentPath.startsWith('/carrera/') || currentPath !== '/' || currentSearch.includes('carrera=')) {
+      router.replace('/', { scroll: false });
+    }
+  }, [router]);
 
   // Keep --sidebar-sticky-top in sync
   useEffect(() => {
@@ -182,17 +203,31 @@ export default function CareersCatalog({ carreras }: Props) {
     return () => window.removeEventListener('resize', updateSidebarTop);
   }, []);
 
-  // Auto-open modal from URL param
+  // Auto-open modal from initialSlug (new route) or URL param (legacy) or direct path check
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const carreraParam = params.get('carrera');
-    if (carreraParam) {
-      // Support both slug format (Abogacia) and legacy encoded format (Abogacía)
-      const found = findCarreraBySlug(carreras, carreraParam)
-        || carreras.find(c => c.nombre === carreraParam);
-      if (found) setSelectedCarrera(found);
+    if (!carreras || carreras.length === 0) return;
+
+    // 1. Check prop (dynamic route)
+    // 2. Check query param (legacy / fallback)
+    // 3. Check path directly (reload fallback)
+    const searchParamsSlug = new URLSearchParams(window.location.search).get('carrera');
+    const pathSlug = window.location.pathname.startsWith('/carrera/') 
+      ? window.location.pathname.split('/').pop() 
+      : null;
+      
+    const slug = initialSlug || searchParamsSlug || pathSlug;
+
+    if (slug) {
+      // Clean slug: decode and normalize
+      const cleanSlug = decodeURIComponent(slug);
+      const found = findCarreraBySlug(carreras, cleanSlug) 
+        || carreras.find(c => c.nombre === cleanSlug);
+        
+      if (found) {
+        setSelectedCarrera(found);
+      }
     }
-  }, [carreras]);
+  }, [carreras, initialSlug]);
 
   const sectionLabels: Record<string, { title: string; accent?: string; placeholder: string }> = {
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
@@ -385,7 +420,7 @@ export default function CareersCatalog({ carreras }: Props) {
         const hasNext = idx >= 0 && idx < carreras.length - 1;
         const navigate = (carrera: Carrera) => { isNavigatingRef.current = true; setSelectedCarrera(carrera); };
         const navProps = {
-          onClose: () => { isNavigatingRef.current = false; setSelectedCarrera(null); },
+          onClose: handleModalClose,
           onNextCarrera: hasNext ? () => navigate(carreras[idx + 1]) : undefined,
           onPrevCarrera: hasPrev ? () => navigate(carreras[idx - 1]) : undefined,
           hasNextCarrera: hasNext,
