@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -61,7 +62,9 @@ export default async function CarreraPage({ params }: Props) {
   return (
     <main className="flex-1">
       <Hero />
-      <CareersCatalog carreras={carrerasData} initialSlug={slug} />
+      <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center"><div className="w-10 h-10 border-4 border-[#00c7b1] border-t-transparent rounded-full animate-spin"></div></div>}>
+        <CareersCatalog carreras={carrerasData} initialSlug={slug} />
+      </Suspense>
       <EnrollmentForm carreras={carrerasData} />
       <IndexFooter />
     </main>
