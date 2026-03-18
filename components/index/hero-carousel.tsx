@@ -64,7 +64,7 @@ export default function HeroCarousel({ children }: Props) {
       </div>
 
       {/* Dots (solo indicadores visuales, no interactivos) */}
-      <div className="flex justify-center gap-2 py-2" aria-hidden="true">
+      <div className="flex justify-center w-full gap-2 py-3 bg-black/30 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" aria-hidden="true">
         {Array.from({ length: totalSlides }).map((_, i) => (
           <div
             key={i}
