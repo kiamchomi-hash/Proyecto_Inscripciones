@@ -397,7 +397,7 @@
   .sidebar-column {
     display: block;
     position: sticky;
-    top: var(--sidebar-sticky-top, 200px);
+    top: calc(var(--navbar-height, 60px) + 5.5rem);
     height: fit-content;
     z-index: 10;
   }
