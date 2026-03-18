@@ -104,10 +104,10 @@ export default function Hero() {
 
             {/* Slide 3: Benefits (Tailwind Reescrito y Blindado) */}
             <div className="banner-slide">
-              <div className="w-full h-full relative min-h-[120px] bg-linear-to-br from-[#013729] to-[#0c2920] overflow-hidden flex flex-col items-center justify-evenly py-2 sm:py-3 md:py-4 px-1 sm:px-6 md:px-12 lg:px-24">
+              <div className="w-full h-full relative min-h-[120px] bg-linear-to-br from-[#013729] to-[#0c2920] overflow-hidden flex flex-col items-center justify-evenly pt-2 sm:pt-2.5 md:pt-3 pb-2 px-1 sm:px-6 md:px-12 lg:px-24">
 
                 {/* Encabezado (Centrado) */}
-                <div className="flex items-center justify-center w-full gap-1 sm:gap-2 text-white text-[13px] sm:text-base md:text-xl font-black uppercase tracking-wider relative z-10 mt-1 sm:mt-0">
+                <div className="flex items-center justify-center w-full gap-1 sm:gap-2 text-white text-[13px] sm:text-base md:text-xl font-black uppercase tracking-wider relative z-10">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
@@ -118,19 +118,19 @@ export default function Hero() {
                 <div className="grid grid-cols-3 items-stretch justify-center gap-2 sm:gap-4 xl:gap-2 w-full md:max-w-[900px] xl:max-w-[650px] 2xl:max-w-[800px] mb-1 sm:mb-0">
 
                   {/* Chip 1 */}
-                  <div className="flex flex-col items-center justify-center text-center bg-[#006c5b] shadow-lg border border-[#00c7b1]/30 rounded-md sm:rounded-xl px-1 pt-1.5 pb-2.5 sm:p-3 xl:p-2 w-full h-full min-h-[75px] sm:min-h-[110px] xl:min-h-[90px] 2xl:min-h-[110px] min-w-0">
+                  <div className="flex flex-col items-center justify-center text-center bg-white/5 border border-white/10 rounded-md sm:rounded-xl px-1 pt-1.5 pb-2.5 sm:p-3 xl:p-2 w-full h-full min-h-[75px] sm:min-h-[110px] xl:min-h-[90px] 2xl:min-h-[110px] min-w-0">
                     <div className="text-[20px] sm:text-2xl md:text-3xl xl:text-xl 2xl:text-3xl font-black text-white leading-none mb-0.5 sm:mb-1 xl:mb-0.5">10%</div>
                     <strong className="text-[#00ffe1] text-[9px] sm:text-[11px] md:text-[13px] xl:text-[10px] 2xl:text-[13px] font-bold leading-tight mt-0.5 w-full px-0.5 wrap-break-word">Deportistas<br />Federados</strong>
                   </div>
 
                   {/* Chip 2 */}
-                  <div className="flex flex-col items-center justify-center text-center bg-[#006c5b] shadow-lg border border-[#00c7b1]/30 rounded-md sm:rounded-xl px-1 pt-1.5 pb-2.5 sm:p-3 xl:p-2 w-full h-full min-h-[75px] sm:min-h-[110px] xl:min-h-[90px] 2xl:min-h-[110px] min-w-0">
+                  <div className="flex flex-col items-center justify-center text-center bg-white/5 border border-white/10 rounded-md sm:rounded-xl px-1 pt-1.5 pb-2.5 sm:p-3 xl:p-2 w-full h-full min-h-[75px] sm:min-h-[110px] xl:min-h-[90px] 2xl:min-h-[110px] min-w-0">
                     <div className="text-[20px] sm:text-2xl md:text-3xl xl:text-xl 2xl:text-3xl font-black text-white leading-none mb-0.5 sm:mb-1 xl:mb-0.5">10%</div>
                     <strong className="text-[#00ffe1] text-[9px] sm:text-[11px] md:text-[13px] xl:text-[10px] 2xl:text-[13px] font-bold leading-tight mt-0.5 w-full px-0.5 wrap-break-word">Organización<br />Amiga</strong>
                   </div>
 
                   {/* Chip 3 */}
-                  <div className="flex flex-col items-center justify-center text-center bg-[#006c5b] shadow-lg border border-[#00c7b1]/30 rounded-md sm:rounded-xl px-1 pt-1.5 pb-2.5 sm:p-3 xl:p-2 w-full h-full min-h-[75px] sm:min-h-[110px] xl:min-h-[90px] 2xl:min-h-[110px] min-w-0">
+                  <div className="flex flex-col items-center justify-center text-center bg-white/5 border border-white/10 rounded-md sm:rounded-xl px-1 pt-1.5 pb-2.5 sm:p-3 xl:p-2 w-full h-full min-h-[75px] sm:min-h-[110px] xl:min-h-[90px] 2xl:min-h-[110px] min-w-0">
                     <div className="text-[20px] sm:text-2xl md:text-3xl xl:text-xl 2xl:text-3xl font-black text-white leading-none mb-0.5 sm:mb-1 xl:mb-0.5">10%</div>
                     <strong className="text-[#00ffe1] text-[9px] sm:text-[11px] md:text-[13px] xl:text-[10px] 2xl:text-[13px] font-bold leading-tight mt-0.5 w-full px-0.5 wrap-break-word">Amigo<br />Referido</strong>
                   </div>
