@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function IndexFooter() {
   return (
-    <footer style={{ background: 'linear-gradient(180deg, rgba(6, 34, 31, 0.92) 0%, #081f1d 100%)', borderTop: '2px solid rgba(0, 199, 177, 0.26)' }}>
+    <footer className="texture-aurora grain-overlay" style={{ borderTop: '2px solid rgba(0, 199, 177, 0.26)' }}>
       <div className="container mx-auto px-6 py-14">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
           {/* Brand */}
