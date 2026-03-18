@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
+import dynamic from 'next/dynamic';
 import type { Carrera } from '@/components/index/types';
 import Hero from '@/components/index/hero';
-import CareersCatalog from '@/components/index/careers-catalog';
-import EnrollmentForm from '@/components/index/enrollment-form';
-import IndexFooter from '@/components/index/footer';
+
+// Dynamic imports for components below the fold to save ~67KB of initial JS
+const CareersCatalog = dynamic(() => import('@/components/index/careers-catalog'));
+const EnrollmentForm = dynamic(() => import('@/components/index/enrollment-form'));
+const IndexFooter = dynamic(() => import('@/components/index/footer'));
 import './index.css';
 
 export const metadata: Metadata = {
