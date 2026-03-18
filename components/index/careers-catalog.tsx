@@ -2,8 +2,10 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug } from './types';
-import CareerModal from './career-modal';
-import CarouselModal from './carousel-modal';
+import dynamic from 'next/dynamic';
+
+const CareerModal = dynamic(() => import('./career-modal'), { ssr: false });
+const CarouselModal = dynamic(() => import('./carousel-modal'), { ssr: false });
 
 // Levenshtein distance for fuzzy search
 function levenshtein(a: string, b: string): number {
