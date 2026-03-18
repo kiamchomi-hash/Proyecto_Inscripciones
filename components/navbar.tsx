@@ -49,15 +49,32 @@ export default function Navbar() {
     if (els.length === 0) return;
 
     const check = () => {
+      // Skip measurement on mobile (links are vertical or hidden)
+      if (window.innerWidth < 1024) {
+        if (overflowing.size > 0) setOverflowing(new Set());
+        return;
+      }
+
       requestAnimationFrame(() => {
         const next = new Set<string>();
+        let paddingX = 0;
+        let paddingMeasured = false;
+
         for (const [href, span] of els) {
           const link = span.parentElement;
           if (!link) continue;
-          const style = getComputedStyle(link);
-          const available = link.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+
+          // Measure padding once per check cycle instead of inside the loop
+          if (!paddingMeasured) {
+            const style = getComputedStyle(link);
+            paddingX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+            paddingMeasured = true;
+          }
+
+          const available = link.clientWidth - paddingX;
           if (span.offsetWidth > available) next.add(href);
         }
+
         setOverflowing(prev => {
           if (prev.size === next.size && [...prev].every(h => next.has(h))) return prev;
           return next;

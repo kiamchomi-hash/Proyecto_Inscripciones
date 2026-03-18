@@ -40,6 +40,10 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/imagenes/imagenes_cau/logo_cau.png',
   },
+  other: {
+    'dns-prefetch': ['https://fonts.googleapis.com', 'https://wa.me'],
+    'preconnect': ['https://fonts.gstatic.com'],
+  },
 };
 
 
