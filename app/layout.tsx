@@ -40,10 +40,6 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/imagenes/imagenes_cau/logo_cau.png',
   },
-  other: {
-    'dns-prefetch': ['https://fonts.googleapis.com', 'https://wa.me'],
-    'preconnect': ['https://fonts.gstatic.com'],
-  },
 };
 
 
@@ -51,6 +47,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${inter.variable} ${unbounded.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://wa.me" />
+      </head>
       <body className={inter.className}>
         <Navbar />
         {children}

@@ -169,18 +169,7 @@ export default function CareersCatalog({ carreras }: Props) {
     setSelectedCarrera(carrera);
   }, []);
 
-  // Keep --sidebar-sticky-top in sync
-  useEffect(() => {
-    function updateSidebarTop() {
-      const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 60;
-      const sticky = document.querySelector('.sticky-search-wrapper');
-      const stickyH = sticky ? sticky.getBoundingClientRect().height : 0;
-      document.documentElement.style.setProperty('--sidebar-sticky-top', (navH + stickyH + 16) + 'px');
-    }
-    updateSidebarTop();
-    window.addEventListener('resize', updateSidebarTop);
-    return () => window.removeEventListener('resize', updateSidebarTop);
-  }, []);
+
 
   // Auto-open modal from URL param
   useEffect(() => {
