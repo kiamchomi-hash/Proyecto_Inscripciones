@@ -537,7 +537,7 @@ export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevC
             ...s,
             beneficios: s.beneficios.map(b =>
               b.texto.toLowerCase().includes('100% online')
-                ? { ...b, texto: '100% online, cursá y rendí desde donde estés, a tu ritmo.' }
+                ? { ...b, texto: 'Está cerca de tu casa, acercate ante cualquier consulta' }
                 : b
             )
           };
@@ -901,19 +901,29 @@ function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: 
 
 function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
   return (
-    <div className="h-full flex overflow-hidden">
+    <div className="h-full flex overflow-hidden relative bg-[#011f17]">
+      {/* Mobile background image */}
       {slide.imagen && (
-        <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24]">
-          <Image src={encodeImagePath(slide.imagen!)} alt="Instituto" fill className="object-cover" />
+        <div className="md:hidden absolute inset-x-0 bottom-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#011f17] via-[#011f17]/50 to-transparent z-10" />
+          <img src="/imagenes/imagenes_cau/Foto-entrada.webp" alt="Instituto" className="w-full h-auto opacity-[0.25] block translate-y-[20%]" />
+        </div>
+      )}
+
+      {/* Desktop side image */}
+      {slide.imagen && (
+        <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
+          <Image src={encodeImagePath(slide.imagen!)} alt="Instituto" fill className="object-cover object-left-bottom" />
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}
-      <div className="flex-1 bg-[#011f17] p-6 sm:p-10 flex flex-col justify-center gap-6 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] p-4 md:p-10 flex flex-col justify-start md:justify-center gap-4 md:gap-8 overflow-hidden">
         <div>
-          <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-2">{slide.subtitulo || 'Beneficios Siglo 21'}</p>
-          <h2 className="text-3xl font-black text-white uppercase tracking-tight leading-none" dangerouslySetInnerHTML={{ __html: slide.titulo }} />
+          <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight leading-none">
+            Estudia<br /><span className="text-[#00c7b1]">con nosotros</span>
+          </h2>
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3 md:gap-5">
           {slide.beneficios.map((b, i) => (
             <div key={i} className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
@@ -926,6 +936,24 @@ function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
               <span className="text-white text-sm font-semibold">{b.texto}</span>
             </div>
           ))}
+        </div>
+
+        {/* CONTENEDOR DE DESCUENTOS FIJOS (3 TARJETAS) */}
+        <div className="w-full -mt-2">
+          <p className="text-[0.65rem] md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
+          <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 w-full mb-2">
+            {[
+              { main: 'Sede Local' },
+              { main: 'Siglo 21' },
+              { main: 'Especiales' }
+            ].map((item, i) => (
+              <div key={i} className="relative overflow-hidden w-[calc(33.333%-4px)] md:w-[calc(33.333%-6px)] max-w-[5.5rem] md:max-w-[7rem] aspect-square border border-white/20 rounded-xl flex flex-col items-center justify-start pt-4 md:pt-5 p-1.5 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte">
+                <div className="relative z-10 flex flex-col items-center">
+                  <span className="text-white font-black text-[0.65rem] md:text-[0.8rem] leading-tight">{item.main}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
