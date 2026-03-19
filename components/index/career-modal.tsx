@@ -119,31 +119,7 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
       {/* Layout: modal + flechas absolutas */}
       <div className={`relative z-10 flex flex-col items-center w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:max-w-none md:w-auto transition-all duration-300 ${visible && !closing ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-5 scale-[0.97]'}`}>
 
-        {/* Mobile: navegación arriba del modal */}
-        {(hasPrevCarrera || hasNextCarrera) && (
-          <div className="md:hidden w-full flex items-center justify-between gap-1.5 px-0.5 pb-1.5">
-            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30 overflow-hidden shadow-lg">
-              <button
-                onClick={() => onPrevCarrera?.()}
-                disabled={!hasPrevCarrera}
-                className="flex items-center gap-1 px-2 py-1 text-[10px] sm:text-[0.65rem] font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer active:scale-95"
-              >
-                <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                <span>Anterior carrera</span>
-              </button>
-            </div>
-            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30 overflow-hidden shadow-lg">
-              <button
-                onClick={() => onNextCarrera?.()}
-                disabled={!hasNextCarrera}
-                className="flex items-center gap-1 px-2 py-1 text-[10px] sm:text-[0.65rem] font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer active:scale-95"
-              >
-                <span>Siguiente carrera</span>
-                <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-              </button>
-            </div>
-          </div>
-        )}
+
 
         {/* Desktop: flecha izquierda (absoluta) */}
         {hasPrevCarrera && onPrevCarrera && (
