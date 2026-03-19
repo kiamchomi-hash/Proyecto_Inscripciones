@@ -149,11 +149,14 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
         {hasPrevCarrera && onPrevCarrera && (
           <button
             onClick={onPrevCarrera}
-            className="group hidden md:flex absolute right-full top-1/2 -translate-y-1/2 items-center gap-1 py-2 px-2.5 h-[28vh] rounded-l-xl bg-[#0a1f1d]/90 border border-r-0 border-[#00c7b1]/40 text-[#00c7b1] hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label={`Carrera anterior: ${prevCarreraName}`}
+            className="group hidden md:flex min-w-0 absolute right-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-l-2xl bg-[#0a1f1d]/90 border border-r-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
+            aria-label="Carrera anterior"
           >
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-            <span className="text-[0.65rem] font-bold uppercase tracking-wider leading-tight opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden" style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', maxHeight: '24vh', textOverflow: 'ellipsis' }}>{prevCarreraName}</span>
+            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            <div className="flex flex-col items-center leading-tight text-center">
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Anterior</span>
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
+            </div>
           </button>
         )}
 
@@ -161,11 +164,14 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
         {hasNextCarrera && onNextCarrera && (
           <button
             onClick={onNextCarrera}
-            className="group hidden md:flex absolute left-full top-1/2 -translate-y-1/2 items-center gap-1 py-2 px-2.5 h-[28vh] rounded-r-xl bg-[#0a1f1d]/90 border border-l-0 border-[#00c7b1]/40 text-[#00c7b1] hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label={`Carrera siguiente: ${nextCarreraName}`}
+            className="group hidden md:flex min-w-0 absolute left-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-r-2xl bg-[#0a1f1d]/90 border border-l-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
+            aria-label="Carrera siguiente"
           >
-            <span className="text-[0.65rem] font-bold uppercase tracking-wider leading-tight opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden" style={{ writingMode: 'vertical-lr', maxHeight: '24vh', textOverflow: 'ellipsis' }}>{nextCarreraName}</span>
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+            <div className="flex flex-col items-center leading-tight text-center">
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Siguiente</span>
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
+            </div>
           </button>
         )}
 
@@ -178,9 +184,9 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
         {/* Header */}
         <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
           <div className="flex justify-between items-center gap-3">
-            <h3 id="modal-title" className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0">
+            <h3 id="modal-title" className="text-lg sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0">
               {prefix && (
-                <span className="block text-xs font-bold uppercase tracking-widest text-[#00ffe1] mb-0.5 leading-normal">
+                <span className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#00ffe1] mb-0.5 leading-normal">
                   {prefix}
                 </span>
               )}
@@ -201,11 +207,11 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
           </div>
 
           {/* Metadata badges */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-3 sm:mt-4">
             {metaItems.map(item => (
-              <div key={item.label} className="bg-[#013729] rounded-lg px-3 py-2">
-                <span className="block text-[10px] font-bold uppercase tracking-widest text-[#00c7b1]">{item.label}</span>
-                <span className="block text-sm text-white font-semibold mt-0.5 leading-tight">{item.value}</span>
+              <div key={item.label} className="bg-[#013729] rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#00c7b1]">{item.label}</span>
+                <span className="block text-[0.8rem] sm:text-sm text-white font-semibold mt-0.5 leading-tight">{item.value}</span>
               </div>
             ))}
           </div>
@@ -218,7 +224,7 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
               {/* Descripcion */}
               {carrera.descripcion && (
                 <div>
-                  <p className="text-[#b4d3ce] text-base sm:text-lg leading-relaxed">
+                  <p className="text-[#b4d3ce] text-[0.95rem] sm:text-lg leading-relaxed">
                     {carrera.descripcion}
                   </p>
                 </div>

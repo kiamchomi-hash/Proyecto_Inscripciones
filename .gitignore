@@ -9,5 +9,5 @@ build/
 .DS_Store
 public/styles.css
 migracion_pendiente/index.html
-rellenar_carreras.html
+public/rellenar_carreras.html
 migracion_pendiente/resumen-plan-backup.html

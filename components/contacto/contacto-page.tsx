@@ -40,7 +40,7 @@ const ZONAS = ['Villa Lugano', 'Mataderos', 'Liniers', 'Villa Celina', 'Ciudad M
 
 export default function ContactoPageContent() {
   return (
-    <main className="max-w-6xl mx-auto px-5 sm:px-8 pb-8">
+    <main className="max-w-6xl mx-auto px-5 sm:px-8 pb-20 sm:pb-12">
 
       {/* Spacer */}
       <div className="pt-2" />
@@ -92,7 +92,7 @@ export default function ContactoPageContent() {
               <div className="rounded-xl overflow-hidden" style={{ background: '#0b1a19' }}>
                 {/* Chat header */}
                 <div className="flex items-center gap-2 px-3 py-2" style={{ background: '#075e54' }}>
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
                     style={{ background: '#ffffff', padding: '1px' }}>
                     <Image src="/imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU" width={24} height={24} />
                   </div>
@@ -243,7 +243,7 @@ export default function ContactoPageContent() {
                       fill
                       className="object-cover transition-transform duration-500 "
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
                     {post.caption && (
                       <div className="absolute bottom-3 left-3 right-3">
                         <p className="text-xs font-semibold text-white/90 drop-shadow">{post.caption}</p>
@@ -290,7 +290,7 @@ export default function ContactoPageContent() {
             {/* Header */}
             <div className="flex items-center gap-4 p-6 pb-0">
               <div
-                className="ct-icon-ring ct-ig-icon-ring w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                className="ct-icon-ring ct-ig-icon-ring w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
               >
                 <InstagramIcon className="w-6 h-6" />
               </div>
@@ -351,7 +351,7 @@ export default function ContactoPageContent() {
                       fill
                       className="object-cover transition-transform duration-500 "
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
                     {post.caption && (
                       <div className="absolute bottom-3 left-3 right-3">
                         <p className="text-xs font-semibold text-white/90 drop-shadow">{post.caption}</p>
@@ -457,7 +457,7 @@ export default function ContactoPageContent() {
           </div>
 
           {/* Map — right side */}
-          <div className="md:w-[280px] lg:w-[320px] flex-shrink-0">
+          <div className="md:w-[280px] lg:w-[320px] shrink-0">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d287.30386866002505!2d-58.478021869563335!3d-34.68692280959655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcceb304e92bc7%3A0x2c1bd7e026f4751a!2sCentro%20de%20Capacitacion%20Lugano!5e0!3m2!1ses-419!2sus!4v1772370527929!5m2!1ses-419!2sus"
               width="100%"

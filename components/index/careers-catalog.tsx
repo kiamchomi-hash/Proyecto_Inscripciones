@@ -415,7 +415,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
     <section id={`section-${sectionId}`} className="mb-10">
       <div className="section-header-container">
         <div className="flex items-center gap-2 sm:gap-3 mb-2 min-w-0">
-          <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 truncate">
+          <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 pr-1">
             {title}
             {accent && (
               <> / <span style={{ color: 'var(--color-highlight)' }}>{accent}</span></>
