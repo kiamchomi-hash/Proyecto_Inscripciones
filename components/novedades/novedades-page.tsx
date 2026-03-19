@@ -129,7 +129,7 @@ function SubCard({ item, delay }: { item: Novedad; delay: number }) {
 }
 
 /* ── Pagination ── */
-function Pagination({ current, total }: { current: number; total: number }) {
+function Pagination({ current, total, className = "mt-10 mb-6" }: { current: number; total: number; className?: string }) {
   if (total <= 1) return null;
 
   const pageHref = (p: number) => `/novedades/${p}`;
@@ -169,7 +169,7 @@ function Pagination({ current, total }: { current: number; total: number }) {
   const btnActive = { color: '#013729', background: 'var(--color-highlight)', borderColor: 'var(--color-highlight)' };
 
   return (
-    <nav className="flex items-center justify-center flex-wrap mt-10 mb-6" aria-label="Paginación de novedades">
+    <nav className={`flex items-center justify-center flex-wrap ${className}`} aria-label="Paginación de novedades">
       <Link
         href={pageHref(1)}
         className={`page-btn page-btn--back ${btnBase} gap-1 text-xs uppercase tracking-wide px-3 mr-1 ${isFirst ? 'opacity-30 pointer-events-none' : ''}`}
@@ -239,7 +239,12 @@ export default function NovedadesPage({ pinnedItem, items, currentPage, totalPag
   const isPage1 = currentPage === 1;
 
   return (
-    <main className="max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-0">
+    <main className="max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-28 sm:pb-0">
+
+      {/* Paginación superior (solo mobile) */}
+      <div className="sm:hidden -mt-2 mb-6">
+        <Pagination current={currentPage} total={totalPages} className="my-0" />
+      </div>
 
       {/* Contenido */}
       {isPage1 && pinnedItem ? (

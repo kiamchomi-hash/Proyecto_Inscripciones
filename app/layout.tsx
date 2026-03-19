@@ -13,9 +13,9 @@ const unbounded = Unbounded({ subsets: ['latin'], variable: '--font-unbounded', 
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.siglo21sur.com'),
-  title: { default: 'CAU Villa Lugano - Universidad Siglo 21', template: '%s | CAU Villa Lugano' },
-  description: 'Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21.',
-  keywords: ['universidad', 'siglo 21', 'villa lugano', 'carreras a distancia', 'educación superior'],
+  title: { default: 'Universidad Siglo 21 | CAU Villa Lugano', template: '%s | Siglo 21' },
+  description: 'Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21. Inscribite hoy en la red de educación más grande de Argentina.',
+  keywords: ['universidad', 'siglo 21', 'villa lugano', 'carreras a distancia', 'educación superior', 'estudiar online'],
   alternates: {
     canonical: '/',
   },
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_AR',
     url: 'https://www.siglo21sur.com',
-    siteName: 'CAU Villa Lugano - Siglo 21',
-    title: 'CAU Villa Lugano - Universidad Siglo 21',
+    siteName: 'Universidad Siglo 21 | Caba',
+    title: 'Universidad Siglo 21 | CAU Villa Lugano',
     description: 'Carreras universitarias a distancia en Villa Lugano. ¡Inscribite hoy!',
   },
   verification: {
@@ -51,6 +51,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://wa.me" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Universidad Siglo 21 | Caba",
+              "url": "https://www.siglo21sur.com/"
+            })
+          }}
+        />
       </head>
       <body className={inter.className}>
         <Navbar />

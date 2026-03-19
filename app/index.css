@@ -397,7 +397,7 @@
   .sidebar-column {
     display: block;
     position: sticky;
-    top: calc(var(--navbar-height, 60px) + 5.5rem);
+    top: calc(var(--navbar-height, 60px) + 9rem);
     height: fit-content;
     z-index: 10;
   }
@@ -651,3 +651,25 @@ mark {
     pointer-events: none;
   }
 }
+
+/* Tarjetas de descuentos - Estilos proporcionados por el usuario */
+.matte-paper { background-color: #1a1c1e; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); }
+.industrial-concrete { background-color: #2b2b2f; }
+.soft-felt { background-color: #0e1918; }
+.dry-clay { background-color: #1c1512; box-shadow: inset 0 0 50px rgba(0,0,0,0.6); }
+.frosted-glass { background-color: #1c2f31; }
+.frosted-glass::before { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='fr'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='1'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23fr)'/%3E%3C/svg%3E"); opacity: 0.5; mix-blend-mode: overlay; }
+.arctic-frost { background: linear-gradient(180deg, #093838, #002425); }
+.mineral-stucco { background-color: #1a3d36; }
+.violet-basalt { background-color: #2d1b33; }
+.purple-velvet { background-color: #332b4a; box-shadow: inset 0 0 80px rgba(0,0,0,0.8); }
+.deep-amethyst { background: linear-gradient(135deg, #4a1259 0%, #0e1918 100%); }
+.petroleum-leather { background-color: #0e1918; }
+.suede-obsidian { background: #1a1a1a; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); }
+.aurora-matte { background: #000; background-image: radial-gradient(at 10% 20%, rgba(0, 255, 127, 0.15) 0px, transparent 50%), radial-gradient(at 80% 10%, rgba(0, 191, 255, 0.15) 0px, transparent 50%), radial-gradient(at 50% 80%, rgba(147, 112, 219, 0.15) 0px, transparent 50%); }
+.deep-ocean { background: linear-gradient(180deg, #0f172a 0%, #1e3a8a 100%); }
+.mono-gritty { background: linear-gradient(45deg, #000 0%, #333 100%); }
+.activated-charcoal { background-color: #051b1b; }
+.petroleum-abyss { background: radial-gradient(circle at 50% 50%, #1a3d36, #051b1b 90%); }
+.fog-forest { background: linear-gradient(180deg, #093838, #002425); }
+.slate-natural { background: linear-gradient(180deg, #27272a, #09090b); }

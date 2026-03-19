@@ -231,23 +231,28 @@ export default function AbogaciaModal({ onClose }: Props) {
             </div>
 
             {/* Slide 3: Estudia con nosotros */}
-            <div className="flex-shrink-0 w-full h-full flex overflow-hidden">
-              <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24]">
+            <div className="flex-shrink-0 w-full h-full flex overflow-hidden relative bg-[#011f17]">
+              {/* Mobile background image */}
+              <div className="md:hidden absolute inset-x-0 bottom-0 z-0 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-b from-[#011f17] via-[#011f17]/50 to-transparent z-10" />
+                <img src="/imagenes/imagenes_cau/Foto-entrada.webp" alt="Instituto" className="w-full h-auto opacity-[0.25] block translate-y-[20%]" />
+              </div>
+
+              {/* Desktop side image */}
+              <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
                 <Image src="/imagenes/imagenes_cau/entrada_estetica.png" alt="Instituto"
-                  fill className="object-cover" />
+                  fill className="object-cover object-left-bottom" />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#011f17] z-20" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
               </div>
-              <div className="flex-1 bg-[#011f17] p-6 sm:p-10 flex flex-col justify-center gap-6 overflow-y-auto custom-scrollbar">
+              <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] p-4 md:p-10 flex flex-col justify-start md:justify-center gap-4 md:gap-8 overflow-hidden">
                 <div>
-                  <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-2">Beneficios Siglo 21</p>
                   <h2 className="text-3xl font-black text-white uppercase tracking-tight leading-none">
                     Estudia<br /><span className="text-[#00c7b1]">con nosotros</span>
                   </h2>
                 </div>
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-3 md:gap-5">
                   {[
-                    { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', text: 'Esta cerca de tu casa' },
-                    { icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', text: '100% online, cursá y rendí desde donde estés, a tu ritmo.' },
+                    { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', text: 'Está cerca de tu casa, acercate ante cualquier consulta' },
                     { icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z', text: 'Te acompañamos en tus dudas' },
                   ].map((b, i) => (
                     <div key={i} className="flex items-center gap-3">
@@ -261,6 +266,24 @@ export default function AbogaciaModal({ onClose }: Props) {
                       <span className="text-white text-sm font-semibold">{b.text}</span>
                     </div>
                   ))}
+                </div>
+
+                {/* CONTENEDOR DE DESCUENTOS FIJOS (3 TARJETAS) */}
+                <div className="w-full -mt-2">
+                  <p className="text-[0.65rem] md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
+                  <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 w-full mb-2">
+                    {[
+                      { main: 'Sede Local' },
+                      { main: 'Siglo 21' },
+                      { main: 'Especiales' }
+                    ].map((item, i) => (
+                      <div key={i} className="relative overflow-hidden w-[calc(33.333%-4px)] md:w-[calc(33.333%-6px)] max-w-[5.5rem] md:max-w-[7rem] aspect-square border border-white/20 rounded-xl flex flex-col items-center justify-start pt-4 md:pt-5 p-1.5 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte">
+                        <div className="relative z-10 flex flex-col items-center">
+                          <span className="text-white font-black text-[0.65rem] md:text-[0.8rem] leading-tight">{item.main}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
