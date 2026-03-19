@@ -584,11 +584,14 @@ export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevC
         {hasPrevCarrera && onPrevCarrera && (
           <button
             onClick={() => { onPrevCarrera(); setSlideIdx(0); }}
-            className="group hidden md:flex absolute right-full top-1/2 -translate-y-1/2 items-center gap-1 py-2 px-2.5 h-[28vh] rounded-l-xl bg-[#0a1f1d]/90 border border-r-0 border-[#00c7b1]/40 text-[#00c7b1] hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label={`Carrera anterior: ${prevCarreraName}`}
+            className="group hidden md:flex min-w-0 absolute right-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-l-2xl bg-[#0a1f1d]/90 border border-r-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
+            aria-label="Carrera anterior"
           >
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-            <span className="text-[0.65rem] font-bold uppercase tracking-wider leading-tight opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden" style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', maxHeight: '24vh', textOverflow: 'ellipsis' }}>{prevCarreraName}</span>
+            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            <div className="flex flex-col items-center leading-tight text-center">
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Anterior</span>
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
+            </div>
           </button>
         )}
 
@@ -596,11 +599,14 @@ export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevC
         {hasNextCarrera && onNextCarrera && (
           <button
             onClick={() => { onNextCarrera(); setSlideIdx(0); }}
-            className="group hidden md:flex absolute left-full top-1/2 -translate-y-1/2 items-center gap-1 py-2 px-2.5 h-[28vh] rounded-r-xl bg-[#0a1f1d]/90 border border-l-0 border-[#00c7b1]/40 text-[#00c7b1] hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label={`Carrera siguiente: ${nextCarreraName}`}
+            className="group hidden md:flex min-w-0 absolute left-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-r-2xl bg-[#0a1f1d]/90 border border-l-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
+            aria-label="Carrera siguiente"
           >
-            <span className="text-[0.65rem] font-bold uppercase tracking-wider leading-tight opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden" style={{ writingMode: 'vertical-lr', maxHeight: '24vh', textOverflow: 'ellipsis' }}>{nextCarreraName}</span>
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+            <div className="flex flex-col items-center leading-tight text-center">
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Siguiente</span>
+              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
+            </div>
           </button>
         )}
 
@@ -715,38 +721,38 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {/* Desktop: all sequential with justify-between */}
 
         <div className="flex-shrink-0 flex items-center gap-[clamp(0.6rem,2vw,1rem)] text-left">
-          <Image src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width={28} height={28} className="h-[clamp(1rem,2.6vh,1.8rem)] w-auto rounded block" />
-          <p className="text-[clamp(0.6rem,1.6vh,0.8rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
-            <span>Nivel de carrera: {carrera.nivel}</span>
+          <Image src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width={24} height={24} className="h-[clamp(0.9rem,2vh,1.5rem)] w-auto rounded block" />
+          <p className="text-[clamp(0.5rem,1.3vh,0.7rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
+            <span>Nivel: {carrera.nivel}</span>
             <span className="block text-white">Duración: {carrera.duracion}</span>
           </p>
         </div>
 
-        <div className="flex-shrink-0 flex items-center justify-center md:justify-start border-t border-[#00c7b1]/20 pt-6 md:pt-1 mt-2 md:mt-0 gap-3">
-          <div className="w-[4px] h-[clamp(1.6rem,8vw,3rem)] bg-[#00c7b1] rounded-sm flex-shrink-0" />
-          <h2 className="text-[clamp(1.6rem,9vw,3.6rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{carrera.nombre.toUpperCase()}</h2>
+        <div className="flex-shrink-0 flex items-center justify-center md:justify-start border-t border-[#00c7b1]/20 pt-3 md:pt-1 mt-1 md:mt-0 gap-2.5">
+          <div className="w-[3px] h-[clamp(1.2rem,6.5vw,2.2rem)] bg-[#00c7b1] rounded-sm flex-shrink-0" />
+          <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{carrera.nombre.toUpperCase()}</h2>
         </div>
 
-        <div className="flex-1 flex flex-col justify-start pt-8 gap-3 md:gap-2 md:flex-initial md:justify-start md:pt-0">
+        <div className="flex-1 flex flex-col justify-start pt-3 gap-1.5 md:gap-2 md:flex-initial md:justify-start md:pt-0">
           {slide.bullets.map((b, i) => (
-            <p key={i} className="text-xl md:text-base text-[#e0f0ed] leading-relaxed md:leading-snug font-medium">
+            <p key={i} className="text-[0.88rem] md:text-base text-[#e0f0ed] leading-snug font-medium">
               <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
             </p>
           ))}
         </div>
 
-        <div className="md:hidden flex-shrink-0 flex flex-col gap-2">
+        <div className="md:hidden flex-shrink-0 flex flex-col gap-1.5">
           {slide.imagen_mobile && (
-            <div className="flex items-end justify-center relative max-h-[30vh]" style={{ minHeight: '120px' }}>
+            <div className="flex items-end justify-center relative max-h-[22vh]" style={{ minHeight: '100px' }}>
               <Image src={encodeImagePath(slide.imagen_mobile!)} alt={carrera.nombre} fill className="object-contain" />
             </div>
           )}
           {slide.badges && (
             <div className="grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2">
               {slide.badges.map((badge, i) => (
-                <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
-                  <span className="block text-[0.5rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
-                  <span className="block text-sm text-white font-extrabold mt-0.5">{badge.value}</span>
+                <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center text-center">
+                  <span className="block text-[0.45rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
+                  <span className="block text-xs text-white font-extrabold mt-0.5">{badge.value}</span>
                 </div>
               ))}
             </div>
