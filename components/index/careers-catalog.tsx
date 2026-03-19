@@ -98,8 +98,23 @@ interface Props {
 export default function CareersCatalog({ carreras }: Props) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [placeholder, setPlaceholder] = useState('BUSCAR CARRERA');
   const [selectedCarrera, setSelectedCarrera] = useState<Carrera | null>(null);
   const [pillsHidden, setPillsHidden] = useState(true);
+
+  // Responsive placeholder
+  useEffect(() => {
+    const updatePlaceholder = () => {
+      if (window.innerWidth >= 768) {
+        setPlaceholder('Buscar carrera, revisa nuestra oferta académica');
+      } else {
+        setPlaceholder('Buscar carrera');
+      }
+    };
+    updatePlaceholder();
+    window.addEventListener('resize', updatePlaceholder);
+    return () => window.removeEventListener('resize', updatePlaceholder);
+  }, []);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
   const isNavigatingRef = useRef(false);
@@ -215,7 +230,7 @@ export default function CareersCatalog({ carreras }: Props) {
                   onChange={e => setSearchQuery(e.target.value)}
                   onFocus={scrollToSearchBar}
                   onPointerDown={scrollToSearchBar}
-                  placeholder="Buscar carrera, revisa nuestra oferta academica"
+                  placeholder={placeholder}
                   aria-label="Buscar carrera"
                   autoComplete="off"
                   className="search-input-custom w-full"

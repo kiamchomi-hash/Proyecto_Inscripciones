@@ -211,6 +211,14 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
   const panels = flattenPaginas(paginas);
   // -1 = show all, >= 0 = specific panel
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    // Solo en desktop (>= 768px) arranca en Plan Completo (-1)
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+      setActive(-1);
+    }
+  }, []);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [currentVisibleIdx, setCurrentVisibleIdx] = useState(0);
   const [isAtBottom, setIsAtBottom] = useState(false);
@@ -561,31 +569,7 @@ export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevC
       {/* Layout: modal + flechas absolutas */}
       <div className={`relative z-10 flex flex-col items-center w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:max-w-none md:w-auto transition-all duration-300 ${visible && !closing ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-5 scale-[0.97]'}`}>
 
-        {/* Mobile: navegación arriba del modal */}
-        {(hasPrevCarrera || hasNextCarrera) && (
-          <div className="md:hidden w-full flex items-center justify-between gap-2 px-1 pb-2">
-            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30">
-              <button
-                onClick={() => { if (onPrevCarrera) { onPrevCarrera(); setSlideIdx(0); } }}
-                disabled={!hasPrevCarrera}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
-              >
-                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                <span>Anterior carrera</span>
-              </button>
-            </div>
-            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30">
-              <button
-                onClick={() => { if (onNextCarrera) { onNextCarrera(); setSlideIdx(0); } }}
-                disabled={!hasNextCarrera}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
-              >
-                <span>Siguiente carrera</span>
-                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-              </button>
-            </div>
-          </div>
-        )}
+
 
         {/* Desktop: flecha izquierda (absoluta) */}
         {hasPrevCarrera && onPrevCarrera && (
@@ -723,32 +707,42 @@ function renderSlide(slide: CarreraSlide, carrera: Carrera) {
 function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePortada; carrera: Carrera }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
-      <div className="flex-1 flex flex-col md:justify-between p-6 sm:p-8 md:p-10 md:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-hidden">
+      <div className="flex-1 flex flex-col md:justify-start pt-1 sm:pt-2 pb-6 sm:pb-8 px-6 sm:px-8 md:pt-3 md:pb-1 md:px-8 md:gap-1 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-hidden">
         {/* Mobile: two zones - content (grows, centers children) + image/badges (fixed bottom) */}
-        {/* Desktop: all sequential with justify-between */}
+        {/* Desktop: all sequential with justify-start */}
 
-        <div className="flex-shrink-0 flex items-center gap-[clamp(0.6rem,2vw,1rem)] text-left">
-          <Image src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width={24} height={24} className="h-[clamp(0.9rem,2vh,1.5rem)] w-auto rounded block" />
-          <p className="text-[clamp(0.5rem,1.3vh,0.7rem)] font-extrabold tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
-            <span>Nivel: {carrera.nivel}</span>
-            <span className="block text-white">Duración: {carrera.duracion}</span>
-          </p>
+        <div className="flex-shrink-0 flex items-center justify-between flex-wrap gap-x-[clamp(0.4rem,2vw,1rem)] gap-y-2 text-left w-full">
+          <div className="flex items-center gap-[clamp(0.6rem,2.2vw,1.2rem)]">
+            <Image src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width={28} height={28} className="h-[clamp(1.4rem,2.8vh,1.8rem)] w-auto rounded-sm block shadow-sm" />
+            <p className="text-[clamp(0.62rem,1.6vh,0.78rem)] font-black tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
+              <span>Nivel: {carrera.nivel}</span>
+              <span className="block text-white">Duración: {carrera.duracion}</span>
+            </p>
+          </div>
+          <div className="flex-shrink-0 flex items-center bg-[#00c7b1]/12 border border-[#00c7b1]/35 rounded px-2.5 py-1">
+            <span className="text-[clamp(0.55rem,1.6vw,0.72rem)] font-black text-white uppercase tracking-wider leading-none">
+              Modalidad: <span className="text-[#00c7b1]">Virtual</span>
+            </span>
+          </div>
         </div>
 
-        <div className="flex-shrink-0 flex items-center justify-center md:justify-start border-t border-[#00c7b1]/20 pt-10 md:pt-1 mt-3 md:mt-0 gap-2.5">
+        {/* Línea independiente para quedar pegada al header */}
+        <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
+
+        <div className="flex-shrink-0 flex items-center justify-center md:justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
           <div className="w-[3px] h-[clamp(1.2rem,6.5vw,2.2rem)] bg-[#00c7b1] rounded-sm flex-shrink-0" />
           <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{carrera.nombre.toUpperCase()}</h2>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center gap-4 md:gap-2 md:flex-initial md:justify-start md:pt-0">
+        <div className="flex-1 flex flex-col justify-center gap-4 md:gap-2 pt-10 md:pt-0">
           {slide.bullets.map((b, i) => (
-            <p key={i} className="text-[0.88rem] md:text-base text-[#e0f0ed] leading-snug font-medium">
+            <p key={i} className="text-[0.95rem] md:text-[1.25rem] text-[#e0f0ed] leading-snug font-medium">
               <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
             </p>
           ))}
         </div>
 
-        <div className="md:hidden flex-shrink-0 flex flex-col gap-1.5">
+        <div className="md:hidden mt-auto flex-shrink-0 flex flex-col gap-1.5">
           {slide.imagen_mobile && (
             <div className="flex items-end justify-center relative max-h-[22vh]" style={{ minHeight: '100px' }}>
               <Image src={encodeImagePath(slide.imagen_mobile!)} alt={carrera.nombre} fill className="object-contain" />
@@ -766,7 +760,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           )}
         </div>
         {slide.badges && (
-          <div className="hidden md:grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
+          <div className="hidden md:grid mt-auto grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
             {slide.badges.map((badge, i) => (
               <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-start text-left">
                 <span className="block text-[0.5rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
