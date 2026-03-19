@@ -135,6 +135,10 @@ export default function CareersCatalog({ carreras }: Props) {
     }
   }, []);
 
+  const delayedScroll = useCallback(() => {
+    setTimeout(scrollToSearchBar, 150);
+  }, [scrollToSearchBar]);
+
   // Group carreras by display category
   const grouped = useMemo(() => {
     const groups: Record<string, Carrera[]> = {};
@@ -179,8 +183,8 @@ export default function CareersCatalog({ carreras }: Props) {
   const handleCategoryClick = useCallback((catId: string) => {
     setActiveCategory(catId);
     setSearchQuery('');
-    scrollToSearchBar();
-  }, [scrollToSearchBar]);
+    delayedScroll();
+  }, [delayedScroll]);
 
   const handleCareerClick = useCallback((carrera: Carrera) => {
     setSelectedCarrera(carrera);
@@ -228,8 +232,8 @@ export default function CareersCatalog({ carreras }: Props) {
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  onFocus={scrollToSearchBar}
-                  onPointerDown={scrollToSearchBar}
+                  onFocus={delayedScroll}
+                  onPointerDown={delayedScroll}
                   placeholder={placeholder}
                   aria-label="Buscar carrera"
                   autoComplete="off"
