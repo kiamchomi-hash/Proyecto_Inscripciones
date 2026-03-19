@@ -121,25 +121,25 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
 
         {/* Mobile: navegación arriba del modal */}
         {(hasPrevCarrera || hasNextCarrera) && (
-          <div className="md:hidden w-full flex items-center justify-between gap-2 px-1 pb-2">
-            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30">
+          <div className="md:hidden w-full flex items-center justify-between gap-1.5 px-0.5 pb-1.5">
+            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30 overflow-hidden shadow-lg">
               <button
                 onClick={() => onPrevCarrera?.()}
                 disabled={!hasPrevCarrera}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+                className="flex items-center gap-1 px-2 py-1 text-[10px] sm:text-[0.65rem] font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer active:scale-95"
               >
-                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
                 <span>Anterior carrera</span>
               </button>
             </div>
-            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30">
+            <div className="rounded-lg bg-[#0a1f1d]/90 backdrop-blur-sm border border-[#00c7b1]/30 overflow-hidden shadow-lg">
               <button
                 onClick={() => onNextCarrera?.()}
                 disabled={!hasNextCarrera}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+                className="flex items-center gap-1 px-2 py-1 text-[10px] sm:text-[0.65rem] font-bold text-[#00c7b1] disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer active:scale-95"
               >
                 <span>Siguiente carrera</span>
-                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+                <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
               </button>
             </div>
           </div>
@@ -178,7 +178,7 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
       {/* Panel */}
       <div
         className={`relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full md:w-[min(64rem,75vw)]
-          h-[90vh] sm:h-[92vh] max-h-[90vh] sm:max-h-[92vh] overflow-hidden flex flex-col
+          h-[88dvh] sm:h-[92vh] max-h-[88dvh] sm:max-h-[92vh] overflow-hidden flex flex-col
           shadow-[0_0_50px_rgba(0,199,177,0.3)]`}
       >
         {/* Header */}

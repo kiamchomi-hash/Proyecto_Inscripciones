@@ -272,6 +272,16 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
     const onScroll = () => {
       const els = getVisiblePanelEls();
       const scrollTop = container.scrollTop;
+      
+      // Detect if scrolled to bottom (within 40px tolerance)
+      const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 40;
+      setIsAtBottom(atBottom);
+
+      if (atBottom && els.length > 0) {
+        setCurrentVisibleIdx(els.length - 1);
+        return;
+      }
+
       let closest = 0;
       let closestDist = Infinity;
       els.forEach(el => {
@@ -281,13 +291,10 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         if (dist < closestDist) { closestDist = dist; closest = idx; }
       });
       setCurrentVisibleIdx(closest);
-      // Detect if scrolled to bottom (within 60px tolerance)
-      const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
-      setIsAtBottom(atBottom);
     };
     container.addEventListener('scroll', onScroll, { passive: true });
     return () => container.removeEventListener('scroll', onScroll);
-  }, [showAll, getVisiblePanelEls, getOffsetInContainer]);
+  }, [showAll, getVisiblePanelEls, getOffsetInContainer, panels.length]);
 
   // Next panel info for the floating button
   const nextIdx = currentVisibleIdx + 1;
@@ -400,7 +407,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         </div>
 
         {/* Scrollable content */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 py-3 flex flex-col gap-2 custom-scrollbar relative z-10">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 pb-[80vh] md:pb-[70vh] flex flex-col gap-2 custom-scrollbar relative z-10">
           {/* Mobile: always all panels */}
           <div className="md:hidden flex flex-col gap-2">
             {panels.map((panel, i) => (
@@ -432,7 +439,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
           background: 'linear-gradient(to bottom, rgba(10,30,28,0.7) 0%, transparent 100%)',
         }} />
         <div className="md:hidden absolute bottom-0 left-0 right-0 h-10 z-10 pointer-events-none" style={{
-          background: 'linear-gradient(to top, rgba(10,30,28,0.85) 0%, transparent 100%)',
+          background: 'linear-gradient(to top, rgba(10,30,28,0.5) 0%, transparent 100%)',
         }} />
 
         {/* Floating nav button — mobile */}
@@ -728,12 +735,12 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           </p>
         </div>
 
-        <div className="flex-shrink-0 flex items-center justify-center md:justify-start border-t border-[#00c7b1]/20 pt-3 md:pt-1 mt-1 md:mt-0 gap-2.5">
+        <div className="flex-shrink-0 flex items-center justify-center md:justify-start border-t border-[#00c7b1]/20 pt-10 md:pt-1 mt-3 md:mt-0 gap-2.5">
           <div className="w-[3px] h-[clamp(1.2rem,6.5vw,2.2rem)] bg-[#00c7b1] rounded-sm flex-shrink-0" />
           <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{carrera.nombre.toUpperCase()}</h2>
         </div>
 
-        <div className="flex-1 flex flex-col justify-start pt-3 gap-1.5 md:gap-2 md:flex-initial md:justify-start md:pt-0">
+        <div className="flex-1 flex flex-col justify-center gap-4 md:gap-2 md:flex-initial md:justify-start md:pt-0">
           {slide.bullets.map((b, i) => (
             <p key={i} className="text-[0.88rem] md:text-base text-[#e0f0ed] leading-snug font-medium">
               <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
