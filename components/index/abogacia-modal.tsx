@@ -41,7 +41,7 @@ export default function AbogaciaModal({ onClose }: Props) {
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const totalSlides = 5;
+  const totalSlides = 3;
 
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
@@ -161,71 +161,7 @@ export default function AbogaciaModal({ onClose }: Props) {
               </div>
             </div>
 
-            {/* Slide 2: Modalidad */}
-            <div className="flex-shrink-0 w-full h-full flex flex-col md:flex-row overflow-hidden">
-              <div className="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,18vh,12rem)] md:h-full">
-                <Image src="/imagenes/Modales/Abogac%C3%ADa/Abogac%C3%ADa.webp" alt="Modalidad"
-                  fill className="object-cover object-[center_15%]" />
-                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent z-20" />
-              </div>
-              <div className="flex-1 overflow-hidden flex flex-col justify-center">
-                <div className="px-6 md:px-10 py-6 flex flex-col gap-5">
-                  <div>
-                    <p className="text-[0.65rem] font-bold tracking-widest text-[#00c7b1] uppercase mb-1">Modalidad de cursado</p>
-                    <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-wider">Distribuida Home Virtual</h3>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
-                    {[
-                      { bold: '100% virtual', rest: ' — sin horarios fijos ni clases presenciales.' },
-                      { bold: '', rest: 'Plataforma de aprendizaje activa ', boldEnd: 'las 24hs del día', dotEnd: '.' },
-                      { bold: '', rest: 'Cursa y rendi desde ', boldEnd: 'donde estes', dotEnd: ', a tu ritmo.' },
-                      { bold: '', rest: 'Necesitas ', boldEnd: 'notebook Windows o MAC', dotEnd: ' y camara encendida.' },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-1 md:gap-2 text-sm leading-snug">
-                        <span className="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
-                        <span className="text-[#b4d3ce]">
-                          {item.bold && <b className="text-white">{item.bold}</b>}
-                          {item.rest}
-                          {item.boldEnd && <b className="text-white">{item.boldEnd}</b>}
-                          {item.dotEnd}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Slide 3: Evaluación */}
-            <div className="flex-shrink-0 w-full h-full flex flex-col items-center justify-center p-6 sm:p-10 gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
-              <div className="text-center">
-                <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-1">Proceso de evaluacion</p>
-                <h3 className="text-lg font-black text-white uppercase tracking-wider">¿Como te evaluamos?</h3>
-              </div>
-              <div className="flex gap-3 w-full max-w-md">
-                {[
-                  { num: '2', label: 'Examenes\nparciales', sub: '(1 por mes)', accent: false },
-                  { num: '4', label: 'Trabajos\npracticos', sub: '(obligatorios)', accent: false },
-                  { num: '7+', label: 'Nota para\npromocionar', sub: '¡sin rendir final!', accent: true },
-                ].map((card, i) => (
-                  <div key={i} className={`flex-1 rounded-xl p-4 text-center ${card.accent ? 'bg-[#00c7b1]/10 border-[1.5px] border-[#00c7b1]' : 'bg-[#1c2f31] border border-[#00c7b1]/18'}`}>
-                    <div className="text-4xl font-black text-[#00c7b1] leading-none">{card.num}</div>
-                    <div className="text-[0.65rem] font-semibold text-[#7ca19b] uppercase tracking-wider mt-1 whitespace-pre-line">{card.label}</div>
-                    <div className={`text-[0.6rem] mt-0.5 ${card.accent ? 'text-[#00c7b1] font-bold' : 'text-[#48b3a4]'}`}>{card.sub}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-1.5 flex-wrap justify-center">
-                {['Multiple choice', 'Entorno seguro virtual', 'Notebook obligatoria'].map(tag => (
-                  <span key={tag} className="bg-[#00c7b1]/8 border border-[#00c7b1]/22 text-[#b4d3ce] text-[0.7rem] px-2.5 py-1 rounded-full font-semibold">{tag}</span>
-                ))}
-              </div>
-              <p className="text-sm text-[#7ca19b] text-center max-w-sm leading-relaxed">
-                Con <b className="text-[#00c7b1]">7 puntos o mas</b> en los dos parciales, promocionas la materia y quedas eximido del examen final.
-              </p>
-            </div>
-
-            {/* Slide 4: Plan de Estudios */}
+            {/* Slide 2: Plan de Estudios */}
             <div className="flex-shrink-0 w-full h-full flex flex-col p-5 sm:p-6 gap-3 overflow-hidden">
               <div className="flex-shrink-0">
                 <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-0.5">Grado · 5 años</p>
@@ -294,7 +230,7 @@ export default function AbogaciaModal({ onClose }: Props) {
               </div>
             </div>
 
-            {/* Slide 5: Estudia con nosotros */}
+            {/* Slide 3: Estudia con nosotros */}
             <div className="flex-shrink-0 w-full h-full flex overflow-hidden">
               <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24]">
                 <Image src="/imagenes/imagenes_cau/entrada_estetica.png" alt="Instituto"
@@ -311,7 +247,7 @@ export default function AbogaciaModal({ onClose }: Props) {
                 <div className="flex flex-col gap-5">
                   {[
                     { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', text: 'Esta cerca de tu casa' },
-                    { icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', text: '100% online' },
+                    { icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', text: '100% online, cursá y rendí desde donde estés, a tu ritmo.' },
                     { icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z', text: 'Te acompañamos en tus dudas' },
                   ].map((b, i) => (
                     <div key={i} className="flex items-center gap-3">

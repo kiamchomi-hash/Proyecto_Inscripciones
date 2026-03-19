@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug } from './types';
 
@@ -528,7 +528,24 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
 
 // ── Main carousel modal ──
 export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevCarrera, hasNextCarrera, hasPrevCarrera, nextCarreraName, prevCarreraName, initiallyVisible = false }: Props) {
-  const slides = carrera.slides!;
+  const slides = useMemo(() => {
+    return (carrera.slides || [])
+      .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion')
+      .map(s => {
+        if (s.type === 'cierre' && s.beneficios) {
+          return {
+            ...s,
+            beneficios: s.beneficios.map(b =>
+              b.texto.toLowerCase().includes('100% online')
+                ? { ...b, texto: '100% online, cursá y rendí desde donde estés, a tu ritmo.' }
+                : b
+            )
+          };
+        }
+        return s;
+      });
+  }, [carrera.slides]);
+
   const [slideIdx, setSlideIdx] = useState(0);
   const [visible, setVisible] = useState(initiallyVisible);
   const [closing, setClosing] = useState(false);
