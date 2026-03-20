@@ -6,12 +6,6 @@ import { type Carrera, carreraToSlug } from './types';
 interface Props {
   carrera: Carrera;
   onClose: () => void;
-  onNextCarrera?: () => void;
-  onPrevCarrera?: () => void;
-  hasNextCarrera?: boolean;
-  hasPrevCarrera?: boolean;
-  nextCarreraName?: string;
-  prevCarreraName?: string;
   initiallyVisible?: boolean;
 }
 
@@ -52,7 +46,7 @@ function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string 
   return { prefix, cleanName };
 }
 
-export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCarrera, hasNextCarrera, hasPrevCarrera, nextCarreraName, prevCarreraName, initiallyVisible = false }: Props) {
+export default function CareerModal({ carrera, onClose, initiallyVisible = false }: Props) {
   const [visible, setVisible] = useState(initiallyVisible);
   const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -89,7 +83,7 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
 
   // Share URL
   const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/carreras/${carreraToSlug(carrera.nombre)}`
+    ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}`
     : '';
 
   const metaItems = [
@@ -116,44 +110,9 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
         onClick={handleClose}
       />
 
-      {/* Layout: modal + flechas absolutas */}
-      <div className={`relative z-10 flex flex-col items-center w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:max-w-none md:w-auto transition-all duration-300 ${visible && !closing ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-5 scale-[0.97]'}`}>
-
-
-
-        {/* Desktop: flecha izquierda (absoluta) */}
-        {hasPrevCarrera && onPrevCarrera && (
-          <button
-            onClick={onPrevCarrera}
-            className="group hidden md:flex min-w-0 absolute right-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-l-2xl bg-[#0a1f1d]/90 border border-r-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label="Carrera anterior"
-          >
-            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-            <div className="flex flex-col items-center leading-tight text-center">
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Anterior</span>
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
-            </div>
-          </button>
-        )}
-
-        {/* Desktop: flecha derecha (absoluta) */}
-        {hasNextCarrera && onNextCarrera && (
-          <button
-            onClick={onNextCarrera}
-            className="group hidden md:flex min-w-0 absolute left-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-r-2xl bg-[#0a1f1d]/90 border border-l-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label="Carrera siguiente"
-          >
-            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-            <div className="flex flex-col items-center leading-tight text-center">
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Siguiente</span>
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
-            </div>
-          </button>
-        )}
-
       {/* Panel */}
       <div
-        className={`relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full md:w-[min(64rem,75vw)]
+        className={`relative z-10 bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
           h-[88dvh] sm:h-[92vh] max-h-[88dvh] sm:max-h-[92vh] overflow-hidden flex flex-col
           shadow-[0_0_50px_rgba(0,199,177,0.3)]`}
       >
@@ -313,8 +272,6 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
             </button>
           </div>
         </div>
-      </div>
-
       </div>
     </div>
   );

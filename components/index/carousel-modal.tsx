@@ -7,12 +7,6 @@ import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug 
 interface Props {
   carrera: Carrera;
   onClose: () => void;
-  onNextCarrera?: () => void;
-  onPrevCarrera?: () => void;
-  hasNextCarrera?: boolean;
-  hasPrevCarrera?: boolean;
-  nextCarreraName?: string;
-  prevCarreraName?: string;
   initiallyVisible?: boolean;
 }
 
@@ -543,7 +537,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
 }
 
 // ── Main carousel modal ──
-export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevCarrera, hasNextCarrera, hasPrevCarrera, nextCarreraName, prevCarreraName, initiallyVisible = false }: Props) {
+export default function CarouselModal({ carrera, onClose, initiallyVisible = false }: Props) {
   const slides = useMemo(() => {
     return (carrera.slides || [])
       .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion')
@@ -592,49 +586,15 @@ export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevC
   const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
   const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/carreras/${carreraToSlug(carrera.nombre)}`
+    ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}`
     : '';
 
   return (
     <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       <div className={`absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`} onClick={handleClose} />
 
-      {/* Layout: modal + flechas absolutas */}
-      <div className={`relative z-10 flex flex-col items-center w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:max-w-none md:w-auto transition-all duration-300 ${visible && !closing ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-5 scale-[0.97]'}`}>
-
-
-
-        {/* Desktop: flecha izquierda (absoluta) */}
-        {hasPrevCarrera && onPrevCarrera && (
-          <button
-            onClick={() => { onPrevCarrera(); setSlideIdx(0); }}
-            className="group hidden md:flex min-w-0 absolute right-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-l-2xl bg-[#0a1f1d]/90 border border-r-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label="Carrera anterior"
-          >
-            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-            <div className="flex flex-col items-center leading-tight text-center">
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Anterior</span>
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
-            </div>
-          </button>
-        )}
-
-        {/* Desktop: flecha derecha (absoluta) */}
-        {hasNextCarrera && onNextCarrera && (
-          <button
-            onClick={() => { onNextCarrera(); setSlideIdx(0); }}
-            className="group hidden md:flex min-w-0 absolute left-full top-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 py-6 w-[clamp(80px,9vw,110px)] rounded-r-2xl bg-[#0a1f1d]/90 border border-l-0 border-[#00c7b1]/40 text-white hover:bg-[#00c7b1]/20 hover:border-[#00c7b1]/70 transition-all backdrop-blur-sm cursor-pointer"
-            aria-label="Carrera siguiente"
-          >
-            <svg className="w-5 h-5 flex-shrink-0 text-[#00c7b1] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-            <div className="flex flex-col items-center leading-tight text-center">
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Siguiente</span>
-              <span className="text-[0.65rem] font-black uppercase tracking-widest whitespace-nowrap">Carrera</span>
-            </div>
-          </button>
-        )}
-
-      <div className={`relative bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full md:w-[min(64rem,75vw)]
+      {/* Panel */}
+      <div className={`relative z-10 bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
         h-[90vh] sm:h-[92vh] max-h-[90vh] sm:max-h-[92vh] overflow-hidden flex flex-col
         shadow-[0_0_50px_rgba(0,199,177,0.3)]`}>
 
@@ -719,8 +679,6 @@ export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevC
           </div>
         </div>
       </div>
-
-      </div>
     </div>
   );
 }
@@ -762,9 +720,16 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {/* Línea independiente para quedar pegada al header */}
         <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
 
-        <div className="flex-shrink-0 flex items-center justify-center md:justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
-          <div className="w-[3px] h-[clamp(1.2rem,6.5vw,2.2rem)] bg-[#00c7b1] rounded-sm flex-shrink-0" />
-          <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{getPortadaName(carrera).toUpperCase()}</h2>
+        <div className="flex-shrink-0 flex justify-center md:justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
+          {(() => { const { prefix, cleanName } = getCleanName(carrera); return (<>
+            <div className="flex gap-2.5">
+              <div className="w-[3px] bg-[#00c7b1] rounded-sm flex-shrink-0 self-stretch" />
+              <div>
+                {prefix && <p className="text-[clamp(0.55rem,2vw,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-center md:text-left">{prefix}</p>}
+                <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] md:whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{cleanName.toUpperCase()}</h2>
+              </div>
+            </div>
+          </>); })()}
         </div>
 
         <div className="flex-1 flex flex-col justify-center gap-4 md:gap-2 pt-10 md:pt-0">
@@ -805,7 +770,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
       </div>
       {slide.imagen_desktop && (
         <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-[#00c7b1]/20 relative" style={{ width: '42%' }}>
-          <Image src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} fill className="object-cover object-top" />
+          <Image src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} fill className={`object-cover ${carrera.nombre === 'Abogacía' ? '' : 'brightness-125'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
         </div>
       )}
     </div>
@@ -910,6 +875,22 @@ function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: 
           <span className="px-1.5 py-0.5 rounded text-[0.5rem] font-black tracking-wider" style={{ background: '#c0392b', color: 'white' }}>PDF</span>
         </button>
       </div>
+      {/* Requisito obligatorio (si hay extras con "requisito" en el título) */}
+      {slide.paginas.some(p => p.extras?.some(e => e.titulo.toLowerCase().includes('requisito'))) && (() => {
+        const req = slide.paginas.flatMap(p => p.extras || []).find(e => e.titulo.toLowerCase().includes('requisito'));
+        if (!req) return null;
+        return (
+          <div className="flex-shrink-0 flex items-start gap-2.5 px-3 py-2.5 rounded-lg border border-[#e69b05]/40" style={{ background: 'rgba(230,155,5,0.08)' }}>
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#e69b05]/20 flex items-center justify-center text-red-500 text-xs font-black leading-none">!</span>
+            <div className="min-w-0">
+              <p className="text-[0.65rem] font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
+              {req.items.map((item, i) => (
+                <p key={i} className="text-xs text-[#e0d8c8] leading-snug">{item}</p>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
       <PlanPanels paginas={slide.paginas} carreraNombre={carrera.nombre} />
     </div>
   );

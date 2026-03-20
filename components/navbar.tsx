@@ -108,7 +108,7 @@ export default function Navbar() {
   }, [menuOpen, closeMenu]);
 
   function isActive(href: string) {
-    if (href === '/') return pathname === '/';
+    if (href === '/') return pathname === '/' || pathname.startsWith('/carreras');
     if (href.startsWith('/novedades')) return pathname.startsWith('/novedades');
     return pathname === href;
   }

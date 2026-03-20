@@ -23,7 +23,7 @@ async function getCarreras() {
 }
 
 function findBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
-  return carreras.find(c => carreraToSlug(c.nombre) === slug);
+  return carreras.find(c => carreraToSlug(c) === slug);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export async function generateStaticParams() {
   const carreras = await getCarreras();
-  return carreras.map(c => ({ slug: carreraToSlug(c.nombre) }));
+  return carreras.map(c => ({ slug: carreraToSlug(c) }));
 }
 
 export default async function CarreraPage({ params }: { params: Promise<{ slug: string }> }) {

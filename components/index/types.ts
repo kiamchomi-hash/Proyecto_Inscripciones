@@ -3,6 +3,7 @@
 export interface SlidePortada {
   type: 'portada';
   imagen_desktop?: string;
+  imagen_desktop_position?: string;
   imagen_mobile?: string;
   bullets: string[];
   badges?: { label: string; value: string }[];
@@ -115,14 +116,33 @@ export function getCategoryForCarrera(c: Carrera): string {
   return 'cursos'; // fallback
 }
 
+// Build full name from prefix + nombre for slug generation
+function carreraFullName(carrera: Carrera): string {
+  const p = (carrera.prefix || '').toLowerCase();
+  const nombre = carrera.nombre;
+  // If nombre already starts with a known type word, use as-is
+  const lower = nombre.toLowerCase();
+  if (lower.startsWith('licenciatura') || lower.startsWith('tecnicatura') || lower.startsWith('maestría') || lower.startsWith('maestria') || lower.startsWith('especialización') || lower.startsWith('especializacion') || lower.startsWith('diplomatura') || lower.startsWith('profesorado') || lower.startsWith('certificado') || lower.startsWith('curso')) {
+    return nombre;
+  }
+  // Prepend from prefix
+  if (p.includes('licenciatura')) return `Licenciatura en ${nombre}`;
+  if (p.includes('tecnicatura')) return `Tecnicatura en ${nombre}`;
+  if (p.includes('maestría') || p.includes('maestria')) return `Maestría en ${nombre}`;
+  if (p.includes('especialización') || p.includes('especializacion')) return `Especialización en ${nombre}`;
+  if (p.includes('diplomatura')) return `Diplomatura en ${nombre}`;
+  return nombre;
+}
+
 // Slug-friendly name for share URLs: remove accents, spaces → _
-export function carreraToSlug(nombre: string): string {
-  return nombre
+export function carreraToSlug(carrera: Carrera | string): string {
+  const fullName = typeof carrera === 'string' ? carrera : carreraFullName(carrera);
+  return fullName
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, '_');
 }
 
 // Find carrera by slug (reverse of carreraToSlug)
 export function findCarreraBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
-  return carreras.find(c => carreraToSlug(c.nombre) === slug);
+  return carreras.find(c => carreraToSlug(c) === slug);
 }
