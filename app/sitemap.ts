@@ -1,11 +1,25 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
+import { carreraToSlug } from '@/components/index/types';
 
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.siglo21sur.com';
+
+  // Carreras activas
+  const { data: carreras } = await supabase
+    .from('carreras')
+    .select('nombre')
+    .eq('activa', true);
+
+  const carrerasEntries: MetadataRoute.Sitemap = (carreras || []).map(c => ({
+    url: `${baseUrl}/carreras/${carreraToSlug(c.nombre)}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
 
   // Calcular total de páginas de novedades
   const { count } = await supabase
@@ -55,6 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.6,
     },
+    ...carrerasEntries,
     ...novedadesEntries,
   ];
 }
