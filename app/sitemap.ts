@@ -11,11 +11,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Carreras activas
   const { data: carreras } = await supabase
     .from('carreras')
-    .select('nombre')
+    .select('nombre, prefix')
     .eq('activa', true);
 
   const carrerasEntries: MetadataRoute.Sitemap = (carreras || []).map(c => ({
-    url: `${baseUrl}/carreras/${carreraToSlug(c.nombre)}`,
+    url: `${baseUrl}/carreras/${carreraToSlug(c as any)}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.7,

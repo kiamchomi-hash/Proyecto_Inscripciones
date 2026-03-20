@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug } from './types';
+import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug } from './types';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
@@ -118,7 +118,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   }, []);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
-  const isNavigatingRef = useRef(false);
+
 
   // Scroll so the sticky wrapper sits right below the navbar
   const scrollToSearchBar = useCallback(() => {
@@ -203,6 +203,49 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       if (found) setSelectedCarrera(found);
     }
   }, [carreras, initialSlug]);
+
+  // Update title and URL when modal opens/closes
+  const defaultTitle = useRef<string>('');
+  const defaultPath = useRef<string>('');
+  const modalOpenRef = useRef(false);
+  useEffect(() => {
+    // Capture defaults once on mount
+    if (!defaultTitle.current) defaultTitle.current = document.title;
+    if (!defaultPath.current) defaultPath.current = window.location.pathname + window.location.search;
+  }, []);
+  useEffect(() => {
+    if (selectedCarrera) {
+      document.title = `${selectedCarrera.nombre} | Universidad Siglo 21 CAU Villa Lugano`;
+      const carreraPath = `/carreras/${carreraToSlug(selectedCarrera)}`;
+      if (window.location.pathname !== carreraPath) {
+        if (!modalOpenRef.current) {
+          // First open: push so back button closes modal
+          window.history.pushState({ modal: true }, '', carreraPath);
+        } else {
+          // Navigating between careers: replace
+          window.history.replaceState({ modal: true }, '', carreraPath);
+        }
+      }
+      modalOpenRef.current = true;
+    } else if (modalOpenRef.current) {
+      document.title = 'Universidad Siglo 21 CAU Villa Lugano | Oferta académica 2026';
+      if (window.location.pathname !== '/') {
+        window.history.replaceState(null, '', '/');
+      }
+      modalOpenRef.current = false;
+    }
+  }, [selectedCarrera]);
+
+  // Handle browser back button closing the modal
+  useEffect(() => {
+    const onPopState = () => {
+      if (modalOpenRef.current) {
+        setSelectedCarrera(null);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   const sectionLabels: Record<string, { title: string; accent?: string; placeholder: string }> = {
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
@@ -389,27 +432,13 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       </div>
 
       {/* Career Modal */}
-      {selectedCarrera && (() => {
-        const idx = carreras.findIndex(c => c.id === selectedCarrera.id);
-        const hasPrev = idx > 0;
-        const hasNext = idx >= 0 && idx < carreras.length - 1;
-        const navigate = (carrera: Carrera) => { isNavigatingRef.current = true; setSelectedCarrera(carrera); };
-        const navProps = {
-          onClose: () => { isNavigatingRef.current = false; setSelectedCarrera(null); },
-          onNextCarrera: hasNext ? () => navigate(carreras[idx + 1]) : undefined,
-          onPrevCarrera: hasPrev ? () => navigate(carreras[idx - 1]) : undefined,
-          hasNextCarrera: hasNext,
-          hasPrevCarrera: hasPrev,
-          nextCarreraName: hasNext ? carreras[idx + 1].nombre : undefined,
-          prevCarreraName: hasPrev ? carreras[idx - 1].nombre : undefined,
-          initiallyVisible: isNavigatingRef.current,
-        };
-        return selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
-          <CarouselModal carrera={selectedCarrera} {...navProps} />
+      {selectedCarrera && (
+        selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
+          <CarouselModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
         ) : (
-          <CareerModal carrera={selectedCarrera} {...navProps} />
-        );
-      })()}
+          <CareerModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
+        )
+      )}
     </>
   );
 }
