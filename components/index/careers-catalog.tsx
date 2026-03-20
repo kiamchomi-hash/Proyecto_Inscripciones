@@ -194,14 +194,15 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
 
   // Auto-open modal from prop or URL param
+  const initialSlug = initialCarreraSlug || null;
   useEffect(() => {
-    const slug = initialCarreraSlug || new URLSearchParams(window.location.search).get('carrera');
+    const slug = initialSlug || new URLSearchParams(window.location.search).get('carrera');
     if (slug) {
       const found = findCarreraBySlug(carreras, slug)
         || carreras.find(c => c.nombre === slug);
       if (found) setSelectedCarrera(found);
     }
-  }, [carreras, initialCarreraSlug]);
+  }, [carreras, initialSlug]);
 
   const sectionLabels: Record<string, { title: string; accent?: string; placeholder: string }> = {
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
