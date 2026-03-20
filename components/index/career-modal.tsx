@@ -89,7 +89,7 @@ export default function CareerModal({ carrera, onClose, onNextCarrera, onPrevCar
 
   // Share URL
   const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}${window.location.pathname}?carrera=${carreraToSlug(carrera.nombre)}`
+    ? `${window.location.origin}/carreras/${carreraToSlug(carrera.nombre)}`
     : '';
 
   const metaItems = [

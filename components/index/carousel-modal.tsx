@@ -67,6 +67,22 @@ function getCleanName(carrera: Carrera): { prefix: string; cleanName: string } {
   return { prefix, cleanName };
 }
 
+// ── Display name for portada slide (e.g. "Lic. en Finanzas") ──
+function getPortadaName(carrera: Carrera): string {
+  const p = (carrera.prefix || '').toLowerCase();
+  const name = carrera.nombre_corto || carrera.nombre;
+  if (p.includes('licenciatura')) return `Lic. en ${name}`;
+  if (p.includes('tecnicatura')) return `Tec. en ${name}`;
+  if (p.includes('maestría') || p.includes('maestria')) return `Maestría en ${name}`;
+  if (p.includes('especialización') || p.includes('especializacion')) return `Esp. en ${name}`;
+  if (p.includes('diplomatura')) return `Diplomatura en ${name}`;
+  // For careers where nombre already includes the full title (Licenciatura en X, etc.)
+  const lower = carrera.nombre.toLowerCase();
+  if (lower.startsWith('licenciatura')) return carrera.nombre.replace(/^Licenciatura/i, 'Lic.');
+  if (lower.startsWith('tecnicatura')) return carrera.nombre.replace(/^Tecnicatura Universitaria/i, 'Tec. Univ.').replace(/^Tecnicatura/i, 'Tec.');
+  return carrera.nombre;
+}
+
 // ── Flatten paginas into individual year panels ──
 interface YearPanel {
   tipo: 'year';
@@ -415,7 +431,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         </div>
 
         {/* Scrollable content */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 pb-[80vh] md:pb-[70vh] flex flex-col gap-2 custom-scrollbar relative z-10">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10" style={{ paddingBottom: `${Math.min(panels.length * 16, 70)}vh` }}>
           {/* Mobile: always all panels */}
           <div className="md:hidden flex flex-col gap-2">
             {panels.map((panel, i) => (
@@ -576,7 +592,7 @@ export default function CarouselModal({ carrera, onClose, onNextCarrera, onPrevC
   const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
   const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}${window.location.pathname}?carrera=${carreraToSlug(carrera.nombre)}`
+    ? `${window.location.origin}/carreras/${carreraToSlug(carrera.nombre)}`
     : '';
 
   return (
@@ -748,7 +764,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
 
         <div className="flex-shrink-0 flex items-center justify-center md:justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
           <div className="w-[3px] h-[clamp(1.2rem,6.5vw,2.2rem)] bg-[#00c7b1] rounded-sm flex-shrink-0" />
-          <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{carrera.nombre.toUpperCase()}</h2>
+          <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{getPortadaName(carrera).toUpperCase()}</h2>
         </div>
 
         <div className="flex-1 flex flex-col justify-center gap-4 md:gap-2 pt-10 md:pt-0">
@@ -924,7 +940,7 @@ function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
           </h2>
         </div>
         <div className="flex flex-col gap-3 md:gap-5">
-          {slide.beneficios.map((b, i) => (
+          {[...slide.beneficios, { icono: 'monitor', texto: 'Estudiá 100% online, rendí y cursá donde quieras' }].map((b, i) => (
             <div key={i} className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
                 <svg className="w-[1.1rem] h-[1.1rem]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -939,17 +955,17 @@ function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
         </div>
 
         {/* CONTENEDOR DE DESCUENTOS FIJOS (3 TARJETAS) */}
-        <div className="w-full -mt-2">
-          <p className="text-[0.65rem] md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
-          <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 w-full mb-2">
+        <div className="w-full mt-2 md:-mt-2 pt-4 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
+          <p className="text-xs md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
+          <div className="flex flex-wrap justify-center gap-2.5 md:gap-2 w-full mb-2">
             {[
               { main: 'Sede Local' },
               { main: 'Siglo 21' },
               { main: 'Especiales' }
             ].map((item, i) => (
-              <div key={i} className="relative overflow-hidden w-[calc(33.333%-4px)] md:w-[calc(33.333%-6px)] max-w-[5.5rem] md:max-w-[7rem] aspect-square border border-white/20 rounded-xl flex flex-col items-center justify-start pt-4 md:pt-5 p-1.5 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte">
+              <div key={i} className="relative overflow-hidden w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem] aspect-square border border-white/20 rounded-xl flex flex-col items-center justify-start pt-4 md:pt-5 p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte">
                 <div className="relative z-10 flex flex-col items-center">
-                  <span className="text-white font-black text-[0.65rem] md:text-[0.8rem] leading-tight">{item.main}</span>
+                  <span className="text-white font-black text-sm md:text-[0.8rem] leading-tight">{item.main}</span>
                 </div>
               </div>
             ))}

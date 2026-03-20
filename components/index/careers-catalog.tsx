@@ -93,9 +93,10 @@ function parseCareerName(name: string): { prefix: string; cleanName: string } {
 
 interface Props {
   carreras: Carrera[];
+  initialCarreraSlug?: string;
 }
 
-export default function CareersCatalog({ carreras }: Props) {
+export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [placeholder, setPlaceholder] = useState('BUSCAR CARRERA');
@@ -192,17 +193,15 @@ export default function CareersCatalog({ carreras }: Props) {
 
 
 
-  // Auto-open modal from URL param
+  // Auto-open modal from prop or URL param
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const carreraParam = params.get('carrera');
-    if (carreraParam) {
-      // Support both slug format (Abogacia) and legacy encoded format (Abogacía)
-      const found = findCarreraBySlug(carreras, carreraParam)
-        || carreras.find(c => c.nombre === carreraParam);
+    const slug = initialCarreraSlug || new URLSearchParams(window.location.search).get('carrera');
+    if (slug) {
+      const found = findCarreraBySlug(carreras, slug)
+        || carreras.find(c => c.nombre === slug);
       if (found) setSelectedCarrera(found);
     }
-  }, [carreras]);
+  }, [carreras, initialCarreraSlug]);
 
   const sectionLabels: Record<string, { title: string; accent?: string; placeholder: string }> = {
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
