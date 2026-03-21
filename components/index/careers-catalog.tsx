@@ -234,6 +234,13 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
 
   const handleCareerClick = useCallback((carrera: Carrera) => {
     setSelectedCarrera(carrera);
+    if (!carrera.slides || carrera.slides.length === 0) {
+      fetch('/api/notificar-carrera', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: carrera.nombre }),
+      }).catch(() => {});
+    }
   }, []);
 
 
