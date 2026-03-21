@@ -42,6 +42,16 @@ export interface SlideCierre {
 
 export type CarreraSlide = SlidePortada | SlideModalidad | SlideEvaluacion | SlidePlanEstudios | SlideCierre;
 
+// ── Descuento type ──
+
+export interface Descuento {
+  id: number;
+  nombre: string;
+  porcentaje: number | null;
+  tipo: 'sede' | 'universidad' | 'promocion';
+  activo: boolean;
+}
+
 // ── Main carrera type ──
 
 export interface Carrera {
@@ -136,7 +146,7 @@ export type AreaId = (typeof AREAS)[number]['id'];
 
 const AREA_KEYWORDS: Record<AreaId, string[]> = {
   derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense'],
-  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'infraestructura tecnológica', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales'],
+  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales'],
   negocios: ['administración', 'finanzas', 'comercialización', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'e-commerce', 'business analysis', 'martillero', 'corredor'],
   salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas'],
   educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia'],
@@ -144,7 +154,7 @@ const AREA_KEYWORDS: Record<AreaId, string[]> = {
   ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
   turismo: ['turística', 'turísticos', 'hotelera', 'turismo'],
   gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
-  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'antropología organizacional'],
+  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social'],
   deporte: ['deportiva', 'deportivo', 'nutrición deportiva', 'fútbol'],
 };
 

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
+import { type Carrera, type Descuento, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
@@ -93,10 +93,11 @@ function parseCareerName(name: string): { prefix: string; cleanName: string } {
 
 interface Props {
   carreras: Carrera[];
+  descuentos?: Descuento[];
   initialCarreraSlug?: string;
 }
 
-export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) {
+export default function CareersCatalog({ carreras, descuentos = [], initialCarreraSlug }: Props) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [placeholder, setPlaceholder] = useState('Buscar carrera');
@@ -600,7 +601,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       {/* Career Modal */}
       {selectedCarrera && (
         selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
-          <CarouselModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
+          <CarouselModal carrera={selectedCarrera} descuentos={descuentos} onClose={() => setSelectedCarrera(null)} />
         ) : (
           <CareerModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
         )

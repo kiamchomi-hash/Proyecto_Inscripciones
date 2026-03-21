@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug } from './types';
+import { type Carrera, type CarreraSlide, type Descuento, type SlidePlanEstudios, carreraToSlug } from './types';
 
 interface Props {
   carrera: Carrera;
+  descuentos?: Descuento[];
   onClose: () => void;
   initiallyVisible?: boolean;
 }
@@ -607,23 +608,20 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
 }
 
 // ── Main carousel modal ──
-export default function CarouselModal({ carrera, onClose, initiallyVisible = false }: Props) {
+export default function CarouselModal({ carrera, descuentos = [], onClose, initiallyVisible = false }: Props) {
   const slides = useMemo(() => {
-    return (carrera.slides || [])
-      .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion')
-      .map(s => {
-        if (s.type === 'cierre' && s.beneficios) {
-          return {
-            ...s,
-            beneficios: s.beneficios.map(b =>
-              b.texto.toLowerCase().includes('100% online')
-                ? { ...b, texto: 'Está cerca de tu casa, acercate ante cualquier consulta' }
-                : b
-            )
-          };
-        }
-        return s;
-      });
+    const filtered = (carrera.slides || [])
+      .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion' && s.type !== 'cierre');
+    const cierreSlide = {
+      type: 'cierre' as const,
+      imagen: '/imagenes/imagenes_cau/entrada_estetica.png',
+      titulo: 'Estudiá<br><span style="color:#00c7b1">con nosotros</span>',
+      beneficios: [
+        { icono: 'location', texto: 'Estamos en Villa Lugano, cerca de Zona Sur y Oeste' },
+        { icono: 'chat', texto: 'Chateá con nosotros y resolvé todas tus dudas' },
+      ],
+    };
+    return [...filtered, cierreSlide];
   }, [carrera.slides]);
 
   const [slideIdx, setSlideIdx] = useState(0);
@@ -691,7 +689,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
           <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
               <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
-                {renderSlide(slide, carrera)}
+                {renderSlide(slide, carrera, descuentos)}
               </div>
             ))}
           </div>
@@ -754,13 +752,13 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
 }
 
 // ── Render individual slide by type ──
-function renderSlide(slide: CarreraSlide, carrera: Carrera) {
+function renderSlide(slide: CarreraSlide, carrera: Carrera, descuentos: Descuento[]) {
   switch (slide.type) {
     case 'portada': return <SlidePortadaView slide={slide} carrera={carrera} />;
     case 'modalidad': return <SlideModalidadView slide={slide} />;
     case 'evaluacion': return <SlideEvaluacionView slide={slide} />;
     case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} />;
-    case 'cierre': return <SlideCierreView slide={slide} />;
+    case 'cierre': return <SlideCierreView slide={slide} descuentos={descuentos} />;
     default: return null;
   }
 }
@@ -768,7 +766,7 @@ function renderSlide(slide: CarreraSlide, carrera: Carrera) {
 function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePortada; carrera: Carrera }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
-      <div className="flex-1 flex flex-col md:justify-start pt-1 sm:pt-2 pb-6 sm:pb-8 px-6 sm:px-8 md:pt-3 md:pb-1 md:px-8 md:gap-1 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-hidden">
+      <div className="flex-1 flex flex-col md:justify-start pt-1 sm:pt-2 pb-6 sm:pb-8 px-6 sm:px-8 md:pt-3 md:pb-1 md:px-8 md:gap-1 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto">
         {/* Mobile: two zones - content (grows, centers children) + image/badges (fixed bottom) */}
         {/* Desktop: all sequential with justify-start */}
 
@@ -790,7 +788,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {/* Línea independiente para quedar pegada al header */}
         <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
 
-        <div className="flex-shrink-0 flex justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
+        <div className="flex-shrink-0 flex justify-start pt-1 md:pt-[clamp(0.5rem,2vh,1rem)] mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
           {(() => { const { prefix, cleanName } = getCleanName(carrera);
             const cccMatch = cleanName.match(/\s*\(CCC\)\s*$/i);
             const displayName = cccMatch ? cleanName.replace(cccMatch[0], '') : cleanName;
@@ -799,16 +797,16 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
               <div className="w-[3px] bg-[#00c7b1] rounded-sm flex-shrink-0 self-stretch" />
               <div>
                 {prefix && <p className="text-[clamp(0.55rem,2vw,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-left">{prefix}</p>}
-                <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,3.5vw,3rem)] font-black text-white leading-[1] md:leading-[1.05] uppercase tracking-tighter">{displayName.toUpperCase()}</h2>
+                <h2 className={`font-black text-white leading-[1] md:leading-[1.05] uppercase tracking-tighter ${displayName.length > 40 ? 'text-[clamp(0.9rem,min(5vw,3vh),1.4rem)] md:text-[clamp(1.2rem,min(2.5vw,3vh),1.8rem)]' : displayName.length > 25 ? 'text-[clamp(1rem,min(6vw,4vh),1.7rem)] md:text-[clamp(1.4rem,min(3vw,4vh),2.2rem)]' : 'text-[clamp(1.2rem,min(7.5vw,5vh),2rem)] md:text-[clamp(1.8rem,min(3.5vw,5vh),3rem)]'}`}>{displayName.toUpperCase()}</h2>
                 {cccMatch && <p className="text-[0.6rem] md:text-xs font-bold text-[#7ca19b] uppercase tracking-widest mt-0.5">Ciclo de Complementación Curricular</p>}
               </div>
             </div>
           </>); })()}
         </div>
 
-        <div className="flex-1 flex flex-col justify-center gap-4 md:gap-2 pt-10 md:pt-0">
+        <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,2vh,1rem)] md:gap-[clamp(0.25rem,1.5vh,0.5rem)] pt-10 md:pt-0">
           {slide.bullets.map((b, i) => (
-            <p key={i} className="text-[0.95rem] md:text-[1.25rem] text-[#e0f0ed] leading-snug font-medium">
+            <p key={i} className="text-[clamp(0.8rem,2.5vw,0.95rem)] md:text-[clamp(0.9rem,2vh,1.25rem)] text-[#e0f0ed] leading-snug font-medium">
               <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
             </p>
           ))}
@@ -844,7 +842,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
       </div>
       {slide.imagen_desktop && (
         <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-[#00c7b1]/20 relative" style={{ width: '42%' }}>
-          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className={`absolute inset-0 w-full h-full object-cover ${['Abogacía', 'Comercio Internacional', 'Contador Público', 'Administración Pública', 'Administración Hotelera', 'Relaciones Internacionales'].includes(carrera.nombre) ? '' : 'brightness-150'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
+          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className={`absolute inset-0 w-full h-full object-cover ${['Abogacía', 'Comercio Internacional', 'Contador Público', 'Administración Pública', 'Administración Hotelera', 'Relaciones Internacionales', 'Profesorado Universitario para Nivel Secundario y Superior (CCC)'].includes(carrera.nombre) ? '' : 'brightness-150'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
         </div>
       )}
     </div>
@@ -954,7 +952,13 @@ function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: 
   );
 }
 
-function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
+const DESCUENTO_LABELS: Record<string, string> = {
+  sede: 'Sede Local',
+  universidad: 'Siglo 21',
+  promocion: 'Especiales',
+};
+
+function SlideCierreView({ slide, descuentos = [] }: { slide: import('./types').SlideCierre; descuentos?: Descuento[] }) {
   return (
     <div className="h-full flex overflow-hidden relative bg-[#011f17]">
       {/* Mobile background image */}
@@ -997,17 +1001,19 @@ function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
         <div className="w-full mt-2 md:-mt-2 pt-4 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
           <p className="text-xs md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
           <div className="flex flex-wrap justify-center gap-2.5 md:gap-2 w-full mb-2">
-            {[
-              { main: 'Sede Local' },
-              { main: 'Siglo 21' },
-              { main: 'Especiales' }
-            ].map((item, i) => (
-              <div key={i} className="relative overflow-hidden w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem] aspect-square border border-white/20 rounded-xl flex flex-col items-center justify-start pt-4 md:pt-5 p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte">
-                <div className="relative z-10 flex flex-col items-center">
-                  <span className="text-white font-black text-sm md:text-[0.8rem] leading-tight">{item.main}</span>
+            {(['sede', 'universidad', 'promocion'] as const).map((tipo) => {
+              const desc = descuentos.find(d => d.tipo === tipo);
+              const label = DESCUENTO_LABELS[tipo];
+              const valor = desc?.porcentaje != null ? `${desc.porcentaje}%` : '-';
+              return (
+                <div key={tipo} className="relative overflow-hidden w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem] aspect-square border border-white/20 rounded-xl flex flex-col items-center justify-center p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte">
+                  <div className="relative z-10 flex flex-col items-center gap-1">
+                    <span className="text-[#00c7b1] font-black text-2xl md:text-3xl leading-none">{valor}</span>
+                    <span className="text-white font-bold text-[0.65rem] md:text-xs leading-tight uppercase tracking-wide">{label}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
