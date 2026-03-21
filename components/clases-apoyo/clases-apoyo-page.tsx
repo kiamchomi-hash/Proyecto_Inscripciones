@@ -269,7 +269,29 @@ function HourPills({ hours, selected, onToggle, disabled, cols, bloqueados }: {
   );
 }
 
-interface DayInfo { num: string; month: string }
+interface DayInfo { num: string; month: string; calendarKey?: string }
+
+/** Convert calendar key "2026-2-25" to ISO date "2026-03-25" */
+function calKeyToIso(key: string): string {
+  const [y, mIdx, d] = key.split('-').map(Number);
+  return `${y}-${String(mIdx + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+
+/** Parse mixed horarios_bloqueados: "14:00-15:00" (global) or "2026-03-25|14:00-15:00" (per-day) */
+function parseHorariosBloqueados(arr: string[]): { global: Set<string>; perDay: Map<string, Set<string>> } {
+  const global = new Set<string>();
+  const perDay = new Map<string, Set<string>>();
+  for (const entry of arr) {
+    if (entry.includes('|')) {
+      const [date, slot] = entry.split('|');
+      if (!perDay.has(date)) perDay.set(date, new Set());
+      perDay.get(date)!.add(slot);
+    } else {
+      global.add(entry);
+    }
+  }
+  return { global, perDay };
+}
 
 function formatDay(d: DayInfo) { return `${d.num} de ${d.month}`; }
 
@@ -290,7 +312,8 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
   const [showInputError, setShowInputError] = useState(false);
   const hours = buildHours(modoManana);
   const cols = modoManana ? 'grid-cols-4' : 'grid-cols-3';
-  const bloqueadosSet = useMemo(() => new Set(horariosBloqueados || []), [horariosBloqueados]);
+  const parsedBloqueados = useMemo(() => parseHorariosBloqueados(horariosBloqueados || []), [horariosBloqueados]);
+  const bloqueadosSet = parsedBloqueados.global;
   const [showTurnstile, setShowTurnstile] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [confirmAction, setConfirmAction] = useState<'same' | 'perday'>('same');
@@ -593,7 +616,15 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
                 onToggle={(i) => togglePerDayHour(selectedDays[perDayIdx].num, i)}
                 disabled={false}
                 cols={cols}
-                bloqueados={bloqueadosSet}
+                bloqueados={(() => {
+                  const merged = new Set(bloqueadosSet);
+                  const ck = selectedDays[perDayIdx]?.calendarKey;
+                  if (ck) {
+                    const iso = calKeyToIso(ck);
+                    parsedBloqueados.perDay.get(iso)?.forEach(s => merged.add(s));
+                  }
+                  return merged;
+                })()}
               />
             </div>
             {/* Dot indicators */}
@@ -687,7 +718,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
     }
   }, [materiasData, router]);
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
-  const [selectedDayInfoMap, setSelectedDayInfoMap] = useState<Record<string, { num: string; month: string }>>({});
+  const [selectedDayInfoMap, setSelectedDayInfoMap] = useState<Record<string, { num: string; month: string; calendarKey: string }>>({});
   const [requestDone, setRequestDone] = useState(false);
   const [calendarLocked, setCalendarLocked] = useState(false);
   const materia = activeIdx !== null ? materiasData[activeIdx] : null;
@@ -709,7 +740,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
     setSelectedDayInfoMap(prev => {
       const next = { ...prev };
       if (prev[key]) delete next[key];
-      else next[key] = { num: dayInfo.num, month: dayInfo.month };
+      else next[key] = { num: dayInfo.num, month: dayInfo.month, calendarKey: key };
       return next;
     });
     scrollToBottom();
@@ -717,7 +748,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
 
   const [scheduleKey, setScheduleKey] = useState(0);
 
-  const selectedDayInfos = Array.from(selectedDays).map(key => selectedDayInfoMap[key]).filter(Boolean) as { num: string; month: string }[];
+  const selectedDayInfos = Array.from(selectedDays).map(key => selectedDayInfoMap[key]).filter(Boolean) as DayInfo[];
 
   if (!materiasData.length) {
     return (

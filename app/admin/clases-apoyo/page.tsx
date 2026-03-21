@@ -65,6 +65,24 @@ function buildHours(modoManana: boolean) {
   });
 }
 
+/** Parse horarios_bloqueados: "14:00-15:00" = global, "2026-03-25|14:00-15:00" = per-day */
+function parseHorariosBloqueados(arr: string[]) {
+  const global = new Set<string>();
+  const perDay = new Map<string, Set<string>>();
+  for (const entry of arr) {
+    const pipe = entry.indexOf('|');
+    if (pipe === -1) {
+      global.add(entry);
+    } else {
+      const date = entry.slice(0, pipe);
+      const hour = entry.slice(pipe + 1);
+      if (!perDay.has(date)) perDay.set(date, new Set());
+      perDay.get(date)!.add(hour);
+    }
+  }
+  return { global, perDay };
+}
+
 /* ── Toast ── */
 function Toast({ message, onDone }: { message: string; onDone: () => void }) {
   useEffect(() => { const t = setTimeout(onDone, 2500); return () => clearTimeout(t); }, [onDone]);
@@ -76,35 +94,64 @@ function Toast({ message, onDone }: { message: string; onDone: () => void }) {
   );
 }
 
+/* ── Rich Text Bullet Editor ── */
+function RichBulletEditor({ value, onChange }: { value: string; onChange: (html: string) => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const internalRef = useRef(value);
+
+  useEffect(() => {
+    if (ref.current && internalRef.current !== value) {
+      ref.current.innerHTML = value;
+      internalRef.current = value;
+    }
+  }, [value]);
+
+  const handleInput = () => {
+    if (ref.current) {
+      const html = ref.current.innerHTML
+        .replace(/<b>/gi, '<strong>').replace(/<\/b>/gi, '</strong>')
+        .replace(/<div>/gi, '').replace(/<\/div>/gi, '')
+        .replace(/<br\s*\/?>/gi, '');
+      internalRef.current = html;
+      onChange(html);
+    }
+  };
+
+  const applyBold = () => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    document.execCommand('bold', false);
+    handleInput();
+  };
+
+  return (
+    <div className="space-y-1">
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={handleInput}
+        className="admin-input w-full min-h-[2.5rem] whitespace-pre-wrap [&_strong]:font-bold [&_strong]:text-[#00c7b1]"
+        style={{ lineHeight: '1.5' }}
+        dangerouslySetInnerHTML={{ __html: value }}
+      />
+      <button type="button" onClick={applyBold} className="admin-btn-small" title="Seleccioná texto y hacé click para negrita">
+        <strong>B</strong>
+      </button>
+    </div>
+  );
+}
+
 /* ── Section: Descripción ── */
 function DescripcionEditor({ materia, onSave }: { materia: Materia; onSave: (desc: string[]) => void }) {
   const [bullets, setBullets] = useState<string[]>(materia.descripcion);
   const [saving, setSaving] = useState(false);
-  const refs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
   useEffect(() => { setBullets(materia.descripcion); }, [materia.descripcion]);
 
   const update = (i: number, val: string) => { const next = [...bullets]; next[i] = val; setBullets(next); };
   const remove = (i: number) => setBullets(bullets.filter((_, j) => j !== i));
   const add = () => { if (bullets.length < 5) setBullets([...bullets, '']); };
-
-  const toggleBold = (i: number) => {
-    const ta = refs.current[i];
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const text = bullets[i];
-    if (start === end) return;
-    const selected = text.slice(start, end);
-    const isBold = selected.startsWith('<strong>') && selected.endsWith('</strong>');
-    let newText: string;
-    if (isBold) {
-      newText = text.slice(0, start) + selected.slice(8, -9) + text.slice(end);
-    } else {
-      newText = text.slice(0, start) + `<strong>${selected}</strong>` + text.slice(end);
-    }
-    update(i, newText);
-  };
 
   const save = async () => {
     setSaving(true);
@@ -120,18 +167,8 @@ function DescripcionEditor({ materia, onSave }: { materia: Materia; onSave: (des
       <div className="space-y-2.5">
         {bullets.map((b, i) => (
           <div key={i} className="flex gap-2 items-start">
-            <div className="flex-1 space-y-1">
-              <textarea
-                ref={el => { refs.current[i] = el; }}
-                value={b}
-                onChange={e => update(i, e.target.value)}
-                rows={2}
-                className="admin-input w-full resize-none"
-                placeholder={`Punto ${i + 1}...`}
-              />
-              <button onClick={() => toggleBold(i)} className="admin-btn-small" title="Seleccioná texto y hacé click para negrita">
-                <strong>B</strong>
-              </button>
+            <div className="flex-1">
+              <RichBulletEditor value={b} onChange={val => update(i, val)} />
             </div>
             <button onClick={() => remove(i)} className="mt-2 text-red-400/40 hover:text-red-400 text-lg transition cursor-pointer">&times;</button>
           </div>
@@ -237,7 +274,6 @@ function DiasBloqueadosEditor({ materia, onSave }: { materia: Materia; onSave: (
       <p className="text-xs text-white/40 mb-3">Click en un día para bloquearlo/desbloquearlo.</p>
 
       <div className="rounded-xl border border-white/10 p-4 max-w-xs" style={{ background: 'rgba(0,0,0,0.2)' }}>
-        {/* Nav */}
         <div className="flex items-center justify-between mb-3">
           <button onClick={goPrev} disabled={!canGoPrev}
             className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 disabled:opacity-20 transition cursor-pointer">
@@ -249,61 +285,76 @@ function DiasBloqueadosEditor({ materia, onSave }: { materia: Materia; onSave: (
             <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
           </button>
         </div>
-        {/* Headers */}
         <div className="grid grid-cols-5 gap-1 mb-1">
           {['Lu', 'Ma', 'Mi', 'Ju', 'Vi'].map(d => (
             <div key={d} className="text-[0.6rem] text-white/30 text-center font-bold uppercase">{d}</div>
           ))}
         </div>
-        {/* Days */}
         {weeks.map((week, wi) => (
           <div key={wi} className="grid grid-cols-5 gap-1">
             {week.map((day, di) => {
               if (day.empty) return <div key={di} />;
               const blocked = bloqueados.has(day.dateStr);
               return (
-                <button
-                  key={di}
-                  onClick={() => !day.past && toggle(day.dateStr)}
-                  disabled={day.past}
+                <button key={di} onClick={() => !day.past && toggle(day.dateStr)} disabled={day.past}
                   className={`text-xs rounded-lg py-1.5 transition cursor-pointer disabled:cursor-default font-medium ${
-                    day.past ? 'text-white/10' :
-                    blocked ? 'bg-red-500/70 text-white' :
-                    'text-white/70 hover:bg-[#00c7b1]/20 hover:text-white'
-                  }`}
-                >
-                  {day.num}
-                </button>
+                    day.past ? 'text-white/10' : blocked ? 'bg-red-500/70 text-white' : 'text-white/70 hover:bg-[#00c7b1]/20 hover:text-white'
+                  }`}>{day.num}</button>
               );
             })}
           </div>
         ))}
       </div>
-
       <button onClick={save} disabled={saving} className="admin-btn-primary mt-3">{saving ? 'Guardando...' : 'Guardar días'}</button>
     </div>
   );
 }
 
-/* ── Section: Horarios bloqueados ── */
+/* ── Section: Horarios bloqueados (global + por día) ── */
 function HorariosBloqueadosEditor({ materia, onSave, onToggleModoManana }: { materia: Materia; onSave: (h: string[]) => void; onToggleModoManana: (v: boolean) => void }) {
-  const [bloqueados, setBloqueados] = useState<Set<string>>(new Set(materia.horarios_bloqueados));
+  const now = new Date();
+  const [viewYear, setViewYear] = useState(now.getFullYear());
+  const [viewMonth, setViewMonth] = useState(now.getMonth());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const { global: globalBlocked, perDay: perDayBlocked } = useMemo(() => parseHorariosBloqueados(materia.horarios_bloqueados), [materia.horarios_bloqueados]);
+
   const hours = buildHours(materia.modo_manana);
+  const weeks = useMemo(() => buildMonthWeeks(viewYear, viewMonth), [viewYear, viewMonth]);
+  const monthName = new Date(viewYear, viewMonth).toLocaleString('es-AR', { month: 'long' });
 
-  useEffect(() => { setBloqueados(new Set(materia.horarios_bloqueados)); }, [materia.horarios_bloqueados]);
+  const canGoPrev = viewYear > now.getFullYear() || (viewYear === now.getFullYear() && viewMonth > now.getMonth());
+  const goNext = () => { if (viewMonth === 11) { setViewYear(y => y + 1); setViewMonth(0); } else setViewMonth(m => m + 1); };
+  const goPrev = () => { if (!canGoPrev) return; if (viewMonth === 0) { setViewYear(y => y - 1); setViewMonth(11); } else setViewMonth(m => m - 1); };
 
-  const toggle = (h: string) => {
-    const next = new Set(bloqueados);
-    if (next.has(h)) next.delete(h); else next.add(h);
-    setBloqueados(next);
+  const rebuildArray = (g: Set<string>, pd: Map<string, Set<string>>) => {
+    const arr: string[] = [];
+    for (const h of g) arr.push(h);
+    for (const [date, hours] of pd) {
+      for (const h of hours) arr.push(`${date}|${h}`);
+    }
+    return arr.sort();
+  };
+
+  const toggleGlobal = (h: string) => {
+    const nextGlobal = new Set(globalBlocked);
+    if (nextGlobal.has(h)) nextGlobal.delete(h); else nextGlobal.add(h);
+    onSave(rebuildArray(nextGlobal, perDayBlocked));
+  };
+
+  const togglePerDay = (date: string, h: string) => {
+    const nextPerDay = new Map(perDayBlocked);
+    const daySet = new Set(nextPerDay.get(date) || []);
+    if (daySet.has(h)) daySet.delete(h); else daySet.add(h);
+    if (daySet.size === 0) nextPerDay.delete(date);
+    else nextPerDay.set(date, daySet);
+    onSave(rebuildArray(globalBlocked, nextPerDay));
   };
 
   const save = async () => {
     setSaving(true);
-    const arr = Array.from(bloqueados).sort();
-    const { error } = await supabase.from('materias').update({ horarios_bloqueados: arr }).eq('id', materia.id);
-    if (!error) onSave(arr);
+    const { error } = await supabase.from('materias').update({ horarios_bloqueados: materia.horarios_bloqueados }).eq('id', materia.id);
     setSaving(false);
   };
 
@@ -311,6 +362,13 @@ function HorariosBloqueadosEditor({ materia, onSave, onToggleModoManana }: { mat
     const { error } = await supabase.from('materias').update({ modo_manana: checked }).eq('id', materia.id);
     if (!error) onToggleModoManana(checked);
   };
+
+  const selectedDayHours = selectedDate ? (perDayBlocked.get(selectedDate) || new Set<string>()) : null;
+  const selectedDateLabel = selectedDate ? (() => {
+    const [y, m, d] = selectedDate.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return date.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' });
+  })() : '';
 
   return (
     <div className="admin-section">
@@ -327,27 +385,97 @@ function HorariosBloqueadosEditor({ materia, onSave, onToggleModoManana }: { mat
         </span>
       </label>
 
-      <p className="text-xs text-white/40 mb-3">Click en un horario para bloquearlo/desbloquearlo globalmente.</p>
-      <div className="flex flex-wrap gap-2">
-        {hours.map(h => {
-          const blocked = bloqueados.has(h);
-          const label = h.split('-')[0];
-          return (
-            <button
-              key={h}
-              onClick={() => toggle(h)}
-              className={`text-xs px-3.5 py-2 rounded-lg border font-medium transition cursor-pointer ${
-                blocked
-                  ? 'bg-red-500/70 border-red-500/30 text-white'
-                  : 'border-white/10 text-white/50 hover:border-[#00c7b1]/50 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
+      {/* Global blocking */}
+      <div className="mb-5">
+        <p className="text-xs text-white/40 mb-2">Bloqueo global (aplica a todos los días):</p>
+        <div className="flex flex-wrap gap-2">
+          {hours.map(h => {
+            const blocked = globalBlocked.has(h);
+            return (
+              <button key={h} onClick={() => toggleGlobal(h)}
+                className={`text-xs px-3.5 py-2 rounded-lg border font-medium transition cursor-pointer ${
+                  blocked ? 'bg-red-500/70 border-red-500/30 text-white' : 'border-white/10 text-white/50 hover:border-[#00c7b1]/50 hover:text-white'
+                }`}>{h.split('-')[0]}</button>
+            );
+          })}
+        </div>
       </div>
-      <button onClick={save} disabled={saving} className="admin-btn-primary mt-3">{saving ? 'Guardando...' : 'Guardar horarios'}</button>
+
+      {/* Per-day blocking */}
+      <div className="mb-4">
+        <p className="text-xs text-white/40 mb-2">Bloqueo por día (seleccioná un día, luego bloqueá horarios):</p>
+        <div className="flex gap-4 flex-col sm:flex-row">
+          {/* Mini calendar */}
+          <div className="rounded-xl border border-white/10 p-3 w-full sm:w-auto sm:min-w-[220px]" style={{ background: 'rgba(0,0,0,0.2)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <button onClick={goPrev} disabled={!canGoPrev}
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 disabled:opacity-20 transition cursor-pointer">
+                <svg className="w-3.5 h-3.5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <span className="text-xs font-bold text-white capitalize">{monthName} {viewYear}</span>
+              <button onClick={goNext}
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 transition cursor-pointer">
+                <svg className="w-3.5 h-3.5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+            <div className="grid grid-cols-5 gap-0.5 mb-0.5">
+              {['L', 'M', 'X', 'J', 'V'].map(d => <div key={d} className="text-[0.55rem] text-white/25 text-center font-bold">{d}</div>)}
+            </div>
+            {weeks.map((week, wi) => (
+              <div key={wi} className="grid grid-cols-5 gap-0.5">
+                {week.map((day, di) => {
+                  if (day.empty) return <div key={di} />;
+                  const isSelected = selectedDate === day.dateStr;
+                  const hasPerDay = perDayBlocked.has(day.dateStr);
+                  return (
+                    <button key={di} onClick={() => !day.past && setSelectedDate(isSelected ? null : day.dateStr)} disabled={day.past}
+                      className={`text-[0.65rem] rounded py-1 transition cursor-pointer disabled:cursor-default font-medium relative ${
+                        day.past ? 'text-white/10' :
+                        isSelected ? 'bg-[#00c7b1] text-white' :
+                        'text-white/60 hover:bg-white/10'
+                      }`}>
+                      {day.num}
+                      {hasPerDay && !isSelected && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-400" />}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          {/* Hour pills for selected day */}
+          {selectedDate && (
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-white/60 mb-2 capitalize">{selectedDateLabel}</p>
+              <div className="flex flex-wrap gap-2">
+                {hours.map(h => {
+                  const isGlobalBlocked = globalBlocked.has(h);
+                  const isDayBlocked = selectedDayHours?.has(h);
+                  return (
+                    <button key={h} onClick={() => !isGlobalBlocked && togglePerDay(selectedDate, h)} disabled={isGlobalBlocked}
+                      className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-30 ${
+                        isDayBlocked ? 'bg-orange-500/70 border-orange-500/30 text-white' :
+                        'border-white/10 text-white/50 hover:border-orange-400/50 hover:text-white'
+                      }`}>
+                      {h.split('-')[0]}
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedDayHours && selectedDayHours.size > 0 && (
+                <p className="text-[0.6rem] text-orange-400/60 mt-2">{selectedDayHours.size} horario(s) bloqueado(s) este día</p>
+              )}
+            </div>
+          )}
+          {!selectedDate && (
+            <div className="flex-1 flex items-center justify-center text-xs text-white/20 py-8">
+              Seleccioná un día del calendario
+            </div>
+          )}
+        </div>
+      </div>
+
+      <button onClick={save} disabled={saving} className="admin-btn-primary">{saving ? 'Guardando...' : 'Guardar horarios'}</button>
     </div>
   );
 }
@@ -358,7 +486,6 @@ function PreviewSection({ materia }: { materia: Materia }) {
     <div className="admin-section">
       <h3 className="admin-section-title">Preview</h3>
       <div className="rounded-xl border border-white/10 overflow-hidden" style={{ background: 'rgba(0,0,0,0.3)' }}>
-        {/* Images */}
         {materia.imagenes.length > 0 && (
           <div className="flex gap-0 overflow-hidden h-36">
             {materia.imagenes.map((img, i) => (
@@ -366,7 +493,6 @@ function PreviewSection({ materia }: { materia: Materia }) {
             ))}
           </div>
         )}
-        {/* Content */}
         <div className="p-5">
           <h4 className="text-lg font-bold text-white mb-3">{materia.label}</h4>
           <ul className="space-y-2">
@@ -377,7 +503,6 @@ function PreviewSection({ materia }: { materia: Materia }) {
               </li>
             ))}
           </ul>
-          {/* Blocked info */}
           {(materia.dias_bloqueados.length > 0 || materia.horarios_bloqueados.length > 0) && (
             <div className="mt-4 pt-3 border-t border-white/10 text-xs text-white/30 space-y-1">
               {materia.dias_bloqueados.length > 0 && <p>{materia.dias_bloqueados.length} día(s) bloqueado(s)</p>}
@@ -464,42 +589,27 @@ export default function AdminClasesApoyo() {
       `}</style>
 
       <div className="min-h-screen" style={{ background: '#0a1612' }}>
-        {/* Header */}
         <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-white/5" style={{ background: 'rgba(10,22,18,0.85)' }}>
           <div className="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black" style={{ background: 'linear-gradient(135deg, #00c7b1, #058c70)' }}>
-                C
-              </div>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black" style={{ background: 'linear-gradient(135deg, #00c7b1, #058c70)' }}>C</div>
               <div>
                 <h1 className="text-sm font-bold text-white leading-none">Clases de Apoyo</h1>
-                <p className="text-[0.6rem] text-white/30 mt-0.5">
-                  {profesor?.rol === 'admin' ? 'Administrador' : mat?.label}
-                </p>
+                <p className="text-[0.6rem] text-white/30 mt-0.5">{profesor?.rol === 'admin' ? 'Administrador' : mat?.label}</p>
               </div>
             </div>
-            <button onClick={logout} className="text-[0.65rem] text-white/30 hover:text-red-400 transition cursor-pointer">
-              Salir
-            </button>
+            <button onClick={logout} className="text-[0.65rem] text-white/30 hover:text-red-400 transition cursor-pointer">Salir</button>
           </div>
         </header>
 
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
-          {/* Tabs */}
           {materias.length > 1 && (
             <div className="flex gap-1 mb-8 overflow-x-auto pb-1 -mx-1 px-1">
               {materias.map((m, i) => (
-                <button
-                  key={m.id}
-                  onClick={() => setActiveTab(i)}
+                <button key={m.id} onClick={() => setActiveTab(i)}
                   className={`text-xs px-4 py-2 rounded-lg whitespace-nowrap transition cursor-pointer font-semibold ${
-                    i === activeTab
-                      ? 'bg-white/10 text-white'
-                      : 'text-white/30 hover:text-white/60 hover:bg-white/5'
-                  }`}
-                >
-                  {m.label}
-                </button>
+                    i === activeTab ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                  }`}>{m.label}</button>
               ))}
             </div>
           )}
