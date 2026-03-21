@@ -256,10 +256,9 @@ function HourPills({ hours, selected, onToggle, disabled, cols, bloqueados }: {
             onClick={() => onToggle(i)}
             className="flex items-center justify-center rounded-full text-[0.62rem] font-bold tabular-nums py-1 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             style={{
-              background: isBloqueado ? 'rgba(239,68,68,0.15)' : selected.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
-              border: isBloqueado ? '1px solid rgba(239,68,68,0.3)' : selected.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
-              color: isBloqueado ? 'rgba(239,68,68,0.5)' : selected.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
-              textDecoration: isBloqueado ? 'line-through' : 'none',
+              background: isBloqueado ? 'rgba(255,255,255,0.03)' : selected.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
+              border: isBloqueado ? '1px solid rgba(255,255,255,0.08)' : selected.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
+              color: isBloqueado ? 'rgba(255,255,255,0.1)' : selected.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
             }}
           >
             {slot.from}–{slot.to}
@@ -412,10 +411,9 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
               onClick={() => { toggleHour(i); if (mode === 'choose-mode') setMode('picking'); }}
               className="flex items-center justify-center rounded-full text-[0.68rem] font-bold tabular-nums py-1.5 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
               style={{
-                background: isBloqueado ? 'rgba(239,68,68,0.15)' : selectedHours.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
-                border: isBloqueado ? '1px solid rgba(239,68,68,0.3)' : selectedHours.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
-                color: isBloqueado ? 'rgba(239,68,68,0.5)' : selectedHours.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
-                textDecoration: isBloqueado ? 'line-through' : 'none',
+                background: isBloqueado ? 'rgba(255,255,255,0.03)' : selectedHours.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
+                border: isBloqueado ? '1px solid rgba(255,255,255,0.08)' : selectedHours.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
+                color: isBloqueado ? 'rgba(255,255,255,0.1)' : selectedHours.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
               }}
             >
               {slot.from}–{slot.to}
