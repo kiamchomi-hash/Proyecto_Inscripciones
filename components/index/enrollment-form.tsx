@@ -64,7 +64,8 @@ export default function EnrollmentForm({ carreras }: Props) {
   const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
 
   // Form validity: at least email or telefono, and email must be valid
-  const isValid = (email.trim() || telefono.trim()) && !emailInvalid && !!turnstileToken;
+  const contactValid = (email.trim() || telefono.trim()) && !emailInvalid;
+  const isValid = contactValid && !!turnstileToken;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -387,7 +388,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                 {error && (
                   <p className="text-[11px] text-red-400">{error}</p>
                 )}
-                {!isValid && (email.trim() || telefono.trim()) && (
+                {!contactValid && (email.trim() || telefono.trim()) && (
                   <p className="text-[11px] text-red-400">Completa al menos email o telefono.</p>
                 )}
               </div>
