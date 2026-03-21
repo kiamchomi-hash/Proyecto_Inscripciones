@@ -21,6 +21,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // Materias activas (clases de apoyo)
+  const { data: materias } = await supabase
+    .from('materias')
+    .select('slug')
+    .eq('activa', true);
+
+  const materiasEntries: MetadataRoute.Sitemap = (materias || []).map(m => ({
+    url: `${baseUrl}/clases-apoyo/${m.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
   // Calcular total de páginas de novedades
   const { count } = await supabase
     .from('novedades')
@@ -70,6 +83,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     ...carrerasEntries,
+    ...materiasEntries,
     ...novedadesEntries,
   ];
 }
