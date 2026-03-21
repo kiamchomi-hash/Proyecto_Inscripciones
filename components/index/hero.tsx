@@ -30,7 +30,7 @@ export default function Hero() {
                   className="relative z-10 text-white font-black text-[1.15rem] min-[380px]:text-[1.8rem] sm:text-[2.2rem] md:text-[2.5rem] lg:text-[3.5rem] xl:text-[2.5rem] 2xl:text-[3rem] text-center tracking-tight uppercase whitespace-nowrap"
                   style={{ textShadow: "1px 1px 0 #4b5563, 2px 2px 0 #374151, 3px 3px 0 #1f2937, 4px 4px 0 #111827, 4px 4px 10px rgba(0,0,0,0.6)" }}
                 >
-                  Inscripciones 2026
+                  Inscripciones {new Date().getFullYear()}
                 </h2>
                 <div className="flex flex-row items-center justify-center gap-1 min-[380px]:gap-2 sm:gap-3 mt-1 sm:mt-2 z-10 w-full px-1">
                   <span className="text-white font-bold text-[7px] min-[380px]:text-[8.5px] sm:text-[11px] md:text-[13px] lg:text-[15px] uppercase tracking-wider drop-shadow-md text-center">

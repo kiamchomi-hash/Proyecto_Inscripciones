@@ -17,6 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ page: str
   return {
     title: `Novedades${suffix}`,
     description: 'Últimas novedades del CAU Villa Lugano — Universidad Siglo 21.',
+    keywords: ['novedades', 'noticias', 'siglo 21', 'villa lugano', 'CAU'],
     alternates: { canonical: `/novedades/${page}` },
   };
 }

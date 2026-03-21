@@ -66,7 +66,8 @@ Workflow para cargar los slides JSON de una carrera en la tabla `carreras` de Su
 - **Badges siempre**: Título + Área (NUNCA Duración ni Modalidad)
 - **Cierre siempre estándar**: misma imagen (`entrada_estetica.png`), mismo título, mismos beneficios. No inventar cierres custom
 - **Imagen**: buscar primero en `public/imagenes/Modales/`. El usuario indica posición si es necesario
-- **`imagen_desktop_position`**: usar `object-position` CSS. Mostrar desde donde está el contenido importante de la foto
+- **`imagen_desktop_position`**: usar `object-position` CSS. Mostrar desde donde está el contenido importante de la foto. Se aceptan valores como `center`, `left center`, `30% center`, etc.
+- **Títulos largos en badges**: el componente ya reduce automáticamente el tamaño de fuente cuando `badge.value.length > 35` caracteres. No hace falta intervención manual
 - **Carreras CCC**: detectar por `(CCC)` en nombre. Duración = "Título previo + X años". Agregar requisito en `paginas[0].extras` con `titulo: "Requisito obligatorio"`
 - **Extras y requisitos**: van en la última página del plan, dentro de `extras[]`
 - **No cambiar nombres en DB** sin que el usuario lo pida

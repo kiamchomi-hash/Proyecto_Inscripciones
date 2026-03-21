@@ -219,7 +219,7 @@ async function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
 function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['paginas']; carreraNombre: string }) {
   const requisito = paginas.flatMap(p => p.extras || []).find(e => e.titulo.toLowerCase().includes('requisito'));
   const panels = flattenPaginas(paginas);
-  // -1 = show all, >= 0 = specific panel
+  // -2 = show requisito only, -1 = show all, >= 0 = specific panel
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -234,8 +234,9 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
   const [isAtBottom, setIsAtBottom] = useState(false);
 
   const showAll = active === -1;
+  const showRequisito = active === -2;
   const activePanel = active >= 0 ? panels[active] : null;
-  const activeLabel = activePanel ? activePanel.año : 'Plan Completo';
+  const activeLabel = activePanel ? activePanel.año : showRequisito ? 'Requisitos' : 'Plan Completo';
 
   // Reset scroll state when switching views
   useEffect(() => {
@@ -363,7 +364,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         {requisito && (<>
           {/* Mobile */}
           <button
-            onClick={() => { setActive(-1); setTimeout(() => { const el = scrollContainerRef.current?.querySelector('[data-requisito]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); }}
+            onClick={() => setActive(-2)}
             className="md:hidden px-3 py-2.5 min-h-[44px] rounded flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 flex-shrink-0"
             style={{
               background: 'rgba(220,60,60,0.12)',
@@ -375,7 +376,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
           </button>
           {/* Desktop */}
           <button
-            onClick={() => { setActive(-1); setTimeout(() => { const el = scrollContainerRef.current?.querySelector('[data-requisito]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); }}
+            onClick={() => setActive(-2)}
             className="hidden md:flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer transition-all duration-200 flex-shrink-0"
             style={{
               background: 'rgba(220,60,60,0.12)',
@@ -485,7 +486,17 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
           </div>
           {/* Desktop: showAll or single panel, requisito on top when showAll */}
           <div className="hidden md:block">
-            {showAll ? (
+            {showRequisito && requisito ? (
+              <div className="flex items-start gap-3 py-4 rounded-lg border border-[#e69b05]/40 px-4" style={{ background: 'rgba(230,155,5,0.08)' }}>
+                <span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-red-600 text-sm font-black leading-none" style={{ background: '#e69b05' }}>!</span>
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase tracking-widest text-[#e69b05] mb-1">Requisito obligatorio</p>
+                  {requisito.items.map((item, i) => (
+                    <p key={i} className="text-sm text-[#e0d8c8] leading-relaxed">{item}</p>
+                  ))}
+                </div>
+              </div>
+            ) : showAll ? (
               <div>
                 {requisito && (
                   <div data-requisito className="flex items-start gap-2.5 py-2.5 rounded-lg border border-[#e69b05]/40 mb-3 px-2" style={{ background: 'rgba(230,155,5,0.08)' }}>
@@ -779,7 +790,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {/* Línea independiente para quedar pegada al header */}
         <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
 
-        <div className="flex-shrink-0 flex justify-center md:justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
+        <div className="flex-shrink-0 flex justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
           {(() => { const { prefix, cleanName } = getCleanName(carrera);
             const cccMatch = cleanName.match(/\s*\(CCC\)\s*$/i);
             const displayName = cccMatch ? cleanName.replace(cccMatch[0], '') : cleanName;
@@ -787,8 +798,8 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
             <div className="flex gap-2.5">
               <div className="w-[3px] bg-[#00c7b1] rounded-sm flex-shrink-0 self-stretch" />
               <div>
-                {prefix && <p className="text-[clamp(0.55rem,2vw,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-center md:text-left">{prefix}</p>}
-                <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,3.5vw,3rem)] font-black text-white leading-[0.9] md:leading-[0.95] uppercase tracking-tighter">{displayName.toUpperCase()}</h2>
+                {prefix && <p className="text-[clamp(0.55rem,2vw,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-left">{prefix}</p>}
+                <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,3.5vw,3rem)] font-black text-white leading-[1] md:leading-[1.05] uppercase tracking-tighter">{displayName.toUpperCase()}</h2>
                 {cccMatch && <p className="text-[0.6rem] md:text-xs font-bold text-[#7ca19b] uppercase tracking-widest mt-0.5">Ciclo de Complementación Curricular</p>}
               </div>
             </div>
@@ -814,7 +825,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
               {slide.badges.map((badge, i) => (
                 <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center text-center">
                   <span className="block text-[0.45rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
-                  <span className="block text-xs text-white font-extrabold mt-0.5">{badge.value}</span>
+                  <span className={`block text-white font-extrabold mt-0.5 ${badge.value.length > 35 ? 'text-[0.6rem]' : 'text-xs'}`}>{badge.value}</span>
                 </div>
               ))}
             </div>
@@ -823,9 +834,9 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {slide.badges && (
           <div className="hidden md:grid mt-auto grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
             {slide.badges.map((badge, i) => (
-              <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-start text-left">
+              <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-start items-start text-left">
                 <span className="block text-[0.5rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
-                <span className="block text-sm text-white font-extrabold mt-0.5">{badge.value}</span>
+                <span className={`block text-white font-extrabold mt-0.5 ${badge.value.length > 35 ? 'text-xs' : 'text-sm'}`}>{badge.value}</span>
               </div>
             ))}
           </div>
@@ -833,8 +844,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
       </div>
       {slide.imagen_desktop && (
         <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-[#00c7b1]/20 relative" style={{ width: '42%' }}>
-          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className={`absolute inset-0 w-full h-full object-cover ${carrera.nombre === 'Abogacía' ? '' : 'brightness-150'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
-          {carrera.nombre === 'Contador Público' && <div className="absolute inset-0 bg-[#013729]/35 pointer-events-none" />}
+          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className={`absolute inset-0 w-full h-full object-cover ${['Abogacía', 'Comercio Internacional', 'Contador Público', 'Administración Pública', 'Administración Hotelera', 'Relaciones Internacionales'].includes(carrera.nombre) ? '' : 'brightness-150'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
         </div>
       )}
     </div>

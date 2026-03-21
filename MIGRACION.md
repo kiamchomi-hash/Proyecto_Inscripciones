@@ -7,15 +7,14 @@
 - 404.html → app/not-found.tsx
 - sobre-nosotros.html → app/sobre-nosotros/page.tsx
 
-## Páginas en progreso
+## Páginas migradas (funcionalidad completa)
 
-### index.html → app/page.tsx — EN PROGRESO (avanzado)
-Catálogo de carreras, búsqueda fuzzy, formulario de inscripción, modales con slides ya funcionan.
+### index.html → app/page.tsx ✅
+Catálogo de carreras, búsqueda fuzzy, filtro por categoría/área/duración, formulario de inscripción, modales con slides, sidebar de beneficios.
 
-Pendiente:
-- Filtro por área (medicina, finanzas) en el buscador
-- Cambiar SVG deportistas federados
-- Badge de nuevo/descuento en carreras
+Pendiente menor:
+- ~~Automatizar año en carrusel hero~~ ✅ (dinámico con `new Date().getFullYear()`)
+- Descuentos en último slide de modales (futuro)
 
 
 ## Archivos legacy en migracion_pendiente/
