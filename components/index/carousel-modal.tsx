@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import Image from 'next/image';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug } from './types';
 
 interface Props {
@@ -218,6 +217,7 @@ async function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
 
 // ── Plan panels: left=year buttons, right=content ──
 function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['paginas']; carreraNombre: string }) {
+  const requisito = paginas.flatMap(p => p.extras || []).find(e => e.titulo.toLowerCase().includes('requisito'));
   const panels = flattenPaginas(paginas);
   // -1 = show all, >= 0 = specific panel
   const [active, setActive] = useState(0);
@@ -230,18 +230,16 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
   }, []);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [currentVisibleIdx, setCurrentVisibleIdx] = useState(0);
+  const [currentVisibleIdx, setCurrentVisibleIdx] = useState(requisito ? -1 : 0);
   const [isAtBottom, setIsAtBottom] = useState(false);
 
   const showAll = active === -1;
   const activePanel = active >= 0 ? panels[active] : null;
-  const activeLabel = activePanel
-    ? activePanel.año
-    : 'Plan Completo';
+  const activeLabel = activePanel ? activePanel.año : 'Plan Completo';
 
   // Reset scroll state when switching views
   useEffect(() => {
-    setCurrentVisibleIdx(0);
+    setCurrentVisibleIdx(requisito ? -1 : 0);
     setIsAtBottom(false);
     const container = scrollContainerRef.current;
     if (container) container.scrollTop = 0;
@@ -266,7 +264,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
   const scrollToPanel = useCallback((idx: number) => {
     const container = scrollContainerRef.current;
     if (!container) return;
-    if (idx === 0) {
+    if (idx === 0 && !requisito) {
       container.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -300,6 +298,15 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         return;
       }
 
+      // If requisito exists and first panel isn't reached yet, show "Ver 1er Año"
+      if (els.length > 0) {
+        const firstPanelTop = getOffsetInContainer(els[0]);
+        if (requisito && scrollTop < firstPanelTop - 20) {
+          setCurrentVisibleIdx(-1);
+          return;
+        }
+      }
+
       let closest = 0;
       let closestDist = Infinity;
       els.forEach(el => {
@@ -316,7 +323,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
 
   // Next panel info for the floating button
   const nextIdx = currentVisibleIdx + 1;
-  const hasNext = nextIdx < panels.length;
+  const hasNext = nextIdx >= 0 && nextIdx < panels.length;
   const nextPanel = hasNext ? panels[nextIdx] : null;
   const nextLabel = nextPanel ? nextPanel.año : null;
 
@@ -351,6 +358,35 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         </button>
 
         <div className="hidden md:block mx-1.5 my-px h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.12) 0%, transparent 80%)' }} />
+
+        {/* Requisitos button — scrolls to requisito section */}
+        {requisito && (<>
+          {/* Mobile */}
+          <button
+            onClick={() => { setActive(-1); setTimeout(() => { const el = scrollContainerRef.current?.querySelector('[data-requisito]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); }}
+            className="md:hidden px-3 py-2.5 min-h-[44px] rounded flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 flex-shrink-0"
+            style={{
+              background: 'rgba(220,60,60,0.12)',
+              border: '1px solid rgba(220,60,60,0.5)',
+            }}
+          >
+            <span className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-red-600 text-[0.5rem] font-black leading-none" style={{ background: '#e69b05' }}>!</span>
+            <span className="text-[0.55rem] leading-none font-bold uppercase tracking-wider whitespace-nowrap text-white">Requisitos</span>
+          </button>
+          {/* Desktop */}
+          <button
+            onClick={() => { setActive(-1); setTimeout(() => { const el = scrollContainerRef.current?.querySelector('[data-requisito]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); }}
+            className="hidden md:flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer transition-all duration-200 flex-shrink-0"
+            style={{
+              background: 'rgba(220,60,60,0.12)',
+              border: '1px solid rgba(220,60,60,0.5)',
+            }}
+          >
+            <span className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-red-600 text-[0.5rem] font-black leading-none" style={{ background: '#e69b05' }}>!</span>
+            <span className="text-[0.6rem] font-bold uppercase tracking-[0.06em] whitespace-nowrap text-white">Requisitos</span>
+          </button>
+          <div className="hidden md:block mx-1.5 my-px h-px" style={{ background: 'linear-gradient(90deg, rgba(220,60,60,0.15) 0%, transparent 80%)' }} />
+        </>)}
 
         {/* Year buttons — minimalist inactive, solid brand when active */}
         {panels.map((panel, i) => {
@@ -406,6 +442,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
           );
         })}
 
+
       </div>
 
       {/* Right: content area */}
@@ -425,9 +462,20 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         </div>
 
         {/* Scrollable content */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10" style={{ paddingBottom: `${Math.min(panels.length * 16, 70)}vh` }}>
-          {/* Mobile: always all panels */}
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10" style={{ paddingBottom: `${Math.max(40, Math.min(panels.length * 16, 70))}vh` }}>
+          {/* Mobile: all panels with requisito on top */}
           <div className="md:hidden flex flex-col gap-2">
+            {requisito && (
+              <div data-requisito className="flex items-start gap-2.5 py-2.5 rounded-lg border border-[#e69b05]/40 mb-1 px-2" style={{ background: 'rgba(230,155,5,0.08)' }}>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-red-600 text-xs font-black leading-none" style={{ background: '#e69b05' }}>!</span>
+                <div className="min-w-0">
+                  <p className="text-[0.6rem] font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
+                  {requisito.items.map((item, i) => (
+                    <p key={i} className="text-[0.65rem] text-[#e0d8c8] leading-snug">{item}</p>
+                  ))}
+                </div>
+              </div>
+            )}
             {panels.map((panel, i) => (
               <div key={i} data-panel-idx={i}>
                 {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
@@ -435,10 +483,21 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
               </div>
             ))}
           </div>
-          {/* Desktop: showAll or single panel */}
+          {/* Desktop: showAll or single panel, requisito on top when showAll */}
           <div className="hidden md:block">
             {showAll ? (
               <div>
+                {requisito && (
+                  <div data-requisito className="flex items-start gap-2.5 py-2.5 rounded-lg border border-[#e69b05]/40 mb-3 px-2" style={{ background: 'rgba(230,155,5,0.08)' }}>
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-red-600 text-xs font-black leading-none" style={{ background: '#e69b05' }}>!</span>
+                    <div className="min-w-0">
+                      <p className="text-[0.65rem] font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
+                      {requisito.items.map((item, i) => (
+                        <p key={i} className="text-xs text-[#e0d8c8] leading-snug">{item}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {panels.map((panel, i) => (
                   <div key={i} data-panel-idx={i}>
                     {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
@@ -605,7 +664,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
               {cleanName}
             </h3>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              <Image src="/imagenes/Modales/Abogac%C3%ADa/logo_siglo.png" alt="Siglo 21" width={100} height={36} className="h-7 sm:h-9 w-auto object-contain block" />
+              <img src="/imagenes/Modales/Abogac%C3%ADa/logo_siglo.png" alt="Siglo 21" className="h-7 sm:h-9 w-auto object-contain block" />
               <button ref={closeBtnRef} onClick={handleClose}
                 className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-red-600/20 text-red-500 hover:bg-red-600/40 hover:text-red-400 transition-colors" aria-label="Cerrar">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -704,7 +763,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
 
         <div className="flex-shrink-0 flex items-center justify-between flex-wrap gap-x-[clamp(0.4rem,2vw,1rem)] gap-y-2 text-left w-full">
           <div className="flex items-center gap-[clamp(0.6rem,2.2vw,1.2rem)]">
-            <Image src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" width={28} height={28} className="h-[clamp(1.4rem,2.8vh,1.8rem)] w-auto rounded-sm block shadow-sm" />
+            <img src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" className="h-[clamp(1.4rem,2.8vh,1.8rem)] w-auto rounded-sm block shadow-sm" />
             <p className="text-[clamp(0.62rem,1.6vh,0.78rem)] font-black tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
               <span>Nivel: {carrera.nivel}</span>
               <span className="block text-white">Duración: {carrera.duracion}</span>
@@ -721,12 +780,16 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
 
         <div className="flex-shrink-0 flex justify-center md:justify-start pt-1 md:pt-4 mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
-          {(() => { const { prefix, cleanName } = getCleanName(carrera); return (<>
+          {(() => { const { prefix, cleanName } = getCleanName(carrera);
+            const cccMatch = cleanName.match(/\s*\(CCC\)\s*$/i);
+            const displayName = cccMatch ? cleanName.replace(cccMatch[0], '') : cleanName;
+            return (<>
             <div className="flex gap-2.5">
               <div className="w-[3px] bg-[#00c7b1] rounded-sm flex-shrink-0 self-stretch" />
               <div>
                 {prefix && <p className="text-[clamp(0.55rem,2vw,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-center md:text-left">{prefix}</p>}
-                <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,4vw,3.5rem)] md:whitespace-nowrap font-black text-white leading-[0.9] md:leading-normal uppercase tracking-tighter">{cleanName.toUpperCase()}</h2>
+                <h2 className="text-[clamp(1.2rem,7.5vw,2rem)] md:text-[clamp(1.8rem,3.5vw,3rem)] font-black text-white leading-[0.9] md:leading-[0.95] uppercase tracking-tighter">{displayName.toUpperCase()}</h2>
+                {cccMatch && <p className="text-[0.6rem] md:text-xs font-bold text-[#7ca19b] uppercase tracking-widest mt-0.5">Ciclo de Complementación Curricular</p>}
               </div>
             </div>
           </>); })()}
@@ -743,7 +806,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         <div className="md:hidden mt-auto flex-shrink-0 flex flex-col gap-1.5">
           {slide.imagen_mobile && (
             <div className="flex items-end justify-center relative max-h-[22vh]" style={{ minHeight: '100px' }}>
-              <Image src={encodeImagePath(slide.imagen_mobile!)} alt={carrera.nombre} fill className="object-contain" />
+              <img src={encodeImagePath(slide.imagen_mobile!)} alt={carrera.nombre} className="absolute inset-0 w-full h-full object-contain" />
             </div>
           )}
           {slide.badges && (
@@ -770,7 +833,8 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
       </div>
       {slide.imagen_desktop && (
         <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-[#00c7b1]/20 relative" style={{ width: '42%' }}>
-          <Image src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} fill className={`object-cover ${carrera.nombre === 'Abogacía' ? '' : 'brightness-125'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
+          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className={`absolute inset-0 w-full h-full object-cover ${carrera.nombre === 'Abogacía' ? '' : 'brightness-150'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
+          {carrera.nombre === 'Contador Público' && <div className="absolute inset-0 bg-[#013729]/35 pointer-events-none" />}
         </div>
       )}
     </div>
@@ -782,7 +846,7 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
       {slide.imagen && (
         <div className="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,18vh,12rem)] md:h-full">
-          <Image src={encodeImagePath(slide.imagen!)} alt="Modalidad" fill className="object-cover object-[center_15%]" />
+          <img src={encodeImagePath(slide.imagen!)} alt="Modalidad" className="absolute inset-0 w-full h-full object-cover object-[center_15%]" />
           <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent z-20 pointer-events-none" />
         </div>
       )}
@@ -875,22 +939,6 @@ function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: 
           <span className="px-1.5 py-0.5 rounded text-[0.5rem] font-black tracking-wider" style={{ background: '#c0392b', color: 'white' }}>PDF</span>
         </button>
       </div>
-      {/* Requisito obligatorio (si hay extras con "requisito" en el título) */}
-      {slide.paginas.some(p => p.extras?.some(e => e.titulo.toLowerCase().includes('requisito'))) && (() => {
-        const req = slide.paginas.flatMap(p => p.extras || []).find(e => e.titulo.toLowerCase().includes('requisito'));
-        if (!req) return null;
-        return (
-          <div className="flex-shrink-0 flex items-start gap-2.5 px-3 py-2.5 rounded-lg border border-[#e69b05]/40" style={{ background: 'rgba(230,155,5,0.08)' }}>
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#e69b05]/20 flex items-center justify-center text-red-500 text-xs font-black leading-none">!</span>
-            <div className="min-w-0">
-              <p className="text-[0.65rem] font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
-              {req.items.map((item, i) => (
-                <p key={i} className="text-xs text-[#e0d8c8] leading-snug">{item}</p>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
       <PlanPanels paginas={slide.paginas} carreraNombre={carrera.nombre} />
     </div>
   );
@@ -910,7 +958,7 @@ function SlideCierreView({ slide }: { slide: import('./types').SlideCierre }) {
       {/* Desktop side image */}
       {slide.imagen && (
         <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
-          <Image src={encodeImagePath(slide.imagen!)} alt="Instituto" fill className="object-cover object-left-bottom" />
+          <img src={encodeImagePath(slide.imagen!)} alt="Instituto" className="absolute inset-0 w-full h-full object-cover object-left-bottom" />
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}

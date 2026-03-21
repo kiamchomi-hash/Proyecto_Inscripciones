@@ -513,16 +513,39 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
   );
 }
 
+// Prefetch slide images on hover/touch
+function prefetchImages(carrera: Carrera) {
+  if (!carrera.slides?.length) return;
+  const seen = new Set<string>();
+  for (const slide of carrera.slides) {
+    const src = ('imagen_desktop' in slide && slide.imagen_desktop) || ('imagen' in slide && (slide as any).imagen);
+    if (src && !seen.has(src)) {
+      seen.add(src);
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.as = 'image';
+      link.href = src.split('/').map((s: string) => encodeURIComponent(s)).join('/');
+      document.head.appendChild(link);
+    }
+  }
+}
+
 // Individual career card
 function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carrera) => void }) {
   const { prefix, cleanName } = getCareerInfo(carrera);
   const badge = carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
+  const prefetched = useRef(false);
+  const handlePrefetch = useCallback(() => {
+    if (!prefetched.current) { prefetched.current = true; prefetchImages(carrera); }
+  }, [carrera]);
 
   return (
     <li
       className="career-card group"
       data-testid="career-card"
       onClick={() => onClick(carrera)}
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
     >
       {badge && (
         <span className={`career-badge ${carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>

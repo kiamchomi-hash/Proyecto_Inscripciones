@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
 import { type Carrera, CATEGORIES, getCategoryForCarrera } from './types';
 
@@ -21,6 +22,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [localidad, setLocalidad] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -62,7 +64,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
 
   // Form validity: at least email or telefono, and email must be valid
-  const isValid = (email.trim() || telefono.trim()) && !emailInvalid;
+  const isValid = (email.trim() || telefono.trim()) && !emailInvalid && !!turnstileToken;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -123,6 +125,7 @@ export default function EnrollmentForm({ carreras }: Props) {
       setTelefono('');
       setLocalidad('');
       setEquivalencias(false);
+      setTurnstileToken('');
     }, 4000);
   };
 
@@ -391,8 +394,15 @@ export default function EnrollmentForm({ carreras }: Props) {
             </div>
 
 
-            {/* Submit */}
-            <div className="px-3 sm:px-4 py-2.5 sm:py-3">
+            {/* Turnstile + Submit */}
+            <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2">
+              <Turnstile
+                sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken('')}
+                theme="dark"
+                size="flexible"
+              />
               <button
                 type="submit"
                 disabled={!isValid || submitting}

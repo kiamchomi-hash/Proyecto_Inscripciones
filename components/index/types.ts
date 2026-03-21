@@ -134,15 +134,19 @@ function carreraFullName(carrera: Carrera): string {
   return nombre;
 }
 
-// Slug-friendly name for share URLs: remove accents, spaces → _
+// Slug-friendly name for share URLs: remove accents, lowercase, spaces → -
 export function carreraToSlug(carrera: Carrera | string): string {
   const fullName = typeof carrera === 'string' ? carrera : carreraFullName(carrera);
   return fullName
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '_');
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 }
 
-// Find carrera by slug (reverse of carreraToSlug)
+// Find carrera by slug (reverse of carreraToSlug), supports old format
 export function findCarreraBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
-  return carreras.find(c => carreraToSlug(c) === slug);
+  const normalized = slug.toLowerCase().replace(/_/g, '-');
+  return carreras.find(c => carreraToSlug(c) === slug || carreraToSlug(c) === normalized);
 }
