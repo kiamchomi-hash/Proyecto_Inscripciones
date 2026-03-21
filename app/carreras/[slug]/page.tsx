@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug } from '@/components/index/types';
@@ -23,7 +23,12 @@ async function getCarreras() {
 }
 
 function findBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
-  return carreras.find(c => carreraToSlug(c) === slug);
+  // Try exact match first
+  const exact = carreras.find(c => carreraToSlug(c) === slug);
+  if (exact) return exact;
+  // Try old format (underscores, mixed case) → normalize and match
+  const normalized = slug.toLowerCase().replace(/_/g, '-');
+  return carreras.find(c => carreraToSlug(c) === normalized);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -52,6 +57,12 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   const carreras = await getCarreras();
   const carrera = findBySlug(carreras, slug);
   if (!carrera) notFound();
+
+  // Redirect old format URLs to new canonical slug
+  const canonicalSlug = carreraToSlug(carrera);
+  if (slug !== canonicalSlug) {
+    redirect(`/carreras/${canonicalSlug}`);
+  }
 
   return (
     <main className="flex-1">
