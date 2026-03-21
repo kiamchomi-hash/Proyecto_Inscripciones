@@ -489,13 +489,15 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
               </button>
             )}
             {showTurnstile && !turnstileToken && (
-              <Turnstile
-                sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                onVerify={handleTurnstileVerify}
-                onExpire={() => setTurnstileToken('')}
-                theme="dark"
-                size="flexible"
-              />
+              <div className="w-full max-w-full overflow-hidden">
+                <Turnstile
+                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                  onVerify={handleTurnstileVerify}
+                  onExpire={() => setTurnstileToken('')}
+                  theme="dark"
+                  size="flexible"
+                />
+              </div>
             )}
             <button
               onClick={() => {
