@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
 
 export interface CalendarWeek {
@@ -99,36 +100,113 @@ function DescriptionPanel({ desc }: { desc: string[] }) {
   );
 }
 
-/* ── Calendar ── */
-function Calendar({ weeks, selectedDays, onToggleDay, locked }: { weeks: CalendarWeek[]; selectedDays: Set<string>; onToggleDay: (weekIdx: number, dayIdx: number) => void; locked?: boolean }) {
+/* ── Monthly Calendar ── */
+function MonthlyCalendar({ selectedDays, onToggleDay, locked }: { selectedDays: Set<string>; onToggleDay: (key: string, dayInfo: { num: string; month: string; past: boolean }) => void; locked?: boolean }) {
+  const now = new Date();
+  const [viewYear, setViewYear] = useState(now.getFullYear());
+  const [viewMonth, setViewMonth] = useState(now.getMonth());
+
+  const todayStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+
+  const monthName = new Date(viewYear, viewMonth).toLocaleString('es-ES', { month: 'long' });
+
+  // Build weeks grid for the month (only weekdays Mon-Fri)
+  const weeks = useMemo(() => {
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    const lastDay = new Date(viewYear, viewMonth + 1, 0);
+    const result: { num: number; key: string; past: boolean; empty: boolean }[][] = [];
+    let currentWeek: { num: number; key: string; past: boolean; empty: boolean }[] = [];
+
+    // Fill empty slots before the first weekday
+    const firstDow = firstDay.getDay(); // 0=Sun
+    // Convert to Mon=0..Fri=4, Sat/Sun=-1
+    const moStart = firstDow === 0 ? -1 : firstDow - 1;
+    if (moStart > 0 && moStart <= 4) {
+      for (let i = 0; i < moStart; i++) {
+        currentWeek.push({ num: 0, key: '', past: true, empty: true });
+      }
+    }
+
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const date = new Date(viewYear, viewMonth, d);
+      const dow = date.getDay();
+      if (dow === 0 || dow === 6) continue; // Skip weekends
+
+      const isPast = date < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const key = `${viewYear}-${viewMonth}-${d}`;
+      currentWeek.push({ num: d, key, past: isPast, empty: false });
+
+      if (dow === 5) { // Friday = end of week
+        result.push(currentWeek);
+        currentWeek = [];
+      }
+    }
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 5) {
+        currentWeek.push({ num: 0, key: '', past: true, empty: true });
+      }
+      result.push(currentWeek);
+    }
+    return result;
+  }, [viewYear, viewMonth, now.getFullYear(), now.getMonth(), now.getDate()]);
+
+  const canGoPrev = viewYear > now.getFullYear() || (viewYear === now.getFullYear() && viewMonth > now.getMonth());
+
+  const goNext = () => {
+    if (viewMonth === 11) { setViewYear(y => y + 1); setViewMonth(0); }
+    else setViewMonth(m => m + 1);
+  };
+  const goPrev = () => {
+    if (!canGoPrev) return;
+    if (viewMonth === 0) { setViewYear(y => y - 1); setViewMonth(11); }
+    else setViewMonth(m => m - 1);
+  };
 
   return (
-    <div className="flex items-center justify-center h-full min-h-0 w-full p-[8px_15px] overflow-hidden">
-      <div className="ca-cal-box" style={locked ? { opacity: 0.5, pointerEvents: 'none' } : undefined}>
+    <div className="flex flex-col items-center h-full min-h-0 w-full p-[8px_15px] overflow-hidden">
+      {/* Day headers */}
+      <div className="ca-cal-box flex-1" style={locked ? { opacity: 0.5, pointerEvents: 'none' } : undefined}>
+        {/* Month navigation — inside ca-cal-box to align with grid */}
+        <div className="flex items-center justify-between mb-2 px-1">
+          <button
+            onClick={goPrev}
+            disabled={!canGoPrev}
+            className="w-7 h-7 rounded-full flex items-center justify-center transition-colors disabled:opacity-20"
+            style={{ background: 'rgba(0,199,177,0.15)', color: 'var(--ca-teal)' }}
+            aria-label="Mes anterior"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <span className="text-sm font-extrabold uppercase tracking-wider capitalize" style={{ color: 'var(--ca-teal)' }}>
+            {monthName} {viewYear}
+          </span>
+          <button
+            onClick={goNext}
+            className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
+            style={{ background: 'rgba(0,199,177,0.15)', color: 'var(--ca-teal)' }}
+            aria-label="Mes siguiente"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
         <header className="ca-cal-header">
           {['Lu', 'Ma', 'Mi', 'Ju', 'Vi'].map(d => (
-            <div key={d} className="text-center py-2 text-xs font-extrabold uppercase tracking-wider" style={{ color: 'var(--ca-teal)' }}>{d}</div>
+            <div key={d} className="text-center py-1.5 text-xs font-extrabold uppercase tracking-wider" style={{ color: 'var(--ca-teal)' }}>{d}</div>
           ))}
         </header>
 
         <div className="flex-1 flex flex-col">
           {weeks.map((week, wi) => (
-            <div key={wi} className="flex-1 flex flex-col overflow-hidden">
-              <div className="ca-week-label">
-                <div className="ca-month-tag">{week.month}</div>
-                <div className="ca-week-text">{week.label}</div>
-              </div>
-              <div className="ca-day-grid">
-                {week.days.map((day, di) => (
-                  <div
-                    key={di}
-                    className={`ca-day ${day.past ? 'past' : ''} ${selectedDays.has(`${wi}-${di}`) ? 'selected' : ''}`}
-                    onClick={() => !day.past && !locked && onToggleDay(wi, di)}
-                  >
-                    {day.num}
-                  </div>
-                ))}
-              </div>
+            <div key={wi} className="ca-day-grid">
+              {week.map((day, di) => (
+                <div
+                  key={di}
+                  className={`ca-day ${day.empty ? 'empty' : ''} ${day.past && !day.empty ? 'past' : ''} ${selectedDays.has(day.key) ? 'selected' : ''} ${day.key === todayStr ? 'today' : ''}`}
+                  onClick={() => !day.past && !day.empty && !locked && onToggleDay(day.key, { num: day.num.toString().padStart(2, '0'), month: monthName, past: day.past })}
+                >
+                  {day.empty ? '' : day.num}
+                </div>
+              ))}
             </div>
           ))}
         </div>
@@ -147,7 +225,7 @@ function buildHours(modoManana: boolean) {
   });
 }
 
-type ScheduleMode = 'picking' | 'choose-mode' | 'per-day' | 'done';
+type ScheduleMode = 'picking' | 'choose-mode' | 'per-day' | 'confirm' | 'done';
 
 function HourPills({ hours, selected, onToggle, disabled, cols }: {
   hours: { from: string; to: string }[];
@@ -181,8 +259,12 @@ interface DayInfo { num: string; month: string }
 
 function formatDay(d: DayInfo) { return `${d.num} de ${d.month}`; }
 
-function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, onInteract }: { modoManana: boolean; materiaId: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void }) {
-  const [mode, setMode] = useState<ScheduleMode>('picking');
+function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDone, onReset, onInteract, onLockCalendar }: { modoManana: boolean; materiaId: string; materiaSlug: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void; onLockCalendar?: (locked: boolean) => void }) {
+  const [mode, _setMode] = useState<ScheduleMode>('picking');
+  const setMode = (m: ScheduleMode) => {
+    _setMode(m);
+    onLockCalendar?.(m !== 'picking');
+  };
   const [error, setError] = useState<string | null>(null);
   const [selectedHours, setSelectedHours] = useState<Set<number>>(new Set());
   const [perDayHours, setPerDayHours] = useState<Record<string, Set<number>>>({});
@@ -190,9 +272,14 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
   const [submittedDays, setSubmittedDays] = useState<DayInfo[]>([]);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [bloqueoSemanal, setBloqueoSemanal] = useState(false);
   const [showInputError, setShowInputError] = useState(false);
   const hours = buildHours(modoManana);
   const cols = modoManana ? 'grid-cols-4' : 'grid-cols-3';
+  const [showTurnstile, setShowTurnstile] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [confirmAction, setConfirmAction] = useState<'same' | 'perday'>('same');
+  const pendingSubmitRef = useRef<'same' | 'perday' | null>(null);
   const soloDigitos = telefono.replace(/[\s\-\+]/g, '');
   const telefonoValido = soloDigitos.length >= 8 && /^\d+$/.test(soloDigitos.slice(-8));
   const datosCompletos = telefonoValido;
@@ -220,7 +307,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
     const horarios = Array.from(selectedHours).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`);
     const dias = selectedDays.map(d => d.num);
     const { error: e } = await supabase.from('solicitudes_clase').insert({
-      materia_id: materiaId, dias, horarios, nombre: nombre.trim() || null, telefono: telefono.trim(),
+      materia_id: materiaId, dias, horarios, nombre: nombre.trim() || null, telefono: telefono.trim(), bloqueo_semanal: bloqueoSemanal,
     });
     if (e) setError('Error al enviar. Intente más tarde.');
     else { setSubmittedDays([...selectedDays]); setMode('done'); onDone(); }
@@ -242,6 +329,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
       horarios: Array.from(perDayHours[day.num] || []).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`),
       nombre: nombre.trim() || null,
       telefono: telefono.trim(),
+      bloqueo_semanal: bloqueoSemanal,
     })).filter(r => r.horarios.length > 0);
 
     if (rows.length === 0) { setError('Seleccioná al menos un horario por día.'); return; }
@@ -249,6 +337,24 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
     const { error: e } = await supabase.from('solicitudes_clase').insert(rows);
     if (e) setError('Error al enviar. Intente más tarde.');
     else { setSubmittedDays(rows.map(r => selectedDays.find(d => d.num === r.dias[0])!)); setMode('done'); onDone(); }
+  };
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+    const action = pendingSubmitRef.current;
+    if (action === 'same') handleChooseSame();
+    else if (action === 'perday') handleSubmitPerDay();
+    pendingSubmitRef.current = null;
+  };
+
+  const requestSubmit = (action: 'same' | 'perday') => {
+    if (turnstileToken) {
+      if (action === 'same') handleChooseSame();
+      else handleSubmitPerDay();
+    } else {
+      pendingSubmitRef.current = action;
+      setShowTurnstile(true);
+    }
   };
 
   const canProceed = selectedHours.size > 0 && selectedDays.length > 0;
@@ -262,7 +368,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
       </div>
 
       {/* Contenido scrollable */}
-      <div className="flex-1 flex flex-col justify-evenly min-h-0 overflow-y-auto ca-schedule-scroll">
+      <div className="flex-1 flex flex-col justify-evenly items-stretch min-h-0 overflow-y-auto ca-schedule-scroll">
 
       {selectedDays.length === 0 ? (
         <div className="flex-1 flex items-center justify-center px-3">
@@ -277,8 +383,8 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
         </div>
       ) : (
       <>
-      {/* Hora pills principales — ocultas en per-day y done */}
-      {mode !== 'per-day' && mode !== 'done' && (
+      {/* Hora pills principales — ocultas en per-day, confirm y done */}
+      {mode !== 'per-day' && mode !== 'done' && mode !== 'confirm' && (
       <div className={`grid gap-2 px-3 my-2 ${cols}`}>
         {hours.map((slot, i) => (
           <button
@@ -297,31 +403,6 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
       </div>
       )}
 
-      {/* Datos del alumno — aparecen al seleccionar horarios */}
-      {mode !== 'done' && mode !== 'per-day' && selectedHours.size > 0 && (
-        <div className="px-3 flex gap-2 mb-2 max-md:mb-3 ca-slide-in">
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={nombre}
-            onChange={e => { setNombre(e.target.value); if (showInputError) setShowInputError(false); }}
-            className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
-            style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.2)', color: 'var(--ca-text-main)' }}
-            onFocus={onInteract}
-          />
-          <input
-            type="tel"
-            placeholder="Teléfono"
-            value={telefono}
-            onChange={e => { setTelefono(e.target.value); if (showInputError) setShowInputError(false); }}
-            className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
-            style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.2)', color: 'var(--ca-text-main)' }}
-            onFocus={onInteract}
-          />
-        </div>
-      )}
-
-
       {/* Zona inferior — cambia según el modo */}
       <div className="px-3 pb-3 flex flex-col gap-2 ca-schedule-transition">
         {mode === 'done' ? (
@@ -338,7 +419,7 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
                 : `Días solicitados: ${submittedDays.map(formatDay).join(', ')}`}
             </span>
             <button
-              onClick={() => { setMode('picking'); setSelectedHours(new Set()); setPerDayHours({}); setSubmittedDays([]); onReset(); }}
+              onClick={() => { setMode('picking'); setSelectedHours(new Set()); setPerDayHours({}); setSubmittedDays([]); setTurnstileToken(''); setShowTurnstile(false); setBloqueoSemanal(false); onReset(); }}
               className="mt-1 px-4 py-1.5 rounded-full text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
               style={{ background: 'rgba(0,199,177,0.1)', border: '1px solid rgba(0,199,177,0.3)', color: 'var(--ca-teal)' }}
             >
@@ -351,38 +432,106 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
               disabled={selectedHours.size === 0}
               onClick={() => {
                 onInteract?.();
-                if (!datosCompletos) { setShowInputError(true); return; }
-                setShowInputError(false);
-                selectedDays.length === 1 ? handleChooseSame() : setMode('choose-mode');
+                if (selectedDays.length > 1) { setMode('choose-mode'); } else { setConfirmAction('same'); setMode('confirm'); }
               }}
               className="w-full py-2 rounded-lg text-[0.75rem] font-bold uppercase tracking-wider text-white transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)' }}
+            >
+              Solicitar clase
+            </button>
+            {selectedHours.size > 0 && (
+              <div className="rounded-lg px-3 py-2 text-[0.62rem] leading-relaxed text-center ca-slide-in" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(0,199,177,0.12)', color: '#ffffff' }}>
+                Solicitar una clase no garantiza la reserva. La profesora confirmará disponibilidad.
+              </div>
+            )}
+          </>
+        ) : mode === 'confirm' ? (
+          <div className="flex flex-col gap-2 ca-slide-in">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Nombre"
+                value={nombre}
+                onChange={e => { setNombre(e.target.value); if (showInputError) setShowInputError(false); }}
+                className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
+                style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.2)', color: 'var(--ca-text-main)' }}
+                onFocus={onInteract}
+              />
+              <input
+                type="tel"
+                placeholder="Teléfono"
+                value={telefono}
+                onChange={e => { setTelefono(e.target.value); if (showInputError) setShowInputError(false); }}
+                className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
+                style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.2)', color: 'var(--ca-text-main)' }}
+                onFocus={onInteract}
+              />
+            </div>
+            {materiaSlug === 'matematica' && (
+              <button
+                type="button"
+                onClick={() => setBloqueoSemanal(!bloqueoSemanal)}
+                className="w-full py-2 rounded-lg text-[0.75rem] font-bold uppercase tracking-wider transition-all duration-300"
+                style={{
+                  background: bloqueoSemanal ? 'linear-gradient(180deg, #093838, #002425)' : 'linear-gradient(45deg, #000 0%, #333 100%)',
+                  border: bloqueoSemanal ? '1.5px solid #00c7b1' : '1.5px solid rgba(230,155,5,0.3)',
+                  color: bloqueoSemanal ? '#fff' : '#e69b05',
+                  boxShadow: bloqueoSemanal ? '0 0 14px rgba(0,199,177,0.25)' : 'none',
+                }}
+              >
+                <span className="inline-flex items-center justify-center gap-1.5">
+                  <svg className={`w-4 h-4 ${bloqueoSemanal ? 'ca-check-animate' : 'opacity-0'}`} fill="none" viewBox="0 0 24 24" stroke="#00c7b1" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Reservar todas las semanas
+                </span>
+                <span className="block text-[0.58rem] font-normal uppercase tracking-widest mt-0.5" style={{ color: bloqueoSemanal ? 'rgba(255,255,255,0.6)' : 'rgba(230,155,5,0.5)' }}>Descuento por continuidad</span>
+              </button>
+            )}
+            {showTurnstile && !turnstileToken && (
+              <Turnstile
+                sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onVerify={handleTurnstileVerify}
+                onExpire={() => setTurnstileToken('')}
+                theme="dark"
+                size="flexible"
+              />
+            )}
+            <button
+              onClick={() => {
+                onInteract?.();
+                if (!datosCompletos) { setShowInputError(true); return; }
+                setShowInputError(false);
+                requestSubmit(confirmAction);
+              }}
+              className="w-full py-2 rounded-lg text-[0.75rem] font-bold uppercase tracking-wider text-white transition-all hover:brightness-110"
               style={{
                 background: showInputError && !datosCompletos
                   ? 'linear-gradient(135deg, #cc2936 0%, #8b1a1a 100%)'
                   : 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)',
               }}
             >
-            {showInputError && !datosCompletos ? 'Completá el teléfono' : 'Solicitar clase'}
+              {showInputError && !datosCompletos ? 'Completá el teléfono' : 'Confirmar solicitud'}
             </button>
             {showInputError && !datosCompletos && (
               <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#ff6b6b' }}>
-                {nombre.trim().length < 2 && telefono.trim().length === 0
-                  ? 'Ingresá tu nombre y teléfono para continuar.'
-                  : nombre.trim().length < 2
-                  ? 'Ingresá tu nombre (mínimo 2 caracteres).'
+                {telefono.trim().length === 0
+                  ? 'Ingresá tu teléfono para continuar.'
                   : 'Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx'}
               </div>
             )}
-            {selectedHours.size > 0 && !showInputError && (
-              <div className="rounded-lg px-3 py-2 text-[0.62rem] leading-relaxed text-center ca-slide-in" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(0,199,177,0.12)', color: '#ffffff' }}>
-                Solicitar una clase no garantiza la reserva. El/la profesor/a confirmará disponibilidad.
-              </div>
-            )}
-          </>
+            <button
+              onClick={() => { setMode('picking'); setShowTurnstile(false); setTurnstileToken(''); setShowInputError(false); }}
+              className="w-full py-1.5 rounded-lg text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
+              style={{ background: 'rgba(200,50,50,0.1)', border: '1.5px solid rgba(220,60,60,0.7)', color: '#e8a0a0' }}
+            >
+              Cancelar selección
+            </button>
+          </div>
         ) : mode === 'choose-mode' ? (
           <div className="flex flex-col gap-2 ca-slide-in">
             <button
-              onClick={() => { onInteract?.(); handleChooseSame(); }}
+              onClick={() => { onInteract?.(); setConfirmAction('same'); setMode('confirm'); }}
               className="w-full py-2 rounded-lg text-[0.7rem] font-bold text-white transition-all hover:brightness-110"
               style={{ background: 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)' }}
             >
@@ -398,38 +547,23 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
             <button
               onClick={() => setMode('picking')}
               className="w-full py-1.5 rounded-lg text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--ca-text-muted)' }}
+              style={{ background: 'rgba(200,50,50,0.1)', border: '1.5px solid rgba(220,60,60,0.7)', color: '#e8a0a0' }}
             >
-              Volver
+              Cancelar selección
             </button>
           </div>
         ) : mode === 'per-day' ? (
           <div className="flex flex-col gap-2 ca-slide-in">
-            {/* Carousel nav */}
-            <div className="flex items-center justify-between px-1">
-              <button
-                disabled={perDayIdx === 0}
-                onClick={() => setPerDayIdx(prev => prev - 1)}
-                aria-label="Ver día anterior"
-                className="w-6 h-6 rounded-full flex items-center justify-center transition-colors disabled:opacity-20"
-                style={{ background: 'rgba(0,199,177,0.15)', color: 'var(--ca-teal)' }}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-              </button>
+            {/* Day title */}
+            <div className="text-center">
               <span className="text-[0.65rem] font-extrabold uppercase tracking-wider capitalize" style={{ color: 'var(--ca-teal)' }}>
-                {formatDay(selectedDays[perDayIdx])} <span className="font-normal normal-case tracking-normal" style={{ color: 'var(--ca-text-muted)' }}>({perDayIdx + 1}/{selectedDays.length})</span>
+                {formatDay(selectedDays[perDayIdx])}
               </span>
-              <button
-                disabled={perDayIdx === selectedDays.length - 1}
-                onClick={() => setPerDayIdx(prev => prev + 1)}
-                aria-label="Ver día siguiente"
-                className="w-6 h-6 rounded-full flex items-center justify-center transition-colors disabled:opacity-20"
-                style={{ background: 'rgba(0,199,177,0.15)', color: 'var(--ca-teal)' }}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
-              </button>
+              <span className="text-[0.6rem] ml-1.5" style={{ color: 'var(--ca-text-muted)' }}>
+                (día {perDayIdx + 1} de {selectedDays.length})
+              </span>
             </div>
-            {/* Day card */}
+            {/* Hour pills for current day */}
             <div key={selectedDays[perDayIdx].num} className="rounded-lg p-2 ca-slide-in" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(0,199,177,0.12)' }}>
               <HourPills
                 hours={hours}
@@ -446,61 +580,46 @@ function SchedulePanel({ modoManana, materiaId, selectedDays, onDone, onReset, o
                   key={i}
                   onClick={() => setPerDayIdx(i)}
                   className="w-1.5 h-1.5 rounded-full transition-colors"
-                  style={{ background: i === perDayIdx ? 'var(--ca-teal)' : 'rgba(0,199,177,0.25)' }}
+                  style={{ background: i <= perDayIdx ? 'var(--ca-teal)' : 'rgba(0,199,177,0.25)' }}
                 />
               ))}
             </div>
-            <div className="flex gap-2 mb-1 max-md:mb-2">
-              <input
-                type="text"
-                placeholder="Nombre"
-                value={nombre}
-                onChange={e => { setNombre(e.target.value); if (showInputError) setShowInputError(false); }}
-                className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
-                style={{ background: '#ffffff', border: '1px solid #d1d5db', color: '#1f2937' }}
-                onFocus={onInteract}
-              />
-              <input
-                type="tel"
-                placeholder="Teléfono"
-                value={telefono}
-                onChange={e => { setTelefono(e.target.value); if (showInputError) setShowInputError(false); }}
-                className="flex-1 min-w-0 px-3 py-1.5 rounded-lg text-[0.68rem] font-medium outline-none transition-colors"
-                style={{ background: '#ffffff', border: '1px solid #d1d5db', color: '#1f2937' }}
-                onFocus={onInteract}
-              />
-            </div>
+            {/* Confirm current day / Continue to next */}
             <button
+              disabled={(perDayHours[selectedDays[perDayIdx].num]?.size || 0) === 0}
               onClick={() => {
                 onInteract?.();
-                if (!datosCompletos) { setShowInputError(true); return; }
-                setShowInputError(false);
-                handleSubmitPerDay();
+                if (perDayIdx < selectedDays.length - 1) {
+                  setPerDayIdx(prev => prev + 1);
+                } else {
+                  setConfirmAction('perday');
+                  setMode('confirm');
+                }
               }}
-              className="w-full py-2 rounded-lg text-[0.7rem] font-bold uppercase tracking-wider text-white transition-all hover:brightness-110"
-              style={{
-                background: showInputError && !datosCompletos
-                  ? 'linear-gradient(135deg, #cc2936 0%, #8b1a1a 100%)'
-                  : 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)',
-              }}
+              className="w-full py-2 rounded-lg text-[0.75rem] font-bold uppercase tracking-wider text-white transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: 'linear-gradient(135deg, var(--cau-brand-blue, #005587) 0%, var(--cau-brand-green, #058c70) 100%)' }}
             >
-              {showInputError && !datosCompletos ? 'Completá el teléfono' : 'Confirmar solicitud'}
+              {perDayIdx < selectedDays.length - 1
+                ? `Confirmar ${formatDay(selectedDays[perDayIdx])}`
+                : `Confirmar ${formatDay(selectedDays[perDayIdx])}`}
             </button>
-            {showInputError && !datosCompletos && (
-              <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#ff6b6b' }}>
-                {nombre.trim().length < 2 && telefono.trim().length === 0
-                  ? 'Ingresá tu nombre y teléfono para continuar.'
-                  : nombre.trim().length < 2
-                  ? 'Ingresá tu nombre (mínimo 2 caracteres).'
-                  : 'Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx'}
-              </div>
+            {/* Back to previous day */}
+            {perDayIdx > 0 && (
+              <button
+                onClick={() => setPerDayIdx(prev => prev - 1)}
+                className="w-full py-1.5 rounded-lg text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
+                style={{ background: 'rgba(0,199,177,0.08)', border: '1px solid rgba(0,199,177,0.2)', color: 'var(--ca-teal)' }}
+              >
+                Volver al día anterior
+              </button>
             )}
+            {/* Cancel */}
             <button
-              onClick={() => setMode('picking')}
+              onClick={() => { setMode('picking'); setPerDayHours({}); setPerDayIdx(0); }}
               className="w-full py-1.5 rounded-lg text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--ca-text-muted)' }}
+              style={{ background: 'rgba(200,50,50,0.1)', border: '1.5px solid rgba(220,60,60,0.7)', color: '#e8a0a0' }}
             >
-              Volver
+              Cancelar selección
             </button>
           </div>
         ) : null}
@@ -532,7 +651,7 @@ function SidebarButton({ label, active, onClick }: { label: string; active: bool
 }
 
 /* ── Main Page Component ── */
-export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSlug }: { calendarWeeks: CalendarWeek[]; materiasData: MateriaDB[]; initialSlug?: string }) {
+export default function ClasesApoyoPage({ materiasData, initialSlug }: { calendarWeeks?: CalendarWeek[]; materiasData: MateriaDB[]; initialSlug?: string }) {
   const router = useRouter();
   const activeIdx = initialSlug ? materiasData.findIndex(m => m.slug === initialSlug) : null;
 
@@ -545,7 +664,9 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
     }
   }, [materiasData, router]);
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
+  const [selectedDayInfoMap, setSelectedDayInfoMap] = useState<Record<string, { num: string; month: string }>>({});
   const [requestDone, setRequestDone] = useState(false);
+  const [calendarLocked, setCalendarLocked] = useState(false);
   const materia = activeIdx !== null ? materiasData[activeIdx] : null;
   const footerRef = useRef<HTMLElement>(null);
   const scrollToBottom = useCallback(() => {
@@ -554,8 +675,7 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
     }
   }, []);
 
-  const handleToggleDay = (weekIdx: number, dayIdx: number) => {
-    const key = `${weekIdx}-${dayIdx}`;
+  const handleToggleDay = (key: string, dayInfo: { num: string; month: string; past: boolean }) => {
     setSelectedDays(prev => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
@@ -563,18 +683,18 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
       if (next.size === 0) setScheduleKey(k => k + 1);
       return next;
     });
+    setSelectedDayInfoMap(prev => {
+      const next = { ...prev };
+      if (prev[key]) delete next[key];
+      else next[key] = { num: dayInfo.num, month: dayInfo.month };
+      return next;
+    });
     scrollToBottom();
   };
 
   const [scheduleKey, setScheduleKey] = useState(0);
 
-  const selectedDayInfos = Array.from(selectedDays).map(key => {
-    const [wi, di] = key.split('-').map(Number);
-    const week = calendarWeeks[wi];
-    const day = week?.days[di];
-    if (!week || !day) return null;
-    return { num: day.num, month: week.month };
-  }).filter(Boolean) as { num: string; month: string }[];
+  const selectedDayInfos = Array.from(selectedDays).map(key => selectedDayInfoMap[key]).filter(Boolean) as { num: string; month: string }[];
 
   if (!materiasData.length) {
     return (
@@ -596,7 +716,7 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
                 onClick={() => switchMateria(i)}
                 role="tab"
                 aria-selected={activeIdx === i}
-                className="ca-mobile-tab flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors"
+                className={`ca-mobile-tab ${m.label.includes(' ') ? 'ca-mobile-tab-multiword' : ''} flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors`}
                 style={{
                   color: activeIdx === i ? '#fff' : 'var(--ca-text-muted)',
                   background: activeIdx === i ? '#051d1a' : 'transparent',
@@ -662,8 +782,8 @@ export default function ClasesApoyoPage({ calendarWeeks, materiasData, initialSl
 
                       {/* Row 2: Calendar + Schedule */}
                       <div className="ca-r2">
-                        <Calendar weeks={calendarWeeks} selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone} />
-                        <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setSelectedDays(new Set()); }} onInteract={scrollToBottom} />
+                        <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} />
+                        <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} />
                       </div>
                     </>
                   )}

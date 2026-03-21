@@ -306,6 +306,29 @@
   z-index: 1;
 }
 
+.ca-day.empty {
+  background: transparent !important;
+  border-color: transparent !important;
+  pointer-events: none;
+}
+
+.ca-day.today:not(.selected) {
+  border: 1.5px solid var(--ca-teal) !important;
+  color: var(--ca-teal) !important;
+  font-weight: 800;
+}
+
+@keyframes ca-check-draw {
+  from { stroke-dashoffset: 30; opacity: 0; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+.ca-check-animate {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: ca-check-draw 0.4s ease 0.1s forwards;
+}
+
 /* ── Loader ── */
 .ca-loader-ring {
   width: 24px;
@@ -390,12 +413,21 @@
     display: none;
   }
   .ca-mobile-tab {
-    flex: 1 !important;
+    flex: 1 1 0% !important;
     min-width: 0 !important;
-    padding: 8px 4px !important;
+    padding: 10px 2px !important;
     text-align: center !important;
-    font-size: 0.6rem !important;
+    font-size: clamp(0.45rem, 2.3vw, 0.62rem) !important;
     letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .ca-mobile-tab-multiword {
+    white-space: normal !important;
+    line-height: 1.2 !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
   }
 
   .ca-app {
