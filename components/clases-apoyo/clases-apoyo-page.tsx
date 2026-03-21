@@ -24,6 +24,8 @@ export interface MateriaDB {
   en_construccion: boolean;
   orden: number;
   modo_manana: boolean;
+  dias_bloqueados: string[];
+  horarios_bloqueados: string[];
 }
 
 /* ── WhatsApp SVG ── */
@@ -101,7 +103,14 @@ function DescriptionPanel({ desc }: { desc: string[] }) {
 }
 
 /* ── Monthly Calendar ── */
-function MonthlyCalendar({ selectedDays, onToggleDay, locked }: { selectedDays: Set<string>; onToggleDay: (key: string, dayInfo: { num: string; month: string; past: boolean }) => void; locked?: boolean }) {
+function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados }: { selectedDays: Set<string>; onToggleDay: (key: string, dayInfo: { num: string; month: string; past: boolean }) => void; locked?: boolean; diasBloqueados?: string[] }) {
+  const bloqueadosSet = useMemo(() => {
+    if (!diasBloqueados?.length) return new Set<string>();
+    return new Set(diasBloqueados.map(iso => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${y}-${m - 1}-${d}`;
+    }));
+  }, [diasBloqueados]);
   const now = new Date();
   const [viewYear, setViewYear] = useState(now.getFullYear());
   const [viewMonth, setViewMonth] = useState(now.getMonth());
@@ -201,8 +210,8 @@ function MonthlyCalendar({ selectedDays, onToggleDay, locked }: { selectedDays: 
               {week.map((day, di) => (
                 <div
                   key={di}
-                  className={`ca-day ${day.empty ? 'empty' : ''} ${day.past && !day.empty ? 'past' : ''} ${selectedDays.has(day.key) ? 'selected' : ''} ${day.key === todayStr ? 'today' : ''}`}
-                  onClick={() => !day.past && !day.empty && !locked && onToggleDay(day.key, { num: day.num.toString().padStart(2, '0'), month: monthName, past: day.past })}
+                  className={`ca-day ${day.empty ? 'empty' : ''} ${(day.past || bloqueadosSet.has(day.key)) && !day.empty ? 'past' : ''} ${selectedDays.has(day.key) ? 'selected' : ''} ${day.key === todayStr ? 'today' : ''} ${bloqueadosSet.has(day.key) && !day.empty ? 'blocked' : ''}`}
+                  onClick={() => !day.past && !day.empty && !locked && !bloqueadosSet.has(day.key) && onToggleDay(day.key, { num: day.num.toString().padStart(2, '0'), month: monthName, past: day.past })}
                 >
                   {day.empty ? '' : day.num}
                 </div>
@@ -227,30 +236,36 @@ function buildHours(modoManana: boolean) {
 
 type ScheduleMode = 'picking' | 'choose-mode' | 'per-day' | 'confirm' | 'done';
 
-function HourPills({ hours, selected, onToggle, disabled, cols }: {
+function HourPills({ hours, selected, onToggle, disabled, cols, bloqueados }: {
   hours: { from: string; to: string }[];
   selected: Set<number>;
   onToggle: (i: number) => void;
   disabled: boolean;
   cols: string;
+  bloqueados?: Set<string>;
 }) {
   return (
     <div className={`grid gap-1.5 ${cols}`}>
-      {hours.map((slot, i) => (
-        <button
-          key={slot.from}
-          disabled={disabled}
-          onClick={() => onToggle(i)}
-          className="flex items-center justify-center rounded-full text-[0.62rem] font-bold tabular-nums py-1 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-          style={{
-            background: selected.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
-            border: selected.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
-            color: selected.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
-          }}
-        >
-          {slot.from}–{slot.to}
-        </button>
-      ))}
+      {hours.map((slot, i) => {
+        const slotKey = `${slot.from}-${slot.to}`;
+        const isBloqueado = bloqueados?.has(slotKey);
+        return (
+          <button
+            key={slot.from}
+            disabled={disabled || isBloqueado}
+            onClick={() => onToggle(i)}
+            className="flex items-center justify-center rounded-full text-[0.62rem] font-bold tabular-nums py-1 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              background: isBloqueado ? 'rgba(239,68,68,0.15)' : selected.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
+              border: isBloqueado ? '1px solid rgba(239,68,68,0.3)' : selected.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
+              color: isBloqueado ? 'rgba(239,68,68,0.5)' : selected.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
+              textDecoration: isBloqueado ? 'line-through' : 'none',
+            }}
+          >
+            {slot.from}–{slot.to}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -259,7 +274,7 @@ interface DayInfo { num: string; month: string }
 
 function formatDay(d: DayInfo) { return `${d.num} de ${d.month}`; }
 
-function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDone, onReset, onInteract, onLockCalendar }: { modoManana: boolean; materiaId: string; materiaSlug: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void; onLockCalendar?: (locked: boolean) => void }) {
+function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDone, onReset, onInteract, onLockCalendar, horariosBloqueados }: { modoManana: boolean; materiaId: string; materiaSlug: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void; onLockCalendar?: (locked: boolean) => void; horariosBloqueados?: string[] }) {
   const [mode, _setMode] = useState<ScheduleMode>('picking');
   const setMode = (m: ScheduleMode) => {
     _setMode(m);
@@ -276,6 +291,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
   const [showInputError, setShowInputError] = useState(false);
   const hours = buildHours(modoManana);
   const cols = modoManana ? 'grid-cols-4' : 'grid-cols-3';
+  const bloqueadosSet = useMemo(() => new Set(horariosBloqueados || []), [horariosBloqueados]);
   const [showTurnstile, setShowTurnstile] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [confirmAction, setConfirmAction] = useState<'same' | 'perday'>('same');
@@ -386,20 +402,26 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
       {/* Hora pills principales — ocultas en per-day, confirm y done */}
       {mode !== 'per-day' && mode !== 'done' && mode !== 'confirm' && (
       <div className={`grid gap-2 px-3 my-2 ${cols}`}>
-        {hours.map((slot, i) => (
-          <button
-            key={slot.from}
-            onClick={() => { toggleHour(i); if (mode === 'choose-mode') setMode('picking'); }}
-            className="flex items-center justify-center rounded-full text-[0.68rem] font-bold tabular-nums py-1.5 transition-colors cursor-pointer"
-            style={{
-              background: selectedHours.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
-              border: selectedHours.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
-              color: selectedHours.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
-            }}
-          >
-            {slot.from}–{slot.to}
-          </button>
-        ))}
+        {hours.map((slot, i) => {
+          const slotKey = `${slot.from}-${slot.to}`;
+          const isBloqueado = bloqueadosSet.has(slotKey);
+          return (
+            <button
+              key={slot.from}
+              disabled={isBloqueado}
+              onClick={() => { toggleHour(i); if (mode === 'choose-mode') setMode('picking'); }}
+              className="flex items-center justify-center rounded-full text-[0.68rem] font-bold tabular-nums py-1.5 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              style={{
+                background: isBloqueado ? 'rgba(239,68,68,0.15)' : selectedHours.has(i) ? 'var(--ca-teal)' : 'rgba(0,199,177,0.1)',
+                border: isBloqueado ? '1px solid rgba(239,68,68,0.3)' : selectedHours.has(i) ? '1px solid var(--ca-teal)' : '1px solid rgba(0,199,177,0.25)',
+                color: isBloqueado ? 'rgba(239,68,68,0.5)' : selectedHours.has(i) ? 'var(--ca-selected-text)' : 'var(--ca-text-main)',
+                textDecoration: isBloqueado ? 'line-through' : 'none',
+              }}
+            >
+              {slot.from}–{slot.to}
+            </button>
+          );
+        })}
       </div>
       )}
 
@@ -573,6 +595,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
                 onToggle={(i) => togglePerDayHour(selectedDays[perDayIdx].num, i)}
                 disabled={false}
                 cols={cols}
+                bloqueados={bloqueadosSet}
               />
             </div>
             {/* Dot indicators */}
@@ -784,8 +807,8 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
 
                       {/* Row 2: Calendar + Schedule */}
                       <div className="ca-r2">
-                        <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} />
-                        <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} />
+                        <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} />
+                        <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
                       </div>
                     </>
                   )}

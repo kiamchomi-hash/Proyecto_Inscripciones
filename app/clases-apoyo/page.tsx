@@ -61,7 +61,7 @@ export default async function Page() {
 
   const { data: materias } = await supabase
     .from('materias')
-    .select('id, slug, label, nombre_profesor, whatsapp, telefono_display, descripcion, imagenes, en_construccion, orden, modo_manana')
+    .select('id, slug, label, nombre_profesor, whatsapp, telefono_display, descripcion, imagenes, en_construccion, orden, modo_manana, dias_bloqueados, horarios_bloqueados')
     .eq('activa', true)
     .order('orden', { ascending: true });
 
