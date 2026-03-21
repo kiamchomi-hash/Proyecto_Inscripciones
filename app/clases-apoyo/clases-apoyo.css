@@ -313,10 +313,12 @@
 }
 
 .ca-day.blocked {
-  color: rgba(239, 68, 68, 0.4) !important;
-  background: rgba(239, 68, 68, 0.08) !important;
+  color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.005) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  cursor: not-allowed;
   pointer-events: none;
-  text-decoration: line-through;
 }
 
 .ca-day.today:not(.selected) {
