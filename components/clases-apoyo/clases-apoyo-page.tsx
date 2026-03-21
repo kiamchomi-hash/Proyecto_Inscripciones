@@ -716,7 +716,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
                 onClick={() => switchMateria(i)}
                 role="tab"
                 aria-selected={activeIdx === i}
-                className={`ca-mobile-tab ${m.label.includes(' ') ? 'ca-mobile-tab-multiword' : ''} flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors`}
+                className="ca-mobile-tab flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors"
                 style={{
                   color: activeIdx === i ? '#fff' : 'var(--ca-text-muted)',
                   background: activeIdx === i ? '#051d1a' : 'transparent',
