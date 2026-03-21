@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { nombre } = await req.json();
     if (!nombre || typeof nombre !== 'string') {
       return NextResponse.json({ error: 'Falta nombre' }, { status: 400 });
