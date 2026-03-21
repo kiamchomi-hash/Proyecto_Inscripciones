@@ -116,6 +116,92 @@ export function getCategoryForCarrera(c: Carrera): string {
   return 'cursos'; // fallback
 }
 
+// ── Area classification ──
+
+export const AREAS = [
+  { id: 'derecho', label: 'Derecho' },
+  { id: 'tecnologia', label: 'Tecnología' },
+  { id: 'negocios', label: 'Negocios' },
+  { id: 'salud', label: 'Salud' },
+  { id: 'educacion', label: 'Educación' },
+  { id: 'comunicacion', label: 'Comunicación y Diseño' },
+  { id: 'ambiente', label: 'Ambiente y Agro' },
+  { id: 'turismo', label: 'Turismo y Hotelería' },
+  { id: 'gobierno', label: 'Gobierno' },
+  { id: 'rrhh', label: 'RRHH' },
+  { id: 'deporte', label: 'Deporte' },
+] as const;
+
+export type AreaId = (typeof AREAS)[number]['id'];
+
+const AREA_KEYWORDS: Record<AreaId, string[]> = {
+  derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense'],
+  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'infraestructura tecnológica', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales'],
+  negocios: ['administración', 'finanzas', 'comercialización', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'e-commerce', 'business analysis', 'martillero', 'corredor'],
+  salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas'],
+  educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia'],
+  comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos'],
+  ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
+  turismo: ['turística', 'turísticos', 'hotelera', 'turismo'],
+  gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
+  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'antropología organizacional'],
+  deporte: ['deportiva', 'deportivo', 'nutrición deportiva', 'fútbol'],
+};
+
+export function getAreaForCarrera(c: Carrera): AreaId | null {
+  const nombre = c.nombre.toLowerCase();
+  for (const [area, keywords] of Object.entries(AREA_KEYWORDS) as [AreaId, string[]][]) {
+    for (const kw of keywords) {
+      if (nombre.includes(kw)) return area;
+    }
+  }
+  return null;
+}
+
+// ── Duration grouping ──
+
+export const DURATION_GROUPS = [
+  { id: 'corta', label: 'Menos de 1 año' },
+  { id: '1-2', label: '1 a 2 años' },
+  { id: '2-3', label: '2 a 3 años' },
+  { id: '4', label: '4 años' },
+  { id: '5+', label: '5+ años' },
+] as const;
+
+export type DurationGroupId = (typeof DURATION_GROUPS)[number]['id'];
+
+export function getDurationGroup(duracion: string): DurationGroupId | null {
+  if (!duracion) return null;
+  const d = duracion.toLowerCase();
+  // Extract numeric years
+  const yearsMatch = d.match(/(\d+(?:\.\d+)?)\s*año/);
+  if (yearsMatch) {
+    const years = parseFloat(yearsMatch[1]);
+    if (years < 1) return 'corta';
+    if (years >= 1 && years <= 2) return '1-2';
+    if (years > 2 && years <= 3) return '2-3';
+    if (years > 3 && years <= 4.5) return '4';
+    return '5+';
+  }
+  // Months
+  const monthsMatch = d.match(/(\d+)\s*mes/);
+  if (monthsMatch) {
+    const months = parseInt(monthsMatch[1]);
+    if (months < 12) return 'corta';
+    return '1-2';
+  }
+  // "Título previo + X años"
+  if (d.includes('título previo') || d.includes('titulo previo')) {
+    const prevMatch = d.match(/\+\s*(\d+)/);
+    if (prevMatch) {
+      const y = parseInt(prevMatch[1]);
+      if (y <= 2) return '1-2';
+      return '2-3';
+    }
+  }
+  return null;
+}
+
 // Build full name from prefix + nombre for slug generation
 function carreraFullName(carrera: Carrera): string {
   const p = (carrera.prefix || '').toLowerCase();

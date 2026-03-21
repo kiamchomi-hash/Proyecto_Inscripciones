@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug } from './types';
+import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
@@ -99,15 +99,24 @@ interface Props {
 export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [placeholder, setPlaceholder] = useState('BUSCAR CARRERA');
+  const [placeholder, setPlaceholder] = useState('Buscar carrera');
   const [selectedCarrera, setSelectedCarrera] = useState<Carrera | null>(null);
   const [pillsHidden, setPillsHidden] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterArea, setFilterArea] = useState<AreaId | null>(null);
+  const [filterDuration, setFilterDuration] = useState<DurationGroupId | null>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const hasFilters = filterArea !== null || filterDuration !== null || activeCategory !== 'all';
+  const filterCount = (activeCategory !== 'all' ? 1 : 0) + (filterArea ? 1 : 0) + (filterDuration ? 1 : 0);
+  // Mobile unified filter panel
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [mobileFilterSection, setMobileFilterSection] = useState<'tipo' | 'area' | 'duracion' | null>(null);
 
   // Responsive placeholder
   useEffect(() => {
     const updatePlaceholder = () => {
       if (window.innerWidth >= 768) {
-        setPlaceholder('Buscar carrera, revisa nuestra oferta académica');
+        setPlaceholder('Buscar carrera, revisá nuestra oferta académica');
       } else {
         setPlaceholder('Buscar carrera');
       }
@@ -116,8 +125,22 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
     window.addEventListener('resize', updatePlaceholder);
     return () => window.removeEventListener('resize', updatePlaceholder);
   }, []);
+
+  // Close filter dropdown on click outside
+  useEffect(() => {
+    if (!showFilters) return;
+    const handler = (e: MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showFilters]);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
+  const pillsRef = useRef<HTMLDivElement>(null);
 
 
   // Scroll so the sticky wrapper sits right below the navbar
@@ -167,19 +190,40 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
     });
   }, [grouped]);
 
+  // Desktop filter dropdown sub-sections
+  const [desktopFilterSection, setDesktopFilterSection] = useState<'area' | 'duracion' | null>(null);
+
+  // Apply area/duration filters to grouped data
+  const filteredGrouped = useMemo(() => {
+    if (!hasFilters) return grouped;
+    const result: Record<string, Carrera[]> = {};
+    for (const [key, items] of Object.entries(grouped)) {
+      const filtered = items.filter(c => {
+        if (filterArea && getAreaForCarrera(c) !== filterArea) return false;
+        if (filterDuration && getDurationGroup(c.duracion) !== filterDuration) return false;
+        return true;
+      });
+      if (filtered.length > 0) result[key] = filtered;
+    }
+    return result;
+  }, [grouped, filterArea, filterDuration, hasFilters]);
+
   // Search results
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return null;
-    return carreras.filter(c => fuzzyMatch(c.nombre, searchQuery.trim()));
-  }, [carreras, searchQuery]);
+    let results = carreras.filter(c => fuzzyMatch(c.nombre, searchQuery.trim()));
+    if (filterArea) results = results.filter(c => getAreaForCarrera(c) === filterArea);
+    if (filterDuration) results = results.filter(c => getDurationGroup(c.duracion) === filterDuration);
+    return results;
+  }, [carreras, searchQuery, filterArea, filterDuration]);
 
   // Sections to display (filtered by category)
   const sectionsToShow = useMemo(() => {
     if (searchResults) return []; // hide sections when searching
     const displayOrder = ['licenciaturas', 'tecnicaturas', 'maestrias', 'certificaciones', 'especializaciones', 'diplomaturas', 'cursos'];
-    if (activeCategory === 'all') return displayOrder.filter(id => grouped[id]?.length);
-    return [activeCategory].filter(id => grouped[id]?.length);
-  }, [activeCategory, grouped, searchResults]);
+    if (activeCategory === 'all') return displayOrder.filter(id => filteredGrouped[id]?.length);
+    return [activeCategory].filter(id => filteredGrouped[id]?.length);
+  }, [activeCategory, filteredGrouped, searchResults]);
 
   const handleCategoryClick = useCallback((catId: string) => {
     setActiveCategory(catId);
@@ -228,7 +272,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       }
       modalOpenRef.current = true;
     } else if (modalOpenRef.current) {
-      document.title = 'Universidad Siglo 21 CAU Villa Lugano | Oferta académica 2026';
+      document.title = `Universidad Siglo 21 CAU Villa Lugano | Oferta académica ${new Date().getFullYear()}`;
       if (window.location.pathname !== '/') {
         window.history.replaceState(null, '', '/');
       }
@@ -267,9 +311,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
         {/* Sticky search + filters */}
         <div className="sticky-search-wrapper">
           <div className="sticky-pills-zone">
-            {/* Search bar */}
-            <div className="relative w-full search-input-wrapper">
-              <form role="search" aria-label="Buscar carrera" onSubmit={e => e.preventDefault()}>
+            {/* Search bar + filter button (right side) */}
+            <div className="search-input-wrapper flex items-center gap-2">
+              <form role="search" aria-label="Buscar carrera" onSubmit={e => e.preventDefault()} className="relative flex-1 min-w-0">
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -280,11 +324,10 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
                   placeholder={placeholder}
                   aria-label="Buscar carrera"
                   autoComplete="off"
-                  className="search-input-custom w-full"
+                  className="search-input-custom"
                 />
                 <svg
-                  className="absolute right-3 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-[#7ca19b] pointer-events-none"
-                  style={{ right: '1.75rem' }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-[16px] w-[16px] text-[#7ca19b] pointer-events-none"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
                   strokeLinecap="round" strokeLinejoin="round"
@@ -293,26 +336,123 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </form>
+              {/* Filter button (right of search) */}
+              <div ref={filtersRef} className="relative flex items-center gap-1.5">
+                <button
+                  onClick={() => { setShowFilters(!showFilters); setDesktopFilterSection(null); }}
+                  className={`filter-toggle-btn ${hasFilters ? 'active' : ''}`}
+                  aria-label="Filtrar por área y duración"
+                  aria-expanded={showFilters}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                  </svg>
+                  <span className="hidden sm:inline">Filtros</span>
+                  <span className="filter-count-badge">{filterCount}</span>
+                </button>
+                <button
+                  onClick={() => { if (hasFilters) { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); } }}
+                  className={`filter-toggle-btn ${hasFilters ? 'filter-clear-btn-red-full' : 'filter-clear-disabled'}`}
+                  title="Limpiar filtros"
+                  aria-disabled={!hasFilters}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                  <span>Limpiar filtros</span>
+                </button>
+
+                {showFilters && (
+                  <div className="filter-dropdown">
+                    {/* Área */}
+                    <button className={`filter-dropdown-header ${desktopFilterSection === 'area' ? 'open' : ''}`} onClick={() => setDesktopFilterSection(desktopFilterSection === 'area' ? null : 'area')}>
+                      <span>Área {filterArea ? `· ${AREAS.find(a => a.id === filterArea)?.label}` : ''}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                    </button>
+                    {desktopFilterSection === 'area' && (
+                      <div className="filter-dropdown-options">
+                        {AREAS.map(a => (
+                          <button
+                            key={a.id}
+                            onClick={() => setFilterArea(filterArea === a.id ? null : a.id)}
+                            className={`filter-option ${filterArea === a.id ? 'active' : ''}`}
+                          >
+                            {a.label}
+                          </button>
+                        ))}
+                        {filterArea && (
+                          <button onClick={() => setFilterArea(null)} className="filter-section-clear">✕ Limpiar filtro área</button>
+                        )}
+                      </div>
+                    )}
+                    {/* Duración */}
+                    <button className={`filter-dropdown-header ${desktopFilterSection === 'duracion' ? 'open' : ''}`} onClick={() => setDesktopFilterSection(desktopFilterSection === 'duracion' ? null : 'duracion')}>
+                      <span>Duración {filterDuration ? `· ${DURATION_GROUPS.find(d => d.id === filterDuration)?.label}` : ''}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                    </button>
+                    {desktopFilterSection === 'duracion' && (
+                      <div className="filter-dropdown-options">
+                        {DURATION_GROUPS.map(d => (
+                          <button
+                            key={d.id}
+                            onClick={() => setFilterDuration(filterDuration === d.id ? null : d.id)}
+                            className={`filter-option ${filterDuration === d.id ? 'active' : ''}`}
+                          >
+                            {d.label}
+                          </button>
+                        ))}
+                        {filterDuration && (
+                          <button onClick={() => setFilterDuration(null)} className="filter-section-clear">✕ Limpiar filtro duración</button>
+                        )}
+                      </div>
+                    )}
+                    {hasFilters && (
+                      <button
+                        onClick={() => { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); }}
+                        className="filter-clear-btn-red"
+                      >
+                        ✕ Limpiar filtros
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Mobile toggle for filter pills */}
+            {/* Mobile: toggle for category pills */}
             <button
               className={`filter-pills-toggle ${pillsHidden ? 'collapsed' : ''}`}
               onClick={() => setPillsHidden(!pillsHidden)}
-              aria-label={pillsHidden ? 'Mostrar filtros de categoría' : 'Ocultar filtros de categoría'}
+              aria-label={pillsHidden ? 'Ver tipos de carrera' : 'Ocultar tipos'}
               aria-expanded={!pillsHidden}
             >
-              <span>{pillsHidden ? 'Mostrar filtros' : 'Ocultar filtros'}</span>
+              <span>{pillsHidden ? 'Ver tipos de carrera' : 'Ocultar tipos'}</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
             </button>
 
-            {/* Category pills */}
-            <div className={`filter-container ${pillsHidden ? 'pills-hidden' : ''}`} role="group" aria-label="Filtros de categoría">
+            {/* Mobile: category pills */}
+            {!pillsHidden && (
+              <div className="filter-container mobile-pills" role="group" aria-label="Filtros de categoría">
+                {visibleCategories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleCategoryClick(cat.id)}
+                    className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.label.length > 13 ? 'filter-pill-long' : ''}`}
+                    aria-pressed={activeCategory === cat.id}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Desktop: category pills (always visible above sm) */}
+            <div ref={pillsRef} className="filter-container desktop-only-pills" role="group" aria-label="Filtros de categoría">
               {visibleCategories.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat.id)}
-                  className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''}`}
+                  className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.label.length > 13 ? 'filter-pill-long' : ''}`}
                   aria-pressed={activeCategory === cat.id}
                 >
                   {cat.label}
@@ -355,18 +495,44 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
               </div>
             )}
 
+            {/* Active filters banner */}
+            {hasFilters && !searchResults && (
+              <div className="flex flex-wrap items-center gap-2 mb-4 text-sm">
+                <span className="text-[#7ca19b] font-semibold uppercase tracking-wider text-xs">Filtros:</span>
+                {activeCategory !== 'all' && (
+                  <span className="filter-active-tag">Tipo: {sectionLabels[activeCategory]?.title}</span>
+                )}
+                {filterArea && (
+                  <span className="filter-active-tag">Área: {AREAS.find(a => a.id === filterArea)?.label}</span>
+                )}
+                {filterDuration && (
+                  <span className="filter-active-tag">Duración: {DURATION_GROUPS.find(d => d.id === filterDuration)?.label}</span>
+                )}
+                <button onClick={() => { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); }} className="filter-clear-btn-red filter-clear-btn-inline">
+                  ✕ Limpiar filtros
+                </button>
+              </div>
+            )}
+
+            {/* No results with filters */}
+            {hasFilters && !searchResults && sectionsToShow.length === 0 && (
+              <p className="text-lg text-[#7ca19b] text-center py-12">
+                No se encontraron carreras con los filtros seleccionados.
+              </p>
+            )}
+
             {/* Career sections */}
             {!searchResults && sectionsToShow.map(sectionId => {
               const section = sectionLabels[sectionId];
-              const items = grouped[sectionId] || [];
+              const items = filteredGrouped[sectionId] || [];
               if (!section || items.length === 0) return null;
 
               return (
                 <CareerSection
                   key={sectionId}
                   sectionId={sectionId}
-                  title={section.title}
-                  accent={section.accent}
+                  title={hasFilters ? section.title : section.title}
+                  accent={hasFilters ? undefined : section.accent}
                   carreras={items}
                   onCareerClick={handleCareerClick}
                 />

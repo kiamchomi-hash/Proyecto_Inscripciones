@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
 import type { Carrera } from '@/components/index/types';
 import Hero from '@/components/index/hero';
+import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
 
 // Dynamic imports for components below the fold
@@ -11,7 +12,7 @@ const IndexFooter = dynamic(() => import('@/components/index/footer'));
 import './index.css';
 
 export const metadata: Metadata = {
-  title: 'Universidad Siglo 21 CAU Villa Lugano | Oferta académica 2026',
+  title: `Universidad Siglo 21 CAU Villa Lugano | Oferta académica ${new Date().getFullYear()}`,
   description: 'Oferta académica Universidad Siglo 21 en Villa Lugano. Ideal para Zona Sur y Oeste: Celina, Madero, Tapiales, Soldati, Mataderos, Riachuelo, Budge.',
 };
 
@@ -35,6 +36,7 @@ export default async function HomePage() {
       <Hero />
       <CareersCatalog carreras={carrerasData} />
       <EnrollmentForm carreras={carrerasData} />
+      <StatsCounter />
       <IndexFooter />
     </main>
   );

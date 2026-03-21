@@ -41,7 +41,7 @@ export default function IndexFooter() {
 
         <div className="mt-8 pt-6" style={{ borderTop: '1px solid rgba(0, 199, 177, 0.16)' }}>
           <p className="text-center text-xs text-[#7ca19b]">
-            &copy; 2026 CAU Villa Lugano &mdash; Universidad Siglo 21. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} CAU Villa Lugano &mdash; Universidad Siglo 21. Todos los derechos reservados.
           </p>
         </div>
       </div>

@@ -43,7 +43,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description,
+    keywords: [carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
     openGraph: { title, description },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
@@ -64,12 +66,46 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     redirect(`/carreras/${canonicalSlug}`);
   }
 
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": carrera.titulo || carrera.nombre,
+    "description": `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`,
+    "provider": {
+      "@type": "CollegeOrUniversity",
+      "name": "Universidad Siglo 21",
+      "url": "https://21.edu.ar",
+    },
+    "educationalLevel": carrera.nivel,
+    "timeToComplete": carrera.duracion,
+    "educationalCredentialAwarded": carrera.titulo,
+    "inLanguage": "es",
+    "courseMode": "blended",
+    "location": {
+      "@type": "Place",
+      "name": "CAU Villa Lugano",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Guaminí 4876",
+        "addressLocality": "Villa Lugano",
+        "addressRegion": "CABA",
+        "addressCountry": "AR",
+      },
+    },
+  };
+
   return (
-    <main className="flex-1">
-      <Hero />
-      <CareersCatalog carreras={carreras} initialCarreraSlug={slug} />
-      <EnrollmentForm carreras={carreras} />
-      <IndexFooter />
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
+      />
+      <main className="flex-1">
+        <Hero />
+        <CareersCatalog carreras={carreras} initialCarreraSlug={slug} />
+        <EnrollmentForm carreras={carreras} />
+        <IndexFooter />
+      </main>
+    </>
   );
 }

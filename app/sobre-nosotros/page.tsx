@@ -5,6 +5,7 @@ import './sobre-nosotros.css';
 export const metadata: Metadata = {
   title: 'Sobre Nosotros',
   description: 'Conocé el Centro de Aprendizaje Universitario Villa Lugano. Capacitaciones, carreras universitarias con Siglo 21, talleres y más.',
+  keywords: ['CAU villa lugano', 'centro de aprendizaje', 'universidad siglo 21', 'educación a distancia', 'CABA zona sur'],
   alternates: {
     canonical: '/sobre-nosotros',
   },

@@ -5,9 +5,8 @@ import { useState, useEffect } from 'react';
 export function ScrollResetOnLoad() {
   useEffect(() => {
     if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
+      history.scrollRestoration = 'auto';
     }
-    window.scrollTo(0, 0);
   }, []);
   return null;
 }
