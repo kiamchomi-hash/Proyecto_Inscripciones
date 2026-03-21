@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import { notFound, redirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import type { Carrera } from '@/components/index/types';
+import type { Carrera, Descuento } from '@/components/index/types';
 import { carreraToSlug } from '@/components/index/types';
 import Hero from '@/components/index/hero';
 import '@/app/index.css';
@@ -56,7 +56,10 @@ export async function generateStaticParams() {
 
 export default async function CarreraPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const carreras = await getCarreras();
+  const [carreras, descuentos] = await Promise.all([
+    getCarreras(),
+    supabase.from('descuentos').select('*').eq('activo', true).then(({ data }) => (data || []) as Descuento[]),
+  ]);
   const carrera = findBySlug(carreras, slug);
   if (!carrera) notFound();
 
@@ -102,7 +105,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
       />
       <main className="flex-1">
         <Hero />
-        <CareersCatalog carreras={carreras} initialCarreraSlug={slug} />
+        <CareersCatalog carreras={carreras} descuentos={descuentos} initialCarreraSlug={slug} />
         <EnrollmentForm carreras={carreras} />
         <IndexFooter />
       </main>

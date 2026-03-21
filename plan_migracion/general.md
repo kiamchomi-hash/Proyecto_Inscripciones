@@ -8,4 +8,3 @@
 
 - Pedir acceso a la ubicación cuando toque el botón de "Cómo llegar"
 
--turnstile configurar bien.h

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
-import type { Carrera } from '@/components/index/types';
+import type { Carrera, Descuento } from '@/components/index/types';
 import Hero from '@/components/index/hero';
 import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
@@ -19,22 +19,25 @@ export const metadata: Metadata = {
 export const revalidate = 3600; // revalidate every hour
 
 export default async function HomePage() {
-  const { data: carreras, error } = await supabase
-    .from('carreras')
-    .select('*')
-    .eq('activa', true)
-    .order('orden', { ascending: true });
+  const [{ data: carreras, error }, { data: descuentos, error: descError }] = await Promise.all([
+    supabase.from('carreras').select('*').eq('activa', true).order('orden', { ascending: true }),
+    supabase.from('descuentos').select('*').eq('activo', true),
+  ]);
 
   if (error) {
     console.error('Error fetching carreras:', error.message);
   }
+  if (descError) {
+    console.error('Error fetching descuentos:', descError.message);
+  }
 
   const carrerasData: Carrera[] = carreras || [];
+  const descuentosData: Descuento[] = descuentos || [];
 
   return (
     <main className="flex-1">
       <Hero />
-      <CareersCatalog carreras={carrerasData} />
+      <CareersCatalog carreras={carrerasData} descuentos={descuentosData} />
       <EnrollmentForm carreras={carrerasData} />
       <StatsCounter />
       <IndexFooter />

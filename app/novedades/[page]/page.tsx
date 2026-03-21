@@ -10,6 +10,19 @@ const ITEMS_PER_PAGE = 6;
 
 export const revalidate = 3600;
 
+export async function generateStaticParams() {
+  const { count } = await supabase
+    .from('novedades')
+    .select('id', { count: 'exact', head: true })
+    .eq('publicada', true)
+    .eq('pinned', false);
+
+  const total = count ?? 0;
+  const totalPages = Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
+
+  return Array.from({ length: totalPages }, (_, i) => ({ page: String(i + 1) }));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ page: string }> }): Promise<Metadata> {
   const { page } = await params;
   const pageNum = parseInt(page, 10);
