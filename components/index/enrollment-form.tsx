@@ -397,13 +397,15 @@ export default function EnrollmentForm({ carreras }: Props) {
 
             {/* Turnstile + Submit */}
             <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2">
-              <Turnstile
-                sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                onVerify={(token) => setTurnstileToken(token)}
-                onExpire={() => setTurnstileToken('')}
-                theme="dark"
-                size="flexible"
-              />
+              {!turnstileToken && (
+                <Turnstile
+                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                  onVerify={(token) => setTurnstileToken(token)}
+                  onExpire={() => setTurnstileToken('')}
+                  theme="dark"
+                  size="flexible"
+                />
+              )}
               <button
                 type="submit"
                 disabled={!isValid || submitting}

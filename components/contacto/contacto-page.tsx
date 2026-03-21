@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
+import { Turnstile } from 'react-turnstile';
+import { supabase } from '@/lib/supabase';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import './contacto.css';
 
@@ -35,6 +38,148 @@ const IG_POSTS: SocialPost[] = [
 ];
 
 const ZONAS = ['Villa Lugano', 'Mataderos', 'Liniers', 'Villa Celina', 'Ciudad Madero', 'Zona Sur', 'Comuna 8', 'Villa Soldati'];
+
+/* ── Contact Form ─────────────────────────────────────── */
+function ContactForm() {
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [localidad, setLocalidad] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
+  const contactValid = (email.trim() || telefono.trim()) && !emailInvalid;
+  const isValid = contactValid && !!turnstileToken;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid || submitting) return;
+    setSubmitting(true);
+    setError('');
+
+    const { error: insertError } = await supabase.from('consultas').insert({
+      carrera: null,
+      tipo: null,
+      modalidad: null,
+      equivalencias: false,
+      nombre: nombre.trim() || null,
+      apellido: apellido.trim() || null,
+      email: email.trim() || null,
+      telefono: telefono.trim() || null,
+      localidad: localidad.trim() || null,
+    });
+
+    setSubmitting(false);
+    if (insertError) {
+      setError('Hubo un error al enviar. Intenta de nuevo o contactanos por WhatsApp.');
+      return;
+    }
+
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+      setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad(''); setMensaje(''); setTurnstileToken('');
+    }, 4000);
+  };
+
+  const inputClass = "w-full bg-[#261820] border border-[#5a2838] rounded-lg px-3 py-1.5 text-xs text-[#e8d0d8] placeholder-white focus:outline-none focus:border-[#8a3050] transition-colors";
+
+  return (
+    <div className="ct-channel-card rounded-2xl overflow-hidden">
+      {success ? (
+        <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: '#00c7b1' }}>
+            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p className="text-lg font-black text-white uppercase tracking-tight">Consulta enviada</p>
+          <p className="text-sm" style={{ color: '#7ca19b' }}>Nos comunicaremos a la brevedad</p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} noValidate>
+          {/* Header */}
+          <div className="px-5 pt-4 pb-3 flex items-center gap-3" style={{ borderBottom: '1px solid #4a2030' }}>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: 'rgba(138,48,80,0.2)', border: '1px solid #5a2838' }}>
+              <svg className="w-5 h-5" fill="none" stroke="#c46080" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-base font-bold" style={{ color: '#e8d0d8' }}>Dejanos tu consulta</h2>
+              <p className="text-xs text-white">Te respondemos a la brevedad</p>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="px-5 py-3 space-y-2.5">
+            <div className="grid grid-cols-2 gap-3">
+              <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
+              <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
+            </div>
+
+            <div className="space-y-1">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                maxLength={100}
+                className={`${inputClass} ${emailInvalid ? '!border-red-400/60' : ''}`}
+              />
+              {emailInvalid && <p className="text-[11px] text-red-400">El formato del email no es válido.</p>}
+            </div>
+
+            <input type="tel" placeholder="Teléfono" value={telefono} onChange={e => setTelefono(e.target.value)} maxLength={100} className={inputClass} />
+
+            <input type="text" placeholder="Localidad" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={inputClass} />
+
+            {!contactValid && (email.trim() || telefono.trim()) && (
+              <p className="text-[11px] text-red-400">Completa al menos email o teléfono.</p>
+            )}
+
+            <p className="text-[11px] text-white">
+              Solo necesitamos un dato de contacto (email o teléfono). El resto es opcional.
+            </p>
+          </div>
+
+          {/* Turnstile + Submit */}
+          <div className="px-5 pb-4 space-y-2.5">
+            {!turnstileToken && (
+              <div className="w-full max-w-full overflow-hidden">
+                <Turnstile
+                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                  onVerify={(token) => setTurnstileToken(token)}
+                  onExpire={() => setTurnstileToken('')}
+                  theme="dark"
+                  size="flexible"
+                />
+              </div>
+            )}
+
+            {error && <p className="text-[11px] text-red-400">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={!isValid || submitting}
+              className="w-full py-2.5 rounded-full font-bold text-xs text-white transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: 'linear-gradient(135deg, #8a3050 0%, #5a1830 100%)' }}
+            >
+              {submitting ? 'Enviando...' : 'Enviar consulta'}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
 
 /* ── Page ──────────────────────────────────────────────── */
 
@@ -408,7 +553,7 @@ export default function ContactoPageContent() {
       </section>
 
       {/* ─── SEDE + MAPA ────────────────────────────────────── */}
-      <section className="mb-0">
+      <section className="mb-10">
         <div className="ct-visitanos flex flex-col md:flex-row gap-0 rounded-2xl overflow-hidden" style={{ background: 'rgba(0,199,177,0.04)' }}>
           {/* Info */}
           <div className="flex-1 p-5 sm:p-6 flex flex-col items-center justify-center gap-3 text-center">
@@ -467,6 +612,23 @@ export default function ContactoPageContent() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               title="Ubicación del CAU Villa Lugano en Google Maps"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FORMULARIO DE CONTACTO ───────────────────────── */}
+      <section className="mb-10">
+        <div className="flex flex-col md:flex-row gap-0 rounded-2xl overflow-hidden" style={{ background: '#1c1215', border: '1px solid #4a2030' }}>
+          <div className="md:w-[320px] lg:w-[360px] shrink-0">
+            <ContactForm />
+          </div>
+          <div className="hidden md:block flex-1 relative">
+            <Image
+              src="/imagenes/imagenes_cau/Siglo21IMG_2555.jpg"
+              alt="Entrada del Centro Educativo Villa Lugano"
+              fill
+              className="object-cover"
             />
           </div>
         </div>
