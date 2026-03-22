@@ -59,7 +59,7 @@ export default async function Page({ params }: { params: Promise<{ page: string 
     // Obtener novedad fijada
     const { data: pinnedData } = await supabase
       .from('novedades')
-      .select('id, titulo, extracto, fecha, tag, imagen_url, href, pinned')
+      .select('id, titulo, extracto, fecha, tag, imagen_url, href, slug, pinned')
       .eq('publicada', true)
       .eq('pinned', true)
       .order('fecha', { ascending: false })
@@ -71,7 +71,7 @@ export default async function Page({ params }: { params: Promise<{ page: string 
     // Obtener primeras 3 no-fijadas
     const { data: itemsData } = await supabase
       .from('novedades')
-      .select('id, titulo, extracto, fecha, tag, imagen_url, href, pinned')
+      .select('id, titulo, extracto, fecha, tag, imagen_url, href, slug, pinned')
       .eq('publicada', true)
       .eq('pinned', false)
       .order('fecha', { ascending: false })
@@ -83,7 +83,7 @@ export default async function Page({ params }: { params: Promise<{ page: string 
     const offset = ITEMS_PAGE_1 + (pageNum - 2) * ITEMS_PER_PAGE;
     const { data: itemsData } = await supabase
       .from('novedades')
-      .select('id, titulo, extracto, fecha, tag, imagen_url, href, pinned')
+      .select('id, titulo, extracto, fecha, tag, imagen_url, href, slug, pinned')
       .eq('publicada', true)
       .eq('pinned', false)
       .order('fecha', { ascending: false })

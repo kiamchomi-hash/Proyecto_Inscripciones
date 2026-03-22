@@ -235,91 +235,24 @@ function ImagenesEditor({ materia, onSave }: { materia: Materia; onSave: (imgs: 
   );
 }
 
-/* ── Section: Calendario bloqueado ── */
-function DiasBloqueadosEditor({ materia, onSave }: { materia: Materia; onSave: (dias: string[]) => void }) {
+/* ── Section: Calendario unificado (días + horarios) ── */
+function CalendarioEditor({ materia, onSaveDias, onSaveHorarios, onToggleModoManana }: {
+  materia: Materia;
+  onSaveDias: (dias: string[]) => void;
+  onSaveHorarios: (h: string[]) => void;
+  onToggleModoManana: (v: boolean) => void;
+}) {
   const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const [viewYear, setViewYear] = useState(now.getFullYear());
   const [viewMonth, setViewMonth] = useState(now.getMonth());
-  const [bloqueados, setBloqueados] = useState<Set<string>>(new Set(materia.dias_bloqueados));
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => { setBloqueados(new Set(materia.dias_bloqueados)); }, [materia.dias_bloqueados]);
-
-  const weeks = useMemo(() => buildMonthWeeks(viewYear, viewMonth), [viewYear, viewMonth]);
-  const monthName = new Date(viewYear, viewMonth).toLocaleString('es-AR', { month: 'long' });
-
-  const canGoPrev = viewYear > now.getFullYear() || (viewYear === now.getFullYear() && viewMonth > now.getMonth());
-  const goNext = () => { if (viewMonth === 11) { setViewYear(y => y + 1); setViewMonth(0); } else setViewMonth(m => m + 1); };
-  const goPrev = () => { if (!canGoPrev) return; if (viewMonth === 0) { setViewYear(y => y - 1); setViewMonth(11); } else setViewMonth(m => m - 1); };
-
-  const toggle = (dateStr: string) => {
-    const next = new Set(bloqueados);
-    if (next.has(dateStr)) next.delete(dateStr); else next.add(dateStr);
-    setBloqueados(next);
-  };
-
-  const save = async () => {
-    setSaving(true);
-    const arr = Array.from(bloqueados).sort();
-    const { error } = await supabase.from('materias').update({ dias_bloqueados: arr }).eq('id', materia.id);
-    if (!error) onSave(arr);
-    setSaving(false);
-  };
-
-  const blockedCount = Array.from(bloqueados).filter(d => d >= `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`).length;
-
-  return (
-    <div className="admin-section">
-      <h3 className="admin-section-title">Días bloqueados <span className="text-white/30 font-normal">({blockedCount} activos)</span></h3>
-      <p className="text-xs text-white/40 mb-3">Click en un día para bloquearlo/desbloquearlo.</p>
-
-      <div className="rounded-xl border border-white/10 p-4 max-w-xs" style={{ background: 'rgba(0,0,0,0.2)' }}>
-        <div className="flex items-center justify-between mb-3">
-          <button onClick={goPrev} disabled={!canGoPrev}
-            className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 disabled:opacity-20 transition cursor-pointer">
-            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
-          </button>
-          <span className="text-sm font-bold text-white capitalize">{monthName} {viewYear}</span>
-          <button onClick={goNext}
-            className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 transition cursor-pointer">
-            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-          </button>
-        </div>
-        <div className="grid grid-cols-5 gap-1 mb-1">
-          {['Lu', 'Ma', 'Mi', 'Ju', 'Vi'].map(d => (
-            <div key={d} className="text-[0.6rem] text-white/30 text-center font-bold uppercase">{d}</div>
-          ))}
-        </div>
-        {weeks.map((week, wi) => (
-          <div key={wi} className="grid grid-cols-5 gap-1">
-            {week.map((day, di) => {
-              if (day.empty) return <div key={di} />;
-              const blocked = bloqueados.has(day.dateStr);
-              return (
-                <button key={di} onClick={() => !day.past && toggle(day.dateStr)} disabled={day.past}
-                  className={`text-xs rounded-lg py-1.5 transition cursor-pointer disabled:cursor-default font-medium ${
-                    day.past ? 'text-white/10' : blocked ? 'bg-red-500/70 text-white' : 'text-white/70 hover:bg-[#00c7b1]/20 hover:text-white'
-                  }`}>{day.num}</button>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-      <button onClick={save} disabled={saving} className="admin-btn-primary mt-3">{saving ? 'Guardando...' : 'Guardar días'}</button>
-    </div>
-  );
-}
-
-/* ── Section: Horarios bloqueados (global + por día) ── */
-function HorariosBloqueadosEditor({ materia, onSave, onToggleModoManana }: { materia: Materia; onSave: (h: string[]) => void; onToggleModoManana: (v: boolean) => void }) {
-  const now = new Date();
-  const [viewYear, setViewYear] = useState(now.getFullYear());
-  const [viewMonth, setViewMonth] = useState(now.getMonth());
+  const [diasBloqueados, setDiasBloqueados] = useState<Set<string>>(new Set(materia.dias_bloqueados));
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const { global: globalBlocked, perDay: perDayBlocked } = useMemo(() => parseHorariosBloqueados(materia.horarios_bloqueados), [materia.horarios_bloqueados]);
+  useEffect(() => { setDiasBloqueados(new Set(materia.dias_bloqueados)); }, [materia.dias_bloqueados]);
 
+  const { global: globalBlocked, perDay: perDayBlocked } = useMemo(() => parseHorariosBloqueados(materia.horarios_bloqueados), [materia.horarios_bloqueados]);
   const hours = buildHours(materia.modo_manana);
   const weeks = useMemo(() => buildMonthWeeks(viewYear, viewMonth), [viewYear, viewMonth]);
   const monthName = new Date(viewYear, viewMonth).toLocaleString('es-AR', { month: 'long' });
@@ -328,33 +261,48 @@ function HorariosBloqueadosEditor({ materia, onSave, onToggleModoManana }: { mat
   const goNext = () => { if (viewMonth === 11) { setViewYear(y => y + 1); setViewMonth(0); } else setViewMonth(m => m + 1); };
   const goPrev = () => { if (!canGoPrev) return; if (viewMonth === 0) { setViewYear(y => y - 1); setViewMonth(11); } else setViewMonth(m => m - 1); };
 
+  const blockedDayCount = Array.from(diasBloqueados).filter(d => d >= todayStr).length;
+
+  // Días bloqueados
+  const toggleDia = (dateStr: string) => {
+    const next = new Set(diasBloqueados);
+    if (next.has(dateStr)) next.delete(dateStr); else next.add(dateStr);
+    setDiasBloqueados(next);
+  };
+
+  const saveDias = async () => {
+    setSaving(true);
+    const arr = Array.from(diasBloqueados).sort();
+    const { error } = await supabase.from('materias').update({ dias_bloqueados: arr }).eq('id', materia.id);
+    if (!error) onSaveDias(arr);
+    setSaving(false);
+  };
+
+  // Horarios
   const rebuildArray = (g: Set<string>, pd: Map<string, Set<string>>) => {
     const arr: string[] = [];
     for (const h of g) arr.push(h);
-    for (const [date, hours] of pd) {
-      for (const h of hours) arr.push(`${date}|${h}`);
-    }
+    for (const [date, hrs] of pd) { for (const h of hrs) arr.push(`${date}|${h}`); }
     return arr.sort();
   };
 
   const toggleGlobal = (h: string) => {
-    const nextGlobal = new Set(globalBlocked);
-    if (nextGlobal.has(h)) nextGlobal.delete(h); else nextGlobal.add(h);
-    onSave(rebuildArray(nextGlobal, perDayBlocked));
+    const next = new Set(globalBlocked);
+    if (next.has(h)) next.delete(h); else next.add(h);
+    onSaveHorarios(rebuildArray(next, perDayBlocked));
   };
 
   const togglePerDay = (date: string, h: string) => {
-    const nextPerDay = new Map(perDayBlocked);
-    const daySet = new Set(nextPerDay.get(date) || []);
+    const nextPD = new Map(perDayBlocked);
+    const daySet = new Set(nextPD.get(date) || []);
     if (daySet.has(h)) daySet.delete(h); else daySet.add(h);
-    if (daySet.size === 0) nextPerDay.delete(date);
-    else nextPerDay.set(date, daySet);
-    onSave(rebuildArray(globalBlocked, nextPerDay));
+    if (daySet.size === 0) nextPD.delete(date); else nextPD.set(date, daySet);
+    onSaveHorarios(rebuildArray(globalBlocked, nextPD));
   };
 
-  const save = async () => {
+  const saveHorarios = async () => {
     setSaving(true);
-    const { error } = await supabase.from('materias').update({ horarios_bloqueados: materia.horarios_bloqueados }).eq('id', materia.id);
+    await supabase.from('materias').update({ horarios_bloqueados: materia.horarios_bloqueados }).eq('id', materia.id);
     setSaving(false);
   };
 
@@ -366,13 +314,13 @@ function HorariosBloqueadosEditor({ materia, onSave, onToggleModoManana }: { mat
   const selectedDayHours = selectedDate ? (perDayBlocked.get(selectedDate) || new Set<string>()) : null;
   const selectedDateLabel = selectedDate ? (() => {
     const [y, m, d] = selectedDate.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-    return date.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' });
+    return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
   })() : '';
+  const isDiaCompleto = selectedDate ? diasBloqueados.has(selectedDate) : false;
 
   return (
     <div className="admin-section">
-      <h3 className="admin-section-title">Horarios</h3>
+      <h3 className="admin-section-title">Calendario y horarios</h3>
 
       {/* Toggle modo mañana */}
       <label className="flex items-center gap-3 mb-4 cursor-pointer group">
@@ -380,102 +328,127 @@ function HorariosBloqueadosEditor({ materia, onSave, onToggleModoManana }: { mat
           onClick={() => handleModoManana(!materia.modo_manana)}>
           <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${materia.modo_manana ? 'translate-x-5' : 'translate-x-0.5'}`} />
         </div>
-        <span className="text-sm text-white/70 group-hover:text-white transition">
-          Horarios de mañana {materia.modo_manana ? <span className="text-[#00c7b1] font-semibold">(8:00 — 20:00)</span> : <span className="text-white/40">(14:00 — 20:00)</span>}
+        <span className="text-sm text-white">
+          Horarios de mañana {materia.modo_manana ? <span className="text-[#00c7b1] font-semibold">(8:00 — 20:00)</span> : <span className="text-white">(14:00 — 20:00)</span>}
         </span>
       </label>
 
-      {/* Global blocking */}
+      {/* Bloqueo global de horarios */}
       <div className="mb-5">
-        <p className="text-xs text-white/40 mb-2">Bloqueo global (aplica a todos los días):</p>
+        <p className="text-xs text-white mb-2">Horarios bloqueados siempre:</p>
         <div className="flex flex-wrap gap-2">
           {hours.map(h => {
             const blocked = globalBlocked.has(h);
             return (
               <button key={h} onClick={() => toggleGlobal(h)}
                 className={`text-xs px-3.5 py-2 rounded-lg border font-medium transition cursor-pointer ${
-                  blocked ? 'bg-red-500/70 border-red-500/30 text-white' : 'border-white/10 text-white/50 hover:border-[#00c7b1]/50 hover:text-white'
+                  blocked ? 'bg-red-500/70 border-red-500/30 text-white' : 'border-white/10 text-white hover:border-[#00c7b1]/50'
                 }`}>{h.split('-')[0]}</button>
             );
           })}
         </div>
       </div>
 
-      {/* Per-day blocking */}
-      <div className="mb-4">
-        <p className="text-xs text-white/40 mb-2">Bloqueo por día (seleccioná un día, luego bloqueá horarios):</p>
-        <div className="flex gap-4 flex-col sm:flex-row">
-          {/* Mini calendar */}
-          <div className="rounded-xl border border-white/10 p-3 w-full sm:w-auto sm:min-w-[220px]" style={{ background: 'rgba(0,0,0,0.2)' }}>
-            <div className="flex items-center justify-between mb-2">
-              <button onClick={goPrev} disabled={!canGoPrev}
-                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 disabled:opacity-20 transition cursor-pointer">
-                <svg className="w-3.5 h-3.5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
-              </button>
-              <span className="text-xs font-bold text-white capitalize">{monthName} {viewYear}</span>
-              <button onClick={goNext}
-                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 transition cursor-pointer">
-                <svg className="w-3.5 h-3.5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-              </button>
-            </div>
-            <div className="grid grid-cols-5 gap-0.5 mb-0.5">
-              {['L', 'M', 'X', 'J', 'V'].map(d => <div key={d} className="text-[0.55rem] text-white/25 text-center font-bold">{d}</div>)}
-            </div>
-            {weeks.map((week, wi) => (
-              <div key={wi} className="grid grid-cols-5 gap-0.5">
-                {week.map((day, di) => {
-                  if (day.empty) return <div key={di} />;
-                  const isSelected = selectedDate === day.dateStr;
-                  const hasPerDay = perDayBlocked.has(day.dateStr);
-                  return (
-                    <button key={di} onClick={() => !day.past && setSelectedDate(isSelected ? null : day.dateStr)} disabled={day.past}
-                      className={`text-[0.65rem] rounded py-1 transition cursor-pointer disabled:cursor-default font-medium relative ${
-                        day.past ? 'text-white/10' :
-                        isSelected ? 'bg-[#00c7b1] text-white' :
-                        'text-white/60 hover:bg-white/10'
-                      }`}>
-                      {day.num}
-                      {hasPerDay && !isSelected && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-400" />}
-                    </button>
-                  );
-                })}
-              </div>
+      {/* Calendario + panel lateral */}
+      <p className="text-xs text-white mb-2">Seleccioná un día para bloquear el día completo o horarios puntuales:</p>
+      <div className="flex gap-4 flex-col sm:flex-row">
+        {/* Calendario */}
+        <div className="rounded-xl border border-white/10 p-4 w-full sm:w-auto sm:min-w-[260px]" style={{ background: 'rgba(0,0,0,0.2)' }}>
+          <div className="flex items-center justify-between mb-3">
+            <button onClick={goPrev} disabled={!canGoPrev}
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 disabled:opacity-20 transition cursor-pointer">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <span className="text-sm font-bold text-white capitalize">{monthName} {viewYear}</span>
+            <button onClick={goNext}
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 transition cursor-pointer">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+          <div className="grid grid-cols-5 gap-1 mb-1">
+            {['Lu', 'Ma', 'Mi', 'Ju', 'Vi'].map(d => (
+              <div key={d} className="text-[0.6rem] text-white text-center font-bold uppercase">{d}</div>
             ))}
           </div>
-
-          {/* Hour pills for selected day */}
-          {selectedDate && (
-            <div className="flex-1">
-              <p className="text-xs font-semibold text-white/60 mb-2 capitalize">{selectedDateLabel}</p>
-              <div className="flex flex-wrap gap-2">
-                {hours.map(h => {
-                  const isGlobalBlocked = globalBlocked.has(h);
-                  const isDayBlocked = selectedDayHours?.has(h);
-                  return (
-                    <button key={h} onClick={() => !isGlobalBlocked && togglePerDay(selectedDate, h)} disabled={isGlobalBlocked}
-                      className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-30 ${
-                        isDayBlocked ? 'bg-orange-500/70 border-orange-500/30 text-white' :
-                        'border-white/10 text-white/50 hover:border-orange-400/50 hover:text-white'
-                      }`}>
-                      {h.split('-')[0]}
-                    </button>
-                  );
-                })}
-              </div>
-              {selectedDayHours && selectedDayHours.size > 0 && (
-                <p className="text-[0.6rem] text-orange-400/60 mt-2">{selectedDayHours.size} horario(s) bloqueado(s) este día</p>
-              )}
+          {weeks.map((week, wi) => (
+            <div key={wi} className="grid grid-cols-5 gap-1">
+              {week.map((day, di) => {
+                if (day.empty) return <div key={di} />;
+                const isSelected = selectedDate === day.dateStr;
+                const isDiaBlock = diasBloqueados.has(day.dateStr);
+                const hasHorarios = perDayBlocked.has(day.dateStr);
+                return (
+                  <button key={di} onClick={() => !day.past && setSelectedDate(isSelected ? null : day.dateStr)} disabled={day.past}
+                    className={`text-xs rounded-lg py-1.5 transition cursor-pointer disabled:cursor-default font-medium relative ${
+                      day.past ? 'text-white/30' :
+                      isSelected ? 'bg-[#00c7b1] text-white' :
+                      isDiaBlock ? 'bg-red-500/70 text-white' :
+                      'text-white hover:bg-white/10'
+                    }`}>
+                    {day.num}
+                    {hasHorarios && !isDiaBlock && !isSelected && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-400" />}
+                  </button>
+                );
+              })}
             </div>
-          )}
-          {!selectedDate && (
-            <div className="flex-1 flex items-center justify-center text-xs text-white/20 py-8">
-              Seleccioná un día del calendario
-            </div>
+          ))}
+          {blockedDayCount > 0 && (
+            <p className="text-[0.65rem] text-white mt-3">{blockedDayCount} día(s) bloqueado(s)</p>
           )}
         </div>
+
+        {/* Panel del día seleccionado */}
+        {selectedDate ? (
+          <div className="flex-1 rounded-xl border border-white/10 p-4" style={{ background: 'rgba(0,0,0,0.2)' }}>
+            <p className="text-sm font-bold text-white mb-3 capitalize">{selectedDateLabel}</p>
+
+            {/* Bloquear día completo */}
+            <button onClick={() => toggleDia(selectedDate)}
+              className={`w-full text-xs px-4 py-2.5 rounded-lg border font-bold transition cursor-pointer mb-4 ${
+                isDiaCompleto
+                  ? 'bg-red-500/70 border-red-500/30 text-white'
+                  : 'border-white/20 text-white hover:border-red-400/50 hover:bg-red-500/10'
+              }`}>
+              {isDiaCompleto ? 'Día completo bloqueado (click para desbloquear)' : 'Bloquear día completo'}
+            </button>
+
+            {/* Horarios del día */}
+            {!isDiaCompleto && (
+              <>
+                <p className="text-xs text-white mb-2">Bloquear horarios puntuales:</p>
+                <div className="flex flex-wrap gap-2">
+                  {hours.map(h => {
+                    const isGlobalBlocked = globalBlocked.has(h);
+                    const isDayBlocked = selectedDayHours?.has(h);
+                    return (
+                      <button key={h} onClick={() => !isGlobalBlocked && togglePerDay(selectedDate, h)} disabled={isGlobalBlocked}
+                        className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-30 ${
+                          isDayBlocked ? 'bg-orange-500/70 border-orange-500/30 text-white' :
+                          'border-white/10 text-white hover:border-orange-400/50'
+                        }`}>
+                        {h.split('-')[0]}
+                      </button>
+                    );
+                  })}
+                </div>
+                {selectedDayHours && selectedDayHours.size > 0 && (
+                  <p className="text-[0.65rem] text-orange-400 mt-2">{selectedDayHours.size} horario(s) bloqueado(s) este día</p>
+                )}
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center rounded-xl border border-white/10 text-sm text-white py-12" style={{ background: 'rgba(0,0,0,0.1)' }}>
+            Seleccioná un día del calendario
+          </div>
+        )}
       </div>
 
-      <button onClick={save} disabled={saving} className="admin-btn-primary">{saving ? 'Guardando...' : 'Guardar horarios'}</button>
+      {/* Botones guardar */}
+      <div className="flex gap-3 mt-4">
+        <button onClick={saveDias} disabled={saving} className="admin-btn-primary">{saving ? 'Guardando...' : 'Guardar días'}</button>
+        <button onClick={saveHorarios} disabled={saving} className="admin-btn-primary">{saving ? 'Guardando...' : 'Guardar horarios'}</button>
+      </div>
     </div>
   );
 }
@@ -616,14 +589,14 @@ export default function AdminClasesApoyo() {
 
           {mat && (
             <div>
-              <DescripcionEditor materia={mat} onSave={desc => updateMateria(mat.id, { descripcion: desc })} />
-              <ImagenesEditor materia={mat} onSave={imgs => updateMateria(mat.id, { imagenes: imgs })} />
-              <DiasBloqueadosEditor materia={mat} onSave={dias => updateMateria(mat.id, { dias_bloqueados: dias })} />
-              <HorariosBloqueadosEditor
+              <CalendarioEditor
                 materia={mat}
-                onSave={h => updateMateria(mat.id, { horarios_bloqueados: h })}
+                onSaveDias={dias => updateMateria(mat.id, { dias_bloqueados: dias })}
+                onSaveHorarios={h => updateMateria(mat.id, { horarios_bloqueados: h })}
                 onToggleModoManana={v => updateMateria(mat.id, { modo_manana: v })}
               />
+              <DescripcionEditor materia={mat} onSave={desc => updateMateria(mat.id, { descripcion: desc })} />
+              <ImagenesEditor materia={mat} onSave={imgs => updateMateria(mat.id, { imagenes: imgs })} />
               <PreviewSection materia={mat} />
             </div>
           )}
