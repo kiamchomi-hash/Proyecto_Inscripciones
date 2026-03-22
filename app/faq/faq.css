@@ -48,9 +48,10 @@
   border-bottom: 2px solid rgba(0, 199, 177, 0.6) !important;
 }
 .faq-item.is-open .faq-btn {
-  background: rgba(0, 199, 177, 0.12);
+  background: transparent;
 }
-.faq-item.is-open .faq-header-wrap {
+.faq-item.is-open .faq-header-wrap,
+.faq-item:not(:has(.faq-header-wrap)).is-open .faq-btn {
   background: rgba(0, 199, 177, 0.12);
 }
 .faq-item.is-open .faq-content {

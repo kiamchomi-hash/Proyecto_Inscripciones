@@ -358,9 +358,10 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
                   <span className="hidden sm:inline">Filtros</span>
                   <span className="filter-count-badge">{filterCount}</span>
                 </button>
+                {/* Desktop: limpiar filtros al lado del buscador */}
                 <button
                   onClick={() => { if (hasFilters) { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); } }}
-                  className={`filter-toggle-btn ${hasFilters ? 'filter-clear-btn-red-full' : 'filter-clear-disabled'}`}
+                  className={`filter-toggle-btn hidden sm:flex ${hasFilters ? 'filter-clear-btn-red-full' : 'filter-clear-disabled'}`}
                   title="Limpiar filtros"
                   aria-disabled={!hasFilters}
                 >
@@ -426,6 +427,19 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
                 )}
               </div>
             </div>
+
+            {/* Mobile: limpiar filtros (debajo del buscador, arriba de tipos) */}
+            {hasFilters && (
+              <button
+                onClick={() => { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); }}
+                className="filter-clear-btn-red-full filter-toggle-btn sm:hidden w-full justify-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                <span>Limpiar filtros</span>
+              </button>
+            )}
 
             {/* Mobile: toggle for category pills */}
             <button

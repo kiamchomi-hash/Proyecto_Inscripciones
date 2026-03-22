@@ -14,3 +14,7 @@ public/tools/
 app/api/upload-imagen/
 migracion_pendiente/resumen-plan-backup.html
 components/index/_carrera-navigation-arrows.tsx.bak
+scripts/explore-*.mjs
+scripts/debug_*.mjs
+scripts/precios-con-descuentos.*
+/tmp/
