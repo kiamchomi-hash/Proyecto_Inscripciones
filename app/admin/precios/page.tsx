@@ -146,7 +146,12 @@ export default function PreciosAdminPage() {
   if (!data) return null;
 
   const filtered = data.carreras.filter(c => c.nombre.toLowerCase().includes(search.toLowerCase()));
-  const syncDate = data.ultimaSync ? new Date(data.ultimaSync).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  const syncDate = data.ultimaSync ? new Date(data.ultimaSync).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Sin datos';
+
+  const promoVencida = data.promoHasta && data.promoHasta < new Date().toISOString().split('T')[0];
+  const diasRestantes = data.promoHasta
+    ? Math.ceil((new Date(data.promoHasta + 'T00:00:00').getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
 
   return (
     <div className="min-h-screen" style={{ background: '#013729', color: '#e0e0e0' }}>
@@ -155,11 +160,23 @@ export default function PreciosAdminPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-black text-white">Precios y Descuentos</h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm">
+              <span style={{ color: '#7ca19b' }}>
+                Última sync: <span className="font-semibold text-white">{syncDate}</span>
+              </span>
+              {data.promoHasta && (
+                <span style={{ color: promoVencida ? '#ef4444' : diasRestantes !== null && diasRestantes <= 3 ? '#e69b05' : '#7ca19b' }}>
+                  {promoVencida
+                    ? <>Promo vencida ({data.promoHasta}) <span className="font-bold">— verificar GitHub Actions</span></>
+                    : <>Vence: <span className="font-semibold text-white">{data.promoHasta}</span> ({diasRestantes} {diasRestantes === 1 ? 'día' : 'días'})</>
+                  }
+                </span>
+              )}
+              {refreshing && <span className="text-[#e69b05]">Actualizando...</span>}
+              {!refreshing && error && <span className="text-red-400">({error})</span>}
+            </div>
             <p className="text-sm" style={{ color: '#7ca19b' }}>
               CAU Villa Lugano
-              {syncDate && <span className="ml-2">({syncDate})</span>}
-              {refreshing && <span className="ml-2 text-[#e69b05]">Actualizando...</span>}
-              {!refreshing && error && <span className="ml-2 text-red-400">({error})</span>}
             </p>
           </div>
           <a href="/admin/clases-apoyo" className="text-sm px-4 py-2 rounded-lg" style={{ background: '#1c2f31', color: '#00c7b1' }}>
