@@ -52,6 +52,13 @@ export interface Descuento {
   activo: boolean;
 }
 
+/** Descuento especial por carrera (matrícula, ticket A, ticket B). */
+export interface DescuentoEspecial {
+  matricula?: number | null;
+  ticket_a?: number | null;
+  ticket_b?: number | null;
+}
+
 // ── Main carrera type ──
 
 export interface Carrera {
@@ -74,6 +81,7 @@ export interface Carrera {
   activa: boolean;
   destacada: boolean;
   nueva: boolean;
+  descuento_especial?: DescuentoEspecial | null;
 }
 
 export interface CarreraCategory {

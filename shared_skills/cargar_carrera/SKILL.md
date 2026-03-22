@@ -74,3 +74,5 @@ Después de subir los slides, usar la skill `webapp-testing` para tomar screensh
 - **Extras y requisitos**: van en la última página del plan, dentro de `extras[]`
 - **No cambiar nombres en DB** sin que el usuario lo pida
 - **Verificar que el WHERE matchea** antes de hacer UPDATE (el nombre en DB puede ser distinto al nombre completo)
+- **Descuentos especiales**: después de cargar slides, preguntar al usuario si quiere sincronizar descuentos especiales con `/sync_descuentos`. Algunas carreras tienen promociones especiales (matrícula, cuotas) que se muestran en el slide de cierre
+- **Verificar precios**: el usuario puede consultar precios actualizados en `/admin/precios` (requiere Excel cacheado en `/tmp/precios.xlsx` via `node scripts/scrape-descuentos.mjs`)

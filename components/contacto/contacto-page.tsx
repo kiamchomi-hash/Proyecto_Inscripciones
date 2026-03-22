@@ -381,19 +381,13 @@ export default function ContactoPageContent() {
                     </div>
                   </div>
                   {/* Image */}
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative h-[280px] overflow-hidden" style={{ background: '#111' }}>
                     <Image
                       src={post.image}
                       alt={post.alt}
                       fill
-                      className="object-cover transition-transform duration-500 "
+                      className="object-contain transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-                    {post.caption && (
-                      <div className="absolute bottom-3 left-3 right-3">
-                        <p className="text-xs font-semibold text-white/90 drop-shadow">{post.caption}</p>
-                      </div>
-                    )}
                   </div>
                 </a>
               ))}
@@ -489,19 +483,13 @@ export default function ContactoPageContent() {
                     <p className="text-xs font-bold text-white/90 truncate">centroeducativovillalugano</p>
                   </div>
                   {/* Image */}
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative h-[280px] overflow-hidden" style={{ background: '#111' }}>
                     <Image
                       src={post.image}
                       alt={post.alt}
                       fill
-                      className="object-cover transition-transform duration-500 "
+                      className="object-contain transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-                    {post.caption && (
-                      <div className="absolute bottom-3 left-3 right-3">
-                        <p className="text-xs font-semibold text-white/90 drop-shadow">{post.caption}</p>
-                      </div>
-                    )}
                   </div>
                 </a>
               )) : (

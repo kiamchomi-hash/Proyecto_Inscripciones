@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { type Carrera, type CarreraSlide, type Descuento, type SlidePlanEstudios, carreraToSlug } from './types';
+import { type Carrera, type CarreraSlide, type Descuento, type DescuentoEspecial, type SlidePlanEstudios, carreraToSlug } from './types';
 
 interface Props {
   carrera: Carrera;
@@ -617,7 +617,7 @@ export default function CarouselModal({ carrera, descuentos = [], onClose, initi
       imagen: '/imagenes/imagenes_cau/entrada_estetica.png',
       titulo: 'Estudiá<br><span style="color:#00c7b1">con nosotros</span>',
       beneficios: [
-        { icono: 'location', texto: 'Estamos en Villa Lugano, cerca de Zona Sur y Oeste' },
+        { icono: 'monitor', texto: 'Estudiá 100% online, rendí y cursá donde quieras' },
         { icono: 'chat', texto: 'Chateá con nosotros y resolvé todas tus dudas' },
       ],
     };
@@ -758,7 +758,7 @@ function renderSlide(slide: CarreraSlide, carrera: Carrera, descuentos: Descuent
     case 'modalidad': return <SlideModalidadView slide={slide} />;
     case 'evaluacion': return <SlideEvaluacionView slide={slide} />;
     case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} />;
-    case 'cierre': return <SlideCierreView slide={slide} descuentos={descuentos} />;
+    case 'cierre': return <SlideCierreView slide={slide} descuentos={descuentos} carrera={carrera} />;
     default: return null;
   }
 }
@@ -952,13 +952,7 @@ function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: 
   );
 }
 
-const DESCUENTO_LABELS: Record<string, string> = {
-  sede: 'Sede Local',
-  universidad: 'Siglo 21',
-  promocion: 'Especiales',
-};
-
-function SlideCierreView({ slide, descuentos = [] }: { slide: import('./types').SlideCierre; descuentos?: Descuento[] }) {
+function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('./types').SlideCierre; descuentos?: Descuento[]; carrera?: Carrera }) {
   return (
     <div className="h-full flex overflow-hidden relative bg-[#011f17]">
       {/* Mobile background image */}
@@ -983,7 +977,7 @@ function SlideCierreView({ slide, descuentos = [] }: { slide: import('./types').
           </h2>
         </div>
         <div className="flex flex-col gap-3 md:gap-5">
-          {[...slide.beneficios, { icono: 'monitor', texto: 'Estudiá 100% online, rendí y cursá donde quieras' }].map((b, i) => (
+          {slide.beneficios.map((b, i) => (
             <div key={i} className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
                 <svg className="w-[1.1rem] h-[1.1rem]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -997,25 +991,136 @@ function SlideCierreView({ slide, descuentos = [] }: { slide: import('./types').
           ))}
         </div>
 
-        {/* CONTENEDOR DE DESCUENTOS FIJOS (3 TARJETAS) */}
-        <div className="w-full mt-2 md:-mt-2 pt-4 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
-          <p className="text-xs md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
-          <div className="flex flex-wrap justify-center gap-2.5 md:gap-2 w-full mb-2">
-            {(['sede', 'universidad', 'promocion'] as const).map((tipo) => {
-              const desc = descuentos.find(d => d.tipo === tipo);
-              const label = DESCUENTO_LABELS[tipo];
-              const valor = desc?.porcentaje != null ? `${desc.porcentaje}%` : '-';
-              return (
-                <div key={tipo} className="relative overflow-hidden w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem] aspect-square border border-white/20 rounded-xl flex flex-col items-center justify-center p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte">
-                  <div className="relative z-10 flex flex-col items-center gap-1">
-                    <span className="text-[#00c7b1] font-black text-2xl md:text-3xl leading-none">{valor}</span>
-                    <span className="text-white font-bold text-[0.65rem] md:text-xs leading-tight uppercase tracking-wide">{label}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        {/* CONTENEDOR DE DESCUENTOS DINÁMICO (3-5 TARJETAS) */}
+        <DescuentosCards descuentos={descuentos} especial={carrera?.descuento_especial} />
+
+        {/* Botones WhatsApp + Ubicación */}
+        <div className="flex flex-wrap justify-center gap-2.5 w-full">
+          {carrera && (
+            <a
+              href={`https://wa.me/5491166522722?text=${encodeURIComponent(`Hola, quiero consultar los precios de ${carrera.nombre}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white font-bold rounded-xl transition-all text-sm"
+            >
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.504 3.935 1.395 5.608L.054 23.395a.5.5 0 0 0 .611.611l5.787-1.341A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.94 9.94 0 0 1-5.39-1.583l-.386-.232-3.437.797.813-3.437-.232-.386A9.94 9.94 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+              </svg>
+              Consultar precios
+            </a>
+          )}
+          <a
+            href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all text-sm border border-white/20"
+          >
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            Guaminí 4876, Piso 1
+          </a>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Tarjetas de descuentos dinámicas (3-5 cards).
+ *
+ * Base: Sede Local + Siglo 21 (siempre).
+ * Especiales: muestran el total acumulado (sede + siglo + especial) con desglose.
+ * Si no hay especiales, se muestra 1 card "Promociones" con "-".
+ */
+function DescuentosCards({ descuentos = [], especial }: { descuentos?: Descuento[]; especial?: DescuentoEspecial | null }) {
+  const sede = descuentos.find(d => d.tipo === 'sede');
+  const siglo = descuentos.find(d => d.tipo === 'universidad');
+  const sedeVal = sede?.porcentaje ?? 0;
+  const sigloVal = siglo?.porcentaje ?? 0;
+
+  const mat = especial?.matricula ?? null;
+  const tkA = especial?.ticket_a ?? null;
+  const tkB = especial?.ticket_b ?? null;
+  const hasEspecial = mat != null || tkA != null || tkB != null;
+
+  const valores = [mat, tkA, tkB].filter(v => v != null) as number[];
+  const todosIguales = valores.length > 0 && valores.every(v => v === valores[0]);
+
+  type Card = { key: string; valor: string; label: string; aplica: string; desglose?: string; accent?: boolean };
+  const cards: Card[] = [
+    { key: 'sede', valor: sedeVal > 0 ? `${sedeVal}%` : '-', label: 'Sede Local', aplica: 'En las cuotas' },
+    { key: 'siglo', valor: sigloVal > 0 ? `${sigloVal}%` : '-', label: 'Siglo 21', aplica: 'En la totalidad' },
+  ];
+
+  // Helper: arma desglose y total para un concepto especial
+  const buildEspecial = (espVal: number, incluyeSede: boolean): { total: number; desglose: string } => {
+    const parts: string[] = [];
+    let total = espVal;
+    if (sigloVal > 0) { parts.push(`${sigloVal}% Siglo`); total += sigloVal; }
+    if (incluyeSede && sedeVal > 0) { parts.push(`${sedeVal}% Sede`); total += sedeVal; }
+    parts.push(`${espVal}% Promo`);
+    return { total, desglose: parts.join(' + ') };
+  };
+
+  if (!hasEspecial) {
+    cards.push({ key: 'esp', valor: '-', label: 'Promociones', aplica: 'Especiales' });
+  } else if (todosIguales) {
+    // Mismo especial en todo — usar matrícula como referencia (sin sede)
+    const { total, desglose } = buildEspecial(valores[0], false);
+    cards.push({ key: 'esp', valor: `${total}%`, label: 'Promoción', aplica: 'En la totalidad', desglose, accent: true });
+  } else if (valores.length === 1) {
+    const esMat = mat != null;
+    const aplica = esMat ? 'En la matrícula' : tkA != null ? 'En la 1ra cuota' : 'En la 2da cuota';
+    const val = (mat ?? tkA ?? tkB)!;
+    const { total, desglose } = buildEspecial(val, !esMat);
+    cards.push({ key: 'esp', valor: `${total}%`, label: 'Promoción', aplica, desglose, accent: true });
+  } else {
+    if (mat != null) { const r = buildEspecial(mat, false); cards.push({ key: 'esp-mat', valor: `${r.total}%`, label: 'Promoción', aplica: 'En la matrícula', desglose: r.desglose, accent: true }); }
+    if (tkA != null) { const r = buildEspecial(tkA, true); cards.push({ key: 'esp-tka', valor: `${r.total}%`, label: 'Promoción', aplica: 'En la 1ra cuota', desglose: r.desglose, accent: true }); }
+    if (tkB != null) { const r = buildEspecial(tkB, true); cards.push({ key: 'esp-tkb', valor: `${r.total}%`, label: 'Promoción', aplica: 'En la 2da cuota', desglose: r.desglose, accent: true }); }
+  }
+
+  const count = cards.length;
+  const widthClass = count <= 3
+    ? 'w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem]'
+    : count === 4
+      ? 'w-[calc(25%-8px)] md:w-[calc(25%-6px)] max-w-[5.5rem] md:max-w-[6rem]'
+      : 'w-[calc(20%-8px)] md:w-[calc(20%-6px)] max-w-[4.5rem] md:max-w-[5rem]';
+
+  const valorSize = count <= 3 ? 'text-2xl md:text-3xl' : count === 4 ? 'text-xl md:text-2xl' : 'text-lg md:text-xl';
+  const labelSize = count <= 3 ? 'text-[0.65rem] md:text-xs' : 'text-[0.55rem] md:text-[0.65rem]';
+  const aplicaSize = count <= 3 ? 'text-[0.5rem] md:text-[0.55rem]' : 'text-[0.45rem] md:text-[0.5rem]';
+
+  return (
+    <div className="w-full mt-2 md:-mt-2 pt-4 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
+      <p className="text-xs md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
+      <div className="flex flex-wrap justify-center gap-2.5 md:gap-2 w-full mb-2">
+        {cards.map((card) => (
+          <div
+            key={card.key}
+            className={`relative overflow-hidden ${widthClass} aspect-square border rounded-xl flex flex-col items-center justify-center p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte ${card.accent ? 'border-[#e69b05]/50' : 'border-white/20'}`}
+          >
+            <div className="relative z-10 flex flex-col items-center gap-0.5">
+              <span className={`${aplicaSize} font-semibold leading-none tracking-wide`} style={{ color: card.accent ? '#e69b05' : '#cde8e3' }}>
+                {card.aplica}
+              </span>
+              <span className={`font-black leading-none ${valorSize} ${card.accent ? 'text-[#e69b05]' : 'text-[#00c7b1]'}`}>
+                {card.valor}
+              </span>
+              <span className={`text-white font-bold leading-tight uppercase tracking-wide ${labelSize}`}>
+                {card.label}
+              </span>
+              {card.desglose && (
+                <span className="text-[0.45rem] md:text-[0.5rem] leading-tight font-semibold mt-0.5" style={{ color: '#b0d4cd' }}>
+                  {card.desglose}
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
