@@ -18,3 +18,5 @@ scripts/explore-*.mjs
 scripts/debug_*.mjs
 scripts/precios-con-descuentos.*
 /tmp/
+screenshots/
+docs/guias/

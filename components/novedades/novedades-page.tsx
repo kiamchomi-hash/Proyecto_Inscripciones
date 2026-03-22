@@ -12,6 +12,7 @@ export interface Novedad {
   tag: string;
   imagen_url: string | null;
   href: string;
+  slug: string;
   pinned: boolean;
 }
 
@@ -49,8 +50,8 @@ function ImagePlaceholder({ tall }: { tall?: boolean }) {
 /* ── Pinned Hero Card (página 1, izquierda) ── */
 function PinnedCard({ item }: { item: Novedad }) {
   return (
-    <a
-      href={item.href}
+    <Link
+      href={`/novedades/articulo/${item.slug}`}
       className="news-card group block rounded-xl overflow-hidden news-animate news-animate--d1 flex flex-col h-full md:h-[580px]"
       style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.06)' }}
     >
@@ -89,15 +90,15 @@ function PinnedCard({ item }: { item: Novedad }) {
           </span>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
 
 /* ── Sub Card (página 1 derecha + páginas 2+) ── */
 function SubCard({ item, delay }: { item: Novedad; delay: number }) {
   return (
-    <a
-      href={item.href}
+    <Link
+      href={`/novedades/articulo/${item.slug}`}
       className={`news-card group block rounded-xl overflow-hidden news-animate news-animate--d${delay} flex-1 min-h-0`}
       style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.06)' }}
     >
@@ -124,7 +125,7 @@ function SubCard({ item, delay }: { item: Novedad; delay: number }) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
 

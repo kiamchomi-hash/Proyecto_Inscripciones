@@ -10,6 +10,18 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/faq',
   },
+  openGraph: {
+    title: 'Preguntas Frecuentes — CAU Villa Lugano',
+    description: 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano. La universidad cerca de Celina y todo Zona Sur/Oeste.',
+    url: '/faq',
+    siteName: 'CAU Villa Lugano — Universidad Siglo 21',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Preguntas Frecuentes — CAU Villa Lugano',
+    description: 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano.',
+  },
 };
 
 export default async function FaqPage() {

@@ -610,18 +610,8 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
 // ── Main carousel modal ──
 export default function CarouselModal({ carrera, descuentos = [], onClose, initiallyVisible = false }: Props) {
   const slides = useMemo(() => {
-    const filtered = (carrera.slides || [])
-      .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion' && s.type !== 'cierre');
-    const cierreSlide = {
-      type: 'cierre' as const,
-      imagen: '/imagenes/imagenes_cau/entrada_estetica.png',
-      titulo: 'Estudiá<br><span style="color:#00c7b1">con nosotros</span>',
-      beneficios: [
-        { icono: 'monitor', texto: 'Estudiá 100% online, rendí y cursá donde quieras' },
-        { icono: 'chat', texto: 'Chateá con nosotros y resolvé todas tus dudas' },
-      ],
-    };
-    return [...filtered, cierreSlide];
+    return (carrera.slides || [])
+      .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion');
   }, [carrera.slides]);
 
   const [slideIdx, setSlideIdx] = useState(0);
@@ -670,7 +660,7 @@ export default function CarouselModal({ carrera, descuentos = [], onClose, initi
         <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
           <div className="flex justify-between items-center gap-3">
             <h3 className={`text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0 ${slideIdx === 0 ? 'invisible' : ''}`}>
-              {cleanName}
+              {slides[slideIdx]?.type === 'cierre' ? <span>Estudiá <span className="text-[#00c7b1]">con nosotros</span></span> : cleanName}
             </h3>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <img src="/imagenes/Modales/Abogac%C3%ADa/logo_siglo.png" alt="Siglo 21" className="h-7 sm:h-9 w-auto object-contain block" />
@@ -884,10 +874,10 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
 
 function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluacion }) {
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4 sm:p-10 gap-3 sm:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
+    <div className="h-full flex flex-col items-center justify-center p-3 sm:p-10 gap-2 sm:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
       <div className="text-center flex-shrink-0">
-        <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-1">Proceso de evaluacion</p>
-        <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">¿Como te evaluamos?</h3>
+        <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-0.5 sm:mb-1">Proceso de evaluacion</p>
+        <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider">¿Como te evaluamos?</h3>
       </div>
       <div className="flex gap-1.5 sm:gap-3 w-full max-w-md">
         {slide.cards.map((card, i) => (
@@ -898,12 +888,12 @@ function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluaci
           </div>
         ))}
       </div>
-      <div className="flex gap-1.5 flex-wrap justify-center">
+      <div className="flex gap-1 sm:gap-1.5 flex-wrap justify-center">
         {slide.tags.map(tag => (
-          <span key={tag} className="bg-[#00c7b1]/8 border border-[#00c7b1]/22 text-[#b4d3ce] text-[0.7rem] px-2.5 py-1 rounded-full font-semibold">{tag}</span>
+          <span key={tag} className="bg-[#00c7b1]/8 border border-[#00c7b1]/22 text-[#b4d3ce] text-[0.6rem] sm:text-[0.7rem] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-semibold">{tag}</span>
         ))}
       </div>
-      <p className="text-sm text-[#7ca19b] text-center max-w-sm leading-relaxed [&_b]:text-[#00c7b1]" dangerouslySetInnerHTML={{ __html: slide.nota }} />
+      <p className="text-xs sm:text-sm text-[#7ca19b] text-center max-w-sm leading-relaxed [&_b]:text-[#00c7b1]" dangerouslySetInnerHTML={{ __html: slide.nota }} />
     </div>
   );
 }
@@ -970,23 +960,19 @@ function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('.
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}
-      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] p-4 md:p-10 flex flex-col justify-start md:justify-center gap-4 md:gap-8 overflow-hidden">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight leading-none">
-            Estudia<br /><span className="text-[#00c7b1]">con nosotros</span>
-          </h2>
-        </div>
-        <div className="flex flex-col gap-3 md:gap-5">
+      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] p-3 md:p-10 flex flex-col justify-center gap-3 md:gap-8 overflow-y-auto custom-scrollbar">
+        {/* Beneficios */}
+        <div className="flex flex-col gap-2 md:gap-5">
           {slide.beneficios.map((b, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
-                <svg className="w-[1.1rem] h-[1.1rem]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <div key={i} className="flex items-center gap-2.5 md:gap-3">
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
+                <svg className="w-3.5 h-3.5 md:w-[1.1rem] md:h-[1.1rem]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   {(ICON_PATHS[b.icono] || ICON_PATHS.star).split(' M').map((d, di) => (
                     <path key={di} strokeLinecap="round" strokeLinejoin="round" d={di === 0 ? d : `M${d}`} />
                   ))}
                 </svg>
               </div>
-              <span className="text-white text-sm font-semibold">{b.texto}</span>
+              <span className="text-white text-sm md:text-sm font-semibold">{b.texto}</span>
             </div>
           ))}
         </div>
@@ -995,13 +981,13 @@ function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('.
         <DescuentosCards descuentos={descuentos} especial={carrera?.descuento_especial} />
 
         {/* Botones WhatsApp + Ubicación */}
-        <div className="flex flex-wrap justify-center gap-2.5 w-full">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
               href={`https://wa.me/5491166522722?text=${encodeURIComponent(`Hola, quiero consultar los precios de ${carrera.nombre}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white font-bold rounded-xl transition-all text-sm"
+              className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2 md:py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white font-bold rounded-xl transition-all text-xs md:text-sm"
             >
               <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
@@ -1014,13 +1000,13 @@ function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('.
             href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all text-sm border border-white/20"
+            className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2 md:py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all text-xs md:text-sm border border-white/20"
           >
             <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
             </svg>
-            Guaminí 4876, Piso 1
+            Guaminí 4876
           </a>
         </div>
       </div>
@@ -1084,24 +1070,29 @@ function DescuentosCards({ descuentos = [], especial }: { descuentos?: Descuento
   }
 
   const count = cards.length;
+  const hasDesglose = cards.some(c => c.desglose);
+
   const widthClass = count <= 3
     ? 'w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem]'
     : count === 4
       ? 'w-[calc(25%-8px)] md:w-[calc(25%-6px)] max-w-[5.5rem] md:max-w-[6rem]'
       : 'w-[calc(20%-8px)] md:w-[calc(20%-6px)] max-w-[4.5rem] md:max-w-[5rem]';
 
-  const valorSize = count <= 3 ? 'text-2xl md:text-3xl' : count === 4 ? 'text-xl md:text-2xl' : 'text-lg md:text-xl';
-  const labelSize = count <= 3 ? 'text-[0.65rem] md:text-xs' : 'text-[0.55rem] md:text-[0.65rem]';
-  const aplicaSize = count <= 3 ? 'text-[0.5rem] md:text-[0.55rem]' : 'text-[0.45rem] md:text-[0.5rem]';
+  // Mobile: sin aspect-ratio forzado para ahorrar espacio. Desktop: cuadradas o 3/4
+  const aspectClass = hasDesglose ? 'md:aspect-[3/4]' : 'md:aspect-square';
+
+  const valorSize = count <= 3 ? 'text-xl md:text-3xl' : count === 4 ? 'text-lg md:text-2xl' : 'text-base md:text-xl';
+  const labelSize = count <= 3 ? 'text-[0.55rem] md:text-xs' : 'text-[0.5rem] md:text-[0.65rem]';
+  const aplicaSize = count <= 3 ? 'text-[0.45rem] md:text-[0.55rem]' : 'text-[0.4rem] md:text-[0.5rem]';
 
   return (
-    <div className="w-full mt-2 md:-mt-2 pt-4 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
-      <p className="text-xs md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-3 text-center">Descuentos</p>
-      <div className="flex flex-wrap justify-center gap-2.5 md:gap-2 w-full mb-2">
+    <div className="w-full mt-1 md:-mt-2 pt-2 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
+      <p className="text-[0.65rem] md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-1.5 md:mb-3 text-center">Descuentos</p>
+      <div className="flex flex-wrap justify-center gap-2 md:gap-2 w-full mb-1 md:mb-2">
         {cards.map((card) => (
           <div
             key={card.key}
-            className={`relative overflow-hidden ${widthClass} aspect-square border rounded-xl flex flex-col items-center justify-center p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte ${card.accent ? 'border-[#e69b05]/50' : 'border-white/20'}`}
+            className={`relative overflow-hidden ${widthClass} ${aspectClass} border rounded-xl flex flex-col items-center justify-center p-1.5 md:p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte ${card.accent ? 'border-[#e69b05]/50' : 'border-white/20'}`}
           >
             <div className="relative z-10 flex flex-col items-center gap-0.5">
               <span className={`${aplicaSize} font-semibold leading-none tracking-wide`} style={{ color: card.accent ? '#e69b05' : '#cde8e3' }}>

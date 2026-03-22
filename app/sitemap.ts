@@ -44,11 +44,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const total = count ?? 0;
   const totalPages = Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
 
-  const novedadesEntries: MetadataRoute.Sitemap = Array.from({ length: totalPages }, (_, i) => ({
+  const novedadesPageEntries: MetadataRoute.Sitemap = Array.from({ length: totalPages }, (_, i) => ({
     url: `${baseUrl}/novedades/${i + 1}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: i === 0 ? 0.8 : 0.5,
+  }));
+
+  // Artículos individuales de novedades
+  const { data: novedades } = await supabase
+    .from('novedades')
+    .select('slug, fecha')
+    .eq('publicada', true)
+    .not('slug', 'is', null);
+
+  const novedadesArticuloEntries: MetadataRoute.Sitemap = (novedades || []).map(n => ({
+    url: `${baseUrl}/novedades/articulo/${n.slug}`,
+    lastModified: n.fecha ? new Date(n.fecha) : new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.6,
   }));
 
   return [
@@ -84,6 +98,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...carrerasEntries,
     ...materiasEntries,
-    ...novedadesEntries,
+    ...novedadesPageEntries,
+    ...novedadesArticuloEntries,
   ];
 }

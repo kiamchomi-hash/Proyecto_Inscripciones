@@ -288,10 +288,42 @@
   }
 }
 
+/* Mobile: limpiar filtros — mismo estilo que filter-pills-toggle pero rojo */
+.mobile-clear-filters {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 6px 14px;
+  margin: 0 1rem;
+  border-radius: 8px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.25);
+  color: #ff6b6b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mobile-clear-filters:active {
+  background: rgba(255, 107, 107, 0.25);
+}
+
+/* Desktop: ocultar limpiar filtros mobile, mostrar desktop */
+.desktop-clear-filters {
+  display: flex;
+}
+
 /* ≤640px: mobile — hide desktop pills, show mobile filter panel */
 @media (max-width: 640px) {
   .desktop-only-pills {
     display: none !important;
+  }
+  .desktop-clear-filters {
+    display: none !important;
+  }
+  .mobile-clear-filters {
+    display: flex;
   }
   .filter-pills-toggle {
     display: flex;
@@ -324,6 +356,9 @@
 /* ≥641px: hide mobile filter UI */
 @media (min-width: 641px) {
   .filter-pills-toggle {
+    display: none !important;
+  }
+  .mobile-pills {
     display: none !important;
   }
   .mobile-filter-panel {

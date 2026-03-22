@@ -113,7 +113,7 @@ function ContactForm() {
               </svg>
             </div>
             <div>
-              <h2 className="text-base font-bold" style={{ color: '#e8d0d8' }}>Dejanos tu consulta</h2>
+              <h2 className="text-base font-bold" style={{ color: '#e8d0d8' }}>Formulario de contacto</h2>
               <p className="text-xs text-white">Te respondemos a la brevedad</p>
             </div>
           </div>
@@ -355,7 +355,7 @@ export default function ContactoPageContent() {
             <div className="mx-6 mb-3" style={{ height: '1px', background: 'linear-gradient(90deg, rgba(24,119,242,0.25), transparent 80%)' }} />
 
             {/* Posts */}
-            <div className="px-6 pb-4 flex flex-col gap-3">
+            <div className="px-6 pb-4 flex-1 flex flex-col justify-center gap-3">
               {FB_POSTS.map((post) => (
                 <a
                   key={post.href}
@@ -392,9 +392,6 @@ export default function ContactoPageContent() {
                 </a>
               ))}
             </div>
-
-            {/* Spacer */}
-            <div className="flex-1" />
 
             {/* Divider */}
             <div className="mx-6" style={{ height: '1px', background: 'linear-gradient(90deg, rgba(24,119,242,0.25), transparent 80%)' }} />
@@ -460,7 +457,7 @@ export default function ContactoPageContent() {
             <div className="mx-6 mb-3" style={{ height: '1px', background: 'linear-gradient(90deg, rgba(214,36,159,0.25), transparent 80%)' }} />
 
             {/* Posts */}
-            <div className="px-6 pb-4 flex flex-col gap-3">
+            <div className="px-6 pb-4 flex-1 flex flex-col justify-center gap-3">
               {IG_POSTS.length > 0 ? IG_POSTS.map((post) => (
                 <a
                   key={post.href}
@@ -515,9 +512,6 @@ export default function ContactoPageContent() {
                 </a>
               )}
             </div>
-
-            {/* Spacer */}
-            <div className="flex-1" />
 
             {/* Divider */}
             <div className="mx-6" style={{ height: '1px', background: 'linear-gradient(90deg, rgba(214,36,159,0.25), transparent 80%)' }} />

@@ -17,9 +17,6 @@ interface CarreraRow {
   dtoMat: number;
   dtoTkA: number;
   dtoTkB: number;
-  dtoMatTotal: number;
-  dtoTkATotal: number;
-  dtoTkBTotal: number;
   matFinal: number;
   tkaFinal: number;
   tkbFinal: number;
@@ -38,6 +35,9 @@ interface PageData {
   especiales: { nombre: string; dtoMat: number; dtoTkA: number; dtoTkB: number }[];
   carreras: CarreraRow[];
   ultimaSync: string;
+  promoEspecialMat: number;
+  promoEspecialTkA: number;
+  promoEspecialTkB: number;
 }
 
 const fmt = (n: number) => `$${n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -63,6 +63,13 @@ async function fetchData(): Promise<PageData> {
   const recargo3 = Number(meta.recargo_visa_master_3) || 0;
   const recargo6 = Number(meta.recargo_visa_master_6) || 0;
 
+  // Promo especial global: solo para mostrar en el banner (los precios ya vienen del Excel)
+  const promoGlobalMat = Number(meta.promo_especial_matricula) || 0;
+  const promoGlobalTkA = Number(meta.promo_especial_tka) || 0;
+  const promoGlobalTkB = Number(meta.promo_especial_tkb) || 0;
+
+  const sedeVal = (sede?.porcentaje ?? 0) / 100;
+
   const especiales = precios
     .filter((p: { es_especial: boolean }) => p.es_especial)
     .map((p: { nombre_supabase: string; descuento_matricula: string; descuento_ticket_a: string; descuento_ticket_b: string }) => ({
@@ -84,24 +91,17 @@ async function fetchData(): Promise<PageData> {
     const dtoTkA = Number(p.descuento_ticket_a);
     const dtoTkB = Number(p.descuento_ticket_b);
 
-    // Matrícula: solo promo. Tickets: promo + sede (amigo referido)
-    const sedeVal = (sede?.porcentaje ?? 0) / 100;
+    // Matrícula: solo promo (del Excel). Tickets: promo + sede (amigo referido)
     const matFinal = matLista * (1 - dtoMat);
     const tkaFinal = tkaLista * (1 - dtoTkA) * (1 - sedeVal);
     const tkbFinal = tkbLista * (1 - dtoTkB) * (1 - sedeVal);
     const total = matFinal + tkaFinal + tkbFinal;
-
-    // % total = beneficio + promoción (como lo muestra el Excel)
-    const dtoMatTotal = dtoMat;
-    const dtoTkATotal = dtoTkA + sedeVal;
-    const dtoTkBTotal = dtoTkB + sedeVal;
 
     return {
       nombre: p.nombre_supabase,
       esEspecial: p.es_especial,
       matLista, tkaLista, tkbLista,
       dtoMat, dtoTkA, dtoTkB,
-      dtoMatTotal, dtoTkATotal, dtoTkBTotal,
       matFinal, tkaFinal, tkbFinal,
       total,
       cuota3: total * (1 + recargo3) / 3,
@@ -119,6 +119,9 @@ async function fetchData(): Promise<PageData> {
     especiales,
     carreras,
     ultimaSync: meta.ultima_sync,
+    promoEspecialMat: Number(meta.promo_especial_matricula) || 0,
+    promoEspecialTkA: Number(meta.promo_especial_tka) || 0,
+    promoEspecialTkB: Number(meta.promo_especial_tkb) || 0,
   };
 }
 
@@ -133,6 +136,12 @@ export default function PreciosAdminPage() {
   const [search, setSearch] = useState('');
   const [showLista, setShowLista] = useState(false);
 
+  // Overrides manuales: { "Abogacía": { benefMat: 0.05, benefTkA: 0.10, ... } }
+  type OverrideKey = 'benefMat' | 'benefTkA' | 'benefTkB' | 'promoMat' | 'promoTkA' | 'promoTkB';
+  const [overrides, setOverrides] = useState<Record<string, Partial<Record<OverrideKey, number>>>>({});
+  const [editing, setEditing] = useState<{ carrera: string; field: OverrideKey } | null>(null);
+  const [editValue, setEditValue] = useState('');
+
   useEffect(() => {
     fetchData()
       .then(d => { setData(d); localStorage.setItem(CACHE_KEY, JSON.stringify(d)); setError(''); })
@@ -140,6 +149,56 @@ export default function PreciosAdminPage() {
       .finally(() => setRefreshing(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Restaurar scroll al recargar
+  useEffect(() => {
+    const saved = sessionStorage.getItem('admin_precios_scroll');
+    if (saved) { window.scrollTo(0, parseInt(saved)); sessionStorage.removeItem('admin_precios_scroll'); }
+    const onBeforeUnload = () => sessionStorage.setItem('admin_precios_scroll', String(window.scrollY));
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, []);
+
+  const confirmEdit = () => {
+    if (!editing) return;
+    const val = parseFloat(editValue.replace(',', '.'));
+    if (isNaN(val) || val < 0 || val > 100) { setEditing(null); return; }
+    setOverrides(prev => ({
+      ...prev,
+      [editing.carrera]: { ...prev[editing.carrera], [editing.field]: val / 100 },
+    }));
+    setEditing(null);
+  };
+
+  const clearOverride = (carrera: string, field: OverrideKey) => {
+    setOverrides(prev => {
+      const copy = { ...prev };
+      if (copy[carrera]) {
+        delete copy[carrera][field];
+        if (Object.keys(copy[carrera]).length === 0) delete copy[carrera];
+      }
+      return copy;
+    });
+  };
+
+  const recalc = (c: CarreraRow): CarreraRow => {
+    const ov = overrides[c.nombre];
+    if (!ov) return c;
+    const sedeVal = data!.sede / 100;
+    const benefMat = ov.benefMat ?? 0;
+    const benefTkA = ov.benefTkA ?? sedeVal;
+    const benefTkB = ov.benefTkB ?? sedeVal;
+    const dtoMat = ov.promoMat ?? c.dtoMat;
+    const dtoTkA = ov.promoTkA ?? c.dtoTkA;
+    const dtoTkB = ov.promoTkB ?? c.dtoTkB;
+    const matFinal = c.matLista * (1 - dtoMat) * (1 - benefMat);
+    const tkaFinal = c.tkaLista * (1 - dtoTkA) * (1 - benefTkA);
+    const tkbFinal = c.tkbLista * (1 - dtoTkB) * (1 - benefTkB);
+    const total = matFinal + tkaFinal + tkbFinal;
+    const recargo3 = data!.recargo3 / 100;
+    const recargo6 = data!.recargo6 / 100;
+    return { ...c, dtoMat, dtoTkA, dtoTkB, matFinal, tkaFinal, tkbFinal, total, cuota3: total * (1 + recargo3) / 3, cuota6: total * (1 + recargo6) / 6 };
+  };
 
   if (!data && refreshing) return <div className="min-h-screen flex items-center justify-center" style={{ background: '#013729' }}><p className="text-[#7ca19b]">Cargando precios...</p></div>;
   if (!data && error) return <div className="min-h-screen flex items-center justify-center" style={{ background: '#013729' }}><p className="text-red-400">{error}</p></div>;
@@ -218,6 +277,52 @@ export default function PreciosAdminPage() {
           </div>
         </div>
 
+        {/* Promo especial global */}
+        {(data.promoEspecialMat > 0 || data.promoEspecialTkA > 0 || data.promoEspecialTkB > 0) && (
+          <div className="rounded-xl p-4 mb-6 flex items-center gap-4" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)' }}>
+            <span className="text-2xl">🔥</span>
+            <div>
+              <p className="text-sm font-bold text-red-400 uppercase tracking-wider">Promo especial global activa</p>
+              <div className="flex gap-4 mt-2">
+                {data.promoEspecialMat > 0 && (() => {
+                  const total = Math.round(data.promoEspecialMat * 100);
+                  const pura = total - data.siglo21;
+                  return (
+                    <div className="px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.15)' }}>
+                      <p className="text-xs" style={{ color: '#7ca19b' }}>Matrícula</p>
+                      <p className="text-lg font-black text-red-400">{total}%</p>
+                      <p className="text-[0.65rem]" style={{ color: '#7ca19b' }}>{data.siglo21}% Siglo + {pura}% Promo</p>
+                    </div>
+                  );
+                })()}
+                {data.promoEspecialTkA > 0 && (() => {
+                  const total = Math.round(data.promoEspecialTkA * 100);
+                  const pura = total - data.siglo21 - data.sede;
+                  return (
+                    <div className="px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.15)' }}>
+                      <p className="text-xs" style={{ color: '#7ca19b' }}>Ticket A</p>
+                      <p className="text-lg font-black text-red-400">{total}%</p>
+                      <p className="text-[0.65rem]" style={{ color: '#7ca19b' }}>{data.siglo21}% Siglo + {data.sede}% Sede + {pura}% Promo</p>
+                    </div>
+                  );
+                })()}
+                {data.promoEspecialTkB > 0 && (() => {
+                  const total = Math.round(data.promoEspecialTkB * 100);
+                  const pura = total - data.siglo21 - data.sede;
+                  return (
+                    <div className="px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.15)' }}>
+                      <p className="text-xs" style={{ color: '#7ca19b' }}>Ticket B</p>
+                      <p className="text-lg font-black text-red-400">{total}%</p>
+                      <p className="text-[0.65rem]" style={{ color: '#7ca19b' }}>{data.siglo21}% Siglo + {data.sede}% Sede + {pura}% Promo</p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <p className="text-xs mt-2" style={{ color: '#7ca19b' }}>Editar desde Supabase → precios_meta (% total, ej: 0.60 = 60% incluye sede+siglo+promo)</p>
+            </div>
+          </div>
+        )}
+
         {/* Especiales */}
         {data.especiales.length > 0 && (
           <div className="rounded-xl p-4 mb-6" style={{ background: '#1c2f31', border: '1px solid rgba(230,155,5,0.3)' }}>
@@ -252,6 +357,51 @@ export default function PreciosAdminPage() {
             Mostrar precios de lista
           </label>
           <span className="text-xs" style={{ color: '#7ca19b' }}>{filtered.length} carreras</span>
+          {Object.keys(overrides).length > 0 && (
+            <button
+              onClick={() => setOverrides({})}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold"
+              style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}
+            >
+              Quitar ediciones ({Object.keys(overrides).length})
+            </button>
+          )}
+        </div>
+
+        {/* Override global por columna */}
+        <div className="flex flex-wrap gap-3 mb-4">
+          {([
+            { label: 'Benef. Mat', field: 'benefMat' as OverrideKey, color: '#00c7b1' },
+            { label: 'Benef. TkA', field: 'benefTkA' as OverrideKey, color: '#00c7b1' },
+            { label: 'Benef. TkB', field: 'benefTkB' as OverrideKey, color: '#00c7b1' },
+            { label: 'Promo Mat', field: 'promoMat' as OverrideKey, color: '#e69b05' },
+            { label: 'Promo TkA', field: 'promoTkA' as OverrideKey, color: '#e69b05' },
+            { label: 'Promo TkB', field: 'promoTkB' as OverrideKey, color: '#e69b05' },
+          ]).map(({ label, field, color }) => (
+            <div key={field} className="flex items-center gap-1.5">
+              <span className="text-[0.65rem] font-bold uppercase" style={{ color }}>{label}</span>
+              <input
+                type="text"
+                placeholder="%"
+                className="w-12 text-center text-xs px-1 py-1 rounded"
+                style={{ background: '#0e1918', border: `1px solid ${color}40`, color: '#fff', outline: 'none' }}
+                onKeyDown={e => {
+                  if (e.key !== 'Enter') return;
+                  const val = parseFloat((e.target as HTMLInputElement).value.replace(',', '.'));
+                  if (isNaN(val) || val < 0 || val > 100) return;
+                  const decimal = val / 100;
+                  setOverrides(prev => {
+                    const next = { ...prev };
+                    for (const c of data.carreras) {
+                      next[c.nombre] = { ...next[c.nombre], [field]: decimal };
+                    }
+                    return next;
+                  });
+                  (e.target as HTMLInputElement).value = '';
+                }}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Tabla */}
@@ -288,38 +438,81 @@ export default function PreciosAdminPage() {
             <tbody>
               {filtered.map((c, i) => {
                 const sedeVal = data.sede / 100;
+                const ov = overrides[c.nombre] || {};
+                const rc = recalc(c);
                 const bdr = { borderRight: '1px solid rgba(255,255,255,0.1)' };
+                const hasOverride = !!overrides[c.nombre];
+
+                const benefMat = ov.benefMat ?? 0;
+                const benefTkA = ov.benefTkA ?? sedeVal;
+                const benefTkB = ov.benefTkB ?? sedeVal;
+
+                const EditableCell = ({ field, value, defaultColor, extraStyle }: { field: OverrideKey; value: number; defaultColor: string; extraStyle?: React.CSSProperties }) => {
+                  const isEditing = editing?.carrera === c.nombre && editing?.field === field;
+                  const isOverridden = ov[field] !== undefined;
+
+                  if (isEditing) {
+                    return (
+                      <td className="text-center px-0.5 py-1" style={extraStyle}>
+                        <input
+                          autoFocus
+                          type="text"
+                          value={editValue}
+                          onChange={e => setEditValue(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') confirmEdit(); if (e.key === 'Escape') setEditing(null); }}
+                          onBlur={confirmEdit}
+                          className="w-12 text-center text-xs px-1 py-0.5 rounded"
+                          style={{ background: '#0e1918', border: '1px solid #00c7b1', color: '#fff', outline: 'none' }}
+                        />
+                      </td>
+                    );
+                  }
+
+                  return (
+                    <td
+                      className="text-center px-1 py-2.5 text-xs tabular-nums cursor-pointer hover:brightness-150"
+                      style={{ color: isOverridden ? '#ef4444' : defaultColor, ...extraStyle }}
+                      onClick={() => { setEditing({ carrera: c.nombre, field }); setEditValue(Math.round(value * 100).toString()); }}
+                      title={isOverridden ? 'Click para editar (doble-click para resetear)' : 'Click para editar'}
+                      onDoubleClick={() => isOverridden && clearOverride(c.nombre, field)}
+                    >
+                      {pct(value)}
+                    </td>
+                  );
+                };
+
                 return (
                 <tr
                   key={c.nombre + i}
                   style={{
                     borderBottom: '1px solid rgba(255,255,255,0.08)',
-                    background: c.esEspecial ? 'rgba(230,155,5,0.05)' : undefined,
+                    background: hasOverride ? 'rgba(239,68,68,0.06)' : c.esEspecial ? 'rgba(230,155,5,0.05)' : undefined,
                   }}
                 >
                   <td className="px-3 py-2.5 font-semibold text-white" style={bdr}>
                     {c.esEspecial && <span style={{ color: '#e69b05' }}>★ </span>}
+                    {hasOverride && <span style={{ color: '#ef4444' }}>✎ </span>}
                     {c.nombre}
                   </td>
-                  {/* Dto. Beneficio: Mat=0, TkA=sede, TkB=sede */}
-                  <td className="text-center px-1 py-2.5 text-xs tabular-nums" style={{ color: '#7ca19b' }}>0%</td>
-                  <td className="text-center px-1 py-2.5 text-xs tabular-nums" style={{ color: '#00c7b1' }}>{pct(sedeVal)}</td>
-                  <td className="text-center px-1 py-2.5 text-xs tabular-nums" style={{ color: '#00c7b1', ...bdr }}>{pct(sedeVal)}</td>
-                  {/* Dto. Promoción */}
-                  <td className="text-center px-1 py-2.5 text-xs tabular-nums" style={{ color: c.esEspecial && c.dtoMat !== c.dtoTkA ? '#e69b05' : '#7ca19b' }}>{pct(c.dtoMat)}</td>
-                  <td className="text-center px-1 py-2.5 text-xs tabular-nums" style={{ color: c.esEspecial ? '#e69b05' : '#7ca19b' }}>{pct(c.dtoTkA)}</td>
-                  <td className="text-center px-1 py-2.5 text-xs tabular-nums" style={{ color: c.esEspecial ? '#e69b05' : '#7ca19b', ...bdr }}>{pct(c.dtoTkB)}</td>
+                  {/* Dto. Beneficio: editables */}
+                  <EditableCell field="benefMat" value={benefMat} defaultColor="#7ca19b" />
+                  <EditableCell field="benefTkA" value={benefTkA} defaultColor="#00c7b1" />
+                  <EditableCell field="benefTkB" value={benefTkB} defaultColor="#00c7b1" extraStyle={bdr} />
+                  {/* Dto. Promoción: editables */}
+                  <EditableCell field="promoMat" value={rc.dtoMat} defaultColor={c.esEspecial && c.dtoMat !== c.dtoTkA ? '#e69b05' : '#7ca19b'} />
+                  <EditableCell field="promoTkA" value={rc.dtoTkA} defaultColor={c.esEspecial ? '#e69b05' : '#7ca19b'} />
+                  <EditableCell field="promoTkB" value={rc.dtoTkB} defaultColor={c.esEspecial ? '#e69b05' : '#7ca19b'} extraStyle={bdr} />
                   {showLista && <>
                     <td className="text-right px-2 py-2.5 tabular-nums" style={{ color: '#7ca19b' }}>{fmt(c.matLista)}</td>
                     <td className="text-right px-2 py-2.5 tabular-nums" style={{ color: '#7ca19b' }}>{fmt(c.tkaLista)}</td>
                     <td className="text-right px-2 py-2.5 tabular-nums" style={{ color: '#7ca19b', ...bdr }}>{fmt(c.tkbLista)}</td>
                   </>}
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#00c7b1' }}>{fmt(c.matFinal)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#00c7b1' }}>{fmt(c.tkaFinal)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#00c7b1', ...bdr }}>{fmt(c.tkbFinal)}</td>
-                  <td className="text-right px-2 py-2.5 font-bold tabular-nums text-white" style={bdr}>{fmt(c.total)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#e69b05', ...bdr }}>{fmt(c.cuota3)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#e69b05' }}>{fmt(c.cuota6)}</td>
+                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#00c7b1' }}>{fmt(rc.matFinal)}</td>
+                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#00c7b1' }}>{fmt(rc.tkaFinal)}</td>
+                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#00c7b1', ...bdr }}>{fmt(rc.tkbFinal)}</td>
+                  <td className="text-right px-2 py-2.5 font-bold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#fff', ...bdr }}>{fmt(rc.total)}</td>
+                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#e69b05', ...bdr }}>{fmt(rc.cuota3)}</td>
+                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#e69b05' }}>{fmt(rc.cuota6)}</td>
                 </tr>
                 );
               })}
