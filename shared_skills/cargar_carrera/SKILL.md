@@ -8,12 +8,12 @@ Workflow para cargar los slides JSON de una carrera en la tabla `carreras` de Su
 2. **Fetch de datos**: extraer título, duración, área, plan de estudios completo y 2 bullets
 3. **Buscar imagen local**: `public/imagenes/Modales/[Nombre Carrera]/**/*`
 4. **Verificar nombre en DB**: `SELECT id, nombre, prefix, nombre_corto, nivel, duracion, titulo, enfoque FROM carreras WHERE nombre ILIKE '%...%' AND activa = true` — el nombre en DB puede diferir del nombre completo (ej: "Informática" en vez de "Licenciatura en Informática")
-5. **Armar slides** (solo portada + plan_estudios, el cierre lo agrega el frontend automáticamente)
+5. **Armar slides** (portada + plan_estudios + cierre — los 3 deben cargarse explícitamente)
 6. **Subir slides** con UPDATE
 7. **Preview**: tomar screenshots del modal en desktop y mobile para que el usuario valide la imagen y el layout
 8. **Ajustar imagen** si el usuario lo pide: actualizar `imagen_desktop_position` y volver a previsualizar
 
-## Formato de slides (2 slides — el cierre se genera en el frontend)
+## Formato de slides (3 slides — todos explícitos en el JSON)
 
 ### Slide 1: Portada
 ```json
@@ -65,7 +65,18 @@ Después de subir los slides, usar la skill `webapp-testing` para tomar screensh
 
 - **Solo 2 bullets** en portada, nunca más
 - **Badges siempre**: Título + Área (NUNCA Duración ni Modalidad)
-- **NO incluir slide de cierre** en el JSON — el frontend lo genera automáticamente
+- **SIEMPRE incluir slide de cierre** en el JSON — el frontend NO lo genera automáticamente. Formato:
+  ```json
+  {
+    "type": "cierre",
+    "imagen": "/imagenes/imagenes_cau/entrada_estetica.png",
+    "titulo": "Estudiá<br><span style=\"color:#00c7b1\">con nosotros</span>",
+    "beneficios": [
+      {"icono": "monitor", "texto": "Estudiá 100% online, rendí y cursá donde quieras"},
+      {"icono": "chat", "texto": "Chateá con nosotros y resolvé todas tus dudas"}
+    ]
+  }
+  ```
 - **Imagen**: buscar primero en `public/imagenes/Modales/`. El usuario indica posición si es necesario
 - **`imagen_desktop_position`**: usar `object-position` CSS. Mostrar desde donde está el contenido importante de la foto. Se aceptan valores como `center`, `left center`, `30% center`, etc.
 - **Títulos largos en badges**: el componente ya reduce automáticamente el tamaño de fuente cuando `badge.value.length > 35` caracteres. No hace falta intervención manual
