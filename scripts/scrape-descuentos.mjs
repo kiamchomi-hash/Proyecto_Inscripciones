@@ -37,7 +37,9 @@ if (existsSync(envPath)) {
   }
 }
 
-const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+// Prefer service role key (bypasses RLS) for server-side scripts, fallback to anon key for read-only/dry-run
+const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey);
 const dryRun = process.argv.includes('--dry-run');
 const headless = !process.argv.includes('--visible');
 const forceCache = process.argv.includes('--cache');

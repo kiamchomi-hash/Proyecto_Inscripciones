@@ -95,7 +95,7 @@ export interface CarreraCategory {
 export const CATEGORIES: CarreraCategory[] = [
   { id: 'all', label: 'Ver Todo', niveles: [], featured: false },
   { id: 'licenciaturas', label: 'Licenciaturas', sublabel: 'Grado', niveles: ['Grado', 'Grado (CCC)'], featured: true },
-  { id: 'tecnicaturas', label: 'Tecnicaturas', sublabel: 'Pregrado', niveles: ['Pregrado (Tecnicatura)'], featured: true },
+  { id: 'tecnicaturas', label: 'Tecnicaturas', sublabel: 'Pregrado', niveles: ['Pregrado'], featured: true },
   { id: 'maestrias', label: 'Maestrias', sublabel: undefined, niveles: ['Posgrado'], featured: false },
   { id: 'diplomaturas', label: 'Diplomaturas', sublabel: undefined, niveles: ['APLV - Extragrado'], featured: false },
   { id: 'certificaciones', label: 'Certificaciones', sublabel: undefined, niveles: ['Certificacion'], featured: false },
@@ -111,7 +111,7 @@ export function getCategoryForCarrera(c: Carrera): string {
   const nombre = c.nombre.toLowerCase();
 
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';
-  if (c.nivel === 'Pregrado (Tecnicatura)') return 'tecnicaturas';
+  if (c.nivel === 'Pregrado') return 'tecnicaturas';
 
   // Posgrado: split into maestrias and especializaciones
   if (c.nivel === 'Posgrado') {
