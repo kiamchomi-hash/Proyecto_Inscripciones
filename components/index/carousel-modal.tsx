@@ -832,7 +832,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
       </div>
       {slide.imagen_desktop && (
         <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-[#00c7b1]/20 relative" style={{ width: '42%' }}>
-          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className={`absolute inset-0 w-full h-full object-cover ${['Abogacía', 'Comercio Internacional', 'Contador Público', 'Administración Pública', 'Administración Hotelera', 'Relaciones Internacionales', 'Profesorado Universitario para Nivel Secundario y Superior (CCC)', 'Negocios Agroecológicos', 'Responsabilidad y Gestión Social', 'Relaciones Laborales'].includes(carrera.nombre) ? '' : 'brightness-150'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
+          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className={`absolute inset-0 w-full h-full object-cover ${['Abogacía', 'Comercio Internacional', 'Contador Público', 'Administración Pública', 'Administración Hotelera', 'Relaciones Internacionales', 'Profesorado Universitario para Nivel Secundario y Superior (CCC)', 'Negocios Agroecológicos', 'Responsabilidad y Gestión Social', 'Relaciones Laborales', 'Investigación de la escena del crimen'].includes(carrera.nombre) ? '' : 'brightness-150'}`} style={{ objectPosition: slide.imagen_desktop_position || 'top' }} />
         </div>
       )}
     </div>

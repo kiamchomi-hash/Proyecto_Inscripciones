@@ -29,13 +29,14 @@ function fuzzyMatch(text: string, query: string): boolean {
   const t = text.toLowerCase();
   const q = query.toLowerCase();
   if (t.includes(q)) return true;
-  // Check each word
-  const words = t.split(/\s+/);
-  for (const word of words) {
-    if (word.startsWith(q.slice(0, 3))) return true;
-    if (q.length >= 3 && levenshtein(word.slice(0, q.length + 2), q) <= 2) return true;
-  }
-  return false;
+  // Check that every query word matches at least one word in the text
+  const queryWords = q.split(/\s+/).filter(Boolean);
+  const textWords = t.split(/\s+/);
+  return queryWords.every(qw =>
+    textWords.some(tw =>
+      tw.includes(qw) || tw.startsWith(qw.slice(0, 3)) || (qw.length >= 3 && levenshtein(tw.slice(0, qw.length + 2), qw) <= 2)
+    )
+  );
 }
 
 // Parse career name into prefix + clean name

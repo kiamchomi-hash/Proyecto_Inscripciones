@@ -87,3 +87,7 @@ Después de subir los slides, usar la skill `webapp-testing` para tomar screensh
 - **Verificar que el WHERE matchea** antes de hacer UPDATE (el nombre en DB puede ser distinto al nombre completo)
 - **Descuentos especiales**: después de cargar slides, preguntar al usuario si quiere sincronizar descuentos especiales con `/sync_descuentos`. Algunas carreras tienen promociones especiales (matrícula, cuotas) que se muestran en el slide de cierre
 - **Verificar precios**: el usuario puede consultar precios actualizados en `/admin/precios` (requiere Excel cacheado en `/tmp/precios.xlsx` via `node scripts/scrape-descuentos.mjs`)
+- **Sincronizar nombres después de cargar**: si el usuario renombra `carreras.nombre` (ej: quita el prefijo "Tecnicatura en"), hay que actualizar también:
+  1. `precios_carreras.nombre_supabase` — para que el JOIN de precios matchee
+  2. `NOMBRE_MAP` en `scripts/scrape-descuentos.mjs` — para que futuras syncs escriban el nombre correcto
+  3. La exclusion list de brillo en `components/index/carousel-modal.tsx` (línea ~835) — si la carrera estaba en la lista sin brillo
