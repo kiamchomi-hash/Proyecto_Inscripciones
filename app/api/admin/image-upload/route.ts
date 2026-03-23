@@ -16,11 +16,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan datos (file, career o type)' }, { status: 400 });
     }
 
+    // Validate file type
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: 'Tipo de archivo no permitido. Solo imágenes (jpg, png, webp, avif).' }, { status: 400 });
+    }
+
+    // Max 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Archivo demasiado grande (máx 10MB)' }, { status: 400 });
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Sanitize career name for directory
-    const slug = careerName.trim();
+    // Sanitize career name for directory — block path traversal
+    const slug = careerName.trim().replace(/\.\./g, '').replace(/[/\\]/g, '');
     const publicDir = path.join(process.cwd(), 'public');
     const destDir = path.join(publicDir, 'imagenes/Modales', slug);
 

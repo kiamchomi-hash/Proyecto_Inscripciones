@@ -141,7 +141,7 @@ const FAQ_ITEMS: FaqItem[] = [
     keywords: 'formas pago aranceles cuotas precio costo cuanto sale vale bimestral cuatrimestre tarjeta credito matricula financiacion mensual',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
-        <p><strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Podés abonar los aranceles por cuatrimestre.</strong> Cada año tiene <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>dos cuatrimestres</strong> y requiere una <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>matrícula de inscripción</strong>. Podés pagar el <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>cuatrimestre completo</strong> o de forma <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>bimestral</strong>.</p>
+        <p><strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Podés abonar los aranceles por cuatrimestre.</strong> Cada cuatrimestre se compone de una <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>matrícula</strong> y <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>dos cuotas</strong>. Podés pagar el <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>cuatrimestre completo</strong> o de forma <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>bimestral</strong>.</p>
         <p>También podés pagar en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>cuotas</strong> con <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>tarjeta de crédito</strong> y otros medios de financiación, según la entidad bancaria o plataforma que elijas.</p>
       </div>
     ),
