@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next';
 
+const supabaseHost = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://localhost').host;
+
 const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['jspdf', 'jspdf-autotable', '@supabase/supabase-js'],
@@ -7,7 +9,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'yuwfkdehaowkselkhtck.supabase.co' },
+      { protocol: 'https', hostname: supabaseHost },
     ],
   },
   async headers() {
@@ -19,11 +21,11 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://yuwfkdehaowkselkhtck.supabase.co https://images.unsplash.com",
+              `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com`,
               "font-src 'self'",
-              "connect-src 'self' https://yuwfkdehaowkselkhtck.supabase.co https://*.google-analytics.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com",
+              `connect-src 'self' https://${supabaseHost} https://*.google-analytics.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com`,
               "frame-src https://challenges.cloudflare.com https://www.google.com",
               "worker-src 'self' blob:",
             ].join('; '),

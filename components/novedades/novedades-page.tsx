@@ -109,6 +109,14 @@ function SubCard({ item, delay }: { item: Novedad; delay: number }) {
           ) : (
             <ImagePlaceholder />
           )}
+          {item.tag?.toLowerCase() === 'barrio' && (
+            <span
+              className="absolute top-3 left-3 z-[3] text-[0.6rem] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-md"
+              style={{ color: '#013729', background: 'var(--color-highlight)', boxShadow: '0 2px 12px rgba(0,199,177,0.4)' }}
+            >
+              Barrio
+            </span>
+          )}
         </div>
         <div className="flex-1 p-5 px-6 flex flex-col justify-center">
           <time className="inline-flex items-center gap-1.5 text-[0.7rem] font-semibold mb-2" style={{ color: 'var(--color-secondary-highlight)' }}>
