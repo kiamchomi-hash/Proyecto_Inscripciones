@@ -145,7 +145,7 @@ export const AREAS = [
   { id: 'comunicacion', label: 'Comunicación y Diseño' },
   { id: 'ambiente', label: 'Ambiente y Agro' },
   { id: 'turismo', label: 'Turismo y Hotelería' },
-  { id: 'gobierno', label: 'Gobierno' },
+  { id: 'gobierno', label: 'Ciencias Políticas' },
   { id: 'rrhh', label: 'RRHH' },
   { id: 'deporte', label: 'Deporte' },
 ] as const;

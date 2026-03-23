@@ -100,8 +100,8 @@
 }
 
 .career-badge--destacada {
-  background: #f5a623;
-  color: #1a1a0e;
+  background: var(--color-highlight);
+  color: #013729;
 }
 
 /* Career prefix */
