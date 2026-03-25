@@ -407,8 +407,8 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
               {/* Mobile button */}
               <button
                 onClick={handleClick}
-                className={`md:hidden px-3 py-2.5 min-h-[44px] rounded flex flex-1 w-full items-center justify-center cursor-pointer transition-all duration-200 ${
-                  isMobileActive ? '' : 'border border-[#00c7b1]/30'
+                className={`md:hidden px-3 py-2.5 min-h-[44px] rounded flex flex-1 items-center justify-center cursor-pointer transition-all duration-200 border border-[#00c7b1]/30 ${
+                  isMobileActive ? 'bg-[#00c7b1]/10 border-[#00c7b1]/60 shadow-[0_0_8px_rgba(0,199,177,0.2)]' : ''
                 }`}
                 style={isMobileActive ? {
                   background: 'linear-gradient(135deg, #008c7d, #006c5b)',
