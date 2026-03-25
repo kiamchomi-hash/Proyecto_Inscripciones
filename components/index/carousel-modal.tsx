@@ -337,7 +337,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
       background: 'linear-gradient(160deg, rgba(18,46,46,0.4) 0%, rgba(10,30,28,0.6) 100%)',
     }}>
       {/* Year buttons — horizontal on mobile, vertical sidebar on desktop */}
-      <div className="flex-shrink-0 flex flex-row items-center md:items-stretch md:flex-col gap-1 md:gap-0.5 md:w-[160px] md:py-1.5 md:px-1.5 md:overflow-hidden md:border-r md:border-[#00c7b1]/12 px-1.5 py-1.5 overflow-x-auto md:overflow-x-hidden" style={{
+      <div className="flex-shrink-0 flex flex-row items-center md:items-stretch md:flex-col gap-1 md:gap-0.5 w-full max-w-full min-w-0 md:w-[160px] md:py-1.5 md:px-1.5 md:overflow-hidden md:border-r md:border-[#00c7b1]/12 px-1.5 py-1.5 overflow-x-auto md:overflow-x-hidden" style={{
         background: 'linear-gradient(180deg, rgba(1,42,31,0.35) 0%, rgba(6,28,26,0.5) 100%)',
       }}>
         {/* Ver plan completo — desktop only */}
@@ -407,7 +407,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
               {/* Mobile button */}
               <button
                 onClick={handleClick}
-                className={`md:hidden px-3 py-2.5 min-h-[44px] rounded flex items-center justify-center cursor-pointer transition-all duration-200 flex-shrink-0 ${
+                className={`md:hidden px-3 py-2.5 min-h-[44px] rounded flex flex-1 w-full items-center justify-center cursor-pointer transition-all duration-200 ${
                   isMobileActive ? '' : 'border border-[#00c7b1]/30'
                 }`}
                 style={isMobileActive ? {
@@ -464,7 +464,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         </div>
 
         {/* Scrollable content */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10" style={{ paddingBottom: `${Math.max(40, Math.min(panels.length * 16, 70))}vh` }}>
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10 pb-20 md:pb-10">
           {/* Mobile: all panels with requisito on top */}
           <div className="md:hidden flex flex-col gap-2">
             {requisito && (
@@ -660,7 +660,7 @@ export default function CarouselModal({ carrera, descuentos = [], onClose, initi
         <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
           <div className="flex justify-between items-center gap-3">
             <h3 className={`text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0 ${slideIdx === 0 ? 'invisible' : ''}`}>
-              {slides[slideIdx]?.type === 'cierre' ? <span>Estudiá <span className="text-[#00c7b1]">con nosotros</span></span> : cleanName}
+              {slides[slideIdx]?.type === 'cierre' ? <span className="hidden md:inline">Estudiá <span className="text-[#00c7b1]">con nosotros</span></span> : cleanName}
             </h3>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <img src="/imagenes/Modales/Abogac%C3%ADa/logo_siglo.png" alt="Siglo 21" className="h-7 sm:h-9 w-auto object-contain block" />
@@ -945,14 +945,6 @@ function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: 
 function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('./types').SlideCierre; descuentos?: Descuento[]; carrera?: Carrera }) {
   return (
     <div className="h-full flex overflow-hidden relative bg-[#011f17]">
-      {/* Mobile background image */}
-      {slide.imagen && (
-        <div className="md:hidden absolute inset-x-0 bottom-0 z-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#011f17] via-[#011f17]/50 to-transparent z-10" />
-          <img src="/imagenes/imagenes_cau/Foto-entrada.webp" alt="Instituto" className="w-full h-auto opacity-[0.25] block translate-y-[20%]" />
-        </div>
-      )}
-
       {/* Desktop side image */}
       {slide.imagen && (
         <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
@@ -960,7 +952,12 @@ function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('.
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}
-      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] p-3 md:p-10 flex flex-col justify-center gap-3 md:gap-8 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] px-4 py-8 md:p-10 flex flex-col justify-center gap-4 md:gap-8 overflow-y-auto custom-scrollbar">
+        {/* Título en mobile */}
+        <div className="md:hidden text-center mb-1 -translate-y-8">
+          <h3 className="text-3xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>' }}></h3>
+        </div>
+
         {/* Beneficios */}
         <div className="flex flex-col gap-2 md:gap-5">
           {slide.beneficios.map((b, i) => (
