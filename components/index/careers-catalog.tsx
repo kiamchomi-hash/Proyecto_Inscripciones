@@ -312,7 +312,7 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
 
   return (
     <>
-      <div className="mx-auto w-full pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20" data-testid="careers-catalog">
+      <div className="mx-auto w-full max-w-[2400px] pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20" data-testid="careers-catalog">
 
         {/* Scroll anchor (non-sticky, keeps its natural position) */}
         <div ref={scrollAnchorRef} aria-hidden="true" />
@@ -574,7 +574,7 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
               <div className="flex flex-col gap-3.5">
                 <div className="sidebar-benefit-chip">
                   <div className="sidebar-benefit-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 100 100" fill="none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 100 100" fill="none">
                       <defs>
                         <clipPath id="tennis-clip">
                           <circle cx="50" cy="50" r="46"/>
@@ -594,7 +594,7 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
                 </div>
                 <div className="sidebar-benefit-chip">
                   <div className="sidebar-benefit-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                       <rect x="4" y="3" width="16" height="18"/><line x1="4" y1="21" x2="20" y2="21"/><rect x="7" y="6" width="3" height="3"/><rect x="14" y="6" width="3" height="3"/><rect x="7" y="12" width="3" height="3"/><rect x="14" y="12" width="3" height="3"/><rect x="10" y="18" width="4" height="3"/>
                     </svg>
                   </div>
@@ -605,7 +605,7 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
                 </div>
                 <div className="sidebar-benefit-chip">
                   <div className="sidebar-benefit-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/>
                     </svg>
                   </div>

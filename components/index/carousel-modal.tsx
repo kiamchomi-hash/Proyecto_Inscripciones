@@ -95,7 +95,7 @@ function flattenPaginas(paginas: SlidePlanEstudios['paginas']): Panel[] {
 }
 
 // ── Panel content renderer (shared between mobile & desktop) ──
-function PanelContent({ panel, showTitle }: { panel: Panel; showTitle?: boolean }) {
+function PanelContent({ panel, showTitle, cuatStartIdx }: { panel: Panel; showTitle?: boolean; cuatStartIdx?: number }) {
   return (
     <>
       {showTitle && (
@@ -104,7 +104,7 @@ function PanelContent({ panel, showTitle }: { panel: Panel; showTitle?: boolean 
       {/* Mobile: stacked; Desktop: side by side */}
       <div className="md:grid md:gap-4" style={{ gridTemplateColumns: `repeat(${panel.cuatrimestres.length}, 1fr)` }}>
         {panel.cuatrimestres.map((c, ci) => (
-          <div key={ci}>
+          <div key={ci} data-cuat-idx={cuatStartIdx != null ? cuatStartIdx + ci : undefined}>
             {/* Mobile separator between cuatrimestres */}
             {ci > 0 && (
               <div className="my-3 h-[2px] rounded-full md:hidden" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.35) 0%, rgba(0,199,177,0.08) 60%, transparent 100%)' }} />
@@ -217,7 +217,7 @@ async function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
 }
 
 // ── Plan panels: left=year buttons, right=content ──
-function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['paginas']; carreraNombre: string }) {
+function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanEstudios['paginas']; carreraNombre: string; isVisible?: boolean }) {
   const requisito = paginas.flatMap(p => p.extras || []).find(e => e.titulo.toLowerCase().includes('requisito'));
   const panels = flattenPaginas(paginas);
   // -2 = show requisito only, -1 = show all, >= 0 = specific panel
@@ -247,6 +247,28 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
     if (container) container.scrollTop = 0;
   }, [active]);
 
+  // Reset when returning to this slide from another
+  const prevVisible = useRef(isVisible);
+  useEffect(() => {
+    if (isVisible && !prevVisible.current) {
+      const container = scrollContainerRef.current;
+      if (container) container.scrollTop = 0;
+      setCurrentVisibleIdx(requisito ? -1 : 0);
+      setCurrentCuatIdx(0);
+      setIsAtBottom(false);
+      setCuatBtnVisible(true);
+      cuatGracePeriod.current = false;
+      if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
+      cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 5000);
+      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+        setActive(-1);
+      } else {
+        setActive(0);
+      }
+    }
+    prevVisible.current = isVisible;
+  }, [isVisible]);
+
   // Get visible panel elements (not inside display:none)
   const getVisiblePanelEls = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -266,8 +288,19 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
   const scrollToPanel = useCallback((idx: number) => {
     const container = scrollContainerRef.current;
     if (!container) return;
-    if (idx === 0 && !requisito) {
-      container.scrollTo({ top: 0, behavior: 'smooth' });
+    if (idx === 0) {
+      if (!requisito) {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // Scroll to the separator line between requisito and 1er año
+        const panel0 = container.querySelector<HTMLDivElement>('[data-panel-idx="0"]');
+        const sep = panel0?.previousElementSibling as HTMLElement | null;
+        if (sep && 'sep' in (sep.dataset || {})) {
+          container.scrollTo({ top: getOffsetInContainer(sep), behavior: 'smooth' });
+        } else if (panel0) {
+          container.scrollTo({ top: getOffsetInContainer(panel0), behavior: 'smooth' });
+        }
+      }
       return;
     }
     const els = getVisiblePanelEls();
@@ -281,7 +314,7 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         container.scrollTo({ top: getOffsetInContainer(el), behavior: 'smooth' });
       }
     }
-  }, [getVisiblePanelEls, getOffsetInContainer]);
+  }, [getVisiblePanelEls, getOffsetInContainer, requisito]);
 
   // Track visible panel + detect bottom during scroll
   useEffect(() => {
@@ -318,6 +351,21 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         if (dist < closestDist) { closestDist = dist; closest = idx; }
       });
       setCurrentVisibleIdx(closest);
+
+      // Track visible cuatrimestre (mobile)
+      const cuatEls = Array.from(container.querySelectorAll<HTMLDivElement>('[data-cuat-idx]'))
+        .filter(el => el.offsetParent !== null);
+      if (cuatEls.length > 0) {
+        let closestCuat = 0;
+        let closestCuatDist = Infinity;
+        cuatEls.forEach(el => {
+          const idx = Number(el.dataset.cuatIdx);
+          const top = el.getBoundingClientRect().top - container.getBoundingClientRect().top + scrollTop;
+          const dist = Math.abs(top - scrollTop);
+          if (dist < closestCuatDist) { closestCuatDist = dist; closestCuat = idx; }
+        });
+        setCurrentCuatIdx(closestCuat);
+      }
     };
     container.addEventListener('scroll', onScroll, { passive: true });
     return () => container.removeEventListener('scroll', onScroll);
@@ -331,6 +379,62 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
 
   // Floating button: show "Volver al inicio" when at bottom, otherwise "Ver X"
   const showFloatingNav = showAll || (typeof window !== 'undefined' && window.innerWidth < 768);
+
+  // ── Cuatrimestre-level navigation (mobile only) ──
+  const allCuatLabels = useMemo(() => panels.flatMap(p => p.cuatrimestres.map(c => c.label)), [panels]);
+  const [currentCuatIdx, setCurrentCuatIdx] = useState(0);
+  const [cuatBtnVisible, setCuatBtnVisible] = useState(true);
+
+  // Auto-hide cuatrimestre button after 5s on first appearance
+  const cuatHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cuatInitialShown = useRef(false);
+  useEffect(() => {
+    if (!cuatInitialShown.current) {
+      cuatInitialShown.current = true;
+      setCuatBtnVisible(true);
+      cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 5000);
+    }
+    return () => { if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current); };
+  }, []);
+  const cuatGracePeriod = useRef(false);
+  const showCuatBtn = useCallback(() => {
+    if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
+    cuatGracePeriod.current = false;
+    setCuatBtnVisible(true);
+  }, []);
+  const hideCuatBtn = useCallback(() => {
+    if (cuatGracePeriod.current) return;
+    cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 200);
+  }, []);
+
+  // When year button disappears while cuat is hovered/open, keep it open 5s more
+  const prevHasNext = useRef(hasNext);
+  useEffect(() => {
+    if (prevHasNext.current && !hasNext && cuatBtnVisible) {
+      cuatGracePeriod.current = true;
+      if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
+      cuatHideTimer.current = setTimeout(() => {
+        cuatGracePeriod.current = false;
+        setCuatBtnVisible(false);
+      }, 5000);
+    }
+    prevHasNext.current = hasNext;
+  }, [hasNext, cuatBtnVisible]);
+
+  // Scroll to a cuatrimestre by its global index
+  const scrollToCuat = useCallback((idx: number) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const el = container.querySelector<HTMLDivElement>(`[data-cuat-idx="${idx}"]`);
+    if (el) {
+      const top = el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+      container.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
+    }
+  }, []);
+
+  const nextCuatIdx = currentCuatIdx + 1;
+  const hasNextCuat = nextCuatIdx < allCuatLabels.length;
+  const nextCuatLabel = hasNextCuat ? allCuatLabels[nextCuatIdx] : null;
 
   return (
     <div className="flex-1 flex flex-col md:flex-row gap-0 min-h-0 overflow-hidden md:rounded-xl md:border md:border-[#00c7b1]/20" style={{
@@ -467,8 +571,8 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10 pb-20 md:pb-10">
           {/* Mobile: all panels with requisito on top */}
           <div className="md:hidden flex flex-col gap-2">
-            {requisito && (
-              <div data-requisito className="flex items-start gap-2.5 py-2.5 rounded-lg border border-[#e69b05]/40 mb-1 px-2" style={{ background: 'rgba(230,155,5,0.08)' }}>
+            {requisito && (<>
+              <div data-requisito className="flex items-start gap-2.5 py-2.5 rounded-lg border border-[#e69b05]/40 px-2" style={{ background: 'rgba(230,155,5,0.08)' }}>
                 <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-red-600 text-xs font-black leading-none" style={{ background: '#e69b05' }}>!</span>
                 <div className="min-w-0">
                   <p className="text-[0.6rem] font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
@@ -477,13 +581,18 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
                   ))}
                 </div>
               </div>
-            )}
-            {panels.map((panel, i) => (
-              <div key={i} data-panel-idx={i}>
-                {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
-                <PanelContent panel={panel} showTitle />
-              </div>
-            ))}
+              <div data-sep className="my-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />
+            </>)}
+            {panels.reduce<{ elements: React.ReactNode[]; cuatAcc: number }>((acc, panel, i) => {
+              acc.elements.push(
+                <div key={i} data-panel-idx={i}>
+                  {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
+                  <PanelContent panel={panel} showTitle cuatStartIdx={acc.cuatAcc} />
+                </div>
+              );
+              acc.cuatAcc += panel.cuatrimestres.length;
+              return acc;
+            }, { elements: [], cuatAcc: 0 }).elements}
             {/* Botón Volver al inicio para Mobile con margen inferior para el scroll */}
             <div className="mt-12 mb-[30vh] flex justify-center">
               <button
@@ -522,13 +631,17 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
                     </div>
                   </div>
                 )}
-                {panels.map((panel, i) => (
-                  <div key={i} data-panel-idx={i}>
-                    {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
-                    <PanelContent panel={panel} showTitle />
-                  </div>
-                ))}
-                
+                {panels.reduce<{ elements: React.ReactNode[]; cuatAcc: number }>((acc, panel, i) => {
+                  acc.elements.push(
+                    <div key={i} data-panel-idx={i}>
+                      {i > 0 && <div data-sep className="my-3 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.2) 0%, transparent 60%)' }} />}
+                      <PanelContent panel={panel} showTitle cuatStartIdx={acc.cuatAcc} />
+                    </div>
+                  );
+                  acc.cuatAcc += panel.cuatrimestres.length;
+                  return acc;
+                }, { elements: [], cuatAcc: 0 }).elements}
+
                 {/* Botón Volver al inicio para Desktop Plan Completo con margen inferior para el scroll */}
                 <div className="mt-12 mb-[30vh] flex justify-center">
                   <button
@@ -555,6 +668,52 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
         <div className="md:hidden absolute bottom-0 left-0 right-0 h-10 z-10 pointer-events-none" style={{
           background: 'linear-gradient(to top, rgba(10,30,28,0.5) 0%, transparent 100%)',
         }} />
+
+        {/* Floating cuatrimestre nav button — mobile only, circle → expands left on hover */}
+        {hasNextCuat && !isAtBottom && (
+          <button
+            onClick={() => scrollToCuat(nextCuatIdx)}
+            onPointerEnter={showCuatBtn}
+            onPointerLeave={hideCuatBtn}
+            className="absolute right-5 z-20 md:hidden flex items-center justify-center rounded-full cursor-pointer overflow-hidden"
+            style={{
+              bottom: hasNext ? '3.5rem' : '0.75rem',
+              height: '32px',
+              minWidth: '32px',
+              maxWidth: cuatBtnVisible ? '220px' : '32px',
+              padding: cuatBtnVisible ? '0 12px' : '0 9px',
+              background: 'linear-gradient(135deg, #1a5c4a, #14473a)',
+              border: '1px solid rgba(0,199,177,0.2)',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.4)',
+              transition: 'max-width 0.3s ease, padding 0.3s ease, bottom 0.3s ease',
+            }}
+          >
+            <span
+              className="text-[0.5rem] font-bold uppercase tracking-wider text-[#b4e8dd] whitespace-nowrap"
+              style={{
+                opacity: cuatBtnVisible ? 1 : 0,
+                maxWidth: cuatBtnVisible ? 160 : 0,
+                marginRight: cuatBtnVisible ? 5 : 0,
+                overflow: 'hidden',
+                transition: 'opacity 0.3s, max-width 0.3s, margin 0.3s',
+              }}
+            >
+              Ver {nextCuatLabel}
+            </span>
+            {/* Chevron — rotates from down (closed) to left (open) */}
+            <svg
+              style={{
+                width: 14, height: 14, minWidth: 14, minHeight: 14,
+                transform: cuatBtnVisible ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease',
+              }}
+              className="text-[#b4e8dd] flex-shrink-0"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        )}
 
         {/* Floating nav button — mobile */}
         {hasNext && (
@@ -704,7 +863,7 @@ export default function CarouselModal({ carrera, descuentos = [], onClose, initi
           <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
               <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
-                {renderSlide(slide, carrera, descuentos)}
+                {renderSlide(slide, carrera, descuentos, si === slideIdx)}
               </div>
             ))}
           </div>
@@ -767,12 +926,12 @@ export default function CarouselModal({ carrera, descuentos = [], onClose, initi
 }
 
 // ── Render individual slide by type ──
-function renderSlide(slide: CarreraSlide, carrera: Carrera, descuentos: Descuento[]) {
+function renderSlide(slide: CarreraSlide, carrera: Carrera, descuentos: Descuento[], isVisible: boolean) {
   switch (slide.type) {
     case 'portada': return <SlidePortadaView slide={slide} carrera={carrera} />;
     case 'modalidad': return <SlideModalidadView slide={slide} />;
     case 'evaluacion': return <SlideEvaluacionView slide={slide} />;
-    case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} />;
+    case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} isVisible={isVisible} />;
     case 'cierre': return <SlideCierreView slide={slide} descuentos={descuentos} carrera={carrera} />;
     default: return null;
   }
@@ -923,7 +1082,7 @@ function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluaci
   );
 }
 
-function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: Carrera }) {
+function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios; carrera: Carrera; isVisible?: boolean }) {
   const panels = flattenPaginas(slide.paginas);
 
   return (
@@ -962,7 +1121,7 @@ function SlidePlanView({ slide, carrera }: { slide: SlidePlanEstudios; carrera: 
           <span className="px-1.5 py-0.5 rounded text-[0.5rem] font-black tracking-wider" style={{ background: '#c0392b', color: 'white' }}>PDF</span>
         </button>
       </div>
-      <PlanPanels paginas={slide.paginas} carreraNombre={carrera.nombre} />
+      <PlanPanels paginas={slide.paginas} carreraNombre={carrera.nombre} isVisible={isVisible} />
     </div>
   );
 }

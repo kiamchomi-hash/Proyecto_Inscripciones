@@ -250,10 +250,8 @@ export default function NovedadesPage({ pinnedItem, items, currentPage, totalPag
   return (
     <main className="max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-28 sm:pb-0">
 
-      {/* Paginación superior (solo mobile) */}
-      <div className="sm:hidden -mt-2 mb-6">
-        <Pagination current={currentPage} total={totalPages} className="my-0" />
-      </div>
+      {/* Paginación superior */}
+      <Pagination current={currentPage} total={totalPages} className="-mt-2 mb-4" />
 
       {/* Contenido */}
       {isPage1 && pinnedItem ? (
@@ -295,7 +293,7 @@ export default function NovedadesPage({ pinnedItem, items, currentPage, totalPag
       )}
 
       {/* Paginación inferior */}
-      <Pagination current={currentPage} total={totalPages} />
+      <Pagination current={currentPage} total={totalPages} className="mt-4 mb-6" />
     </main>
   );
 }

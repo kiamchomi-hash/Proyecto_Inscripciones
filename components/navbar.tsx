@@ -35,8 +35,8 @@ export default function Navbar() {
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const h = Math.round(entry.contentRect.height);
+    const ro = new ResizeObserver(() => {
+      const h = nav.offsetHeight;
       document.documentElement.style.setProperty('--navbar-height', h + 'px');
     });
     ro.observe(nav);

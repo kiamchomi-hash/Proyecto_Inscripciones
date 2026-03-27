@@ -64,20 +64,20 @@ export default function IndexFooter() {
           {/* Col 4 — Horarios + Modalidad */}
           <div className="lg:col-span-2 lg:pl-4 pt-8 lg:pt-0">
             <h3 className="text-xs font-bold text-[#00c7b1] uppercase tracking-widest mb-4">Horarios</h3>
-            <div className="rounded-xl p-4 space-y-3 max-w-xs mx-auto lg:mx-0" style={{ background: 'rgba(0, 199, 177, 0.05)', border: '1px solid rgba(0, 199, 177, 0.12)' }}>
+            <div className="rounded-xl p-4 space-y-3 max-w-xs mx-auto lg:mx-0 text-center lg:text-left" style={{ background: 'rgba(0, 199, 177, 0.05)', border: '1px solid rgba(0, 199, 177, 0.12)' }}>
               <div className="text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#00c7b1]" />
+                <div className="flex items-center justify-center lg:justify-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00c7b1] shrink-0 hidden lg:block" />
                   <span className="text-[#c0d5d0]">Lunes a Viernes</span>
                 </div>
-                <span className="text-white font-semibold text-xs px-2 py-0.5 rounded-md ml-3.5 inline-block mt-1" style={{ background: 'rgba(0, 199, 177, 0.15)' }}>9 a 20 hs</span>
+                <span className="text-white font-semibold text-xs px-2 py-0.5 rounded-md inline-block mt-1 lg:ml-3.5" style={{ background: 'rgba(0, 199, 177, 0.15)' }}>9 a 20 hs</span>
               </div>
               <div className="text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#7ca19b]/40" />
+                <div className="flex items-center justify-center lg:justify-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#7ca19b]/40 shrink-0 hidden lg:block" />
                   <span className="text-[#7ca19b]">Sábados y Domingos</span>
                 </div>
-                <span className="text-[#7ca19b] text-xs ml-3.5 inline-block mt-1">Cerrado</span>
+                <span className="text-[#a08080] text-xs font-semibold inline-block mt-1 lg:ml-3.5 px-2 py-0.5 rounded-md" style={{ background: 'rgba(180, 80, 80, 0.12)' }}>Cerrado</span>
               </div>
             </div>
 
