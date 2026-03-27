@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .eq('activa', true);
 
   const carrerasEntries: MetadataRoute.Sitemap = (carreras || []).map(c => ({
-    url: `${baseUrl}/carreras/${carreraToSlug(c as any)}`,
+    url: `${baseUrl}/carreras/${carreraToSlug(c)}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.7,

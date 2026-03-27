@@ -484,6 +484,18 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
                 <PanelContent panel={panel} showTitle />
               </div>
             ))}
+            {/* Botón Volver al inicio para Mobile con margen inferior para el scroll */}
+            <div className="mt-12 mb-[30vh] flex justify-center">
+              <button
+                onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#00c7b1]/10 border border-[#00c7b1]/30 text-[#00c7b1] font-bold uppercase tracking-widest hover:bg-[#00c7b1]/20 transition-all cursor-pointer group"
+              >
+                <svg className="w-4 h-4 transition-transform group-hover:-translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+                <span>Volver al inicio</span>
+              </button>
+            </div>
           </div>
           {/* Desktop: showAll or single panel, requisito on top when showAll */}
           <div className="hidden md:block">
@@ -516,6 +528,19 @@ function PlanPanels({ paginas, carreraNombre }: { paginas: SlidePlanEstudios['pa
                     <PanelContent panel={panel} showTitle />
                   </div>
                 ))}
+                
+                {/* Botón Volver al inicio para Desktop Plan Completo con margen inferior para el scroll */}
+                <div className="mt-12 mb-[30vh] flex justify-center">
+                  <button
+                    onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#00c7b1]/10 border border-[#00c7b1]/30 text-[#00c7b1] font-bold uppercase tracking-widest hover:bg-[#00c7b1]/20 transition-all cursor-pointer group"
+                  >
+                    <svg className="w-4 h-4 transition-transform group-hover:-translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    </svg>
+                    <span>Volver al inicio</span>
+                  </button>
+                </div>
               </div>
             ) : (
               activePanel && <PanelContent panel={activePanel} />
