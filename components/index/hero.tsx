@@ -5,7 +5,7 @@ export default function Hero() {
   return (
     <header className="w-full mb-0 shadow-2xl overflow-hidden texture-petroleum grain-overlay"
       style={{ borderBottom: '3px solid var(--color-highlight)' }}>
-      <div className="mx-auto w-full p-4 sm:p-6 xl:px-20 flex flex-col xl:flex-row items-center justify-start gap-6 xl:gap-8">
+      <div className="mx-auto w-full max-w-[2400px] p-4 sm:p-6 xl:px-20 flex flex-col xl:flex-row items-center justify-start xl:justify-center gap-6 xl:gap-8">
 
         {/* Banner carousel */}
         <div className="flex-1 w-full xl:max-w-4xl order-2 xl:order-1 flex flex-col items-center min-w-0 overflow-hidden">

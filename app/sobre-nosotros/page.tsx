@@ -65,7 +65,7 @@ export default function SobreNosotrosPage() {
     <main className="max-w-6xl mx-auto px-5 sm:px-8">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <section className="pt-4 sm:pt-10 pb-8 sm:pb-14 text-center">
+      <section className="pt-4 sm:pt-8 pb-6 sm:pb-10 text-center">
         <div className="sn-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 sm:mb-8">
           <span className="w-2 h-2 rounded-full" style={{ background: '#00c7b1' }} />
           <span className="text-[11px] sm:text-xs font-semibold tracking-wide uppercase" style={{ color: '#00c7b1' }}>
@@ -87,7 +87,7 @@ export default function SobreNosotrosPage() {
           </span>
         </h1>
 
-        <p className="max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed mb-7 sm:mb-10" style={{ color: '#8fada7' }}>
+        <p className="max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed mb-5 sm:mb-7" style={{ color: '#c8dedd' }}>
           En el Centro de Capacitación Villa Lugano creemos que{' '}
           <strong className="font-semibold" style={{ color: '#c8dedd' }}>aprender, crecer y emprender</strong>{' '}
           deben ser experiencias accesibles, humanas y transformadoras.
@@ -122,7 +122,7 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* ─── NUESTRA SEDE ─────────────────────────────────── */}
-      <section className="mb-10">
+      <section className="mb-7">
         <div className="flex flex-col md:flex-row md:items-stretch gap-4 md:gap-5">
           {/* Image — desktop: large side panel */}
           <div
@@ -178,13 +178,13 @@ export default function SobreNosotrosPage() {
                     style={{ objectPosition: 'center 70%' }}
                   />
                 </div>
-                <p className="text-sm leading-relaxed flex-1" style={{ color: '#8fada7' }}>
+                <p className="text-sm leading-relaxed flex-1" style={{ color: '#c8dedd' }}>
                   Un espacio pensado para que puedas <strong className="text-white font-semibold">estudiar, capacitarte y crecer profesionalmente</strong> en el corazón de <strong className="text-white font-semibold">Villa Lugano</strong>.
                   Nuestro centro reúne todo lo que necesitás: <strong className="text-white font-semibold">aulas equipadas</strong>, <strong className="text-white font-semibold">atención personalizada</strong> y un equipo que te acompaña en cada paso.
                 </p>
               </div>
 
-              <p className="text-sm leading-relaxed mt-5" style={{ color: '#8fada7' }}>
+              <p className="text-sm leading-relaxed mt-5" style={{ color: '#c8dedd' }}>
                 En el <strong className="text-white font-semibold">Centro Educativo Villa Lugano</strong>, trabajamos con el compromiso de acercar <strong className="text-white font-semibold">oportunidades reales</strong> a quienes viven en Villa Lugano y alrededores.
                 Somos <strong className="text-white font-semibold">sede oficial de la Universidad Siglo 21</strong> y además ofrecemos <strong className="text-white font-semibold">talleres culturales</strong>, <strong className="text-white font-semibold">clases de apoyo escolar</strong>,
                 <strong className="text-white font-semibold"> capacitaciones laborales</strong> y un espacio de <strong className="text-white font-semibold">coworking para emprendedores</strong>. Creemos en la educación como motor de cambio
@@ -225,7 +225,7 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* ─── STATS ────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-7">
         {STATS.map((s) => (
           <div
             key={s.label}
@@ -233,14 +233,14 @@ export default function SobreNosotrosPage() {
             style={{ background: 'linear-gradient(160deg, rgba(28,47,49,0.8) 0%, rgba(22,47,46,0.5) 100%)', border: '1px solid rgba(0,199,177,0.08)' }}
           >
             <p className="text-3xl sm:text-4xl font-black mb-1" style={{ color: '#00c7b1' }}>{s.value}</p>
-            <p className="text-xs sm:text-sm font-medium" style={{ color: '#8fada7' }}>{s.label}</p>
+            <p className="text-xs sm:text-sm font-medium" style={{ color: '#c8dedd' }}>{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* ─── SEDE CENTRAL SIGLO 21 (Córdoba) ──────────────── */}
       <section
-        className="rounded-2xl p-5 sm:p-7 mb-10"
+        className="rounded-2xl p-5 sm:p-7 mb-7"
         style={{ background: 'linear-gradient(160deg, rgba(28,47,49,0.7) 0%, rgba(22,47,46,0.5) 100%)', border: '1px solid rgba(0,199,177,0.1)' }}
       >
         <div className="flex items-center gap-3 mb-5">
@@ -297,15 +297,15 @@ export default function SobreNosotrosPage() {
 
 
       {/* ─── GLOW DIVIDER ─────────────────────────────────── */}
-      <div className="sn-glow-line mb-10" />
+      <div className="sn-glow-line mb-7" />
 
       {/* ─── FEATURE CARDS ────────────────────────────────── */}
-      <section className="mb-14">
+      <section className="mb-10">
         <p className="text-xs font-semibold tracking-widest uppercase mb-3 text-center" style={{ color: '#00c7b1' }}>
           Nuestros pilares
         </p>
         <h2
-          className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white mb-10"
+          className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white mb-7"
           style={{ fontFamily: 'var(--font-unbounded)' }}
         >
           ¿Por qué elegirnos?
@@ -327,7 +327,7 @@ export default function SobreNosotrosPage() {
                 </div>
                 <h3 className="text-lg font-bold text-white">{f.title}</h3>
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: '#8fada7' }}>{f.description}</p>
+              <p className="text-sm leading-relaxed" style={{ color: '#c8dedd' }}>{f.description}</p>
             </div>
           ))}
         </div>
@@ -335,11 +335,11 @@ export default function SobreNosotrosPage() {
 
       {/* ─── SERVICES: CHECKLIST ─────────────────────────── */}
       <section
-        className="rounded-2xl overflow-hidden mb-10"
+        className="rounded-2xl overflow-hidden mb-7"
         style={{ background: 'linear-gradient(to bottom, rgba(6,23,22,0.8) 0%, rgba(22,47,46,0.5) 50%, rgba(1,55,41,0.6) 100%)', border: '1px solid rgba(0,199,177,0.12)' }}
       >
         <div className="p-7 sm:p-10 md:p-14">
-          <div className="flex flex-col md:flex-row gap-10 items-start">
+          <div className="flex flex-col md:flex-row gap-7 items-start">
             {/* Left: logo + checklist */}
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-6">
@@ -360,7 +360,7 @@ export default function SobreNosotrosPage() {
                 </div>
               </div>
 
-              <p className="text-sm leading-relaxed mb-8" style={{ color: '#b0cec8' }}>
+              <p className="text-sm leading-relaxed mb-8" style={{ color: '#c8dedd' }}>
                 Ofrecemos una propuesta integral para que puedas formarte,
                 capacitarte y conectar con otros profesionales sin salir del barrio.
               </p>
@@ -395,7 +395,7 @@ export default function SobreNosotrosPage() {
                 className="rounded-xl mb-4 brightness-0 invert"
               />
               <p className="text-lg font-bold text-white mb-2">¿Tenés dudas?</p>
-              <p className="text-sm mb-5" style={{ color: '#b0cec8' }}>
+              <p className="text-sm mb-5" style={{ color: '#c8dedd' }}>
                 Escribinos y te asesoramos sin compromiso sobre la carrera que más se adapte a vos.
               </p>
               <div className="flex flex-col gap-2.5 w-full">
@@ -449,7 +449,7 @@ export default function SobreNosotrosPage() {
       </section>
 
       {/* ─── GLOW DIVIDER ─────────────────────────────────── */}
-      <div className="sn-glow-line mb-10" />
+      <div className="sn-glow-line mb-7" />
 
       {/* ─── MAP ──────────────────────────────────────────── */}
       <section className="sn-map-card sn-glass rounded-2xl p-6 sm:p-10 mb-0">
@@ -483,7 +483,7 @@ export default function SobreNosotrosPage() {
           <div className="flex flex-col md:flex-row gap-8 md:items-stretch">
             <div className="flex-1 flex flex-col md:justify-between">
               <div>
-                <p className="text-sm leading-relaxed mb-4" style={{ color: '#8fada7' }}>
+                <p className="text-sm leading-relaxed mb-4" style={{ color: '#c8dedd' }}>
                   Nuestro centro está en <strong className="text-white">Villa Lugano</strong>, con fácil acceso desde <strong className="text-white">Mataderos</strong>, <strong className="text-white">Liniers</strong>, <strong className="text-white">Villa Celina</strong> y <strong className="text-white">Zona Sur del GBA</strong>.
                   Atendemos <strong className="text-white">de lunes a viernes</strong> en turnos mañana y tarde.
                 </p>

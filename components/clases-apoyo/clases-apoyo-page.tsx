@@ -91,7 +91,7 @@ function Carousel({ images }: { images: string[] }) {
 function DescriptionPanel({ desc }: { desc: string[] }) {
   return (
     <div className="flex flex-col h-full overflow-hidden" style={{ background: 'var(--ca-bg-temas)' }}>
-      <div className="flex-1 flex flex-col rounded-xl m-[1.5vh_20px] p-[1vh_25px]" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.1)' }}>
+      <div className="flex-1 flex flex-col justify-center rounded-xl m-[1.5vh_20px] p-[1vh_25px]" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.1)' }}>
         <ul className="list-none flex flex-col h-full justify-evenly">
           {desc.map((item, i) => (
             <li key={i} className="ca-desc-item" dangerouslySetInnerHTML={{ __html: item }} />
@@ -176,7 +176,7 @@ function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados }: 
       {/* Day headers */}
       <div className="ca-cal-box flex-1" style={locked ? { opacity: 0.5, pointerEvents: 'none' } : undefined}>
         {/* Month navigation — inside ca-cal-box to align with grid */}
-        <div className="flex items-center justify-between mb-2 px-1">
+        <div className="flex items-center justify-between py-2 px-1">
           <button
             onClick={goPrev}
             disabled={!canGoPrev}
@@ -878,7 +878,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
                           onClick={() => switchMateria(i)}
                           className="flex items-center justify-center rounded-xl font-bold text-sm md:text-base uppercase tracking-wide transition-all hover:scale-[1.03]"
                           style={{
-                            color: '#e7d6b4',
+                            color: 'var(--ca-text-main)',
                             background: 'linear-gradient(160deg, rgba(0,199,177,0.1) 0%, rgba(0,199,177,0.03) 100%)',
                             border: '1px solid rgba(0,199,177,0.2)',
                             boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)',
