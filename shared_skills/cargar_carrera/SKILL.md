@@ -10,8 +10,7 @@ Workflow para cargar los slides JSON de una carrera en la tabla `carreras` de Su
 4. **Verificar nombre en DB**: `SELECT id, nombre, prefix, nombre_corto, nivel, duracion, titulo, enfoque FROM carreras WHERE nombre ILIKE '%...%' AND activa = true` — el nombre en DB puede diferir del nombre completo (ej: "Informática" en vez de "Licenciatura en Informática")
 5. **Armar slides** (portada + plan_estudios + cierre — los 3 deben cargarse explícitamente)
 6. **Subir slides** con UPDATE
-7. **Preview**: tomar screenshots del modal en desktop y mobile para que el usuario valide la imagen y el layout
-8. **Ajustar imagen** si el usuario lo pide: actualizar `imagen_desktop_position` y volver a previsualizar
+7. **Ajustar imagen** si el usuario lo pide: actualizar `imagen_desktop_position` en DB
 
 ## Formato de slides (3 slides — todos explícitos en el JSON)
 
@@ -49,17 +48,6 @@ Workflow para cargar los slides JSON de una carrera en la tabla `carreras` de Su
   ]
 }
 ```
-
-## Preview
-
-Después de subir los slides, usar la skill `webapp-testing` para tomar screenshots del modal:
-
-1. **Abrir la página** en `http://localhost:3000`
-2. **Hacer click en la tarjeta** de la carrera recién cargada para abrir el modal
-3. **Screenshot desktop** (1280x800) — verificar imagen, título, bullets, badges
-4. **Screenshot mobile** (375x667) — verificar que no se corte contenido
-5. **Mostrar ambos screenshots** al usuario para validación
-6. Si el usuario pide ajustes de imagen, actualizar `imagen_desktop_position` en DB y repetir preview
 
 ## Reglas IMPORTANTES
 

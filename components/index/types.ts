@@ -221,7 +221,7 @@ export function getDurationGroup(duracion: string): DurationGroupId | null {
 }
 
 // Build full name from prefix + nombre for slug generation
-function carreraFullName(carrera: Carrera): string {
+function carreraFullName(carrera: Pick<Carrera, 'nombre' | 'prefix'>): string {
   const p = (carrera.prefix || '').toLowerCase();
   const nombre = carrera.nombre;
   // If nombre already starts with a known type word, use as-is
@@ -239,7 +239,7 @@ function carreraFullName(carrera: Carrera): string {
 }
 
 // Slug-friendly name for share URLs: remove accents, lowercase, spaces → -
-export function carreraToSlug(carrera: Carrera | string): string {
+export function carreraToSlug(carrera: Pick<Carrera, 'nombre' | 'prefix'> | string): string {
   const fullName = typeof carrera === 'string' ? carrera : carreraFullName(carrera);
   return fullName
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
