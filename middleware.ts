@@ -5,8 +5,14 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only protect admin routes (except login)
+  const isPublicAdmin =
+    pathname.startsWith('/admin/login') ||
+    pathname.startsWith('/admin/auth/callback') ||
+    pathname.startsWith('/admin/reset-password') ||
+    pathname.startsWith('/admin/pendiente');
+
   const isProtected =
-    (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) ||
+    (pathname.startsWith('/admin') && !isPublicAdmin) ||
     pathname.startsWith('/api/admin');
 
   if (!isProtected) return NextResponse.next();
