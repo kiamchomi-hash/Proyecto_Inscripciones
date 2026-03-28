@@ -168,6 +168,13 @@ export default function PreciosAdminPage() {
   const [overrides, setOverrides] = useState<Record<string, Partial<Record<OverrideKey, number>>>>({});
   const [editing, setEditing] = useState<{ carrera: string; field: OverrideKey } | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const copyText = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(prev => prev === id ? null : prev), 1200);
+  };
 
   // Verificar que sea admin
   useEffect(() => {
@@ -448,7 +455,8 @@ export default function PreciosAdminPage() {
                 <th colSpan={is1B ? 2 : 3} className="text-center px-1 py-2 font-bold text-[0.65rem] uppercase tracking-widest text-[var(--color-highlight)] border-b border-[var(--color-highlight)]/15 border-r border-white/5">Finales</th>
                 <th rowSpan={2} className="text-right px-3 py-3 font-bold text-white align-bottom border-r border-white/5">Total</th>
                 <th rowSpan={2} className="text-right px-3 py-3 font-bold text-[var(--color-gold)] align-bottom border-r border-white/5">3 cuotas</th>
-                <th rowSpan={2} className="text-right px-3 py-3 font-bold text-[var(--color-gold)] align-bottom">6 cuotas</th>
+                <th rowSpan={2} className="text-right px-3 py-3 font-bold text-[var(--color-gold)] align-bottom border-r border-white/5">6 cuotas</th>
+                <th rowSpan={2} className="px-2 py-3 align-bottom w-8"></th>
               </tr>
               <tr className="border-b-2 border-[var(--color-highlight)]/20">
                 <th className="text-center px-1 py-2 text-xs text-[var(--color-highlight)]">Mat</th>
@@ -534,12 +542,70 @@ export default function PreciosAdminPage() {
                     {!is1B && <td className="text-right px-2 py-3 tabular-nums text-[var(--color-text-light)]">{fmt(c.tkaLista)}</td>}
                     <td className="text-right px-2 py-3 tabular-nums text-[var(--color-text-light)] border-r border-white/5">{fmt(c.tkbLista)}</td>
                   </>}
-                  <td className={`text-right px-2 py-3 font-semibold tabular-nums ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}>{fmt(rc.matFinal)}</td>
-                  {!is1B && <td className={`text-right px-2 py-3 font-semibold tabular-nums ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}>{fmt(rc.tkaFinal)}</td>}
-                  <td className={`text-right px-2 py-3 font-semibold tabular-nums border-r border-white/5 ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}>{fmt(rc.tkbFinal)}</td>
-                  <td className={`text-right px-3 py-3 font-bold tabular-nums border-r border-white/5 ${hasOverride ? 'text-red-400' : 'text-white'}`}>{fmt(rc.total)}</td>
-                  <td className="text-right px-3 py-3 font-semibold tabular-nums text-[var(--color-gold)] border-r border-white/5">{fmt(rc.cuota3)}</td>
-                  <td className="text-right px-3 py-3 font-semibold tabular-nums text-[var(--color-gold)]">{fmt(rc.cuota6)}</td>
+                  <td
+                    className={`text-right px-2 py-3 font-semibold tabular-nums cursor-pointer hover:brightness-150 transition-colors ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}
+                    onClick={() => copyText(fmt(rc.matFinal), `${c.nombre}-matF`)}
+                    title="Click para copiar"
+                  >
+                    {copiedId === `${c.nombre}-matF` ? <span className="text-green-400 text-xs">Copiado</span> : fmt(rc.matFinal)}
+                  </td>
+                  {!is1B && <td
+                    className={`text-right px-2 py-3 font-semibold tabular-nums cursor-pointer hover:brightness-150 transition-colors ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}
+                    onClick={() => copyText(fmt(rc.tkaFinal), `${c.nombre}-tkaF`)}
+                    title="Click para copiar"
+                  >
+                    {copiedId === `${c.nombre}-tkaF` ? <span className="text-green-400 text-xs">Copiado</span> : fmt(rc.tkaFinal)}
+                  </td>}
+                  <td
+                    className={`text-right px-2 py-3 font-semibold tabular-nums border-r border-white/5 cursor-pointer hover:brightness-150 transition-colors ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}
+                    onClick={() => copyText(fmt(rc.tkbFinal), `${c.nombre}-tkbF`)}
+                    title="Click para copiar"
+                  >
+                    {copiedId === `${c.nombre}-tkbF` ? <span className="text-green-400 text-xs">Copiado</span> : fmt(rc.tkbFinal)}
+                  </td>
+                  <td
+                    className={`text-right px-3 py-3 font-bold tabular-nums border-r border-white/5 cursor-pointer hover:brightness-150 transition-colors ${hasOverride ? 'text-red-400' : 'text-white'}`}
+                    onClick={() => copyText(fmt(rc.total), `${c.nombre}-total`)}
+                    title="Click para copiar"
+                  >
+                    {copiedId === `${c.nombre}-total` ? <span className="text-green-400 text-xs">Copiado</span> : fmt(rc.total)}
+                  </td>
+                  <td
+                    className="text-right px-3 py-3 font-semibold tabular-nums text-[var(--color-gold)] border-r border-white/5 cursor-pointer hover:brightness-150 transition-colors"
+                    onClick={() => copyText(fmt(rc.cuota3), `${c.nombre}-c3`)}
+                    title="Click para copiar"
+                  >
+                    {copiedId === `${c.nombre}-c3` ? <span className="text-green-400 text-xs">Copiado</span> : fmt(rc.cuota3)}
+                  </td>
+                  <td
+                    className="text-right px-3 py-3 font-semibold tabular-nums text-[var(--color-gold)] border-r border-white/5 cursor-pointer hover:brightness-150 transition-colors"
+                    onClick={() => copyText(fmt(rc.cuota6), `${c.nombre}-c6`)}
+                    title="Click para copiar"
+                  >
+                    {copiedId === `${c.nombre}-c6` ? <span className="text-green-400 text-xs">Copiado</span> : fmt(rc.cuota6)}
+                  </td>
+                  <td className="px-1 py-3 text-center">
+                    <button
+                      title="Copiar resumen de precios"
+                      onClick={() => {
+                        const parts: string[] = [];
+                        parts.push(`Matrícula ${fmt(rc.matFinal)} (${pct(rc.dtoMat)} dto)`);
+                        if (!is1B) {
+                          parts.push(`Ticket A ${fmt(rc.tkaFinal)} (${pct(rc.dtoTkA)} dto)`);
+                          parts.push(`Ticket B ${fmt(rc.tkbFinal)} (${pct(rc.dtoTkB)} dto)`);
+                        } else {
+                          parts.push(`Cuota ${fmt(rc.tkbFinal)} (${pct(rc.dtoTkB)} dto)`);
+                        }
+                        copyText(parts.join(' | '), `${c.nombre}-resumen`);
+                      }}
+                      className="p-1.5 rounded-lg hover:bg-white/10 transition-colors group"
+                    >
+                      {copiedId === `${c.nombre}-resumen`
+                        ? <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        : <svg className="w-4 h-4 text-white/30 group-hover:text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" /></svg>
+                      }
+                    </button>
+                  </td>
                 </tr>
                 );
               })}
