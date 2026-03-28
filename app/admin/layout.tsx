@@ -39,6 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           nombre: user.user_metadata?.full_name || user.user_metadata?.name || null,
           email: user.email,
           estado: 'pendiente',
+          rol: 'profesor',
         });
         router.replace('/admin/pendiente');
         return;
