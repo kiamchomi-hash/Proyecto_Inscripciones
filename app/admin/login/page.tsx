@@ -25,7 +25,8 @@ export default function AdminLogin() {
       setLoading(false);
       return;
     }
-    router.push('/admin');
+    // Full page navigation para que middleware sincronice cookies de sesión
+    window.location.href = '/admin';
   };
 
   const handleGoogleLogin = async () => {
