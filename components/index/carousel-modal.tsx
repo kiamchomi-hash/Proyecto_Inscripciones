@@ -673,15 +673,10 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
         {hasNextCuat && !isAtBottom && (
           <button
             onClick={() => {
-              if (!cuatBtnVisible) {
-                // Primer tap en mobile: expandir
-                showCuatBtn();
-                if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
-                cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 4000);
-              } else {
-                // Segundo tap o ya visible: navegar
-                scrollToCuat(nextCuatIdx);
-              }
+              showCuatBtn();
+              scrollToCuat(nextCuatIdx);
+              if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
+              cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 5000);
             }}
             onPointerEnter={showCuatBtn}
             onPointerLeave={hideCuatBtn}
