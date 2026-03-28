@@ -10,6 +10,7 @@ interface Profesor {
 
 interface Solicitud {
   id: string;
+  user_id: string;
   nombre: string | null;
   email: string | null;
   estado: string;
@@ -25,6 +26,7 @@ interface Materia {
 
 export default function AdminDashboard() {
   const [profesor, setProfesor] = useState<Profesor | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [materias, setMaterias] = useState<Materia[]>([]);
@@ -34,7 +36,7 @@ export default function AdminDashboard() {
 
   const loadSolicitudes = useCallback(async () => {
     const [{ data: sols }, { data: mats }] = await Promise.all([
-      supabase.from('profesores').select('id, nombre, email, estado, rol, materia_id, created_at').order('created_at', { ascending: false }),
+      supabase.from('profesores').select('id, user_id, nombre, email, estado, rol, materia_id, created_at').order('created_at', { ascending: false }),
       supabase.from('materias').select('id, label').eq('activa', true).order('orden', { ascending: true }),
     ]);
     setSolicitudes(sols ?? []);
@@ -60,6 +62,7 @@ export default function AdminDashboard() {
       }
 
       setProfesor(prof);
+      setCurrentUserId(user.id);
       await loadSolicitudes();
       setLoading(false);
     }
@@ -75,6 +78,14 @@ export default function AdminDashboard() {
   };
 
   const rechazar = async (id: string) => {
+    setSaving(id);
+    await supabase.from('profesores').delete().eq('id', id);
+    await loadSolicitudes();
+    setSaving(null);
+  };
+
+  const eliminar = async (id: string, email: string | null) => {
+    if (!confirm(`¿Eliminar a ${email || 'este profesor'}? Se perderá su acceso.`)) return;
     setSaving(id);
     await supabase.from('profesores').delete().eq('id', id);
     await loadSolicitudes();
@@ -253,6 +264,18 @@ export default function AdminDashboard() {
                   <span className="text-xs text-[#00c7b1] font-medium whitespace-nowrap">
                     {s.rol === 'admin' ? 'Admin' : getMateriaLabel(s.materia_id)}
                   </span>
+                  {s.user_id !== currentUserId && (
+                    <button
+                      onClick={() => eliminar(s.id, s.email)}
+                      disabled={saving === s.id}
+                      className="p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer disabled:opacity-30"
+                      title="Eliminar profesor"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
