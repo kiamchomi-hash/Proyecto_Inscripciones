@@ -1,7 +1,28 @@
 import { NextResponse } from 'next/server';
 
+// Rate limiting en memoria: máximo 5 emails por IP cada 10 minutos
+const rateMap = new Map<string, { count: number; resetAt: number }>();
+const WINDOW_MS = 10 * 60 * 1000;
+const MAX_REQUESTS = 5;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > MAX_REQUESTS;
+}
+
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    if (isRateLimited(ip)) {
+      return NextResponse.json({ error: 'Demasiadas solicitudes' }, { status: 429 });
+    }
+
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { nombre } = await req.json();

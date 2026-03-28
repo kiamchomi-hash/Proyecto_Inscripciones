@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -147,6 +148,8 @@ async function fetchData(periodo: Periodo): Promise<PageData> {
 }
 
 export default function PreciosAdminPage() {
+  const router = useRouter();
+  const [accessChecked, setAccessChecked] = useState(false);
   const [periodo, setPeriodo] = useState<Periodo>('1B');
   const [periodoActivo, setPeriodoActivo] = useState<Periodo>('1A');
   const is1B = periodo === '1B';
@@ -169,7 +172,23 @@ export default function PreciosAdminPage() {
   const [editing, setEditing] = useState<{ carrera: string; field: OverrideKey } | null>(null);
   const [editValue, setEditValue] = useState('');
 
+  // Verificar que sea admin
   useEffect(() => {
+    async function checkAdmin() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.replace('/admin/login'); return; }
+      const { data: prof } = await supabase.from('profesores').select('rol').eq('user_id', user.id).single();
+      if (!prof || prof.rol !== 'admin') {
+        router.replace('/admin/clases-apoyo');
+        return;
+      }
+      setAccessChecked(true);
+    }
+    checkAdmin();
+  }, [router]);
+
+  useEffect(() => {
+    if (!accessChecked) return;
     setRefreshing(true);
     try { const c = localStorage.getItem(CACHE_KEY); if (c) setData(JSON.parse(c)); } catch { /* ignore */ }
     fetchData(periodo)
@@ -182,7 +201,7 @@ export default function PreciosAdminPage() {
       .catch(e => { if (!data) setError(e.message); })
       .finally(() => setRefreshing(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [periodo]);
+  }, [periodo, accessChecked]);
 
   useEffect(() => {
     const saved = sessionStorage.getItem('admin_precios_scroll');
@@ -256,6 +275,17 @@ export default function PreciosAdminPage() {
   // La promo vence el día POSTERIOR a promoHasta (si dice 27, el 27 sigue válida)
   const now = new Date();
   const hoy = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  if (!accessChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a1612' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 border-2 border-[#00c7b1] border-t-transparent rounded-full animate-spin" />
+          <span className="text-white/50 text-sm">Verificando acceso...</span>
+        </div>
+      </div>
+    );
+  }
+
   const promoVencida = data.promoHasta && data.promoHasta < hoy;
   const diasRestantes = data.promoHasta
     ? Math.ceil((new Date(data.promoHasta + 'T00:00:00').getTime() - Date.now()) / (1000 * 60 * 60 * 24))
