@@ -22,7 +22,7 @@ export default async function HomePage() {
   const [{ data: carreras, error }, { data: descuentos, error: descError }, { data: meta }] = await Promise.all([
     supabase.from('carreras').select('*').eq('activa', true).order('orden', { ascending: true }),
     supabase.from('descuentos').select('*').eq('activo', true),
-    supabase.from('precios_meta').select('promo_especial_matricula, promo_especial_tka, promo_especial_tkb').eq('id', 1).single(),
+    supabase.from('precios_meta').select('promo_especial_matricula, promo_especial_tka, promo_especial_tkb, periodo_activo, promo_especial_matricula_1b, promo_especial_tk_1b, beneficio_1b_mat, beneficio_1b_tk').eq('id', 1).single(),
   ]);
 
   if (error) {
@@ -38,9 +38,18 @@ export default async function HomePage() {
   const sedeVal = descuentosData.find(d => d.tipo === 'sede')?.porcentaje ?? 0;
   const sigloVal = descuentosData.find(d => d.tipo === 'universidad')?.porcentaje ?? 0;
 
-  const promoGlobalMat = Number(meta?.promo_especial_matricula) || 0;
-  const promoGlobalTkA = Number(meta?.promo_especial_tka) || 0;
-  const promoGlobalTkB = Number(meta?.promo_especial_tkb) || 0;
+  const periodoActivo = meta?.periodo_activo || '1A';
+  let promoGlobalMat: number, promoGlobalTkA: number, promoGlobalTkB: number;
+  if (periodoActivo === '1B') {
+    // 1B: total = promo base + beneficio provincial (aditivo)
+    promoGlobalMat = (Number(meta?.promo_especial_matricula_1b) || 0) + (Number(meta?.beneficio_1b_mat) || 0);
+    promoGlobalTkA = 0; // No aplica en 1B
+    promoGlobalTkB = (Number(meta?.promo_especial_tk_1b) || 0) + (Number(meta?.beneficio_1b_tk) || 0);
+  } else {
+    promoGlobalMat = Number(meta?.promo_especial_matricula) || 0;
+    promoGlobalTkA = Number(meta?.promo_especial_tka) || 0;
+    promoGlobalTkB = Number(meta?.promo_especial_tkb) || 0;
+  }
   const hasPromoGlobal = promoGlobalMat > 0 || promoGlobalTkA > 0 || promoGlobalTkB > 0;
 
   // Parte pura = total - siglo (- sede para tickets)
