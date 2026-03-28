@@ -596,6 +596,11 @@ export default function PreciosAdminPage() {
                         } else {
                           parts.push(`Cuota ${fmt(rc.tkbFinal)} (${pct(rc.dtoTkB)} dto)`);
                         }
+                        if (data.promoDesde || data.promoHasta) {
+                          const desde = data.promoDesde ? new Date(data.promoDesde + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' }) : '?';
+                          const hasta = data.promoHasta ? new Date(data.promoHasta + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' }) : '?';
+                          parts.push(`Promo del ${desde} al ${hasta}`);
+                        }
                         copyText(parts.join(' | '), `${c.nombre}-resumen`);
                       }}
                       className="p-1.5 rounded-lg hover:bg-white/10 transition-colors group"
