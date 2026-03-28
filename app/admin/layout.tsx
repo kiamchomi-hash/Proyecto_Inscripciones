@@ -21,26 +21,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     async function check() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { router.replace('/admin/login'); return; }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.replace('/admin/login'); return; }
 
       // Verificar si existe en profesores
-      const { data: prof } = await supabase
+      const { data: prof, error } = await supabase
         .from('profesores')
         .select('estado')
-        .eq('user_id', session.user.id)
-        .single();
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error consultando profesores:', JSON.stringify(error), 'user_id:', user.id);
+        router.replace('/admin/login');
+        return;
+      }
 
       if (!prof) {
         // Primera vez: crear registro pendiente
-        const { user } = session;
-        await supabase.from('profesores').insert({
+        const { error: insertError } = await supabase.from('profesores').insert({
           user_id: user.id,
           nombre: user.user_metadata?.full_name || user.user_metadata?.name || null,
           email: user.email,
           estado: 'pendiente',
           rol: 'profesor',
         });
+        if (insertError) {
+          // Si falla por unique constraint, el registro existe pero RLS no lo deja leer
+          console.error('Error creando registro pendiente:', insertError);
+          if (insertError.code === '23505') {
+            // El registro ya existe — probable problema de RLS, ir a pendiente
+            // (el admin deberá verificar en Supabase)
+          }
+        }
         router.replace('/admin/pendiente');
         return;
       }
