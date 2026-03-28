@@ -440,6 +440,7 @@ async function syncPreciosSupabase(buffer, promoGeneral, promoEspecial) {
       descuento_ticket_a: promo.ticketA,
       descuento_ticket_b: promo.ticketB,
       es_especial: esEspecial,
+      periodo: '1A',
       updated_at: new Date().toISOString(),
     });
   }
@@ -463,8 +464,8 @@ async function syncPreciosSupabase(buffer, promoGeneral, promoEspecial) {
     return;
   }
 
-  // Upsert carreras
-  const { error: delErr } = await supabase.from('precios_carreras').delete().neq('id', 0);
+  // Upsert carreras (solo periodo 1A)
+  const { error: delErr } = await supabase.from('precios_carreras').delete().eq('periodo', '1A');
   if (delErr) { console.error('   Error limpiando precios:', delErr.message); return; }
 
   const { error: insErr } = await supabase.from('precios_carreras').insert(rows);
@@ -482,6 +483,151 @@ async function syncPreciosSupabase(buffer, promoGeneral, promoEspecial) {
   if (metaErr) { console.error('   Error actualizando meta:', metaErr.message); return; }
 
   console.log(`   ✓ ${rows.length} carreras sincronizadas. Recargo Visa/Master: 3c=${(recargo3 * 100).toFixed(0)}% 6c=${(recargo6 * 100).toFixed(0)}%`);
+}
+
+/**
+ * Paso 7: Parsear descuentos del periodo 1B desde promocionesB.
+ *
+ * promoB (tabla cols 15-24, filas 7+): descuento base por segmento.
+ * adicionalProvinciaB (cols 49-57, filas 17+): descuento adicional por provincia/carrera.
+ * Total = promoB base + adicional provincial.
+ *
+ * Periodo 1B solo tiene matrícula y un ticket único (no A/B).
+ */
+async function parseDescuentos1B(buffer) {
+  console.log('7. Parseando descuentos periodo 1B...');
+
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(buffer);
+
+  const ws = workbook.getWorksheet('promocionesB');
+  if (!ws) { console.log('   Hoja promocionesB no encontrada'); return null; }
+
+  const cv = (r, c) => rawCellVal(ws.getCell(r, c).value);
+
+  // promoB tabla: headers fila 7, datos desde fila 8
+  // Cols: 16=Vigente, 17=segmento, 18=carrera, 19=desde, 20=hasta, 21=Matrícula, 22=Ticket A
+  let promoBase = null;
+  for (let row = 8; row <= 33; row++) {
+    const vigente = cv(row, 16);
+    if (vigente !== 'Vigente') continue;
+    const seg = cv(row, 17);
+    if (seg !== CAU_SEGMENTO) continue;
+    const carrera = cv(row, 18);
+    if (carrera !== 'Resto') continue;
+
+    const desde = cv(row, 19);
+    const hasta = cv(row, 20);
+    const dDesde = desde instanceof Date ? desde : new Date(desde);
+    const dHasta = hasta instanceof Date ? hasta : new Date(hasta);
+
+    promoBase = {
+      matricula: Number(cv(row, 21)) || 0,
+      ticket: Number(cv(row, 22)) || 0,
+      desde: dDesde.toISOString().split('T')[0],
+      hasta: dHasta.toISOString().split('T')[0],
+    };
+    break;
+  }
+
+  if (!promoBase) {
+    console.log('   No se encontró promo base vigente en promoB para segmento A');
+    return null;
+  }
+
+  // adicionalProvinciaB: cols 49=provincia, 53=Matrícula, 54=Ticket A, 57=Vigente
+  let adicionalMat = 0;
+  let adicionalTk = 0;
+  for (let row = 17; row <= 156; row++) {
+    const vigente = cv(row, 57);
+    if (vigente !== 'Vigente') continue;
+    const prov = cv(row, 49);
+    if (prov !== 'BUENOS AIRES') continue;
+    adicionalMat = Number(cv(row, 53)) || 0;
+    adicionalTk = Number(cv(row, 54)) || 0;
+    break;
+  }
+
+  console.log(`   Promo 1B vigente:`);
+  console.log(`     Promo base: Mat=${(promoBase.matricula * 100).toFixed(0)}% Tk=${(promoBase.ticket * 100).toFixed(0)}%`);
+  console.log(`     Beneficio BSAS: Mat=${(adicionalMat * 100).toFixed(0)}% Tk=${(adicionalTk * 100).toFixed(0)}%`);
+  console.log(`     TOTAL: Mat=${((promoBase.matricula + adicionalMat) * 100).toFixed(0)}% Tk=${((promoBase.ticket + adicionalTk) * 100).toFixed(0)}%`);
+  console.log(`     Vigente: ${promoBase.desde} → ${promoBase.hasta}`);
+
+  return {
+    promoMat: promoBase.matricula,       // parte promo (ej: 0.5)
+    promoTk: promoBase.ticket,           // parte promo (ej: 0.2)
+    beneficioMat: adicionalMat,          // parte beneficio provincial (ej: 0.3)
+    beneficioTk: adicionalTk,            // parte beneficio provincial (ej: 0.0)
+    desde: promoBase.desde,
+    hasta: promoBase.hasta,
+  };
+}
+
+/**
+ * Paso 8: Parsear preciosB y subir periodo 1B a Supabase.
+ *
+ * preciosB: cols 9=caucodigo, 10=carrera, 11=01MM (matrícula), 12=01TK (ticket único).
+ * El ticket único se mapea a ticket_b; ticket_a = 0 (no aplica en 1B).
+ */
+async function syncPrecios1BSupabase(buffer, promo1B) {
+  console.log('8. Sincronizando precios periodo 1B a Supabase...');
+
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(buffer);
+  const precB = workbook.getWorksheet('preciosB');
+  if (!precB) { console.log('   Hoja preciosB no encontrada'); return; }
+
+  const cv = (r, c) => rawCellVal(precB.getCell(r, c).value);
+
+  const rows = [];
+  for (let row = 4; row <= 24093; row++) {
+    const codigo = cv(row, 9);
+    if (codigo !== CAU_CODIGO) continue;
+    const nombreExcel = cv(row, 10);
+    if (!nombreExcel) continue;
+    const matricula = Number(cv(row, 11)) || 0;
+    const ticket = Number(cv(row, 12)) || 0;
+    if (matricula === 0) continue;
+
+    rows.push({
+      nombre_excel: nombreExcel,
+      nombre_supabase: NOMBRE_MAP[nombreExcel] || nombreExcel,
+      matricula,
+      ticket_a: 0,
+      ticket_b: ticket,
+      descuento_matricula: promo1B.promoMat,     // solo parte promo base
+      descuento_ticket_a: 0,
+      descuento_ticket_b: promo1B.promoTk,        // solo parte promo base
+      es_especial: false,
+      periodo: '1B',
+      updated_at: new Date().toISOString(),
+    });
+  }
+
+  if (dryRun) {
+    console.log(`   [DRY RUN] ${rows.length} carreras periodo 1B`);
+    return;
+  }
+
+  const { error: delErr } = await supabase.from('precios_carreras').delete().eq('periodo', '1B');
+  if (delErr) { console.error('   Error limpiando precios 1B:', delErr.message); return; }
+
+  const { error: insErr } = await supabase.from('precios_carreras').insert(rows);
+  if (insErr) { console.error('   Error insertando precios 1B:', insErr.message); return; }
+
+  const { error: metaErr } = await supabase.from('precios_meta').update({
+    promo_desde_1b: promo1B.desde,
+    promo_hasta_1b: promo1B.hasta,
+    promo_especial_matricula_1b: promo1B.promoMat,
+    promo_especial_tk_1b: promo1B.promoTk,
+    beneficio_1b_mat: promo1B.beneficioMat,
+    beneficio_1b_tk: promo1B.beneficioTk,
+  }).eq('id', 1);
+
+  if (metaErr) { console.error('   Error actualizando meta 1B:', metaErr.message); return; }
+
+  console.log(`   ✓ ${rows.length} carreras periodo 1B sincronizadas.`);
 }
 
 // ── Main ──
@@ -522,8 +668,14 @@ async function main() {
       };
     }
 
-    // Sync precios + financiación a Supabase
+    // Sync precios periodo 1A + financiación a Supabase
     await syncPreciosSupabase(buffer, promoGeneral, promoEspecial);
+
+    // Sync precios periodo 1B
+    const promo1B = await parseDescuentos1B(buffer);
+    if (promo1B) {
+      await syncPrecios1BSupabase(buffer, promo1B);
+    }
 
     // Si la promo del Excel sigue vencida (no actualizaron), limpiar especiales
     // Sede y Siglo 21 se mantienen

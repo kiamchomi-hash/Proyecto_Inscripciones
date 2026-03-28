@@ -672,7 +672,17 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
         {/* Floating cuatrimestre nav button — mobile only, circle → expands left on hover */}
         {hasNextCuat && !isAtBottom && (
           <button
-            onClick={() => scrollToCuat(nextCuatIdx)}
+            onClick={() => {
+              if (!cuatBtnVisible) {
+                // Primer tap en mobile: expandir
+                showCuatBtn();
+                if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
+                cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 4000);
+              } else {
+                // Segundo tap o ya visible: navegar
+                scrollToCuat(nextCuatIdx);
+              }
+            }}
             onPointerEnter={showCuatBtn}
             onPointerLeave={hideCuatBtn}
             className="absolute right-5 z-20 md:hidden flex items-center justify-center rounded-full cursor-pointer overflow-hidden"
@@ -1205,94 +1215,68 @@ function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('.
 function DescuentosCards({ descuentos = [], especial }: { descuentos?: Descuento[]; especial?: DescuentoEspecial | null }) {
   const sede = descuentos.find(d => d.tipo === 'sede');
   const siglo = descuentos.find(d => d.tipo === 'universidad');
-  const sedeVal = sede?.porcentaje ?? 0;
-  const sigloVal = siglo?.porcentaje ?? 0;
+  const sedeVal = Number(sede?.porcentaje) || 0;
+  const sigloVal = Number(siglo?.porcentaje) || 0;
 
-  const mat = especial?.matricula ?? null;
-  const tkA = especial?.ticket_a ?? null;
-  const tkB = especial?.ticket_b ?? null;
-  const hasEspecial = mat != null || tkA != null || tkB != null;
+  const mat = especial?.matricula != null ? Number(especial.matricula) : null;
+  const tkA = especial?.ticket_a != null ? Number(especial.ticket_a) : null;
+  const tkB = especial?.ticket_b != null ? Number(especial.ticket_b) : null;
 
-  const valores = [mat, tkA, tkB].filter(v => v != null) as number[];
-  const todosIguales = valores.length > 0 && valores.every(v => v === valores[0]);
+  // Periodo 1B: tkA es null (solo matrícula + cuota)
+  const is1B = tkA == null && tkB != null;
 
-  type Card = { key: string; valor: string; label: string; aplica: string; desglose?: string; accent?: boolean };
-  const cards: Card[] = [
-    { key: 'sede', valor: sedeVal > 0 ? `${sedeVal}%` : '-', label: 'Sede Local', aplica: 'En las cuotas' },
-    { key: 'siglo', valor: sigloVal > 0 ? `${sigloVal}%` : '-', label: 'Siglo 21', aplica: 'En la totalidad' },
-  ];
+  // Descuento total por concepto (siglo + sede + promo)
+  const totalMat = mat != null ? sigloVal + mat : 0;
+  const totalTkA = tkA != null ? sigloVal + sedeVal + tkA : 0;
+  const totalTkB = tkB != null ? sigloVal + sedeVal + tkB : 0;
 
-  // Helper: arma desglose y total para un concepto especial
-  const buildEspecial = (espVal: number, incluyeSede: boolean): { total: number; desglose: string } => {
-    const parts: string[] = [];
-    let total = espVal;
-    if (sigloVal > 0) { parts.push(`${sigloVal}% Siglo`); total += sigloVal; }
-    if (incluyeSede && sedeVal > 0) { parts.push(`${sedeVal}% Sede`); total += sedeVal; }
-    parts.push(`${espVal}% Promo`);
-    return { total, desglose: parts.join(' + ') };
+  type Card = { key: string; valor: string; label: string; pct: number };
+  const cards: Card[] = [];
+
+  if (totalMat > 0) cards.push({ key: 'mat', valor: `${Math.round(totalMat)}%`, label: 'Matrícula', pct: totalMat });
+  if (!is1B && totalTkA > 0) cards.push({ key: 'tka', valor: `${Math.round(totalTkA)}%`, label: 'Primera cuota', pct: totalTkA });
+  if (totalTkB > 0) cards.push({ key: 'tkb', valor: `${Math.round(totalTkB)}%`, label: is1B ? 'Cuota' : 'Segunda cuota', pct: totalTkB });
+
+  // Color de borde y texto según intensidad del descuento (escala teal)
+  // Bajo (0-30): apagado, Medio (30-60): teal medio, Alto (60+): teal vibrante
+  const cardColor = (p: number) => {
+    const t = Math.min(p / 80, 1); // normalizar a 0-1 (80% = máximo)
+    const r = Math.round(30 * (1 - t));
+    const g = Math.round(140 + 59 * t);  // 140 → 199
+    const b = Math.round(130 + 47 * t);  // 130 → 177
+    return `rgb(${r}, ${g}, ${b})`;
   };
 
-  if (!hasEspecial) {
-    cards.push({ key: 'esp', valor: '-', label: 'Promociones', aplica: 'Especiales' });
-  } else if (todosIguales) {
-    // Mismo especial en todo — usar matrícula como referencia (sin sede)
-    const { total, desglose } = buildEspecial(valores[0], false);
-    cards.push({ key: 'esp', valor: `${total}%`, label: 'Promoción', aplica: 'En la totalidad', desglose, accent: true });
-  } else if (valores.length === 1) {
-    const esMat = mat != null;
-    const aplica = esMat ? 'En la matrícula' : tkA != null ? 'En la 1ra cuota' : 'En la 2da cuota';
-    const val = (mat ?? tkA ?? tkB)!;
-    const { total, desglose } = buildEspecial(val, !esMat);
-    cards.push({ key: 'esp', valor: `${total}%`, label: 'Promoción', aplica, desglose, accent: true });
-  } else {
-    if (mat != null) { const r = buildEspecial(mat, false); cards.push({ key: 'esp-mat', valor: `${r.total}%`, label: 'Promoción', aplica: 'En la matrícula', desglose: r.desglose, accent: true }); }
-    if (tkA != null) { const r = buildEspecial(tkA, true); cards.push({ key: 'esp-tka', valor: `${r.total}%`, label: 'Promoción', aplica: 'En la 1ra cuota', desglose: r.desglose, accent: true }); }
-    if (tkB != null) { const r = buildEspecial(tkB, true); cards.push({ key: 'esp-tkb', valor: `${r.total}%`, label: 'Promoción', aplica: 'En la 2da cuota', desglose: r.desglose, accent: true }); }
-  }
+  if (cards.length === 0) return null;
 
   const count = cards.length;
-  const hasDesglose = cards.some(c => c.desglose);
-
-  const widthClass = count <= 3
-    ? 'w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem]'
-    : count === 4
-      ? 'w-[calc(25%-8px)] md:w-[calc(25%-6px)] max-w-[5.5rem] md:max-w-[6rem]'
-      : 'w-[calc(20%-8px)] md:w-[calc(20%-6px)] max-w-[4.5rem] md:max-w-[5rem]';
-
-  // Mobile: sin aspect-ratio forzado para ahorrar espacio. Desktop: cuadradas o 3/4
-  const aspectClass = hasDesglose ? 'md:aspect-[3/4]' : 'md:aspect-square';
-
-  const valorSize = count <= 3 ? 'text-xl md:text-3xl' : count === 4 ? 'text-lg md:text-2xl' : 'text-base md:text-xl';
-  const labelSize = count <= 3 ? 'text-[0.55rem] md:text-xs' : 'text-[0.5rem] md:text-[0.65rem]';
-  const aplicaSize = count <= 3 ? 'text-[0.45rem] md:text-[0.55rem]' : 'text-[0.4rem] md:text-[0.5rem]';
+  const widthClass = count <= 2
+    ? 'w-[calc(50%-8px)] md:w-[calc(33.333%-6px)] max-w-[7rem] md:max-w-[8rem]'
+    : 'w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem]';
 
   return (
     <div className="w-full mt-1 md:-mt-2 pt-2 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
       <p className="text-[0.65rem] md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-1.5 md:mb-3 text-center">Descuentos</p>
       <div className="flex flex-wrap justify-center gap-2 md:gap-2 w-full mb-1 md:mb-2">
-        {cards.map((card) => (
+        {cards.map((card) => {
+          const color = cardColor(card.pct);
+          return (
           <div
             key={card.key}
-            className={`relative overflow-hidden ${widthClass} ${aspectClass} border rounded-xl flex flex-col items-center justify-center p-1.5 md:p-2 text-center transition-transform hover:-translate-y-1 hover:brightness-110 leading-none aurora-matte ${card.accent ? 'border-[#e69b05]/50' : 'border-white/20'}`}
+            className={`relative overflow-hidden ${widthClass} md:aspect-square rounded-xl flex flex-col items-center justify-center p-1.5 md:p-2 text-center leading-none aurora-matte`}
+            style={{ borderWidth: 1, borderStyle: 'solid', borderColor: color }}
           >
-            <div className="relative z-10 flex flex-col items-center gap-0.5">
-              <span className={`${aplicaSize} font-semibold leading-none tracking-wide`} style={{ color: card.accent ? '#e69b05' : '#cde8e3' }}>
-                {card.aplica}
-              </span>
-              <span className={`font-black leading-none ${valorSize} ${card.accent ? 'text-[#e69b05]' : 'text-[#00c7b1]'}`}>
+            <div className="relative z-10 flex flex-col items-center gap-1">
+              <span className="font-black leading-none text-xl md:text-3xl text-[#00c7b1]">
                 {card.valor}
               </span>
-              <span className={`text-white font-bold leading-tight uppercase tracking-wide ${labelSize}`}>
+              <span className="text-white font-bold leading-tight uppercase tracking-wide text-[0.55rem] md:text-xs">
                 {card.label}
               </span>
-              {card.desglose && (
-                <span className="text-[0.45rem] md:text-[0.5rem] leading-tight font-semibold mt-0.5" style={{ color: '#b0d4cd' }}>
-                  {card.desglose}
-                </span>
-              )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

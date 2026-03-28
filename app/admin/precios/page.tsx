@@ -25,6 +25,8 @@ interface CarreraRow {
   cuota6: number;
 }
 
+type Periodo = '1A' | '1B';
+
 interface PageData {
   sede: number;
   siglo21: number;
@@ -38,14 +40,17 @@ interface PageData {
   promoEspecialMat: number;
   promoEspecialTkA: number;
   promoEspecialTkB: number;
+  beneficio1bMat: number;
+  beneficio1bTk: number;
+  periodoActivo: Periodo;
 }
 
 const fmt = (n: number) => `$${n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 
-async function fetchData(): Promise<PageData> {
+async function fetchData(periodo: Periodo): Promise<PageData> {
   const [preciosRes, metaRes, descuentosRes] = await Promise.all([
-    supabase.from('precios_carreras').select('*').order('nombre_supabase'),
+    supabase.from('precios_carreras').select('*').eq('periodo', periodo).order('nombre_supabase'),
     supabase.from('precios_meta').select('*').eq('id', 1).single(),
     supabase.from('descuentos').select('*').eq('activo', true),
   ]);
@@ -63,10 +68,19 @@ async function fetchData(): Promise<PageData> {
   const recargo3 = Number(meta.recargo_visa_master_3) || 0;
   const recargo6 = Number(meta.recargo_visa_master_6) || 0;
 
-  // Promo especial global: solo para mostrar en el banner (los precios ya vienen del Excel)
-  const promoGlobalMat = Number(meta.promo_especial_matricula) || 0;
-  const promoGlobalTkA = Number(meta.promo_especial_tka) || 0;
-  const promoGlobalTkB = Number(meta.promo_especial_tkb) || 0;
+  let promoGlobalMat: number, promoGlobalTkA: number, promoGlobalTkB: number;
+  let beneficio1bMat = 0, beneficio1bTk = 0;
+  if (periodo === '1B') {
+    promoGlobalMat = Number(meta.promo_especial_matricula_1b) || 0;
+    promoGlobalTkA = 0;
+    promoGlobalTkB = Number(meta.promo_especial_tk_1b) || 0;
+    beneficio1bMat = Number(meta.beneficio_1b_mat) || 0;
+    beneficio1bTk = Number(meta.beneficio_1b_tk) || 0;
+  } else {
+    promoGlobalMat = Number(meta.promo_especial_matricula) || 0;
+    promoGlobalTkA = Number(meta.promo_especial_tka) || 0;
+    promoGlobalTkB = Number(meta.promo_especial_tkb) || 0;
+  }
 
   const sedeVal = (sede?.porcentaje ?? 0) / 100;
 
@@ -91,17 +105,18 @@ async function fetchData(): Promise<PageData> {
     const dtoTkA = Number(p.descuento_ticket_a);
     const dtoTkB = Number(p.descuento_ticket_b);
 
-    // Matrícula: solo promo (del Excel). Tickets: promo + sede (amigo referido)
-    const matFinal = matLista * (1 - dtoMat);
+    const totalDtoMat = periodo === '1B' ? dtoMat + beneficio1bMat : dtoMat;
+    const totalDtoTkB = periodo === '1B' ? dtoTkB + beneficio1bTk : dtoTkB;
+    const matFinal = matLista * (1 - totalDtoMat);
     const tkaFinal = tkaLista * (1 - dtoTkA) * (1 - sedeVal);
-    const tkbFinal = tkbLista * (1 - dtoTkB) * (1 - sedeVal);
+    const tkbFinal = tkbLista * (1 - totalDtoTkB) * (1 - sedeVal);
     const total = matFinal + tkaFinal + tkbFinal;
 
     return {
       nombre: p.nombre_supabase,
       esEspecial: p.es_especial,
       matLista, tkaLista, tkbLista,
-      dtoMat, dtoTkA, dtoTkB,
+      dtoMat: totalDtoMat, dtoTkA, dtoTkB: totalDtoTkB,
       matFinal, tkaFinal, tkbFinal,
       total,
       cuota3: total * (1 + recargo3) / 3,
@@ -109,48 +124,66 @@ async function fetchData(): Promise<PageData> {
     };
   });
 
+  const promoDesde = periodo === '1B' ? (meta.promo_desde_1b || '') : (meta.promo_desde || '');
+  const promoHasta = periodo === '1B' ? (meta.promo_hasta_1b || '') : (meta.promo_hasta || '');
+
   return {
     sede: sede?.porcentaje ?? 0,
     siglo21: siglo?.porcentaje ?? 0,
-    promoDesde: meta.promo_desde || '',
-    promoHasta: meta.promo_hasta || '',
+    promoDesde,
+    promoHasta,
     recargo3: Math.round(recargo3 * 100),
     recargo6: Math.round(recargo6 * 100),
     especiales,
     carreras,
     ultimaSync: meta.ultima_sync,
-    promoEspecialMat: Number(meta.promo_especial_matricula) || 0,
-    promoEspecialTkA: Number(meta.promo_especial_tka) || 0,
-    promoEspecialTkB: Number(meta.promo_especial_tkb) || 0,
+    promoEspecialMat: promoGlobalMat,
+    promoEspecialTkA: promoGlobalTkA,
+    promoEspecialTkB: promoGlobalTkB,
+    beneficio1bMat,
+    beneficio1bTk,
+    periodoActivo: meta.periodo_activo || '1A',
   };
 }
 
 export default function PreciosAdminPage() {
-  const CACHE_KEY = 'admin_precios_v2';
+  const [periodo, setPeriodo] = useState<Periodo>('1B');
+  const [periodoActivo, setPeriodoActivo] = useState<Periodo>('1A');
+  const is1B = periodo === '1B';
+
+  const CACHE_KEY = `admin_precios_v3_${periodo}`;
   const [data, setData] = useState<PageData | null>(() => {
     if (typeof window === 'undefined') return null;
     try { const c = localStorage.getItem(CACHE_KEY); return c ? JSON.parse(c) : null; } catch { return null; }
   });
   const [error, setError] = useState('');
   const [refreshing, setRefreshing] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState('');
   const [search, setSearch] = useState('');
   const [showLista, setShowLista] = useState(false);
+  const [showDescuentos, setShowDescuentos] = useState(false);
 
-  // Overrides manuales: { "Abogacía": { benefMat: 0.05, benefTkA: 0.10, ... } }
   type OverrideKey = 'benefMat' | 'benefTkA' | 'benefTkB' | 'promoMat' | 'promoTkA' | 'promoTkB';
   const [overrides, setOverrides] = useState<Record<string, Partial<Record<OverrideKey, number>>>>({});
   const [editing, setEditing] = useState<{ carrera: string; field: OverrideKey } | null>(null);
   const [editValue, setEditValue] = useState('');
 
   useEffect(() => {
-    fetchData()
-      .then(d => { setData(d); localStorage.setItem(CACHE_KEY, JSON.stringify(d)); setError(''); })
+    setRefreshing(true);
+    try { const c = localStorage.getItem(CACHE_KEY); if (c) setData(JSON.parse(c)); } catch { /* ignore */ }
+    fetchData(periodo)
+      .then(d => {
+        setData(d);
+        setPeriodoActivo(d.periodoActivo);
+        localStorage.setItem(CACHE_KEY, JSON.stringify(d));
+        setError('');
+      })
       .catch(e => { if (!data) setError(e.message); })
       .finally(() => setRefreshing(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [periodo]);
 
-  // Restaurar scroll al recargar
   useEffect(() => {
     const saved = sessionStorage.getItem('admin_precios_scroll');
     if (saved) { window.scrollTo(0, parseInt(saved)); sessionStorage.removeItem('admin_precios_scroll'); }
@@ -200,191 +233,163 @@ export default function PreciosAdminPage() {
     return { ...c, dtoMat, dtoTkA, dtoTkB, matFinal, tkaFinal, tkbFinal, total, cuota3: total * (1 + recargo3) / 3, cuota6: total * (1 + recargo6) / 6 };
   };
 
-  if (!data && refreshing) return <div className="min-h-screen flex items-center justify-center" style={{ background: '#013729' }}><p className="text-[#7ca19b]">Cargando precios...</p></div>;
-  if (!data && error) return <div className="min-h-screen flex items-center justify-center" style={{ background: '#013729' }}><p className="text-red-400">{error}</p></div>;
+  if (!data && refreshing) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center gap-3">
+        <div className="w-5 h-5 border-2 border-[var(--color-highlight)] border-t-transparent rounded-full animate-spin" />
+        <p className="text-[var(--color-text-light)]">Cargando precios...</p>
+      </div>
+    </div>
+  );
+  if (!data && error) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="rounded-2xl border border-red-500/30 bg-red-500/5 px-6 py-4">
+        <p className="text-red-400">{error}</p>
+      </div>
+    </div>
+  );
   if (!data) return null;
 
   const filtered = data.carreras.filter(c => c.nombre.toLowerCase().includes(search.toLowerCase()));
   const syncDate = data.ultimaSync ? new Date(data.ultimaSync).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Sin datos';
 
-  const promoVencida = data.promoHasta && data.promoHasta < new Date().toISOString().split('T')[0];
+  // La promo vence el día POSTERIOR a promoHasta (si dice 27, el 27 sigue válida)
+  const now = new Date();
+  const hoy = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const promoVencida = data.promoHasta && data.promoHasta < hoy;
   const diasRestantes = data.promoHasta
     ? Math.ceil((new Date(data.promoHasta + 'T00:00:00').getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null;
 
   return (
-    <div className="min-h-screen" style={{ background: '#013729', color: '#e0e0e0' }}>
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-black text-white">Precios y Descuentos</h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm">
-              <span style={{ color: '#7ca19b' }}>
-                Última sync: <span className="font-semibold text-white">{syncDate}</span>
+    <div className="min-h-screen text-[var(--color-text-normal)]">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6">
+
+        {/* ── Header ── */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-black tracking-tight">Precios y Descuentos</h1>
+              <span className="text-xs px-3 py-1 rounded-lg bg-[var(--color-card-bg)] text-[var(--color-text-light)] border border-white/10">
+                Slide: <span className="font-bold text-white">{periodoActivo}</span>
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[var(--color-text-light)]">
+              <span>
+                Sync: <span className="font-semibold text-white">{syncDate}</span>
               </span>
               {data.promoHasta && (
-                <span style={{ color: promoVencida ? '#ef4444' : diasRestantes !== null && diasRestantes <= 3 ? '#e69b05' : '#7ca19b' }}>
+                <span className={promoVencida ? 'text-red-400' : diasRestantes !== null && diasRestantes <= 3 ? 'text-[var(--color-gold)]' : ''}>
                   {promoVencida
-                    ? <>Promo vencida ({data.promoHasta}) <span className="font-bold">— verificar GitHub Actions</span></>
-                    : <>Vence: <span className="font-semibold text-white">{data.promoHasta}</span> ({diasRestantes} {diasRestantes === 1 ? 'día' : 'días'})</>
+                    ? <>Promo vencida ({data.promoHasta}) <span className="font-bold">— verificar</span></>
+                    : <>Vence: <span className="font-semibold text-white">{data.promoHasta}</span> ({diasRestantes} {diasRestantes === 1 ? 'dia' : 'dias'})</>
                   }
                 </span>
               )}
-              {refreshing && <span className="text-[#e69b05]">Actualizando...</span>}
+              {refreshing && <span className="text-[var(--color-gold)] animate-pulse">Actualizando...</span>}
               {!refreshing && error && <span className="text-red-400">({error})</span>}
             </div>
-            <p className="text-sm" style={{ color: '#7ca19b' }}>
-              CAU Villa Lugano
-            </p>
-          </div>
-          <a href="/admin/clases-apoyo" className="text-sm px-4 py-2 rounded-lg" style={{ background: '#1c2f31', color: '#00c7b1' }}>
-            ← Clases de apoyo
-          </a>
-        </div>
 
-        {/* Cards de descuentos */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="rounded-xl p-4" style={{ background: '#1c2f31', border: '1px solid rgba(0,199,177,0.2)' }}>
-            <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: '#7ca19b' }}>Sede Local (Amigo referido)</p>
-            <p className="text-3xl font-black" style={{ color: '#00c7b1' }}>{data.sede}%</p>
-            <p className="text-xs mt-1" style={{ color: '#7ca19b' }}>Descuento adicional en cuotas (Ticket A y B)</p>
-          </div>
-          <div className="rounded-xl p-4" style={{ background: '#1c2f31', border: '1px solid rgba(0,199,177,0.2)' }}>
-            <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: '#7ca19b' }}>Siglo 21 (Promoción general)</p>
-            <p className="text-3xl font-black" style={{ color: '#00c7b1' }}>{data.siglo21}%</p>
-            {data.promoDesde && (
-              <p className="text-xs mt-1" style={{ color: '#7ca19b' }}>{data.promoDesde} → {data.promoHasta}</p>
-            )}
-          </div>
-          <div className="rounded-xl p-4" style={{ background: '#1c2f31', border: '1px solid rgba(230,155,5,0.3)' }}>
-            <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: '#e69b05' }}>Financiación Visa/Master</p>
-            <p className="text-sm font-bold text-white">Visa y Mastercard - Otros Bancos</p>
-            <div className="flex gap-4 mt-2">
-              <div>
-                <p className="text-xs" style={{ color: '#7ca19b' }}>3 cuotas</p>
-                <p className="text-xl font-black" style={{ color: data.recargo3 > 0 ? '#e69b05' : '#00c7b1' }}>
-                  {data.recargo3 > 0 ? `+${data.recargo3}%` : 'Sin interés'}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs" style={{ color: '#7ca19b' }}>6 cuotas</p>
-                <p className="text-xl font-black" style={{ color: data.recargo6 > 0 ? '#e69b05' : '#00c7b1' }}>
-                  {data.recargo6 > 0 ? `+${data.recargo6}%` : 'Sin interés'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Promo especial global */}
-        {(data.promoEspecialMat > 0 || data.promoEspecialTkA > 0 || data.promoEspecialTkB > 0) && (
-          <div className="rounded-xl p-4 mb-6 flex items-center gap-4" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)' }}>
-            <span className="text-2xl">🔥</span>
-            <div>
-              <p className="text-sm font-bold text-red-400 uppercase tracking-wider">Promo especial global activa</p>
-              <div className="flex gap-4 mt-2">
-                {data.promoEspecialMat > 0 && (() => {
-                  const total = Math.round(data.promoEspecialMat * 100);
-                  const pura = total - data.siglo21;
-                  return (
-                    <div className="px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.15)' }}>
-                      <p className="text-xs" style={{ color: '#7ca19b' }}>Matrícula</p>
-                      <p className="text-lg font-black text-red-400">{total}%</p>
-                      <p className="text-[0.65rem]" style={{ color: '#7ca19b' }}>{data.siglo21}% Siglo + {pura}% Promo</p>
-                    </div>
-                  );
-                })()}
-                {data.promoEspecialTkA > 0 && (() => {
-                  const total = Math.round(data.promoEspecialTkA * 100);
-                  const pura = total - data.siglo21 - data.sede;
-                  return (
-                    <div className="px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.15)' }}>
-                      <p className="text-xs" style={{ color: '#7ca19b' }}>Ticket A</p>
-                      <p className="text-lg font-black text-red-400">{total}%</p>
-                      <p className="text-[0.65rem]" style={{ color: '#7ca19b' }}>{data.siglo21}% Siglo + {data.sede}% Sede + {pura}% Promo</p>
-                    </div>
-                  );
-                })()}
-                {data.promoEspecialTkB > 0 && (() => {
-                  const total = Math.round(data.promoEspecialTkB * 100);
-                  const pura = total - data.siglo21 - data.sede;
-                  return (
-                    <div className="px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.15)' }}>
-                      <p className="text-xs" style={{ color: '#7ca19b' }}>Ticket B</p>
-                      <p className="text-lg font-black text-red-400">{total}%</p>
-                      <p className="text-[0.65rem]" style={{ color: '#7ca19b' }}>{data.siglo21}% Siglo + {data.sede}% Sede + {pura}% Promo</p>
-                    </div>
-                  );
-                })()}
-              </div>
-              <p className="text-xs mt-2" style={{ color: '#7ca19b' }}>Editar desde Supabase → precios_meta (% total, ej: 0.60 = 60% incluye sede+siglo+promo)</p>
-            </div>
-          </div>
-        )}
-
-        {/* Especiales */}
-        {data.especiales.length > 0 && (
-          <div className="rounded-xl p-4 mb-6" style={{ background: '#1c2f31', border: '1px solid rgba(230,155,5,0.3)' }}>
-            <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#e69b05' }}>
-              ★ Descuentos especiales ({data.especiales.length} carreras)
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {data.especiales.map(e => (
-                <div key={e.nombre} className="flex justify-between items-center px-3 py-2 rounded-lg" style={{ background: 'rgba(230,155,5,0.08)' }}>
-                  <span className="text-sm font-semibold text-white truncate mr-2">{e.nombre}</span>
-                  <span className="text-xs whitespace-nowrap" style={{ color: '#e69b05' }}>
-                    Mat={pct(e.dtoMat)} A={pct(e.dtoTkA)} B={pct(e.dtoTkB)}
-                  </span>
-                </div>
+            {/* Periodo toggle */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {(['1A', '1B'] as const).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPeriodo(p)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                    periodo === p
+                      ? 'bg-[var(--color-highlight)]/15 text-[var(--color-highlight)] border border-[var(--color-highlight)]/40 shadow-[0_0_12px_rgba(0,199,177,0.15)]'
+                      : 'text-[var(--color-text-light)] border border-white/5 hover:text-white hover:border-white/15'
+                  }`}
+                >
+                  {p}{p === '1B' ? ' (Mat+Cuota)' : ' (Mat+TkA+TkB)'}
+                </button>
               ))}
+              {periodoActivo !== periodo && (
+                <button
+                  onClick={async () => {
+                    await supabase.from('precios_meta').update({ periodo_activo: periodo }).eq('id', 1);
+                    setPeriodoActivo(periodo);
+                  }}
+                  className="text-xs text-[var(--color-gold)] hover:text-white underline underline-offset-2 decoration-[var(--color-gold)]/30 hover:decoration-white/50 transition-colors ml-2"
+                >
+                  Mostrar {periodo} en slide publico
+                </button>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Controls */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={async () => {
+                setSyncing(true);
+                setSyncMsg('');
+                try {
+                  const res = await fetch('/api/admin/sync-precios', { method: 'POST' });
+                  if (res.ok) {
+                    setSyncMsg('Sync disparado — espera ~2 min y recarga');
+                  } else {
+                    const d = await res.json();
+                    setSyncMsg(d.error || 'Error al disparar sync');
+                  }
+                } catch { setSyncMsg('Error de red'); }
+                finally { setSyncing(false); }
+              }}
+              disabled={syncing}
+              className="px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 bg-[var(--color-gold)]/10 text-[var(--color-gold)] border border-[var(--color-gold)]/25 hover:bg-[var(--color-gold)]/20 disabled:opacity-50"
+            >
+              {syncing ? 'Sincronizando...' : 'Sincronizar Excel'}
+            </button>
+            {syncMsg && <span className={`text-xs ${syncMsg.includes('Error') ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}>{syncMsg}</span>}
+            <a href="/admin/clases-apoyo" className="px-4 py-2 rounded-xl text-sm font-medium bg-[var(--color-card-bg)] text-[var(--color-highlight)] border border-[var(--color-highlight)]/15 hover:border-[var(--color-highlight)]/30 transition-all duration-200">
+              Clases de apoyo
+            </a>
+          </div>
+        </div>
+
+        {/* ── Controls ── */}
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar carrera..."
-            className="flex-1 min-w-[200px] px-3 py-2 rounded-lg text-sm focus:outline-none"
-            style={{ background: '#0e1918', border: '1px solid rgba(0,199,177,0.2)', color: '#e0e0e0' }}
+            className="flex-1 min-w-[200px] px-4 py-2.5 rounded-xl text-sm bg-[#0a1a19] border border-[var(--color-highlight)]/30 text-[#ffffff] placeholder:text-white/40 focus:outline-none focus:border-[var(--color-highlight)] focus:shadow-[0_0_12px_rgba(0,199,177,0.15)] transition-all caret-white"
           />
-          <label className="flex items-center gap-2 text-sm cursor-pointer select-none" style={{ color: '#7ca19b' }}>
-            <input type="checkbox" checked={showLista} onChange={e => setShowLista(e.target.checked)} className="accent-[#00c7b1]" />
-            Mostrar precios de lista
+          <label className="flex items-center gap-2 text-sm cursor-pointer select-none text-[var(--color-text-light)]">
+            <input type="checkbox" checked={showLista} onChange={e => setShowLista(e.target.checked)} className="accent-[var(--color-highlight)]" />
+            Precios de lista
           </label>
-          <span className="text-xs" style={{ color: '#7ca19b' }}>{filtered.length} carreras</span>
+          <span className="text-xs text-[var(--color-text-light)]">{filtered.length} carreras</span>
           {Object.keys(overrides).length > 0 && (
             <button
               onClick={() => setOverrides({})}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold"
-              style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
             >
               Quitar ediciones ({Object.keys(overrides).length})
             </button>
           )}
         </div>
 
-        {/* Override global por columna */}
-        <div className="flex flex-wrap gap-3 mb-4">
+        {/* ── Override global por columna ── */}
+        <div className="flex flex-wrap gap-3 mb-5">
           {([
-            { label: 'Benef. Mat', field: 'benefMat' as OverrideKey, color: '#00c7b1' },
-            { label: 'Benef. TkA', field: 'benefTkA' as OverrideKey, color: '#00c7b1' },
-            { label: 'Benef. TkB', field: 'benefTkB' as OverrideKey, color: '#00c7b1' },
-            { label: 'Promo Mat', field: 'promoMat' as OverrideKey, color: '#e69b05' },
-            { label: 'Promo TkA', field: 'promoTkA' as OverrideKey, color: '#e69b05' },
-            { label: 'Promo TkB', field: 'promoTkB' as OverrideKey, color: '#e69b05' },
+            { label: 'Benef. Mat', field: 'benefMat' as OverrideKey, color: 'var(--color-highlight)' },
+            ...(!is1B ? [{ label: 'Benef. TkA', field: 'benefTkA' as OverrideKey, color: 'var(--color-highlight)' }] : []),
+            { label: is1B ? 'Benef. Cuota' : 'Benef. TkB', field: 'benefTkB' as OverrideKey, color: 'var(--color-highlight)' },
+            { label: 'Promo Mat', field: 'promoMat' as OverrideKey, color: 'var(--color-gold)' },
+            ...(!is1B ? [{ label: 'Promo TkA', field: 'promoTkA' as OverrideKey, color: 'var(--color-gold)' }] : []),
+            { label: is1B ? 'Promo Cuota' : 'Promo TkB', field: 'promoTkB' as OverrideKey, color: 'var(--color-gold)' },
           ]).map(({ label, field, color }) => (
             <div key={field} className="flex items-center gap-1.5">
               <span className="text-[0.65rem] font-bold uppercase" style={{ color }}>{label}</span>
               <input
                 type="text"
                 placeholder="%"
-                className="w-12 text-center text-xs px-1 py-1 rounded"
-                style={{ background: '#0e1918', border: `1px solid ${color}40`, color: '#fff', outline: 'none' }}
+                className="w-12 text-center text-xs px-1 py-1.5 rounded-lg bg-[#0a1a19] text-white outline-none transition-colors"
+                style={{ border: `1px solid color-mix(in srgb, ${color} 25%, transparent)` }}
+                onFocus={e => e.target.style.borderColor = `color-mix(in srgb, ${color} 50%, transparent)`}
+                onBlur={e => e.target.style.borderColor = `color-mix(in srgb, ${color} 25%, transparent)`}
                 onKeyDown={e => {
                   if (e.key !== 'Enter') return;
                   const val = parseFloat((e.target as HTMLInputElement).value.replace(',', '.'));
@@ -404,35 +409,35 @@ export default function PreciosAdminPage() {
           ))}
         </div>
 
-        {/* Tabla */}
-        <div className="overflow-x-auto rounded-xl" style={{ background: '#1c2f31', border: '1px solid rgba(0,199,177,0.15)' }}>
+        {/* ── Tabla ── */}
+        <div className="overflow-x-auto rounded-2xl bg-[var(--color-card-bg)] border border-[var(--color-highlight)]/10">
           <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr>
-                <th rowSpan={2} className="text-left px-3 py-2 font-bold text-white align-bottom" style={{ borderBottom: '2px solid rgba(0,199,177,0.3)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>Carrera</th>
-                <th colSpan={3} className="text-center px-1 py-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: '#00c7b1', borderBottom: '1px solid rgba(0,199,177,0.2)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>Dto. Beneficio</th>
-                <th colSpan={3} className="text-center px-1 py-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: '#e69b05', borderBottom: '1px solid rgba(230,155,5,0.25)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>Dto. Promoción</th>
-                {showLista && <th colSpan={3} className="text-center px-1 py-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: '#7ca19b', borderBottom: '1px solid rgba(124,161,155,0.25)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>Precios de Lista</th>}
-                <th colSpan={3} className="text-center px-1 py-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: '#00c7b1', borderBottom: '1px solid rgba(0,199,177,0.2)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>Precios Finales</th>
-                <th rowSpan={2} className="text-right px-2 py-2 font-bold text-white align-bottom" style={{ borderBottom: '2px solid rgba(0,199,177,0.3)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>Total</th>
-                <th rowSpan={2} className="text-right px-2 py-2 font-bold align-bottom" style={{ color: '#e69b05', borderBottom: '2px solid rgba(0,199,177,0.3)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>3 cuotas</th>
-                <th rowSpan={2} className="text-right px-2 py-2 font-bold align-bottom" style={{ color: '#e69b05', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>6 cuotas</th>
+              <tr className="border-b-2 border-[var(--color-highlight)]/20">
+                <th rowSpan={2} className="text-left px-4 py-3 font-bold text-white align-bottom border-r border-white/5">Carrera</th>
+                <th colSpan={is1B ? 2 : 3} className="text-center px-1 py-2 font-bold text-[0.65rem] uppercase tracking-widest text-[var(--color-highlight)] border-b border-[var(--color-highlight)]/15 border-r border-white/5">Dto. Beneficio</th>
+                <th colSpan={is1B ? 2 : 3} className="text-center px-1 py-2 font-bold text-[0.65rem] uppercase tracking-widest text-[var(--color-gold)] border-b border-[var(--color-gold)]/15 border-r border-white/5">Dto. Promocion</th>
+                {showLista && <th colSpan={is1B ? 2 : 3} className="text-center px-1 py-2 font-bold text-[0.65rem] uppercase tracking-widest text-[var(--color-text-light)] border-b border-white/10 border-r border-white/5">Lista</th>}
+                <th colSpan={is1B ? 2 : 3} className="text-center px-1 py-2 font-bold text-[0.65rem] uppercase tracking-widest text-[var(--color-highlight)] border-b border-[var(--color-highlight)]/15 border-r border-white/5">Finales</th>
+                <th rowSpan={2} className="text-right px-3 py-3 font-bold text-white align-bottom border-r border-white/5">Total</th>
+                <th rowSpan={2} className="text-right px-3 py-3 font-bold text-[var(--color-gold)] align-bottom border-r border-white/5">3 cuotas</th>
+                <th rowSpan={2} className="text-right px-3 py-3 font-bold text-[var(--color-gold)] align-bottom">6 cuotas</th>
               </tr>
-              <tr>
-                <th className="text-center px-1 py-1.5 text-xs" style={{ color: '#00c7b1', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>Mat</th>
-                <th className="text-center px-1 py-1.5 text-xs" style={{ color: '#00c7b1', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>TkA</th>
-                <th className="text-center px-1 py-1.5 text-xs" style={{ color: '#00c7b1', borderBottom: '2px solid rgba(0,199,177,0.3)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>TkB</th>
-                <th className="text-center px-1 py-1.5 text-xs" style={{ color: '#e69b05', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>Mat</th>
-                <th className="text-center px-1 py-1.5 text-xs" style={{ color: '#e69b05', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>TkA</th>
-                <th className="text-center px-1 py-1.5 text-xs" style={{ color: '#e69b05', borderBottom: '2px solid rgba(0,199,177,0.3)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>TkB</th>
+              <tr className="border-b-2 border-[var(--color-highlight)]/20">
+                <th className="text-center px-1 py-2 text-xs text-[var(--color-highlight)]">Mat</th>
+                {!is1B && <th className="text-center px-1 py-2 text-xs text-[var(--color-highlight)]">TkA</th>}
+                <th className="text-center px-1 py-2 text-xs text-[var(--color-highlight)] border-r border-white/5">{is1B ? 'Cuota' : 'TkB'}</th>
+                <th className="text-center px-1 py-2 text-xs text-[var(--color-gold)]">Mat</th>
+                {!is1B && <th className="text-center px-1 py-2 text-xs text-[var(--color-gold)]">TkA</th>}
+                <th className="text-center px-1 py-2 text-xs text-[var(--color-gold)] border-r border-white/5">{is1B ? 'Cuota' : 'TkB'}</th>
                 {showLista && <>
-                  <th className="text-right px-2 py-1.5 text-xs" style={{ color: '#7ca19b', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>Mat</th>
-                  <th className="text-right px-2 py-1.5 text-xs" style={{ color: '#7ca19b', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>TkA</th>
-                  <th className="text-right px-2 py-1.5 text-xs" style={{ color: '#7ca19b', borderBottom: '2px solid rgba(0,199,177,0.3)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>TkB</th>
+                  <th className="text-right px-2 py-2 text-xs text-[var(--color-text-light)]">Mat</th>
+                  {!is1B && <th className="text-right px-2 py-2 text-xs text-[var(--color-text-light)]">TkA</th>}
+                  <th className="text-right px-2 py-2 text-xs text-[var(--color-text-light)] border-r border-white/5">{is1B ? 'Cuota' : 'TkB'}</th>
                 </>}
-                <th className="text-right px-2 py-1.5 text-xs" style={{ color: '#00c7b1', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>Mat</th>
-                <th className="text-right px-2 py-1.5 text-xs" style={{ color: '#00c7b1', borderBottom: '2px solid rgba(0,199,177,0.3)' }}>TkA</th>
-                <th className="text-right px-2 py-1.5 text-xs" style={{ color: '#00c7b1', borderBottom: '2px solid rgba(0,199,177,0.3)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>TkB</th>
+                <th className="text-right px-2 py-2 text-xs text-[var(--color-highlight)]">Mat</th>
+                {!is1B && <th className="text-right px-2 py-2 text-xs text-[var(--color-highlight)]">TkA</th>}
+                <th className="text-right px-2 py-2 text-xs text-[var(--color-highlight)] border-r border-white/5">{is1B ? 'Cuota' : 'TkB'}</th>
               </tr>
             </thead>
             <tbody>
@@ -440,20 +445,19 @@ export default function PreciosAdminPage() {
                 const sedeVal = data.sede / 100;
                 const ov = overrides[c.nombre] || {};
                 const rc = recalc(c);
-                const bdr = { borderRight: '1px solid rgba(255,255,255,0.1)' };
                 const hasOverride = !!overrides[c.nombre];
 
                 const benefMat = ov.benefMat ?? 0;
                 const benefTkA = ov.benefTkA ?? sedeVal;
                 const benefTkB = ov.benefTkB ?? sedeVal;
 
-                const EditableCell = ({ field, value, defaultColor, extraStyle }: { field: OverrideKey; value: number; defaultColor: string; extraStyle?: React.CSSProperties }) => {
+                const EditableCell = ({ field, value, defaultColor, borderR }: { field: OverrideKey; value: number; defaultColor: string; borderR?: boolean }) => {
                   const isEditing = editing?.carrera === c.nombre && editing?.field === field;
                   const isOverridden = ov[field] !== undefined;
 
                   if (isEditing) {
                     return (
-                      <td className="text-center px-0.5 py-1" style={extraStyle}>
+                      <td className={`text-center px-0.5 py-1 ${borderR ? 'border-r border-white/5' : ''}`}>
                         <input
                           autoFocus
                           type="text"
@@ -461,8 +465,7 @@ export default function PreciosAdminPage() {
                           onChange={e => setEditValue(e.target.value)}
                           onKeyDown={e => { if (e.key === 'Enter') confirmEdit(); if (e.key === 'Escape') setEditing(null); }}
                           onBlur={confirmEdit}
-                          className="w-12 text-center text-xs px-1 py-0.5 rounded"
-                          style={{ background: '#0e1918', border: '1px solid #00c7b1', color: '#fff', outline: 'none' }}
+                          className="w-12 text-center text-xs px-1 py-0.5 rounded-lg bg-[#0a1a19] border border-[var(--color-highlight)] text-white outline-none"
                         />
                       </td>
                     );
@@ -470,8 +473,8 @@ export default function PreciosAdminPage() {
 
                   return (
                     <td
-                      className="text-center px-1 py-2.5 text-xs tabular-nums cursor-pointer hover:brightness-150"
-                      style={{ color: isOverridden ? '#ef4444' : defaultColor, ...extraStyle }}
+                      className={`text-center px-1 py-3 text-xs tabular-nums cursor-pointer transition-colors hover:brightness-150 ${borderR ? 'border-r border-white/5' : ''}`}
+                      style={{ color: isOverridden ? '#ef4444' : defaultColor }}
                       onClick={() => { setEditing({ carrera: c.nombre, field }); setEditValue(Math.round(value * 100).toString()); }}
                       title={isOverridden ? 'Click para editar (doble-click para resetear)' : 'Click para editar'}
                       onDoubleClick={() => isOverridden && clearOverride(c.nombre, field)}
@@ -484,41 +487,193 @@ export default function PreciosAdminPage() {
                 return (
                 <tr
                   key={c.nombre + i}
-                  style={{
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
-                    background: hasOverride ? 'rgba(239,68,68,0.06)' : c.esEspecial ? 'rgba(230,155,5,0.05)' : undefined,
-                  }}
+                  className={`border-b border-white/5 transition-colors ${
+                    hasOverride ? 'bg-red-500/5' : c.esEspecial ? 'bg-[var(--color-gold)]/[0.03]' : 'hover:bg-white/[0.02]'
+                  }`}
                 >
-                  <td className="px-3 py-2.5 font-semibold text-white" style={bdr}>
-                    {c.esEspecial && <span style={{ color: '#e69b05' }}>★ </span>}
-                    {hasOverride && <span style={{ color: '#ef4444' }}>✎ </span>}
+                  <td className="px-4 py-3 font-semibold text-white border-r border-white/5">
+                    {c.esEspecial && <span className="text-[var(--color-gold)]">★ </span>}
+                    {hasOverride && <span className="text-red-400">✎ </span>}
                     {c.nombre}
                   </td>
-                  {/* Dto. Beneficio: editables */}
-                  <EditableCell field="benefMat" value={benefMat} defaultColor="#7ca19b" />
-                  <EditableCell field="benefTkA" value={benefTkA} defaultColor="#00c7b1" />
-                  <EditableCell field="benefTkB" value={benefTkB} defaultColor="#00c7b1" extraStyle={bdr} />
-                  {/* Dto. Promoción: editables */}
-                  <EditableCell field="promoMat" value={rc.dtoMat} defaultColor={c.esEspecial && c.dtoMat !== c.dtoTkA ? '#e69b05' : '#7ca19b'} />
-                  <EditableCell field="promoTkA" value={rc.dtoTkA} defaultColor={c.esEspecial ? '#e69b05' : '#7ca19b'} />
-                  <EditableCell field="promoTkB" value={rc.dtoTkB} defaultColor={c.esEspecial ? '#e69b05' : '#7ca19b'} extraStyle={bdr} />
+                  <EditableCell field="benefMat" value={benefMat} defaultColor="var(--color-text-light)" />
+                  {!is1B && <EditableCell field="benefTkA" value={benefTkA} defaultColor="var(--color-highlight)" />}
+                  <EditableCell field="benefTkB" value={benefTkB} defaultColor="var(--color-highlight)" borderR />
+                  <EditableCell field="promoMat" value={rc.dtoMat} defaultColor={c.esEspecial && c.dtoMat !== c.dtoTkA ? 'var(--color-gold)' : 'var(--color-text-light)'} />
+                  {!is1B && <EditableCell field="promoTkA" value={rc.dtoTkA} defaultColor={c.esEspecial ? 'var(--color-gold)' : 'var(--color-text-light)'} />}
+                  <EditableCell field="promoTkB" value={rc.dtoTkB} defaultColor={c.esEspecial ? 'var(--color-gold)' : 'var(--color-text-light)'} borderR />
                   {showLista && <>
-                    <td className="text-right px-2 py-2.5 tabular-nums" style={{ color: '#7ca19b' }}>{fmt(c.matLista)}</td>
-                    <td className="text-right px-2 py-2.5 tabular-nums" style={{ color: '#7ca19b' }}>{fmt(c.tkaLista)}</td>
-                    <td className="text-right px-2 py-2.5 tabular-nums" style={{ color: '#7ca19b', ...bdr }}>{fmt(c.tkbLista)}</td>
+                    <td className="text-right px-2 py-3 tabular-nums text-[var(--color-text-light)]">{fmt(c.matLista)}</td>
+                    {!is1B && <td className="text-right px-2 py-3 tabular-nums text-[var(--color-text-light)]">{fmt(c.tkaLista)}</td>}
+                    <td className="text-right px-2 py-3 tabular-nums text-[var(--color-text-light)] border-r border-white/5">{fmt(c.tkbLista)}</td>
                   </>}
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#00c7b1' }}>{fmt(rc.matFinal)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#00c7b1' }}>{fmt(rc.tkaFinal)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#00c7b1', ...bdr }}>{fmt(rc.tkbFinal)}</td>
-                  <td className="text-right px-2 py-2.5 font-bold tabular-nums" style={{ color: hasOverride ? '#ef4444' : '#fff', ...bdr }}>{fmt(rc.total)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#e69b05', ...bdr }}>{fmt(rc.cuota3)}</td>
-                  <td className="text-right px-2 py-2.5 font-semibold tabular-nums" style={{ color: '#e69b05' }}>{fmt(rc.cuota6)}</td>
+                  <td className={`text-right px-2 py-3 font-semibold tabular-nums ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}>{fmt(rc.matFinal)}</td>
+                  {!is1B && <td className={`text-right px-2 py-3 font-semibold tabular-nums ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}>{fmt(rc.tkaFinal)}</td>}
+                  <td className={`text-right px-2 py-3 font-semibold tabular-nums border-r border-white/5 ${hasOverride ? 'text-red-400' : 'text-[var(--color-highlight)]'}`}>{fmt(rc.tkbFinal)}</td>
+                  <td className={`text-right px-3 py-3 font-bold tabular-nums border-r border-white/5 ${hasOverride ? 'text-red-400' : 'text-white'}`}>{fmt(rc.total)}</td>
+                  <td className="text-right px-3 py-3 font-semibold tabular-nums text-[var(--color-gold)] border-r border-white/5">{fmt(rc.cuota3)}</td>
+                  <td className="text-right px-3 py-3 font-semibold tabular-nums text-[var(--color-gold)]">{fmt(rc.cuota6)}</td>
                 </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
+
+        {/* ── Descuentos (colapsable) ── */}
+        <div className="mt-8">
+          <button
+            onClick={() => setShowDescuentos(v => !v)}
+            className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-light)] hover:text-white transition-colors"
+          >
+            <span className={`transition-transform duration-200 ${showDescuentos ? 'rotate-90' : ''}`}>▶</span>
+            Descuentos y promociones
+            {(data.promoEspecialMat > 0 || data.promoEspecialTkA > 0 || data.promoEspecialTkB > 0) && (
+              <span className="text-[0.65rem] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 font-bold">PROMO ACTIVA</span>
+            )}
+          </button>
+
+          {showDescuentos && (
+            <div className="mt-4 space-y-4">
+              {/* Cards */}
+              <div className={`grid grid-cols-1 ${is1B ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-4`}>
+                <div className="rounded-2xl p-5 bg-[var(--color-card-bg)] border border-[var(--color-highlight)]/10">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-widest text-[var(--color-text-light)] mb-2">Sede Local (Amigo referido)</p>
+                  <p className="text-4xl font-black text-[var(--color-highlight)]">{data.sede}%</p>
+                  <p className="text-xs mt-2 text-[var(--color-text-light)]">{is1B ? 'Descuento en cuota' : 'Descuento en cuotas (TkA y TkB)'}</p>
+                </div>
+
+                <div className="rounded-2xl p-5 bg-[var(--color-card-bg)] border border-[var(--color-highlight)]/10">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-widest text-[var(--color-text-light)] mb-2">{is1B ? 'Promo base (Siglo 21)' : 'Siglo 21 (Promocion general)'}</p>
+                  <div className="flex gap-6">
+                    <div>
+                      <p className="text-4xl font-black text-[var(--color-highlight)]">{Math.round(data.promoEspecialMat * 100)}%</p>
+                      <p className="text-[0.65rem] text-[var(--color-text-light)] mt-1">Matricula</p>
+                    </div>
+                    {is1B ? (
+                      <div>
+                        <p className="text-4xl font-black text-[var(--color-highlight)]">{Math.round(data.promoEspecialTkB * 100)}%</p>
+                        <p className="text-[0.65rem] text-[var(--color-text-light)] mt-1">Cuota</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-4xl font-black text-[var(--color-highlight)]">{data.siglo21}%</p>
+                        <p className="text-[0.65rem] text-[var(--color-text-light)] mt-1">Totalidad</p>
+                      </div>
+                    )}
+                  </div>
+                  {data.promoDesde && (
+                    <p className="text-xs mt-3 text-[var(--color-text-light)]">{data.promoDesde} → {data.promoHasta}</p>
+                  )}
+                </div>
+
+                {is1B && (
+                  <div className="rounded-2xl p-5 bg-[var(--color-card-bg)] border border-[var(--color-secondary-highlight)]/15">
+                    <p className="text-[0.65rem] font-bold uppercase tracking-widest text-[var(--color-secondary-highlight)] mb-2">Beneficio Provincial (BSAS/CABA)</p>
+                    <div className="flex gap-6">
+                      <div>
+                        <p className={`text-4xl font-black ${data.beneficio1bMat > 0 ? 'text-[var(--color-secondary-highlight)]' : 'text-[var(--color-text-light)]'}`}>{Math.round(data.beneficio1bMat * 100)}%</p>
+                        <p className="text-[0.65rem] text-[var(--color-text-light)] mt-1">Matricula</p>
+                      </div>
+                      <div>
+                        <p className={`text-4xl font-black ${data.beneficio1bTk > 0 ? 'text-[var(--color-secondary-highlight)]' : 'text-[var(--color-text-light)]'}`}>{Math.round(data.beneficio1bTk * 100)}%</p>
+                        <p className="text-[0.65rem] text-[var(--color-text-light)] mt-1">Cuota</p>
+                      </div>
+                    </div>
+                    <p className="text-xs mt-3 text-[var(--color-text-light)]">
+                      Total Mat: {Math.round((data.promoEspecialMat + data.beneficio1bMat) * 100)}% | Cuota: {Math.round((data.promoEspecialTkB + data.beneficio1bTk) * 100)}%
+                    </p>
+                  </div>
+                )}
+
+                <div className="rounded-2xl p-5 bg-[var(--color-card-bg)] border border-[var(--color-gold)]/15">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-widest text-[var(--color-gold)] mb-1">Financiacion Visa/Master</p>
+                  <p className="text-sm font-bold text-white mb-3">Visa y Mastercard - Otros Bancos</p>
+                  <div className="flex gap-6">
+                    <div>
+                      <p className="text-xs text-[var(--color-text-light)]">3 cuotas</p>
+                      <p className={`text-2xl font-black ${data.recargo3 > 0 ? 'text-[var(--color-gold)]' : 'text-[var(--color-highlight)]'}`}>
+                        {data.recargo3 > 0 ? `+${data.recargo3}%` : 'Sin interes'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[var(--color-text-light)]">6 cuotas</p>
+                      <p className={`text-2xl font-black ${data.recargo6 > 0 ? 'text-[var(--color-gold)]' : 'text-[var(--color-highlight)]'}`}>
+                        {data.recargo6 > 0 ? `+${data.recargo6}%` : 'Sin interes'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Promo especial global */}
+              {(data.promoEspecialMat > 0 || data.promoEspecialTkA > 0 || data.promoEspecialTkB > 0) && (
+                <div className="rounded-2xl p-5 flex items-start gap-4 bg-red-500/5 border border-red-500/20">
+                  <span className="text-2xl mt-0.5">🔥</span>
+                  <div>
+                    <p className="text-sm font-bold text-red-400 uppercase tracking-wider">Promo especial global activa</p>
+                    <div className="flex gap-3 mt-3">
+                      {data.promoEspecialMat > 0 && (() => {
+                        const total = Math.round(data.promoEspecialMat * 100);
+                        const pura = total - data.siglo21;
+                        return (
+                          <div className="px-4 py-3 rounded-xl bg-red-500/10">
+                            <p className="text-xs text-[var(--color-text-light)]">Matricula</p>
+                            <p className="text-xl font-black text-red-400">{total}%</p>
+                            <p className="text-[0.65rem] text-[var(--color-text-light)]">{data.siglo21}% Siglo + {pura}% Promo</p>
+                          </div>
+                        );
+                      })()}
+                      {data.promoEspecialTkA > 0 && (() => {
+                        const total = Math.round(data.promoEspecialTkA * 100);
+                        const pura = total - data.siglo21 - data.sede;
+                        return (
+                          <div className="px-4 py-3 rounded-xl bg-red-500/10">
+                            <p className="text-xs text-[var(--color-text-light)]">Ticket A</p>
+                            <p className="text-xl font-black text-red-400">{total}%</p>
+                            <p className="text-[0.65rem] text-[var(--color-text-light)]">{data.siglo21}% Siglo + {data.sede}% Sede + {pura}% Promo</p>
+                          </div>
+                        );
+                      })()}
+                      {data.promoEspecialTkB > 0 && (() => {
+                        const total = Math.round(data.promoEspecialTkB * 100);
+                        const pura = total - data.siglo21 - data.sede;
+                        return (
+                          <div className="px-4 py-3 rounded-xl bg-red-500/10">
+                            <p className="text-xs text-[var(--color-text-light)]">Ticket B</p>
+                            <p className="text-xl font-black text-red-400">{total}%</p>
+                            <p className="text-[0.65rem] text-[var(--color-text-light)]">{data.siglo21}% Siglo + {data.sede}% Sede + {pura}% Promo</p>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs mt-3 text-[var(--color-text-light)]">Editar desde Supabase → precios_meta</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Especiales */}
+              {data.especiales.length > 0 && (
+                <div className="rounded-2xl p-5 bg-[var(--color-card-bg)] border border-[var(--color-gold)]/15">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-widest text-[var(--color-gold)] mb-4">
+                    Descuentos especiales ({data.especiales.length} carreras)
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {data.especiales.map(e => (
+                      <div key={e.nombre} className="flex justify-between items-center px-4 py-2.5 rounded-xl bg-[var(--color-gold)]/5">
+                        <span className="text-sm font-semibold text-white truncate mr-3">{e.nombre}</span>
+                        <span className="text-xs whitespace-nowrap text-[var(--color-gold)]">
+                          Mat={pct(e.dtoMat)} A={pct(e.dtoTkA)} B={pct(e.dtoTkB)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
