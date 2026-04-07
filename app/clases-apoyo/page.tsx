@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ClasesApoyoPage from '@/components/clases-apoyo/clases-apoyo-page';
 import { supabase } from '@/lib/supabase';
+import { materiaSchema, parseArray } from '@/lib/schemas';
 import './clases-apoyo.css';
 
 export const metadata: Metadata = {
@@ -65,10 +66,12 @@ export default async function Page() {
     .eq('activa', true)
     .order('orden', { ascending: true });
 
+  const materiasValidadas = parseArray(materiaSchema, materias ?? [], 'materias');
+
   return (
     <ClasesApoyoPage
       calendarWeeks={calendarWeeks}
-      materiasData={materias ?? []}
+      materiasData={materiasValidadas}
     />
   );
 }

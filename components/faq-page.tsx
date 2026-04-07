@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Turnstile } from 'react-turnstile';
-import { WhatsAppIcon, FacebookIcon, InstagramIcon } from './icons';
+import { WhatsAppIcon, FacebookIcon, InstagramIcon, ChevronDownIcon } from './icons';
 import { supabase } from '@/lib/supabase';
 
 /* ── Data ──────────────────────────────────────────────── */
@@ -21,11 +21,7 @@ const PIN_SVG = (
   </svg>
 );
 
-const CHEVRON_SVG = (
-  <svg className="faq-chevron w-6 h-6" style={{ color: 'var(--color-highlight)' }} fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
-    <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
-  </svg>
-);
+const CHEVRON_SVG = <ChevronDownIcon className="faq-chevron w-6 h-6" style={{ color: 'var(--color-highlight)' }} />;
 
 function ZonaCard({ name }: { name: string }) {
   return (
@@ -319,9 +315,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
               </a>
             </div>
           )}
-          <svg className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: 'var(--color-highlight)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
-            <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
-          </svg>
+          <ChevronDownIcon className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: 'var(--color-highlight)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
         </div>
         <div ref={contentRef} className="faq-content">
           {item.content}
@@ -337,9 +331,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
         <span className="font-semibold flex-1 min-w-0 leading-snug text-sm md:text-lg" style={{ color: '#fff' }}>
           {questionLines.map((line, i) => <span key={i}>{line}{i < questionLines.length - 1 && <br />}</span>)}
         </span>
-        <svg className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: 'var(--color-highlight)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
-          <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
-        </svg>
+        <ChevronDownIcon className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: 'var(--color-highlight)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
       <div ref={contentRef} className="faq-content">
         {item.content}
@@ -418,6 +410,20 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
 
+  async function verifyToken(): Promise<boolean> {
+    try {
+      const res = await fetch('/api/verify-turnstile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+      const data = await res.json();
+      return data.success === true;
+    } catch {
+      return false;
+    }
+  }
+
   async function submitPub() {
     if (!contactPub.trim()) { setErrorPub(true); return; }
     if (!checkRateLimit()) { setRateLimited(true); return; }
@@ -426,6 +432,8 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const c = contactPub.trim().slice(0, 200);
     setErrorPub(false);
     setSubmitting(true);
+    const verified = await verifyToken();
+    if (!verified) { setErrorPub(true); setSubmitting(false); setTurnstileToken(''); return; }
     const { error } = await supabase.from('faq_preguntas').insert({
       titulo: t,
       descripcion: d,
@@ -449,6 +457,8 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const n = name.trim().slice(0, 80) || null;
     setErrorPriv(false);
     setSubmitting(true);
+    const verified = await verifyToken();
+    if (!verified) { setErrorPriv(true); setSubmitting(false); setTurnstileToken(''); return; }
     const { error } = await supabase.from('faq_preguntas').insert({
       titulo: t,
       descripcion: d,
@@ -465,10 +475,37 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     setSlide(3);
   }
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { handleClose(); return; }
+      if (e.key === 'Tab') {
+        const modal = modalRef.current;
+        if (!modal) return;
+        const focusable = modal.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }
+    };
     document.addEventListener('keydown', handleKey);
+    // Enfocar el primer elemento al abrir
+    requestAnimationFrame(() => {
+      const modal = modalRef.current;
+      if (modal) {
+        const first = modal.querySelector<HTMLElement>('button, input, textarea');
+        first?.focus();
+      }
+    });
     return () => document.removeEventListener('keydown', handleKey);
   });
 
@@ -476,7 +513,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: 'rgba(0,10,10,0.82)' }} role="dialog" aria-modal="true" onClick={e => { if (e.target === e.currentTarget) handleClose(); }}>
-      <div className="w-full max-w-[480px] rounded-2xl overflow-hidden relative" style={{ background: '#122e2e', border: '1px solid rgba(5,140,112,0.5)', boxShadow: '0 24px 64px rgba(0,0,0,0.55)' }}>
+      <div ref={modalRef} className="w-full max-w-[480px] rounded-2xl overflow-hidden relative" style={{ background: '#122e2e', border: '1px solid rgba(5,140,112,0.5)', boxShadow: '0 24px 64px rgba(0,0,0,0.55)' }}>
         {/* Header */}
         <div className="flex items-center gap-3 px-8 py-5 rounded-t-2xl relative" style={{ background: 'linear-gradient(135deg, #012a1f 0%, #0d3040 100%)', borderBottom: '1px solid rgba(0,199,177,0.2)' }}>
           <button type="button" onClick={handleClose} aria-label="Cerrar"
@@ -658,9 +695,7 @@ function UserQuestionItem({ q, displayIndex, isOpen, onToggle }: { q: UserQuesti
           {displayIndex}
         </span>
         <span className="font-semibold flex-1 min-w-0 leading-snug text-sm md:text-lg" style={{ color: '#fff' }}>{q.titulo}</span>
-        <svg className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: '#37b5aa', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
-          <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
-        </svg>
+        <ChevronDownIcon className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: '#37b5aa', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
       <div ref={contentRef} className="faq-content">
         <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>

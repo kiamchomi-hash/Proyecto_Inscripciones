@@ -63,6 +63,27 @@ function ContactForm() {
     setSubmitting(true);
     setError('');
 
+    // Verificar token Turnstile server-side
+    try {
+      const verifyRes = await fetch('/api/verify-turnstile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyData.success) {
+        setError('No se pudo verificar el CAPTCHA. Intentá de nuevo.');
+        setSubmitting(false);
+        setTurnstileToken('');
+        return;
+      }
+    } catch {
+      setError('Error de conexión. Intentá de nuevo.');
+      setSubmitting(false);
+      setTurnstileToken('');
+      return;
+    }
+
     const { error: insertError } = await supabase.from('consultas').insert({
       carrera: null,
       tipo: null,

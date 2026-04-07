@@ -75,7 +75,6 @@ export interface Carrera {
   seccion_duracion: string | null;
   seccion_modalidad: string | null;
   plan_estudios: string | null;
-  imagenes: string[];
   slides: CarreraSlide[] | null;
   orden: number;
   activa: boolean;
@@ -235,6 +234,8 @@ function carreraFullName(carrera: Pick<Carrera, 'nombre' | 'prefix'>): string {
   if (p.includes('maestría') || p.includes('maestria')) return `Maestría en ${nombre}`;
   if (p.includes('especialización') || p.includes('especializacion')) return `Especialización en ${nombre}`;
   if (p.includes('diplomatura')) return `Diplomatura en ${nombre}`;
+  if (p.includes('certificado')) return `Certificado en ${nombre}`;
+  if (p.includes('curso')) return `Curso en ${nombre}`;
   return nombre;
 }
 

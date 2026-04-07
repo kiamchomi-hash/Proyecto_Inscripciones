@@ -377,16 +377,44 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
     else { setSubmittedDays(rows.map(r => selectedDays.find(d => d.num === r.dias[0])!)); setMode('done'); onDone(); }
   };
 
-  const handleTurnstileVerify = (token: string) => {
-    setTurnstileToken(token);
-    const action = pendingSubmitRef.current;
-    if (action === 'same') handleChooseSame();
-    else if (action === 'perday') handleSubmitPerDay();
-    pendingSubmitRef.current = null;
+  const verifyTurnstileServer = async (token: string): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/verify-turnstile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      return data.success === true;
+    } catch {
+      return false;
+    }
   };
 
-  const requestSubmit = (action: 'same' | 'perday') => {
+  const handleTurnstileVerify = async (token: string) => {
+    setTurnstileToken(token);
+    const action = pendingSubmitRef.current;
+    pendingSubmitRef.current = null;
+    const verified = await verifyTurnstileServer(token);
+    if (!verified) {
+      setError('No se pudo verificar el CAPTCHA. Intentá de nuevo.');
+      setTurnstileToken('');
+      setShowTurnstile(false);
+      return;
+    }
+    if (action === 'same') handleChooseSame();
+    else if (action === 'perday') handleSubmitPerDay();
+  };
+
+  const requestSubmit = async (action: 'same' | 'perday') => {
     if (turnstileToken) {
+      const verified = await verifyTurnstileServer(turnstileToken);
+      if (!verified) {
+        setError('No se pudo verificar el CAPTCHA. Intentá de nuevo.');
+        setTurnstileToken('');
+        setShowTurnstile(false);
+        return;
+      }
       if (action === 'same') handleChooseSame();
       else handleSubmitPerDay();
     } else {
