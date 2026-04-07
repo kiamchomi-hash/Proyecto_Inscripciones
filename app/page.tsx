@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
 import type { Carrera, Descuento } from '@/components/index/types';
+import { carreraSchema, descuentoSchema, preciosMetaSchema, parseArray } from '@/lib/schemas';
 import Hero from '@/components/index/hero';
 import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
@@ -14,6 +15,9 @@ import './index.css';
 export const metadata: Metadata = {
   title: `Universidad Siglo 21 CAU Villa Lugano | Oferta académica ${new Date().getFullYear()}`,
   description: 'Oferta académica Universidad Siglo 21 en Villa Lugano. Ideal para Zona Sur y Oeste: Celina, Madero, Tapiales, Soldati, Mataderos, Riachuelo, Budge.',
+  alternates: {
+    canonical: 'https://www.siglo21sur.com',
+  },
 };
 
 export const revalidate = 3600; // revalidate every hour
@@ -32,23 +36,27 @@ export default async function HomePage() {
     console.error('Error fetching descuentos:', descError.message);
   }
 
-  // Promo especial global: promo_especial_* guarda el % TOTAL (ej: 0.60 = 60%).
-  // El slide espera la parte PURA (sin sede/siglo), así que restamos.
-  const descuentosData: Descuento[] = descuentos || [];
+  // Validar datos con Zod
+  const carrerasValidadas = parseArray(carreraSchema, carreras || [], 'carreras') as Carrera[];
+  const descuentosData = parseArray(descuentoSchema, descuentos || [], 'descuentos') as Descuento[];
+  const metaValidado = meta ? preciosMetaSchema.safeParse(meta) : null;
+  if (metaValidado && !metaValidado.success) {
+    console.warn('[Zod] precios_meta inválido:', metaValidado.error.issues);
+  }
+  const metaData = metaValidado?.success ? metaValidado.data : meta;
   const sedeVal = descuentosData.find(d => d.tipo === 'sede')?.porcentaje ?? 0;
   const sigloVal = descuentosData.find(d => d.tipo === 'universidad')?.porcentaje ?? 0;
 
-  const periodoActivo = meta?.periodo_activo || '1A';
+  const periodoActivo = metaData?.periodo_activo || '1A';
   let promoGlobalMat: number, promoGlobalTkA: number, promoGlobalTkB: number;
   if (periodoActivo === '1B') {
-    // 1B: total = promo base + beneficio provincial (aditivo)
-    promoGlobalMat = (Number(meta?.promo_especial_matricula_1b) || 0) + (Number(meta?.beneficio_1b_mat) || 0);
-    promoGlobalTkA = 0; // No aplica en 1B
-    promoGlobalTkB = (Number(meta?.promo_especial_tk_1b) || 0) + (Number(meta?.beneficio_1b_tk) || 0);
+    promoGlobalMat = (Number(metaData?.promo_especial_matricula_1b) || 0) + (Number(metaData?.beneficio_1b_mat) || 0);
+    promoGlobalTkA = 0;
+    promoGlobalTkB = (Number(metaData?.promo_especial_tk_1b) || 0) + (Number(metaData?.beneficio_1b_tk) || 0);
   } else {
-    promoGlobalMat = Number(meta?.promo_especial_matricula) || 0;
-    promoGlobalTkA = Number(meta?.promo_especial_tka) || 0;
-    promoGlobalTkB = Number(meta?.promo_especial_tkb) || 0;
+    promoGlobalMat = Number(metaData?.promo_especial_matricula) || 0;
+    promoGlobalTkA = Number(metaData?.promo_especial_tka) || 0;
+    promoGlobalTkB = Number(metaData?.promo_especial_tkb) || 0;
   }
   const hasPromoGlobal = promoGlobalMat > 0 || promoGlobalTkA > 0 || promoGlobalTkB > 0;
 
@@ -57,7 +65,7 @@ export default async function HomePage() {
   const puraTkA = Math.max(promoGlobalTkA * 100 - sigloVal - sedeVal, 0);
   const puraTkB = Math.max(promoGlobalTkB * 100 - sigloVal - sedeVal, 0);
 
-  const carrerasData: Carrera[] = (carreras || []).map((c: Carrera) => {
+  const carrerasData: Carrera[] = carrerasValidadas.map((c: Carrera) => {
     if (!hasPromoGlobal) return c;
     const esp = c.descuento_especial;
     return {

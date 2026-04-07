@@ -14,6 +14,14 @@ export function FacebookIcon({ className = "w-5 h-5" }: { className?: string }) 
   );
 }
 
+export function ChevronDownIcon({ className = "w-6 h-6", style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg className={className} style={style} fill="currentColor" viewBox="0 0 512 512" aria-hidden="true">
+      <path d="M256 294.1L383 167c9.4-9.4 24.6-9.4 33.9 0s9.3 24.6 0 34L273 345c-9.1 9.1-23.7 9.3-33.1.7L95 201.1c-4.7-4.7-7-10.9-7-17s2.3-12.3 7-17c9.4-9.4 24.6-9.4 33.9 0l127.1 127z" />
+    </svg>
+  );
+}
+
 export function InstagramIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">

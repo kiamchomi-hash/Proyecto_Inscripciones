@@ -456,7 +456,8 @@
   .sidebar-column {
     display: block;
     position: sticky;
-    top: calc(var(--navbar-height, 60px) + 8rem);
+    top: calc(var(--navbar-height, 60px) + 12rem);
+    margin-top: 5rem;
     height: fit-content;
     z-index: 1;
     align-self: start;

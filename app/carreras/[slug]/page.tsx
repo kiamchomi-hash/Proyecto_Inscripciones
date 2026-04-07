@@ -40,11 +40,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const title = `${carrera.nombre} | Universidad Siglo 21 CAU Villa Lugano`;
   const description = `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.nivel} · ${carrera.duracion}. Modalidad virtual, cerca de Zona Sur y Oeste.`;
 
+  const canonicalSlug = carreraToSlug(carrera);
+
   return {
     title,
     description,
     keywords: [carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
-    openGraph: { title, description },
+    alternates: {
+      canonical: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
+    },
+    openGraph: { title, description, url: `https://www.siglo21sur.com/carreras/${canonicalSlug}` },
     twitter: { card: 'summary_large_image', title, description },
   };
 }

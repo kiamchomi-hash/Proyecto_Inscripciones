@@ -15,6 +15,9 @@ export async function generateMetadata({ params }: { params: Promise<{ materia: 
   return {
     title: `${label} - Clases de Apoyo`,
     description: `Clases de apoyo de ${label} en Villa Lugano. Solicitá tu clase particular.`,
+    alternates: {
+      canonical: `https://www.siglo21sur.com/clases-apoyo/${materia}`,
+    },
   };
 }
 
