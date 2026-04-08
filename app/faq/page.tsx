@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import FaqPageContent from '@/components/faq-page';
 import { supabase } from '@/lib/supabase';
-import { faqPreguntaSchema, parseArray } from '@/lib/schemas';
+import type { FaqPregunta } from '@/lib/types';
 import './faq.css';
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default async function FaqPage() {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  const faqs = parseArray(faqPreguntaSchema, data ?? [], 'faq_preguntas');
+  const faqs = (data ?? []) as FaqPregunta[];
 
   const faqSchema = {
     "@context": "https://schema.org",

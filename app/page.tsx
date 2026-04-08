@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
 import type { Carrera, Descuento } from '@/components/index/types';
-import { carreraSchema, descuentoSchema, preciosMetaSchema, parseArray } from '@/lib/schemas';
+import type { PreciosMeta } from '@/lib/types';
 import Hero from '@/components/index/hero';
 import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
@@ -36,14 +36,9 @@ export default async function HomePage() {
     console.error('Error fetching descuentos:', descError.message);
   }
 
-  // Validar datos con Zod
-  const carrerasValidadas = parseArray(carreraSchema, carreras || [], 'carreras') as Carrera[];
-  const descuentosData = parseArray(descuentoSchema, descuentos || [], 'descuentos') as Descuento[];
-  const metaValidado = meta ? preciosMetaSchema.safeParse(meta) : null;
-  if (metaValidado && !metaValidado.success) {
-    console.warn('[Zod] precios_meta inválido:', metaValidado.error.issues);
-  }
-  const metaData = metaValidado?.success ? metaValidado.data : meta;
+  const carrerasValidadas = (carreras || []) as Carrera[];
+  const descuentosData = (descuentos || []) as Descuento[];
+  const metaData = meta as PreciosMeta | null;
   const sedeVal = descuentosData.find(d => d.tipo === 'sede')?.porcentaje ?? 0;
   const sigloVal = descuentosData.find(d => d.tipo === 'universidad')?.porcentaje ?? 0;
 
