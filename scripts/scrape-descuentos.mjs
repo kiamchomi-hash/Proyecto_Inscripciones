@@ -145,6 +145,20 @@ const rawCellVal = (v) => {
   return v;
 };
 
+/**
+ * Verifica si una fila está vigente. Primero intenta leer el valor literal
+ * de la columna "vigente"; si es una fórmula sin resultado pre-calculado,
+ * compara las fechas desde/hasta contra la fecha actual.
+ */
+function isVigente(vigenteVal, desde, hasta) {
+  if (vigenteVal === 'Vigente') return true;
+  if (!desde || !hasta) return false;
+  const hoy = new Date().toISOString().split('T')[0];
+  const dDesde = (desde instanceof Date ? desde : new Date(desde)).toISOString().split('T')[0];
+  const dHasta = (hasta instanceof Date ? hasta : new Date(hasta)).toISOString().split('T')[0];
+  return hoy >= dDesde && hoy <= dHasta;
+}
+
 // URL directa al Excel embebido (sin necesidad de contraseña Wix)
 const EMBED_URL = 'https://1drv.ms/x/c/5a51a3751f7943fc/IQRb9AL0kmd3T7Pzx07bkl1LAagdLmm3olCeulRnTx_Rwek?em=2&AllowTyping=True&Item=%27Distancia%20CAU%20N%27!A1%3AP29&wdHideGridlines=True&wdDownloadButton=True&wdInConfigurator=True';
 
@@ -281,15 +295,15 @@ async function parseDescuentos(buffer) {
   const vigentesEspecial = [];
 
   for (let row = 4; row <= 1271; row++) {
-    const vigente = cellVal(row, COL.Vigente);
-    if (vigente !== 'Vigente') continue;
-
     const segmento = cellVal(row, COL.segmento);
     if (segmento !== CAU_SEGMENTO) continue;
 
-    const carrera = cellVal(row, COL.carrera);
     const desde = cellVal(row, COL.desde);
     const hasta = cellVal(row, COL.hasta);
+    const vigente = cellVal(row, COL.Vigente);
+    if (!isVigente(vigente, desde, hasta)) continue;
+
+    const carrera = cellVal(row, COL.carrera);
     const dDesde = desde instanceof Date ? desde : new Date(desde);
     const dHasta = hasta instanceof Date ? hasta : new Date(hasta);
 
@@ -538,8 +552,6 @@ async function parseDescuentos1B(buffer) {
   // Cols: 16=Vigente, 17=segmento, 18=carrera, 19=desde, 20=hasta, 21=Matrícula, 22=Ticket A
   let promoBase = null;
   for (let row = 8; row <= 33; row++) {
-    const vigente = cv(row, 16);
-    if (vigente !== 'Vigente') continue;
     const seg = cv(row, 17);
     if (seg !== CAU_SEGMENTO) continue;
     const carrera = cv(row, 18);
@@ -547,6 +559,8 @@ async function parseDescuentos1B(buffer) {
 
     const desde = cv(row, 19);
     const hasta = cv(row, 20);
+    const vigente = cv(row, 16);
+    if (!isVigente(vigente, desde, hasta)) continue;
     const dDesde = desde instanceof Date ? desde : new Date(desde);
     const dHasta = hasta instanceof Date ? hasta : new Date(hasta);
 
@@ -564,14 +578,22 @@ async function parseDescuentos1B(buffer) {
     return null;
   }
 
-  // adicionalProvinciaB: cols 49=provincia, 53=Matrícula, 54=Ticket A, 57=Vigente
+  // adicionalProvinciaB: cols 48=vigente(fórmula), 49=provincia, 50=carrera,
+  // 51=desde, 52=hasta, 53=Matrícula, 54=Ticket A, 55=Ticket B
+  // La columna "vigente" (48) es una fórmula que ExcelJS no evalúa,
+  // así que verificamos vigencia comparando fechas directamente.
+  const hoy = new Date().toISOString().split('T')[0];
   let adicionalMat = 0;
   let adicionalTk = 0;
-  for (let row = 17; row <= 156; row++) {
-    const vigente = cv(row, 57);
-    if (vigente !== 'Vigente') continue;
+  for (let row = 17; row <= 500; row++) {
     const prov = cv(row, 49);
     if (prov !== 'BUENOS AIRES') continue;
+    const desde = cv(row, 51);
+    const hasta = cv(row, 52);
+    if (!desde || !hasta) continue;
+    const dDesde = (desde instanceof Date ? desde : new Date(desde)).toISOString().split('T')[0];
+    const dHasta = (hasta instanceof Date ? hasta : new Date(hasta)).toISOString().split('T')[0];
+    if (hoy < dDesde || hoy > dHasta) continue;
     adicionalMat = Number(cv(row, 53)) || 0;
     adicionalTk = Number(cv(row, 54)) || 0;
     break;
