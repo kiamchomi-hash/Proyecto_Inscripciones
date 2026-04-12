@@ -96,16 +96,11 @@ export default function AdminDashboard() {
     setSolicitudes(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
   };
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-    router.replace('/admin/login');
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a1612' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--admin-bg)' }}>
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-[#00c7b1] border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[var(--admin-accent)] border-t-transparent rounded-full animate-spin" />
           <span className="text-white/50 text-sm">Cargando...</span>
         </div>
       </div>
@@ -114,8 +109,6 @@ export default function AdminDashboard() {
 
   const pendientes = solicitudes.filter(s => s.estado === 'pendiente');
   const aprobados = solicitudes.filter(s => s.estado === 'aprobado');
-
-  const isDev = process.env.NODE_ENV === 'development';
 
   const cards = [
     {
@@ -138,8 +131,7 @@ export default function AdminDashboard() {
         </svg>
       ),
     },
-    // Solo visible en desarrollo local
-    ...(isDev ? [{
+    {
       title: 'Alumnos CAU',
       description: 'Listado de alumnos, datos personales, analíticos y pagos',
       href: '/admin/alumnos',
@@ -148,26 +140,13 @@ export default function AdminDashboard() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H5.228A2 2 0 013 17.16V15.87a4.5 4.5 0 018.243-2.664M12.75 7.5a3 3 0 11-6 0 3 3 0 016 0zm8.25 2.25a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
         </svg>
       ),
-    }] : []),
+    },
   ];
 
   const getMateriaLabel = (id: string | null) => materias.find(m => m.id === id)?.label ?? '—';
 
   return (
-    <div className="min-h-screen" style={{ background: '#0a1612' }}>
-      <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-white/5" style={{ background: 'rgba(10,22,18,0.85)' }}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black" style={{ background: 'linear-gradient(135deg, #00c7b1, #058c70)' }}>A</div>
-            <div>
-              <h1 className="text-sm font-bold text-white leading-none">Panel Admin</h1>
-              <p className="text-[0.6rem] text-white/30 mt-0.5">CAU Villa Lugano</p>
-            </div>
-          </div>
-          <button onClick={logout} className="text-[0.65rem] text-white/30 hover:text-red-400 transition cursor-pointer">Salir</button>
-        </div>
-      </header>
-
+    <div className="min-h-screen" style={{ background: 'var(--admin-bg)' }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-12">
         {/* Navegación */}
         <div>
@@ -177,14 +156,14 @@ export default function AdminDashboard() {
               <button
                 key={card.href}
                 onClick={() => router.push(card.href)}
-                className="group p-6 rounded-2xl border border-white/10 text-left transition hover:border-[#00c7b1]/40 hover:bg-white/[0.03] cursor-pointer"
-                style={{ background: 'var(--color-card-bg)' }}
+                className="group p-6 rounded-2xl border text-left transition hover:bg-white/[0.03] cursor-pointer"
+                style={{ background: 'var(--admin-card)', borderColor: 'var(--admin-border)' }}
               >
-                <div className="text-[#00c7b1] mb-4 group-hover:scale-110 transition-transform">
+                <div className="mb-4 group-hover:scale-110 transition-transform" style={{ color: 'var(--admin-accent)' }}>
                   {card.icon}
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">{card.title}</h3>
-                <p className="text-sm text-white/40">{card.description}</p>
+                <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>{card.description}</p>
               </button>
             ))}
           </div>
@@ -199,7 +178,7 @@ export default function AdminDashboard() {
             </h2>
             <div className="space-y-3">
               {pendientes.map(s => (
-                <div key={s.id} className="p-4 rounded-xl border border-orange-500/20" style={{ background: 'var(--color-card-bg)' }}>
+                <div key={s.id} className="p-4 rounded-xl border border-orange-500/20" style={{ background: 'var(--admin-card)' }}>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-white truncate">{s.nombre || 'Sin nombre'}</p>
@@ -215,7 +194,7 @@ export default function AdminDashboard() {
                       <select
                         value={s.materia_id ?? ''}
                         onChange={e => updateField(s.id, 'materia_id', e.target.value || null)}
-                        className="w-full p-2 rounded-lg bg-[#0f2825] text-white text-xs border border-white/10 outline-none focus:border-[#00c7b1] transition cursor-pointer"
+                        className="w-full p-2 rounded-lg bg-[var(--admin-input)] text-white text-xs border border-white/10 outline-none focus:border-[var(--admin-accent)] transition cursor-pointer"
                       >
                         <option value="">Seleccionar materia...</option>
                         {materias.map(m => (
@@ -228,7 +207,7 @@ export default function AdminDashboard() {
                       <select
                         value={s.rol}
                         onChange={e => updateField(s.id, 'rol', e.target.value)}
-                        className="w-full p-2 rounded-lg bg-[#0f2825] text-white text-xs border border-white/10 outline-none focus:border-[#00c7b1] transition cursor-pointer"
+                        className="w-full p-2 rounded-lg bg-[var(--admin-input)] text-white text-xs border border-white/10 outline-none focus:border-[var(--admin-accent)] transition cursor-pointer"
                       >
                         <option value="profesor">Profesor</option>
                         <option value="admin">Admin</option>
@@ -239,7 +218,7 @@ export default function AdminDashboard() {
                         onClick={() => aprobar(s.id, s.materia_id, s.rol)}
                         disabled={saving === s.id || (!s.materia_id && s.rol === 'profesor')}
                         className="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold text-white transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                        style={{ background: 'linear-gradient(135deg, #00c7b1, #058c70)' }}
+                        style={{ background: 'var(--admin-accent)' }}
                       >
                         {saving === s.id ? '...' : 'Aprobar'}
                       </button>
@@ -267,14 +246,14 @@ export default function AdminDashboard() {
           {aprobados.length === 0 ? (
             <p className="text-sm text-white/30">No hay profesores aprobados.</p>
           ) : (
-            <div className="rounded-xl border border-white/10 overflow-hidden" style={{ background: 'var(--color-card-bg)' }}>
+            <div className="rounded-xl border overflow-hidden" style={{ background: 'var(--admin-card)', borderColor: 'var(--admin-border)' }}>
               {aprobados.map((s, i) => (
                 <div key={s.id} className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? 'border-t border-white/5' : ''}`}>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white truncate">{s.nombre || s.email || 'Sin nombre'}</p>
                     <p className="text-xs text-white/30 truncate">{s.email}</p>
                   </div>
-                  <span className="text-xs text-[#00c7b1] font-medium whitespace-nowrap">
+                  <span className="text-xs font-medium whitespace-nowrap" style={{ color: 'var(--admin-accent)' }}>
                     {s.rol === 'admin' ? 'Admin' : getMateriaLabel(s.materia_id)}
                   </span>
                   {s.user_id !== currentUserId && (

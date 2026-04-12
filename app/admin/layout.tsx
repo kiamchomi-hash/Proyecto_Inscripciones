@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createSupabaseBrowser } from '@/lib/supabase-auth';
+import AdminSidebar from '@/components/admin/sidebar';
+import './admin.css';
 
 const PUBLIC_PATHS = ['/admin/login', '/admin/auth/callback', '/admin/reset-password', '/admin/pendiente'];
 
@@ -82,5 +84,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  return <>{children}</>;
+  if (isPublic) return <>{children}</>;
+
+  return (
+    <div className="flex min-h-screen" style={{ background: 'var(--admin-bg)' }}>
+      <AdminSidebar />
+      <div className="flex-1 min-w-0">{children}</div>
+    </div>
+  );
 }

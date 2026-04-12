@@ -103,17 +103,12 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
   const [searchQuery, setSearchQuery] = useState('');
   const [placeholder, setPlaceholder] = useState('Buscar carrera');
   const [selectedCarrera, setSelectedCarrera] = useState<Carrera | null>(null);
-  const [pillsHidden, setPillsHidden] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [filterArea, setFilterArea] = useState<AreaId | null>(null);
   const [filterDuration, setFilterDuration] = useState<DurationGroupId | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
   const hasFilters = filterArea !== null || filterDuration !== null || activeCategory !== 'all';
   const filterCount = (activeCategory !== 'all' ? 1 : 0) + (filterArea ? 1 : 0) + (filterDuration ? 1 : 0);
-  // Mobile unified filter panel
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-  const [mobileFilterSection, setMobileFilterSection] = useState<'tipo' | 'area' | 'duracion' | null>(null);
-
   // Responsive placeholder
   useEffect(() => {
     const updatePlaceholder = () => {
@@ -222,7 +217,7 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
   // Sections to display (filtered by category)
   const sectionsToShow = useMemo(() => {
     if (searchResults) return []; // hide sections when searching
-    const displayOrder = ['licenciaturas', 'tecnicaturas', 'maestrias', 'certificaciones', 'especializaciones', 'diplomaturas', 'cursos'];
+    const displayOrder = ['licenciaturas', 'tecnicaturas', 'identidad_argentina'];
     if (activeCategory === 'all') return displayOrder.filter(id => filteredGrouped[id]?.length);
     return [activeCategory].filter(id => filteredGrouped[id]?.length);
   }, [activeCategory, filteredGrouped, searchResults]);
@@ -303,11 +298,7 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
   const sectionLabels: Record<string, { title: string; accent?: string; placeholder: string }> = {
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
     tecnicaturas: { title: 'Tecnicaturas', accent: 'Pregrado', placeholder: 'BUSCAR TECNICATURA...' },
-    maestrias: { title: 'Maestrias', placeholder: 'BUSCAR MAESTRIA...' },
-    certificaciones: { title: 'Certificaciones', placeholder: 'BUSCAR CERTIFICACION...' },
-    especializaciones: { title: 'Especializaciones', placeholder: 'BUSCAR ESPECIALIZACION...' },
-    diplomaturas: { title: 'Diplomaturas', placeholder: 'BUSCAR DIPLOMATURA...' },
-    cursos: { title: 'Cursos', placeholder: 'BUSCAR CURSO...' },
+    identidad_argentina: { title: 'Identidad Argentina', accent: 'Convenio', placeholder: 'BUSCAR PROGRAMA...' },
   };
 
   return (
@@ -443,45 +434,21 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
               </button>
             )}
 
-            {/* Mobile: toggle for category pills */}
-            <button
-              className={`filter-pills-toggle ${pillsHidden ? 'collapsed' : ''}`}
-              onClick={() => setPillsHidden(!pillsHidden)}
-              aria-label={pillsHidden ? 'Ver tipos de carrera' : 'Ocultar tipos'}
-              aria-expanded={!pillsHidden}
-            >
-              <span>{pillsHidden ? 'Ver tipos de carrera' : 'Ocultar tipos'}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
-            </button>
-
-            {/* Mobile: category pills */}
-            {!pillsHidden && (
-              <div className="filter-container mobile-pills" role="group" aria-label="Filtros de categoría">
-                {visibleCategories.map(cat => (
+            {/* Category pills — unified row (4 pills fit on all screens) */}
+            <div ref={pillsRef} className="filter-container" role="group" aria-label="Filtros de categoría">
+              {visibleCategories.map(cat => {
+                const count = cat.id === 'all' ? carreras.filter(c => getCategoryForCarrera(c) !== '_hidden').length : (grouped[cat.id]?.length ?? 0);
+                return (
                   <button
                     key={cat.id}
                     onClick={() => handleCategoryClick(cat.id)}
-                    className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.label.length > 13 ? 'filter-pill-long' : ''}`}
+                    className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.id === 'identidad_argentina' ? 'filter-pill-ia' : ''}`}
                     aria-pressed={activeCategory === cat.id}
                   >
-                    {cat.label}
+                    {cat.label}{count > 0 ? ` (${count})` : ''}
                   </button>
-                ))}
-              </div>
-            )}
-
-            {/* Desktop: category pills (always visible above sm) */}
-            <div ref={pillsRef} className="filter-container desktop-only-pills" role="group" aria-label="Filtros de categoría">
-              {visibleCategories.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => handleCategoryClick(cat.id)}
-                  className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.label.length > 13 ? 'filter-pill-long' : ''}`}
-                  aria-pressed={activeCategory === cat.id}
-                >
-                  {cat.label}
-                </button>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -559,6 +526,7 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
                   accent={hasFilters ? undefined : section.accent}
                   carreras={items}
                   onCareerClick={handleCareerClick}
+                  isIdentidadArgentina={sectionId === 'identidad_argentina'}
                 />
               );
             })}
@@ -634,12 +602,13 @@ export default function CareersCatalog({ carreras, descuentos = [], initialCarre
 }
 
 // Career section component
-function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
+function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina }: {
   sectionId: string;
   title: string;
   accent?: string;
   carreras: Carrera[];
   onCareerClick: (c: Carrera) => void;
+  isIdentidadArgentina?: boolean;
 }) {
   const [sectionSearch, setSectionSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
@@ -656,9 +625,14 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
           <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 pr-1">
             {title}
             {accent && (
-              <> / <span style={{ color: 'var(--color-highlight)' }}>{accent}</span></>
+              <> / <span style={{ color: isIdentidadArgentina ? 'var(--cau-brand-blue)' : 'var(--color-highlight)' }}>{accent}</span></>
             )}
           </h2>
+          {isIdentidadArgentina && (
+            <span className="text-[0.6rem] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0" style={{ background: 'rgba(0,85,135,0.2)', color: '#005587', border: '1px solid rgba(0,85,135,0.4)' }}>
+              Convenio
+            </span>
+          )}
           <button
             onClick={() => setShowSearch(!showSearch)}
             className={`p-1.5 rounded-lg shadow-sm transition-colors shrink-0 ${showSearch ? 'bg-[#00c7b1] hover:bg-[#00c7b1]/80' : 'bg-white/90 hover:bg-white/60'}`}
@@ -691,10 +665,10 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick }: {
           </div>
         )}
 
-        <div className="flex-grow h-px section-divider" />
+        <div className={`flex-grow h-px section-divider ${isIdentidadArgentina ? 'section-divider-ia' : ''}`} />
       </div>
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0 mb-6">
+      <ul className={`grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0 mb-6 ${isIdentidadArgentina ? 'ia-section-cards' : ''}`}>
         {filteredCarreras.map(c => (
           <CareerCard key={c.id} carrera={c} onClick={onCareerClick} />
         ))}
