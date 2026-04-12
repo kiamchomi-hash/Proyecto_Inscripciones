@@ -46,11 +46,60 @@ function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string 
   return { prefix, cleanName };
 }
 
+/** Parse IA enfoque field into structured metadata */
+function parseIAMeta(enfoque: string): { modalidad: string; certificacion: string } {
+  const lines = enfoque.split('\n');
+  let modalidad = '100% Online';
+  let certificacion = 'Nacional e Internacional';
+  for (const line of lines) {
+    if (line.startsWith('Modalidad:')) modalidad = line.replace('Modalidad:', '').trim();
+    if (line.startsWith('Certificación:')) certificacion = line.replace('Certificación:', '').trim();
+  }
+  return { modalidad, certificacion };
+}
+
+/** Parse IA plan_estudios into structured modules */
+function parsePlanModulos(plan: string): { titulo: string; contenido: string }[] {
+  const blocks = plan.split(/\n\n+/);
+  const modulos: { titulo: string; contenido: string }[] = [];
+  for (const block of blocks) {
+    const lines = block.split('\n');
+    const firstLine = lines[0]?.trim() || '';
+    if (firstLine.startsWith('Módulo ') || firstLine.startsWith('Masterclass ')) {
+      modulos.push({
+        titulo: firstLine,
+        contenido: lines.slice(1).join('\n').trim(),
+      });
+    } else {
+      modulos.push({ titulo: '', contenido: block.trim() });
+    }
+  }
+  return modulos;
+}
+
+/** Parse IA seccion_modalidad (docente) into name + bio lines */
+function parseDocente(raw: string): { nombre: string; bio: string[] } {
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const nombre = lines[0] || '';
+  const bio = lines.slice(1).map(l => l.replace(/^·\s*/, ''));
+  return { nombre, bio };
+}
+
 export default function CareerModal({ carrera, onClose, initiallyVisible = false }: Props) {
   const [visible, setVisible] = useState(initiallyVisible);
   const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const { prefix, cleanName } = getCareerPrefix(carrera);
+  const isIA = carrera.nivel === 'Identidad Argentina';
+
+  // IA-specific accent colors
+  const accent = isIA ? '#005587' : '#00c7b1';
+  const accentLight = isIA ? '#0077b6' : '#00ffe1';
+  const accentBg = isIA ? '#002a44' : '#013729';
+  const accentBorder = isIA ? 'rgba(0,85,135,0.3)' : 'rgba(0,199,177,0.2)';
+  const accentGlow = isIA ? 'rgba(0,85,135,0.3)' : 'rgba(0,199,177,0.3)';
+  const panelBg = isIA ? '#0f1a24' : '#1c2f31';
+  const headerBg = isIA ? '#081420' : '#051a1a';
 
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
@@ -86,15 +135,31 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
     ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}`
     : '';
 
-  const metaItems = [
-    { label: 'Nivel', value: carrera.nivel },
-    { label: 'Duracion', value: carrera.duracion },
-    { label: 'Titulo', value: carrera.titulo },
-    { label: 'Foco', value: carrera.enfoque },
-  ];
+  // Build metadata items depending on type
+  let metaItems: { label: string; value: string }[];
+  if (isIA) {
+    const iaMeta = parseIAMeta(carrera.enfoque || '');
+    metaItems = [
+      { label: 'Tipo', value: carrera.prefix || 'Diplomatura' },
+      { label: 'Duración', value: carrera.duracion },
+      { label: 'Modalidad', value: iaMeta.modalidad },
+      { label: 'Certificación', value: iaMeta.certificacion },
+    ];
+  } else {
+    metaItems = [
+      { label: 'Nivel', value: carrera.nivel },
+      { label: 'Duracion', value: carrera.duracion },
+      { label: 'Titulo', value: carrera.titulo },
+      { label: 'Foco', value: carrera.enfoque },
+    ];
+  }
 
   // Sections
   const hasSections = carrera.seccion_duracion || carrera.seccion_modalidad || carrera.plan_estudios;
+
+  // IA-specific parsed data
+  const iaDocente = isIA && carrera.seccion_modalidad ? parseDocente(carrera.seccion_modalidad) : null;
+  const iaModulos = isIA && carrera.plan_estudios ? parsePlanModulos(carrera.plan_estudios) : null;
 
   return (
     <div
@@ -105,29 +170,51 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
     >
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px] transition-opacity duration-300
+        className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300
           ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
+        style={{ background: isIA ? 'rgba(5,15,25,0.85)' : 'rgba(1,26,20,0.8)' }}
         onClick={handleClose}
       />
 
       {/* Panel */}
       <div
-        className={`relative z-10 bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
-          h-[88dvh] sm:h-[92vh] max-h-[88dvh] sm:max-h-[92vh] overflow-hidden flex flex-col
-          shadow-[0_0_50px_rgba(0,199,177,0.3)]`}
+        className="relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
+          h-[88dvh] sm:h-[92vh] max-h-[88dvh] sm:max-h-[92vh] overflow-hidden flex flex-col"
+        style={{
+          background: panelBg,
+          border: `2px solid ${accent}`,
+          boxShadow: `0 0 50px ${accentGlow}`,
+        }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
+        <div
+          className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b"
+          style={{ background: headerBg, borderColor: accentBorder }}
+        >
           <div className="flex justify-between items-center gap-3">
             <h3 id="modal-title" className="text-lg sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0">
               {prefix && (
-                <span className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#00ffe1] mb-0.5 leading-normal">
+                <span
+                  className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-0.5 leading-normal"
+                  style={{ color: accentLight }}
+                >
                   {prefix}
                 </span>
               )}
               <span className="block">{cleanName}</span>
             </h3>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {isIA && (
+                <span
+                  className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+                  style={{ background: `${accent}25`, color: accentLight }}
+                >
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Convenio
+                </span>
+              )}
               <button
                 ref={closeBtnRef}
                 onClick={handleClose}
@@ -144,8 +231,8 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
           {/* Metadata badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-3 sm:mt-4">
             {metaItems.map(item => (
-              <div key={item.label} className="bg-[#013729] rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2">
-                <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#00c7b1]">{item.label}</span>
+              <div key={item.label} className="rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2" style={{ background: accentBg }}>
+                <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-widest" style={{ color: accent }}>{item.label}</span>
                 <span className="block text-[0.8rem] sm:text-sm text-white font-semibold mt-0.5 leading-tight">{item.value}</span>
               </div>
             ))}
@@ -154,9 +241,92 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
 
         {/* Content */}
         <div className="p-5 sm:p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0">
-          {hasSections ? (
+          {isIA ? (
+            /* ── Identidad Argentina layout ── */
             <div className="space-y-6">
-              {/* Descripcion */}
+              {/* Objetivos / Descripcion */}
+              {carrera.descripcion && (
+                <div>
+                  <h4
+                    className="text-sm font-bold uppercase tracking-widest mb-3 flex items-center gap-2"
+                    style={{ color: accent }}
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Objetivos
+                  </h4>
+                  <p className="text-[#b4cce0] text-[0.95rem] sm:text-lg leading-relaxed">
+                    {carrera.descripcion}
+                  </p>
+                </div>
+              )}
+
+              {/* Docente */}
+              {iaDocente && iaDocente.nombre && (
+                <div
+                  className="rounded-xl p-4 sm:p-5"
+                  style={{ background: `${accentBg}80`, border: `1px solid ${accent}25` }}
+                >
+                  <h4
+                    className="text-sm font-bold uppercase tracking-widest mb-3 flex items-center gap-2"
+                    style={{ color: accent }}
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Docente
+                  </h4>
+                  <p className="text-white font-bold text-base sm:text-lg">{iaDocente.nombre}</p>
+                  {iaDocente.bio.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {iaDocente.bio.map((line, i) => (
+                        <li key={i} className="text-[#8ab4d0] text-sm flex items-start gap-2">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: accent }} />
+                          {line}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              {/* Plan de estudios — módulos */}
+              {iaModulos && iaModulos.length > 0 && (
+                <div>
+                  <h4
+                    className="text-sm font-bold uppercase tracking-widest mb-4 flex items-center gap-2"
+                    style={{ color: accent }}
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    Plan de estudios
+                  </h4>
+                  <div className="space-y-3">
+                    {iaModulos.map((mod, i) => (
+                      <div
+                        key={i}
+                        className="rounded-lg p-3 sm:p-4"
+                        style={{ background: `${accentBg}60`, borderLeft: `3px solid ${accent}` }}
+                      >
+                        {mod.titulo && (
+                          <p className="text-white font-bold text-sm sm:text-[0.95rem] mb-1.5">{mod.titulo}</p>
+                        )}
+                        {mod.contenido && (
+                          <p className="text-[#8ab4d0] text-[0.82rem] sm:text-sm leading-relaxed whitespace-pre-wrap">
+                            {mod.contenido}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : hasSections ? (
+            /* ── Standard Siglo 21 layout with sections ── */
+            <div className="space-y-6">
               {carrera.descripcion && (
                 <div>
                   <p className="text-[#b4d3ce] text-[0.95rem] sm:text-lg leading-relaxed">
@@ -165,7 +335,6 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
                 </div>
               )}
 
-              {/* Duracion section */}
               {carrera.seccion_duracion && (
                 <div className="bg-[#013729]/50 border border-[#00c7b1]/15 rounded-xl p-4 sm:p-5">
                   <h4 className="text-sm font-bold uppercase tracking-widest text-[#00c7b1] mb-3 flex items-center gap-2">
@@ -180,7 +349,6 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
                 </div>
               )}
 
-              {/* Modalidad section */}
               {carrera.seccion_modalidad && (
                 <div className="bg-[#013729]/50 border border-[#00c7b1]/15 rounded-xl p-4 sm:p-5">
                   <h4 className="text-sm font-bold uppercase tracking-widest text-[#00c7b1] mb-3 flex items-center gap-2">
@@ -195,7 +363,6 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
                 </div>
               )}
 
-              {/* Plan de estudios section */}
               {carrera.plan_estudios && (
                 <div className="bg-[#013729]/50 border border-[#00c7b1]/15 rounded-xl p-4 sm:p-5">
                   <h4 className="text-sm font-bold uppercase tracking-widest text-[#00c7b1] mb-3 flex items-center gap-2">
@@ -211,6 +378,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
               )}
             </div>
           ) : (
+            /* ── Fallback: description only ── */
             <div className="text-[#b4d3ce] text-base sm:text-lg leading-relaxed whitespace-pre-wrap">
               {carrera.descripcion || 'Informacion no disponible aun para esta carrera.'}
             </div>
@@ -218,7 +386,10 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 p-4 bg-[#051a1a] border-t border-[#00c7b1]/20 flex flex-wrap gap-2 items-center">
+        <div
+          className="flex-shrink-0 p-4 border-t flex flex-wrap gap-2 items-center"
+          style={{ background: headerBg, borderColor: accentBorder }}
+        >
           {/* WhatsApp + Form buttons */}
           <div className="order-1 sm:order-2 w-full sm:w-auto flex items-center gap-2 justify-end sm:flex-shrink-0">
             <a
@@ -242,7 +413,8 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
                   if (form) form.scrollIntoView({ behavior: 'smooth' });
                 }, 350);
               }}
-              className="w-36 flex items-center justify-center gap-2 py-2 bg-[#6c2381] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"
+              className="w-36 flex items-center justify-center gap-2 py-2 text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"
+              style={{ background: isIA ? '#005587' : '#6c2381' }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -258,12 +430,18 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
               readOnly
               value={shareUrl}
               onClick={e => (e.target as HTMLInputElement).select()}
-              className="flex-1 min-w-0 px-3 py-2 bg-[#013729] border border-[#00c7b1]/20 rounded-lg text-[#7ca19b] text-[11px] font-mono focus:outline-none focus:border-[#00c7b1]/50 cursor-text transition-colors truncate"
+              className="flex-1 min-w-0 px-3 py-2 rounded-lg text-[11px] font-mono focus:outline-none cursor-text transition-colors truncate"
+              style={{
+                background: accentBg,
+                border: `1px solid ${accentBorder}`,
+                color: isIA ? '#6b9fc0' : '#7ca19b',
+              }}
             />
             <button
               onClick={() => navigator.clipboard?.writeText(shareUrl)}
               title="Compartir enlace"
-              className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 bg-[#00c7b1] text-[#013729] font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
+              className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
+              style={{ background: accent, color: isIA ? '#fff' : '#013729' }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />

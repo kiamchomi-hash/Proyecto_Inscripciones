@@ -95,11 +95,7 @@ export const CATEGORIES: CarreraCategory[] = [
   { id: 'all', label: 'Ver Todo', niveles: [], featured: false },
   { id: 'licenciaturas', label: 'Licenciaturas', sublabel: 'Grado', niveles: ['Grado', 'Grado (CCC)'], featured: true },
   { id: 'tecnicaturas', label: 'Tecnicaturas', sublabel: 'Pregrado', niveles: ['Pregrado'], featured: true },
-  { id: 'maestrias', label: 'Maestrias', sublabel: undefined, niveles: ['Posgrado'], featured: false },
-  { id: 'diplomaturas', label: 'Diplomaturas', sublabel: undefined, niveles: ['APLV - Extragrado'], featured: false },
-  { id: 'certificaciones', label: 'Certificaciones', sublabel: undefined, niveles: ['Certificacion'], featured: false },
-  { id: 'especializaciones', label: 'Especializaciones', sublabel: undefined, niveles: ['Posgrado'], featured: false },
-  { id: 'cursos', label: 'Cursos', sublabel: undefined, niveles: ['APLV - Extragrado', 'Curso'], featured: false },
+  { id: 'identidad_argentina', label: 'Identidad Argentina', sublabel: 'Convenio', niveles: ['Identidad Argentina'], featured: true },
 ];
 
 // Mapping from Supabase nivel to display categories
@@ -107,30 +103,12 @@ export const CATEGORIES: CarreraCategory[] = [
 // and APLV - Extragrado contains Diplomaturas, Certificados, and Cursos,
 // we use name prefix to further categorize
 export function getCategoryForCarrera(c: Carrera): string {
-  const nombre = c.nombre.toLowerCase();
-
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';
   if (c.nivel === 'Pregrado') return 'tecnicaturas';
+  if (c.nivel === 'Identidad Argentina') return 'identidad_argentina';
 
-  // Posgrado: split into maestrias and especializaciones
-  if (c.nivel === 'Posgrado') {
-    if (nombre.startsWith('maestría') || nombre.startsWith('maestria')) return 'maestrias';
-    return 'especializaciones';
-  }
-
-  // Certificacion
-  if (c.nivel === 'Certificación') return 'certificaciones';
-
-  // APLV - Extragrado: split into diplomaturas, certificaciones, cursos
-  if (c.nivel === 'APLV - Extragrado') {
-    if (nombre.startsWith('diplomatura')) return 'diplomaturas';
-    if (nombre.startsWith('certificado')) return 'certificaciones';
-    return 'cursos';
-  }
-
-  if (c.nivel === 'Curso') return 'cursos';
-
-  return 'cursos'; // fallback
+  // Any other nivel is not displayed in the current categories
+  return '_hidden';
 }
 
 // ── Area classification ──

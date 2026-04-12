@@ -1,0 +1,13 @@
+/* === Admin panel — neutral/blue palette === */
+:root {
+  --admin-bg: #0f1114;
+  --admin-card: #1a1d23;
+  --admin-input: #1a1d23;
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-accent: #3b82f6;
+  --admin-accent-hover: #2563eb;
+  --admin-accent-glow: rgba(59, 130, 246, 0.15);
+  --admin-text: #e5e7eb;
+  --admin-text-muted: rgba(255, 255, 255, 0.4);
+  --admin-text-dimmed: rgba(255, 255, 255, 0.2);
+}

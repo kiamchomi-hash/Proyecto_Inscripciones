@@ -156,31 +156,20 @@
   padding: 0 1rem;
 }
 
-/* Mobile toggle button for filter pills */
-.filter-pills-toggle {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 6px 14px;
-  margin: 0 1rem;
-  border-radius: 8px;
-  background: rgba(0, 199, 177, 0.1);
-  border: 1px solid rgba(0, 199, 177, 0.25);
-  color: #00c7b1;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
+/* Identidad Argentina pill */
+.filter-pill-ia {
+  background-color: rgba(0, 85, 135, 0.3);
+  color: #7bb8d9;
+  border: 1px solid rgba(0, 85, 135, 0.5);
+  font-weight: 900;
 }
-.filter-pills-toggle:active {
-  background: rgba(0, 199, 177, 0.2);
+.filter-pill-ia:hover {
+  background-color: rgba(0, 85, 135, 0.4);
 }
-.filter-pills-toggle svg {
-  transition: transform 0.25s ease;
-}
-.filter-pills-toggle.collapsed svg {
-  transform: rotate(180deg);
+.filter-pill-ia.active {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* Filter pills — base */
@@ -314,54 +303,25 @@
   display: flex;
 }
 
-/* ≤640px: mobile — hide desktop pills, show mobile filter panel */
+/* ≤640px: mobile — compact pills + show mobile clear */
 @media (max-width: 640px) {
-  .desktop-only-pills {
-    display: none !important;
-  }
   .desktop-clear-filters {
     display: none !important;
   }
   .mobile-clear-filters {
     display: flex;
   }
-  .filter-pills-toggle {
-    display: flex;
-  }
-  .mobile-pills {
+  .filter-container {
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    margin-bottom: 0;
-    padding: 0 1rem;
   }
-  .mobile-pills .filter-pill {
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 0.8rem !important;
-    letter-spacing: 0 !important;
-    padding: 8px 4px !important;
-    text-align: center !important;
-    border-width: 1px !important;
-    border-radius: 8px !important;
-    white-space: nowrap !important;
-    line-height: 1.1 !important;
-    min-height: 42px !important;
-    hyphens: none !important;
-    overflow: hidden !important;
+  .filter-pill {
+    font-size: 0.72rem;
   }
 }
 
-/* ≥641px: hide mobile filter UI */
+/* ≥641px: hide mobile clear */
 @media (min-width: 641px) {
-  .filter-pills-toggle {
-    display: none !important;
-  }
-  .mobile-pills {
-    display: none !important;
-  }
-  .mobile-filter-panel {
+  .mobile-clear-filters {
     display: none !important;
   }
 }
@@ -990,3 +950,27 @@ mark {
 .petroleum-abyss { background: radial-gradient(circle at 50% 50%, #1a3d36, #051b1b 90%); }
 .fog-forest { background: linear-gradient(180deg, #093838, #002425); }
 .slate-natural { background: linear-gradient(180deg, #27272a, #09090b); }
+
+/* === Identidad Argentina section === */
+.ia-section-cards .career-card {
+  border-left: 3px solid #005587;
+}
+.ia-section-cards .career-card:hover {
+  border-color: #005587;
+  background: rgba(0, 85, 135, 0.08);
+}
+.ia-section-cards .detail-link {
+  background: #005587;
+  border-color: #005587;
+  color: #fff;
+}
+.ia-section-cards .detail-link:hover {
+  background: #003d5c;
+  border-color: #003d5c;
+}
+.section-divider-ia {
+  background: rgba(0, 85, 135, 0.4);
+}
+.section-divider-ia::after {
+  background: linear-gradient(145deg, #005587 0%, #3b82f6 100%);
+}
