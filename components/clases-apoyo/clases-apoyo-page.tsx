@@ -561,7 +561,6 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
             )}
             {showTurnstile && !turnstileToken && (
               <TurnstileWidget
-                className="w-full flex justify-center"
                 onVerify={handleTurnstileVerify}
                 onExpire={() => setTurnstileToken('')}
               />

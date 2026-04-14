@@ -175,7 +175,6 @@ function ContactForm() {
           <div className="px-5 pb-4 space-y-2.5">
             {!turnstileToken && (
               <TurnstileWidget
-                className="w-full flex justify-center"
                 onVerify={(token) => setTurnstileToken(token)}
                 onExpire={() => setTurnstileToken('')}
               />

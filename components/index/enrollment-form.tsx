@@ -421,7 +421,6 @@ export default function EnrollmentForm({ carreras }: Props) {
             <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2">
               {!turnstileToken && (
                 <TurnstileWidget
-                  className="w-full flex justify-center"
                   onVerify={(token) => setTurnstileToken(token)}
                   onExpire={() => setTurnstileToken('')}
                 />
