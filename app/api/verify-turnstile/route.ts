@@ -21,11 +21,28 @@ export async function POST(req: NextRequest) {
     body: new URLSearchParams({ secret, response: token }),
   });
 
-  const data = await res.json();
+  const data = await res.json() as {
+    success?: boolean;
+    hostname?: string;
+    action?: string;
+    'error-codes'?: string[];
+  };
 
   if (!data.success) {
+    console.error('[Turnstile] Siteverify failed', {
+      status: res.status,
+      errorCodes: data['error-codes'] ?? [],
+      hostname: data.hostname ?? null,
+      action: data.action ?? null,
+    });
+
     return NextResponse.json({ success: false, error: 'Verificación fallida' }, { status: 403 });
   }
+
+  console.info('[Turnstile] Siteverify success', {
+    hostname: data.hostname ?? null,
+    action: data.action ?? null,
+  });
 
   return NextResponse.json({ success: true });
 }
