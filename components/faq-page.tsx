@@ -598,7 +598,6 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               </div>
               {!turnstileToken && (
                 <TurnstileWidget
-                  className="w-full flex justify-center"
                   onVerify={setTurnstileToken}
                   onExpire={() => setTurnstileToken('')}
                 />
@@ -639,7 +638,6 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
               {!turnstileToken && (
                 <TurnstileWidget
-                  className="w-full flex justify-center"
                   onVerify={setTurnstileToken}
                   onExpire={() => setTurnstileToken('')}
                 />
