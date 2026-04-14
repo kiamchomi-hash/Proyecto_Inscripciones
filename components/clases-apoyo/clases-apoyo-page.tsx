@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
+import TurnstileWidget from '@/components/turnstile-widget';
 
 export interface CalendarWeek {
   label: string;
@@ -560,15 +560,11 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
               </button>
             )}
             {showTurnstile && !turnstileToken && (
-              <div className="w-full max-w-full overflow-hidden">
-                <Turnstile
-                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                  onVerify={handleTurnstileVerify}
-                  onExpire={() => setTurnstileToken('')}
-                  theme="dark"
-                  size="flexible"
-                />
-              </div>
+              <TurnstileWidget
+                className="w-full flex justify-center"
+                onVerify={handleTurnstileVerify}
+                onExpire={() => setTurnstileToken('')}
+              />
             )}
             <button
               onClick={() => {

@@ -2,8 +2,8 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
+import TurnstileWidget from '@/components/turnstile-widget';
 import { type Carrera, CATEGORIES, getCategoryForCarrera } from './types';
 
 interface Props {
@@ -420,12 +420,10 @@ export default function EnrollmentForm({ carreras }: Props) {
             {/* Turnstile + Submit */}
             <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2">
               {!turnstileToken && (
-                <Turnstile
-                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                <TurnstileWidget
+                  className="w-full flex justify-center"
                   onVerify={(token) => setTurnstileToken(token)}
                   onExpire={() => setTurnstileToken('')}
-                  theme="dark"
-                  size="flexible"
                 />
               )}
               <button

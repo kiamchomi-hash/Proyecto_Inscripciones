@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Turnstile } from 'react-turnstile';
 import { supabase } from '@/lib/supabase';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
+import TurnstileWidget from '@/components/turnstile-widget';
 import './contacto.css';
 
 /* ── Publicaciones ────────────────────────────────────── *
@@ -174,15 +174,11 @@ function ContactForm() {
           {/* Turnstile + Submit */}
           <div className="px-5 pb-4 space-y-2.5">
             {!turnstileToken && (
-              <div className="w-full max-w-full overflow-hidden">
-                <Turnstile
-                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                  onVerify={(token) => setTurnstileToken(token)}
-                  onExpire={() => setTurnstileToken('')}
-                  theme="dark"
-                  size="flexible"
-                />
-              </div>
+              <TurnstileWidget
+                className="w-full flex justify-center"
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken('')}
+              />
             )}
 
             {error && <p className="text-[11px] text-red-400">{error}</p>}
