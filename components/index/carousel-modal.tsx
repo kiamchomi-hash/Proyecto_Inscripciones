@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { type Carrera, type CarreraSlide, type Descuento, type DescuentoEspecial, type SlidePlanEstudios, carreraToSlug } from './types';
+import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug } from './types';
 
 interface Props {
   carrera: Carrera;
-  descuentos?: Descuento[];
   onClose: () => void;
   initiallyVisible?: boolean;
 }
@@ -797,7 +796,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
 }
 
 // ── Main carousel modal ──
-export default function CarouselModal({ carrera, descuentos = [], onClose, initiallyVisible = false }: Props) {
+export default function CarouselModal({ carrera, onClose, initiallyVisible = false }: Props) {
   const slides = useMemo(() => {
     return (carrera.slides || [])
       .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion');
@@ -868,7 +867,7 @@ export default function CarouselModal({ carrera, descuentos = [], onClose, initi
           <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
               <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
-                {renderSlide(slide, carrera, descuentos, si === slideIdx)}
+                {renderSlide(slide, carrera, si === slideIdx)}
               </div>
             ))}
           </div>
@@ -931,13 +930,13 @@ export default function CarouselModal({ carrera, descuentos = [], onClose, initi
 }
 
 // ── Render individual slide by type ──
-function renderSlide(slide: CarreraSlide, carrera: Carrera, descuentos: Descuento[], isVisible: boolean) {
+function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean) {
   switch (slide.type) {
     case 'portada': return <SlidePortadaView slide={slide} carrera={carrera} />;
     case 'modalidad': return <SlideModalidadView slide={slide} />;
     case 'evaluacion': return <SlideEvaluacionView slide={slide} />;
     case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} isVisible={isVisible} />;
-    case 'cierre': return <SlideCierreView slide={slide} descuentos={descuentos} carrera={carrera} />;
+    case 'cierre': return <SlideCierreView slide={slide} carrera={carrera} />;
     default: return null;
   }
 }
@@ -1131,7 +1130,7 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
   );
 }
 
-function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('./types').SlideCierre; descuentos?: Descuento[]; carrera?: Carrera }) {
+function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCierre; carrera?: Carrera }) {
   return (
     <div className="h-full flex overflow-hidden relative bg-[#011f17]">
       {/* Desktop side image */}
@@ -1162,9 +1161,6 @@ function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('.
             </div>
           ))}
         </div>
-
-        {/* CONTENEDOR DE DESCUENTOS DINÁMICO (3-5 TARJETAS) */}
-        <DescuentosCards descuentos={descuentos} especial={carrera?.descuento_especial} />
 
         {/* Botones WhatsApp + Ubicación */}
         <div className="flex flex-wrap justify-center gap-2 md:gap-2.5 w-full">
@@ -1200,79 +1196,3 @@ function SlideCierreView({ slide, descuentos = [], carrera }: { slide: import('.
   );
 }
 
-/**
- * Tarjetas de descuentos dinámicas (3-5 cards).
- *
- * Base: Sede Local + Siglo 21 (siempre).
- * Especiales: muestran el total acumulado (sede + siglo + especial) con desglose.
- * Si no hay especiales, se muestra 1 card "Promociones" con "-".
- */
-function DescuentosCards({ descuentos = [], especial }: { descuentos?: Descuento[]; especial?: DescuentoEspecial | null }) {
-  const sede = descuentos.find(d => d.tipo === 'sede');
-  const siglo = descuentos.find(d => d.tipo === 'universidad');
-  const sedeVal = Number(sede?.porcentaje) || 0;
-  const sigloVal = Number(siglo?.porcentaje) || 0;
-
-  const mat = especial?.matricula != null ? Number(especial.matricula) : null;
-  const tkA = especial?.ticket_a != null ? Number(especial.ticket_a) : null;
-  const tkB = especial?.ticket_b != null ? Number(especial.ticket_b) : null;
-
-  // Periodo 1B: tkA es null (solo matrícula + cuota)
-  const is1B = tkA == null && tkB != null;
-
-  // Descuento total por concepto (siglo + sede + promo)
-  const totalMat = mat != null ? sigloVal + mat : 0;
-  const totalTkA = tkA != null ? sigloVal + sedeVal + tkA : 0;
-  const totalTkB = tkB != null ? sigloVal + sedeVal + tkB : 0;
-
-  type Card = { key: string; valor: string; label: string; pct: number };
-  const cards: Card[] = [];
-
-  if (totalMat > 0) cards.push({ key: 'mat', valor: `${Math.round(totalMat)}%`, label: 'Matrícula', pct: totalMat });
-  if (!is1B && totalTkA > 0) cards.push({ key: 'tka', valor: `${Math.round(totalTkA)}%`, label: 'Primera cuota', pct: totalTkA });
-  if (totalTkB > 0) cards.push({ key: 'tkb', valor: `${Math.round(totalTkB)}%`, label: is1B ? 'Cuota' : 'Segunda cuota', pct: totalTkB });
-
-  // Color de borde y texto según intensidad del descuento (escala teal)
-  // Bajo (0-30): apagado, Medio (30-60): teal medio, Alto (60+): teal vibrante
-  const cardColor = (p: number) => {
-    const t = Math.min(p / 80, 1); // normalizar a 0-1 (80% = máximo)
-    const r = Math.round(30 * (1 - t));
-    const g = Math.round(140 + 59 * t);  // 140 → 199
-    const b = Math.round(130 + 47 * t);  // 130 → 177
-    return `rgb(${r}, ${g}, ${b})`;
-  };
-
-  if (cards.length === 0) return null;
-
-  const count = cards.length;
-  const widthClass = count <= 2
-    ? 'w-[calc(50%-8px)] md:w-[calc(33.333%-6px)] max-w-[7rem] md:max-w-[8rem]'
-    : 'w-[calc(33.333%-8px)] md:w-[calc(33.333%-6px)] max-w-[6.5rem] md:max-w-[7rem]';
-
-  return (
-    <div className="w-full mt-1 md:-mt-2 pt-2 md:pt-0 border-t border-[#00c7b1]/15 md:border-0">
-      <p className="text-[0.65rem] md:text-[0.75rem] font-bold tracking-[0.2em] text-white uppercase mb-1.5 md:mb-3 text-center">Descuentos</p>
-      <div className="flex flex-wrap justify-center gap-2 md:gap-2 w-full mb-1 md:mb-2">
-        {cards.map((card) => {
-          const color = cardColor(card.pct);
-          return (
-          <div
-            key={card.key}
-            className={`relative overflow-hidden ${widthClass} md:aspect-square rounded-xl flex flex-col items-center justify-center p-1.5 md:p-2 text-center leading-none aurora-matte`}
-            style={{ borderWidth: 1, borderStyle: 'solid', borderColor: color }}
-          >
-            <div className="relative z-10 flex flex-col items-center gap-1">
-              <span className="font-black leading-none text-xl md:text-3xl text-[#00c7b1]">
-                {card.valor}
-              </span>
-              <span className="text-white font-bold leading-tight uppercase tracking-wide text-[0.55rem] md:text-xs">
-                {card.label}
-              </span>
-            </div>
-          </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
