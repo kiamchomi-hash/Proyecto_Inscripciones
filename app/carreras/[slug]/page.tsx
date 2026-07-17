@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import { notFound, redirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import type { Carrera, Descuento } from '@/components/index/types';
+import type { Carrera } from '@/components/index/types';
 import { carreraToSlug } from '@/components/index/types';
 import Hero from '@/components/index/hero';
 import '@/app/index.css';
@@ -61,43 +61,7 @@ export async function generateStaticParams() {
 
 export default async function CarreraPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [carrerasRaw, descuentos, { data: meta }] = await Promise.all([
-    getCarreras(),
-    supabase.from('descuentos').select('*').eq('activo', true).then(({ data }) => (data || []) as Descuento[]),
-    supabase.from('precios_meta').select('promo_especial_matricula, promo_especial_tka, promo_especial_tkb, periodo_activo, promo_especial_matricula_1b, promo_especial_tk_1b, beneficio_1b_mat, beneficio_1b_tk').eq('id', 1).single(),
-  ]);
-
-  const sedeVal = descuentos.find(d => d.tipo === 'sede')?.porcentaje ?? 0;
-  const sigloVal = descuentos.find(d => d.tipo === 'universidad')?.porcentaje ?? 0;
-  const periodoActivo = meta?.periodo_activo || '1A';
-
-  let promoGlobalMat: number, promoGlobalTkA: number, promoGlobalTkB: number;
-  if (periodoActivo === '1B') {
-    promoGlobalMat = (Number(meta?.promo_especial_matricula_1b) || 0) + (Number(meta?.beneficio_1b_mat) || 0);
-    promoGlobalTkA = 0;
-    promoGlobalTkB = (Number(meta?.promo_especial_tk_1b) || 0) + (Number(meta?.beneficio_1b_tk) || 0);
-  } else {
-    promoGlobalMat = Number(meta?.promo_especial_matricula) || 0;
-    promoGlobalTkA = Number(meta?.promo_especial_tka) || 0;
-    promoGlobalTkB = Number(meta?.promo_especial_tkb) || 0;
-  }
-  const hasPromoGlobal = promoGlobalMat > 0 || promoGlobalTkA > 0 || promoGlobalTkB > 0;
-  const puraMat = Math.max(promoGlobalMat * 100 - Number(sigloVal), 0);
-  const puraTkA = Math.max(promoGlobalTkA * 100 - Number(sigloVal) - Number(sedeVal), 0);
-  const puraTkB = Math.max(promoGlobalTkB * 100 - Number(sigloVal) - Number(sedeVal), 0);
-
-  const carreras: Carrera[] = carrerasRaw.map((c) => {
-    if (!hasPromoGlobal) return c;
-    const esp = c.descuento_especial;
-    return {
-      ...c,
-      descuento_especial: {
-        matricula: promoGlobalMat > 0 ? puraMat : (esp?.matricula ?? null),
-        ticket_a: promoGlobalTkA > 0 ? puraTkA : (esp?.ticket_a ?? null),
-        ticket_b: promoGlobalTkB > 0 ? puraTkB : (esp?.ticket_b ?? null),
-      },
-    };
-  });
+  const carreras = await getCarreras();
 
   const carrera = findBySlug(carreras, slug);
   if (!carrera) notFound();
@@ -144,7 +108,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
       />
       <main className="flex-1">
         <Hero />
-        <CareersCatalog carreras={carreras} descuentos={descuentos} initialCarreraSlug={slug} />
+        <CareersCatalog carreras={carreras} initialCarreraSlug={slug} />
         <EnrollmentForm carreras={carreras} />
         <IndexFooter />
       </main>
