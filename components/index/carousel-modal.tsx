@@ -848,7 +848,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
         <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
           <div className="flex justify-between items-center gap-3">
             <h3 className={`text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0 ${slideIdx === 0 ? 'invisible' : ''}`}>
-              {slides[slideIdx]?.type === 'cierre' ? <span className="hidden md:inline">Estudiá <span className="text-[#00c7b1]">con nosotros</span></span> : cleanName}
+              {cleanName}
             </h3>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <img src="/imagenes/Modales/Abogac%C3%ADa/logo_siglo.png" alt="Siglo 21" className="h-7 sm:h-9 w-auto object-contain block" />
@@ -966,7 +966,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {/* Línea independiente para quedar pegada al header */}
         <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
 
-        <div className="flex-shrink-0 flex justify-start pt-1 md:pt-[clamp(0.5rem,2vh,1rem)] mt-0 md:mt-0 gap-2.5 relative top-[35px] md:top-0 z-10">
+        <div className="flex-shrink-0 flex justify-start pt-3 md:pt-[clamp(0.5rem,2vh,1rem)] mt-0 md:mt-0 gap-2.5">
           {(() => { const { prefix, cleanName } = getCleanName(carrera);
             const cccMatch = cleanName.match(/\s*\(CCC\)\s*$/i);
             const displayName = cccMatch ? cleanName.replace(cccMatch[0], '') : cleanName;
@@ -982,7 +982,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           </>); })()}
         </div>
 
-        <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,2vh,1rem)] md:gap-[clamp(0.25rem,1.5vh,0.5rem)] pt-10 md:pt-0">
+        <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,2vh,1rem)] md:gap-[clamp(0.25rem,1.5vh,0.5rem)]">
           {slide.bullets.map((b, i) => (
             <p key={i} className="text-[clamp(0.8rem,2.5vw,0.95rem)] md:text-[clamp(0.9rem,2vh,1.25rem)] text-[#e0f0ed] leading-snug font-medium">
               <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
@@ -990,10 +990,15 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           ))}
         </div>
 
-        <div className="md:hidden mt-auto flex-shrink-0 flex flex-col gap-1.5">
-          {slide.imagen_mobile && (
-            <div className="flex items-end justify-center relative max-h-[22vh]" style={{ minHeight: '100px' }}>
-              <img src={encodeImagePath(slide.imagen_mobile!)} alt={carrera.nombre} className="absolute inset-0 w-full h-full object-contain" />
+        <div className="md:hidden mt-auto flex-shrink-0 flex flex-col gap-2">
+          {(slide.imagen_mobile || slide.imagen_desktop) && (
+            <div className="relative w-full h-[20vh] rounded-xl overflow-hidden border border-[#00c7b1]/15">
+              <img
+                src={encodeImagePath((slide.imagen_mobile || slide.imagen_desktop)!)}
+                alt={carrera.nombre}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ objectPosition: slide.imagen_mobile ? 'center' : (slide.imagen_desktop_position || 'top') }}
+              />
             </div>
           )}
           {slide.badges && (
@@ -1132,7 +1137,14 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
 
 function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCierre; carrera?: Carrera }) {
   return (
-    <div className="h-full flex overflow-hidden relative bg-[#011f17]">
+    <div className="h-full flex flex-col md:flex-row overflow-hidden relative bg-[#011f17]">
+      {/* Mobile top banner */}
+      {slide.imagen && (
+        <div className="md:hidden relative h-[24vh] shrink-0 overflow-hidden">
+          <img src={encodeImagePath(slide.imagen!)} alt="Instituto" className="absolute inset-0 w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 55%, #011f17 100%)' }} />
+        </div>
+      )}
       {/* Desktop side image */}
       {slide.imagen && (
         <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
@@ -1140,30 +1152,33 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}
-      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] px-4 py-8 md:p-10 flex flex-col justify-center gap-4 md:gap-8 overflow-y-auto custom-scrollbar">
-        {/* Título en mobile */}
-        <div className="md:hidden text-center mb-1 -translate-y-8">
-          <h3 className="text-3xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>' }}></h3>
+      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-10 flex flex-col justify-center gap-5 md:gap-8 overflow-y-auto custom-scrollbar">
+        {/* Título */}
+        <div className="text-center md:text-left">
+          <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>' }}></h3>
+          {slide.subtitulo && (
+            <p className="text-[#7ca19b] text-sm md:text-base mt-2">{slide.subtitulo}</p>
+          )}
         </div>
 
         {/* Beneficios */}
-        <div className="flex flex-col gap-2 md:gap-5">
+        <div className="flex flex-col gap-3 md:gap-5">
           {slide.beneficios.map((b, i) => (
             <div key={i} className="flex items-center gap-2.5 md:gap-3">
-              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
-                <svg className="w-3.5 h-3.5 md:w-[1.1rem] md:h-[1.1rem]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
+                <svg className="w-3.5 h-3.5 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   {(ICON_PATHS[b.icono] || ICON_PATHS.star).split(' M').map((d, di) => (
                     <path key={di} strokeLinecap="round" strokeLinejoin="round" d={di === 0 ? d : `M${d}`} />
                   ))}
                 </svg>
               </div>
-              <span className="text-white text-sm md:text-sm font-semibold">{b.texto}</span>
+              <span className="text-white text-sm md:text-base font-semibold">{b.texto}</span>
             </div>
           ))}
         </div>
 
         {/* Botones WhatsApp + Ubicación */}
-        <div className="flex flex-wrap justify-center gap-2 md:gap-2.5 w-full">
+        <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
               href={`https://wa.me/5491166522722?text=${encodeURIComponent(`Hola, quiero consultar los precios de ${carrera.nombre}`)}`}
