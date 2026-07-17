@@ -17,9 +17,6 @@ export const metadata: Metadata = {
   title: { default: 'Universidad Siglo 21 | CAU Villa Lugano', template: '%s | Siglo 21' },
   description: 'Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21. Inscribite hoy en la red de educación más grande de Argentina.',
   keywords: ['universidad', 'siglo 21', 'villa lugano', 'carreras a distancia', 'educación superior', 'estudiar online', 'CAU', 'CABA', 'zona sur'],
-  alternates: {
-    canonical: '/',
-  },
   authors: [{ name: 'CAU Villa Lugano' }],
   creator: 'Universidad Siglo 21',
   openGraph: {

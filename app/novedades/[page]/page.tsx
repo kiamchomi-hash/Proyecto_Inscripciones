@@ -10,7 +10,7 @@ const ITEMS_PER_PAGE = 6;
 
 export const revalidate = 3600;
 
-export async function generateStaticParams() {
+async function getTotalPages(): Promise<number> {
   const { count } = await supabase
     .from('novedades')
     .select('id', { count: 'exact', head: true })
@@ -18,14 +18,19 @@ export async function generateStaticParams() {
     .eq('pinned', false);
 
   const total = count ?? 0;
-  const totalPages = Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
+  return Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
+}
 
+export async function generateStaticParams() {
+  const totalPages = await getTotalPages();
   return Array.from({ length: totalPages }, (_, i) => ({ page: String(i + 1) }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ page: string }> }): Promise<Metadata> {
   const { page } = await params;
   const pageNum = parseInt(page, 10);
+  if (isNaN(pageNum) || pageNum < 1 || String(pageNum) !== page) notFound();
+
   const suffix = pageNum > 1 ? ` — Página ${pageNum}` : '';
   return {
     title: `Novedades${suffix}`,
@@ -38,18 +43,9 @@ export async function generateMetadata({ params }: { params: Promise<{ page: str
 export default async function Page({ params }: { params: Promise<{ page: string }> }) {
   const { page } = await params;
   const pageNum = parseInt(page, 10);
-  if (isNaN(pageNum) || pageNum < 1) notFound();
+  if (isNaN(pageNum) || pageNum < 1 || String(pageNum) !== page) notFound();
 
-  // Contar items activos no-fijados para calcular total de páginas
-  const { count: totalCount } = await supabase
-    .from('novedades')
-    .select('id', { count: 'exact', head: true })
-    .eq('publicada', true)
-    .eq('pinned', false);
-
-  const total = totalCount ?? 0;
-  const totalPages = Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
-
+  const totalPages = await getTotalPages();
   if (pageNum > totalPages) notFound();
 
   let pinnedItem: Novedad | null = null;

@@ -32,6 +32,14 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/admin/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/api/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
+      },
     ];
   },
   async redirects() {
@@ -44,6 +52,11 @@ const nextConfig: NextConfig = {
       {
         source: '/contactos',
         destination: '/contacto',
+        permanent: true,
+      },
+      {
+        source: '/novedades',
+        destination: '/novedades/1',
         permanent: true,
       },
       // Redirect non-www to www
