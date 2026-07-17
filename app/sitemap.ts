@@ -16,7 +16,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const carrerasEntries: MetadataRoute.Sitemap = (carreras || []).map(c => ({
     url: `${baseUrl}/carreras/${carreraToSlug(c)}`,
-    lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
@@ -29,7 +28,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const materiasEntries: MetadataRoute.Sitemap = (materias || []).map(m => ({
     url: `${baseUrl}/clases-apoyo/${m.slug}`,
-    lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
@@ -46,7 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const novedadesPageEntries: MetadataRoute.Sitemap = Array.from({ length: totalPages }, (_, i) => ({
     url: `${baseUrl}/novedades/${i + 1}`,
-    lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: i === 0 ? 0.8 : 0.5,
   }));
@@ -60,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const novedadesArticuloEntries: MetadataRoute.Sitemap = (novedades || []).map(n => ({
     url: `${baseUrl}/novedades/articulo/${n.slug}`,
-    lastModified: n.fecha ? new Date(n.fecha) : new Date(),
+    ...(n.fecha ? { lastModified: new Date(n.fecha) } : {}),
     changeFrequency: 'monthly',
     priority: 0.6,
   }));
@@ -68,31 +65,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 1,
     },
     {
       url: `${baseUrl}/clases-apoyo`,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/contacto`,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${baseUrl}/faq`,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${baseUrl}/sobre-nosotros`,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
     },

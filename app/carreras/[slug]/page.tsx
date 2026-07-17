@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug } from '@/components/index/types';
@@ -69,7 +69,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // Redirect old format URLs to new canonical slug
   const canonicalSlug = carreraToSlug(carrera);
   if (slug !== canonicalSlug) {
-    redirect(`/carreras/${canonicalSlug}`);
+    permanentRedirect(`/carreras/${canonicalSlug}`);
   }
 
   const courseSchema = {

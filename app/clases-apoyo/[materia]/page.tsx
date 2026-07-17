@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import ClasesApoyoPage from '@/components/clases-apoyo/clases-apoyo-page';
 import { supabase } from '@/lib/supabase';
 import '../clases-apoyo.css';
@@ -9,8 +10,28 @@ function slugToLabel(slug: string): string {
     .replace(/\b\w/g, c => c.toUpperCase());
 }
 
+async function materiaExiste(slug: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('materias')
+    .select('slug')
+    .eq('activa', true)
+    .eq('slug', slug)
+    .maybeSingle();
+  return !!data;
+}
+
+export async function generateStaticParams() {
+  const { data } = await supabase
+    .from('materias')
+    .select('slug')
+    .eq('activa', true);
+  return (data ?? []).map(m => ({ materia: m.slug }));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ materia: string }> }): Promise<Metadata> {
   const { materia } = await params;
+  if (!(await materiaExiste(materia))) return { title: 'Materia no encontrada' };
+
   const label = slugToLabel(materia);
   return {
     title: `${label} - Clases de Apoyo`,
@@ -72,6 +93,8 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
     .select('id, slug, label, nombre_profesor, whatsapp, telefono_display, descripcion, imagenes, en_construccion, orden, modo_manana, dias_bloqueados, horarios_bloqueados')
     .eq('activa', true)
     .order('orden', { ascending: true });
+
+  if (!(materias ?? []).some(m => m.slug === materia)) notFound();
 
   return (
     <ClasesApoyoPage
