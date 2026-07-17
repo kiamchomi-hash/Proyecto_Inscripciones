@@ -59,6 +59,18 @@ const nextConfig: NextConfig = {
         destination: '/novedades/1',
         permanent: true,
       },
+      // Ruta vieja en singular (marzo 2026), puede seguir indexada
+      {
+        source: '/carrera/:slug',
+        destination: '/carreras/:slug',
+        permanent: true,
+      },
+      // /carreras sin slug no existe como página; el catálogo está en la home
+      {
+        source: '/carreras',
+        destination: '/',
+        permanent: true,
+      },
       // Redirect non-www to www
       {
         source: '/:path*',
