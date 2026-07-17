@@ -982,6 +982,19 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           </>); })()}
         </div>
 
+        {/* Mobile: imagen de la carrera como banner bajo el título */}
+        {(slide.imagen_mobile || slide.imagen_desktop) && (
+          <div className="md:hidden flex-shrink-0 relative w-full h-[22vh] rounded-xl overflow-hidden border border-[#00c7b1]/15 mt-3">
+            <img
+              src={encodeImagePath((slide.imagen_mobile || slide.imagen_desktop)!)}
+              alt={carrera.nombre}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ objectPosition: slide.imagen_mobile ? 'center' : (slide.imagen_desktop_position || 'top') }}
+            />
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 70%, rgba(1,31,23,0.55) 100%)' }} />
+          </div>
+        )}
+
         <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,2vh,1rem)] md:gap-[clamp(0.25rem,1.5vh,0.5rem)]">
           {slide.bullets.map((b, i) => (
             <p key={i} className="text-[clamp(0.8rem,2.5vw,0.95rem)] md:text-[clamp(0.9rem,2vh,1.25rem)] text-[#e0f0ed] leading-snug font-medium">
@@ -990,28 +1003,16 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           ))}
         </div>
 
-        <div className="md:hidden mt-auto flex-shrink-0 flex flex-col gap-2">
-          {(slide.imagen_mobile || slide.imagen_desktop) && (
-            <div className="relative w-full h-[20vh] rounded-xl overflow-hidden border border-[#00c7b1]/15">
-              <img
-                src={encodeImagePath((slide.imagen_mobile || slide.imagen_desktop)!)}
-                alt={carrera.nombre}
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ objectPosition: slide.imagen_mobile ? 'center' : (slide.imagen_desktop_position || 'top') }}
-              />
-            </div>
-          )}
-          {slide.badges && (
-            <div className="grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2">
-              {slide.badges.map((badge, i) => (
-                <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center text-center">
-                  <span className="block text-[0.45rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
-                  <span className={`block text-white font-extrabold mt-0.5 ${badge.value.length > 35 ? 'text-[0.6rem]' : 'text-xs'}`}>{badge.value}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {slide.badges && (
+          <div className="md:hidden mt-auto flex-shrink-0 grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2">
+            {slide.badges.map((badge, i) => (
+              <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center text-center">
+                <span className="block text-[0.45rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
+                <span className={`block text-white font-extrabold mt-0.5 ${badge.value.length > 35 ? 'text-[0.6rem]' : 'text-xs'}`}>{badge.value}</span>
+              </div>
+            ))}
+          </div>
+        )}
         {slide.badges && (
           <div className="hidden md:grid mt-auto grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
             {slide.badges.map((badge, i) => (
