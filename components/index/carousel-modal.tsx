@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug } from './types';
+import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
 
 interface Props {
   carrera: Carrera;
@@ -982,18 +982,21 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           </>); })()}
         </div>
 
-        {/* Mobile: imagen de la carrera como banner bajo el título */}
-        {(slide.imagen_mobile || slide.imagen_desktop) && (
-          <div className="md:hidden flex-shrink-0 relative w-full h-[22vh] rounded-xl overflow-hidden border border-[#00c7b1]/15 mt-3">
-            <img
-              src={encodeImagePath((slide.imagen_mobile || slide.imagen_desktop)!)}
-              alt={carrera.nombre}
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ objectPosition: slide.imagen_mobile ? 'center' : (slide.imagen_desktop_position || 'top') }}
-            />
-            <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 70%, rgba(1,31,23,0.55) 100%)' }} />
-          </div>
-        )}
+        {/* Mobile: banner bajo el título — foto mobile si existe, si no cover generado */}
+        <div className="md:hidden flex-shrink-0 relative w-full h-[22vh] rounded-xl overflow-hidden border border-[#00c7b1]/15 mt-3">
+          {slide.imagen_mobile ? (
+            <>
+              <img
+                src={encodeImagePath(slide.imagen_mobile)}
+                alt={carrera.nombre}
+                className="absolute inset-0 w-full h-full object-cover object-center"
+              />
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 70%, rgba(1,31,23,0.55) 100%)' }} />
+            </>
+          ) : (
+            <CareerCoverArt carrera={carrera} />
+          )}
+        </div>
 
         <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,2vh,1rem)] md:gap-[clamp(0.25rem,1.5vh,0.5rem)]">
           {slide.bullets.map((b, i) => (
@@ -1209,6 +1212,77 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Cover art generado por carrera (banner mobile de la portada) ──
+// Ícono según el área de estudio + variaciones (dirección del degradado,
+// posición del glow, rotación) derivadas del nombre, para que cada carrera
+// tenga un cover propio sin mantener archivos de imagen.
+
+const COVER_ICONS: Record<string, string> = {
+  derecho: 'M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z',
+  tecnologia: 'M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z',
+  negocios: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z',
+  salud: 'M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z',
+  educacion: 'M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5',
+  comunicacion: 'M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46',
+  ambiente: 'M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 01-1.161.886l-.143.048a1.107 1.107 0 00-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 01-1.652.928l-.679-.906a1.125 1.125 0 00-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 00-8.862 12.872M12.75 3.031a9 9 0 016.69 14.036m0 0l-.177-.529A2.25 2.25 0 0017.128 15H16.5l-.324-.324a1.453 1.453 0 00-2.328.377l-.036.073a1.586 1.586 0 01-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 01-5.276 3.67m0 0a9 9 0 01-10.275-4.835M15.75 9c0 .896-.393 1.7-1.016 2.25',
+  turismo: 'M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z',
+  gobierno: 'M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z',
+  rrhh: 'M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z',
+  deporte: 'M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0',
+  default: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z',
+};
+
+function CareerCoverArt({ carrera }: { carrera: Carrera }) {
+  let h = 0;
+  for (const c of carrera.nombre) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  const icon = COVER_ICONS[getAreaForCarrera(carrera) || 'default'] || COVER_ICONS.default;
+  const uid = `cv${h % 100000}`;
+  const dirs = [
+    { x1: 0, y1: 0, x2: 1, y2: 1 },
+    { x1: 1, y1: 0, x2: 0, y2: 1 },
+    { x1: 0, y1: 1, x2: 1, y2: 0 },
+    { x1: 0, y1: 0, x2: 0, y2: 1 },
+  ];
+  const d = dirs[h % 4];
+  const rot = (h % 5) * 4 - 8;
+  const iconX = 470 + (h % 3) * 30;
+  const glowX = (h >> 3) % 2 ? 620 : 130;
+  const ringX = glowX === 620 ? 90 : 600;
+  const dots = (h >> 5) % 2 === 0;
+
+  return (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 720 360" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label={carrera.nombre}>
+      <defs>
+        <linearGradient id={`${uid}-g`} x1={d.x1} y1={d.y1} x2={d.x2} y2={d.y2}>
+          <stop offset="0" stopColor="#06251d" />
+          <stop offset="0.55" stopColor="#0a2f26" />
+          <stop offset="1" stopColor="#0e3d30" />
+        </linearGradient>
+        <radialGradient id={`${uid}-glow`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#00c7b1" stopOpacity="0.16" />
+          <stop offset="1" stopColor="#00c7b1" stopOpacity="0" />
+        </radialGradient>
+        <pattern id={`${uid}-p`} width="28" height="28" patternUnits="userSpaceOnUse">
+          {dots
+            ? <circle cx="2" cy="2" r="1.3" fill="#00c7b1" opacity="0.10" />
+            : <path d="M0 28L28 0" stroke="#00c7b1" strokeWidth="0.6" opacity="0.07" />}
+        </pattern>
+      </defs>
+      <rect width="720" height="360" fill={`url(#${uid}-g)`} />
+      <rect width="720" height="360" fill={`url(#${uid}-p)`} />
+      <circle cx={glowX} cy="150" r="230" fill={`url(#${uid}-glow)`} />
+      <circle cx={ringX} cy="290" r="150" fill="none" stroke="#00c7b1" strokeWidth="1.2" opacity="0.12" />
+      <circle cx={ringX} cy="290" r="105" fill="none" stroke="#00c7b1" strokeWidth="0.8" opacity="0.08" />
+      <g transform={`translate(${iconX}, 55) scale(10.5) rotate(${rot} 12 12)`}>
+        <path d={icon} fill="none" stroke="#00c7b1" strokeWidth="0.85" strokeLinecap="round" strokeLinejoin="round" opacity="0.34" />
+      </g>
+      <g transform="translate(52, 250) scale(2.6)">
+        <path d={icon} fill="none" stroke="#00ffe1" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" />
+      </g>
+    </svg>
   );
 }
 
