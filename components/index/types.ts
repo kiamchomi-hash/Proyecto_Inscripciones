@@ -4,6 +4,8 @@ export interface SlidePortada {
   type: 'portada';
   imagen_desktop?: string;
   imagen_desktop_position?: string;
+  // Multiplicador de brillo CSS para imagen_desktop (ej. 1.5); sin campo = sin filtro
+  imagen_brightness?: number;
   imagen_mobile?: string;
   bullets: string[];
   badges?: { label: string; value: string }[];
