@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import TurnstileWidget from '@/components/turnstile-widget';
 import './contacto.css';
@@ -63,45 +62,35 @@ function ContactForm() {
     setSubmitting(true);
     setError('');
 
-    // Verificar token Turnstile server-side
     try {
-      const verifyRes = await fetch('/api/verify-turnstile', {
+      const response = await fetch('/api/formularios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: turnstileToken }),
+        body: JSON.stringify({
+          kind: 'consulta',
+          token: turnstileToken,
+          payload: {
+            carrera: null,
+            tipo: null,
+            modalidad: null,
+            equivalencias: false,
+            nombre,
+            apellido,
+            email,
+            telefono,
+            localidad,
+          },
+        }),
       });
-      const verifyData = await verifyRes.json();
-      if (!verifyData.success) {
-        setError('No se pudo verificar el CAPTCHA. Intentá de nuevo.');
-        setSubmitting(false);
-        setTurnstileToken('');
-        return;
-      }
+      if (!response.ok) throw new Error('submit_failed');
     } catch {
-      setError('Error de conexión. Intentá de nuevo.');
+      setError('Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
       setSubmitting(false);
       setTurnstileToken('');
       return;
     }
 
-    const { error: insertError } = await supabase.from('consultas').insert({
-      carrera: null,
-      tipo: null,
-      modalidad: null,
-      equivalencias: false,
-      nombre: nombre.trim() || null,
-      apellido: apellido.trim() || null,
-      email: email.trim() || null,
-      telefono: telefono.trim() || null,
-      localidad: localidad.trim() || null,
-    });
-
     setSubmitting(false);
-    if (insertError) {
-      setError('Hubo un error al enviar. Intenta de nuevo o contactanos por WhatsApp.');
-      return;
-    }
-
     setSuccess(true);
     setTimeout(() => {
       setSuccess(false);
@@ -202,6 +191,7 @@ function ContactForm() {
 export default function ContactoPageContent() {
   return (
     <main className="max-w-6xl mx-auto px-5 sm:px-8 pb-20 sm:pb-12">
+      <h1 className="sr-only">Contacto con el CAU Villa Lugano</h1>
 
       {/* Spacer */}
       <div className="pt-2" />

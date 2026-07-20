@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
 import TurnstileWidget from '@/components/turnstile-widget';
+import { sanitizeContent } from '@/lib/sanitize-content';
 
 export interface CalendarWeek {
   label: string;
@@ -94,7 +94,7 @@ function DescriptionPanel({ desc }: { desc: string[] }) {
       <div className="flex-1 flex flex-col justify-center rounded-xl m-[1.5vh_20px] p-[1vh_25px]" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.1)' }}>
         <ul className="list-none flex flex-col h-full justify-evenly">
           {desc.map((item, i) => (
-            <li key={i} className="ca-desc-item" dangerouslySetInnerHTML={{ __html: item }} />
+            <li key={i} className="ca-desc-item" dangerouslySetInnerHTML={{ __html: sanitizeContent(item) }} />
           ))}
         </ul>
       </div>
@@ -340,14 +340,30 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
     onInteract?.();
   };
 
-  const handleChooseSame = async () => {
+  const submitRows = async (rows: Array<Record<string, unknown>>, token: string) => {
+    try {
+      const response = await fetch('/api/formularios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'clase', token, payload: { rows } }),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    } finally {
+      setTurnstileToken('');
+      setShowTurnstile(false);
+    }
+  };
+
+  const handleChooseSame = async (token: string) => {
     setError(null);
     const horarios = Array.from(selectedHours).sort((a, b) => a - b).map(i => `${hours[i].from}-${hours[i].to}`);
     const dias = selectedDays.map(d => d.num);
-    const { error: e } = await supabase.from('solicitudes_clase').insert({
+    const ok = await submitRows([{
       materia_id: materiaId, dias, horarios, nombre: nombre.trim() || null, telefono: telefono.trim(), bloqueo_semanal: bloqueoSemanal,
-    });
-    if (e) setError('Error al enviar. Intente más tarde.');
+    }], token);
+    if (!ok) setError('Error al enviar. Intente más tarde.');
     else { setSubmittedDays([...selectedDays]); setMode('done'); onDone(); }
   };
 
@@ -359,7 +375,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
     setMode('per-day');
   };
 
-  const handleSubmitPerDay = async () => {
+  const handleSubmitPerDay = async (token: string) => {
     setError(null);
     const rows = selectedDays.map(day => ({
       materia_id: materiaId,
@@ -372,51 +388,23 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
 
     if (rows.length === 0) { setError('Seleccioná al menos un horario por día.'); return; }
 
-    const { error: e } = await supabase.from('solicitudes_clase').insert(rows);
-    if (e) setError('Error al enviar. Intente más tarde.');
+    const ok = await submitRows(rows, token);
+    if (!ok) setError('Error al enviar. Intente más tarde.');
     else { setSubmittedDays(rows.map(r => selectedDays.find(d => d.num === r.dias[0])!)); setMode('done'); onDone(); }
   };
 
-  const verifyTurnstileServer = async (token: string): Promise<boolean> => {
-    try {
-      const res = await fetch('/api/verify-turnstile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      });
-      const data = await res.json();
-      return data.success === true;
-    } catch {
-      return false;
-    }
-  };
-
-  const handleTurnstileVerify = async (token: string) => {
+  const handleTurnstileVerify = (token: string) => {
     setTurnstileToken(token);
     const action = pendingSubmitRef.current;
     pendingSubmitRef.current = null;
-    const verified = await verifyTurnstileServer(token);
-    if (!verified) {
-      setError('No se pudo verificar el CAPTCHA. Intentá de nuevo.');
-      setTurnstileToken('');
-      setShowTurnstile(false);
-      return;
-    }
-    if (action === 'same') handleChooseSame();
-    else if (action === 'perday') handleSubmitPerDay();
+    if (action === 'same') void handleChooseSame(token);
+    else if (action === 'perday') void handleSubmitPerDay(token);
   };
 
-  const requestSubmit = async (action: 'same' | 'perday') => {
+  const requestSubmit = (action: 'same' | 'perday') => {
     if (turnstileToken) {
-      const verified = await verifyTurnstileServer(turnstileToken);
-      if (!verified) {
-        setError('No se pudo verificar el CAPTCHA. Intentá de nuevo.');
-        setTurnstileToken('');
-        setShowTurnstile(false);
-        return;
-      }
-      if (action === 'same') handleChooseSame();
-      else handleSubmitPerDay();
+      if (action === 'same') void handleChooseSame(turnstileToken);
+      else void handleSubmitPerDay(turnstileToken);
     } else {
       pendingSubmitRef.current = action;
       setShowTurnstile(true);
@@ -845,6 +833,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
 
             {/* Main content */}
             <main className="ca-main">
+              <h1 className="sr-only">Clases de apoyo en Villa Lugano</h1>
               {materia ? (
                 <div className="ca-panel flex flex-col h-full overflow-hidden" key={materia.id}>
                   {materia.en_construccion ? (

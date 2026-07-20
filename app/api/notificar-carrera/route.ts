@@ -1,25 +1,18 @@
+import { createHash } from 'node:crypto';
 import { NextResponse } from 'next/server';
-
-// Rate limiting en memoria: máximo 5 emails por IP cada 10 minutos
-const rateMap = new Map<string, { count: number; resetAt: number }>();
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_REQUESTS = 5;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  entry.count++;
-  return entry.count > MAX_REQUESTS;
-}
+import { createSupabaseAdmin } from '@/lib/supabase-admin';
 
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-    if (isRateLimited(ip)) {
+    const key = `notificar:${createHash('sha256').update(ip).digest('hex')}`;
+    const { data: allowed, error: rateError } = await createSupabaseAdmin().rpc('check_form_rate_limit', {
+      p_key: key,
+      p_max_requests: 5,
+      p_window_seconds: 600,
+    });
+    if (rateError) throw rateError;
+    if (!allowed) {
       return NextResponse.json({ error: 'Demasiadas solicitudes' }, { status: 429 });
     }
 
@@ -35,7 +28,7 @@ export async function POST(req: Request) {
     const safeNombre = safe(nombre);
     const ahora = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
 
-    await resend.emails.send({
+    const sendPromise = resend.emails.send({
       from: 'CAU Villa Lugano <onboarding@resend.dev>',
       to: 'kiamchomi@gmail.com',
       subject: `Carrera sin slides: ${safeNombre}`,
@@ -46,6 +39,13 @@ export async function POST(req: Request) {
         <p>Cargá los slides desde la herramienta o con <code>/cargar_carrera</code>.</p>
       `,
     });
+    const result = await Promise.race([
+      sendPromise,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Resend timeout')), 8_000),
+      ),
+    ]);
+    if (result.error) throw result.error;
 
     return NextResponse.json({ ok: true });
   } catch (e) {

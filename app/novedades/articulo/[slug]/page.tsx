@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { sanitizeContent } from '@/lib/sanitize-content';
 import CopyLinkButton from '@/components/novedades/copy-link-button';
 import '../../novedades.css';
 
@@ -70,7 +71,7 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
   if (!data) notFound();
 
   const novedad = data as Novedad;
-  const shareUrl = `https://cauvlg.com.ar/novedades/articulo/${novedad.slug}`;
+  const shareUrl = `https://www.siglo21sur.com/novedades/articulo/${novedad.slug}`;
   const shareText = encodeURIComponent(novedad.titulo);
   const shareUrlEncoded = encodeURIComponent(shareUrl);
 
@@ -136,7 +137,7 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
             style={{ color: 'rgba(255,255,255,0.75)' }}
           >
             {novedad.contenido ? (
-              <div dangerouslySetInnerHTML={{ __html: novedad.contenido }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeContent(novedad.contenido) }} />
             ) : novedad.extracto ? (
               <p>{novedad.extracto}</p>
             ) : (

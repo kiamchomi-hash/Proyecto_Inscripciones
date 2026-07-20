@@ -340,7 +340,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
                 <button
                   onClick={() => { setShowFilters(!showFilters); setDesktopFilterSection(null); }}
                   className={`filter-toggle-btn ${hasFilters ? 'active' : ''}`}
-                  aria-label="Filtrar por área y duración"
+                  aria-label="Filtros por área y duración"
                   aria-expanded={showFilters}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -680,7 +680,8 @@ function prefetchImages(carrera: Carrera) {
   if (!carrera.slides?.length) return;
   const seen = new Set<string>();
   for (const slide of carrera.slides) {
-    const src = ('imagen_desktop' in slide && slide.imagen_desktop) || ('imagen' in slide && (slide as any).imagen);
+    const src = ('imagen_desktop' in slide && slide.imagen_desktop) ||
+      ('imagen' in slide && typeof slide.imagen === 'string' ? slide.imagen : undefined);
     if (src && !seen.has(src)) {
       seen.add(src);
       const link = document.createElement('link');
@@ -702,29 +703,33 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
   }, [carrera]);
 
   return (
-    <li
-      className="career-card group"
-      data-testid="career-card"
-      onClick={() => onClick(carrera)}
-      onMouseEnter={handlePrefetch}
-      onTouchStart={handlePrefetch}
-    >
-      {badge && (
-        <span className={`career-badge ${carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
-          {badge}
-        </span>
-      )}
-      <div className="flex-grow relative min-w-0">
-        {prefix && (
-          <span className="career-prefix block mb-0.5">{prefix}</span>
+    <li className="contents">
+      <button
+        type="button"
+        className="career-card group w-full"
+        data-testid="career-card"
+        onClick={() => onClick(carrera)}
+        onMouseEnter={handlePrefetch}
+        onTouchStart={handlePrefetch}
+        aria-label={`Ver detalles de ${carrera.nombre}`}
+      >
+        {badge && (
+          <span className={`career-badge ${carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
+            {badge}
+          </span>
         )}
-        <span className="block font-semibold text-[1.1rem] leading-tight text-white">
-          {cleanName}
+        <div className="flex-grow relative min-w-0">
+          {prefix && (
+            <span className="career-prefix block mb-0.5">{prefix}</span>
+          )}
+          <span className="block font-semibold text-[1.1rem] leading-tight text-white">
+            {cleanName}
+          </span>
+        </div>
+        <span className="text-[0.65rem] min-[380px]:text-xs font-bold detail-link px-2 min-[380px]:px-4 py-1.5 min-[380px]:py-2 rounded-lg cursor-pointer text-center self-center">
+          Ver detalles
         </span>
-      </div>
-      <span className="text-[0.65rem] min-[380px]:text-xs font-bold detail-link px-2 min-[380px]:px-4 py-1.5 min-[380px]:py-2 rounded-lg cursor-pointer text-center self-center">
-        Ver detalles
-      </span>
+      </button>
     </li>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
+import { sanitizeContent } from '@/lib/sanitize-content';
 
 interface Props {
   carrera: Carrera;
@@ -127,7 +128,7 @@ function PanelContent({ panel, showTitle, cuatStartIdx }: { panel: Panel; showTi
 // ── PDF download helper (in-page, no new window) ──
 async function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
   const jsPDFModule = await import('jspdf');
-  const jsPDF = jsPDFModule.default ?? (jsPDFModule as any).jsPDF;
+  const jsPDF = jsPDFModule.default ?? jsPDFModule.jsPDF;
   await import('jspdf-autotable');
   const yearPanels = panels.filter(p => p.tipo === 'year') as YearPanel[];
 
@@ -806,15 +807,31 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
   const [visible, setVisible] = useState(initiallyVisible);
   const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const totalSlides = slides.length;
   const { cleanName } = getCleanName(carrera);
 
   useEffect(() => {
+    openerRef.current = document.activeElement as HTMLElement | null;
+    const inerted: Element[] = [];
+    let current: Element | null = dialogRef.current;
+    while (current?.parentElement) {
+      for (const sibling of Array.from(current.parentElement.children)) {
+        if (sibling !== current && !sibling.hasAttribute('inert')) {
+          sibling.setAttribute('inert', '');
+          inerted.push(sibling);
+        }
+      }
+      current = current.parentElement;
+    }
     requestAnimationFrame(() => setVisible(true));
     closeBtnRef.current?.focus();
     document.documentElement.style.overflow = 'hidden';
     return () => {
       document.documentElement.style.overflow = '';
+      inerted.forEach((element) => element.removeAttribute('inert'));
+      openerRef.current?.focus();
     };
   }, []);
 
@@ -824,7 +841,26 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
   }, [onClose]);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? []);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [handleClose]);
@@ -836,7 +872,13 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
     : '';
 
   return (
-    <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+    <div
+      ref={dialogRef}
+      className="fixed inset-0 z-[5000] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Detalles de ${carrera.nombre}`}
+    >
       <div className={`absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`} onClick={handleClose} />
 
       {/* Panel */}
@@ -1090,7 +1132,7 @@ function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluaci
           <span key={tag} className="bg-[#00c7b1]/8 border border-[#00c7b1]/22 text-[#b4d3ce] text-[0.6rem] sm:text-[0.7rem] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-semibold">{tag}</span>
         ))}
       </div>
-      <p className="text-xs sm:text-sm text-[#7ca19b] text-center max-w-sm leading-relaxed [&_b]:text-[#00c7b1]" dangerouslySetInnerHTML={{ __html: slide.nota }} />
+      <p className="text-xs sm:text-sm text-[#7ca19b] text-center max-w-sm leading-relaxed [&_b]:text-[#00c7b1]" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.nota) }} />
     </div>
   );
 }
@@ -1159,7 +1201,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
       <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-10 flex flex-col justify-center gap-5 md:gap-8 overflow-y-auto custom-scrollbar">
         {/* Título */}
         <div className="text-center md:text-left">
-          <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>' }}></h3>
+          <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>') }}></h3>
           {slide.subtitulo && (
             <p className="text-[#7ca19b] text-sm md:text-base mt-2">{slide.subtitulo}</p>
           )}

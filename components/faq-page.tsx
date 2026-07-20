@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon, ChevronDownIcon } from './icons';
-import { supabase } from '@/lib/supabase';
 import TurnstileWidget from '@/components/turnstile-widget';
 
 /* ── Data ──────────────────────────────────────────────── */
@@ -410,15 +409,14 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
 
-  async function verifyToken(): Promise<boolean> {
+  async function saveQuestion(payload: Record<string, unknown>) {
     try {
-      const res = await fetch('/api/verify-turnstile', {
+      const response = await fetch('/api/formularios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: turnstileToken }),
+        body: JSON.stringify({ kind: 'faq', token: turnstileToken, payload }),
       });
-      const data = await res.json();
-      return data.success === true;
+      return response.ok;
     } catch {
       return false;
     }
@@ -432,16 +430,9 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const c = contactPub.trim().slice(0, 200);
     setErrorPub(false);
     setSubmitting(true);
-    const verified = await verifyToken();
-    if (!verified) { setErrorPub(true); setSubmitting(false); setTurnstileToken(''); return; }
-    const { error } = await supabase.from('faq_preguntas').insert({
-      titulo: t,
-      descripcion: d,
-      modo: 'publica',
-      contacto: c,
-    });
+    const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'publica', contacto: c });
     setSubmitting(false);
-    if (error) { setErrorPub(true); return; }
+    if (!saved) { setErrorPub(true); setTurnstileToken(''); return; }
     recordSubmission();
     localStorage.setItem('faq-contact', c);
     setTurnstileToken('');
@@ -457,17 +448,9 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const n = name.trim().slice(0, 80) || null;
     setErrorPriv(false);
     setSubmitting(true);
-    const verified = await verifyToken();
-    if (!verified) { setErrorPriv(true); setSubmitting(false); setTurnstileToken(''); return; }
-    const { error } = await supabase.from('faq_preguntas').insert({
-      titulo: t,
-      descripcion: d,
-      modo: 'privada',
-      contacto: c,
-      nombre_contacto: n,
-    });
+    const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'privada', contacto: c, nombre_contacto: n });
     setSubmitting(false);
-    if (error) { setErrorPriv(true); return; }
+    if (!saved) { setErrorPriv(true); setTurnstileToken(''); return; }
     recordSubmission();
     localStorage.setItem('faq-contact', c);
     if (n) localStorage.setItem('faq-contact-name', n);
@@ -805,6 +788,7 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
   return (
     <>
       <section className="faq-section w-full px-4 pt-2 pb-14 md:pt-4 md:pb-16">
+        <h1 className="sr-only">Preguntas frecuentes sobre Universidad Siglo 21</h1>
         <div className="max-w-7xl mx-auto">
 
           {/* Layout */}

@@ -89,6 +89,8 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   const [visible, setVisible] = useState(initiallyVisible);
   const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const { prefix, cleanName } = getCareerPrefix(carrera);
   const isIA = carrera.nivel === 'Identidad Argentina';
 
@@ -102,11 +104,25 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   const headerBg = isIA ? '#081420' : '#051a1a';
 
   useEffect(() => {
+    openerRef.current = document.activeElement as HTMLElement | null;
+    const inerted: Element[] = [];
+    let current: Element | null = dialogRef.current;
+    while (current?.parentElement) {
+      for (const sibling of Array.from(current.parentElement.children)) {
+        if (sibling !== current && !sibling.hasAttribute('inert')) {
+          sibling.setAttribute('inert', '');
+          inerted.push(sibling);
+        }
+      }
+      current = current.parentElement;
+    }
     requestAnimationFrame(() => setVisible(true));
     closeBtnRef.current?.focus();
     document.documentElement.style.overflow = 'hidden';
     return () => {
       document.documentElement.style.overflow = '';
+      inerted.forEach((element) => element.removeAttribute('inert'));
+      openerRef.current?.focus();
     };
   }, []);
 
@@ -120,7 +136,24 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
+      if (e.key === 'Escape') {
+        handleClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? []);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -163,6 +196,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-[5000] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"

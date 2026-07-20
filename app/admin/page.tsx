@@ -72,14 +72,18 @@ export default function AdminDashboard() {
   const aprobar = async (id: string, materiaId: string | null, rol: string) => {
     if (!materiaId && rol === 'profesor') return;
     setSaving(id);
-    await supabase.from('profesores').update({ estado: 'aprobado', materia_id: materiaId, rol }).eq('id', id);
+    await fetch('/api/admin/profesores', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, estado: 'aprobado', materia_id: materiaId, rol }),
+    });
     await loadSolicitudes();
     setSaving(null);
   };
 
   const rechazar = async (id: string) => {
     setSaving(id);
-    await supabase.from('profesores').delete().eq('id', id);
+    await fetch(`/api/admin/profesores?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
     await loadSolicitudes();
     setSaving(null);
   };
@@ -87,7 +91,7 @@ export default function AdminDashboard() {
   const eliminar = async (id: string, email: string | null) => {
     if (!confirm(`¿Eliminar a ${email || 'este profesor'}? Se perderá su acceso.`)) return;
     setSaving(id);
-    await supabase.from('profesores').delete().eq('id', id);
+    await fetch(`/api/admin/profesores?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
     await loadSolicitudes();
     setSaving(null);
   };
@@ -121,16 +125,6 @@ export default function AdminDashboard() {
         </svg>
       ),
     },
-    {
-      title: 'Alumnos CAU',
-      description: 'Listado de alumnos, datos personales, analíticos y pagos',
-      href: '/admin/alumnos',
-      icon: (
-        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H5.228A2 2 0 013 17.16V15.87a4.5 4.5 0 018.243-2.664M12.75 7.5a3 3 0 11-6 0 3 3 0 016 0zm8.25 2.25a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-        </svg>
-      ),
-    },
   ];
 
   const getMateriaLabel = (id: string | null) => materias.find(m => m.id === id)?.label ?? '—';
@@ -141,7 +135,7 @@ export default function AdminDashboard() {
         {/* Navegación */}
         <div>
           <h2 className="text-xl font-bold text-white mb-6 text-center">¿Qué querés administrar?</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {cards.map((card) => (
               <button
                 key={card.href}
