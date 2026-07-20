@@ -3,6 +3,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID")!;
+const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET")!;
 const EMAIL_TO = "kiamchomi@gmail.com";
 
 interface WebhookPayload {
@@ -20,6 +21,16 @@ function formatDate(iso: string): string {
 function esc(val: unknown): string {
   const s = String(val ?? "");
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function secureEqual(a: string, b: string): boolean {
+  const encoder = new TextEncoder();
+  const left = encoder.encode(a);
+  const right = encoder.encode(b);
+  if (left.length !== right.length) return false;
+  let diff = 0;
+  for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i];
+  return diff === 0;
 }
 
 /* ── Email template with CAU brand ── */
@@ -158,6 +169,7 @@ async function sendEmail(subject: string, html: string) {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
     body: JSON.stringify({ from: "CAU Villa Lugano <onboarding@resend.dev>", to: [EMAIL_TO], subject, html }),
+    signal: AbortSignal.timeout(8_000),
   });
   if (!res.ok) console.error("Resend error:", await res.text());
   return res.ok;
@@ -168,6 +180,7 @@ async function sendTelegram(text: string) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: "Markdown" }),
+    signal: AbortSignal.timeout(8_000),
   });
   if (!res.ok) console.error("Telegram error:", await res.text());
   return res.ok;
@@ -178,10 +191,21 @@ Deno.serve(async (req: Request) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
+  if (!WEBHOOK_SECRET) {
+    console.error("WEBHOOK_SECRET no configurado");
+    return new Response("Server misconfigured", { status: 500 });
+  }
+  const authorization = req.headers.get("authorization") || "";
+  if (!secureEqual(authorization, `Bearer ${WEBHOOK_SECRET}`)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   try {
     const payload: WebhookPayload = await req.json();
     const { table, record } = payload;
+    if (payload.type !== "INSERT" || payload.schema !== "public" || !record || typeof record !== "object") {
+      return new Response("Invalid webhook payload", { status: 400 });
+    }
 
     let message: { subject: string; telegram: string; html: string };
 

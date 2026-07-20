@@ -126,3 +126,13 @@ body::after {
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%);
 }
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

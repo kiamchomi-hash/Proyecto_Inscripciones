@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Turnstile } from 'react-turnstile';
 
 type TurnstileWidgetProps = {
@@ -9,14 +10,17 @@ type TurnstileWidgetProps = {
 
 export default function TurnstileWidget({ onVerify, onExpire }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const onVerifyRef = useRef(onVerify);
 
-  if (!sitekey) {
-    return (
-      <p className="w-full text-[11px] text-red-400">
-        CAPTCHA no configurado.
-      </p>
-    );
-  }
+  useEffect(() => {
+    onVerifyRef.current = onVerify;
+  }, [onVerify]);
+
+  useEffect(() => {
+    if (!sitekey) onVerifyRef.current('rate-limit-only');
+  }, [sitekey]);
+
+  if (!sitekey) return null;
 
   return (
     <Turnstile

@@ -24,6 +24,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -93,7 +95,35 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!menuOpen) return;
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeMenu(); };
+    const menu = menuRef.current;
+    const background = Array.from(document.body.children)
+      .filter((element) => !element.contains(navRef.current));
+    background.forEach((element) => element.setAttribute('inert', ''));
+
+    const focusable = () => Array.from(menu?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ) ?? []);
+    const focusTimer = window.setTimeout(() => focusable()[0]?.focus(), 50);
+    const menuButton = menuButtonRef.current;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeMenu();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = focusable();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     const handleClick = () => closeMenu();
     document.addEventListener('keydown', handleKey);
     document.addEventListener('click', handleClick);
@@ -104,6 +134,9 @@ export default function Navbar() {
       document.removeEventListener('click', handleClick);
       document.body.classList.remove('overflow-hidden');
       document.documentElement.classList.remove('overflow-hidden');
+      background.forEach((element) => element.removeAttribute('inert'));
+      window.clearTimeout(focusTimer);
+      menuButton?.focus();
     };
   }, [menuOpen, closeMenu]);
 
@@ -118,9 +151,11 @@ export default function Navbar() {
       <div className="navbar-container">
         {/* Mobile toggle */}
         <button
+          ref={menuButtonRef}
           className="mobile-menu-btn"
           aria-label="Abrir menu de navegacion"
           aria-expanded={menuOpen}
+          aria-controls="mobile-navigation-menu"
           onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -138,7 +173,15 @@ export default function Navbar() {
         </div>
 
         {/* Menu */}
-        <div className={`navbar-menu${menuOpen ? ' active' : ''}`} role="dialog" aria-label="Menu de navegacion" onClick={(e) => e.stopPropagation()}>
+        <div
+          ref={menuRef}
+          id="mobile-navigation-menu"
+          className={`navbar-menu${menuOpen ? ' active' : ''}`}
+          role={menuOpen ? 'dialog' : undefined}
+          aria-modal={menuOpen ? true : undefined}
+          aria-label="Menu de navegacion"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="menu-header lg:hidden">
             <span style={{ fontFamily: "'Unbounded',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
               CAU <span style={{ fontFamily: "'Unbounded',sans-serif", color: '#00c7b1' }}>Siglo 21</span>

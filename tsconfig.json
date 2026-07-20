@@ -39,6 +39,7 @@
     "node_modules",
     "dist",
     "shared_skills",
-    "supabase"
+    "supabase",
+    ".next/dev"
   ]
 }

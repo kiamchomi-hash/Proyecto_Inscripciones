@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowser } from '@/lib/supabase-auth';
+import { sanitizeContent } from '@/lib/sanitize-content';
 
 interface Materia {
   id: string;
@@ -133,7 +134,7 @@ function RichBulletEditor({ value, onChange }: { value: string; onChange: (html:
         onInput={handleInput}
         className="admin-input w-full min-h-[2.5rem] whitespace-pre-wrap [&_strong]:font-bold [&_strong]:text-[#00c7b1]"
         style={{ lineHeight: '1.5' }}
-        dangerouslySetInnerHTML={{ __html: value }}
+        dangerouslySetInnerHTML={{ __html: sanitizeContent(value) }}
       />
       <button type="button" onClick={applyBold} className="admin-btn-small" title="Seleccioná texto y hacé click para negrita">
         <strong>B</strong>
@@ -472,7 +473,7 @@ function PreviewSection({ materia }: { materia: Materia }) {
             {materia.descripcion.map((d, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#00c7b1] shrink-0" />
-                <span dangerouslySetInnerHTML={{ __html: d }} />
+                <span dangerouslySetInnerHTML={{ __html: sanitizeContent(d) }} />
               </li>
             ))}
           </ul>

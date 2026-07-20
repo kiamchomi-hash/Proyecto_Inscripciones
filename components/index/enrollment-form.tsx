@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { type Carrera, CATEGORIES, getCategoryForCarrera } from './types';
 
@@ -94,47 +93,35 @@ export default function EnrollmentForm({ carreras }: Props) {
     setSubmitting(true);
     setError('');
 
-    // Verificar token Turnstile server-side
     try {
-      const verifyRes = await fetch('/api/verify-turnstile', {
+      const response = await fetch('/api/formularios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: turnstileToken }),
+        body: JSON.stringify({
+          kind: 'consulta',
+          token: turnstileToken,
+          payload: {
+            carrera: selectedCarrera || null,
+            tipo: activeFilter ? (CATEGORIES.find(c => c.id === activeFilter)?.label || activeFilter) : null,
+            modalidad: 'virtual',
+            equivalencias,
+            nombre,
+            apellido,
+            email,
+            telefono,
+            localidad,
+          },
+        }),
       });
-      const verifyData = await verifyRes.json();
-      if (!verifyData.success) {
-        setError('No se pudo verificar el CAPTCHA. Intentá de nuevo.');
-        setSubmitting(false);
-        setTurnstileToken('');
-        return;
-      }
+      if (!response.ok) throw new Error('submit_failed');
     } catch {
-      setError('Error de conexión. Intentá de nuevo.');
+      setError('Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
       setSubmitting(false);
       setTurnstileToken('');
       return;
     }
 
-    const { error: insertError } = await supabase.from('consultas').insert({
-      carrera: selectedCarrera || null,
-      tipo: activeFilter ? (CATEGORIES.find(c => c.id === activeFilter)?.label || activeFilter) : null,
-      modalidad: 'virtual',
-      equivalencias,
-      nombre: nombre.trim() || null,
-      apellido: apellido.trim() || null,
-      email: email.trim() || null,
-      telefono: telefono.trim() || null,
-      localidad: localidad.trim() || null,
-    });
-
     setSubmitting(false);
-
-    if (insertError) {
-      setError('Hubo un error al enviar. Intenta de nuevo o contactanos por WhatsApp.');
-      console.error('Form submit error:', insertError.message);
-      return;
-    }
-
     setSuccess(true);
   };
 
