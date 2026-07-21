@@ -4,7 +4,6 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
 import { getEscuelaIA } from './identidad-argentina';
-import { IdentidadArgentinaMark } from './ia-mark';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
@@ -715,7 +714,6 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
         onTouchStart={handlePrefetch}
         aria-label={`Ver detalles de ${carrera.nombre}`}
       >
-        {isIA && <IdentidadArgentinaMark className="ia-card-mark" />}
         {badge && (
           <span className={`career-badge ${carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
             {badge}
