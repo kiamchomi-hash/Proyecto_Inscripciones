@@ -53,7 +53,9 @@ Pages are React Server Components that fetch data from Supabase at request/reval
 ### Component Organization
 
 - `components/navbar.tsx` — Client component (`'use client'`), shared via `app/layout.tsx`
-- `components/index/` — Home page components: `hero.tsx`, `careers-catalog.tsx`, `enrollment-form.tsx`, `career-modal.tsx`, `carousel-modal.tsx`, `abogacia-modal.tsx`, `footer.tsx`, `types.ts`
+- `components/index/` — Home page components: `hero.tsx`, `careers-catalog.tsx`, `enrollment-form.tsx`, `career-modal.tsx`, `carousel-modal.tsx`, `ia-modal.tsx`, `abogacia-modal.tsx`, `footer.tsx`, `types.ts`
+
+  Selección de modal en `careers-catalog.tsx`: `nivel === 'Identidad Argentina'` → `ia-modal.tsx` (slides con la marca del convenio); si tiene `slides` → `carousel-modal.tsx`; si no → `career-modal.tsx`.
 - `components/clases-apoyo/` — Support classes components
 - `components/faq-page.tsx` — FAQ client component
 - `components/scroll-to-top.tsx` — Scroll utilities

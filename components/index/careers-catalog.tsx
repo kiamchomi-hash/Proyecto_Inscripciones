@@ -7,6 +7,7 @@ import { getEscuelaIA } from './identidad-argentina';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
+const IAModal = dynamic(() => import('./ia-modal'));
 
 // Levenshtein distance for fuzzy search
 function levenshtein(a: string, b: string): number {
@@ -230,7 +231,8 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
   const handleCareerClick = useCallback((carrera: Carrera) => {
     setSelectedCarrera(carrera);
-    if (!carrera.slides || carrera.slides.length === 0) {
+    // Las de convenio tienen su propio modal de slides: no cuentan como faltantes
+    if (carrera.nivel !== 'Identidad Argentina' && (!carrera.slides || carrera.slides.length === 0)) {
       fetch('/api/notificar-carrera', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -590,7 +592,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
       {/* Career Modal */}
       {selectedCarrera && (
-        selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
+        selectedCarrera.nivel === 'Identidad Argentina' ? (
+          <IAModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
+        ) : selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
           <CarouselModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
         ) : (
           <CareerModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
