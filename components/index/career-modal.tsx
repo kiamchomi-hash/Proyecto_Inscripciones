@@ -3,7 +3,6 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
-import { IdentidadArgentinaMark } from './ia-mark';
 
 interface Props {
   carrera: Carrera;
@@ -229,7 +228,6 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
           className={`flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b ${isIA ? 'ia-modal-header' : ''}`}
           style={{ background: headerBg, borderColor: accentBorder }}
         >
-          {isIA && <IdentidadArgentinaMark className="ia-modal-mark" />}
           <div className="relative flex justify-between items-center gap-3">
             <h3 id="modal-title" className="text-lg sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0">
               {prefix && (
@@ -266,26 +264,36 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
 
           {/* Metadata badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-3 sm:mt-4">
-            {metaItems.map(item => (
+            {metaItems.map(item => {
+              // En el convenio la escuela es el dato principal: bloque amarillo lleno
+              const esPrimario = isIA && item.label === 'Escuela';
+              return (
               <div
                 key={item.label}
                 className="rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2"
-                style={{ background: accentBg, border: isIA ? `1px solid ${accentBorder}` : undefined }}
+                style={
+                  esPrimario
+                    ? { background: 'rgba(241,207,28,0.94)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
+                    : isIA
+                      ? { background: 'rgba(255,255,255,0.075)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.12)' }
+                      : { background: accentBg }
+                }
               >
                 <span
                   className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-widest"
-                  style={{ color: isIA ? '#7ecbe6' : accent }}
+                  style={{ color: esPrimario ? 'rgba(16,24,32,0.7)' : isIA ? '#7ecbe6' : accent }}
                 >
                   {item.label}
                 </span>
                 <span
                   className="block text-[0.8rem] sm:text-sm font-semibold mt-0.5 leading-tight"
-                  style={{ color: isIA && item.label === 'Escuela' ? accentLight : '#fff' }}
+                  style={{ color: esPrimario ? '#101820' : '#fff' }}
                 >
                   {item.value}
                 </span>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -316,7 +324,10 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
               {iaDocente && iaDocente.nombre && (
                 <div
                   className="rounded-xl p-4 sm:p-5"
-                  style={{ background: `${accentBg}80`, border: `1px solid ${accent}25` }}
+                  style={{
+                    background: 'rgba(255,255,255,0.055)',
+                    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.12)',
+                  }}
                 >
                   <h4
                     className="text-sm font-bold uppercase tracking-widest mb-3 flex items-center gap-2"
@@ -362,7 +373,8 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
                         key={i}
                         className="rounded-lg p-3 sm:p-4"
                         style={{
-                          background: `${accentBg}99`,
+                          background: 'rgba(255,255,255,0.05)',
+                          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
                           borderLeft: `3px solid ${esMasterclass ? accentLight : accent}`,
                         }}
                       >
