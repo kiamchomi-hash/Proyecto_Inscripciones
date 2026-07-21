@@ -7,7 +7,7 @@
 // isotipo de la academia. Referencias: identidadargentina.com.ar y el render de
 // Remotion (Desktop\Academia Identidad Argentina\remotion-diplomaturas).
 
-import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 
@@ -18,6 +18,9 @@ interface Props {
 
 const AZUL = '#0090c1';
 const AMARILLO = '#f1cf1c';
+// El azul de marca sobre el fondo tinta queda muy apagado en textos chicos, asi
+// que los rotulos usan esta version aclarada.
+const AZUL_CLARO = '#7ecbe6';
 
 // ── Parsers de los campos que llegan de Supabase ──
 
@@ -87,18 +90,6 @@ function parsePlan(plan: string | null): Modulo[] {
   return modulos;
 }
 
-/** Iniciales del docente para el avatar */
-function iniciales(nombre: string): string {
-  return nombre
-    .replace(/\b(Lic\.?|Dr\.?|Dra\.?|Mg\.?|Prof\.?|Cr\.?)\s*/gi, '')
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(p => p[0])
-    .join('')
-    .toUpperCase();
-}
-
 // ── Isotipo de la academia (mismo path que el render de Remotion) ──
 function Isotipo({ className }: { className?: string }) {
   return (
@@ -115,72 +106,26 @@ function Isotipo({ className }: { className?: string }) {
 /** Rotulo de seccion de un slide */
 function Rotulo({ children }: { children: React.ReactNode }) {
   return (
-    <p className="flex-shrink-0 text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL }}>
+    <p className="flex-shrink-0 text-[0.6rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL_CLARO }}>
       {children}
     </p>
   );
 }
 
 /**
- * Lista con vinetas que se recorta al alto disponible.
+ * Lista con vinetas.
  *
- * Los slides no scrollean, asi que sobra contenido en pantallas bajas. En vez
- * de dejar que se corte a mitad de linea, se mide cuantos items entran y se
- * descartan los ultimos: el recorte cae siempre en items enteros.
+ * Crece con su contenido (`min-h-fit`) y se centra cuando sobra alto. Si no
+ * entra, el slide que la contiene scrollea: no se recorta ningun item.
  */
 function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [tope, setTope] = useState(items.length);
-  // Contador que fuerza un render: si solo reseteamos `tope` al valor que ya
-  // tiene, React no vuelve a renderizar y la lista no se remide.
-  const [, setPasada] = useState(0);
-  // Los padres arman `items` en cada render, asi que las dependencias tienen
-  // que mirar el contenido y no la identidad del array
-  const clave = items.join('|');
-
-  // Converge sacando un item por pasada hasta que la lista entra. Al correr en
-  // useLayoutEffect el ajuste queda resuelto antes de pintar.
-  // Se suma la altura de los items en vez de mirar scrollHeight: con
-  // justify-center el sobrante se reparte arriba y abajo, y scrollHeight solo
-  // refleja la mitad de abajo.
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el || tope <= 1) return;
-    const gap = parseFloat(getComputedStyle(el).rowGap) || 0;
-    const hijos = Array.from(el.children) as HTMLElement[];
-    const alto = hijos.reduce((t, h) => t + h.offsetHeight, 0) + gap * Math.max(0, hijos.length - 1);
-    if (alto > el.clientHeight + 1) setTope(t => t - 1);
-  });
-
-  // Vuelve a abrir la lista para recalcular: al cambiar el contenido, cuando
-  // cambia el alto disponible y cuando terminan de cargar las fuentes (hasta
-  // ese momento el texto ocupa menos y entrarian items de mas).
-  const reabrir = useCallback(() => {
-    setTope(items.length);
-    setPasada(p => p + 1);
-  }, [items.length]);
-
-  useLayoutEffect(() => setTope(items.length), [clave, items.length]);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    document.fonts?.ready.then(reabrir).catch(() => {});
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(reabrir);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [reabrir]);
-
-  const visibles = items.slice(0, tope);
-
-  // El rotulo va adentro del area medida para que quede pegado a los items:
+  // El rotulo va adentro del bloque centrado para que quede pegado a los items:
   // centrando la lista por separado se abria un hueco entre ambos.
   return (
-    <div ref={ref} className="flex-1 min-h-0 overflow-hidden flex flex-col justify-center gap-2">
+    <div className="flex-1 min-h-fit flex flex-col justify-center gap-2">
       {rotulo && <Rotulo>{rotulo}</Rotulo>}
       <ul className="flex flex-col gap-2.5">
-        {visibles.map((texto, i) => (
+        {items.map((texto, i) => (
           <li key={i} className="flex items-start gap-2.5 text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">
             <span className="mt-[0.5em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
             <span>{texto}</span>
@@ -200,7 +145,7 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
   const online = /100\s*%\s*online/i.test(modalidad);
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-hidden">
+    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
       <div className="flex-shrink-0 flex gap-3">
         <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
         <div className="min-w-0">
@@ -248,8 +193,8 @@ function BloqueDato({ label, valor, principal, className = '' }: { label: string
       }
     >
       <span
-        className="block text-[0.5rem] font-black uppercase tracking-[0.14em]"
-        style={{ color: principal ? 'rgba(16,24,32,0.7)' : '#7ecbe6' }}
+        className="block text-[0.55rem] font-black uppercase tracking-[0.14em]"
+        style={{ color: principal ? 'rgba(16,24,32,0.7)' : AZUL_CLARO }}
       >
         {label}
       </span>
@@ -269,20 +214,12 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
   const { cursada, modalidad, certificacion } = parseEnfoque(carrera.enfoque);
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-hidden">
+    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
       <Rotulo>A cargo de</Rotulo>
 
       {docente && (
-        <div className="flex-shrink-0 flex items-center gap-4">
-          <div
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 text-lg sm:text-xl font-black text-white"
-            style={{
-              background: `linear-gradient(145deg, ${AZUL}, rgba(0,144,193,0.35))`,
-              boxShadow: `inset 0 0 0 2px ${AMARILLO}`,
-            }}
-          >
-            {iniciales(docente.nombre)}
-          </div>
+        <div className="flex-shrink-0 flex gap-3">
+          <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
           <h3 className="text-xl sm:text-3xl font-black text-white uppercase leading-tight tracking-tight min-w-0">
             {docente.nombre}
           </h3>
@@ -348,7 +285,7 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
 
         {modulo && (
           <div
-            className="flex-1 min-h-0 overflow-hidden p-4 flex flex-col justify-center"
+            className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 flex flex-col justify-center-safe"
             style={{ borderLeft: `3px solid ${modulo.destacado ? AMARILLO : AZUL}` }}
           >
             <ModuloDetalle modulo={modulo} />
@@ -375,8 +312,8 @@ function ModuloDetalle({ modulo, enTarjeta }: { modulo: Modulo; enTarjeta?: bool
       }
     >
       <p
-        className="text-[0.5rem] font-black uppercase tracking-[0.16em]"
-        style={{ color: modulo.destacado ? AMARILLO : '#7ecbe6' }}
+        className="text-[0.55rem] font-black uppercase tracking-[0.16em]"
+        style={{ color: modulo.destacado ? AMARILLO : AZUL_CLARO }}
       >
         {modulo.etiqueta}
       </p>
@@ -411,7 +348,7 @@ function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; d
             }
           : {
               background: 'rgba(255,255,255,0.05)',
-              color: destacado ? AMARILLO : '#7ecbe6',
+              color: destacado ? AMARILLO : AZUL_CLARO,
               boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
             }
       }
@@ -435,7 +372,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
   )}`;
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-hidden">
+    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
       <div className="flex-shrink-0">
         <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
           Estudiá con
@@ -448,14 +385,14 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-2 gap-2 content-center overflow-hidden">
+      <div className="flex-1 min-h-fit grid grid-cols-1 sm:grid-cols-2 gap-2 content-center">
         {beneficios.map(b => (
           <div
             key={b.titulo}
             className="rounded p-3"
             style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
           >
-            <p className="text-[0.5rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL }}>
+            <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL_CLARO }}>
               {b.titulo}
             </p>
             <p className="text-[0.85rem] font-bold text-white leading-snug mt-0.5">{b.detalle}</p>
@@ -661,7 +598,7 @@ export default function IAModal({ carrera, onClose }: Props) {
             disabled={idx === 0}
             aria-label="Slide anterior"
             className="flex items-center gap-1 sm:gap-2 text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
-            style={{ color: '#7ecbe6', boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.45)' }}
+            style={{ color: AZUL_CLARO, boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.45)' }}
           >
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -744,7 +681,7 @@ export default function IAModal({ carrera, onClose }: Props) {
               onClick={() => navigator.clipboard?.writeText(shareUrl)}
               title="Compartir enlace"
               className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
-              style={{ background: 'transparent', border: `1px solid ${AZUL}`, color: '#7ecbe6' }}
+              style={{ background: 'transparent', border: `1px solid ${AZUL}`, color: AZUL_CLARO }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
