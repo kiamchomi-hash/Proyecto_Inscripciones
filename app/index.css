@@ -1134,28 +1134,6 @@ mark {
   background-size: auto, auto, auto, 42px 42px;
 }
 
-/* Subrayado de marcador del "100% ONLINE" del render */
-.ia-marker {
-  position: relative;
-  display: inline-block;
-  isolation: isolate;
-  color: #fff;
-  padding: 0 0.15em;
-}
-
-.ia-marker::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0.02em;
-  height: 0.42em;
-  z-index: -1;
-  background: var(--ia-yellow);
-  opacity: 0.85;
-  border-radius: 0.2em;
-}
-
 .section-divider-ia {
   background: rgba(0, 144, 193, 0.4);
 }

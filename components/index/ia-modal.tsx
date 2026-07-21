@@ -128,8 +128,8 @@ function Rotulo({ children }: { children: React.ReactNode }) {
  * de dejar que se corte a mitad de linea, se mide cuantos items entran y se
  * descartan los ultimos: el recorte cae siempre en items enteros.
  */
-function ListaAjustada({ items }: { items: string[] }) {
-  const ref = useRef<HTMLUListElement>(null);
+function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
   const [tope, setTope] = useState(items.length);
   // Contador que fuerza un render: si solo reseteamos `tope` al valor que ya
   // tiene, React no vuelve a renderizar y la lista no se remide.
@@ -174,15 +174,20 @@ function ListaAjustada({ items }: { items: string[] }) {
 
   const visibles = items.slice(0, tope);
 
+  // El rotulo va adentro del area medida para que quede pegado a los items:
+  // centrando la lista por separado se abria un hueco entre ambos.
   return (
-    <ul ref={ref} className="flex-1 min-h-0 overflow-hidden flex flex-col justify-center gap-2">
-      {visibles.map((texto, i) => (
-        <li key={i} className="flex items-start gap-2.5 text-[0.8rem] sm:text-[0.95rem] text-[#c3d8e6] leading-snug">
-          <span className="mt-[0.5em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
-          <span>{texto}</span>
-        </li>
-      ))}
-    </ul>
+    <div ref={ref} className="flex-1 min-h-0 overflow-hidden flex flex-col justify-center gap-2">
+      {rotulo && <Rotulo>{rotulo}</Rotulo>}
+      <ul className="flex flex-col gap-2.5">
+        {visibles.map((texto, i) => (
+          <li key={i} className="flex items-start gap-2.5 text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">
+            <span className="mt-[0.5em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
+            <span>{texto}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -214,22 +219,12 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
         </div>
       </div>
 
-      {/* "100% ONLINE" con el subrayado de marcador del render */}
       <p className="flex-shrink-0 text-sm sm:text-base font-black uppercase tracking-wider text-white">
-        {online ? (
-          <>
-            100% <span className="ia-marker">Online</span>
-          </>
-        ) : (
-          <span className="ia-marker">{modalidad}</span>
-        )}
+        {online ? '100% Online' : modalidad}
       </p>
 
       {objetivos.length > 0 && (
-        <div className="flex-1 min-h-0 flex flex-col justify-center gap-2 overflow-hidden">
-          <Rotulo>Objetivos</Rotulo>
-          <ListaAjustada items={objetivos} />
-        </div>
+        <ListaAjustada items={objetivos} rotulo="Objetivos" />
       )}
 
       {/* Bloques de dato: el principal (escuela) va lleno en amarillo */}
@@ -321,13 +316,23 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
         </span>
       </div>
 
+      {/* Mobile: el programa completo, con scroll */}
       <div
-        className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden rounded-lg"
+        className="md:hidden flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
       >
-        {/* Indice: fila con scroll en mobile, columna en desktop */}
+        {modulos.map((m, i) => (
+          <ModuloDetalle key={i} modulo={m} enTarjeta />
+        ))}
+      </div>
+
+      {/* Desktop: indice a la izquierda y un modulo por vez, sin scroll */}
+      <div
+        className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
+        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+      >
         <div
-          className="flex-shrink-0 flex flex-row md:flex-col gap-1 p-1.5 overflow-x-auto md:overflow-y-auto md:w-[9.5rem] custom-scrollbar"
+          className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[9.5rem] custom-scrollbar"
           style={{ background: 'rgba(0,0,0,0.22)' }}
         >
           {modulos.map((m, i) => (
@@ -343,33 +348,51 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
 
         {modulo && (
           <div
-            className="flex-1 min-h-0 overflow-hidden p-3 sm:p-4 flex flex-col justify-center"
+            className="flex-1 min-h-0 overflow-hidden p-4 flex flex-col justify-center"
             style={{ borderLeft: `3px solid ${modulo.destacado ? AMARILLO : AZUL}` }}
           >
-            <p
-              className="flex-shrink-0 text-[0.5rem] font-black uppercase tracking-[0.16em]"
-              style={{ color: modulo.destacado ? AMARILLO : '#7ecbe6' }}
-            >
-              {modulo.etiqueta}
-            </p>
-            {modulo.titulo && (
-              <p className="flex-shrink-0 text-[0.95rem] sm:text-lg font-bold text-white leading-snug mt-0.5">
-                {modulo.titulo}
-              </p>
-            )}
-            {modulo.items.length > 0 && (
-              <ul className="flex flex-col gap-1.5 mt-3">
-                {modulo.items.map((item, j) => (
-                  <li key={j} className="flex items-start gap-2 text-[0.78rem] sm:text-[0.92rem] text-[#a9c4d6] leading-snug">
-                    <span className="mt-[0.5em] w-1 h-1 rounded-full flex-shrink-0" style={{ background: AZUL }} />
-                    <span className="line-clamp-2">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <ModuloDetalle modulo={modulo} />
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/** Cabecera y contenidos de un modulo */
+function ModuloDetalle({ modulo, enTarjeta }: { modulo: Modulo; enTarjeta?: boolean }) {
+  return (
+    <div
+      className={enTarjeta ? 'flex-shrink-0 rounded p-3' : undefined}
+      style={
+        enTarjeta
+          ? {
+              background: 'rgba(255,255,255,0.05)',
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              borderLeft: `3px solid ${modulo.destacado ? AMARILLO : AZUL}`,
+            }
+          : undefined
+      }
+    >
+      <p
+        className="text-[0.5rem] font-black uppercase tracking-[0.16em]"
+        style={{ color: modulo.destacado ? AMARILLO : '#7ecbe6' }}
+      >
+        {modulo.etiqueta}
+      </p>
+      {modulo.titulo && (
+        <p className="text-[0.9rem] md:text-lg font-bold text-white leading-snug mt-0.5">{modulo.titulo}</p>
+      )}
+      {modulo.items.length > 0 && (
+        <ul className="flex flex-col gap-1.5 mt-2 md:mt-3">
+          {modulo.items.map((item, j) => (
+            <li key={j} className="flex items-start gap-2 text-[0.78rem] md:text-[0.92rem] text-[#a9c4d6] leading-snug">
+              <span className="mt-[0.5em] w-1 h-1 rounded-full flex-shrink-0" style={{ background: AZUL }} />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
