@@ -82,6 +82,11 @@
   --color-gold: #e69b05;
   --cau-brand-blue: #005587;
   --cau-brand-green: #058c70;
+  /* Marca Academia Identidad Argentina (convenio) */
+  --ia-blue: #0090c1;
+  --ia-blue-deep: #00648a;
+  --ia-yellow: #f1cf1c;
+  --ia-ink: #101820;
 }
 
 html {

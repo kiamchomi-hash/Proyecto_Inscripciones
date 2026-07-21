@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
+import { getEscuelaIA } from './identidad-argentina';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
@@ -623,13 +624,11 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 pr-1">
             {title}
             {accent && (
-              <> / <span style={{ color: isIdentidadArgentina ? 'var(--cau-brand-blue)' : 'var(--color-highlight)' }}>{accent}</span></>
+              <> / <span style={{ color: isIdentidadArgentina ? 'var(--ia-blue)' : 'var(--color-highlight)' }}>{accent}</span></>
             )}
           </h2>
           {isIdentidadArgentina && (
-            <span className="text-[0.6rem] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0" style={{ background: 'rgba(0,85,135,0.2)', color: '#005587', border: '1px solid rgba(0,85,135,0.4)' }}>
-              Convenio
-            </span>
+            <span className="ia-section-badge shrink-0">Convenio</span>
           )}
           <button
             onClick={() => setShowSearch(!showSearch)}
@@ -697,6 +696,8 @@ function prefetchImages(carrera: Carrera) {
 function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carrera) => void }) {
   const { prefix, cleanName } = getCareerInfo(carrera);
   const badge = carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
+  const isIA = getCategoryForCarrera(carrera) === 'identidad_argentina';
+  const escuela = isIA ? getEscuelaIA(carrera) : null;
   const prefetched = useRef(false);
   const handlePrefetch = useCallback(() => {
     if (!prefetched.current) { prefetched.current = true; prefetchImages(carrera); }
@@ -706,13 +707,14 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
     <li className="contents">
       <button
         type="button"
-        className="career-card group w-full"
+        className={`career-card group w-full ${isIA ? 'career-card-ia' : ''}`}
         data-testid="career-card"
         onClick={() => onClick(carrera)}
         onMouseEnter={handlePrefetch}
         onTouchStart={handlePrefetch}
         aria-label={`Ver detalles de ${carrera.nombre}`}
       >
+        {isIA && <IdentidadArgentinaMark />}
         {badge && (
           <span className={`career-badge ${carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
             {badge}
@@ -729,7 +731,23 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
         <span className="text-[0.65rem] min-[380px]:text-xs font-bold detail-link px-2 min-[380px]:px-4 py-1.5 min-[380px]:py-2 rounded-lg cursor-pointer text-center self-center">
           Ver detalles
         </span>
+        {isIA && (
+          <div className="ia-card-meta">
+            {escuela && <span className="ia-chip ia-chip-escuela">{escuela}</span>}
+            {carrera.duracion && <span className="ia-chip">{carrera.duracion}</span>}
+          </div>
+        )}
       </button>
     </li>
+  );
+}
+
+// Isotipo de Identidad Argentina como marca de agua de la tarjeta
+function IdentidadArgentinaMark() {
+  return (
+    <svg className="ia-card-mark" viewBox="0 0 2094 1502" aria-hidden="true" focusable="false">
+      <polygon fill="var(--ia-blue)" points="8.78,1501.47 8.78,0 356.27,0 356.27,1501.47" />
+      <path fill="var(--ia-yellow)" d="M409.76 1501.47l261.12 -585.82 346.86 0.25 -251.91 585.57 -356.07 0zm669.23 -1501.46l343.19 0 671.38 1501.46 -364.64 0c-51.85,-125.8 -656.89,-1469.04 -649.92,-1501.46zm-334.61 1179.72l92.23 -263.83 772.18 0 94.37 263.83 -958.79 0z" />
+    </svg>
   );
 }
