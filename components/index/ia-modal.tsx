@@ -184,8 +184,11 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
         )}
       </p>
 
+      {/* Sin min-h-0: el bloque no debe encogerse por debajo de su contenido
+          (si no, en pantallas bajas los objetivos se montan sobre el titulo y
+          sobre los bloques de dato). Cuando no entra, scrollea el slide. */}
       {objetivos.length > 0 && (
-        <div className="flex-1 min-h-0 flex flex-col justify-center gap-2 py-1">
+        <div className="flex-1 flex flex-col justify-center gap-2 py-1">
           <p className="text-[0.58rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL }}>
             Objetivos
           </p>
@@ -266,7 +269,7 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
       )}
 
       {docente && docente.bio.length > 0 && (
-        <ul className="flex-1 min-h-0 flex flex-col justify-center gap-2">
+        <ul className="flex-1 flex flex-col justify-center gap-2 py-1">
           {docente.bio.map((linea, i) => (
             <li key={i} className="flex items-start gap-2.5 text-[0.85rem] sm:text-base text-[#c3d8e6] leading-snug">
               <span className="mt-[0.55em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
@@ -427,7 +430,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-2 gap-2 content-center">
+      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2 content-center">
         {beneficios.map(b => (
           <div
             key={b.titulo}
