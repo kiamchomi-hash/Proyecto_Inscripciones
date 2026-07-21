@@ -7,7 +7,7 @@
 // isotipo de la academia. Referencias: identidadargentina.com.ar y el render de
 // Remotion (Desktop\Academia Identidad Argentina\remotion-diplomaturas).
 
-import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 
@@ -112,29 +112,77 @@ function Isotipo({ className }: { className?: string }) {
   );
 }
 
-/** Barra de marca que encabeza cada slide */
-function BarraMarca({ derecha }: { derecha?: React.ReactNode }) {
+/** Rotulo de seccion de un slide */
+function Rotulo({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex-shrink-0 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2.5">
-        <Isotipo className="h-5 sm:h-6 w-auto" />
-        <p className="text-[0.5rem] sm:text-[0.58rem] font-black uppercase tracking-[0.18em] text-white/70 leading-tight">
-          Academia
-          <span className="block text-white">Identidad Argentina</span>
-        </p>
-      </div>
-      {derecha}
-    </div>
+    <p className="flex-shrink-0 text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL }}>
+      {children}
+    </p>
   );
 }
 
-/** Filo de luz amarillo→azul, el separador del render */
-function FiloLuz({ className = '' }: { className?: string }) {
+/**
+ * Lista con vinetas que se recorta al alto disponible.
+ *
+ * Los slides no scrollean, asi que sobra contenido en pantallas bajas. En vez
+ * de dejar que se corte a mitad de linea, se mide cuantos items entran y se
+ * descartan los ultimos: el recorte cae siempre en items enteros.
+ */
+function ListaAjustada({ items }: { items: string[] }) {
+  const ref = useRef<HTMLUListElement>(null);
+  const [tope, setTope] = useState(items.length);
+  // Contador que fuerza un render: si solo reseteamos `tope` al valor que ya
+  // tiene, React no vuelve a renderizar y la lista no se remide.
+  const [, setPasada] = useState(0);
+  // Los padres arman `items` en cada render, asi que las dependencias tienen
+  // que mirar el contenido y no la identidad del array
+  const clave = items.join('|');
+
+  // Converge sacando un item por pasada hasta que la lista entra. Al correr en
+  // useLayoutEffect el ajuste queda resuelto antes de pintar.
+  // Se suma la altura de los items en vez de mirar scrollHeight: con
+  // justify-center el sobrante se reparte arriba y abajo, y scrollHeight solo
+  // refleja la mitad de abajo.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || tope <= 1) return;
+    const gap = parseFloat(getComputedStyle(el).rowGap) || 0;
+    const hijos = Array.from(el.children) as HTMLElement[];
+    const alto = hijos.reduce((t, h) => t + h.offsetHeight, 0) + gap * Math.max(0, hijos.length - 1);
+    if (alto > el.clientHeight + 1) setTope(t => t - 1);
+  });
+
+  // Vuelve a abrir la lista para recalcular: al cambiar el contenido, cuando
+  // cambia el alto disponible y cuando terminan de cargar las fuentes (hasta
+  // ese momento el texto ocupa menos y entrarian items de mas).
+  const reabrir = useCallback(() => {
+    setTope(items.length);
+    setPasada(p => p + 1);
+  }, [items.length]);
+
+  useLayoutEffect(() => setTope(items.length), [clave, items.length]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    document.fonts?.ready.then(reabrir).catch(() => {});
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(reabrir);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [reabrir]);
+
+  const visibles = items.slice(0, tope);
+
   return (
-    <div
-      className={`flex-shrink-0 h-px w-full ${className}`}
-      style={{ background: `linear-gradient(90deg, ${AMARILLO}, ${AZUL} 55%, transparent)` }}
-    />
+    <ul ref={ref} className="flex-1 min-h-0 overflow-hidden flex flex-col justify-center gap-2">
+      {visibles.map((texto, i) => (
+        <li key={i} className="flex items-start gap-2.5 text-[0.8rem] sm:text-[0.95rem] text-[#c3d8e6] leading-snug">
+          <span className="mt-[0.5em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
+          <span>{texto}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -147,15 +195,8 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
   const online = /100\s*%\s*online/i.test(modalidad);
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <BarraMarca
-        derecha={
-          <span className="ia-modal-badge hidden sm:inline-flex">Diplomatura de convenio</span>
-        }
-      />
-      <FiloLuz />
-
-      <div className="flex gap-3">
+    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-hidden">
+      <div className="flex-shrink-0 flex gap-3">
         <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
         <div className="min-w-0">
           {carrera.prefix && (
@@ -165,7 +206,7 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
           )}
           <h2
             className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
-              nombre.length > 38 ? 'text-xl sm:text-3xl' : 'text-2xl sm:text-4xl'
+              nombre.length > 38 ? 'text-lg sm:text-3xl' : 'text-2xl sm:text-4xl'
             }`}
           >
             {nombre}
@@ -184,25 +225,15 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
         )}
       </p>
 
-      {/* Sin min-h-0: el bloque no debe encogerse por debajo de su contenido
-          (si no, en pantallas bajas los objetivos se montan sobre el titulo y
-          sobre los bloques de dato). Cuando no entra, scrollea el slide. */}
       {objetivos.length > 0 && (
-        <div className="flex-1 flex flex-col justify-center gap-2 py-1">
-          <p className="text-[0.58rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL }}>
-            Objetivos
-          </p>
-          {objetivos.map((o, i) => (
-            <p key={i} className="flex items-start gap-2.5 text-[0.85rem] sm:text-base text-[#c3d8e6] leading-snug">
-              <span className="mt-[0.55em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
-              {o}
-            </p>
-          ))}
+        <div className="flex-1 min-h-0 flex flex-col justify-center gap-2 overflow-hidden">
+          <Rotulo>Objetivos</Rotulo>
+          <ListaAjustada items={objetivos} />
         </div>
       )}
 
       {/* Bloques de dato: el principal (escuela) va lleno en amarillo */}
-      <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+      <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2">
         <BloqueDato label="Escuela" valor={escuela || 'Convenio'} principal />
         <BloqueDato label="Duración" valor={carrera.duracion} />
         <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
@@ -243,13 +274,8 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
   const { cursada, modalidad, certificacion } = parseEnfoque(carrera.enfoque);
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-4 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <BarraMarca />
-      <FiloLuz />
-
-      <p className="flex-shrink-0 text-[0.58rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL }}>
-        A cargo de
-      </p>
+    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-hidden">
+      <Rotulo>A cargo de</Rotulo>
 
       {docente && (
         <div className="flex-shrink-0 flex items-center gap-4">
@@ -268,16 +294,7 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
         </div>
       )}
 
-      {docente && docente.bio.length > 0 && (
-        <ul className="flex-1 flex flex-col justify-center gap-2 py-1">
-          {docente.bio.map((linea, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-[0.85rem] sm:text-base text-[#c3d8e6] leading-snug">
-              <span className="mt-[0.55em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
-              {linea}
-            </li>
-          ))}
-        </ul>
-      )}
+      {docente && docente.bio.length > 0 && <ListaAjustada items={docente.bio} />}
 
       <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-2">
         <BloqueDato label="Cursada" valor={cursada} className="sm:col-span-3" />
@@ -291,31 +308,18 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
 
 // ── Slide 3: plan de estudios ──
 function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }) {
-  // -1 = programa completo (default en desktop), >= 0 = un modulo
-  const [activo, setActivo] = useState(-1);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0 });
-  }, [activo]);
-
-  const visibles = activo === -1 ? modulos : [modulos[activo]].filter(Boolean);
+  // Se muestra un modulo por vez: asi cada vista entra sin scroll
+  const [activo, setActivo] = useState(0);
+  const modulo = modulos[activo];
 
   return (
     <div className="ia-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
-      <BarraMarca
-        derecha={
-          <p className="text-right">
-            <span className="block text-[0.5rem] font-black uppercase tracking-[0.14em]" style={{ color: AZUL }}>
-              {carrera.duracion}
-            </span>
-            <span className="block text-xs sm:text-sm font-black uppercase tracking-wider text-white">
-              Plan de estudios
-            </span>
-          </p>
-        }
-      />
-      <FiloLuz />
+      <div className="flex-shrink-0 flex items-baseline justify-between gap-3">
+        <Rotulo>Plan de estudios</Rotulo>
+        <span className="text-[0.5rem] font-black uppercase tracking-[0.14em] text-white/50">
+          {modulos.length} módulos · {carrera.duracion}
+        </span>
+      </div>
 
       <div
         className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden rounded-lg"
@@ -326,7 +330,6 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
           className="flex-shrink-0 flex flex-row md:flex-col gap-1 p-1.5 overflow-x-auto md:overflow-y-auto md:w-[9.5rem] custom-scrollbar"
           style={{ background: 'rgba(0,0,0,0.22)' }}
         >
-          <BotonModulo activo={activo === -1} onClick={() => setActivo(-1)} texto="Programa completo" />
           {modulos.map((m, i) => (
             <BotonModulo
               key={i}
@@ -338,39 +341,34 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
           ))}
         </div>
 
-        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 sm:p-4 flex flex-col gap-3">
-          {visibles.map((m, i) => (
-            <div
-              key={i}
-              className="rounded p-3"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
-                borderLeft: `3px solid ${m.destacado ? AMARILLO : AZUL}`,
-              }}
+        {modulo && (
+          <div
+            className="flex-1 min-h-0 overflow-hidden p-3 sm:p-4 flex flex-col justify-center"
+            style={{ borderLeft: `3px solid ${modulo.destacado ? AMARILLO : AZUL}` }}
+          >
+            <p
+              className="flex-shrink-0 text-[0.5rem] font-black uppercase tracking-[0.16em]"
+              style={{ color: modulo.destacado ? AMARILLO : '#7ecbe6' }}
             >
-              <p
-                className="text-[0.5rem] font-black uppercase tracking-[0.16em]"
-                style={{ color: m.destacado ? AMARILLO : '#7ecbe6' }}
-              >
-                {m.etiqueta}
+              {modulo.etiqueta}
+            </p>
+            {modulo.titulo && (
+              <p className="flex-shrink-0 text-[0.95rem] sm:text-lg font-bold text-white leading-snug mt-0.5">
+                {modulo.titulo}
               </p>
-              {m.titulo && (
-                <p className="text-[0.9rem] sm:text-base font-bold text-white leading-snug mt-0.5">{m.titulo}</p>
-              )}
-              {m.items.length > 0 && (
-                <ul className="mt-2 flex flex-col gap-1">
-                  {m.items.map((item, j) => (
-                    <li key={j} className="flex items-start gap-2 text-[0.78rem] sm:text-[0.9rem] text-[#a9c4d6] leading-relaxed">
-                      <span className="mt-[0.5em] w-1 h-1 rounded-full flex-shrink-0" style={{ background: AZUL }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
+            )}
+            {modulo.items.length > 0 && (
+              <ul className="flex flex-col gap-1.5 mt-3">
+                {modulo.items.map((item, j) => (
+                  <li key={j} className="flex items-start gap-2 text-[0.78rem] sm:text-[0.92rem] text-[#a9c4d6] leading-snug">
+                    <span className="mt-[0.5em] w-1 h-1 rounded-full flex-shrink-0" style={{ background: AZUL }} />
+                    <span className="line-clamp-2">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -414,10 +412,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
   )}`;
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-4 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <BarraMarca />
-      <FiloLuz />
-
+    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-hidden">
       <div className="flex-shrink-0">
         <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
           Estudiá con
@@ -425,12 +420,12 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
             certificación real
           </span>
         </h3>
-        <p className="text-[#a9c4d6] text-sm mt-2">
+        <p className="text-[#a9c4d6] text-[0.8rem] sm:text-sm mt-2 line-clamp-2">
           Diplomatura de convenio entre el CAU Villa Lugano y la Academia Identidad Argentina.
         </p>
       </div>
 
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2 content-center">
+      <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-2 gap-2 content-center overflow-hidden">
         {beneficios.map(b => (
           <div
             key={b.titulo}
@@ -585,14 +580,25 @@ export default function IAModal({ carrera, onClose }: Props) {
           boxShadow: '0 0 50px rgba(0,144,193,0.3)',
         }}
       >
-        {/* Encabezado */}
-        <div className="ia-modal-header flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b" style={{ background: '#0a1219', borderColor: 'rgba(0,144,193,0.35)' }}>
+        {/* Encabezado: la marca del convenio vive aca, no en cada slide */}
+        <div className="ia-modal-header flex-shrink-0 px-4 py-2.5 sm:px-6 sm:py-3 border-b" style={{ background: '#0a1219', borderColor: 'rgba(0,144,193,0.35)' }}>
           <div className="relative flex justify-between items-center gap-3">
-            <h3 className={`text-base sm:text-xl font-black text-white uppercase tracking-tight leading-tight truncate min-w-0 ${idx === 0 ? 'invisible' : ''}`}>
-              {nombre}
-            </h3>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <Isotipo className="h-6 sm:h-8 w-auto flex-shrink-0" />
+              <p className="text-[0.5rem] sm:text-[0.6rem] font-black uppercase tracking-[0.18em] text-white/70 leading-tight flex-shrink-0">
+                Academia
+                <span className="block text-white">Identidad Argentina</span>
+              </p>
+              {idx > 0 && (
+                <>
+                  <span className="hidden sm:block w-px h-7 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.18)' }} />
+                  <h3 className="hidden sm:block text-sm md:text-base font-black text-white uppercase tracking-tight leading-tight truncate min-w-0">
+                    {nombre}
+                  </h3>
+                </>
+              )}
+            </div>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              <span className="ia-modal-badge hidden sm:inline-flex">Convenio</span>
               <button
                 ref={closeBtnRef}
                 onClick={handleClose}
