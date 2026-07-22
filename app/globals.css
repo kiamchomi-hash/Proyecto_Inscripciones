@@ -87,6 +87,11 @@
   --ia-blue-deep: #00648a;
   --ia-yellow: #f1cf1c;
   --ia-ink: #101820;
+  /* Marca Instituto Tecnico Superior Teclab: cian para las carreras de
+     tecnologia, violeta para las de gestion, sobre el mismo fondo tinta */
+  --teclab-cyan: #2ee7d7;
+  --teclab-purple: #8e2cf2;
+  --teclab-ink: #071822;
 }
 
 html {

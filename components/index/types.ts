@@ -80,6 +80,8 @@ export const CATEGORIES: CarreraCategory[] = [
   { id: 'licenciaturas', label: 'Licenciaturas', sublabel: 'Grado', niveles: ['Grado', 'Grado (CCC)'], featured: true },
   { id: 'tecnicaturas', label: 'Tecnicaturas', sublabel: 'Pregrado', niveles: ['Pregrado'], featured: true },
   { id: 'identidad_argentina', label: 'Identidad Argentina', sublabel: 'Convenio', niveles: ['Identidad Argentina'], featured: true },
+  { id: 'teclab_tecnologia', label: 'Teclab Tecnología', sublabel: 'Tecnicaturas', niveles: ['Teclab - Tecnología'], featured: true },
+  { id: 'teclab_gestion', label: 'Teclab Gestión', sublabel: 'Tecnicaturas', niveles: ['Teclab - Gestión'], featured: true },
 ];
 
 // Mapping from Supabase nivel to display categories
@@ -90,6 +92,8 @@ export function getCategoryForCarrera(c: Carrera): string {
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';
   if (c.nivel === 'Pregrado') return 'tecnicaturas';
   if (c.nivel === 'Identidad Argentina') return 'identidad_argentina';
+  if (c.nivel === 'Teclab - Tecnología') return 'teclab_tecnologia';
+  if (c.nivel === 'Teclab - Gestión') return 'teclab_gestion';
 
   // Any other nivel is not displayed in the current categories
   return '_hidden';
@@ -115,8 +119,8 @@ export type AreaId = (typeof AREAS)[number]['id'];
 
 const AREA_KEYWORDS: Record<AreaId, string[]> = {
   derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense'],
-  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales'],
-  negocios: ['administración', 'finanzas', 'comercialización', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'e-commerce', 'business analysis', 'martillero', 'corredor'],
+  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales', 'programación', 'data science', 'quality assurance', 'cloud administration'],
+  negocios: ['administración', 'finanzas', 'comercialización', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'e-commerce', 'business analysis', 'martillero', 'corredor', 'venta directa', 'customer experience', 'seguros'],
   salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas'],
   educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia'],
   comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos'],

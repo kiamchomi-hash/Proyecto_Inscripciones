@@ -4,10 +4,12 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
 import { getEscuelaIA } from './identidad-argentina';
+import { esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
 const IAModal = dynamic(() => import('./ia-modal'));
+const TeclabModal = dynamic(() => import('./teclab-modal'));
 
 // Levenshtein distance for fuzzy search
 function levenshtein(a: string, b: string): number {
@@ -218,7 +220,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   // Sections to display (filtered by category)
   const sectionsToShow = useMemo(() => {
     if (searchResults) return []; // hide sections when searching
-    const displayOrder = ['licenciaturas', 'tecnicaturas', 'identidad_argentina'];
+    const displayOrder = ['licenciaturas', 'tecnicaturas', 'teclab_tecnologia', 'teclab_gestion', 'identidad_argentina'];
     if (activeCategory === 'all') return displayOrder.filter(id => filteredGrouped[id]?.length);
     return [activeCategory].filter(id => filteredGrouped[id]?.length);
   }, [activeCategory, filteredGrouped, searchResults]);
@@ -231,8 +233,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
   const handleCareerClick = useCallback((carrera: Carrera) => {
     setSelectedCarrera(carrera);
-    // Las de convenio tienen su propio modal de slides: no cuentan como faltantes
-    if (carrera.nivel !== 'Identidad Argentina' && (!carrera.slides || carrera.slides.length === 0)) {
+    // Las de convenio y las de Teclab tienen su propio modal de slides armado
+    // desde los campos de texto: no cuentan como faltantes
+    if (carrera.nivel !== 'Identidad Argentina' && !esTeclab(carrera) && (!carrera.slides || carrera.slides.length === 0)) {
       fetch('/api/notificar-carrera', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -297,10 +300,14 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const sectionLabels: Record<string, { title: string; accent?: string; placeholder: string }> = {
+  // `titleFiltrado` es como se nombra la seccion cuando el acento no se muestra:
+  // las dos de Teclab comparten titulo y solo se distinguen por el acento.
+  const sectionLabels: Record<string, { title: string; accent?: string; titleFiltrado?: string; placeholder: string }> = {
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
     tecnicaturas: { title: 'Tecnicaturas', accent: 'Pregrado', placeholder: 'BUSCAR TECNICATURA...' },
     identidad_argentina: { title: 'Identidad Argentina', accent: 'Convenio', placeholder: 'BUSCAR PROGRAMA...' },
+    teclab_tecnologia: { title: 'Teclab', accent: 'Tecnología', titleFiltrado: 'Teclab Tecnología', placeholder: 'BUSCAR TECNICATURA...' },
+    teclab_gestion: { title: 'Teclab', accent: 'Gestión', titleFiltrado: 'Teclab Gestión', placeholder: 'BUSCAR TECNICATURA...' },
   };
 
   return (
@@ -444,7 +451,11 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
                   <button
                     key={cat.id}
                     onClick={() => handleCategoryClick(cat.id)}
-                    className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.id === 'identidad_argentina' ? 'filter-pill-ia' : ''}`}
+                    className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.id === 'identidad_argentina' ? 'filter-pill-ia' : ''} ${
+                      cat.id === 'teclab_tecnologia' ? 'filter-pill-teclab teclab-tecnologia'
+                        : cat.id === 'teclab_gestion' ? 'filter-pill-teclab teclab-gestion'
+                        : ''
+                    }`}
                     aria-pressed={activeCategory === cat.id}
                   >
                     {cat.label}{count > 0 ? ` (${count})` : ''}
@@ -545,7 +556,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
               <div className="flex flex-wrap items-center gap-2 mb-4 text-sm">
                 <span className="text-[#7ca19b] font-semibold uppercase tracking-wider text-xs">Filtros:</span>
                 {activeCategory !== 'all' && (
-                  <span className="filter-active-tag">Tipo: {sectionLabels[activeCategory]?.title}</span>
+                  <span className="filter-active-tag">Tipo: {sectionLabels[activeCategory]?.titleFiltrado ?? sectionLabels[activeCategory]?.title}</span>
                 )}
                 {filterArea && (
                   <span className="filter-active-tag">Área: {AREAS.find(a => a.id === filterArea)?.label}</span>
@@ -576,11 +587,16 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
                 <CareerSection
                   key={sectionId}
                   sectionId={sectionId}
-                  title={hasFilters ? section.title : section.title}
+                  title={hasFilters ? section.titleFiltrado ?? section.title : section.title}
                   accent={hasFilters ? undefined : section.accent}
                   carreras={items}
                   onCareerClick={handleCareerClick}
                   isIdentidadArgentina={sectionId === 'identidad_argentina'}
+                  familiaTeclab={
+                    sectionId === 'teclab_tecnologia' ? 'tecnologia'
+                      : sectionId === 'teclab_gestion' ? 'gestion'
+                      : undefined
+                  }
                 />
               );
             })}
@@ -594,6 +610,8 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       {selectedCarrera && (
         selectedCarrera.nivel === 'Identidad Argentina' ? (
           <IAModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
+        ) : esTeclab(selectedCarrera) ? (
+          <TeclabModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
         ) : selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
           <CarouselModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
         ) : (
@@ -605,21 +623,41 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 }
 
 // Career section component
-function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina }: {
+function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab }: {
   sectionId: string;
   title: string;
   accent?: string;
   carreras: Carrera[];
   onCareerClick: (c: Carrera) => void;
   isIdentidadArgentina?: boolean;
+  familiaTeclab?: TeclabFamilia;
 }) {
   const [sectionSearch, setSectionSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  // Pildora de tipo activa dentro de la seccion de gestion de Teclab
+  const [tipoActivo, setTipoActivo] = useState<string | null>(null);
+
+  // Tipos presentes en esta seccion, en el orden del render
+  const tipos = useMemo(() => {
+    if (familiaTeclab !== 'gestion') return [];
+    const presentes = new Set(carreras.map(c => getTipoTeclab(c)).filter(Boolean) as string[]);
+    return TIPOS_GESTION.filter(t => presentes.has(t));
+  }, [carreras, familiaTeclab]);
 
   const filteredCarreras = useMemo(() => {
-    if (!sectionSearch.trim()) return carreras;
-    return carreras.filter(c => fuzzyMatch(c.nombre, sectionSearch.trim()));
-  }, [carreras, sectionSearch]);
+    let items = carreras;
+    if (tipoActivo) items = items.filter(c => getTipoTeclab(c) === tipoActivo);
+    if (sectionSearch.trim()) items = items.filter(c => fuzzyMatch(c.nombre, sectionSearch.trim()));
+    return items;
+  }, [carreras, sectionSearch, tipoActivo]);
+
+  const colorAcento = isIdentidadArgentina
+    ? 'var(--ia-blue)'
+    : familiaTeclab === 'tecnologia'
+      ? 'var(--teclab-cyan)'
+      : familiaTeclab === 'gestion'
+        ? 'var(--teclab-purple)'
+        : 'var(--color-highlight)';
 
   return (
     <section id={`section-${sectionId}`} className="mb-10">
@@ -628,11 +666,16 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 pr-1">
             {title}
             {accent && (
-              <> / <span style={{ color: isIdentidadArgentina ? 'var(--ia-blue)' : 'var(--color-highlight)' }}>{accent}</span></>
+              <> / <span style={{ color: colorAcento }}>{accent}</span></>
             )}
           </h2>
           {isIdentidadArgentina && (
             <span className="ia-section-badge shrink-0">Convenio</span>
+          )}
+          {familiaTeclab && (
+            <span className={`teclab-section-badge teclab-${familiaTeclab} shrink-0`}>
+              Instituto Técnico
+            </span>
           )}
           <button
             onClick={() => setShowSearch(!showSearch)}
@@ -666,10 +709,33 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           </div>
         )}
 
-        <div className={`flex-grow h-px section-divider ${isIdentidadArgentina ? 'section-divider-ia' : ''}`} />
+        {/* Pildoras de tipo: cada familia del render tiene su propio rotulo */}
+        {tipos.length > 0 && (
+          <div className="teclab-tipo-pills" role="group" aria-label="Filtrar por tipo de programa">
+            {tipos.map(tipo => {
+              const count = carreras.filter(c => getTipoTeclab(c) === tipo).length;
+              return (
+                <button
+                  key={tipo}
+                  onClick={() => setTipoActivo(tipoActivo === tipo ? null : tipo)}
+                  className={`teclab-tipo-pill ${tipoActivo === tipo ? 'active' : ''}`}
+                  aria-pressed={tipoActivo === tipo}
+                >
+                  {tipo} ({count})
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <div
+          className={`flex-grow h-px section-divider ${isIdentidadArgentina ? 'section-divider-ia' : ''} ${familiaTeclab ? `section-divider-teclab teclab-${familiaTeclab}` : ''}`}
+        />
       </div>
 
-      <ul className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-w-0 mb-6 ${isIdentidadArgentina ? 'ia-section-cards' : ''}`}>
+      <ul
+        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-w-0 mb-6 ${isIdentidadArgentina ? 'ia-section-cards' : ''}`}
+      >
         {filteredCarreras.map(c => (
           <CareerCard key={c.id} carrera={c} onClick={onCareerClick} />
         ))}
@@ -702,6 +768,8 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
   const badge = carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
   const isIA = getCategoryForCarrera(carrera) === 'identidad_argentina';
   const escuela = isIA ? getEscuelaIA(carrera) : null;
+  const familiaTeclab = getFamiliaTeclab(carrera);
+  const tipoTeclab = familiaTeclab ? getTipoTeclab(carrera) : null;
   const prefetched = useRef(false);
   const handlePrefetch = useCallback(() => {
     if (!prefetched.current) { prefetched.current = true; prefetchImages(carrera); }
@@ -711,7 +779,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
     <li className="contents">
       <button
         type="button"
-        className={`career-card group w-full ${isIA ? 'career-card-ia' : ''}`}
+        className={`career-card group w-full ${isIA ? 'career-card-ia' : ''} ${familiaTeclab ? `career-card-teclab teclab-${familiaTeclab}` : ''}`}
         data-testid="career-card"
         onClick={() => onClick(carrera)}
         onMouseEnter={handlePrefetch}
@@ -738,6 +806,13 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
           <div className="ia-card-meta">
             {escuela && <span className="ia-chip ia-chip-escuela">{escuela}</span>}
             {carrera.duracion && <span className="ia-chip">{carrera.duracion}</span>}
+          </div>
+        )}
+        {familiaTeclab && (
+          <div className="ia-card-meta">
+            {tipoTeclab && <span className="teclab-chip teclab-chip-tipo">{tipoTeclab}</span>}
+            {carrera.duracion && <span className="teclab-chip">{carrera.duracion}</span>}
+            <span className="teclab-chip">100% online</span>
           </div>
         )}
       </button>
