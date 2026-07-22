@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { sendGAEvent } from '@next/third-parties/google';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import { esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
@@ -244,6 +245,21 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
   const handleCareerClick = useCallback((carrera: Carrera) => {
     setSelectedCarrera(carrera);
+
+    // Telemetría: GA para el detalle, la tabla propia para el digest de las 20hs.
+    if (process.env.NEXT_PUBLIC_GA_ID) {
+      sendGAEvent('event', 'career_card_click', {
+        career_name: carrera.nombre,
+        career_level: carrera.nivel ?? 'sin_nivel',
+      });
+    }
+    fetch('/api/track-click', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ carrera: carrera.nombre }),
+      keepalive: true,
+    }).catch(() => {});
+
     // Las de convenio y las de Teclab tienen su propio modal de slides armado
     // desde los campos de texto: no cuentan como faltantes
     if (carrera.nivel !== 'Identidad Argentina' && !esTeclab(carrera) && (!carrera.slides || carrera.slides.length === 0)) {
