@@ -791,11 +791,18 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
             {badge}
           </span>
         )}
+        {/* Teclab: cabecera de badges como el .folder-head del render */}
+        {familiaTeclab && (
+          <div className="teclab-card-head">
+            <span className="teclab-badge">{carrera.duracion || '2 años'}</span>
+            {tipoTeclab && <span className="teclab-badge teclab-badge-tipo">{tipoTeclab}</span>}
+          </div>
+        )}
         <div className="flex-grow relative min-w-0">
           {prefix && (
             <span className="career-prefix block mb-0.5">{prefix}</span>
           )}
-          <span className="block font-semibold text-[1.1rem] leading-tight text-white">
+          <span className={`block font-semibold text-[1.1rem] leading-tight ${familiaTeclab ? 'text-[#071822]' : 'text-white'}`}>
             {cleanName}
           </span>
         </div>
@@ -806,13 +813,6 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
           <div className="ia-card-meta">
             {escuela && <span className="ia-chip ia-chip-escuela">{escuela}</span>}
             {carrera.duracion && <span className="ia-chip">{carrera.duracion}</span>}
-          </div>
-        )}
-        {familiaTeclab && (
-          <div className="ia-card-meta">
-            {tipoTeclab && <span className="teclab-chip teclab-chip-tipo">{tipoTeclab}</span>}
-            {carrera.duracion && <span className="teclab-chip">{carrera.duracion}</span>}
-            <span className="teclab-chip">100% online</span>
           </div>
         )}
       </button>
