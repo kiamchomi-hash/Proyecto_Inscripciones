@@ -1256,6 +1256,9 @@ mark {
      misma fila se igualan a la mas alta) queda abajo, no entre medio. */
   align-content: start;
   column-gap: 1rem;
+  /* `.career-card` trae `gap: 1.25rem`, que fija fila Y columna: sin esto queda
+     un row-gap de ~21px entre los badges y el titulo. */
+  row-gap: 0;
 }
 
 .career-card-teclab:hover {
