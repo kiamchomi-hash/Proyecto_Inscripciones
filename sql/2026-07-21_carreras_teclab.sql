@@ -36,7 +36,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de proyectos
 • Práctica Profesionalizante
-• Programación mobile', 1001, true, false, true),
+• Programación mobile', 1001, true, false, false),
   ('Tecnicatura Superior en Data Science', 'Teclab - Tecnología', '2 años', 'Técnico Superior en Data Science', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Data Science
@@ -70,7 +70,7 @@ Segundo Año | 1er semestre
 Segundo Año | 2do semestre
 • Práctica Profesionalizante
 • Comunicación efectiva
-• Machine Learning en la Nube', 1002, true, false, true),
+• Machine Learning en la Nube', 1002, true, false, false),
   ('Tecnicatura Superior en Quality Assurance', 'Teclab - Tecnología', '2 años', 'Técnico Superior en Quality Assurance', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Quality Assurance
@@ -104,7 +104,7 @@ Segundo Año | 1er semestre
 Segundo Año | 2do semestre
 • Proceso y estrategia de mejora
 • Práctica Profesionalizante
-• Hacking ético', 1003, true, false, true),
+• Hacking ético', 1003, true, false, false),
   ('Tecnicatura Superior en Redes Informáticas', 'Teclab - Tecnología', '2 años', 'Técnico Superior en Redes Informáticas', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Redes Informáticas
@@ -136,7 +136,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de Proyectos
 • Práctica Profesionalizante
-• Seguridad y Gestión de Redes', 1004, true, false, true),
+• Seguridad y Gestión de Redes', 1004, true, false, false),
   ('Tecnicatura Superior en Seguridad Informática', 'Teclab - Tecnología', '2 años', 'Técnico Superior en Seguridad Informática', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Seguridad Informática
@@ -169,7 +169,7 @@ Segundo Año | 2do cuatrimestre
 • Comunicación Efectiva
 • Seguridad en la Nube y protección de datos.
 • Práctica Profesionalizante I
-• Práctica Profesionalizante II', 1005, true, false, true),
+• Práctica Profesionalizante II', 1005, true, false, false),
   ('Tecnicatura Superior en Cloud Administration', 'Teclab - Tecnología', '2 años', 'Técnico Superior en Administración de Servicios en la Nube (Cloud Administration).', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Administración de Servicios en la Nube (Cloud Administration).
@@ -203,7 +203,7 @@ Segundo Año | 2do cuatrimestre
 • Comunicación Efectiva
 • Gestión de Proyectos
 • Práctica Profesionalizante I
-• Práctica Profesionalizante II', 1006, true, false, true),
+• Práctica Profesionalizante II', 1006, true, false, false),
   ('Tecnicatura Superior en Marketing Digital', 'Teclab - Gestión', '2 años', 'Técnico Superior en Marketing Digital', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Marketing Digital
@@ -236,7 +236,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Análisis de la Experiencia del Cliente
 • Práctica Profesionalizante
-• Estrategia y Planificación Comercial', 1007, true, false, true),
+• Estrategia y Planificación Comercial', 1007, true, false, false),
   ('Tecnicatura Superior en Inbound Marketing', 'Teclab - Gestión', '2 años', 'Técnico Superior en Inbound Marketing', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Inbound Marketing
@@ -270,7 +270,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Proceso y Estrategia de Mejora
 • Práctica Profesionalizante
-• Estrategia y Planificación de Inbound Marketing', 1008, true, false, true),
+• Estrategia y Planificación de Inbound Marketing', 1008, true, false, false),
   ('Tecnicatura Superior en Customer Experience', 'Teclab - Gestión', '2 años', 'Técnico Superior en Customer Experience', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Customer Experience
@@ -303,7 +303,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de Proyectos
 • Práctica Profesionalizante
-• Estrategias de Transformación Digital', 1009, true, false, true),
+• Estrategias de Transformación Digital', 1009, true, false, false),
   ('Tecnicatura Superior en Venta Directa', 'Teclab - Gestión', '2 años', 'Técnico Superior en Venta Directa', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Venta Directa
@@ -335,7 +335,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de Proyectos
 • Práctica Profesionalizante
-• Incentivos y formación de equipos de venta', 1010, true, false, true),
+• Incentivos y formación de equipos de venta', 1010, true, false, false),
   ('Tecnicatura Superior en Gestión Contable', 'Teclab - Gestión', '2 años', 'Técnico Superior en Gestión Contable', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Gestión Contable
@@ -367,7 +367,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Legislación laboral
 • Práctica Profesionalizante
-• Tecnología para la Gestión Contable', 1011, true, false, true),
+• Tecnología para la Gestión Contable', 1011, true, false, false),
   ('Tecnicatura Superior en Seguros', 'Teclab - Gestión', '2 años', 'Técnico Superior en Seguros', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Seguros
@@ -399,7 +399,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de Presupuestos
 • Práctica Profesionalizante
-• Transformación y el negocio del Seguro', 1012, true, false, true),
+• Transformación y el negocio del Seguro', 1012, true, false, false),
   ('Tecnicatura Superior en Gestión Agraria', 'Teclab - Gestión', '2 años', 'Técnico Superior en Gestión de la Empresa Agraria', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Gestión de la Empresa Agraria
@@ -431,7 +431,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de proyectos
 • Práctica Profesionalizante
-• Agricultura Digital', 1013, true, false, true),
+• Agricultura Digital', 1013, true, false, false),
   ('Tecnicatura Superior en Relaciones Laborales', 'Teclab - Gestión', '2 años', 'Técnico Superior en Relaciones Laborales', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Relaciones Laborales
@@ -463,7 +463,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Experiencia de las personas
 • Práctica Profesionalizante
-• Transformación e Innovación organizacional', 1014, true, false, true),
+• Transformación e Innovación organizacional', 1014, true, false, false),
   ('Tecnicatura Superior en Gestión Hotelera', 'Teclab - Gestión', '2 años', 'Técnico Superior en Gestión Hotelera', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Gestión Hotelera
@@ -495,7 +495,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de proyectos
 • Práctica Profesionalizante
-• Comercialización y Revenue Management', 1015, true, false, true),
+• Comercialización y Revenue Management', 1015, true, false, false),
   ('Tecnicatura Superior en Planificación y Organización de Eventos', 'Teclab - Gestión', '2 años', 'Técnico Superior en Planificación y Organización de Eventos', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Planificación y Organización de Eventos
@@ -527,7 +527,7 @@ Segundo Año | 1er cuatrimestre
 Segundo Año | 2do cuatrimestre
 • Gestión de proyectos
 • Práctica Profesionalizante
-• Emprendimiento e Innovación en eventos', 1016, true, false, true),
+• Emprendimiento e Innovación en eventos', 1016, true, false, false),
   ('Tecnicatura Superior en Periodismo y Nuevas Tecnologías', 'Teclab - Gestión', '2 años', 'Técnico Superior en Periodismo y Nuevas Tecnologías', 'Modalidad: 100% Online
 Duración: 2 años
 Título: Técnico Superior en Periodismo y Nuevas Tecnologías
@@ -560,4 +560,4 @@ Segundo Año | 2do cuatrimestre
 • Sitios Web y Publicidad Digital
 • Práctica Profesionalizante
 • Práctica profesionalizante
-• Periodismo de datos', 1017, true, false, true);
+• Periodismo de datos', 1017, true, false, false);

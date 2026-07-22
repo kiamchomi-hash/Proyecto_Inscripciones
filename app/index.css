@@ -1164,42 +1164,97 @@ mark {
   --teclab-on-accent: #fff;
 }
 
-/* ── Tarjeta ── */
+/* ── Tarjeta: el rectangulo blanco del render ──
+   Blanco con borde tinta grueso y sombra dura desplazada. En el render la
+   sombra en reposo es tinta y pasa al acento cuando la tarjeta esta activa;
+   aca va siempre en el acento, que sobre el verde del sitio es lo que hace
+   reconocible la marca (el tinta se perderia contra el fondo). */
 .career-card-teclab {
-  --card-bg: #0c2230;
-  --card-border: color-mix(in srgb, var(--teclab-accent) 34%, transparent);
-  border-radius: 0.5rem;
-  box-shadow: 5px 5px 0 color-mix(in srgb, var(--teclab-accent) 55%, transparent);
+  --card-bg: #ffffff;
+  background-color: #ffffff;
+  color: var(--teclab-ink);
+  border: 3px solid var(--teclab-ink);
+  border-radius: 8px;
+  box-shadow: 9px 9px 0 var(--teclab-accent);
+  padding: 0.9rem 1.05rem;
+  /* Grilla: badges arriba a todo el ancho, despues titulo + boton.
+     `space-between` manda los badges al filo de arriba y el titulo al de abajo,
+     como en el render, en vez de dejar un hueco muerto en el medio. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  align-content: space-between;
+  column-gap: 1rem;
 }
 
 .career-card-teclab:hover {
-  border-color: var(--teclab-accent);
-  background: color-mix(in srgb, var(--teclab-accent) 9%, transparent);
-  box-shadow: 8px 8px 0 var(--teclab-accent);
-  transform: translate(-2px, -2px);
+  background-color: #ffffff;
+  border-color: var(--teclab-ink);
+  box-shadow: 13px 13px 0 var(--teclab-accent);
+  transform: translate(-3px, -3px);
 }
 
-/* La textura de ruido del hover generico pisa la sombra dura */
+/* La textura de ruido del hover generico ensucia el blanco */
 .career-card-teclab:hover::after {
   background-image: none;
 }
 
+/* Cabecera de badges, como el .folder-head del render */
+.teclab-card-head {
+  grid-column: 1 / -1;
+  order: -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+/* El prefijo entra en una linea: "TECNICATURA SUPERIOR / EN" partia feo */
 .career-card-teclab .career-prefix {
-  color: var(--teclab-accent);
-  opacity: 0.95;
+  font-size: 0.66rem;
+}
+
+.teclab-badge {
+  display: block;
+  padding: 0.28rem 0.5rem 0.3rem;
+  border-radius: 5px;
+  font-size: 0.6rem;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: var(--teclab-ink);
+}
+
+.teclab-badge-tipo {
+  color: var(--teclab-on-accent);
+  background: var(--teclab-accent);
+}
+
+.career-card-teclab .career-prefix {
+  color: color-mix(in srgb, var(--teclab-ink) 62%, #ffffff);
+  opacity: 1;
   letter-spacing: 0.06em;
   font-weight: 900;
 }
 
 .career-card-teclab .detail-link {
-  background: var(--teclab-accent);
+  background: var(--teclab-ink);
   border: none;
-  color: var(--teclab-on-accent);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: none;
 }
 
 .career-card-teclab .detail-link:hover {
-  filter: brightness(1.15);
+  background: var(--teclab-accent);
+  color: var(--teclab-on-accent);
+}
+
+/* El badge "Nueva" cuelga del borde: sobre blanco necesita separarse del filo */
+.career-card-teclab .career-badge {
+  top: -3px;
 }
 
 /* ── Chips: mismo tipografico que los rotulos del render ── */
@@ -1225,16 +1280,17 @@ mark {
 }
 
 /* ── Encabezado de seccion ── */
+/* Caja del encabezado, con el mismo filo que el titular del render */
 .teclab-section-badge {
   font-size: 0.6rem;
-  font-weight: 800;
+  font-weight: 950;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0.15rem 0.55rem;
-  border-radius: 9999px;
-  color: var(--teclab-accent);
-  background: color-mix(in srgb, var(--teclab-accent) 16%, transparent);
-  border: 1px solid color-mix(in srgb, var(--teclab-accent) 45%, transparent);
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  color: #ffffff;
+  background: var(--teclab-ink);
+  border: 2px solid var(--teclab-accent);
 }
 
 .section-divider-teclab {
@@ -1256,30 +1312,33 @@ mark {
   margin-bottom: 0.75rem;
 }
 
+/* Cajas tinta con filo grueso del acento, como los rotulos NEGOCIOS / GESTION /
+   COMUNICACION del render */
 .teclab-tipo-pill {
-  font-size: 0.63rem;
-  font-weight: 900;
-  letter-spacing: 0.06em;
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 0.25rem 0.7rem;
-  border-radius: 4px;
-  line-height: 1.25;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  line-height: 1.2;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: color-mix(in srgb, var(--teclab-accent) 65%, white);
-  background: color-mix(in srgb, var(--teclab-accent) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--teclab-accent) 40%, transparent);
+  color: #ffffff;
+  background: var(--teclab-ink);
+  border: 2px solid color-mix(in srgb, var(--teclab-accent) 70%, transparent);
 }
 
 .teclab-tipo-pill:hover {
-  background: color-mix(in srgb, var(--teclab-accent) 26%, transparent);
+  border-color: var(--teclab-accent);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--teclab-accent) 60%, transparent);
 }
 
 .teclab-tipo-pill.active {
   color: var(--teclab-on-accent);
   background: var(--teclab-accent);
   border-color: var(--teclab-accent);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  box-shadow: 3px 3px 0 var(--teclab-ink);
 }
 
 /* ── Pildoras de categoria del filtro principal ── */
