@@ -107,6 +107,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   const [placeholder, setPlaceholder] = useState('Buscar carrera');
   const [selectedCarrera, setSelectedCarrera] = useState<Carrera | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  // En mobile las pildoras de categoria van plegadas: ocupaban dos filas fijas
+  // arriba de todo. En desktop se muestran siempre (lo resuelve el CSS).
+  const [pillsOpen, setPillsOpen] = useState(false);
   const [filterArea, setFilterArea] = useState<AreaId | null>(null);
   const [filterDuration, setFilterDuration] = useState<DurationGroupId | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
@@ -228,8 +231,16 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   const handleCategoryClick = useCallback((catId: string) => {
     setActiveCategory(catId);
     setSearchQuery('');
+    setPillsOpen(false); // elegida la categoria, el panel se cierra solo
     delayedScroll();
   }, [delayedScroll]);
+
+  // Cuantas carreras entran en cada pildora
+  const contarCategoria = useCallback((catId: string) => (
+    catId === 'all'
+      ? carreras.filter(c => getCategoryForCarrera(c) !== '_hidden').length
+      : (grouped[catId]?.length ?? 0)
+  ), [carreras, grouped]);
 
   const handleCareerClick = useCallback((carrera: Carrera) => {
     setSelectedCarrera(carrera);
@@ -443,10 +454,33 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
               </button>
             )}
 
-            {/* Category pills — unified row (4 pills fit on all screens) */}
-            <div ref={pillsRef} className="filter-container" role="group" aria-label="Filtros de categoría">
+            {/* Mobile: las pildoras se abren y cierran desde aca */}
+            <button
+              type="button"
+              onClick={() => setPillsOpen(v => !v)}
+              className={`categories-toggle ${pillsOpen ? 'open' : ''}`}
+              aria-expanded={pillsOpen}
+              aria-controls="filtros-categoria"
+            >
+              <span className="categories-toggle-label">
+                {visibleCategories.find(c => c.id === activeCategory)?.label ?? 'Ver Todo'}
+                <b>{contarCategoria(activeCategory)}</b>
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {/* Category pills */}
+            <div
+              ref={pillsRef}
+              id="filtros-categoria"
+              className={`filter-container ${pillsOpen ? 'open' : ''}`}
+              role="group"
+              aria-label="Filtros de categoría"
+            >
               {visibleCategories.map(cat => {
-                const count = cat.id === 'all' ? carreras.filter(c => getCategoryForCarrera(c) !== '_hidden').length : (grouped[cat.id]?.length ?? 0);
+                const count = contarCategoria(cat.id);
                 return (
                   <button
                     key={cat.id}
