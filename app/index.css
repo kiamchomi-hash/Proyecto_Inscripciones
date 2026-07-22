@@ -148,7 +148,8 @@
 /* Filter container — grid 4 cols by default */
 .filter-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* 6 pildoras: dos filas limpias de 3 en mobile */
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   width: 100%;
   margin-bottom: 0;
@@ -255,7 +256,8 @@
 @media (min-width: 1600px) {
   .filter-container {
     display: flex;
-    flex-wrap: nowrap;
+    /* Con 6 pildoras ya no entra una sola fila en desktops angostos */
+    flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
   }
@@ -1139,4 +1141,193 @@ mark {
 }
 .section-divider-ia::after {
   background: linear-gradient(145deg, var(--ia-blue) 0%, var(--ia-yellow) 100%);
+}
+
+/* ===================== Teclab =====================
+   Dos esteticas sobre la misma estructura, tal como en el render de Remotion:
+   cian para las carreras de tecnologia y violeta para las de gestion. Cada
+   contenedor declara su acento en --teclab-accent y todo lo de adentro lo lee,
+   asi la variante se elige en un solo lugar.
+
+   El motivo de marca es la sombra dura desplazada en el color del acento
+   (`box-shadow: Npx Npx 0`), que en el render aparece bajo cada tarjeta. */
+
+.teclab-tecnologia {
+  --teclab-accent: var(--teclab-cyan);
+  /* Sobre cian el texto va en tinta; sobre violeta, en blanco */
+  --teclab-on-accent: var(--teclab-ink);
+}
+
+.teclab-gestion,
+.teclab-tipo-pills {
+  --teclab-accent: var(--teclab-purple);
+  --teclab-on-accent: #fff;
+}
+
+/* ── Tarjeta ── */
+.career-card-teclab {
+  --card-bg: #0c2230;
+  --card-border: color-mix(in srgb, var(--teclab-accent) 34%, transparent);
+  border-radius: 0.5rem;
+  box-shadow: 5px 5px 0 color-mix(in srgb, var(--teclab-accent) 55%, transparent);
+}
+
+.career-card-teclab:hover {
+  border-color: var(--teclab-accent);
+  background: color-mix(in srgb, var(--teclab-accent) 9%, transparent);
+  box-shadow: 8px 8px 0 var(--teclab-accent);
+  transform: translate(-2px, -2px);
+}
+
+/* La textura de ruido del hover generico pisa la sombra dura */
+.career-card-teclab:hover::after {
+  background-image: none;
+}
+
+.career-card-teclab .career-prefix {
+  color: var(--teclab-accent);
+  opacity: 0.95;
+  letter-spacing: 0.06em;
+  font-weight: 900;
+}
+
+.career-card-teclab .detail-link {
+  background: var(--teclab-accent);
+  border: none;
+  color: var(--teclab-on-accent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.career-card-teclab .detail-link:hover {
+  filter: brightness(1.15);
+}
+
+/* ── Chips: mismo tipografico que los rotulos del render ── */
+.teclab-chip {
+  font-size: 0.63rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  line-height: 1.25;
+  max-width: 100%;
+}
+
+/* El tipo es el dato principal: bloque lleno con el acento */
+.teclab-chip-tipo {
+  color: var(--teclab-on-accent);
+  background: var(--teclab-accent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+/* ── Encabezado de seccion ── */
+.teclab-section-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  color: var(--teclab-accent);
+  background: color-mix(in srgb, var(--teclab-accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teclab-accent) 45%, transparent);
+}
+
+.section-divider-teclab {
+  background: color-mix(in srgb, var(--teclab-accent) 40%, transparent);
+}
+.section-divider-teclab::after {
+  background: linear-gradient(
+    145deg,
+    var(--teclab-accent) 0%,
+    color-mix(in srgb, var(--teclab-accent) 40%, var(--teclab-ink)) 100%
+  );
+}
+
+/* ── Pildoras de tipo dentro de la seccion de gestion ── */
+.teclab-tipo-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.teclab-tipo-pill {
+  font-size: 0.63rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border-radius: 4px;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: color-mix(in srgb, var(--teclab-accent) 65%, white);
+  background: color-mix(in srgb, var(--teclab-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teclab-accent) 40%, transparent);
+}
+
+.teclab-tipo-pill:hover {
+  background: color-mix(in srgb, var(--teclab-accent) 26%, transparent);
+}
+
+.teclab-tipo-pill.active {
+  color: var(--teclab-on-accent);
+  background: var(--teclab-accent);
+  border-color: var(--teclab-accent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+/* ── Pildoras de categoria del filtro principal ── */
+.filter-pill-teclab {
+  color: color-mix(in srgb, var(--teclab-accent) 55%, white);
+  background-color: color-mix(in srgb, var(--teclab-accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teclab-accent) 45%, transparent);
+  font-weight: 900;
+}
+.filter-pill-teclab:hover {
+  background-color: color-mix(in srgb, var(--teclab-accent) 28%, transparent);
+}
+.filter-pill-teclab.active {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Modal ──
+   Mismos lavados ambientales del <Background> del render, en el acento de la
+   familia, sobre el fondo tinta de la marca. */
+.teclab-modal-header {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    radial-gradient(ellipse at 22% 18%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 48%),
+    radial-gradient(ellipse at 82% 70%, color-mix(in srgb, var(--teclab-accent) 20%, transparent), transparent 52%),
+    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+  background-size: auto, auto, 42px 42px;
+}
+
+.teclab-modal-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teclab-accent), transparent);
+  pointer-events: none;
+}
+
+.teclab-slide {
+  background-color: var(--teclab-ink);
+  background-image:
+    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 50%),
+    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 22%, transparent), transparent 54%),
+    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: auto, auto, auto, 42px 42px;
 }
