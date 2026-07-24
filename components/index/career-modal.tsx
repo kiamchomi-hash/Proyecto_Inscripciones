@@ -3,87 +3,17 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
+import {
+  getCareerPrefix,
+  parseIAMeta,
+  parsePlanModulos,
+  parseDocente,
+} from '@/components/carreras/career-content';
 
 interface Props {
   carrera: Carrera;
   onClose: () => void;
   initiallyVisible?: boolean;
-}
-
-function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string } {
-  if (carrera.prefix !== null || carrera.nombre_corto !== null) {
-    return { prefix: carrera.prefix || '', cleanName: carrera.nombre_corto || carrera.nombre };
-  }
-  let prefix = '';
-  let cleanName = carrera.nombre;
-  const nameLower = carrera.nombre.toLowerCase();
-  const prefixMap = [
-    { match: 'licenciatura', display: 'Licenciatura', len: 12 },
-    { match: 'tecnicatura', display: 'Tecnicatura', len: 11 },
-    { match: 'maestría', display: 'Maestria', len: 8 },
-    { match: 'maestria', display: 'Maestria', len: 8 },
-    { match: 'especialización', display: 'Especializacion', len: 15 },
-    { match: 'especializacion', display: 'Especializacion', len: 15 },
-    { match: 'diplomatura', display: 'Diplomatura', len: 11 },
-    { match: 'certificado', display: 'Certificado', len: 11 },
-    { match: 'curso de ', display: 'Curso de', len: 9 },
-    { match: 'curso', display: 'Curso', len: 5 },
-  ];
-  for (const p of prefixMap) {
-    if (nameLower.startsWith(p.match)) {
-      prefix = p.display;
-      cleanName = carrera.nombre.substring(p.len).trim();
-      break;
-    }
-  }
-  cleanName = cleanName.replace(/Universitaria|Universitario|Univ\./g, '').replace(/\s*\(CCC\)/gi, '').replace(/\s*-\s*CCC\b/gi, '').replace(/\s+CCC$/i, '').replace(/\s\s+/g, ' ').trim();
-  if (cleanName.toLowerCase().startsWith('en ')) {
-    prefix += ' en';
-    cleanName = cleanName.substring(3).trim();
-  }
-  if (cleanName.length > 0) {
-    cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-  }
-  return { prefix, cleanName };
-}
-
-/** Parse IA enfoque field into structured metadata */
-function parseIAMeta(enfoque: string): { modalidad: string; certificacion: string } {
-  const lines = enfoque.split('\n');
-  let modalidad = '100% Online';
-  let certificacion = 'Nacional e Internacional';
-  for (const line of lines) {
-    if (line.startsWith('Modalidad:')) modalidad = line.replace('Modalidad:', '').trim();
-    if (line.startsWith('Certificación:')) certificacion = line.replace('Certificación:', '').trim();
-  }
-  return { modalidad, certificacion };
-}
-
-/** Parse IA plan_estudios into structured modules */
-function parsePlanModulos(plan: string): { titulo: string; contenido: string }[] {
-  const blocks = plan.split(/\n\n+/);
-  const modulos: { titulo: string; contenido: string }[] = [];
-  for (const block of blocks) {
-    const lines = block.split('\n');
-    const firstLine = lines[0]?.trim() || '';
-    if (firstLine.startsWith('Módulo ') || firstLine.startsWith('Masterclass ')) {
-      modulos.push({
-        titulo: firstLine,
-        contenido: lines.slice(1).join('\n').trim(),
-      });
-    } else {
-      modulos.push({ titulo: '', contenido: block.trim() });
-    }
-  }
-  return modulos;
-}
-
-/** Parse IA seccion_modalidad (docente) into name + bio lines */
-function parseDocente(raw: string): { nombre: string; bio: string[] } {
-  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  const nombre = lines[0] || '';
-  const bio = lines.slice(1).map(l => l.replace(/^·\s*/, ''));
-  return { nombre, bio };
 }
 
 export default function CareerModal({ carrera, onClose, initiallyVisible = false }: Props) {

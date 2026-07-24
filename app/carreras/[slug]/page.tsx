@@ -3,11 +3,10 @@ import { supabase } from '@/lib/supabase';
 import { notFound, permanentRedirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import type { Carrera } from '@/components/index/types';
-import { carreraToSlug } from '@/components/index/types';
-import Hero from '@/components/index/hero';
+import { carreraToSlug, carreraFullName } from '@/components/index/types';
+import CareerDetail from '@/components/carreras/career-detail';
 import '@/app/index.css';
 
-const CareersCatalog = dynamic(() => import('@/components/index/careers-catalog'));
 const EnrollmentForm = dynamic(() => import('@/components/index/enrollment-form'));
 const IndexFooter = dynamic(() => import('@/components/index/footer'));
 
@@ -37,15 +36,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const carrera = findBySlug(carreras, slug);
   if (!carrera) return { title: 'Carrera no encontrada' };
 
-  const title = `${carrera.nombre} | Universidad Siglo 21 CAU Villa Lugano`;
-  const description = `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.nivel} · ${carrera.duracion}. Modalidad virtual, cerca de Zona Sur y Oeste.`;
+  // Nombre completo con prefijo ("Licenciatura en Administracion", no solo
+  // "Administracion"): es el termino que la gente busca y da mejor CTR.
+  const nombreCompleto = carreraFullName(carrera);
+  const title = `${nombreCompleto} | Universidad Siglo 21 CAU Villa Lugano`;
+  const description = `Estudia ${nombreCompleto} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.nivel} · ${carrera.duracion}. Modalidad virtual, cerca de Zona Sur y Oeste.`;
 
   const canonicalSlug = carreraToSlug(carrera);
 
   return {
     title,
     description,
-    keywords: [carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
+    keywords: [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
     alternates: {
       canonical: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
     },
@@ -72,11 +74,25 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     permanentRedirect(`/carreras/${canonicalSlug}`);
   }
 
+  const url = `https://www.siglo21sur.com/carreras/${canonicalSlug}`;
+
+  // Otras carreras del mismo nivel: dan enlaces internos entre paginas de carrera.
+  // Solo se manda lo que se pinta; la fila entera arrastra todos los slides.
+  const relacionadas = carreras
+    .filter(c => c.nivel === carrera.nivel && c.id !== carrera.id)
+    .slice(0, 8)
+    .map(c => ({ id: c.id, nombre: c.nombre, prefix: c.prefix }));
+
+  // El formulario solo necesita id/nombre/nivel: mandarle la fila entera metia
+  // las 115 carreras completas en el HTML de cada pagina.
+  const opcionesFormulario = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel }));
+
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": carrera.titulo || carrera.nombre,
-    "description": `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`,
+    "name": carreraFullName(carrera),
+    "url": url,
+    "description": carrera.descripcion || `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`,
     "provider": {
       "@type": "CollegeOrUniversity",
       "name": "Universidad Siglo 21",
@@ -100,16 +116,28 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     },
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.siglo21sur.com" },
+      { "@type": "ListItem", "position": 2, "name": carreraFullName(carrera), "item": url },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <main className="flex-1">
-        <Hero />
-        <CareersCatalog carreras={carreras} initialCarreraSlug={slug} />
-        <EnrollmentForm carreras={carreras} />
+        <CareerDetail carrera={carrera} relacionadas={relacionadas} />
+        <EnrollmentForm carreras={opcionesFormulario} />
         <IndexFooter />
       </main>
     </>

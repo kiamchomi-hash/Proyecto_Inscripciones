@@ -1,0 +1,126 @@
+// Helpers puros para armar el contenido de una carrera.
+// Viven aca (y no dentro de un componente 'use client') porque los usa tanto el
+// modal del catalogo como la pagina server-rendered de /carreras/[slug].
+
+import type {
+  Carrera,
+  SlidePortada,
+  SlidePlanEstudios,
+  SlideCierre,
+} from '@/components/index/types';
+
+/** Separa el nombre en prefijo ("Licenciatura en") y nombre limpio. */
+export function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string } {
+  if (carrera.prefix !== null || carrera.nombre_corto !== null) {
+    return { prefix: carrera.prefix || '', cleanName: carrera.nombre_corto || carrera.nombre };
+  }
+  let prefix = '';
+  let cleanName = carrera.nombre;
+  const nameLower = carrera.nombre.toLowerCase();
+  const prefixMap = [
+    { match: 'licenciatura', display: 'Licenciatura', len: 12 },
+    { match: 'tecnicatura', display: 'Tecnicatura', len: 11 },
+    { match: 'maestría', display: 'Maestria', len: 8 },
+    { match: 'maestria', display: 'Maestria', len: 8 },
+    { match: 'especialización', display: 'Especializacion', len: 15 },
+    { match: 'especializacion', display: 'Especializacion', len: 15 },
+    { match: 'diplomatura', display: 'Diplomatura', len: 11 },
+    { match: 'certificado', display: 'Certificado', len: 11 },
+    { match: 'curso de ', display: 'Curso de', len: 9 },
+    { match: 'curso', display: 'Curso', len: 5 },
+  ];
+  for (const p of prefixMap) {
+    if (nameLower.startsWith(p.match)) {
+      prefix = p.display;
+      cleanName = carrera.nombre.substring(p.len).trim();
+      break;
+    }
+  }
+  cleanName = cleanName.replace(/Universitaria|Universitario|Univ\./g, '').replace(/\s*\(CCC\)/gi, '').replace(/\s*-\s*CCC\b/gi, '').replace(/\s+CCC$/i, '').replace(/\s\s+/g, ' ').trim();
+  if (cleanName.toLowerCase().startsWith('en ')) {
+    prefix += ' en';
+    cleanName = cleanName.substring(3).trim();
+  }
+  if (cleanName.length > 0) {
+    cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+  }
+  return { prefix, cleanName };
+}
+
+/** Parsea el campo enfoque de Identidad Argentina en metadatos estructurados. */
+export function parseIAMeta(enfoque: string): { modalidad: string; certificacion: string } {
+  const lines = enfoque.split('\n');
+  let modalidad = '100% Online';
+  let certificacion = 'Nacional e Internacional';
+  for (const line of lines) {
+    if (line.startsWith('Modalidad:')) modalidad = line.replace('Modalidad:', '').trim();
+    if (line.startsWith('Certificación:')) certificacion = line.replace('Certificación:', '').trim();
+  }
+  return { modalidad, certificacion };
+}
+
+/** Parsea el plan_estudios de Identidad Argentina en modulos. */
+export function parsePlanModulos(plan: string): { titulo: string; contenido: string }[] {
+  const blocks = plan.split(/\n\n+/);
+  const modulos: { titulo: string; contenido: string }[] = [];
+  for (const block of blocks) {
+    const lines = block.split('\n');
+    const firstLine = lines[0]?.trim() || '';
+    if (firstLine.startsWith('Módulo ') || firstLine.startsWith('Masterclass ')) {
+      modulos.push({ titulo: firstLine, contenido: lines.slice(1).join('\n').trim() });
+    } else {
+      modulos.push({ titulo: '', contenido: block.trim() });
+    }
+  }
+  return modulos;
+}
+
+/** Parsea seccion_modalidad de Identidad Argentina en docente + bio. */
+export function parseDocente(raw: string): { nombre: string; bio: string[] } {
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  return { nombre: lines[0] || '', bio: lines.slice(1).map(l => l.replace(/^·\s*/, '')) };
+}
+
+// ── Acceso a los slides ──
+
+export function getPortada(carrera: Carrera): SlidePortada | null {
+  return (carrera.slides?.find(s => s.type === 'portada') as SlidePortada) ?? null;
+}
+
+export function getPlanSlide(carrera: Carrera): SlidePlanEstudios | null {
+  return (carrera.slides?.find(s => s.type === 'plan_estudios') as SlidePlanEstudios) ?? null;
+}
+
+export function getCierre(carrera: Carrera): SlideCierre | null {
+  return (carrera.slides?.find(s => s.type === 'cierre') as SlideCierre) ?? null;
+}
+
+/** Un año del plan, aplanado desde las paginas del slide (izquierda + derecha). */
+export interface AnioPlan {
+  anio: string;
+  cuatrimestres: { label: string; materias: string[] }[];
+}
+
+/** Aplana el slide de plan de estudios en una lista de años lista para renderizar. */
+export function planSlideToAnios(slide: SlidePlanEstudios): AnioPlan[] {
+  const anios: AnioPlan[] = [];
+  for (const pagina of slide.paginas) {
+    for (const lado of [pagina.izquierda, pagina.derecha]) {
+      if (lado?.año) anios.push({ anio: lado.año, cuatrimestres: lado.cuatrimestres });
+    }
+  }
+  return anios;
+}
+
+/** Bloques extra del plan (titulos de intermedio, practicas, etc). */
+export function planSlideToExtras(slide: SlidePlanEstudios): { titulo: string; items: string[]; nota?: string }[] {
+  return slide.paginas.flatMap(p => p.extras ?? []);
+}
+
+/** Cuenta las materias del plan: sirve para decidir si vale la pena mostrarlo. */
+export function contarMaterias(slide: SlidePlanEstudios): number {
+  return planSlideToAnios(slide).reduce(
+    (total, a) => total + a.cuatrimestres.reduce((n, c) => n + c.materias.length, 0),
+    0,
+  );
+}

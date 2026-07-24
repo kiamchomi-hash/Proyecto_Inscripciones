@@ -2,8 +2,9 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { sendGAEvent } from '@next/third-parties/google';
-import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
+import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import { esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 
@@ -295,7 +296,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   }, []);
   useEffect(() => {
     if (selectedCarrera) {
-      document.title = `${selectedCarrera.nombre} | Universidad Siglo 21 CAU Villa Lugano`;
+      document.title = `${carreraFullName(selectedCarrera)} | Universidad Siglo 21 CAU Villa Lugano`;
       const carreraPath = `/carreras/${carreraToSlug(selectedCarrera)}`;
       if (window.location.pathname !== carreraPath) {
         if (!modalOpenRef.current) {
@@ -825,13 +826,24 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
     if (!prefetched.current) { prefetched.current = true; prefetchImages(carrera); }
   }, [carrera]);
 
+  // La tarjeta es un enlace real a /carreras/{slug}: asi Google la rastrea y el
+  // usuario puede abrirla en pestaña nueva. Un click normal, en cambio, abre el
+  // modal sin recargar (preventDefault). Los clicks con modificador (Ctrl/Cmd/medio)
+  // o click derecho se dejan pasar para no romper "abrir en pestaña nueva".
+  const href = `/carreras/${carreraToSlug(carrera)}`;
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    onClick(carrera);
+  }, [carrera, onClick]);
+
   return (
     <li className="contents">
-      <button
-        type="button"
+      <Link
+        href={href}
         className={`career-card group w-full ${isIA ? 'career-card-ia' : ''} ${familiaTeclab ? `career-card-teclab teclab-${familiaTeclab}` : ''}`}
         data-testid="career-card"
-        onClick={() => onClick(carrera)}
+        onClick={handleClick}
         onMouseEnter={handlePrefetch}
         onTouchStart={handlePrefetch}
         aria-label={`Ver detalles de ${carrera.nombre}`}
@@ -865,7 +877,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
             {carrera.duracion && <span className="ia-chip">{carrera.duracion}</span>}
           </div>
         )}
-      </button>
+      </Link>
     </li>
   );
 }
