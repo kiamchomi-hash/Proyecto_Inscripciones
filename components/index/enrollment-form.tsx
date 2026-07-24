@@ -3,10 +3,10 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
-import { type Carrera, CATEGORIES, getCategoryForCarrera } from './types';
+import { type CarreraOpcion, CATEGORIES, getCategoryForCarrera } from './types';
 
 interface Props {
-  carreras: Carrera[];
+  carreras: CarreraOpcion[];
 }
 
 export default function EnrollmentForm({ carreras }: Props) {

@@ -67,6 +67,13 @@ export interface Carrera {
   nueva: boolean;
 }
 
+// Lo minimo que necesita el select del formulario de inscripcion. Mandarle la
+// fila completa metia las 115 carreras enteras en el HTML de cada pagina.
+export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'>;
+
+// Lo minimo para pintar un enlace a otra carrera (nombre + slug).
+export type CarreraEnlace = Pick<Carrera, 'id' | 'nombre' | 'prefix'>;
+
 export interface CarreraCategory {
   id: string;
   label: string;
@@ -88,7 +95,7 @@ export const CATEGORIES: CarreraCategory[] = [
 // Since Posgrado contains both Maestrias and Especializaciones,
 // and APLV - Extragrado contains Diplomaturas, Certificados, and Cursos,
 // we use name prefix to further categorize
-export function getCategoryForCarrera(c: Carrera): string {
+export function getCategoryForCarrera(c: Pick<Carrera, 'nivel'>): string {
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';
   if (c.nivel === 'Pregrado') return 'tecnicaturas';
   if (c.nivel === 'Identidad Argentina') return 'identidad_argentina';
@@ -186,7 +193,7 @@ export function getDurationGroup(duracion: string): DurationGroupId | null {
 }
 
 // Build full name from prefix + nombre for slug generation
-function carreraFullName(carrera: Pick<Carrera, 'nombre' | 'prefix'>): string {
+export function carreraFullName(carrera: Pick<Carrera, 'nombre' | 'prefix'>): string {
   const p = (carrera.prefix || '').toLowerCase();
   const nombre = carrera.nombre;
   // If nombre already starts with a known type word, use as-is

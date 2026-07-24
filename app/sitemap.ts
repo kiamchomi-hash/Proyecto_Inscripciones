@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
-import { carreraToSlug } from '@/components/index/types';
+import { carreraToSlug, getCategoryForCarrera } from '@/components/index/types';
 
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
@@ -8,17 +8,22 @@ const ITEMS_PER_PAGE = 6;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.siglo21sur.com';
 
-  // Carreras activas
+  // Carreras activas. Se declaran solo las que aparecen en el catalogo: las de
+  // nivel oculto (Posgrado, APLV, Certificacion, Curso) no tienen ningun enlace
+  // que lleve hasta ellas, asi que anunciarlas solo suma URLs sin indexar.
+  // Las paginas siguen existiendo y respondiendo si alguien tiene el link.
   const { data: carreras } = await supabase
     .from('carreras')
-    .select('nombre, prefix')
+    .select('nombre, prefix, nivel')
     .eq('activa', true);
 
-  const carrerasEntries: MetadataRoute.Sitemap = (carreras || []).map(c => ({
-    url: `${baseUrl}/carreras/${carreraToSlug(c)}`,
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+  const carrerasEntries: MetadataRoute.Sitemap = (carreras || [])
+    .filter(c => getCategoryForCarrera(c) !== '_hidden')
+    .map(c => ({
+      url: `${baseUrl}/carreras/${carreraToSlug(c)}`,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    }));
 
   // Materias activas (clases de apoyo)
   const { data: materias } = await supabase
