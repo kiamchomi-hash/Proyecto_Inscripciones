@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { notFound, permanentRedirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import type { Carrera } from '@/components/index/types';
-import { carreraToSlug, carreraFullName } from '@/components/index/types';
+import { carreraToSlug, carreraFullName, getCategoryForCarrera } from '@/components/index/types';
 import CareerDetail from '@/components/carreras/career-detail';
 import '@/app/index.css';
 
@@ -44,10 +44,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const canonicalSlug = carreraToSlug(carrera);
 
+  // Carreras de nivel oculto (Posgrado, Diplomaturas/APLV, Certificaciones, Cursos):
+  // no tienen lugar en el catalogo, por eso quedan fuera del sitemap y ademas se marcan
+  // noindex. Asi, aunque Google ya conozca la URL, al visitarla ve la orden de no
+  // indexar y las descarta de forma definitiva. La pagina sigue existiendo por si
+  // alguien tiene el enlace directo.
+  const oculta = getCategoryForCarrera(carrera) === '_hidden';
+
   return {
     title,
     description,
     keywords: [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
+    ...(oculta ? { robots: { index: false, follow: true } } : {}),
     alternates: {
       canonical: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
     },
