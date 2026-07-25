@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     inlineCss: true,
   },
   images: {
+    // 90 para las fotos grandes (hero de carrera y modales de Teclab): con el
+    // 75 por defecto las caras quedaban con artefactos visibles.
+    qualities: [75, 90],
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: supabaseHost },
