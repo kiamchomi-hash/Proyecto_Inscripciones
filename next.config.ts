@@ -5,6 +5,11 @@ const supabaseHost = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://lo
 const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['jspdf', 'jspdf-autotable', '@supabase/supabase-js'],
+    // El CSS viajaba en dos <link> que bloqueaban el render (~450 ms segun PSI en
+    // mobile). Inlineado en el HTML desaparece esa ida y vuelta de la ruta critica:
+    // el navegador pinta con lo que ya recibio. Requiere style-src 'unsafe-inline',
+    // que la CSP de abajo ya permite.
+    inlineCss: true,
   },
   images: {
     remotePatterns: [

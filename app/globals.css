@@ -1,4 +1,9 @@
-@import "tailwindcss";
+/* Tailwind v4 escanea por defecto todo el repo: se comia shared_skills/,
+   testsprite_tests/, archivados/ y migracion_pendiente/, y generaba utilidades
+   para clases que ya no existen en el sitio. Solo el codigo vivo genera CSS. */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
 
 /* --- TEXTURES & GRAIN --- */
 .grain-overlay {
