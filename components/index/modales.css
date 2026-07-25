@@ -141,30 +141,21 @@
   pointer-events: none;
 }
 
-/* Banda con la foto de la ficha (mobile): marco fino y la sombra dura
-   desplazada en el acento, el mismo motivo de las tarjetas. */
+/* Foto de la ficha oficial: marco fino y la sombra dura desplazada en el
+   acento, el mismo motivo de las tarjetas. En mobile va mas apaisada, que es
+   una banda a todo el ancho; en desktop comparte la fila con el perfil. */
 .teclab-foto {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.16);
 }
 
-/* Columna con la foto a sangre contra el borde del modal (desktop). El filo del
-   acento a la izquierda es el que separa la foto del texto. */
-.teclab-rail {
-  position: relative;
-  overflow: hidden;
-  border-left: 3px solid;
-}
-
-.teclab-rail-pie {
-  position: absolute;
-  z-index: 1;
-  right: 0.7rem;
-  bottom: 0.7rem;
-  left: 0.7rem;
+@media (max-width: 767px) {
+  .teclab-foto {
+    aspect-ratio: 16 / 9;
+  }
 }
 
 /* Cierre: la segunda foto de la ficha, de fondo y bajo un velo tinta */
