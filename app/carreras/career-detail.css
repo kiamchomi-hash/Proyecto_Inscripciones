@@ -83,6 +83,41 @@
   animation: career-copy-in .65s .05s ease-out both;
 }
 
+.career-all-careers {
+  width: fit-content;
+  min-height: 2.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  margin-bottom: 1.2rem;
+  padding: .65rem .85rem;
+  border: 1px solid color-mix(in srgb, var(--career-accent) 60%, white);
+  background: color-mix(in srgb, var(--career-ink) 84%, transparent);
+  color: #f4fbfa;
+  font-size: .76rem;
+  font-weight: 750;
+  backdrop-filter: blur(10px);
+  transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+  animation: career-copy-in .6s ease-out both;
+}
+
+.career-all-careers svg {
+  width: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  transform: rotate(180deg);
+}
+
+.career-all-careers:hover {
+  border-color: var(--career-accent);
+  background: color-mix(in srgb, var(--career-ink) 68%, var(--career-accent));
+  color: #fff;
+  transform: translateX(-3px);
+}
+
 .career-breadcrumb a {
   transition: color .2s ease;
 }
@@ -656,6 +691,29 @@
 }
 
 @media (min-width: 901px) {
+  .career-page:not(.career-page--no-image) .career-hero-inner {
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    box-sizing: border-box;
+  }
+
+  .career-page:not(.career-page--no-image) .career-all-careers {
+    position: absolute;
+    top: 2rem;
+    left: 0;
+  }
+
+  .career-page:not(.career-page--no-image) .career-breadcrumb {
+    position: absolute;
+    top: 5.85rem;
+    left: 0;
+    margin-bottom: 0;
+  }
+
   .career-page--title-long .career-hero-copy,
   .career-page--title-xl .career-hero-copy {
     max-width: 1080px;
