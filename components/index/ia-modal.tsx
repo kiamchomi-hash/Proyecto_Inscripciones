@@ -10,6 +10,7 @@
 import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
+import Isotipo from './ia-isotipo';
 
 interface Props {
   carrera: Carrera;
@@ -69,6 +70,16 @@ function parseDocente(raw: string | null): { nombre: string; bio: string[] } | n
   return { nombre: lines[0], bio };
 }
 
+/** Iniciales del docente para la placa amarilla, salteando el titulo (Lic., Dr.) */
+function inicialesDocente(nombre: string): string {
+  return nombre
+    .split(/\s+/)
+    .filter(p => !/^(lic|dr|dra|prof|mg|ing|cr|cra|esp)\.?$/i.test(p))
+    .slice(0, 2)
+    .map(p => p.charAt(0).toUpperCase())
+    .join('');
+}
+
 /** plan_estudios: bloques "Módulo N: titulo" + lineas "• contenido" */
 interface Modulo { etiqueta: string; titulo: string; items: string[]; destacado: boolean }
 
@@ -88,19 +99,6 @@ function parsePlan(plan: string | null): Modulo[] {
     });
   }
   return modulos;
-}
-
-// ── Isotipo de la academia (mismo path que el render de Remotion) ──
-function Isotipo({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 2094 1502" role="img" aria-label="Academia Identidad Argentina">
-      <polygon fill={AZUL} points="8.78,1501.47 8.78,0 356.27,0 356.27,1501.47" />
-      <path
-        fill={AMARILLO}
-        d="M409.76 1501.47l261.12 -585.82 346.86 0.25 -251.91 585.57 -356.07 0zm669.23 -1501.46l343.19 0 671.38 1501.46 -364.64 0c-51.85,-125.8 -656.89,-1469.04 -649.92,-1501.46zm-334.61 1179.72l92.23 -263.83 772.18 0 94.37 263.83 -958.79 0z"
-      />
-    </svg>
-  );
 }
 
 /** Rotulo de seccion de un slide */
@@ -145,38 +143,43 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
   const online = /100\s*%\s*online/i.test(modalidad);
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <div className="flex-shrink-0 flex gap-3">
-        <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
-        <div className="min-w-0">
-          {carrera.prefix && (
-            <p className="text-[0.6rem] sm:text-xs font-black uppercase tracking-[0.16em] mb-1" style={{ color: AMARILLO }}>
-              {carrera.prefix}
-            </p>
-          )}
-          <h2
-            className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
-              nombre.length > 38 ? 'text-lg sm:text-3xl' : 'text-2xl sm:text-4xl'
-            }`}
-          >
-            {nombre}
-          </h2>
+    <div className="ia-slide relative h-full overflow-y-auto custom-scrollbar">
+      {/* El isotipo grande y apagado, como en el render: da fondo sin tapar nada */}
+      <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
+
+      <div className="relative min-h-full flex flex-col gap-3 p-5 sm:p-7">
+        <div className="flex-shrink-0 flex gap-3">
+          <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
+          <div className="min-w-0">
+            {carrera.prefix && (
+              <p className="text-[0.6rem] sm:text-xs font-black uppercase tracking-[0.16em] mb-1" style={{ color: AMARILLO }}>
+                {carrera.prefix}
+              </p>
+            )}
+            <h2
+              className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
+                nombre.length > 38 ? 'text-lg sm:text-3xl' : 'text-2xl sm:text-4xl'
+              }`}
+            >
+              {nombre}
+            </h2>
+          </div>
         </div>
-      </div>
 
-      <p className="flex-shrink-0 text-sm sm:text-base font-black uppercase tracking-wider text-white">
-        {online ? '100% Online' : modalidad}
-      </p>
+        <p className="flex-shrink-0 text-sm sm:text-base font-black uppercase tracking-wider text-white">
+          {online ? '100% Online' : modalidad}
+        </p>
 
-      {objetivos.length > 0 && (
-        <ListaAjustada items={objetivos} rotulo="Objetivos" />
-      )}
+        {objetivos.length > 0 && (
+          <ListaAjustada items={objetivos} rotulo="Objetivos" />
+        )}
 
-      {/* Bloques de dato: el principal (escuela) va lleno en amarillo */}
-      <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <BloqueDato label="Escuela" valor={escuela || 'Convenio'} principal />
-        <BloqueDato label="Duración" valor={carrera.duracion} />
-        <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
+        {/* Bloques de dato: el principal (escuela) va lleno en amarillo */}
+        <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <BloqueDato label="Escuela" valor={escuela || 'Convenio'} principal />
+          <BloqueDato label="Duración" valor={carrera.duracion} />
+          <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
+        </div>
       </div>
     </div>
   );
@@ -218,8 +221,15 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
       <Rotulo>A cargo de</Rotulo>
 
       {docente && (
-        <div className="flex-shrink-0 flex gap-3">
-          <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
+        <div className="flex-shrink-0 flex items-center gap-3">
+          {/* Placa con las iniciales: la ficha del convenio no trae foto */}
+          <span
+            className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center font-black text-xl sm:text-2xl"
+            style={{ background: AMARILLO, color: '#101820' }}
+            aria-hidden="true"
+          >
+            {inicialesDocente(docente.nombre)}
+          </span>
           <h3 className="text-xl sm:text-3xl font-black text-white uppercase leading-tight tracking-tight min-w-0">
             {docente.nombre}
           </h3>
@@ -419,9 +429,17 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
           Guaminí 4876
         </a>
       </div>
-      <p className="flex-shrink-0 text-center text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/45">
+      <a
+        href="https://identidadargentina.com.ar/"
+        target="_blank"
+        rel="noopener"
+        className="flex-shrink-0 flex items-center justify-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/45 hover:text-white/75 transition-colors"
+      >
         identidadargentina.com.ar
-      </p>
+        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V7a1 1 0 011-1h4" />
+        </svg>
+      </a>
     </div>
   );
 }

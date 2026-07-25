@@ -5,16 +5,24 @@
 // (Desktop\Teclab Info\remotion-teclab-carreras): fondo tinta #071822, tarjetas
 // blancas con sombra dura de color, tipografia pesada en mayusculas y chips de
 // tipo. El acento cambia por familia: cian en tecnologia, violeta en gestion.
+//
+// El material de marca -logo, fotos de portada, logos de las empresas que
+// cocrearon cada carrera- sale de la ficha oficial de teclab.edu.ar, a la que
+// cada slide enlaza (ver FICHAS en ./teclab).
 
+import Image from 'next/image';
 import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import {
   acentoTeclab,
   getFamiliaTeclab,
+  getFichaTeclab,
   getTipoTeclab,
   parseCompetenciasTeclab,
   parseEnfoqueTeclab,
   parsePlanTeclab,
+  partirDescripcionTeclab,
+  type TeclabFicha,
   type TeclabPeriodo,
 } from './teclab';
 
@@ -30,13 +38,76 @@ const CLARO: Record<string, string> = {
   '#8e2cf2': '#c9a0ff',
 };
 
-// ── Isotipo: cuadrado redondeado con el play, como en el render ──
-function Isotipo({ className, acento }: { className?: string; acento: string }) {
+/** Flecha de enlace externo, el motivo `>` de la marca */
+function IconoExterno({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 40 40" role="img" aria-label="Teclab">
-      <rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="none" stroke={acento} strokeWidth="3" />
-      <path d="M16 12.5 L29 20 L16 27.5 Z" fill={acento} />
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V7a1 1 0 011-1h4" />
     </svg>
+  );
+}
+
+/** Enlace a la ficha oficial de la carrera en teclab.edu.ar */
+function EnlaceFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
+  return (
+    <a
+      href={ficha.url}
+      target="_blank"
+      rel="noopener"
+      className={`inline-flex items-center gap-1.5 text-[0.6rem] font-black uppercase tracking-[0.12em] transition-opacity hover:opacity-75 ${className}`}
+      style={{ color: CLARO[acento] }}
+    >
+      Ver en teclab.edu.ar
+      <IconoExterno className="w-3 h-3" />
+    </a>
+  );
+}
+
+/**
+ * Foto de portada de la ficha oficial, con la sombra dura desplazada que es el
+ * motivo de la marca. Decorativa: lo que informa es el texto de al lado.
+ */
+function FotoFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
+  return (
+    <div
+      className={`teclab-foto ${className}`}
+      style={{ boxShadow: `6px 6px 0 ${acento}` }}
+    >
+      <Image
+        src={ficha.imagen}
+        alt=""
+        fill
+        sizes="(max-width: 768px) 90vw, 22rem"
+        className="object-cover"
+      />
+    </div>
+  );
+}
+
+/** "Cocreada con" + el logo blanco que publica la ficha oficial */
+function BloqueCocreacion({ ficha, acento }: { ficha: TeclabFicha; acento: string }) {
+  if (!ficha.partner) return null;
+  return (
+    <div
+      className="flex items-center gap-3 rounded px-3 py-2"
+      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+    >
+      <span className="text-[0.55rem] font-black uppercase tracking-[0.14em] leading-tight" style={{ color: CLARO[acento] }}>
+        Carrera
+        <span className="block">cocreada con</span>
+      </span>
+      {ficha.partner.logo ? (
+        <Image
+          src={ficha.partner.logo}
+          alt={ficha.partner.nombre}
+          width={420}
+          height={110}
+          className="h-4 sm:h-5 w-auto flex-shrink-0"
+        />
+      ) : (
+        <span className="text-sm font-bold text-white leading-tight">{ficha.partner.nombre}</span>
+      )}
+    </div>
   );
 }
 
@@ -93,10 +164,11 @@ function BloqueDato({
 }
 
 // ── Slide 1: portada ──
-function SlidePortada({ carrera, acento }: { carrera: Carrera; acento: string }) {
-  const { modalidad, certificado, cocreacion } = parseEnfoqueTeclab(carrera.enfoque);
+function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
+  const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
   const tipo = getTipoTeclab(carrera);
   const nombre = carrera.nombre_corto || carrera.nombre;
+  const { perfil } = partirDescripcionTeclab(carrera.descripcion);
 
   return (
     <div className="teclab-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
@@ -128,32 +200,52 @@ function SlidePortada({ carrera, acento }: { carrera: Carrera; acento: string })
         <span className="teclab-chip">Título oficial</span>
       </div>
 
-      {carrera.descripcion && (
-        <div className="flex-1 min-h-fit flex flex-col justify-center gap-2">
-          <Rotulo acento={acento}>Perfil y salida laboral</Rotulo>
-          <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">
-            {carrera.descripcion}
-          </p>
-        </div>
-      )}
+      {/* La foto va primera en mobile -es el gancho- y a la derecha en desktop */}
+      <div className="flex-1 min-h-fit grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-center">
+        {ficha && (
+          <div className="flex flex-col gap-2 md:order-2 md:w-[19rem] md:justify-self-end">
+            <FotoFicha ficha={ficha} acento={acento} />
+            <BloqueCocreacion ficha={ficha} acento={acento} />
+          </div>
+        )}
+        {perfil && (
+          <div className="flex flex-col gap-2 md:order-1">
+            <Rotulo acento={acento}>Perfil profesional</Rotulo>
+            <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
+            {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="mt-1" />}
+          </div>
+        )}
+      </div>
 
       <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal className="col-span-2 sm:col-span-1" />
-        {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} />}
-        {cocreacion && <BloqueDato label="Cocreada con" valor={cocreacion} acento={acento} />}
+        <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal className="col-span-2 sm:col-span-2" />
+        {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} className="col-span-2 sm:col-span-1" />}
       </div>
     </div>
   );
 }
 
-// ── Slide 2: competencias ──
-function SlideCompetencias({ competencias, acento }: { competencias: string[]; acento: string }) {
+// ── Slide 2: competencias y salida laboral ──
+function SlideCompetencias({ competencias, salida, acento }: { competencias: string[]; salida: string; acento: string }) {
   return (
     <div className="teclab-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
       <Rotulo acento={acento}>Competencias profesionales</Rotulo>
       <h3 className="flex-shrink-0 text-xl sm:text-3xl font-black text-white uppercase leading-tight tracking-tight">
         Qué vas a saber hacer
       </h3>
+      {/* La salida laboral va arriba: las competencias son varias y largas, y si
+          queda al pie hay que scrollear para encontrarla. */}
+      {salida && (
+        <div
+          className="flex-shrink-0 rounded p-3"
+          style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', borderLeft: `3px solid ${acento}` }}
+        >
+          <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
+            Dónde vas a trabajar
+          </p>
+          <p className="text-[0.82rem] sm:text-[0.88rem] text-white leading-snug mt-1">{salida}</p>
+        </div>
+      )}
       <ul className="flex-1 min-h-fit flex flex-col justify-center gap-2.5">
         {competencias.map((texto, i) => (
           <li key={i} className="flex items-start gap-2.5 text-[0.85rem] sm:text-[0.92rem] text-[#c3d8e6] leading-relaxed">
@@ -261,8 +353,8 @@ function PeriodoDetalle({ periodo, acento, enTarjeta }: { periodo: TeclabPeriodo
 }
 
 // ── Slide 4: cierre ──
-function SlideCierre({ carrera, acento }: { carrera: Carrera; acento: string }) {
-  const { modalidad, certificado, cocreacion } = parseEnfoqueTeclab(carrera.enfoque);
+function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
+  const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
   const beneficios = [
     { titulo: 'Título', detalle: carrera.titulo },
     { titulo: 'Modalidad', detalle: modalidad },
@@ -283,8 +375,8 @@ function SlideCierre({ carrera, acento }: { carrera: Carrera; acento: string }) 
           </span>
         </h3>
         <p className="text-[#a9c4d6] text-[0.8rem] sm:text-sm mt-2">
-          Tecnicatura oficial de Teclab, Instituto Técnico Superior con validez nacional
-          {cocreacion ? `, cocreada con ${cocreacion}` : ''}.
+          {ficha?.resumen ||
+            'Tecnicatura oficial de Teclab, Instituto Técnico Superior con validez nacional.'}
         </p>
       </div>
 
@@ -303,6 +395,12 @@ function SlideCierre({ carrera, acento }: { carrera: Carrera; acento: string }) 
         ))}
       </div>
 
+      {ficha?.partner && (
+        <div className="flex-shrink-0">
+          <BloqueCocreacion ficha={ficha} acento={acento} />
+        </div>
+      )}
+
       <div className="flex-shrink-0 flex flex-wrap gap-2">
         <a
           href={waHref}
@@ -312,6 +410,18 @@ function SlideCierre({ carrera, acento }: { carrera: Carrera; acento: string }) 
         >
           Consultar precios
         </a>
+        {ficha && (
+          <a
+            href={ficha.url}
+            target="_blank"
+            rel="noopener"
+            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm transition-all hover:brightness-110"
+            style={{ color: CLARO[acento], boxShadow: `inset 0 0 0 1px ${acento}` }}
+          >
+            Ficha oficial
+            <IconoExterno className="w-3.5 h-3.5" />
+          </a>
+        )}
         <a
           href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
           target="_blank"
@@ -322,9 +432,15 @@ function SlideCierre({ carrera, acento }: { carrera: Carrera; acento: string }) 
           Guaminí 4876
         </a>
       </div>
-      <p className="flex-shrink-0 text-center text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/45">
-        teclab.edu.ar · articula con Universidad Siglo 21
-      </p>
+
+      {/* Lockup oficial: la carrera es de Teclab y articula con la Siglo 21 */}
+      <Image
+        src="/imagenes/teclab/logo-teclab-siglo21.webp"
+        alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
+        width={380}
+        height={69}
+        className="flex-shrink-0 h-7 sm:h-8 w-auto mx-auto opacity-80"
+      />
     </div>
   );
 }
@@ -335,18 +451,20 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const acento = acentoTeclab(familia);
   const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
 
+  const ficha = useMemo(() => getFichaTeclab(carrera), [carrera]);
   const competencias = useMemo(() => parseCompetenciasTeclab(carrera.seccion_modalidad), [carrera.seccion_modalidad]);
   const periodos = useMemo(() => parsePlanTeclab(carrera.plan_estudios), [carrera.plan_estudios]);
+  const salida = useMemo(() => partirDescripcionTeclab(carrera.descripcion).salida, [carrera.descripcion]);
 
   const slides = useMemo(() => {
     const s: { key: string; node: React.ReactNode }[] = [
-      { key: 'portada', node: <SlidePortada carrera={carrera} acento={acento} /> },
+      { key: 'portada', node: <SlidePortada carrera={carrera} acento={acento} ficha={ficha} /> },
     ];
-    if (competencias.length) s.push({ key: 'competencias', node: <SlideCompetencias competencias={competencias} acento={acento} /> });
+    if (competencias.length) s.push({ key: 'competencias', node: <SlideCompetencias competencias={competencias} salida={salida} acento={acento} /> });
     if (periodos.length) s.push({ key: 'plan', node: <SlidePlan carrera={carrera} periodos={periodos} acento={acento} /> });
-    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} /> });
+    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} /> });
     return s;
-  }, [carrera, acento, competencias, periodos]);
+  }, [carrera, acento, competencias, ficha, periodos, salida]);
 
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -454,11 +572,14 @@ export default function TeclabModal({ carrera, onClose }: Props) {
         >
           <div className="relative flex justify-between items-center gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <Isotipo className="h-6 sm:h-8 w-auto flex-shrink-0" acento={acento} />
-              <p className="text-[0.5rem] sm:text-[0.6rem] font-black uppercase tracking-[0.18em] text-white/70 leading-tight flex-shrink-0">
-                Teclab
-                <span className="block text-white">Instituto Técnico Superior</span>
-              </p>
+              {/* Logotipo oficial, tal como lo publica teclab.edu.ar */}
+              <Image
+                src="/imagenes/teclab/logo-teclab.webp"
+                alt="Teclab, Instituto Técnico Superior"
+                width={296}
+                height={100}
+                className="h-8 sm:h-10 w-auto flex-shrink-0"
+              />
               {idx > 0 && (
                 <>
                   <span className="hidden sm:block w-px h-7 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.18)' }} />
@@ -468,6 +589,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
                 </>
               )}
             </div>
+            {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="hidden md:inline-flex ml-auto flex-shrink-0" />}
             <button
               ref={closeBtnRef}
               onClick={handleClose}
