@@ -5,6 +5,7 @@ import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, carreraFullName, esCarreraVisible } from '@/components/index/types';
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
+import ResetScrollDesdeModal from '@/components/carreras/reset-scroll-modal';
 import IndexFooter from '@/components/index/footer';
 import '../career-detail.css';
 
@@ -135,6 +136,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <main className="flex-1">
+        <ResetScrollDesdeModal />
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
         <DeferredEnrollmentForm carreras={opcionesFormulario} />
         <IndexFooter />
