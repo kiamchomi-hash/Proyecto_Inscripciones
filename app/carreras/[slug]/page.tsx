@@ -6,6 +6,7 @@ import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, carreraFullName, getCategoryForCarrera } from '@/components/index/types';
 import CareerDetail from '@/components/carreras/career-detail';
 import '@/app/index.css';
+import '../career-detail.css';
 
 const EnrollmentForm = dynamic(() => import('@/components/index/enrollment-form'));
 const IndexFooter = dynamic(() => import('@/components/index/footer'));
