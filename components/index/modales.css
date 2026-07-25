@@ -1,0 +1,201 @@
+/* Estilos de los modales de carrera (Teclab e Identidad Argentina).
+   Viven aparte de app/index.css porque el mismo modal se abre desde dos lados:
+   el catalogo de la home y el boton "Ver info" de /carreras/[slug]. Cuando las
+   reglas estaban solo en index.css, desde la pagina de la carrera el modal salia
+   sin fondo, sin chips y con la foto ocupandolo todo.
+   Las dos hojas -index.css y career-detail.css- importan esta. */
+
+/* Barra de scroll de los slides */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 199, 177, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 199, 177, 0.5);
+}
+
+/* ===================== Identidad Argentina =====================
+   Mismo lenguaje del video: lavados ambientales amarillo/azul sobre tinta,
+   trama fina y filo de luz al pie del encabezado. */
+.ia-modal-header {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    radial-gradient(ellipse at 22% 18%, rgba(241, 207, 28, 0.13), transparent 48%),
+    radial-gradient(ellipse at 82% 70%, rgba(0, 144, 193, 0.18), transparent 52%),
+    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+  background-size: auto, auto, 42px 42px;
+}
+
+.ia-modal-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(241, 207, 28, 0.92),
+    rgba(0, 144, 193, 0.92),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.ia-modal-badge {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  color: var(--ia-yellow);
+  background: rgba(0, 144, 193, 0.2);
+  border: 1px solid rgba(0, 144, 193, 0.45);
+  white-space: nowrap;
+}
+
+/* Fondo de cada slide: lavados ambientales amarillo/azul sobre tinta + trama
+   fina, igual que el <Background> del render de Remotion. */
+.ia-slide {
+  background-color: #101820;
+  background-image:
+    radial-gradient(ellipse at 22% 26%, rgba(241, 207, 28, 0.13), transparent 50%),
+    radial-gradient(ellipse at 84% 44%, rgba(0, 144, 193, 0.22), transparent 54%),
+    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: auto, auto, auto, 42px 42px;
+}
+
+/* ===================== Teclab =====================
+   Dos esteticas sobre la misma estructura, como en el render: cian para las
+   carreras de tecnologia y violeta para las de gestion. Cada contenedor declara
+   su acento en --teclab-accent y todo lo de adentro lo lee. */
+
+.teclab-tecnologia {
+  --teclab-accent: var(--teclab-cyan);
+  /* Sobre cian el texto va en tinta; sobre violeta, en blanco */
+  --teclab-on-accent: var(--teclab-ink);
+}
+
+.teclab-gestion,
+.teclab-tipo-pills {
+  --teclab-accent: var(--teclab-purple);
+  --teclab-on-accent: #fff;
+}
+
+/* ── Chips: mismo tipografico que los rotulos del render ── */
+.teclab-chip {
+  font-size: 0.63rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  line-height: 1.25;
+  max-width: 100%;
+}
+
+/* El tipo es el dato principal: bloque lleno con el acento */
+.teclab-chip-tipo {
+  color: var(--teclab-on-accent);
+  background: var(--teclab-accent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+/* ── Modal ──
+   Mismos lavados ambientales del <Background> del render, en el acento de la
+   familia, sobre el fondo tinta de la marca. */
+.teclab-modal-header {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    radial-gradient(ellipse at 22% 18%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 48%),
+    radial-gradient(ellipse at 82% 70%, color-mix(in srgb, var(--teclab-accent) 20%, transparent), transparent 52%),
+    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+  background-size: auto, auto, 42px 42px;
+}
+
+.teclab-modal-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teclab-accent), transparent);
+  pointer-events: none;
+}
+
+/* Banda con la foto de la ficha (mobile): marco fino y la sombra dura
+   desplazada en el acento, el mismo motivo de las tarjetas. */
+.teclab-foto {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.16);
+}
+
+/* Columna con la foto a sangre contra el borde del modal (desktop). El filo del
+   acento a la izquierda es el que separa la foto del texto. */
+.teclab-rail {
+  position: relative;
+  overflow: hidden;
+  border-left: 3px solid;
+}
+
+.teclab-rail-pie {
+  position: absolute;
+  z-index: 1;
+  right: 0.7rem;
+  bottom: 0.7rem;
+  left: 0.7rem;
+}
+
+/* Cierre: la segunda foto de la ficha, de fondo y bajo un velo tinta */
+.teclab-cierre-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.teclab-cierre-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--teclab-ink) 90%, transparent),
+    color-mix(in srgb, var(--teclab-ink) 97%, transparent) 62%
+  );
+}
+
+/* El contenido tiene que quedar por encima de la foto de fondo */
+.teclab-cierre > *:not(.teclab-cierre-fondo) {
+  position: relative;
+  z-index: 1;
+}
+
+.teclab-slide {
+  background-color: var(--teclab-ink);
+  background-image:
+    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 50%),
+    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 22%, transparent), transparent 54%),
+    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: auto, auto, auto, 42px 42px;
+}
