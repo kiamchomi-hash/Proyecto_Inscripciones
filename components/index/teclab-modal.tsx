@@ -199,9 +199,9 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
       </div>
 
       {/* La foto va primera en mobile -es el gancho- y a la derecha en desktop.
-          Arranca pegada a los chips (`items-start`): el aire sobrante queda
-          abajo, para los bloques de titulo y certificado. */}
-      <div className="flex-1 min-h-fit grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-start">
+          Sin `flex-1`: la fila ocupa lo que necesita y todo el bloque queda
+          arriba, con los datos pegados abajo de la foto. */}
+      <div className="flex-shrink-0 grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-start">
         {ficha && (
           <div className="flex flex-col gap-2 md:order-2 md:w-[19rem] md:justify-self-end">
             <FotoFicha ficha={ficha} acento={acento} />
@@ -217,11 +217,12 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
         )}
       </div>
 
-      <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal className="col-span-2 sm:col-span-2" />
-        {certificado && (
-          <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} className="col-span-2 sm:col-span-1" />
-        )}
+      {/* Los dos cuadros van del mismo ancho y cada uno con su alto: si se
+          estiran para igualarse, el del titulo queda enorme al lado de un
+          certificado de dos lineas. */}
+      <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
+        <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal />
+        {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} />}
       </div>
     </div>
   );
