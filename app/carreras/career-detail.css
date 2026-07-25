@@ -281,7 +281,7 @@
   grid-template-columns: minmax(0, 1fr) 290px;
   gap: clamp(3rem, 8vw, 8rem);
   margin: 0 auto;
-  padding: clamp(3.5rem, 6vw, 5.5rem) 0;
+  padding: clamp(3.5rem, 6vw, 5.5rem) 0 2rem;
 }
 
 .career-section {
@@ -625,7 +625,7 @@
 .career-related {
   width: min(100% - 2rem, 1280px);
   margin: 0 auto;
-  padding: clamp(4rem, 7vw, 6.5rem) 0;
+  padding: 3rem 0 clamp(4rem, 7vw, 6.5rem);
   background: color-mix(in srgb, var(--career-ink) 82%, #214744);
   box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--career-ink) 82%, #214744);
   clip-path: inset(0 -100vmax);
@@ -838,7 +838,7 @@
   .career-facts > div:nth-child(odd) { padding-left: 0; }
   .career-facts dd { font-size: .78rem; }
 
-  .career-layout { padding: 4.5rem 0; }
+  .career-layout { padding: 4.5rem 0 2.5rem; }
 
   .career-section-heading {
     margin-bottom: 2rem;
