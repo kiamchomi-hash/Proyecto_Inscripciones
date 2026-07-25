@@ -202,14 +202,17 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
 
         <div className="career-hero-inner">
           <div className="career-hero-nav-row">
-            <Link href="/#carreras" className="career-all-careers">
+            {/* El payload RSC de la home pesa ~75 KB (el catalogo entero con sus
+                slides). Precargarlo desde cada carrera roba ancho de banda justo
+                cuando se esta pintando el hero. */}
+            <Link href="/#carreras" className="career-all-careers" prefetch={false}>
               <ArrowIcon />
               Ver todas las carreras
             </Link>
             <nav aria-label="Migas de pan" className="career-breadcrumb">
-              <Link href="/">Inicio</Link>
+              <Link href="/" prefetch={false}>Inicio</Link>
               <span className="career-breadcrumb-separator" aria-hidden="true">›</span>
-              <Link href="/#carreras">Carreras</Link>
+              <Link href="/#carreras" prefetch={false}>Carreras</Link>
               <span className="career-breadcrumb-separator" aria-hidden="true">›</span>
               <span className="career-breadcrumb-current" aria-current="page">{cleanName}</span>
             </nav>
@@ -377,12 +380,14 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               <span>Seguí explorando</span>
               <h2>Otras carreras de {carrera.nivel}</h2>
             </div>
-            <Link href="/#carreras">Ver todas <ArrowIcon /></Link>
+            <Link href="/#carreras" prefetch={false}>Ver todas <ArrowIcon /></Link>
           </div>
           <ul>
+            {/* Con inlineCss cada precarga arrastra los 123 KB de CSS de la ruta:
+                al llegar scrolleando hasta aca se pedian hasta 8 paginas de golpe. */}
             {relacionadas.map((related) => (
               <li key={related.id}>
-                <Link href={`/carreras/${carreraToSlug(related)}`}>
+                <Link href={`/carreras/${carreraToSlug(related)}`} prefetch={false}>
                   <span>{carreraFullName(related)}</span>
                   <ArrowIcon />
                 </Link>
