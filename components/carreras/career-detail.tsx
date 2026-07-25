@@ -200,6 +200,10 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         )}
 
         <div className="career-hero-inner">
+          <Link href="/#carreras" className="career-all-careers">
+            <ArrowIcon />
+            Ver todas las carreras
+          </Link>
           <nav aria-label="Migas de pan" className="career-breadcrumb">
             <Link href="/">Inicio</Link>
             <span aria-hidden="true">/</span>
