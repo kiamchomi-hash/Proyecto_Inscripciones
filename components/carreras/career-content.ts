@@ -8,6 +8,7 @@ import type {
   SlidePlanEstudios,
   SlideCierre,
 } from '@/components/index/types';
+import type { TeclabPeriodo } from '@/components/index/teclab';
 
 /** Separa el nombre en prefijo ("Licenciatura en") y nombre limpio. */
 export function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string } {
@@ -115,6 +116,24 @@ export function planSlideToAnios(slide: SlidePlanEstudios): AnioPlan[] {
 /** Bloques extra del plan (titulos de intermedio, practicas, etc). */
 export function planSlideToExtras(slide: SlidePlanEstudios): { titulo: string; items: string[]; nota?: string }[] {
   return slide.paginas.flatMap(p => p.extras ?? []);
+}
+
+/**
+ * El plan de Teclab viene por periodo ("Primer Año | 1er cuatrimestre"); la
+ * pagina los agrupa por año para reusar el mismo bloque que el resto de las
+ * carreras.
+ */
+export function periodosTeclabToAnios(periodos: TeclabPeriodo[]): AnioPlan[] {
+  const anios: AnioPlan[] = [];
+  for (const periodo of periodos) {
+    let anio = anios.find(a => a.anio === periodo.año);
+    if (!anio) {
+      anio = { anio: periodo.año, cuatrimestres: [] };
+      anios.push(anio);
+    }
+    anio.cuatrimestres.push({ label: periodo.label, materias: periodo.materias });
+  }
+  return anios;
 }
 
 /** Cuenta las materias del plan: sirve para decidir si vale la pena mostrarlo. */

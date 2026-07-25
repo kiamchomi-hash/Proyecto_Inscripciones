@@ -7,6 +7,15 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Carrera, CarreraEnlace } from '@/components/index/types';
 import { carreraToSlug, carreraFullName } from '@/components/index/types';
 import { getEscuelaIA } from '@/components/index/identidad-argentina';
+import IsotipoIA from '@/components/index/ia-isotipo';
+import {
+  esTeclab,
+  getFichaTeclab,
+  parseCompetenciasTeclab,
+  parseEnfoqueTeclab,
+  parsePlanTeclab,
+  partirDescripcionTeclab,
+} from '@/components/index/teclab';
 import CareerInfoButton from './career-info-button';
 import {
   getCareerPrefix,
@@ -15,6 +24,7 @@ import {
   parseDocente,
   getPortada,
   getPlanSlide,
+  periodosTeclabToAnios,
   planSlideToAnios,
   planSlideToExtras,
   contarMaterias,
@@ -104,6 +114,10 @@ function CheckIcon() {
 
 export default function CareerDetail({ carrera, relacionadas }: Props) {
   const isIA = carrera.nivel === 'Identidad Argentina';
+  // Las carreras de Teclab traen su material de la ficha oficial del instituto:
+  // foto de portada, competencias, plan por periodo y el enlace a teclab.edu.ar.
+  const isTeclab = esTeclab(carrera);
+  const ficha = isTeclab ? getFichaTeclab(carrera) : null;
   const accent = isIA ? '#25a9db' : '#00c7b1';
   const accentBright = isIA ? '#f1cf1c' : '#70f0dc';
   const ink = isIA ? '#101820' : '#071d1b';
@@ -112,6 +126,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   const nombreCompleto = carreraFullName(carrera);
   const portada = getPortada(carrera);
   const heroImage =
+    ficha?.imagen ||
     portada?.imagen_desktop ||
     portada?.imagen_mobile ||
     '/imagenes/gente/Header_1920x450-1.webp';
@@ -145,6 +160,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   };
 
   const iaMeta = isIA ? parseIAMeta(carrera.enfoque || '') : null;
+  const teclabMeta = isTeclab ? parseEnfoqueTeclab(carrera.enfoque) : null;
   const metaItems = isIA
     ? [
         { label: 'Escuela', value: getEscuelaIA(carrera) || carrera.prefix || 'Diplomatura' },
@@ -152,22 +168,36 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         { label: 'Modalidad', value: iaMeta!.modalidad },
         { label: 'Certificación', value: iaMeta!.certificacion },
       ]
-    : [
-        { label: 'Nivel', value: carrera.nivel },
-        { label: 'Duración', value: carrera.duracion },
-        { label: 'Título', value: carrera.titulo },
-        { label: 'Modalidad', value: carrera.modalidad || 'Educación distribuida' },
-      ];
+    : isTeclab
+      ? [
+          { label: 'Institución', value: 'Teclab · Instituto Técnico Superior' },
+          { label: 'Duración', value: carrera.duracion },
+          { label: 'Título', value: carrera.titulo },
+          { label: 'Certificado intermedio', value: teclabMeta!.certificado || 'Al finalizar el primer año' },
+        ]
+      : [
+          { label: 'Nivel', value: carrera.nivel },
+          { label: 'Duración', value: carrera.duracion },
+          { label: 'Título', value: carrera.titulo },
+          { label: 'Modalidad', value: carrera.modalidad || 'Educación distribuida' },
+        ];
 
   const planSlide = getPlanSlide(carrera);
-  const anios = planSlide && contarMaterias(planSlide) > 0 ? planSlideToAnios(planSlide) : [];
+  const teclabCompetencias = isTeclab ? parseCompetenciasTeclab(carrera.seccion_modalidad) : [];
+  const teclabSalida = isTeclab ? partirDescripcionTeclab(carrera.descripcion).salida : '';
+  const teclabIntro = isTeclab ? partirDescripcionTeclab(carrera.descripcion).perfil : '';
+  const anios = isTeclab
+    ? periodosTeclabToAnios(parsePlanTeclab(carrera.plan_estudios))
+    : planSlide && contarMaterias(planSlide) > 0
+      ? planSlideToAnios(planSlide)
+      : [];
   const extras = planSlide ? planSlideToExtras(planSlide) : [];
   const iaDocente = isIA && carrera.seccion_modalidad ? parseDocente(carrera.seccion_modalidad) : null;
   const iaModulos = isIA && carrera.plan_estudios ? parsePlanModulos(carrera.plan_estudios) : null;
   const hasPlan = Boolean(
     (iaModulos && iaModulos.length > 0) ||
     anios.length > 0 ||
-    (!isIA && carrera.plan_estudios),
+    (!isIA && !isTeclab && carrera.plan_estudios),
   );
 
   const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
@@ -223,7 +253,8 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             <h1>{cleanName}</h1>
             {!isIA && (
               <p className="career-hero-intro">
-                {carrera.descripcion ||
+                {teclabIntro ||
+                  carrera.descripcion ||
                   `Formate en ${nombreCompleto} con el acompañamiento del CAU Villa Lugano.`}
               </p>
             )}
@@ -269,6 +300,28 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                   </li>
                 ))}
               </ul>
+            </section>
+          )}
+
+          {teclabCompetencias.length > 0 && (
+            <section id="perfil" className="career-section career-reveal">
+              <SectionHeading eyebrow="Competencias profesionales">
+                Qué vas a saber hacer
+              </SectionHeading>
+              <ul className="career-learning-list">
+                {teclabCompetencias.map((competencia, index) => (
+                  <li key={index}>
+                    <span><CheckIcon /></span>
+                    <p>{competencia}</p>
+                  </li>
+                ))}
+              </ul>
+              {teclabSalida && (
+                <div className="career-salida">
+                  <h3>Dónde vas a trabajar</h3>
+                  <p>{teclabSalida}</p>
+                </div>
+              )}
             </section>
           )}
 
@@ -347,12 +400,56 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               )}
             </section>
           )}
+
+          {/* Franja de marca del convenio: la diplomatura la dicta la Academia */}
+          {isIA && (
+            <section className="career-oficial career-oficial--ia career-reveal">
+              <IsotipoIA className="career-oficial-isotipo" />
+              <p>
+                Diplomatura de convenio entre el CAU Villa Lugano y la Academia Identidad
+                Argentina. Se cursa por la plataforma Innova Virtual, con certificación nacional e
+                internacional.
+              </p>
+              <a href="https://identidadargentina.com.ar/" target="_blank" rel="noopener">
+                Conocé la Academia Identidad Argentina
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" />
+                </svg>
+              </a>
+            </section>
+          )}
+
+          {/* Franja de marca: el titulo lo emite Teclab y la ficha oficial vive
+              en su sitio; el CAU es el centro que acompaña la cursada. */}
+          {ficha && (
+            <section className="career-oficial career-reveal">
+              <Image
+                src="/imagenes/teclab/logo-teclab-siglo21.webp"
+                alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
+                width={380}
+                height={69}
+              />
+              <p>
+                Carrera oficial de Teclab
+                {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Desde el CAU Villa
+                Lugano te acompañamos en la inscripción y durante toda la cursada.
+              </p>
+              <a href={ficha.url} target="_blank" rel="noopener">
+                Ver la ficha en teclab.edu.ar
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" />
+                </svg>
+              </a>
+            </section>
+          )}
         </div>
 
         <aside className="career-aside" aria-label="Navegación y contacto">
           <div className="career-aside-inner">
             <nav>
-              {(portada?.bullets.length ?? 0) > 0 && <a href="#perfil">Perfil profesional</a>}
+              {((portada?.bullets.length ?? 0) > 0 || teclabCompetencias.length > 0) && (
+                <a href="#perfil">Perfil profesional</a>
+              )}
               {hasPlan && <a href="#plan">Plan de estudios</a>}
             </nav>
             <div className="career-aside-cta">

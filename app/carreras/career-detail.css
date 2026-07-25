@@ -570,6 +570,83 @@
   font-style: normal;
 }
 
+/* Salida laboral: cierra el bloque de competencias de las carreras de Teclab */
+.career-salida {
+  margin-top: 2rem;
+  padding: 1.25rem 1.4rem;
+  border-left: 3px solid var(--career-accent);
+  background: rgba(255,255,255,.035);
+}
+
+.career-salida h3 {
+  margin-bottom: .45rem;
+  color: var(--career-accent);
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.career-salida p {
+  color: #f7fbfa;
+  font-size: .95rem;
+  line-height: 1.6;
+}
+
+/* Franja de marca con el enlace a la ficha oficial del instituto */
+.career-oficial {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  margin-top: 3rem;
+  padding: 1.75rem;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.03);
+}
+
+.career-oficial img {
+  width: auto;
+  height: 2.2rem;
+}
+
+.career-oficial-isotipo {
+  width: auto;
+  height: 2.6rem;
+}
+
+.career-oficial p {
+  max-width: 46ch;
+  color: var(--career-soft);
+  font-size: .92rem;
+  line-height: 1.65;
+}
+
+.career-oficial a {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--career-accent) 70%, transparent);
+  color: var(--career-accent-bright);
+  font-size: .8rem;
+  font-weight: 750;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.career-oficial a:hover {
+  border-color: var(--career-accent);
+  background: color-mix(in srgb, var(--career-accent) 10%, transparent);
+}
+
+.career-oficial a svg {
+  width: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .career-aside {
   position: relative;
 }
