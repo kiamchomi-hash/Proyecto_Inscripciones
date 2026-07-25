@@ -198,8 +198,10 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
         <span className="teclab-chip">Título oficial</span>
       </div>
 
-      {/* La foto va primera en mobile -es el gancho- y a la derecha en desktop */}
-      <div className="flex-1 min-h-fit grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-center">
+      {/* La foto va primera en mobile -es el gancho- y a la derecha en desktop.
+          Arranca pegada a los chips (`items-start`): el aire sobrante queda
+          abajo, para los bloques de titulo y certificado. */}
+      <div className="flex-1 min-h-fit grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-start">
         {ficha && (
           <div className="flex flex-col gap-2 md:order-2 md:w-[19rem] md:justify-self-end">
             <FotoFicha ficha={ficha} acento={acento} />
