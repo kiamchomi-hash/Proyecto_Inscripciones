@@ -197,6 +197,10 @@ export default function Navbar() {
             <Link
               key={href}
               href={href}
+              // El menu movil cerrado sigue pegado al viewport (translateX(-100%)),
+              // asi que entra en el rootMargin del prefetch y precarga las 6 rutas
+              // de fondo en cada visita. Se navega igual, solo pide al hacer clic.
+              prefetch={false}
               className={`navbar-link${isActive(href) ? ' active' : ''}`}
               onClick={closeMenu}
             >
