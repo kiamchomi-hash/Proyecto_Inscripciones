@@ -111,16 +111,12 @@ function Rotulo({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Lista con vinetas.
- *
- * Crece con su contenido (`min-h-fit`) y se centra cuando sobra alto. Si no
- * entra, el slide que la contiene scrollea: no se recorta ningun item.
+ * Lista con vinetas, pegada al bloque de arriba: el aire sobrante del slide
+ * queda abajo y no partido en dos. Si no entra, el slide scrollea.
  */
 function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) {
-  // El rotulo va adentro del bloque centrado para que quede pegado a los items:
-  // centrando la lista por separado se abria un hueco entre ambos.
   return (
-    <div className="flex-1 min-h-fit flex flex-col justify-center gap-2">
+    <div className="flex-shrink-0 flex flex-col gap-2">
       {rotulo && <Rotulo>{rotulo}</Rotulo>}
       <ul className="flex flex-col gap-2.5">
         {items.map((texto, i) => (
@@ -238,7 +234,25 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
         </div>
       )}
 
-      {docente && docente.bio.length > 0 && <ListaAjustada items={docente.bio} />}
+      {/* La bio son credenciales sueltas y cortas: como vinetas en una columna
+          quedaban flotando, asi que van en tarjetas de dos columnas. */}
+      {docente && docente.bio.length > 0 && (
+        <div className="flex-shrink-0 flex flex-col gap-2">
+          <Rotulo>Trayectoria</Rotulo>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {docente.bio.map((texto, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-2.5 rounded px-3 py-2 text-[0.82rem] sm:text-[0.88rem] text-white leading-snug"
+                style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+              >
+                <span className="mt-[0.45em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
+                <span>{texto}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-2">
         <BloqueDato label="Cursada" valor={cursada} className="sm:col-span-3" />
@@ -251,10 +265,14 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
 }
 
 // ── Slide 3: plan de estudios ──
+// Mismo armado que el plan de las carreras de Siglo 21 (carousel-modal): indice
+// a la izquierda con "Programa completo" arriba, y a la derecha el contenido
+// arrancando desde el borde de arriba, no centrado.
 function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }) {
-  // Se muestra un modulo por vez: asi cada vista entra sin scroll
-  const [activo, setActivo] = useState(0);
-  const modulo = modulos[activo];
+  // -1 = programa completo, >= 0 = un modulo
+  const [activo, setActivo] = useState(-1);
+  const visibles = activo === -1 ? modulos : [modulos[activo]];
+  const titulo = activo === -1 ? 'Programa completo' : modulos[activo]?.etiqueta;
 
   return (
     <div className="ia-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
@@ -275,7 +293,7 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
         ))}
       </div>
 
-      {/* Desktop: indice a la izquierda y un modulo por vez, sin scroll */}
+      {/* Desktop: indice a la izquierda, contenido a la derecha */}
       <div
         className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
@@ -284,6 +302,7 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
           className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[9.5rem] custom-scrollbar"
           style={{ background: 'rgba(0,0,0,0.22)' }}
         >
+          <BotonModulo activo={activo === -1} onClick={() => setActivo(-1)} texto="Programa completo" />
           {modulos.map((m, i) => (
             <BotonModulo
               key={i}
@@ -295,14 +314,12 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
           ))}
         </div>
 
-        {modulo && (
-          <div
-            className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 flex flex-col justify-center-safe"
-            style={{ borderLeft: `3px solid ${modulo.destacado ? AMARILLO : AZUL}` }}
-          >
-            <ModuloDetalle modulo={modulo} />
-          </div>
-        )}
+        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-4 py-3 flex flex-col gap-4">
+          <p className="flex-shrink-0 text-sm font-black uppercase tracking-[0.12em] text-white pb-2 border-b border-white/10">
+            {titulo}
+          </p>
+          {visibles.map((m, i) => m && <ModuloDetalle key={i} modulo={m} />)}
+        </div>
       </div>
     </div>
   );
@@ -310,17 +327,20 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
 
 /** Cabecera y contenidos de un modulo */
 function ModuloDetalle({ modulo, enTarjeta }: { modulo: Modulo; enTarjeta?: boolean }) {
+  const filo = `3px solid ${modulo.destacado ? AMARILLO : AZUL}`;
   return (
     <div
-      className={enTarjeta ? 'flex-shrink-0 rounded p-3' : undefined}
+      className={enTarjeta ? 'flex-shrink-0 rounded p-3' : 'flex-shrink-0 pl-3'}
       style={
         enTarjeta
           ? {
               background: 'rgba(255,255,255,0.05)',
               boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
-              borderLeft: `3px solid ${modulo.destacado ? AMARILLO : AZUL}`,
+              borderLeft: filo,
             }
-          : undefined
+          : // Apilados uno abajo del otro, el filo del color es lo que separa
+            // un modulo del siguiente.
+            { borderLeft: filo }
       }
     >
       <p
