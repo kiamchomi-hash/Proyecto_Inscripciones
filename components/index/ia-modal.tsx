@@ -142,8 +142,10 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
   const nombre = carrera.nombre_corto || carrera.nombre;
   const online = /100\s*%\s*online/i.test(modalidad);
 
+  // overflow-x-hidden: el isotipo de fondo se sale por la derecha y sin recorte
+  // aparece una barra de scroll horizontal al pie del slide.
   return (
-    <div className="ia-slide relative h-full overflow-y-auto custom-scrollbar">
+    <div className="ia-slide relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
       {/* El isotipo grande y apagado, como en el render: da fondo sin tapar nada */}
       <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
 

@@ -218,6 +218,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 alt=""
                 fill
                 priority
+                quality={90}
                 sizes="100vw"
                 style={{
                   filter: portada?.imagen_brightness

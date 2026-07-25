@@ -1356,20 +1356,53 @@ mark {
   pointer-events: none;
 }
 
-/* Foto de la ficha oficial dentro del modal: marco fino y la sombra dura
+/* Banda con la foto de la ficha (mobile): marco fino y la sombra dura
    desplazada en el acento, el mismo motivo de las tarjetas. */
 .teclab-foto {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.16);
 }
 
-@media (max-width: 767px) {
-  .teclab-foto {
-    aspect-ratio: 16 / 9;
-  }
+/* Columna con la foto a sangre contra el borde del modal (desktop). El filo del
+   acento a la izquierda es el que separa la foto del texto. */
+.teclab-rail {
+  position: relative;
+  overflow: hidden;
+  border-left: 3px solid;
+}
+
+.teclab-rail-pie {
+  position: absolute;
+  z-index: 1;
+  right: 0.7rem;
+  bottom: 0.7rem;
+  left: 0.7rem;
+}
+
+/* Cierre: la segunda foto de la ficha, de fondo y bajo un velo tinta */
+.teclab-cierre-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.teclab-cierre-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--teclab-ink) 90%, transparent),
+    color-mix(in srgb, var(--teclab-ink) 97%, transparent) 62%
+  );
+}
+
+/* El contenido tiene que quedar por encima de la foto de fondo */
+.teclab-cierre > *:not(.teclab-cierre-fondo) {
+  position: relative;
+  z-index: 1;
 }
 
 .teclab-slide {

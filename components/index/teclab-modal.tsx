@@ -64,33 +64,38 @@ function EnlaceFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; ac
 }
 
 /**
- * Foto de portada de la ficha oficial, con la sombra dura desplazada que es el
- * motivo de la marca. Decorativa: lo que informa es el texto de al lado.
+ * Banda con la foto de la ficha, para mobile: el slide es una columna y la foto
+ * entra a lo ancho, con la sombra dura desplazada que es el motivo de la marca.
  */
 function FotoFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
   return (
-    <div
-      className={`teclab-foto ${className}`}
-      style={{ boxShadow: `6px 6px 0 ${acento}` }}
-    >
-      <Image
-        src={ficha.imagen}
-        alt=""
-        fill
-        sizes="(max-width: 768px) 90vw, 22rem"
-        className="object-cover"
-      />
+    <div className={`teclab-foto ${className}`} style={{ boxShadow: `6px 6px 0 ${acento}` }}>
+      <Image src={ficha.imagen} alt="" fill quality={90} sizes="92vw" className="object-cover" />
     </div>
   );
 }
 
 /** "Cocreada con" + el logo blanco que publica la ficha oficial */
-function BloqueCocreacion({ ficha, acento }: { ficha: TeclabFicha; acento: string }) {
+function BloqueCocreacion({
+  ficha,
+  acento,
+  sobreFoto,
+  className = '',
+}: {
+  ficha: TeclabFicha;
+  acento: string;
+  sobreFoto?: boolean;
+  className?: string;
+}) {
   if (!ficha.partner) return null;
   return (
     <div
-      className="flex items-center gap-3 rounded px-3 py-2"
-      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+      className={`flex items-center gap-3 rounded px-3 py-2 ${className}`}
+      style={
+        sobreFoto
+          ? { background: 'rgba(4,18,26,0.82)', backdropFilter: 'blur(4px)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.14)' }
+          : { background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }
+      }
     >
       <span className="text-[0.55rem] font-black uppercase tracking-[0.14em] leading-tight" style={{ color: CLARO[acento] }}>
         Carrera
@@ -164,6 +169,8 @@ function BloqueDato({
 }
 
 // ── Slide 1: portada ──
+// En desktop la foto va a sangre contra el borde del modal, como una columna
+// entera; en mobile, que no hay lugar al costado, entra como banda arriba.
 function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
   const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
   const tipo = getTipoTeclab(carrera);
@@ -171,56 +178,72 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
   const { perfil } = partirDescripcionTeclab(carrera.descripcion);
 
   return (
-    <div className="teclab-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <div className="flex-shrink-0 flex gap-3">
-        <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: acento }} />
-        <div className="min-w-0">
-          {carrera.prefix && (
-            <p
-              className="text-[0.6rem] sm:text-xs font-black uppercase tracking-[0.16em] mb-1"
-              style={{ color: acento }}
+    <div className="teclab-slide h-full flex">
+      <div className="flex-1 min-w-0 flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
+        <div className="flex-shrink-0 flex gap-3">
+          <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: acento }} />
+          <div className="min-w-0">
+            {carrera.prefix && (
+              <p
+                className="text-[0.6rem] sm:text-xs font-black uppercase tracking-[0.16em] mb-1"
+                style={{ color: acento }}
+              >
+                {carrera.prefix}
+              </p>
+            )}
+            <h2
+              className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
+                nombre.length > 38 ? 'text-lg sm:text-3xl' : 'text-2xl sm:text-4xl'
+              }`}
             >
-              {carrera.prefix}
-            </p>
+              {nombre}
+            </h2>
+          </div>
+        </div>
+
+        <div className="flex-shrink-0 flex flex-wrap gap-1.5">
+          {tipo && <span className="teclab-chip teclab-chip-tipo">{tipo}</span>}
+          <span className="teclab-chip">{modalidad}</span>
+          <span className="teclab-chip">{carrera.duracion}</span>
+          <span className="teclab-chip">Título oficial</span>
+        </div>
+
+        {ficha && <FotoFicha ficha={ficha} acento={acento} className="md:hidden flex-shrink-0" />}
+
+        <div className="flex-1 min-h-fit flex flex-col justify-center gap-2">
+          {perfil && (
+            <>
+              <Rotulo acento={acento}>Perfil profesional</Rotulo>
+              <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
+            </>
           )}
-          <h2
-            className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
-              nombre.length > 38 ? 'text-lg sm:text-3xl' : 'text-2xl sm:text-4xl'
-            }`}
-          >
-            {nombre}
-          </h2>
+          {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="mt-1" />}
+        </div>
+
+        {ficha && <BloqueCocreacion ficha={ficha} acento={acento} className="md:hidden flex-shrink-0" />}
+
+        <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal />
+          {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} />}
         </div>
       </div>
 
-      <div className="flex-shrink-0 flex flex-wrap gap-1.5">
-        {tipo && <span className="teclab-chip teclab-chip-tipo">{tipo}</span>}
-        <span className="teclab-chip">{modalidad}</span>
-        <span className="teclab-chip">{carrera.duracion}</span>
-        <span className="teclab-chip">Título oficial</span>
-      </div>
-
-      {/* La foto va primera en mobile -es el gancho- y a la derecha en desktop */}
-      <div className="flex-1 min-h-fit grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-center">
-        {ficha && (
-          <div className="flex flex-col gap-2 md:order-2 md:w-[19rem] md:justify-self-end">
-            <FotoFicha ficha={ficha} acento={acento} />
-            <BloqueCocreacion ficha={ficha} acento={acento} />
+      {ficha && (
+        <div className="teclab-rail hidden md:block flex-shrink-0 w-[15rem] lg:w-[18rem]" style={{ borderLeftColor: acento }}>
+          <Image
+            src={ficha.imagen}
+            alt=""
+            fill
+            quality={90}
+            sizes="18rem"
+            className="object-cover"
+            style={{ objectPosition: 'center 35%' }}
+          />
+          <div className="teclab-rail-pie">
+            <BloqueCocreacion ficha={ficha} acento={acento} sobreFoto />
           </div>
-        )}
-        {perfil && (
-          <div className="flex flex-col gap-2 md:order-1">
-            <Rotulo acento={acento}>Perfil profesional</Rotulo>
-            <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
-            {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="mt-1" />}
-          </div>
-        )}
-      </div>
-
-      <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal className="col-span-2 sm:col-span-2" />
-        {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} className="col-span-2 sm:col-span-1" />}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -366,7 +389,15 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
   )}`;
 
   return (
-    <div className="teclab-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
+    <div className="teclab-slide teclab-cierre h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
+      {/* La segunda foto de la ficha, de fondo y bajo un velo tinta */}
+      {ficha && (
+        <div className="teclab-cierre-fondo" aria-hidden="true">
+          <Image src={ficha.imagenCierre} alt="" fill quality={90} sizes="(max-width: 768px) 100vw, 64rem" className="object-cover" />
+          <div className="teclab-cierre-velo" />
+        </div>
+      )}
+
       <div className="flex-shrink-0">
         <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
           Educación para
