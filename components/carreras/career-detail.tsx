@@ -7,6 +7,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Carrera, CarreraEnlace } from '@/components/index/types';
 import { carreraToSlug, carreraFullName } from '@/components/index/types';
 import { getEscuelaIA } from '@/components/index/identidad-argentina';
+import CareerInfoButton from './career-info-button';
 import {
   getCareerPrefix,
   parseIAMeta,
@@ -200,17 +201,19 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         )}
 
         <div className="career-hero-inner">
-          <Link href="/#carreras" className="career-all-careers">
-            <ArrowIcon />
-            Ver todas las carreras
-          </Link>
-          <nav aria-label="Migas de pan" className="career-breadcrumb">
-            <Link href="/">Inicio</Link>
-            <span aria-hidden="true">|</span>
-            <Link href="/#carreras">Carreras</Link>
-            <span aria-hidden="true">|</span>
-            <span aria-current="page">{cleanName}</span>
-          </nav>
+          <div className="career-hero-nav-row">
+            <Link href="/#carreras" className="career-all-careers">
+              <ArrowIcon />
+              Ver todas las carreras
+            </Link>
+            <nav aria-label="Migas de pan" className="career-breadcrumb">
+              <Link href="/">Inicio</Link>
+              <span className="career-breadcrumb-separator" aria-hidden="true">›</span>
+              <Link href="/#carreras">Carreras</Link>
+              <span className="career-breadcrumb-separator" aria-hidden="true">›</span>
+              <span className="career-breadcrumb-current" aria-current="page">{cleanName}</span>
+            </nav>
+          </div>
 
           <div className="career-hero-copy">
             <p className="career-kicker">{prefix || carrera.nivel}</p>
@@ -233,6 +236,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               >
                 Hacer una consulta
               </a>
+              <CareerInfoButton carrera={carrera} />
             </div>
           </div>
         </div>

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { Inter, Unbounded } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import ScrollToTop, { ScrollResetOnLoad } from '@/components/scroll-to-top';
+import PublicGoogleAnalytics from '@/components/google-analytics';
 
-import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
@@ -51,8 +51,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${inter.variable} ${unbounded.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://wa.me" />
         <script
           type="application/ld+json"
@@ -109,9 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ScrollResetOnLoad />
         <ScrollToTop />
 
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
+        <PublicGoogleAnalytics />
         <Analytics />
         <SpeedInsights />
       </body>
