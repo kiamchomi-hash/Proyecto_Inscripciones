@@ -74,12 +74,18 @@
 }
 
 .career-breadcrumb {
+  width: fit-content;
+  min-height: 2.35rem;
   display: flex;
   align-items: center;
   gap: .65rem;
   margin-bottom: clamp(2.5rem, 9vh, 6.5rem);
+  padding: .5rem .75rem;
+  border: 1px solid rgba(255,255,255,.22);
+  background: color-mix(in srgb, var(--career-ink) 88%, transparent);
   font-size: .72rem;
   color: rgba(255,255,255,.63);
+  backdrop-filter: blur(10px);
   animation: career-copy-in .65s .05s ease-out both;
 }
 
