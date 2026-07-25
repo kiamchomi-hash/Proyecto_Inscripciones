@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
-import type { Carrera } from '@/components/index/types';
+import { type Carrera, esCarreraVisible } from '@/components/index/types';
 import Hero from '@/components/index/hero';
 import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
@@ -32,7 +32,7 @@ export default async function HomePage() {
     console.error('Error fetching carreras:', error.message);
   }
 
-  const carrerasData = (carreras || []) as Carrera[];
+  const carrerasData = ((carreras || []) as Carrera[]).filter(esCarreraVisible);
 
   return (
     <main className="flex-1">

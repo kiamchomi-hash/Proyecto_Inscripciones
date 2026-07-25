@@ -68,7 +68,7 @@ export interface Carrera {
 }
 
 // Lo minimo que necesita el select del formulario de inscripcion. Mandarle la
-// fila completa metia las 115 carreras enteras en el HTML de cada pagina.
+// fila completa metia todas las carreras enteras en el HTML de cada pagina.
 export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'>;
 
 // Lo minimo para pintar un enlace a otra carrera (nombre + slug).
@@ -92,9 +92,6 @@ export const CATEGORIES: CarreraCategory[] = [
 ];
 
 // Mapping from Supabase nivel to display categories
-// Since Posgrado contains both Maestrias and Especializaciones,
-// and APLV - Extragrado contains Diplomaturas, Certificados, and Cursos,
-// we use name prefix to further categorize
 export function getCategoryForCarrera(c: Pick<Carrera, 'nivel'>): string {
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';
   if (c.nivel === 'Pregrado') return 'tecnicaturas';
@@ -104,6 +101,15 @@ export function getCategoryForCarrera(c: Pick<Carrera, 'nivel'>): string {
 
   // Any other nivel is not displayed in the current categories
   return '_hidden';
+}
+
+// La oferta del sitio son Grado, Pregrado, Teclab e Identidad Argentina. Los
+// niveles que quedaron afuera -Posgrado (maestrias y especializaciones),
+// APLV - Extragrado, Certificacion y Curso- se filtran al leer de Supabase, asi
+// que no se listan, no se pueden elegir en el formulario y no tienen pagina.
+// Las filas siguen en la base: para reponer un nivel alcanza con darle categoria.
+export function esCarreraVisible(c: Pick<Carrera, 'nivel'>): boolean {
+  return getCategoryForCarrera(c) !== '_hidden';
 }
 
 // ── Area classification ──
