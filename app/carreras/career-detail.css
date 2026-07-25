@@ -75,7 +75,9 @@
 
 .career-hero-nav-row {
   display: flex;
-  align-items: center;
+  /* stretch para que las migas y el boton de volver midan exactamente lo
+     mismo de alto sin depender de cuanto ocupe el texto de cada uno. */
+  align-items: stretch;
   gap: .75rem;
   margin-bottom: 1.25rem;
 }
@@ -136,7 +138,7 @@
 }
 
 .career-breadcrumb a {
-  padding: .35rem .1rem;
+  padding: 0 .1rem;
   transition: color .2s ease;
 }
 
@@ -153,7 +155,7 @@
 
 .career-breadcrumb-current {
   max-width: 26rem;
-  padding: .35rem .55rem;
+  padding: .3rem .55rem;
   border-radius: 0;
   background: color-mix(in srgb, var(--career-accent) 16%, transparent);
   color: var(--career-accent-bright);
@@ -298,7 +300,8 @@
   border-right: 1px solid rgba(255,255,255,.12);
 }
 
-.career-facts > div:first-child { padding-left: 0; }
+/* Con fondo, el padding va parejo en las cuatro: si la primera arranca en 0
+   el texto queda pegado al borde del bloque de color. */
 .career-facts > div:last-child { border-right: 0; }
 
 .career-facts dt,
@@ -311,15 +314,13 @@
   text-transform: uppercase;
 }
 
-/* Alternar el color de los datos para separar visualmente las cuatro columnas. */
-.career-facts > div:nth-child(odd) dt,
-.career-facts > div:nth-child(odd) dd {
-  color: var(--career-accent);
+/* Alternar el fondo para separar visualmente las cuatro columnas. */
+.career-facts > div:nth-child(odd) {
+  background: color-mix(in srgb, var(--career-accent) 14%, transparent);
 }
 
-.career-facts > div:nth-child(even) dt,
-.career-facts > div:nth-child(even) dd {
-  color: var(--career-accent-bright);
+.career-facts > div:nth-child(even) {
+  background: rgba(255, 255, 255, .05);
 }
 
 .career-facts dd {
@@ -842,7 +843,6 @@
   .career-facts > div:nth-child(2) { border-right: 0; }
   .career-facts > div:first-child,
   .career-facts > div:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,.12); }
-  .career-facts > div:nth-child(3) { padding-left: 0; }
 
   .career-layout {
     grid-template-columns: 1fr;
@@ -884,7 +884,6 @@
   }
 
   .career-facts > div { padding: 1.35rem .9rem; }
-  .career-facts > div:nth-child(odd) { padding-left: 0; }
   .career-facts dd { font-size: .78rem; }
 
   .career-layout { padding: 4.5rem 0 2.5rem; }
