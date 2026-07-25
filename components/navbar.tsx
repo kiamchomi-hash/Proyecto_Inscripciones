@@ -141,7 +141,10 @@ export default function Navbar() {
   }, [menuOpen, closeMenu]);
 
   function isActive(href: string) {
-    if (href === '/') return pathname === '/';
+    // El modal de carrera reescribe la URL a /carreras/{slug} (y esa es la misma
+    // ruta que la pagina de carrera): sigue siendo la seccion INICIO/CARRERAS,
+    // asi que el enlace no tiene que perder el resaltado al abrir el modal.
+    if (href === '/') return pathname === '/' || pathname.startsWith('/carreras');
     if (href.startsWith('/novedades')) return pathname.startsWith('/novedades');
     return pathname === href;
   }

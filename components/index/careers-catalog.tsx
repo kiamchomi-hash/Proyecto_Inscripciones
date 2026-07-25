@@ -7,6 +7,7 @@ import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, car
 import { getEscuelaIA } from './identidad-argentina';
 import { esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 import CareerInfoModal from './career-info-modal';
+import { MARCA_MODAL } from '@/components/carreras/reset-scroll-modal';
 
 // Levenshtein distance for fuzzy search
 function levenshtein(a: string, b: string): number {
@@ -289,6 +290,17 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
     if (!defaultTitle.current) defaultTitle.current = document.title;
     if (!defaultPath.current) defaultPath.current = window.location.pathname + window.location.search;
   }, []);
+  // Mientras el modal se adueña de la URL, el scroll guardado para esa entrada
+  // es el del catalogo: la marca le avisa a la pagina de carrera que, si la
+  // recargan con F5, tiene que arrancar arriba y no en el formulario del final.
+  const marcarUrlDeModal = useCallback((path: string | null) => {
+    try {
+      if (path) sessionStorage.setItem(MARCA_MODAL, path);
+      else sessionStorage.removeItem(MARCA_MODAL);
+    } catch {
+      // Navegacion privada sin storage: se vive con el scroll restaurado.
+    }
+  }, []);
   useEffect(() => {
     if (selectedCarrera) {
       document.title = `${carreraFullName(selectedCarrera)} | Universidad Siglo 21 CAU Villa Lugano`;
@@ -302,15 +314,17 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
           window.history.replaceState({ modal: true }, '', carreraPath);
         }
       }
+      marcarUrlDeModal(carreraPath);
       modalOpenRef.current = true;
     } else if (modalOpenRef.current) {
       document.title = `Universidad Siglo 21 CAU Villa Lugano | Oferta académica ${new Date().getFullYear()}`;
       if (window.location.pathname !== '/') {
         window.history.replaceState(null, '', '/');
       }
+      marcarUrlDeModal(null);
       modalOpenRef.current = false;
     }
-  }, [selectedCarrera]);
+  }, [selectedCarrera, marcarUrlDeModal]);
 
   // Handle browser back button closing the modal
   useEffect(() => {
