@@ -1,9 +1,9 @@
-// Detalle de una carrera renderizado en el servidor.
-// Es el contenido propio de /carreras/[slug]: antes vivia solo dentro del modal
-// client-side, asi que el HTML servido era una copia del home y Google lo trataba
-// como duplicado. Aca va como texto real, indexable.
+// Detalle de carrera renderizado en el servidor: todo el contenido importante
+// permanece en el HTML para que cada URL sea una pagina real e indexable.
 
+import Image from 'next/image';
 import Link from 'next/link';
+import type { CSSProperties, ReactNode } from 'react';
 import type { Carrera, CarreraEnlace } from '@/components/index/types';
 import { carreraToSlug, carreraFullName } from '@/components/index/types';
 import { getEscuelaIA } from '@/components/index/identidad-argentina';
@@ -24,32 +24,125 @@ interface Props {
   relacionadas: CarreraEnlace[];
 }
 
-/** Titulo de seccion con la linea de acento arriba. */
-function SectionTitle({ children, accent }: { children: React.ReactNode; accent: string }) {
+type CareerStyle = CSSProperties & {
+  '--career-accent': string;
+  '--career-accent-bright': string;
+  '--career-ink': string;
+  '--career-soft': string;
+  '--career-hero-position': string;
+  '--career-hero-position-mobile': string;
+  '--career-hero-scale': string;
+  '--career-hero-origin': string;
+  '--career-hero-origin-mobile': string;
+};
+
+const HERO_POSITIONS: Record<string, string> = {
+  Abogacía: 'center top',
+  'Licenciatura en Administración': 'center top',
+  'Licenciatura en Administración Hotelera': 'left top',
+  'Licenciatura en Administración Pública': 'center top',
+  'Licenciatura en Comercio Internacional': 'center top',
+  'Licenciatura en Educación (CCC)': 'center top',
+  'Licenciatura en Informática': 'center top',
+  'Licenciatura en Psicopedagogía (CCC)': 'center top',
+  'Licenciatura en Relaciones Internacionales': 'center top',
+  'Licenciatura en Relaciones Públicas e Institucionales': 'center top',
+  'Profesorado Universitario para Nivel Secundario y Superior (CCC)': 'center top',
+  'Tecnicatura en Administración y Gestión de Políticas Públicas': 'center top',
+  'Tecnicatura en Gestión de Empresas Familiares': 'center top',
+};
+
+const HERO_SCALES: Record<string, string> = {
+  'Licenciatura en Administración Hotelera': '1.35',
+  'Tecnicatura en Administración y Gestión Tributaria': '1.15',
+};
+
+const HERO_ORIGINS: Record<string, string> = {
+  'Licenciatura en Administración Hotelera': 'left top',
+  'Tecnicatura en Administración y Gestión Tributaria': 'center center',
+};
+
+const MOBILE_HERO_POSITIONS: Record<string, string> = {
+  'Tecnicatura en Administración y Gestión Tributaria': 'center top',
+};
+
+const MOBILE_HERO_ORIGINS: Record<string, string> = {
+  'Tecnicatura en Administración y Gestión Tributaria': 'center top',
+};
+
+function SectionHeading({
+  eyebrow,
+  children,
+}: {
+  eyebrow: string;
+  children: ReactNode;
+}) {
   return (
-    <h2
-      className="text-sm font-bold uppercase tracking-widest mb-3"
-      style={{ color: accent }}
-    >
-      {children}
-    </h2>
+    <div className="career-section-heading">
+      <span>{eyebrow}</span>
+      <h2>{children}</h2>
+    </div>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="m5 12 4 4L19 6" />
+    </svg>
   );
 }
 
 export default function CareerDetail({ carrera, relacionadas }: Props) {
   const isIA = carrera.nivel === 'Identidad Argentina';
-  const accent = isIA ? '#0090c1' : '#00c7b1';
-  const accentLight = isIA ? '#f1cf1c' : '#00ffe1';
-  const panelBg = isIA ? '#101820' : '#1c2f31';
-  const cardBg = isIA ? 'rgba(255,255,255,0.05)' : 'rgba(1,55,41,0.5)';
-  const cardBorder = isIA ? 'rgba(255,255,255,0.12)' : 'rgba(0,199,177,0.15)';
-  const bodyText = isIA ? '#b4cce0' : '#b4d3ce';
-  const mutedText = isIA ? '#8ab4d0' : '#7ca19b';
-
+  const accent = isIA ? '#25a9db' : '#00c7b1';
+  const accentBright = isIA ? '#f1cf1c' : '#70f0dc';
+  const ink = isIA ? '#101820' : '#071d1b';
+  const soft = isIA ? '#b9d9e8' : '#b7d1cd';
   const { prefix, cleanName } = getCareerPrefix(carrera);
   const nombreCompleto = carreraFullName(carrera);
+  const portada = getPortada(carrera);
+  const heroImage =
+    portada?.imagen_desktop ||
+    portada?.imagen_mobile ||
+    '/imagenes/gente/Header_1920x450-1.webp';
+  const heroPosition =
+    HERO_POSITIONS[nombreCompleto] ||
+    portada?.imagen_desktop_position ||
+    'center';
+  const mobileHeroPosition =
+    MOBILE_HERO_POSITIONS[nombreCompleto] ||
+    HERO_POSITIONS[nombreCompleto] ||
+    heroPosition;
+  const titleLengthClass =
+    cleanName.length > 45
+      ? ' career-page--title-xl'
+      : cleanName.length > 28
+        ? ' career-page--title-long'
+        : '';
+  const careerStyle: CareerStyle = {
+    '--career-accent': accent,
+    '--career-accent-bright': accentBright,
+    '--career-ink': ink,
+    '--career-soft': soft,
+    '--career-hero-position': heroPosition,
+    '--career-hero-position-mobile': mobileHeroPosition,
+    '--career-hero-scale': HERO_SCALES[nombreCompleto] || '1',
+    '--career-hero-origin': HERO_ORIGINS[nombreCompleto] || 'center top',
+    '--career-hero-origin-mobile':
+      MOBILE_HERO_ORIGINS[nombreCompleto] ||
+      HERO_ORIGINS[nombreCompleto] ||
+      'center top',
+  };
 
-  // Badges de cabecera: el convenio muestra escuela/certificacion, el resto nivel/titulo.
   const iaMeta = isIA ? parseIAMeta(carrera.enfoque || '') : null;
   const metaItems = isIA
     ? [
@@ -62,290 +155,232 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         { label: 'Nivel', value: carrera.nivel },
         { label: 'Duración', value: carrera.duracion },
         { label: 'Título', value: carrera.titulo },
-        { label: 'Enfoque', value: carrera.enfoque },
+        { label: 'Modalidad', value: carrera.modalidad || 'Educación distribuida' },
       ];
 
-  const portada = getPortada(carrera);
   const planSlide = getPlanSlide(carrera);
   const anios = planSlide && contarMaterias(planSlide) > 0 ? planSlideToAnios(planSlide) : [];
   const extras = planSlide ? planSlideToExtras(planSlide) : [];
   const iaDocente = isIA && carrera.seccion_modalidad ? parseDocente(carrera.seccion_modalidad) : null;
   const iaModulos = isIA && carrera.plan_estudios ? parsePlanModulos(carrera.plan_estudios) : null;
+  const hasPlan = Boolean(
+    (iaModulos && iaModulos.length > 0) ||
+    anios.length > 0 ||
+    (!isIA && carrera.plan_estudios),
+  );
 
   const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
 
   return (
-    <article className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-12">
-      {/* Migas: enlaces reales para que el rastreo llegue y vuelva */}
-      <nav aria-label="Migas de pan" className="mb-5 text-xs sm:text-sm" style={{ color: mutedText }}>
-        <Link href="/" className="hover:underline">Inicio</Link>
-        <span className="mx-2" aria-hidden="true">/</span>
-        <Link href="/#carreras" className="hover:underline">Carreras</Link>
-        <span className="mx-2" aria-hidden="true">/</span>
-        <span style={{ color: accent }}>{nombreCompleto}</span>
-      </nav>
-
-      {/* Cabecera */}
-      <header
-        className="rounded-2xl p-5 sm:p-7 mb-6"
-        style={{ background: panelBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-      >
-        {prefix && (
-          <p
-            className="text-[11px] sm:text-xs font-bold uppercase tracking-widest mb-1"
-            style={{ color: accentLight }}
-          >
-            {prefix}
-          </p>
-        )}
-        <h1 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-tight">
-          {cleanName}
-        </h1>
-
-        <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-5">
-          {metaItems.map(item => (
-            <div
-              key={item.label}
-              className="rounded-lg px-3 py-2"
-              style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-            >
-              <dt
-                className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest"
-                style={{ color: accent }}
-              >
-                {item.label}
-              </dt>
-              <dd className="text-[0.8rem] sm:text-sm font-semibold mt-0.5 leading-tight text-white">
-                {item.value}
-              </dd>
+    <article
+      className={`career-page${isIA ? ' career-page--ia career-page--no-image' : ''}${titleLengthClass}`}
+      style={careerStyle}
+    >
+      <header className="career-hero">
+        {!isIA && (
+          <>
+            <div className="career-hero-media" aria-hidden="true">
+              <Image
+                className="career-hero-image"
+                src={heroImage}
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                style={{
+                  filter: portada?.imagen_brightness
+                    ? `brightness(${portada.imagen_brightness})`
+                    : undefined,
+                }}
+              />
             </div>
-          ))}
-        </dl>
+            <div className="career-hero-shade" />
+          </>
+        )}
+
+        <div className="career-hero-inner">
+          <nav aria-label="Migas de pan" className="career-breadcrumb">
+            <Link href="/">Inicio</Link>
+            <span aria-hidden="true">/</span>
+            <Link href="/#carreras">Carreras</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{cleanName}</span>
+          </nav>
+
+          <div className="career-hero-copy">
+            <p className="career-kicker">{prefix || carrera.nivel}</p>
+            <h1>{cleanName}</h1>
+            {!isIA && (
+              <p className="career-hero-intro">
+                {carrera.descripcion ||
+                  `Formate en ${nombreCompleto} con el acompañamiento del CAU Villa Lugano.`}
+              </p>
+            )}
+            <div className="career-hero-actions">
+              <a href="#formulario" className="career-button career-button--primary">
+                Quiero inscribirme <ArrowIcon />
+              </a>
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener nofollow"
+                className="career-button career-button--ghost"
+              >
+                Hacer una consulta
+              </a>
+            </div>
+          </div>
+        </div>
       </header>
 
-      {/* Descripcion */}
-      {carrera.descripcion && (
-        <section className="mb-6">
-          <SectionTitle accent={accent}>Sobre la carrera</SectionTitle>
-          <p className="text-[0.95rem] sm:text-lg leading-relaxed" style={{ color: bodyText }}>
-            {carrera.descripcion}
-          </p>
-        </section>
-      )}
-
-      {/* Que vas a poder hacer (bullets de la portada) */}
-      {portada && portada.bullets.length > 0 && (
-        <section className="mb-6">
-          <SectionTitle accent={accent}>Lo que vas a aprender</SectionTitle>
-          <ul className="space-y-2">
-            {portada.bullets.map((b, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm sm:text-base leading-relaxed" style={{ color: bodyText }}>
-                <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: accent }} />
-                {b}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* Docente (convenio Identidad Argentina) */}
-      {iaDocente?.nombre && (
-        <section
-          className="mb-6 rounded-xl p-4 sm:p-5"
-          style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-        >
-          <SectionTitle accent={accent}>Docente</SectionTitle>
-          <p className="text-white font-bold text-base sm:text-lg">{iaDocente.nombre}</p>
-          {iaDocente.bio.length > 0 && (
-            <ul className="mt-2 space-y-1">
-              {iaDocente.bio.map((line, i) => (
-                <li key={i} className="text-sm flex items-start gap-2" style={{ color: mutedText }}>
-                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: accent }} />
-                  {line}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-
-      {/* Duracion en detalle */}
-      {carrera.seccion_duracion && (
-        <section
-          className="mb-6 rounded-xl p-4 sm:p-5"
-          style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-        >
-          <SectionTitle accent={accent}>Duración</SectionTitle>
-          <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap" style={{ color: bodyText }}>
-            {carrera.seccion_duracion}
-          </p>
-        </section>
-      )}
-
-      {/* Modalidad (para el convenio ya se uso como docente) */}
-      {!isIA && carrera.seccion_modalidad && (
-        <section
-          className="mb-6 rounded-xl p-4 sm:p-5"
-          style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-        >
-          <SectionTitle accent={accent}>Modalidad de cursado</SectionTitle>
-          <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap" style={{ color: bodyText }}>
-            {carrera.seccion_modalidad}
-          </p>
-        </section>
-      )}
-
-      {/* Plan de estudios ── 1) modulos del convenio */}
-      {iaModulos && iaModulos.length > 0 && (
-        <section className="mb-6">
-          <SectionTitle accent={accent}>Plan de estudios</SectionTitle>
-          <div className="space-y-3">
-            {iaModulos.map((mod, i) => {
-              const esMasterclass = mod.titulo.startsWith('Masterclass');
-              return (
-                <div
-                  key={i}
-                  className="rounded-lg p-3 sm:p-4"
-                  style={{
-                    background: cardBg,
-                    boxShadow: `inset 0 0 0 1px ${cardBorder}`,
-                    borderLeft: `3px solid ${esMasterclass ? accentLight : accent}`,
-                  }}
-                >
-                  {mod.titulo && (
-                    <h3 className="font-bold text-sm sm:text-[0.95rem] mb-1.5" style={{ color: esMasterclass ? accentLight : '#fff' }}>
-                      {mod.titulo}
-                    </h3>
-                  )}
-                  {mod.contenido && (
-                    <p className="text-[0.82rem] sm:text-sm leading-relaxed whitespace-pre-wrap" style={{ color: mutedText }}>
-                      {mod.contenido}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
+      <dl className="career-facts" aria-label="Información principal de la carrera">
+        {metaItems.map((item) => (
+          <div key={item.label}>
+            <dt>{item.label}</dt>
+            <dd>{item.value}</dd>
           </div>
-        </section>
-      )}
+        ))}
+      </dl>
 
-      {/* Plan de estudios ── 2) grilla estructurada por año */}
-      {!isIA && anios.length > 0 && (
-        <section className="mb-6">
-          <SectionTitle accent={accent}>Plan de estudios</SectionTitle>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {anios.map((a, i) => (
-              <div
-                key={i}
-                className="rounded-xl p-4"
-                style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-              >
-                <h3 className="font-black text-white uppercase tracking-tight text-base mb-2">{a.anio}</h3>
-                {a.cuatrimestres.map((c, j) => (
-                  <div key={j} className="mb-3 last:mb-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accent }}>
-                      {c.label}
-                    </p>
-                    <ul className="space-y-1">
-                      {c.materias.map((m, k) => (
-                        <li key={k} className="text-[0.82rem] sm:text-sm leading-snug flex items-start gap-2" style={{ color: bodyText }}>
-                          <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: accent }} />
-                          {m}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+      <div className="career-layout">
+        <div className="career-content">
+          {(portada?.bullets.length ?? 0) > 0 && (
+            <section id="perfil" className="career-section career-reveal">
+              <SectionHeading eyebrow="Tu futuro profesional">
+                Lo que vas a aprender
+              </SectionHeading>
+              <ul className="career-learning-list">
+                {portada!.bullets.map((bullet, index) => (
+                  <li key={index}>
+                    <span><CheckIcon /></span>
+                    <p>{bullet}</p>
+                  </li>
                 ))}
-              </div>
-            ))}
-          </div>
-
-          {extras.length > 0 && (
-            <div className="grid sm:grid-cols-2 gap-3 mt-3">
-              {extras.map((e, i) => (
-                <div
-                  key={i}
-                  className="rounded-xl p-4"
-                  style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-                >
-                  <h3 className="font-bold text-sm mb-2" style={{ color: accentLight }}>{e.titulo}</h3>
-                  <ul className="space-y-1">
-                    {e.items.map((it, j) => (
-                      <li key={j} className="text-[0.82rem] sm:text-sm leading-snug flex items-start gap-2" style={{ color: bodyText }}>
-                        <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: accent }} />
-                        {it}
-                      </li>
-                    ))}
-                  </ul>
-                  {e.nota && <p className="text-xs mt-2 italic" style={{ color: mutedText }}>{e.nota}</p>}
-                </div>
-              ))}
-            </div>
+              </ul>
+            </section>
           )}
-        </section>
-      )}
 
-      {/* Plan de estudios ── 3) texto plano, cuando no hay grilla */}
-      {!isIA && anios.length === 0 && carrera.plan_estudios && (
-        <section
-          className="mb-6 rounded-xl p-4 sm:p-5"
-          style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}` }}
-        >
-          <SectionTitle accent={accent}>Plan de estudios</SectionTitle>
-          <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap" style={{ color: bodyText }}>
-            {carrera.plan_estudios}
-          </p>
-        </section>
-      )}
+          {iaDocente?.nombre && (
+            <section className="career-section career-reveal">
+              <SectionHeading eyebrow="Acompañamiento">Conocé a tu docente</SectionHeading>
+              <div className="career-teacher">
+                <div aria-hidden="true">{iaDocente.nombre.charAt(0)}</div>
+                <div>
+                  <h3>{iaDocente.nombre}</h3>
+                  {iaDocente.bio.map((line, index) => <p key={index}>{line}</p>)}
+                </div>
+              </div>
+            </section>
+          )}
 
-      {/* El slide de cierre no se renderiza: 58 de 59 carreras comparten los mismos
-          beneficios palabra por palabra, y repetir ese texto en cada pagina vuelve a
-          meter el problema de contenido duplicado que esta pagina viene a resolver. */}
+          {hasPlan && (
+            <section id="plan" className="career-section career-plan career-reveal">
+              <SectionHeading eyebrow="Tu recorrido académico">
+                Plan de estudios
+              </SectionHeading>
 
-      {/* Llamados a la accion */}
-      <div className="flex flex-wrap gap-2.5 mb-10">
-        <a
-          href="#formulario"
-          className="flex items-center justify-center gap-2 px-5 py-2.5 text-white font-bold rounded-lg text-sm hover:brightness-110 transition"
-          style={{ background: isIA ? accent : '#6c2381' }}
-        >
-          Inscribite ya
-        </a>
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener nofollow"
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#25D366] text-white font-bold rounded-lg text-sm hover:brightness-110 transition"
-        >
-          Consultar por WhatsApp
-        </a>
+              {iaModulos && iaModulos.length > 0 && (
+                <div className="career-modules">
+                  {iaModulos.map((module, index) => (
+                    <div key={index}>
+                      <span>{String(index + 1).padStart(2, '0')}</span>
+                      <div>
+                        {module.titulo && <h3>{module.titulo}</h3>}
+                        {module.contenido && <p>{module.contenido}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!isIA && anios.length > 0 && (
+                <div className="career-years">
+                  {anios.map((year, index) => (
+                    <section key={index}>
+                      <div className="career-year-title">
+                        <span>{String(index + 1).padStart(2, '0')}</span>
+                        <h3>{year.anio}</h3>
+                      </div>
+                      {year.cuatrimestres.map((term, termIndex) => (
+                        <div className="career-term" key={termIndex}>
+                          <h4>{term.label}</h4>
+                          <ul>
+                            {term.materias.map((subject, subjectIndex) => (
+                              <li key={subjectIndex}>{subject}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </section>
+                  ))}
+                </div>
+              )}
+
+              {extras.length > 0 && (
+                <div className="career-extras">
+                  {extras.map((extra, index) => (
+                    <div key={index}>
+                      <h3>{extra.titulo}</h3>
+                      <ul>
+                        {extra.items.map((item, itemIndex) => <li key={itemIndex}>{item}</li>)}
+                      </ul>
+                      {extra.nota && <p>{extra.nota}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!isIA && anios.length === 0 && carrera.plan_estudios && (
+                <p className="career-plain-plan">{carrera.plan_estudios}</p>
+              )}
+            </section>
+          )}
+        </div>
+
+        <aside className="career-aside" aria-label="Navegación y contacto">
+          <div className="career-aside-inner">
+            <p>En esta carrera</p>
+            <nav>
+              {(portada?.bullets.length ?? 0) > 0 && <a href="#perfil">Perfil profesional</a>}
+              {hasPlan && <a href="#plan">Plan de estudios</a>}
+            </nav>
+            <div className="career-aside-cta">
+              <span>¿Querés dar el próximo paso?</span>
+              <strong>Te acompañamos desde Villa Lugano.</strong>
+              <a href="#formulario">Solicitar información <ArrowIcon /></a>
+              <a
+                className="career-aside-whatsapp"
+                href={waHref}
+                target="_blank"
+                rel="noopener nofollow"
+              >
+                Escribir por WhatsApp
+              </a>
+            </div>
+          </div>
+        </aside>
       </div>
 
-      {/* Otras carreras: enlaces internos rastreables entre paginas de carrera */}
       {relacionadas.length > 0 && (
-        <section className="pt-6" style={{ borderTop: `1px solid ${cardBorder}` }}>
-          <SectionTitle accent={accent}>Otras carreras de {carrera.nivel}</SectionTitle>
-          <ul className="flex flex-wrap gap-2">
-            {relacionadas.map(c => (
-              <li key={c.id}>
-                <Link
-                  href={`/carreras/${carreraToSlug(c)}`}
-                  className="inline-block rounded-lg px-3 py-1.5 text-[0.82rem] hover:brightness-125 transition"
-                  style={{ background: cardBg, boxShadow: `inset 0 0 0 1px ${cardBorder}`, color: bodyText }}
-                >
-                  {carreraFullName(c)}
+        <section className="career-related career-reveal">
+          <div className="career-related-heading">
+            <div>
+              <span>Seguí explorando</span>
+              <h2>Otras carreras de {carrera.nivel}</h2>
+            </div>
+            <Link href="/#carreras">Ver todas <ArrowIcon /></Link>
+          </div>
+          <ul>
+            {relacionadas.map((related) => (
+              <li key={related.id}>
+                <Link href={`/carreras/${carreraToSlug(related)}`}>
+                  <span>{carreraFullName(related)}</span>
+                  <ArrowIcon />
                 </Link>
               </li>
             ))}
           </ul>
-          <Link
-            href="/"
-            className="inline-block mt-4 text-sm font-semibold hover:underline"
-            style={{ color: accent }}
-          >
-            Ver todas las carreras →
-          </Link>
         </section>
       )}
     </article>
