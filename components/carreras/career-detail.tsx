@@ -206,9 +206,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           </Link>
           <nav aria-label="Migas de pan" className="career-breadcrumb">
             <Link href="/">Inicio</Link>
-            <span aria-hidden="true">/</span>
+            <span aria-hidden="true">|</span>
             <Link href="/#carreras">Carreras</Link>
-            <span aria-hidden="true">/</span>
+            <span aria-hidden="true">|</span>
             <span aria-current="page">{cleanName}</span>
           </nav>
 
