@@ -1,15 +1,12 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import { notFound, permanentRedirect } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, carreraFullName, getCategoryForCarrera } from '@/components/index/types';
 import CareerDetail from '@/components/carreras/career-detail';
-import '@/app/index.css';
+import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
+import IndexFooter from '@/components/index/footer';
 import '../career-detail.css';
-
-const EnrollmentForm = dynamic(() => import('@/components/index/enrollment-form'));
-const IndexFooter = dynamic(() => import('@/components/index/footer'));
 
 export const revalidate = 3600;
 
@@ -146,7 +143,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
       />
       <main className="flex-1">
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
-        <EnrollmentForm carreras={opcionesFormulario} />
+        <DeferredEnrollmentForm carreras={opcionesFormulario} />
         <IndexFooter />
       </main>
     </>

@@ -4,7 +4,7 @@
 }
 
 .career-hero {
-  min-height: min(780px, calc(100svh - var(--navbar-height, 64px)));
+  min-height: min(560px, calc(100svh - var(--navbar-height, 64px)));
   position: relative;
   isolation: isolate;
   display: flex;
@@ -64,7 +64,7 @@
 }
 
 .career-page--no-image .career-breadcrumb {
-  margin-bottom: clamp(2rem, 3vw, 3rem);
+  margin-bottom: 0;
 }
 
 .career-hero-inner {
@@ -73,18 +73,28 @@
   padding: clamp(2rem, 6vw, 5.5rem) 0;
 }
 
-.career-breadcrumb {
-  width: fit-content;
-  min-height: 2.35rem;
+.career-hero-nav-row {
   display: flex;
   align-items: center;
-  gap: .65rem;
-  margin-bottom: clamp(2.5rem, 9vh, 6.5rem);
-  padding: .5rem .75rem;
-  border: 1px solid rgba(255,255,255,.22);
-  background: color-mix(in srgb, var(--career-ink) 88%, transparent);
-  font-size: .72rem;
-  color: rgba(255,255,255,.63);
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+
+.career-breadcrumb {
+  width: fit-content;
+  min-height: 2.65rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 0;
+  padding: .45rem .55rem .45rem .8rem;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: .25rem;
+  background: color-mix(in srgb, var(--career-ink) 78%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  font-size: .74rem;
+  font-weight: 700;
+  color: rgba(255,255,255,.68);
   backdrop-filter: blur(10px);
   animation: career-copy-in .65s .05s ease-out both;
 }
@@ -95,7 +105,7 @@
   display: inline-flex;
   align-items: center;
   gap: .65rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0;
   padding: .65rem .85rem;
   border: 1px solid color-mix(in srgb, var(--career-accent) 60%, white);
   background: color-mix(in srgb, var(--career-ink) 84%, transparent);
@@ -125,15 +135,27 @@
 }
 
 .career-breadcrumb a {
+  padding: .35rem .1rem;
   transition: color .2s ease;
 }
 
 .career-breadcrumb a:hover {
-  color: var(--career-accent-bright);
+  color: #fff;
 }
 
-.career-breadcrumb span:last-child {
+.career-breadcrumb-separator {
+  color: color-mix(in srgb, var(--career-accent) 70%, white);
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.career-breadcrumb-current {
   max-width: 26rem;
+  padding: .35rem .55rem;
+  border-radius: .2rem;
+  background: color-mix(in srgb, var(--career-accent) 16%, transparent);
+  color: var(--career-accent-bright);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -144,7 +166,7 @@
 }
 
 .career-kicker {
-  margin-bottom: 1rem;
+  margin-bottom: .7rem;
   color: var(--career-accent-bright);
   font-family: var(--font-unbounded), sans-serif;
   font-size: clamp(.7rem, 1vw, .86rem);
@@ -238,6 +260,27 @@
 .career-button--ghost:hover {
   background: rgba(255,255,255,.1);
   border-color: rgba(255,255,255,.7);
+}
+
+.career-button--info {
+  border-color: color-mix(in srgb, var(--career-accent) 72%, white);
+  background: color-mix(in srgb, var(--career-ink) 76%, transparent);
+  color: var(--career-accent-bright);
+  backdrop-filter: blur(10px);
+}
+
+.career-button--info:hover {
+  border-color: var(--career-accent-bright);
+  background: color-mix(in srgb, var(--career-ink) 68%, var(--career-accent));
+  color: #fff;
+}
+
+.career-button--info svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 
 .career-facts {
@@ -703,8 +746,8 @@
 }
 
 @keyframes career-section-in {
-  from { opacity: .15; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(30px); }
+  to { transform: translateY(0); }
 }
 
 @media (min-width: 901px) {
@@ -714,21 +757,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
     box-sizing: border-box;
-  }
-
-  .career-page:not(.career-page--no-image) .career-all-careers {
-    position: absolute;
-    top: 2rem;
-    left: 0;
-  }
-
-  .career-page:not(.career-page--no-image) .career-breadcrumb {
-    position: absolute;
-    top: 5.85rem;
-    left: 0;
-    margin-bottom: 0;
   }
 
   .career-page--title-long .career-hero-copy,
@@ -784,7 +816,12 @@
   }
 
   .career-hero-inner { padding: 1.25rem 0 2.5rem; }
-  .career-breadcrumb { margin-bottom: 2rem; }
+  .career-hero-nav-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .65rem;
+    margin-bottom: 1.1rem;
+  }
 
   .career-facts {
     grid-template-columns: repeat(2, 1fr);
@@ -855,3 +892,4 @@
   .career-related-heading { align-items: start; flex-direction: column; }
 
 }
+@import "../../components/index/enrollment-form.css";

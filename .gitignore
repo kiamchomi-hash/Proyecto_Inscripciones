@@ -18,6 +18,8 @@ scripts/debug_*.mjs
 scripts/precios-con-descuentos.*
 /tmp/
 screenshots/
+output/
+.playwright-cli/
 docs/guias/
 TUTORIAL_ADMIN.md
 DOCUMENTACION_PROYECTO.md

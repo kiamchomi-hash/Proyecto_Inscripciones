@@ -1,17 +1,12 @@
 'use client';
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { sendGAEvent } from '@next/third-parties/google';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import { esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
-
-const CareerModal = dynamic(() => import('./career-modal'));
-const CarouselModal = dynamic(() => import('./carousel-modal'));
-const IAModal = dynamic(() => import('./ia-modal'));
-const TeclabModal = dynamic(() => import('./teclab-modal'));
+import CareerInfoModal from './career-info-modal';
 
 // Levenshtein distance for fuzzy search
 function levenshtein(a: string, b: string): number {
@@ -659,15 +654,10 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
       {/* Career Modal */}
       {selectedCarrera && (
-        selectedCarrera.nivel === 'Identidad Argentina' ? (
-          <IAModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
-        ) : esTeclab(selectedCarrera) ? (
-          <TeclabModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
-        ) : selectedCarrera.slides && selectedCarrera.slides.length > 0 ? (
-          <CarouselModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
-        ) : (
-          <CareerModal carrera={selectedCarrera} onClose={() => setSelectedCarrera(null)} />
-        )
+        <CareerInfoModal
+          carrera={selectedCarrera}
+          onClose={() => setSelectedCarrera(null)}
+        />
       )}
     </>
   );
