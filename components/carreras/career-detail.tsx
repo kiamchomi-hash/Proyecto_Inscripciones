@@ -351,7 +351,6 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
 
         <aside className="career-aside" aria-label="Navegación y contacto">
           <div className="career-aside-inner">
-            <p>En esta carrera</p>
             <nav>
               {(portada?.bullets.length ?? 0) > 0 && <a href="#perfil">Perfil profesional</a>}
               {hasPlan && <a href="#plan">Plan de estudios</a>}

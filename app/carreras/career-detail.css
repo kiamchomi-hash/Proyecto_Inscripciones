@@ -300,8 +300,7 @@
   border-right: 1px solid rgba(255,255,255,.12);
 }
 
-/* Con fondo, el padding va parejo en las cuatro: si la primera arranca en 0
-   el texto queda pegado al borde del bloque de color. */
+.career-facts > div:first-child { padding-left: 0; }
 .career-facts > div:last-child { border-right: 0; }
 
 .career-facts dt,
@@ -312,15 +311,6 @@
   font-weight: 800;
   letter-spacing: .13em;
   text-transform: uppercase;
-}
-
-/* Alternar el fondo para separar visualmente las cuatro columnas. */
-.career-facts > div:nth-child(odd) {
-  background: color-mix(in srgb, var(--career-accent) 14%, transparent);
-}
-
-.career-facts > div:nth-child(even) {
-  background: rgba(255, 255, 255, .05);
 }
 
 .career-facts dd {
@@ -589,20 +579,10 @@
   top: calc(var(--navbar-height, 64px) + 2rem);
 }
 
-.career-aside-inner > p {
-  padding-bottom: .8rem;
-  border-bottom: 1px solid rgba(255,255,255,.15);
-  color: rgba(255,255,255,.5);
-  font-size: .66rem;
-  font-weight: 800;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
 .career-aside nav {
   display: grid;
   gap: .6rem;
-  padding: .7rem 0 2rem;
+  padding: 0 0 2rem;
 }
 
 .career-aside nav a {
@@ -843,6 +823,7 @@
   .career-facts > div:nth-child(2) { border-right: 0; }
   .career-facts > div:first-child,
   .career-facts > div:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,.12); }
+  .career-facts > div:nth-child(3) { padding-left: 0; }
 
   .career-layout {
     grid-template-columns: 1fr;
@@ -884,6 +865,7 @@
   }
 
   .career-facts > div { padding: 1.35rem .9rem; }
+  .career-facts > div:nth-child(odd) { padding-left: 0; }
   .career-facts dd { font-size: .78rem; }
 
   .career-layout { padding: 4.5rem 0 2.5rem; }
