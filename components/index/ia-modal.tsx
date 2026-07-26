@@ -111,21 +111,53 @@ function Rotulo({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Lista con vinetas, pegada al bloque de arriba: el aire sobrante del slide
- * queda abajo y no partido en dos. Si no entra, el slide scrollea.
+ * Lista de objetivos, pegada al bloque de arriba. Cada uno en su tarjeta con el
+ * filo amarillo, como los modulos del plan: en mobile, una fila de vinetas
+ * sueltas una abajo de la otra quedaba como un apunte.
  */
 function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) {
   return (
     <div className="flex-shrink-0 flex flex-col gap-2">
       {rotulo && <Rotulo>{rotulo}</Rotulo>}
-      <ul className="flex flex-col gap-2.5">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {items.map((texto, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">
-            <span className="mt-[0.5em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
-            <span>{texto}</span>
+          <li
+            key={i}
+            className="rounded px-3 py-2 text-[0.85rem] sm:text-[0.92rem] text-[#c3d8e6] leading-snug"
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              borderLeft: `3px solid ${AMARILLO}`,
+            }}
+          >
+            {texto}
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Placa del convenio para el aire que queda en mobile. Las diplomaturas son
+ * cortas -cuatro objetivos y tres datos- y en una pantalla de telefono sobraba
+ * media pantalla vacia abajo del contenido. En vez de repartir ese aire en
+ * huecos, se ocupa con la marca del convenio, que es informacion real. En
+ * desktop no hace falta: ahi sobra poco y esta el isotipo de fondo, y en un
+ * telefono chico tampoco aparece porque el contenido ya llena el slide (la
+ * regla .ia-placa de modales.css decide cuando se muestra).
+ */
+function PlacaConvenio() {
+  return (
+    <div
+      className="ia-placa flex-1 min-h-[4.5rem] rounded-lg flex-col items-center justify-center gap-2.5 px-4 text-center"
+      style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.025)' }}
+    >
+      <Isotipo className="w-14 max-h-12 opacity-90" />
+      <p className="text-[0.58rem] font-black uppercase tracking-[0.14em] leading-relaxed text-white/50">
+        Diplomatura de convenio
+        <span className="block">CAU Villa Lugano · Academia Identidad Argentina</span>
+      </p>
     </div>
   );
 }
@@ -142,7 +174,8 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
   // aparece una barra de scroll horizontal al pie del slide.
   return (
     <div className="ia-slide relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
-      {/* El isotipo grande y apagado, como en el render: da fondo sin tapar nada */}
+      {/* El isotipo grande y apagado, como en el render: da fondo sin tapar
+          nada. En mobile va abajo a la derecha, que es donde queda el aire. */}
       <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
 
       <div className="relative min-h-full flex flex-col gap-3 p-5 sm:p-7">
@@ -172,8 +205,12 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
           <ListaAjustada items={objetivos} rotulo="Objetivos" />
         )}
 
-        {/* Bloques de dato: el principal (escuela) va lleno en amarillo */}
-        <div className="flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <PlacaConvenio />
+
+        {/* Bloques de dato: el principal (escuela) va lleno en amarillo. Van al
+            pie -mt-auto- para que el aire sobrante quede en un solo lugar y no
+            como un vacio abajo de todo. */}
+        <div className="flex-shrink-0 mt-auto pt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
           <BloqueDato label="Escuela" valor={escuela || 'Convenio'} principal />
           <BloqueDato label="Duración" valor={carrera.duracion} />
           <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
@@ -215,7 +252,9 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
   const { cursada, modalidad, certificacion } = parseEnfoque(carrera.enfoque);
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
+    // relative + overflow-x-hidden por el isotipo, que se sale por la derecha
+    <div className="ia-slide relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
+      <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
       <Rotulo>A cargo de</Rotulo>
 
       {docente && (
@@ -234,8 +273,9 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
         </div>
       )}
 
-      {/* La bio son credenciales sueltas y cortas: como vinetas en una columna
-          quedaban flotando, asi que van en tarjetas de dos columnas. */}
+      {/* La bio son credenciales sueltas y cortas: cada una en su tarjeta con
+          el filo amarillo, que es lo que las separa. La vineta adentro de la
+          tarjeta sobraba y en mobile se leia como una lista de apunte. */}
       {docente && docente.bio.length > 0 && (
         <div className="flex-shrink-0 flex flex-col gap-2">
           <Rotulo>Trayectoria</Rotulo>
@@ -243,22 +283,29 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
             {docente.bio.map((texto, i) => (
               <li
                 key={i}
-                className="flex items-start gap-2.5 rounded px-3 py-2 text-[0.82rem] sm:text-[0.88rem] text-white leading-snug"
-                style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+                className="rounded px-3 py-2 text-[0.82rem] sm:text-[0.88rem] text-white leading-snug"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+                  borderLeft: `3px solid ${AMARILLO}`,
+                }}
               >
-                <span className="mt-[0.45em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: AMARILLO }} />
-                <span>{texto}</span>
+                {texto}
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <BloqueDato label="Cursada" valor={cursada} className="sm:col-span-3" />
+      <PlacaConvenio />
+
+      {/* Al pie, como en la portada: el aire queda en un solo lugar. En mobile
+          van de a dos -son datos de dos palabras- y no cuatro cintas apiladas. */}
+      <div className="flex-shrink-0 mt-auto pt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <BloqueDato label="Cursada" valor={cursada} className="col-span-2 sm:col-span-3" />
         <BloqueDato label="Modalidad" valor={modalidad} />
         <BloqueDato label="Duración" valor={carrera.duracion} />
-        <BloqueDato label="Certificación" valor={certificacion} />
+        <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
       </div>
     </div>
   );

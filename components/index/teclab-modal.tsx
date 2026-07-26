@@ -61,17 +61,21 @@ function FotoFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acen
   );
 }
 
-/** "Cocreada con" + el logo blanco que publica la ficha oficial */
+/**
+ * "Cocreada con" + el logo blanco que publica la ficha oficial. Comparte la
+ * anatomia de BloqueDato -rotulo arriba, dato abajo, mismo ancho- para que en
+ * la portada las tres tarjetas se lean como un juego y no como un apunte
+ * suelto al costado.
+ */
 function BloqueCocreacion({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
   if (!ficha.partner) return null;
   return (
     <div
-      className={`flex items-center gap-3 rounded px-3 py-2 ${className}`}
+      className={`rounded px-2.5 py-1.5 ${className}`}
       style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
     >
-      <span className="text-[0.55rem] font-black uppercase tracking-[0.14em] leading-tight" style={{ color: CLARO[acento] }}>
-        Carrera
-        <span className="block">cocreada con</span>
+      <span className="block text-[0.55rem] font-black uppercase tracking-[0.14em]" style={{ color: CLARO[acento] }}>
+        Carrera cocreada con
       </span>
       {ficha.partner.logo ? (
         <Image
@@ -79,10 +83,10 @@ function BloqueCocreacion({ ficha, acento, className = '' }: { ficha: TeclabFich
           alt={ficha.partner.nombre}
           width={420}
           height={110}
-          className="h-4 sm:h-5 w-auto flex-shrink-0"
+          className="h-[1.15rem] sm:h-5 w-auto mt-1"
         />
       ) : (
-        <span className="text-sm font-bold text-white leading-tight">{ficha.partner.nombre}</span>
+        <span className="block text-[0.78rem] sm:text-sm font-bold text-white leading-tight mt-0.5">{ficha.partner.nombre}</span>
       )}
     </div>
   );
@@ -151,8 +155,10 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
     // En desktop es una grilla: el texto a la izquierda y la foto a la derecha,
     // arrancando a la altura del titulo y estirandose hasta los cuadros de
     // datos, asi no queda un hueco muerto abajo cuando la pantalla es alta.
-    // En mobile es una columna y la foto entra despues de los chips.
-    <div className="teclab-slide teclab-portada h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
+    // En mobile es una columna y la foto entra despues de los chips: ahi toma
+    // el alto que sobra (ver modales.css), asi no queda hueco al pie con textos
+    // cortos ni empuja el resto fuera de la pantalla con textos largos.
+    <div className="teclab-slide teclab-portada h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-7 overflow-y-auto custom-scrollbar">
       <div className="teclab-portada-titulo flex-shrink-0 flex gap-3">
         <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: acento }} />
         <div className="min-w-0">
@@ -182,7 +188,7 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
       </div>
 
       {ficha && (
-        <div className="teclab-portada-foto flex-shrink-0">
+        <div className="teclab-portada-foto">
           <FotoFicha ficha={ficha} acento={acento} />
         </div>
       )}
@@ -192,10 +198,10 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
           {perfil && (
             <>
               <Rotulo acento={acento}>Perfil profesional</Rotulo>
-              <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
+              <p className="text-[0.85rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
             </>
           )}
-          {ficha && <BloqueCocreacion ficha={ficha} acento={acento} className="mt-1 self-start" />}
+          {ficha && <BloqueCocreacion ficha={ficha} acento={acento} className="mt-0.5" />}
         </div>
       )}
 
@@ -211,34 +217,66 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
 }
 
 // ── Slide 2: competencias y salida laboral ──
+// Mismo armado que el slide del plan de estudios, que es el que funciona en
+// mobile: el encabezado y la salida laboral quedan fijos y lo unico que
+// scrollea es la lista, dentro de su marco. Cada competencia es una tarjeta
+// numerada; en fila con vinetas eran nueve parrafos largos uno abajo del otro.
 function SlideCompetencias({ competencias, salida, acento }: { competencias: string[]; salida: string; acento: string }) {
+  const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
+
   return (
-    <div className="teclab-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <Rotulo acento={acento}>Competencias profesionales</Rotulo>
-      <h3 className="flex-shrink-0 text-xl sm:text-3xl font-black text-white uppercase leading-tight tracking-tight">
-        Qué vas a saber hacer
-      </h3>
+    <div className="teclab-slide h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-6 overflow-hidden">
+      <div className="flex-shrink-0">
+        <Rotulo acento={acento}>Competencias profesionales</Rotulo>
+        <h3 className="text-lg sm:text-2xl font-black text-white uppercase leading-tight tracking-tight mt-0.5">
+          Qué vas a saber hacer
+        </h3>
+      </div>
+
       {/* La salida laboral va arriba: las competencias son varias y largas, y si
           queda al pie hay que scrollear para encontrarla. */}
       {salida && (
         <div
-          className="flex-shrink-0 rounded p-3"
+          className="flex-shrink-0 rounded p-2.5"
           style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', borderLeft: `3px solid ${acento}` }}
         >
           <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
             Dónde vas a trabajar
           </p>
-          <p className="text-[0.82rem] sm:text-[0.88rem] text-white leading-snug mt-1">{salida}</p>
+          <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug mt-0.5">{salida}</p>
         </div>
       )}
-      <ul className="flex-1 min-h-fit flex flex-col justify-center gap-2.5">
-        {competencias.map((texto, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-[0.85rem] sm:text-[0.92rem] text-[#c3d8e6] leading-relaxed">
-            <span className="mt-[0.5em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: acento }} />
-            <span>{texto}</span>
-          </li>
-        ))}
-      </ul>
+
+      {/* Lo unico que scrollea es este marco; el alto lo pone el flex, no el
+          contenido. */}
+      <div
+        className="flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5"
+        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+      >
+        {/* Las fichas traen entre siete y nueve competencias de un renglon
+            largo. En desktop van en dos columnas de texto y no en una grilla:
+            la grilla empareja el alto de las filas y con tarjetas tan
+            desparejas se pierde media pantalla en aire. Las columnas van en
+            este hijo de alto natural, no en el marco: dentro de una caja de
+            alto fijo, el sobrante se iria en columnas hacia el costado. */}
+        <div className="flex flex-col gap-2 md:block md:columns-2 md:gap-2">
+          {competencias.map((texto, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-2.5 rounded p-2.5 md:p-2 break-inside-avoid md:mb-2"
+              style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+            >
+              <span
+                className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-[0.6rem] font-black"
+                style={{ background: acento, color: textoAcento }}
+              >
+                {i + 1}
+              </span>
+              <span className="text-[0.8rem] sm:text-[0.85rem] text-[#c3d8e6] leading-snug">{texto}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

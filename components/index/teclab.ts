@@ -291,10 +291,13 @@ export function partirDescripcionTeclab(descripcion: string | null): { perfil: s
 
 /** seccion_modalidad: competencias profesionales, una por linea con vineta. */
 export function parseCompetenciasTeclab(raw: string | null): string[] {
-  return (raw || '')
+  const items = (raw || '')
     .split('\n')
     .map(l => l.replace(/^[•·-]\s*/, '').trim())
     .filter(Boolean);
+  // Varias fichas traen la misma competencia repetida (Data Science, por
+  // ejemplo, lista dos veces la de principios matematicos).
+  return [...new Set(items)];
 }
 
 /**
