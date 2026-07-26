@@ -16,6 +16,7 @@ import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } fr
 import { type Carrera, carreraToSlug } from './types';
 import {
   acentoTeclab,
+  destacarCompetencias,
   getFamiliaTeclab,
   getFichaTeclab,
   getTipoTeclab,
@@ -39,66 +40,16 @@ const CLARO: Record<string, string> = {
   '#8e2cf2': '#c9a0ff',
 };
 
-/** true cuando la consulta da, y false en el primer render (no hay window) */
-function useMediaQuery(consulta: string): boolean {
-  const [da, setDa] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia(consulta);
-    setDa(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setDa(e.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, [consulta]);
-  return da;
-}
-
-/**
- * Arrastre horizontal, para pasar de tanda en el telefono como en cualquier
- * carrusel. Se ignora si el gesto fue mas vertical que horizontal o si apenas
- * se movio: eso es un clic, no un arrastre.
- */
-function useArrastre(siguiente: () => void, anterior: () => void) {
-  const inicio = useRef<{ x: number; y: number } | null>(null);
-  return {
-    onPointerDown: (e: React.PointerEvent) => {
-      inicio.current = { x: e.clientX, y: e.clientY };
-    },
-    onPointerUp: (e: React.PointerEvent) => {
-      const p = inicio.current;
-      inicio.current = null;
-      if (!p) return;
-      const dx = e.clientX - p.x;
-      const dy = e.clientY - p.y;
-      if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
-      if (dx < 0) siguiente();
-      else anterior();
-    },
-    onPointerCancel: () => {
-      inicio.current = null;
-    },
-  };
-}
-
 // Grilla de una tanda de competencias (y de la copia que se usa para medir):
 // las dos tienen que maquetar igual para que la cuenta valga.
-const CLASES_TANDA = 'p-2 sm:p-2.5 grid grid-cols-1 md:grid-cols-2 gap-2 content-start';
+const CLASES_TANDA = 'p-2 sm:p-2.5 grid grid-cols-1 gap-2 content-start';
 
-/**
- * Reparte las competencias en tandas que entren enteras en el marco. Un numero
- * fijo por tamaño de pantalla no sirve: los textos de las fichas van de dos a
- * cinco renglones, asi que con un numero chico sobra media caja y con uno
- * grande la ultima tarjeta queda cortada. Se mide la lista de verdad -una copia
- * invisible con la misma maqueta- y se llena tanda por tanda.
- *
- * Devuelve indices, no textos, porque cada tarjeta lleva su numero de orden.
- */
 const rango = (desde: number, hasta: number) => Array.from({ length: hasta - desde }, (_, i) => desde + i);
 
 /**
- * Reparte filas -por su alto- en tandas que entren en `disponible`. Primero
+ * Reparte tarjetas -por su alto- en tandas que entren en `disponible`. Primero
  * cuenta el minimo de tandas necesarias y despues, entre todos los cortes que
- * dan ese mismo numero, se queda con el mas parejo: llenando cada tanda a tope,
- * la ultima terminaba con dos tarjetas y media caja vacia.
+ * dan ese mismo numero, se queda con el mas parejo.
  */
 function repartir(altos: number[], disponible: number, separacion: number): number[][] {
   const n = altos.length;
@@ -109,9 +60,10 @@ function repartir(altos: number[], disponible: number, separacion: number): numb
   for (let i = 0; i < n; ) {
     let j = i;
     while (j < n && alto(i, j + 1) <= disponible) j++;
-    i = j === i ? i + 1 : j; // una fila mas alta que el marco va sola igual
+    i = j === i ? i + 1 : j; // una tarjeta mas alta que el marco va sola igual
     tandas++;
   }
+  if (tandas <= 1) return [rango(0, n)];
 
   let mejor: number[][] | null = null;
   let mejorDiferencia = Infinity;
@@ -137,7 +89,13 @@ function repartir(altos: number[], disponible: number, separacion: number): numb
   return mejor ?? [rango(0, n)];
 }
 
-function useTandas(items: string[], columnas: number) {
+/**
+ * Normalmente las tres competencias entran en el marco y esto devuelve una sola
+ * tanda. Si la ventana es muy baja -un portatil chico, el telefono acostado- no
+ * entran, y ahi se parten en dos para que ninguna quede cortada. Los altos
+ * salen de una copia invisible de la lista, con la misma maqueta.
+ */
+function useTandas(items: string[]) {
   const marcoRef = useRef<HTMLDivElement>(null);
   const medidorRef = useRef<HTMLDivElement>(null);
   const [tandas, setTandas] = useState<number[][]>(() => [items.map((_, i) => i)]);
@@ -154,16 +112,7 @@ function useTandas(items: string[], columnas: number) {
       const tarjetas = Array.from(medidor.children) as HTMLElement[];
       if (!tarjetas.length || disponible <= 0) return;
 
-      // Con dos columnas la unidad no es la tarjeta sino la fila: cortar en un
-      // impar parte una fila al medio y cambia el alto de las dos tandas.
-      const filas: number[][] = [];
-      for (let i = 0; i < tarjetas.length; i += columnas) {
-        filas.push(tarjetas.map((_, j) => j).slice(i, i + columnas));
-      }
-      const altos = filas.map(fila => Math.max(...fila.map(i => tarjetas[i].offsetHeight)));
-
-      const armadas = repartir(altos, disponible, separacion).map(grupo => grupo.flatMap(f => filas[f]));
-
+      const armadas = repartir(tarjetas.map(t => t.offsetHeight), disponible, separacion);
       setTandas(previas =>
         previas.length === armadas.length && previas.every((p, i) => p.length === armadas[i].length)
           ? previas
@@ -176,31 +125,38 @@ function useTandas(items: string[], columnas: number) {
     if (marcoRef.current) ro.observe(marcoRef.current);
     if (medidorRef.current) ro.observe(medidorRef.current);
     return () => ro.disconnect();
-  }, [items, columnas]);
+  }, [items]);
 
   return { marcoRef, medidorRef, tandas };
 }
 
-/** Una competencia: numero en el acento y el texto de la ficha */
-function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: number; acento: string }) {
-  const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
-  return (
-    <div
-      className="flex items-start gap-2.5 rounded p-2.5 md:p-2"
-      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
-    >
-      <span
-        className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-[0.6rem] font-black"
-        style={{ background: acento, color: textoAcento }}
-      >
-        {numero}
-      </span>
-      <span className="text-[0.8rem] sm:text-[0.85rem] text-[#c3d8e6] leading-snug">{texto}</span>
-    </div>
-  );
+/**
+ * Arrastre horizontal, para pasar de tanda con el dedo. Se ignora si el gesto
+ * fue mas vertical que horizontal o si apenas se movio: eso es un clic.
+ */
+function useArrastre(siguiente: () => void, anterior: () => void) {
+  const inicio = useRef<{ x: number; y: number } | null>(null);
+  return {
+    onPointerDown: (e: React.PointerEvent) => {
+      inicio.current = { x: e.clientX, y: e.clientY };
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      const p = inicio.current;
+      inicio.current = null;
+      if (!p) return;
+      const dx = e.clientX - p.x;
+      const dy = e.clientY - p.y;
+      if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+      if (dx < 0) siguiente();
+      else anterior();
+    },
+    onPointerCancel: () => {
+      inicio.current = null;
+    },
+  };
 }
 
-/** Flecha chica para pasar de tanda dentro de un marco */
+/** Flecha chica para pasar de tanda dentro del marco */
 function FlechaTanda({
   acento,
   sentido,
@@ -224,6 +180,25 @@ function FlechaTanda({
         <path strokeLinecap="round" strokeLinejoin="round" d={sentido === 'anterior' ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'} />
       </svg>
     </button>
+  );
+}
+
+/** Una competencia: numero en el acento y el texto de la ficha */
+function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: number; acento: string }) {
+  const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
+  return (
+    <div
+      className="flex items-start gap-3 rounded p-3"
+      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+    >
+      <span
+        className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[0.68rem] font-black"
+        style={{ background: acento, color: textoAcento }}
+      >
+        {numero}
+      </span>
+      <span className="text-[0.85rem] sm:text-[0.95rem] text-[#c3d8e6] leading-snug">{texto}</span>
+    </div>
   );
 }
 
@@ -405,16 +380,13 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
 }
 
 // ── Slide 2: competencias y salida laboral ──
-// El encabezado y la salida laboral quedan fijos, y las competencias -entre
-// siete y nueve parrafos largos por ficha- pasan de a tandas: en vez de una
-// tira que hay que scrollear, cada tanda entra completa y se avanza con las
-// flechas del marco o arrastrando en el telefono.
+// Solo las tres competencias principales de la ficha (la seleccion esta en
+// DESTACADAS, en ./teclab); la lista completa queda en la pagina de la carrera.
+// Las tres entran de una: el contador y las flechas aparecen unicamente si la
+// ventana es tan baja que no entran, para que ninguna quede cortada.
 function SlideCompetencias({ competencias, salida, acento }: { competencias: string[]; salida: string; acento: string }) {
-  const esAncho = useMediaQuery('(min-width: 768px)');
-  const { marcoRef, medidorRef, tandas } = useTandas(competencias, esAncho ? 2 : 1);
-
+  const { marcoRef, medidorRef, tandas } = useTandas(competencias);
   const [tanda, setTanda] = useState(0);
-  // Al cambiar de tamaño cambia el reparto y el indice viejo puede no existir
   useEffect(() => setTanda(t => Math.min(t, tandas.length - 1)), [tandas.length]);
 
   const irA = useCallback((i: number) => setTanda(Math.max(0, Math.min(tandas.length - 1, i))), [tandas.length]);
@@ -438,9 +410,8 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
         )}
       </div>
 
-      {/* La salida laboral va arriba: las competencias son varias y largas, y si
-          queda al pie hay que scrollear para encontrarla. Sin rotulo: el texto
-          ya dice de que se trata y el filo del acento lo separa de la lista. */}
+      {/* La salida laboral va arriba. Sin rotulo: el texto ya dice de que se
+          trata y el filo del acento lo separa de la lista. */}
       {salida && (
         <div
           className="flex-shrink-0 rounded p-2.5"
@@ -450,15 +421,13 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
         </div>
       )}
 
-      {/* El marco recorta y adentro corre la cinta de tandas */}
       <div
         ref={marcoRef}
         className="relative flex-1 min-h-0 overflow-hidden rounded-lg touch-pan-y"
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
         {...arrastre}
       >
-        {/* Copia invisible de toda la lista: de aca sale cuantas tarjetas entran
-            en el marco, que es lo que decide el tamaño de cada tanda. */}
+        {/* Copia invisible: de aca salen los altos reales para saber si entran */}
         <div ref={medidorRef} aria-hidden="true" className={`${CLASES_TANDA} invisible pointer-events-none absolute inset-x-0 top-0`}>
           {competencias.map((texto, i) => (
             <TarjetaCompetencia key={i} texto={texto} numero={i + 1} acento={acento} />
@@ -470,9 +439,8 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
           style={{ transform: `translateX(-${tanda * 100}%)` }}
         >
           {tandas.map((indices, t) => (
-            // auto-rows-fr: las tarjetas se estiran hasta llenar la tanda. Con
-            // siete competencias no hay reparto que llene dos cajas enteras, y
-            // media caja vacia se lee como que falta algo.
+            // auto-rows-fr: las tarjetas se reparten el alto del marco, asi no
+            // queda media caja vacia abajo.
             <div key={t} className={`${CLASES_TANDA} auto-rows-fr flex-shrink-0 w-full h-full`}>
               {indices.map(i => (
                 <TarjetaCompetencia key={i} texto={competencias[i]} numero={i + 1} acento={acento} />
@@ -675,7 +643,10 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
 
   const ficha = useMemo(() => getFichaTeclab(carrera), [carrera]);
-  const competencias = useMemo(() => parseCompetenciasTeclab(carrera.seccion_modalidad), [carrera.seccion_modalidad]);
+  const competencias = useMemo(
+    () => destacarCompetencias(parseCompetenciasTeclab(carrera.seccion_modalidad), carrera),
+    [carrera],
+  );
   const periodos = useMemo(() => parsePlanTeclab(carrera.plan_estudios), [carrera.plan_estudios]);
   const salida = useMemo(() => partirDescripcionTeclab(carrera.descripcion).salida, [carrera.descripcion]);
 
