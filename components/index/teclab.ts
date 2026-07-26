@@ -255,6 +255,61 @@ export function getFichaTeclab(carrera: Pick<Carrera, 'nombre'>): TeclabFicha | 
   return FICHAS.find(f => nombre.includes(f.match))?.ficha ?? null;
 }
 
+/**
+ * Las tres competencias que muestra el modal, elegidas a mano de la lista
+ * oficial: las fichas traen entre siete y nueve, muchas repiten formulas
+ * genericas ("planificar e implementar proyectos con orientacion a
+ * resultados") y algunas mezclan avisos que no son competencias (la alianza
+ * con AWS, el titulo, el descuento en la certificacion). La lista completa
+ * sigue estando en la pagina de cada carrera.
+ *
+ * Se identifican por como empiezan y no por su posicion, asi reordenar la
+ * ficha en Supabase no cambia cual se muestra.
+ */
+const DESTACADAS: Record<string, string[]> = {
+  'programación': ['Escribir el código', 'Desarrollar sitios web modulares', 'Analizar y gestionar bases de datos'],
+  'data science': ['Analizar y explorar datos', 'Procesar datos, entrenar modelos', 'Gestionar bases de datos orientadas'],
+  'quality assurance': ['Identificar las funcionalidades', 'Crear planes de pruebas', 'Dominar distintos lenguajes'],
+  'cloud administration': ['Conocé todo sobre cloud computing', 'Conocerás los conceptos asociados', 'Preparate para monitorear'],
+  'seguridad informática': ['Sabrás responder', 'Aprenderás a identificar riesgos', 'Vas a poder asegurar'],
+  'redes informáticas': ['Planear, implementar, administrar', 'Implementar seguridad en redes', 'Desarrollar scripts'],
+  'marketing digital': ['Diseñar, implementar y evaluar', 'Gestionar campañas publicitarias', 'Elaborar diferentes reportes'],
+  'inbound marketing': ['Diseñar estrategias efectivas', 'Analizar y comprender el proceso', 'Desarrollar, revisar y publicar'],
+  'customer experience': ['Diseñar e implementar, a través del Design Thinking', 'Crear y ejecutar estrategias', 'Determinar y analizar las métricas'],
+  'venta directa': ['Gestionar las etapas del proceso', 'Gestionar prospectos', 'Utilizar herramientas de monitoreo'],
+  'gestión contable': ['Registrar operaciones comerciales', 'Dominar el marco legal', 'Utilizar sistemas y bases de datos'],
+  'seguros': ['Asesorar sobre los distintos tipos', 'Gestionar solicitudes de cotizaciones', 'Asistir al cliente'],
+  'agraria': ['Gestionar planes de producción', 'Seleccionar y utilizar tecnologías', 'Gestionar en forma eficiente'],
+  'relaciones laborales': ['Aplicar políticas de reclutamiento', 'Procesar la documentación', 'Manejar adecuadamente la normativa'],
+  'hotelera': ['Organizar y ejecutar los procesos', 'Aplicar técnicas básicas de Revenue', 'Supervisar el cumplimiento'],
+  'eventos': ['Diseñar, planificar, implementar', 'Administrar recursos y herramientas', 'Implementar las normas de ceremonial'],
+  'periodismo': ['Planear, producir y difundir', 'Analizar y jerarquizar', 'Conocer las fuentes adecuadas'],
+};
+
+const sinTildes = (texto: string) =>
+  texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+/**
+ * Las tres competencias del modal. Si una elegida no aparece -porque cambio el
+ * texto de la ficha- se completa con las primeras de la lista, asi el slide
+ * nunca queda corto.
+ */
+export function destacarCompetencias(competencias: string[], carrera: Pick<Carrera, 'nombre'>): string[] {
+  const nombre = carrera.nombre.toLowerCase();
+  const clave = Object.keys(DESTACADAS).find(k => nombre.includes(k));
+  const elegidas: string[] = [];
+
+  for (const inicio of clave ? DESTACADAS[clave] : []) {
+    const hallada = competencias.find(c => sinTildes(c).startsWith(sinTildes(inicio)) && !elegidas.includes(c));
+    if (hallada) elegidas.push(hallada);
+  }
+  for (const c of competencias) {
+    if (elegidas.length >= 3) break;
+    if (!elegidas.includes(c)) elegidas.push(c);
+  }
+  return elegidas.slice(0, 3);
+}
+
 // ── Parsers de los campos de texto que llegan de Supabase ──
 
 /** enfoque: "Modalidad: ...\nDuración: ...\nTítulo: ...\nCertificado intermedio: ...\nCocreación: ..." */
