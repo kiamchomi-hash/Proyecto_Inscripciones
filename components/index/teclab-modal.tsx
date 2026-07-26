@@ -169,8 +169,12 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
   const { perfil } = partirDescripcionTeclab(carrera.descripcion);
 
   return (
-    <div className="teclab-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <div className="flex-shrink-0 flex gap-3">
+    // En desktop es una grilla: el texto a la izquierda y la foto a la derecha,
+    // arrancando a la altura del titulo y estirandose hasta los cuadros de
+    // datos, asi no queda un hueco muerto abajo cuando la pantalla es alta.
+    // En mobile es una columna y la foto entra despues de los chips.
+    <div className="teclab-slide teclab-portada h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
+      <div className="teclab-portada-titulo flex-shrink-0 flex gap-3">
         <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: acento }} />
         <div className="min-w-0">
           {carrera.prefix && (
@@ -191,36 +195,32 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
         </div>
       </div>
 
-      <div className="flex-shrink-0 flex flex-wrap gap-1.5">
+      <div className="teclab-portada-chips flex-shrink-0 flex flex-wrap gap-1.5">
         {tipo && <span className="teclab-chip teclab-chip-tipo">{tipo}</span>}
         <span className="teclab-chip">{modalidad}</span>
         <span className="teclab-chip">{carrera.duracion}</span>
         <span className="teclab-chip">Título oficial</span>
       </div>
 
-      {/* La foto va primera en mobile -es el gancho- y a la derecha en desktop.
-          Sin `flex-1`: la fila ocupa lo que necesita y todo el bloque queda
-          arriba, con los datos pegados abajo de la foto. */}
-      <div className="flex-shrink-0 grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-start">
-        {ficha && (
-          <div className="flex flex-col gap-2 md:order-2 md:w-[19rem] md:justify-self-end">
-            <FotoFicha ficha={ficha} acento={acento} />
-            <BloqueCocreacion ficha={ficha} acento={acento} />
-          </div>
-        )}
-        {perfil && (
-          <div className="flex flex-col gap-2 md:order-1">
-            <Rotulo acento={acento}>Perfil profesional</Rotulo>
-            <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
-            {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="mt-1" />}
-          </div>
-        )}
-      </div>
+      {ficha && (
+        <div className="teclab-portada-foto flex-shrink-0 flex flex-col gap-2">
+          <FotoFicha ficha={ficha} acento={acento} />
+          <BloqueCocreacion ficha={ficha} acento={acento} />
+        </div>
+      )}
+
+      {perfil && (
+        <div className="teclab-portada-perfil flex-shrink-0 flex flex-col gap-2">
+          <Rotulo acento={acento}>Perfil profesional</Rotulo>
+          <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
+          {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="mt-1" />}
+        </div>
+      )}
 
       {/* Los dos cuadros van del mismo ancho y cada uno con su alto: si se
           estiran para igualarse, el del titulo queda enorme al lado de un
           certificado de dos lineas. */}
-      <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
+      <div className="teclab-portada-datos flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
         <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal />
         {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} />}
       </div>
@@ -567,9 +567,11 @@ export default function TeclabModal({ carrera, onClose }: Props) {
         onClick={handleClose}
       />
 
+      {/* El tope en rem evita que en pantallas altas (tablet vertical) el modal
+          se estire mucho mas de lo que el contenido necesita y queden huecos. */}
       <div
         className={`teclab-${familia} relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
-          h-[88dvh] sm:h-[92vh] max-h-[88dvh] sm:max-h-[92vh] overflow-hidden flex flex-col`}
+          h-[88dvh] sm:h-[min(92vh,52rem)] max-h-[88dvh] sm:max-h-[min(92vh,52rem)] overflow-hidden flex flex-col`}
         style={{
           background: '#071822',
           border: `2px solid ${acento}`,

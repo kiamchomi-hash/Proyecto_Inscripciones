@@ -142,19 +142,50 @@
 }
 
 /* Foto de la ficha oficial: marco fino y la sombra dura desplazada en el
-   acento, el mismo motivo de las tarjetas. En mobile va mas apaisada, que es
-   una banda a todo el ancho; en desktop comparte la fila con el perfil. */
+   acento, el mismo motivo de las tarjetas. En mobile es una banda apaisada
+   entre los chips y el perfil. */
 .teclab-foto {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.16);
 }
 
-@media (max-width: 767px) {
-  .teclab-foto {
-    aspect-ratio: 16 / 9;
+/* Portada en desktop: dos columnas. La foto empieza a la altura del titulo y
+   se estira hasta los cuadros de datos, que van abajo a todo el ancho. Asi el
+   alto sobrante lo toma la foto en vez de quedar como un hueco al pie. */
+@media (min-width: 768px) {
+  .teclab-portada {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 19rem;
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      "titulo foto"
+      "chips  foto"
+      "perfil foto"
+      "datos  datos";
+    align-content: start;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .teclab-portada-titulo { grid-area: titulo; }
+  .teclab-portada-chips { grid-area: chips; }
+  .teclab-portada-perfil { grid-area: perfil; }
+  .teclab-portada-datos { grid-area: datos; }
+
+  .teclab-portada-foto {
+    grid-area: foto;
+    min-height: 0;
+  }
+
+  /* Sin proporcion fija: la foto toma el alto de la columna. El tope evita que
+     en pantallas altas y angostas (tablet vertical) quede un retrato estirado. */
+  .teclab-portada-foto .teclab-foto {
+    flex: 1;
+    aspect-ratio: auto;
+    min-height: 11rem;
+    max-height: 28rem;
   }
 }
 
