@@ -420,8 +420,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             </section>
           )}
 
-          {/* Franja de marca: el titulo lo emite Teclab y la ficha oficial vive
-              en su sitio; el CAU es el centro que acompaña la cursada. */}
+          {/* Franja de marca: el titulo lo emite Teclab y el CAU es el centro
+              que acompaña la cursada. Sin enlace al sitio del instituto: el
+              contacto se hace por WhatsApp o por el formulario de esta pagina. */}
           {ficha && (
             <section className="career-oficial career-reveal">
               <Image
@@ -435,10 +436,10 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Desde el CAU Villa
                 Lugano te acompañamos en la inscripción y durante toda la cursada.
               </p>
-              <a href={ficha.url} target="_blank" rel="noopener">
-                Ver la ficha en teclab.edu.ar
+              <a href="#formulario">
+                Solicitar información
                 <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" />
+                  <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </a>
             </section>

@@ -61,7 +61,11 @@ export const TECLAB_SITIO = 'https://teclab.edu.ar';
 export const TECLAB_CARRERAS = 'https://teclab.edu.ar/carreras/';
 
 export interface TeclabFicha {
-  /** Ficha oficial de la carrera en teclab.edu.ar */
+  /**
+   * Ficha oficial de la carrera en teclab.edu.ar. Es la fuente del material de
+   * esta tabla, no un enlace del sitio: no se muestra en ningun lado, porque el
+   * contacto tiene que pasar por WhatsApp o el formulario del CAU.
+   */
   url: string;
   /** Foto de portada de esa misma ficha, bajada con scripts/descargar-assets-teclab.mjs */
   imagen: string;

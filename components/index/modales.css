@@ -176,6 +176,8 @@
 
   .teclab-portada-foto {
     grid-area: foto;
+    display: flex;
+    flex-direction: column;
     min-height: 0;
   }
 
