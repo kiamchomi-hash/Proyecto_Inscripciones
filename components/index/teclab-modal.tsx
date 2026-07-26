@@ -12,7 +12,7 @@
 // solo por WhatsApp o el formulario del CAU.
 
 import Image from 'next/image';
-import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import {
   acentoTeclab,
@@ -38,6 +38,194 @@ const CLARO: Record<string, string> = {
   '#2ee7d7': '#8ff5ec',
   '#8e2cf2': '#c9a0ff',
 };
+
+/** true cuando la consulta da, y false en el primer render (no hay window) */
+function useMediaQuery(consulta: string): boolean {
+  const [da, setDa] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(consulta);
+    setDa(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setDa(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [consulta]);
+  return da;
+}
+
+/**
+ * Arrastre horizontal, para pasar de tanda en el telefono como en cualquier
+ * carrusel. Se ignora si el gesto fue mas vertical que horizontal o si apenas
+ * se movio: eso es un clic, no un arrastre.
+ */
+function useArrastre(siguiente: () => void, anterior: () => void) {
+  const inicio = useRef<{ x: number; y: number } | null>(null);
+  return {
+    onPointerDown: (e: React.PointerEvent) => {
+      inicio.current = { x: e.clientX, y: e.clientY };
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      const p = inicio.current;
+      inicio.current = null;
+      if (!p) return;
+      const dx = e.clientX - p.x;
+      const dy = e.clientY - p.y;
+      if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+      if (dx < 0) siguiente();
+      else anterior();
+    },
+    onPointerCancel: () => {
+      inicio.current = null;
+    },
+  };
+}
+
+// Grilla de una tanda de competencias (y de la copia que se usa para medir):
+// las dos tienen que maquetar igual para que la cuenta valga.
+const CLASES_TANDA = 'p-2 sm:p-2.5 grid grid-cols-1 md:grid-cols-2 gap-2 content-start';
+
+/**
+ * Reparte las competencias en tandas que entren enteras en el marco. Un numero
+ * fijo por tamaño de pantalla no sirve: los textos de las fichas van de dos a
+ * cinco renglones, asi que con un numero chico sobra media caja y con uno
+ * grande la ultima tarjeta queda cortada. Se mide la lista de verdad -una copia
+ * invisible con la misma maqueta- y se llena tanda por tanda.
+ *
+ * Devuelve indices, no textos, porque cada tarjeta lleva su numero de orden.
+ */
+const rango = (desde: number, hasta: number) => Array.from({ length: hasta - desde }, (_, i) => desde + i);
+
+/**
+ * Reparte filas -por su alto- en tandas que entren en `disponible`. Primero
+ * cuenta el minimo de tandas necesarias y despues, entre todos los cortes que
+ * dan ese mismo numero, se queda con el mas parejo: llenando cada tanda a tope,
+ * la ultima terminaba con dos tarjetas y media caja vacia.
+ */
+function repartir(altos: number[], disponible: number, separacion: number): number[][] {
+  const n = altos.length;
+  const alto = (desde: number, hasta: number) =>
+    altos.slice(desde, hasta).reduce((a, b) => a + b, 0) + separacion * Math.max(0, hasta - desde - 1);
+
+  let tandas = 0;
+  for (let i = 0; i < n; ) {
+    let j = i;
+    while (j < n && alto(i, j + 1) <= disponible) j++;
+    i = j === i ? i + 1 : j; // una fila mas alta que el marco va sola igual
+    tandas++;
+  }
+
+  let mejor: number[][] | null = null;
+  let mejorDiferencia = Infinity;
+  const buscar = (desde: number, faltan: number, acumulado: number[][]) => {
+    if (faltan === 1) {
+      if (alto(desde, n) > disponible) return;
+      const grupos = [...acumulado, rango(desde, n)];
+      const suyos = grupos.map(g => alto(g[0], g[g.length - 1] + 1));
+      const diferencia = Math.max(...suyos) - Math.min(...suyos);
+      if (diferencia < mejorDiferencia) {
+        mejorDiferencia = diferencia;
+        mejor = grupos;
+      }
+      return;
+    }
+    for (let corte = desde + 1; corte <= n - (faltan - 1); corte++) {
+      if (alto(desde, corte) > disponible) break;
+      buscar(corte, faltan - 1, [...acumulado, rango(desde, corte)]);
+    }
+  };
+  buscar(0, tandas, []);
+
+  return mejor ?? [rango(0, n)];
+}
+
+function useTandas(items: string[], columnas: number) {
+  const marcoRef = useRef<HTMLDivElement>(null);
+  const medidorRef = useRef<HTMLDivElement>(null);
+  const [tandas, setTandas] = useState<number[][]>(() => [items.map((_, i) => i)]);
+
+  useLayoutEffect(() => {
+    const calcular = () => {
+      const marco = marcoRef.current;
+      const medidor = medidorRef.current;
+      if (!marco || !medidor) return;
+      const estilo = getComputedStyle(medidor);
+      const relleno = parseFloat(estilo.paddingTop) || 0;
+      const separacion = parseFloat(estilo.rowGap) || 0;
+      const disponible = marco.clientHeight - relleno * 2;
+      const tarjetas = Array.from(medidor.children) as HTMLElement[];
+      if (!tarjetas.length || disponible <= 0) return;
+
+      // Con dos columnas la unidad no es la tarjeta sino la fila: cortar en un
+      // impar parte una fila al medio y cambia el alto de las dos tandas.
+      const filas: number[][] = [];
+      for (let i = 0; i < tarjetas.length; i += columnas) {
+        filas.push(tarjetas.map((_, j) => j).slice(i, i + columnas));
+      }
+      const altos = filas.map(fila => Math.max(...fila.map(i => tarjetas[i].offsetHeight)));
+
+      const armadas = repartir(altos, disponible, separacion).map(grupo => grupo.flatMap(f => filas[f]));
+
+      setTandas(previas =>
+        previas.length === armadas.length && previas.every((p, i) => p.length === armadas[i].length)
+          ? previas
+          : armadas,
+      );
+    };
+
+    calcular();
+    const ro = new ResizeObserver(calcular);
+    if (marcoRef.current) ro.observe(marcoRef.current);
+    if (medidorRef.current) ro.observe(medidorRef.current);
+    return () => ro.disconnect();
+  }, [items, columnas]);
+
+  return { marcoRef, medidorRef, tandas };
+}
+
+/** Una competencia: numero en el acento y el texto de la ficha */
+function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: number; acento: string }) {
+  const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
+  return (
+    <div
+      className="flex items-start gap-2.5 rounded p-2.5 md:p-2"
+      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+    >
+      <span
+        className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-[0.6rem] font-black"
+        style={{ background: acento, color: textoAcento }}
+      >
+        {numero}
+      </span>
+      <span className="text-[0.8rem] sm:text-[0.85rem] text-[#c3d8e6] leading-snug">{texto}</span>
+    </div>
+  );
+}
+
+/** Flecha chica para pasar de tanda dentro de un marco */
+function FlechaTanda({
+  acento,
+  sentido,
+  disabled,
+  onClick,
+}: {
+  acento: string;
+  sentido: 'anterior' | 'siguiente';
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={sentido === 'anterior' ? 'Competencias anteriores' : 'Más competencias'}
+      className="w-6 h-6 flex items-center justify-center rounded transition-all cursor-pointer disabled:opacity-25 disabled:pointer-events-none"
+      style={{ color: CLARO[acento], boxShadow: `inset 0 0 0 1px ${acento}59` }}
+    >
+      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+        <path strokeLinecap="round" strokeLinejoin="round" d={sentido === 'anterior' ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'} />
+      </svg>
+    </button>
+  );
+}
 
 /**
  * Foto de portada de la ficha oficial de Teclab. Decorativa: lo que informa es
@@ -217,16 +405,38 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
 }
 
 // ── Slide 2: competencias y salida laboral ──
-// Mismo armado que el slide del plan de estudios, que es el que funciona en
-// mobile: el encabezado y la salida laboral quedan fijos y lo unico que
-// scrollea es la lista, dentro de su marco. Cada competencia es una tarjeta
-// numerada; en fila con vinetas eran nueve parrafos largos uno abajo del otro.
+// El encabezado y la salida laboral quedan fijos, y las competencias -entre
+// siete y nueve parrafos largos por ficha- pasan de a tandas: en vez de una
+// tira que hay que scrollear, cada tanda entra completa y se avanza con las
+// flechas del marco o arrastrando en el telefono.
 function SlideCompetencias({ competencias, salida, acento }: { competencias: string[]; salida: string; acento: string }) {
-  const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
+  const esAncho = useMediaQuery('(min-width: 768px)');
+  const { marcoRef, medidorRef, tandas } = useTandas(competencias, esAncho ? 2 : 1);
+
+  const [tanda, setTanda] = useState(0);
+  // Al cambiar de tamaño cambia el reparto y el indice viejo puede no existir
+  useEffect(() => setTanda(t => Math.min(t, tandas.length - 1)), [tandas.length]);
+
+  const irA = useCallback((i: number) => setTanda(Math.max(0, Math.min(tandas.length - 1, i))), [tandas.length]);
+  const arrastre = useArrastre(
+    useCallback(() => irA(tanda + 1), [irA, tanda]),
+    useCallback(() => irA(tanda - 1), [irA, tanda]),
+  );
 
   return (
     <div className="teclab-slide h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-6 overflow-hidden">
-      <Rotulo acento={acento}>Competencias profesionales</Rotulo>
+      <div className="flex-shrink-0 flex items-center justify-between gap-3">
+        <Rotulo acento={acento}>Competencias profesionales</Rotulo>
+        {tandas.length > 1 && (
+          <div className="flex items-center gap-1.5">
+            <FlechaTanda acento={acento} sentido="anterior" disabled={tanda === 0} onClick={() => irA(tanda - 1)} />
+            <span className="text-[0.55rem] font-black tabular-nums tracking-[0.12em] text-white/50">
+              {tanda + 1}/{tandas.length}
+            </span>
+            <FlechaTanda acento={acento} sentido="siguiente" disabled={tanda === tandas.length - 1} onClick={() => irA(tanda + 1)} />
+          </div>
+        )}
+      </div>
 
       {/* La salida laboral va arriba: las competencias son varias y largas, y si
           queda al pie hay que scrollear para encontrarla. Sin rotulo: el texto
@@ -240,32 +450,33 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
         </div>
       )}
 
-      {/* Lo unico que scrollea es este marco; el alto lo pone el flex, no el
-          contenido. */}
+      {/* El marco recorta y adentro corre la cinta de tandas */}
       <div
-        className="flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5"
+        ref={marcoRef}
+        className="relative flex-1 min-h-0 overflow-hidden rounded-lg touch-pan-y"
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        {...arrastre}
       >
-        {/* Las fichas traen entre siete y nueve competencias de un renglon
-            largo. En desktop van en dos columnas de texto y no en una grilla:
-            la grilla empareja el alto de las filas y con tarjetas tan
-            desparejas se pierde media pantalla en aire. Las columnas van en
-            este hijo de alto natural, no en el marco: dentro de una caja de
-            alto fijo, el sobrante se iria en columnas hacia el costado. */}
-        <div className="flex flex-col gap-2 md:block md:columns-2 md:gap-2">
+        {/* Copia invisible de toda la lista: de aca sale cuantas tarjetas entran
+            en el marco, que es lo que decide el tamaño de cada tanda. */}
+        <div ref={medidorRef} aria-hidden="true" className={`${CLASES_TANDA} invisible pointer-events-none absolute inset-x-0 top-0`}>
           {competencias.map((texto, i) => (
-            <div
-              key={i}
-              className="flex items-start gap-2.5 rounded p-2.5 md:p-2 break-inside-avoid md:mb-2"
-              style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
-            >
-              <span
-                className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-[0.6rem] font-black"
-                style={{ background: acento, color: textoAcento }}
-              >
-                {i + 1}
-              </span>
-              <span className="text-[0.8rem] sm:text-[0.85rem] text-[#c3d8e6] leading-snug">{texto}</span>
+            <TarjetaCompetencia key={i} texto={texto} numero={i + 1} acento={acento} />
+          ))}
+        </div>
+
+        <div
+          className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]"
+          style={{ transform: `translateX(-${tanda * 100}%)` }}
+        >
+          {tandas.map((indices, t) => (
+            // auto-rows-fr: las tarjetas se estiran hasta llenar la tanda. Con
+            // siete competencias no hay reparto que llene dos cajas enteras, y
+            // media caja vacia se lee como que falta algo.
+            <div key={t} className={`${CLASES_TANDA} auto-rows-fr flex-shrink-0 w-full h-full`}>
+              {indices.map(i => (
+                <TarjetaCompetencia key={i} texto={competencias[i]} numero={i + 1} acento={acento} />
+              ))}
             </div>
           ))}
         </div>
