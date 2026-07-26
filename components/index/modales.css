@@ -141,15 +141,15 @@
   pointer-events: none;
 }
 
-/* Foto de la ficha oficial: marco fino y la sombra dura desplazada en el
-   acento, el mismo motivo de las tarjetas. En mobile es una banda apaisada
-   entre los chips y el perfil. */
+/* Foto de la ficha oficial, con marco en el acento de la familia (el color lo
+   pone el componente). En mobile es una banda apaisada entre los chips y el
+   perfil; en desktop, la columna de la derecha. */
 .teclab-foto {
   position: relative;
   aspect-ratio: 16 / 9;
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.16);
+  border: 2px solid;
 }
 
 /* Portada en desktop: dos columnas. La foto empieza a la altura del titulo y

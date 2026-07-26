@@ -69,7 +69,10 @@ function EnlaceFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; ac
  */
 function FotoFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
   return (
-    <div className={`teclab-foto ${className}`} style={{ boxShadow: `6px 6px 0 ${acento}` }}>
+    // Marco liso en el acento. La sombra dura desplazada de las tarjetas aca no
+    // funciona: con las esquinas redondeadas asoma corrida y, al cambiar de
+    // tamaño la foto, se lee como un borde mal alineado.
+    <div className={`teclab-foto ${className}`} style={{ borderColor: acento }}>
       <Image
         src={ficha.imagen}
         alt=""
