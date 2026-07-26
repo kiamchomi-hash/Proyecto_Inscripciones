@@ -7,8 +7,9 @@
 // tipo. El acento cambia por familia: cian en tecnologia, violeta en gestion.
 //
 // El material de marca -logo, fotos de portada, logos de las empresas que
-// cocrearon cada carrera- sale de la ficha oficial de teclab.edu.ar, a la que
-// cada slide enlaza (ver FICHAS en ./teclab).
+// cocrearon cada carrera- sale de la ficha oficial de teclab.edu.ar (ver FICHAS
+// en ./teclab), pero el modal no enlaza al sitio del instituto: el contacto es
+// solo por WhatsApp o el formulario del CAU.
 
 import Image from 'next/image';
 import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
@@ -38,34 +39,9 @@ const CLARO: Record<string, string> = {
   '#8e2cf2': '#c9a0ff',
 };
 
-/** Flecha de enlace externo, el motivo `>` de la marca */
-function IconoExterno({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V7a1 1 0 011-1h4" />
-    </svg>
-  );
-}
-
-/** Enlace a la ficha oficial de la carrera en teclab.edu.ar */
-function EnlaceFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
-  return (
-    <a
-      href={ficha.url}
-      target="_blank"
-      rel="noopener"
-      className={`inline-flex items-center gap-1.5 text-[0.6rem] font-black uppercase tracking-[0.12em] transition-opacity hover:opacity-75 ${className}`}
-      style={{ color: CLARO[acento] }}
-    >
-      Ver en teclab.edu.ar
-      <IconoExterno className="w-3 h-3" />
-    </a>
-  );
-}
-
 /**
- * Foto de portada de la ficha oficial, en su marco con la sombra dura desplazada
- * que es el motivo de la marca. Decorativa: lo que informa es el texto de al lado.
+ * Foto de portada de la ficha oficial de Teclab. Decorativa: lo que informa es
+ * el texto de al lado.
  */
 function FotoFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
   return (
@@ -206,17 +182,20 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
       </div>
 
       {ficha && (
-        <div className="teclab-portada-foto flex-shrink-0 flex flex-col gap-2">
+        <div className="teclab-portada-foto flex-shrink-0">
           <FotoFicha ficha={ficha} acento={acento} />
-          <BloqueCocreacion ficha={ficha} acento={acento} />
         </div>
       )}
 
-      {perfil && (
+      {(perfil || ficha?.partner) && (
         <div className="teclab-portada-perfil flex-shrink-0 flex flex-col gap-2">
-          <Rotulo acento={acento}>Perfil profesional</Rotulo>
-          <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
-          {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="mt-1" />}
+          {perfil && (
+            <>
+              <Rotulo acento={acento}>Perfil profesional</Rotulo>
+              <p className="text-[0.88rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
+            </>
+          )}
+          {ficha && <BloqueCocreacion ficha={ficha} acento={acento} className="mt-1 self-start" />}
         </div>
       )}
 
@@ -424,18 +403,6 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         >
           Consultar precios
         </a>
-        {ficha && (
-          <a
-            href={ficha.url}
-            target="_blank"
-            rel="noopener"
-            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm transition-all hover:brightness-110"
-            style={{ color: CLARO[acento], boxShadow: `inset 0 0 0 1px ${acento}` }}
-          >
-            Ficha oficial
-            <IconoExterno className="w-3.5 h-3.5" />
-          </a>
-        )}
         <a
           href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
           target="_blank"
@@ -605,7 +572,6 @@ export default function TeclabModal({ carrera, onClose }: Props) {
                 </>
               )}
             </div>
-            {ficha && <EnlaceFicha ficha={ficha} acento={acento} className="hidden md:inline-flex ml-auto flex-shrink-0" />}
             <button
               ref={closeBtnRef}
               onClick={handleClose}
@@ -667,12 +633,14 @@ export default function TeclabModal({ carrera, onClose }: Props) {
               />
             ))}
           </div>
+          {/* Navegar entre slides no compite con inscribirse: el relleno del
+              acento queda para "Inscribite ya", el unico CTA del modal. */}
           <button
             onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))}
             disabled={idx === slides.length - 1}
             aria-label="Slide siguiente"
-            className="flex items-center gap-1 sm:gap-2 text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:brightness-110"
-            style={{ background: acento, color: textoAcento, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.2)' }}
+            className="flex items-center gap-1 sm:gap-2 text-white text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
+            style={{ background: 'rgba(255,255,255,0.09)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.25)' }}
           >
             <span className="hidden min-[360px]:inline">Siguiente</span>
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

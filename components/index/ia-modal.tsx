@@ -663,12 +663,14 @@ export default function IAModal({ carrera, onClose }: Props) {
               />
             ))}
           </div>
+          {/* Navegar entre slides no compite con inscribirse: el relleno del
+              azul queda para "Inscribite ya", el unico CTA del modal. */}
           <button
             onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))}
             disabled={idx === slides.length - 1}
             aria-label="Slide siguiente"
-            className="flex items-center gap-1 sm:gap-2 text-white text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:brightness-110"
-            style={{ background: AZUL, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.2)' }}
+            className="flex items-center gap-1 sm:gap-2 text-white text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
+            style={{ background: 'rgba(255,255,255,0.09)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.25)' }}
           >
             <span className="hidden min-[360px]:inline">Siguiente</span>
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
