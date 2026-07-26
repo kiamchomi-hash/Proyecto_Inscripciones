@@ -565,11 +565,13 @@ function PeriodoDetalle({ periodo, acento, enTarjeta }: { periodo: TeclabPeriodo
 // ── Slide 4: cierre ──
 function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
   const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
+  // Los dos datos largos van a todo el ancho y los cortos comparten fila: en el
+  // telefono, cuatro cintas apiladas ocupaban de mas y traian scroll.
   const beneficios = [
-    { titulo: 'Título', detalle: carrera.titulo },
-    { titulo: 'Modalidad', detalle: modalidad },
-    { titulo: 'Duración', detalle: carrera.duracion },
-    { titulo: 'Certificado intermedio', detalle: certificado || 'Al finalizar el primer año' },
+    { titulo: 'Título', detalle: carrera.titulo, ancho: true },
+    { titulo: 'Modalidad', detalle: modalidad, ancho: false },
+    { titulo: 'Duración', detalle: carrera.duracion, ancho: false },
+    { titulo: 'Certificado intermedio', detalle: certificado || 'Al finalizar el primer año', ancho: true },
   ];
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
     `Hola, quiero consultar precios y fechas de ${carrera.nombre}`,
@@ -585,24 +587,23 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         </div>
       )}
 
-      <div className="flex-shrink-0">
-        <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
-          Educación para
-          <span className="block" style={{ color: acento }}>
-            cambiarlo todo
-          </span>
-        </h3>
-        <p className="text-[#a9c4d6] text-[0.8rem] sm:text-sm mt-2">
-          {ficha?.resumen ||
-            'Tecnicatura oficial de Teclab, Instituto Técnico Superior con validez nacional.'}
-        </p>
-      </div>
+      {/* Sin la bajada de la ficha: era el texto mas largo del slide y hacia
+          aparecer scroll apenas se achicaba el modal. Lo que importa aca son
+          los datos y los botones. */}
+      <h3 className="flex-shrink-0 text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
+        Educación para
+        <span className="block" style={{ color: acento }}>
+          cambiarlo todo
+        </span>
+      </h3>
 
-      <div className="flex-1 min-h-fit grid grid-cols-1 sm:grid-cols-2 gap-2 content-center">
+      {/* Pegados al titulo: el aire que sobra queda antes de la cocreacion y
+          los botones, que van al pie */}
+      <div className="flex-1 min-h-fit grid grid-cols-2 gap-2 content-start">
         {beneficios.map(b => (
           <div
             key={b.titulo}
-            className="rounded p-3"
+            className={`rounded p-3 ${b.ancho ? 'col-span-2' : ''}`}
             style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
           >
             <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
