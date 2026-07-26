@@ -226,24 +226,17 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
 
   return (
     <div className="teclab-slide h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-6 overflow-hidden">
-      <div className="flex-shrink-0">
-        <Rotulo acento={acento}>Competencias profesionales</Rotulo>
-        <h3 className="text-lg sm:text-2xl font-black text-white uppercase leading-tight tracking-tight mt-0.5">
-          Qué vas a saber hacer
-        </h3>
-      </div>
+      <Rotulo acento={acento}>Competencias profesionales</Rotulo>
 
       {/* La salida laboral va arriba: las competencias son varias y largas, y si
-          queda al pie hay que scrollear para encontrarla. */}
+          queda al pie hay que scrollear para encontrarla. Sin rotulo: el texto
+          ya dice de que se trata y el filo del acento lo separa de la lista. */}
       {salida && (
         <div
           className="flex-shrink-0 rounded p-2.5"
           style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', borderLeft: `3px solid ${acento}` }}
         >
-          <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
-            Dónde vas a trabajar
-          </p>
-          <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug mt-0.5">{salida}</p>
+          <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug">{salida}</p>
         </div>
       )}
 
