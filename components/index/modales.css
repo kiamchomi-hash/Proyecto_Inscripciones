@@ -23,6 +23,24 @@
   background: rgba(0, 199, 177, 0.5);
 }
 
+/* Dentro de un modal de Teclab la barra toma el acento de la familia -cian en
+   tecnologia, violeta en gestion- en vez del verde del sitio, que ahi es un
+   color que no pinta nada mas. */
+.teclab-tecnologia .custom-scrollbar,
+.teclab-gestion .custom-scrollbar {
+  scrollbar-color: color-mix(in srgb, var(--teclab-accent) 45%, transparent) transparent;
+}
+
+.teclab-tecnologia .custom-scrollbar::-webkit-scrollbar-thumb,
+.teclab-gestion .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--teclab-accent) 45%, transparent);
+}
+
+.teclab-tecnologia .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.teclab-gestion .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--teclab-accent) 70%, transparent);
+}
+
 /* ===================== Identidad Argentina =====================
    Mismo lenguaje del video: lavados ambientales amarillo/azul sobre tinta,
    trama fina y filo de luz al pie del encabezado. */
