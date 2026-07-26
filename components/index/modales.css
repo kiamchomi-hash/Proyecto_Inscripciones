@@ -66,6 +66,19 @@
   white-space: nowrap;
 }
 
+/* Placa del convenio: solo en mobile, y solo cuando la pantalla da para que
+   ocupe el aire sobrante en vez de forzar scroll. En telefonos chicos el
+   contenido ya llena el slide, asi que no aparece. */
+.ia-placa {
+  display: none;
+}
+
+@media (min-width: 380px) and (max-width: 639px) and (min-height: 800px) {
+  .ia-placa {
+    display: flex;
+  }
+}
+
 /* Fondo de cada slide: lavados ambientales amarillo/azul sobre tinta + trama
    fina, igual que el <Background> del render de Remotion. */
 .ia-slide {
@@ -150,6 +163,31 @@
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid;
+}
+
+/* Portada en mobile: una sola columna, y la foto es la que absorbe el alto que
+   sobra. Con proporcion fija pasaba una de dos: quedaba un hueco muerto al pie
+   cuando el perfil era corto, o el titulo y el certificado se iban abajo del
+   borde y aparecia scroll. Con piso y techo la foto se achica antes que eso. */
+@media (max-width: 767px) {
+  /* El techo va en el contenedor y no en la foto: si lo lleva la foto, el
+     contenedor sigue creciendo y queda un hueco entre la foto y el perfil. */
+  .teclab-portada-foto {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* Techo alto a proposito: la foto solo crece hacia el espacio libre, asi
+       que el tope no genera scroll, y con uno bajo quedaba un hueco al pie en
+       las carreras de perfil corto. Lo mas alto que llega es un retrato. */
+    max-height: 26rem;
+  }
+
+  .teclab-portada-foto .teclab-foto {
+    flex: 1;
+    aspect-ratio: auto;
+    min-height: 6rem;
+  }
 }
 
 /* Portada en desktop: dos columnas. La foto empieza a la altura del titulo y
