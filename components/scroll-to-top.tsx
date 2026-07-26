@@ -1,12 +1,58 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { MARCA_MODAL } from '@/components/index/types';
+
+// Gestos que delatan que el scroll lo movio la persona y no el navegador.
+const GESTOS = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
 
 export function ScrollResetOnLoad() {
   useEffect(() => {
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'auto';
+    if (!('scrollRestoration' in history)) return;
+
+    // Con el modal abierto la URL es /carreras/{slug} pero el scroll que el
+    // navegador guarda para esa entrada es el del catalogo, bien abajo. Un F5
+    // carga la pagina de carrera de verdad y le restaura ese offset: como es
+    // mas corta, aterriza en el formulario del final. La home deja una marca al
+    // abrir el modal; si esta puesta, la pagina arranca arriba de todo.
+    let marca: string | null = null;
+    try {
+      marca = sessionStorage.getItem(MARCA_MODAL);
+      if (marca) sessionStorage.removeItem(MARCA_MODAL);
+    } catch {
+      // Navegacion privada sin storage: no hay nada que corregir.
     }
+    // Un ancla explicita (#formulario) manda por encima de esto.
+    if (marca !== window.location.pathname || window.location.hash) {
+      history.scrollRestoration = 'auto';
+      return;
+    }
+
+    history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+
+    // Pedir 'manual' no siempre alcanza: Chrome reintenta restaurar mientras el
+    // layout crece con las imagenes. Se lo devuelve a cero hasta que la persona
+    // toque algo, y como mucho por un segundo y medio.
+    let vigilando = true;
+    const soltar = () => {
+      if (!vigilando) return;
+      vigilando = false;
+      window.removeEventListener('scroll', volverArriba);
+      GESTOS.forEach(g => window.removeEventListener(g, soltar));
+      history.scrollRestoration = 'auto';
+    };
+    function volverArriba() {
+      if (vigilando && window.scrollY !== 0) window.scrollTo(0, 0);
+    }
+    window.addEventListener('scroll', volverArriba);
+    GESTOS.forEach(g => window.addEventListener(g, soltar, { passive: true }));
+    const timer = window.setTimeout(soltar, 1500);
+
+    return () => {
+      window.clearTimeout(timer);
+      soltar();
+    };
   }, []);
   return null;
 }

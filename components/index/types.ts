@@ -234,3 +234,8 @@ export function findCarreraBySlug(carreras: Carrera[], slug: string): Carrera | 
   const normalized = slug.toLowerCase().replace(/_/g, '-');
   return carreras.find(c => carreraToSlug(c) === slug || carreraToSlug(c) === normalized);
 }
+
+// Marca en sessionStorage: la URL /carreras/{slug} la puso el modal de la home,
+// no una visita real a la pagina de carrera. La escribe careers-catalog y la
+// consume ScrollResetOnLoad para no restaurar el scroll del catalogo.
+export const MARCA_MODAL = 'carrera-modal-url';
