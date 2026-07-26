@@ -56,14 +56,18 @@ function repartir(altos: number[], disponible: number, separacion: number): numb
   const alto = (desde: number, hasta: number) =>
     altos.slice(desde, hasta).reduce((a, b) => a + b, 0) + separacion * Math.max(0, hasta - desde - 1);
 
-  let tandas = 0;
+  // Llenado a tope: da el minimo de tandas y ademas es el plan B, porque nunca
+  // deja un grupo mas grande de lo que entra (salvo que una sola tarjeta no
+  // entre, y ahi no hay reparto posible).
+  const aTope: number[][] = [];
   for (let i = 0; i < n; ) {
     let j = i;
     while (j < n && alto(i, j + 1) <= disponible) j++;
-    i = j === i ? i + 1 : j; // una tarjeta mas alta que el marco va sola igual
-    tandas++;
+    if (j === i) j = i + 1; // una tarjeta mas alta que el marco va sola igual
+    aTope.push(rango(i, j));
+    i = j;
   }
-  if (tandas <= 1) return [rango(0, n)];
+  if (aTope.length <= 1) return aTope;
 
   let mejor: number[][] | null = null;
   let mejorDiferencia = Infinity;
@@ -84,9 +88,12 @@ function repartir(altos: number[], disponible: number, separacion: number): numb
       buscar(corte, faltan - 1, [...acumulado, rango(desde, corte)]);
     }
   };
-  buscar(0, tandas, []);
+  buscar(0, aTope.length, []);
 
-  return mejor ?? [rango(0, n)];
+  // Sin reparto parejo posible -pasa cuando ni una tarjeta sola entra- vale el
+  // llenado a tope. Devolver todas juntas, como se hacia antes, apretaba las
+  // filas hasta que los textos se montaban unos sobre otros.
+  return mejor ?? aTope;
 }
 
 /**
@@ -187,8 +194,11 @@ function FlechaTanda({
 function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: number; acento: string }) {
   const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
   return (
+    // min-h-fit: la tarjeta no baja de lo que mide su texto. Sin eso, en una
+    // ventana muy baja las filas de la grilla se aprietan y los renglones se
+    // salen de la caja, montandose sobre la tarjeta de abajo.
     <div
-      className="flex items-start gap-3 rounded p-3"
+      className="flex items-start gap-3 rounded p-3 min-h-fit"
       style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
     >
       <span
@@ -397,7 +407,10 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
 
   return (
     <div className="teclab-slide h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-6 overflow-hidden">
-      <div className="flex-shrink-0 flex items-center justify-between gap-3">
+      {/* Alto fijo aunque no haya contador: si la fila creciera al aparecer,
+          el marco se achicaria, entrarian menos tarjetas y el contador podria
+          aparecer y desaparecer solo, temblando. */}
+      <div className="flex-shrink-0 h-6 flex items-center justify-between gap-3">
         <Rotulo acento={acento}>Competencias profesionales</Rotulo>
         {tandas.length > 1 && (
           <div className="flex items-center gap-1.5">
@@ -440,8 +453,10 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
         >
           {tandas.map((indices, t) => (
             // auto-rows-fr: las tarjetas se reparten el alto del marco, asi no
-            // queda media caja vacia abajo.
-            <div key={t} className={`${CLASES_TANDA} auto-rows-fr flex-shrink-0 w-full h-full`}>
+            // queda media caja vacia abajo. El overflow es la ultima red: si la
+            // ventana es tan baja que ni una tarjeta entra, se scrollea en vez
+            // de recortar el texto.
+            <div key={t} className={`${CLASES_TANDA} auto-rows-fr flex-shrink-0 w-full h-full overflow-y-auto custom-scrollbar`}>
               {indices.map(i => (
                 <TarjetaCompetencia key={i} texto={competencias[i]} numero={i + 1} acento={acento} />
               ))}
