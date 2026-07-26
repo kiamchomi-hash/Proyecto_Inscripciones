@@ -229,6 +229,31 @@
   }
 }
 
+/* Ventana baja: la portada deja de estirarse para llenar el alto y cada bloque
+   toma el suyo; lo que no entra se scrollea, que es lo que ya hace el slide.
+   Comprimiendola, la foto se achicaba, todo se reacomodaba y los cuadros de
+   titulo y certificado terminaban cortados contra el borde de abajo. El corte
+   esta justo donde el contenido empieza a no entrar -y ahi la foto ya venia
+   apretada contra su minimo- asi que el cambio no se nota.
+   Va al final para ganarle por orden a los dos bloques de arriba. */
+@media (max-height: 470px) {
+  .teclab-portada {
+    grid-template-rows: auto auto auto auto;
+  }
+
+  .teclab-portada-foto {
+    flex: 0 0 auto;
+    max-height: none;
+  }
+
+  .teclab-portada-foto .teclab-foto {
+    flex: 0 0 auto;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    max-height: none;
+  }
+}
+
 /* Cierre: la segunda foto de la ficha, de fondo y bajo un velo tinta */
 .teclab-cierre-fondo {
   position: absolute;
