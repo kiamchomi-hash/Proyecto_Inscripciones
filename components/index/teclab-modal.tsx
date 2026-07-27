@@ -583,11 +583,11 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         </div>
       )}
 
-      {/* Sin la bajada de la ficha, que era el texto mas largo y hacia aparecer
-          scroll apenas se achicaba el modal. Lo que queda es poco a proposito
-          -es un cierre- asi que va centrado en el alto: apilado arriba dejaba
-          todo el aire junto al pie y se leia como un hueco. */}
-      <div className="flex-1 min-h-fit flex flex-col justify-center gap-2.5">
+      {/* Todo el contenido apoyado en el pie, en un solo bloque con la
+          cocreacion y los botones: asi el alto que sobra queda junto arriba,
+          que es donde esta la foto. Centrado se partia en dos y quedaba un
+          hueco a cada lado del titulo; arriba de todo, un hueco al pie. */}
+      <div className="mt-auto flex flex-col gap-2.5">
         <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
           Educación para
           <span className="block" style={{ color: acento }}>

@@ -279,20 +279,20 @@
   z-index: 0;
 }
 
-/* El velo se abre en el medio: arriba y abajo tapa lo necesario para el titulo
-   y para la botonera, y en la franja del medio deja ver la foto. Opaco de punta
-   a punta, el alto que sobra en un cierre -que de texto tiene dos lineas- se
-   leia como un rectangulo negro. */
+/* El velo arranca casi transparente y se cierra hacia abajo, donde se apoya
+   todo el contenido: la mitad de arriba es la foto y la de abajo, el texto.
+   Opaco de punta a punta -como estaba- un cierre que de texto tiene dos lineas
+   se veia como un rectangulo negro. */
 .teclab-cierre-velo {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--teclab-ink) 92%, transparent) 0%,
-    color-mix(in srgb, var(--teclab-ink) 84%, transparent) 30%,
-    color-mix(in srgb, var(--teclab-ink) 70%, transparent) 52%,
-    color-mix(in srgb, var(--teclab-ink) 88%, transparent) 72%,
-    color-mix(in srgb, var(--teclab-ink) 96%, transparent) 86%
+    color-mix(in srgb, var(--teclab-ink) 30%, transparent) 0%,
+    color-mix(in srgb, var(--teclab-ink) 42%, transparent) 28%,
+    color-mix(in srgb, var(--teclab-ink) 72%, transparent) 50%,
+    color-mix(in srgb, var(--teclab-ink) 91%, transparent) 68%,
+    color-mix(in srgb, var(--teclab-ink) 97%, transparent) 84%
   );
 }
 
