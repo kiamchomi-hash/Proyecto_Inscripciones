@@ -279,14 +279,29 @@
   z-index: 0;
 }
 
+/* El velo se abre en el medio: arriba tapa lo justo para que el titulo y los
+   chips se lean, en la franja del medio deja ver la foto -que es lo que llena
+   el slide cuando el modal es alto- y al pie vuelve a cerrarse para la
+   cocreacion, los botones y el logo. Antes era opaco de punta a punta y ese
+   espacio libre parecia un hueco vacio. */
 .teclab-cierre-velo {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--teclab-ink) 90%, transparent),
-    color-mix(in srgb, var(--teclab-ink) 97%, transparent) 62%
+    180deg,
+    color-mix(in srgb, var(--teclab-ink) 94%, transparent) 0%,
+    color-mix(in srgb, var(--teclab-ink) 88%, transparent) 26%,
+    color-mix(in srgb, var(--teclab-ink) 56%, transparent) 46%,
+    color-mix(in srgb, var(--teclab-ink) 86%, transparent) 66%,
+    color-mix(in srgb, var(--teclab-ink) 96%, transparent) 82%
   );
+}
+
+/* Los chips del cierre van sobre la foto, asi que necesitan fondo propio: con
+   el blanco translucido de la portada se perdian contra la imagen. */
+.teclab-cierre .teclab-chip {
+  background: color-mix(in srgb, var(--teclab-ink) 62%, transparent);
+  backdrop-filter: blur(2px);
 }
 
 /* El contenido tiene que quedar por encima de la foto de fondo */

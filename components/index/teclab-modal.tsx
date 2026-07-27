@@ -565,13 +565,10 @@ function PeriodoDetalle({ periodo, acento, enTarjeta }: { periodo: TeclabPeriodo
 // ── Slide 4: cierre ──
 function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
   const { modalidad } = parseEnfoqueTeclab(carrera.enfoque);
-  // Solo los dos datos de una linea. El titulo y el certificado ya estan en la
-  // portada, y aca eran las dos cintas mas largas: repetian informacion y
-  // hacian aparecer scroll apenas se achicaba el modal.
-  const beneficios = [
-    { titulo: 'Modalidad', detalle: modalidad },
-    { titulo: 'Duración', detalle: carrera.duracion },
-  ];
+  // Los datos van como chips, igual que en la portada. Con cuadros rotulados
+  // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
+  // en medio de la nada. El titulo y el certificado ya estan en la portada.
+  const chips = [modalidad, carrera.duracion, 'Título oficial'].filter(Boolean);
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
     `Hola, quiero consultar precios y fechas de ${carrera.nombre}`,
   )}`;
@@ -586,13 +583,11 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         </div>
       )}
 
-      {/* Sin la bajada de la ficha: era el texto mas largo del slide y hacia
-          aparecer scroll apenas se achicaba el modal. Lo que importa aca son
-          los datos y los botones.
-          El titulo y las dos cintas van juntos y centrados en el alto libre:
-          arriba de todo quedaban colgados, con un hueco enorme hasta los
-          botones del pie. Cuando no sobra alto, el centrado no hace nada. */}
-      <div className="flex-1 min-h-fit flex flex-col justify-center gap-3">
+      {/* Titulo y chips arriba, botones al pie y la foto en el medio: el hueco
+          que quedaba entre una cosa y la otra ahora es la imagen, que es de lo
+          que va este slide. Sin la bajada de la ficha, que era el texto mas
+          largo y hacia aparecer scroll apenas se achicaba el modal. */}
+      <div className="flex-shrink-0 flex flex-col gap-2.5">
         <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
           Educación para
           <span className="block" style={{ color: acento }}>
@@ -600,23 +595,18 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
           </span>
         </h3>
 
-        {/* Cada cinta toma el ancho de su texto; estiradas a media pantalla
-            quedaban dos barras casi vacias. */}
-        <div className="flex flex-wrap items-start gap-2">
-          {beneficios.map(b => (
-            <div
-              key={b.titulo}
-              className="rounded px-4 py-2.5"
-              style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
-            >
-              <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
-                {b.titulo}
-              </p>
-              <p className="text-[0.85rem] font-bold text-white leading-snug mt-0.5">{b.detalle}</p>
-            </div>
+        <div className="flex flex-wrap gap-1.5">
+          {chips.map(c => (
+            <span key={c} className="teclab-chip">
+              {c}
+            </span>
           ))}
         </div>
       </div>
+
+      {/* El aire sobrante: lo llena la foto de abajo. Con min-h-0 se comprime
+          hasta desaparecer antes de que aparezca scroll. */}
+      <div className="flex-1 min-h-0" aria-hidden="true" />
 
       {ficha?.partner && (
         <div className="flex-shrink-0">
