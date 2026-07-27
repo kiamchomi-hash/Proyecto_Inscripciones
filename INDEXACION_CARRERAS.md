@@ -1,5 +1,17 @@
 # Estado de indexación — Carreras
 
+> ## ⚠️ Informe histórico — los dos bloqueos ya están corregidos
+>
+> Este relevamiento diagnosticó, el 24/07, por qué las fichas de carrera no se
+> indexaban: **0 enlaces internos rastreables** y **0 páginas con HTML propio** (todas
+> eran el home con otro `<title>`). Los dos se arreglaron en el deploy de ese mismo día.
+>
+> **Resultado, medido el 27/07:** las carreras indexadas pasaron de 23 a 38 sobre 96,
+> sin pedir una sola indexación a mano. El detalle está en `INDEXACION_REAL_GSC.md`.
+>
+> Se conserva porque explica el diagnóstico y el porqué de los arreglos. **Nada de lo
+> que sigue describe el estado actual del sitio.**
+
 **Fecha del relevamiento:** 2026-07-24
 **Sitio:** https://www.siglo21sur.com
 **Carreras de la oferta vigente:** 96 — Grado, Pregrado, Grado CCC, Teclab e Identidad
