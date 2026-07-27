@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon, ChevronDownIcon } from './icons';
 import TurnstileWidget from '@/components/turnstile-widget';
+import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 
 /* ── Data ──────────────────────────────────────────────── */
 
@@ -68,11 +69,12 @@ const FAQ_ITEMS: FaqItem[] = [
           <div className="flex flex-col gap-2 flex-1">
             <div className="rounded-lg overflow-hidden" style={{ height: 220 }}>
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d287.30386866002505!2d-58.478021869563335!3d-34.68692280959655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcceb304e92bc7%3A0x2c1bd7e026f4751a!2sCentro%20de%20Capacitacion%20Lugano!5e0!3m2!1ses-419!2sus!4v1772370527929!5m2!1ses-419!2sus"
+                src={MAPS_EMBED_SRC}
+                title={MAPS_TITLE}
                 width="100%" height="220" style={{ border: 0, display: 'block' }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
-            <a href="https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7" target="_blank" rel="noopener nofollow"
+            <a href={MAPS_URL} target="_blank" rel="noopener nofollow"
               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm text-white hover:brightness-115"
               style={{ background: 'linear-gradient(135deg,#1a3a6e 0%,#006655 100%)' }}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">

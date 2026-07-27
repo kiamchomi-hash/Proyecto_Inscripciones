@@ -6,6 +6,7 @@ import { carreraToSlug, carreraFullName, esCarreraVisible } from '@/components/i
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import IndexFooter from '@/components/index/footer';
+import { POSTAL_ADDRESS } from '@/lib/sede';
 import '../career-detail.css';
 
 export const revalidate = 3600;
@@ -135,13 +136,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     "location": {
       "@type": "Place",
       "name": "CAU Villa Lugano",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Guaminí 4876",
-        "addressLocality": "Villa Lugano",
-        "addressRegion": "CABA",
-        "addressCountry": "AR",
-      },
+      "address": POSTAL_ADDRESS,
     },
   };
 

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import TurnstileWidget from '@/components/turnstile-widget';
+import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 import './contacto.css';
 
 /* ── Publicaciones ────────────────────────────────────── *
@@ -585,7 +586,7 @@ export default function ContactoPageContent() {
             </div>
 
             <a
-              href="https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7"
+              href={MAPS_URL}
               target="_blank"
               rel="noopener nofollow"
               className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full font-bold text-sm text-white transition-all hover:brightness-110 mt-1"
@@ -601,14 +602,14 @@ export default function ContactoPageContent() {
           {/* Map — right side */}
           <div className="md:w-[280px] lg:w-[320px] shrink-0">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d287.30386866002505!2d-58.478021869563335!3d-34.68692280959655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcceb304e92bc7%3A0x2c1bd7e026f4751a!2sCentro%20de%20Capacitacion%20Lugano!5e0!3m2!1ses-419!2sus!4v1772370527929!5m2!1ses-419!2sus"
+              src={MAPS_EMBED_SRC}
               width="100%"
               height="100%"
               style={{ border: 0, display: 'block', minHeight: '180px' }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Ubicación del CAU Villa Lugano en Google Maps"
+              title={MAPS_TITLE}
             />
           </div>
         </div>
