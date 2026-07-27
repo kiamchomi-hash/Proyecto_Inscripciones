@@ -644,17 +644,22 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           </div>
 
           {/* Slide 3: Confirmation */}
-          <div className={`ask-slide px-8 py-6 pb-8 ${slide === 3 ? 'active visible pointer-events-auto' : 'invisible pointer-events-none'}`} style={{ gridArea: '1 / 1', textAlign: 'center' }}>
-            <svg className="w-14 h-14 mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" style={{ color: 'var(--color-highlight)' }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-xl font-bold mb-2" style={{ color: '#fff' }}>¡Consulta recibida!</h3>
-            <p className="text-sm mb-6" style={{ color: 'var(--color-text-light)' }}>Nos llegó tu pregunta y te respondemos a la brevedad. ¡Gracias!</p>
-            <button type="button" onClick={handleClose}
-              className="font-semibold py-2.5 px-6 rounded-xl text-white text-sm hover:bg-[rgba(0,199,177,0.35)]"
-              style={{ background: 'rgba(0,199,177,0.2)', border: '1px solid rgba(0,199,177,0.45)', cursor: 'pointer' }}>
-              Cerrar
-            </button>
+          {/* Los slides comparten la celda del grid, así que este ocupa el alto del
+              más largo. El wrapper interno lo centra en vertical sin alterar el
+              layout horizontal de su contenido. */}
+          <div className={`ask-slide px-8 py-6 pb-8 ${slide === 3 ? 'active visible pointer-events-auto' : 'invisible pointer-events-none'}`} style={{ gridArea: '1 / 1', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div>
+              <svg className="w-14 h-14 mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" style={{ color: 'var(--color-highlight)' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="text-xl font-bold mb-2" style={{ color: '#fff' }}>¡Consulta recibida!</h3>
+              <p className="text-sm mb-6" style={{ color: 'var(--color-text-light)' }}>Nos llegó tu pregunta y te respondemos a la brevedad. ¡Gracias!</p>
+              <button type="button" onClick={handleClose}
+                className="font-semibold py-2.5 px-6 rounded-xl text-white text-sm hover:bg-[rgba(0,199,177,0.35)]"
+                style={{ background: 'rgba(0,199,177,0.2)', border: '1px solid rgba(0,199,177,0.45)', cursor: 'pointer' }}>
+                Cerrar
+              </button>
+            </div>
           </div>
         </div>
       </div>
