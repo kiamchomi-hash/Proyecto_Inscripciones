@@ -469,10 +469,38 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
 }
 
 // ── Slide 3: plan de estudios ──
+// Mismo armado que el plan de las carreras de Siglo 21 (carousel-modal): el
+// indice de la izquierda va por año -no por cuatrimestre- con "Plan completo"
+// arriba, y a la derecha el año arranca pegado al borde de arriba, con sus
+// cuatrimestres en columnas.
+
+/** Un año con los cuatrimestres que la ficha lista debajo */
+interface TeclabAño {
+  año: string;
+  cuatrimestres: TeclabPeriodo[];
+}
+
+function agruparPorAño(periodos: TeclabPeriodo[]): TeclabAño[] {
+  const años: TeclabAño[] = [];
+  for (const periodo of periodos) {
+    const ultimo = años[años.length - 1];
+    if (ultimo && ultimo.año === periodo.año) ultimo.cuatrimestres.push(periodo);
+    else años.push({ año: periodo.año, cuatrimestres: [periodo] });
+  }
+  return años;
+}
+
 function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: TeclabPeriodo[]; acento: string }) {
-  const [activo, setActivo] = useState(0);
-  const periodo = periodos[activo];
+  const años = useMemo(() => agruparPorAño(periodos), [periodos]);
+  // -1 = plan completo, >= 0 = un año
+  const [activo, setActivo] = useState(-1);
+  const visibles = activo === -1 ? años : [años[activo]];
+  const titulo = activo === -1 ? 'Plan completo' : años[activo]?.año;
   const textoActivo = acento === '#2ee7d7' ? '#071822' : '#fff';
+  const estiloBoton = (encendido: boolean) =>
+    encendido
+      ? { background: acento, color: textoActivo, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
+      : { background: 'rgba(255,255,255,0.05)', color: CLARO[acento], boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' };
 
   return (
     <div className="teclab-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
@@ -489,11 +517,11 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
       >
         {periodos.map((p, i) => (
-          <PeriodoDetalle key={i} periodo={p} acento={acento} enTarjeta />
+          <PeriodoDetalle key={i} periodo={p} acento={acento} />
         ))}
       </div>
 
-      {/* Desktop: indice a la izquierda y un periodo por vez, sin scroll */}
+      {/* Desktop: indice a la izquierda y el contenido a la derecha */}
       <div
         className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
@@ -502,63 +530,114 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
           className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[10.5rem] custom-scrollbar"
           style={{ background: 'rgba(0,0,0,0.22)' }}
         >
-          {periodos.map((p, i) => (
+          <button
+            onClick={() => setActivo(-1)}
+            className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-2 rounded text-[0.55rem] font-black uppercase tracking-[0.08em] text-left transition-all cursor-pointer"
+            style={estiloBoton(activo === -1)}
+          >
+            <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            Plan completo
+          </button>
+
+          <div
+            className="flex-shrink-0 h-px mx-1 my-0.5"
+            style={{ background: `linear-gradient(90deg, ${acento}40 0%, transparent 85%)` }}
+          />
+
+          {años.map((a, i) => (
             <button
               key={i}
               onClick={() => setActivo(i)}
               className="flex-shrink-0 px-2.5 py-2 rounded text-[0.55rem] font-black uppercase tracking-[0.08em] text-left transition-all cursor-pointer"
-              style={
-                activo === i
-                  ? { background: acento, color: textoActivo, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
-                  : { background: 'rgba(255,255,255,0.05)', color: CLARO[acento], boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }
-              }
+              style={estiloBoton(activo === i)}
             >
-              {p.año}
-              <span className="block font-bold opacity-80">{p.label}</span>
+              {a.año}
             </button>
           ))}
         </div>
 
-        {periodo && (
-          <div
-            className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 flex flex-col justify-center-safe"
-            style={{ borderLeft: `3px solid ${acento}` }}
-          >
-            <PeriodoDetalle periodo={periodo} acento={acento} />
+        {/* El rotulo de lo que se esta viendo queda fijo arriba y el contenido
+            arranca pegado a el: con el año centrado en el alto, uno de pocas
+            materias flotaba en el medio del marco. */}
+        <div className="flex-1 min-h-0 flex flex-col" style={{ borderLeft: `3px solid ${acento}` }}>
+          <p className="flex-shrink-0 px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-white border-b border-white/10">
+            {titulo}
+          </p>
+          <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-4 py-3 flex flex-col gap-4">
+            {visibles.map((a, i) =>
+              a ? (
+                <div key={i} className="flex-shrink-0 flex flex-col gap-4">
+                  {/* Apilados uno abajo del otro, la linea es lo que separa un
+                      año del siguiente. */}
+                  {i > 0 && <div className="h-px" style={{ background: `linear-gradient(90deg, ${acento}33 0%, transparent 60%)` }} />}
+                  {/* Con un solo año a la vista el rotulo ya esta en la barra de
+                      arriba, asi que no se repite. */}
+                  <AñoDetalle año={a} acento={acento} conTitulo={activo === -1} />
+                </div>
+              ) : null,
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 }
 
-function PeriodoDetalle({ periodo, acento, enTarjeta }: { periodo: TeclabPeriodo; acento: string; enTarjeta?: boolean }) {
+/** Un año del plan: el rotulo arriba y los cuatrimestres en columnas */
+function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: string; conTitulo?: boolean }) {
+  return (
+    <div>
+      {conTitulo && (
+        <p className="text-base font-black text-white uppercase tracking-wider mb-3 pb-1 border-b border-white/10">
+          {año.año}
+        </p>
+      )}
+      <div className="grid gap-5" style={{ gridTemplateColumns: `repeat(${año.cuatrimestres.length}, minmax(0,1fr))` }}>
+        {año.cuatrimestres.map((c, i) => (
+          <div key={i}>
+            <p className="text-[0.6rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
+              {c.label}
+            </p>
+            <ListaMaterias materias={c.materias} acento={acento} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Tarjeta de un cuatrimestre, para el plan en mobile */
+function PeriodoDetalle({ periodo, acento }: { periodo: TeclabPeriodo; acento: string }) {
   return (
     <div
-      className={enTarjeta ? 'flex-shrink-0 rounded p-3' : undefined}
-      style={
-        enTarjeta
-          ? {
-              background: 'rgba(255,255,255,0.05)',
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
-              borderLeft: `3px solid ${acento}`,
-            }
-          : undefined
-      }
+      className="flex-shrink-0 rounded p-3"
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+        borderLeft: `3px solid ${acento}`,
+      }}
     >
       <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
         {periodo.año}
       </p>
-      <p className="text-[0.9rem] md:text-lg font-bold text-white leading-snug mt-0.5">{periodo.label}</p>
-      <ul className="flex flex-col gap-1.5 mt-2 md:mt-3">
-        {periodo.materias.map((materia, j) => (
-          <li key={j} className="flex items-start gap-2 text-[0.78rem] md:text-[0.92rem] text-[#a9c4d6] leading-snug">
-            <span className="mt-[0.5em] w-1 h-1 rounded-full flex-shrink-0" style={{ background: acento }} />
-            <span>{materia}</span>
-          </li>
-        ))}
-      </ul>
+      <p className="text-[0.9rem] font-bold text-white leading-snug mt-0.5">{periodo.label}</p>
+      <ListaMaterias materias={periodo.materias} acento={acento} />
     </div>
+  );
+}
+
+function ListaMaterias({ materias, acento }: { materias: string[]; acento: string }) {
+  return (
+    <ul className="flex flex-col gap-1.5 mt-2 md:mt-3">
+      {materias.map((materia, i) => (
+        <li key={i} className="flex items-start gap-2 text-[0.78rem] md:text-[0.92rem] text-[#a9c4d6] leading-snug">
+          <span className="mt-[0.5em] w-1 h-1 rounded-full flex-shrink-0" style={{ background: acento }} />
+          <span>{materia}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
