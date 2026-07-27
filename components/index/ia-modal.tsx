@@ -438,77 +438,78 @@ function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; d
 }
 
 // ── Slide 4: cierre ──
+// Mismo armado que el cierre de Teclab: los datos como chips en vez de cuatro
+// cintas rotuladas, todo el contenido en un solo bloque centrado en el alto, y
+// el aire sobrante ocupado por la marca -alla la foto de la ficha, aca el
+// isotipo del convenio, que es lo unico que hay-.
 function SlideCierre({ carrera }: { carrera: Carrera }) {
-  const { cursada, modalidad, certificacion } = parseEnfoque(carrera.enfoque);
-  const beneficios = [
-    { titulo: 'Certificación', detalle: certificacion },
-    { titulo: 'Modalidad', detalle: modalidad },
-    { titulo: 'Cursada', detalle: cursada },
-    { titulo: 'Duración', detalle: carrera.duracion },
-  ];
+  const { modalidad, certificacion } = parseEnfoque(carrera.enfoque);
+  // La cursada no entra: es una frase, no un dato de dos palabras. Queda en la
+  // portada y en el slide del docente.
+  const chips = [modalidad, carrera.duracion, certificacion].filter(Boolean);
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
     `Hola, quiero consultar precios y fechas de ${carrera.nombre}`,
   )}`;
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      <div className="flex-shrink-0">
-        <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
+    <div className="ia-slide ia-cierre relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
+      {/* El isotipo, grande y apagado, ocupando el alto que sobra */}
+      <Isotipo className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] sm:w-[34rem] max-w-[135%] opacity-[0.09]" />
+
+      {/* Sin la bajada del convenio: lo dice el encabezado del modal y la placa
+          de los slides de adentro, y era el texto mas largo del slide. */}
+      <div className="relative flex-shrink-0 flex flex-col gap-2.5">
+        <h3 className="text-[2.2rem] min-[380px]:text-[2.6rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight text-center sm:text-left">
           Estudiá con
           <span className="block" style={{ color: AMARILLO }}>
             certificación real
           </span>
         </h3>
-        <p className="text-[#a9c4d6] text-[0.8rem] sm:text-sm mt-2 line-clamp-2">
-          Diplomatura de convenio entre el CAU Villa Lugano y la Academia Identidad Argentina.
-        </p>
+
+        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5">
+          {chips.map(c => (
+            <span key={c} className="ia-cierre-chip">
+              {c}
+            </span>
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1 min-h-fit grid grid-cols-1 sm:grid-cols-2 gap-2 content-center">
-        {beneficios.map(b => (
-          <div
-            key={b.titulo}
-            className="rounded p-3"
-            style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+      {/* Pegado al titulo. En el telefono los botones van en columna, a todo el
+          ancho y mas altos: a media pantalla cada uno quedaban chicos. */}
+      <div className="relative flex-shrink-0 flex flex-col gap-2.5">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener nofollow"
+            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
           >
-            <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL_CLARO }}>
-              {b.titulo}
-            </p>
-            <p className="text-[0.85rem] font-bold text-white leading-snug mt-0.5">{b.detalle}</p>
-          </div>
-        ))}
-      </div>
+            Consultar precios
+          </a>
+          <a
+            href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg text-white font-bold text-[0.95rem] sm:text-sm transition-all"
+            style={{ background: 'rgba(255,255,255,0.08)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
+          >
+            Guaminí 4876
+          </a>
+        </div>
 
-      <div className="flex-shrink-0 flex flex-wrap gap-2">
         <a
-          href={waHref}
+          href="https://identidadargentina.com.ar/"
           target="_blank"
-          rel="noopener nofollow"
-          className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-sm hover:brightness-110 transition-all"
+          rel="noopener"
+          className="flex items-center justify-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/45 hover:text-white/75 transition-colors"
         >
-          Consultar precios
-        </a>
-        <a
-          href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-2.5 rounded-lg text-white font-bold text-sm transition-all"
-          style={{ background: 'rgba(255,255,255,0.08)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
-        >
-          Guaminí 4876
+          identidadargentina.com.ar
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V7a1 1 0 011-1h4" />
+          </svg>
         </a>
       </div>
-      <a
-        href="https://identidadargentina.com.ar/"
-        target="_blank"
-        rel="noopener"
-        className="flex-shrink-0 flex items-center justify-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/45 hover:text-white/75 transition-colors"
-      >
-        identidadargentina.com.ar
-        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V7a1 1 0 011-1h4" />
-        </svg>
-      </a>
     </div>
   );
 }

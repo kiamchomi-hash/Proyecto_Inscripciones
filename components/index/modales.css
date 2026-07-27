@@ -97,6 +97,40 @@
   }
 }
 
+/* Cierre: el contenido va en un solo bloque centrado en el alto, como el de
+   Teclab. `safe`: si no entra, el centrado se apaga solo y el slide arranca
+   desde arriba en vez de cortar el titulo. */
+.ia-cierre {
+  justify-content: safe center;
+}
+
+/* Los chips del cierre reemplazan a las cuatro cintas rotuladas. Van definidos
+   aca y no en index.css -donde vive .ia-chip, el de las tarjetas del catalogo-
+   porque el modal tambien se abre desde /carreras/[slug]. */
+.ia-cierre-chip {
+  font-size: 0.63rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  line-height: 1.25;
+  max-width: 100%;
+}
+
+/* En el telefono, con el titulo a toda la pantalla, al tamaño del catalogo
+   quedaban como letra chica. */
+@media (max-width: 767px) {
+  .ia-cierre-chip {
+    font-size: 0.78rem;
+    padding: 0.32rem 0.7rem;
+    letter-spacing: 0.045em;
+  }
+}
+
 /* Fondo de cada slide: lavados ambientales amarillo/azul sobre tinta + trama
    fina, igual que el <Background> del render de Remotion. */
 .ia-slide {
