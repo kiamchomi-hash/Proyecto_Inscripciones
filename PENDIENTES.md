@@ -20,7 +20,9 @@
 
   Pasos: rotar en el dashboard de Cloudflare Turnstile → borrar la variable en Vercel → volver a crearla con el check **Sensitive** → redeploy. Ojo: una vez Sensitive no se puede volver a leer nunca, y `vercel env pull` la trae censurada, así que guardarla antes en el gestor de contraseñas y pegarla a mano en `.env.local`.
 
-- [ ] **Mismo tratamiento para `SUPABASE_SERVICE_ROLE_KEY` y `RESEND_API_KEY`.** Son igual de sensibles y están como variables normales.
+- [ ] **Mismo tratamiento para `RESEND_API_KEY`.** Es igual de sensible y está como variable normal.
+
+  `SUPABASE_SERVICE_ROLE_KEY` ya está marcada Sensitive — verificado el 27/07: `vercel env pull` la devuelve como `[SENSITIVE]`. Efecto lateral a tener presente: desde la máquina local ya no hay ninguna credencial con permiso de escritura sobre la base, así que todo `UPDATE`/`INSERT` va por el SQL Editor del dashboard.
 
 - [ ] **Revisar y borrar variables sin uso en Vercel.** No aparecen en ningún lado del código:
   - `GITHUB_PAT` (creada hace ~120 días) — un token de GitHub en el runtime de la web. Revocarlo en GitHub, no solo borrarlo de Vercel.
@@ -28,12 +30,9 @@
 
 ## Encontrado de paso
 
-- [ ] **El digest diario de clicks nunca corre.** `sql/2026-07-22_clicks_carreras.sql` programa un `pg_cron` a las 23:00 UTC que llama a la Edge Function `digest-clicks`, pero la tabla `cron.job` está **vacía** — ese bloque nunca se ejecutó. La función está desplegada y sin nadie que la invoque.
+- [ ] **El digest diario de clicks nunca corre.** `sql/2026-07-22_clicks_carreras.sql` programa un `pg_cron` a las 23:00 UTC que llama a la Edge Function `digest-clicks`, pero la tabla `cron.job` está **vacía** — ese bloque nunca se ejecutó, porque pedía reemplazar `<WEBHOOK_SECRET>` a mano. La función está desplegada y sin nadie que la invoque.
 
-  Si se programa, el header `Authorization` tiene que llevar el `WEBHOOK_SECRET` **nuevo** (se rotó el 27/07). El valor vigente está en el cuerpo del trigger:
-  `SELECT prosrc FROM pg_proc WHERE proname = 'notify_edge_function';`
-
-- [ ] **`components/index/teclab-modal.tsx` quedó modificado sin commitear.** Es anterior a los cambios del captcha y no tiene relación con ellos; se dejó afuera de esos commits a propósito.
+  **Listo para correr:** `sql/2026-07-27_cron_digest_clicks.sql` programa el job sacando el secreto vigente del trigger `notify_edge_function`, así que no hay nada que pegar. Incluye una invocación de prueba para no esperar a las 20hs y el `select` sobre `net._http_response` para ver si respondió 200.
 
 ## Para tener presente
 
