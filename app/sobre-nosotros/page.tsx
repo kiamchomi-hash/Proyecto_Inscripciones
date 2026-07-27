@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 import './sobre-nosotros.css';
 
 export const metadata: Metadata = {
@@ -523,7 +524,7 @@ export default function SobreNosotrosPage() {
 
                 {/* Mobile: button before map */}
                 <a
-                  href="https://maps.app.goo.gl/mXu8TUH6FCLQvuYYA"
+                  href={MAPS_URL}
                   target="_blank"
                   rel="noopener nofollow"
                   className="md:hidden flex items-center justify-center gap-2 w-full py-3 rounded-lg font-bold text-sm text-white transition-all hover:brightness-110 mb-0"
@@ -539,21 +540,19 @@ export default function SobreNosotrosPage() {
             <div className="w-full md:w-[55%] flex flex-col gap-3 flex-shrink-0">
             <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,199,177,0.1)' }}>
               <iframe
-                /* Ficha "Siglo 21", no "Centro de Capacitacion Lugano": eran dos
-                   listados distintos de Google y el mapa apuntaba al equivocado. */
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d287.30386866002505!2d-58.4775718!3d-34.6870295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcceb30061ee91%3A0x9da28c537a0065b1!2sSiglo%2021!5e0!3m2!1ses-419!2sus!4v1772370527929!5m2!1ses-419!2sus"
+                src={MAPS_EMBED_SRC}
                 width="100%"
                 height="320"
                 style={{ border: 0, display: 'block' }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Ubicación del CAU Villa Lugano en Google Maps"
+                title={MAPS_TITLE}
               />
             </div>
             {/* Desktop: button below map */}
             <a
-              href="https://maps.app.goo.gl/mXu8TUH6FCLQvuYYA"
+              href={MAPS_URL}
               target="_blank"
               rel="noopener nofollow"
               className="hidden md:flex items-center justify-center gap-2 w-full py-3 rounded-lg font-bold text-sm text-white transition-all hover:brightness-110"

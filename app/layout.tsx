@@ -3,6 +3,7 @@ import { Inter, Unbounded } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import ScrollToTop, { ScrollResetOnLoad } from '@/components/scroll-to-top';
 import PublicGoogleAnalytics from '@/components/google-analytics';
+import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
 
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -47,70 +48,55 @@ export const metadata: Metadata = {
 
 
 
+// Datos fijos: se serializa una sola vez por proceso y no en cada render del
+// layout, que es el componente por el que pasa todas las paginas del sitio.
+const jsonLd = JSON.stringify([
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Universidad Siglo 21 | CAU Villa Lugano",
+    "url": "https://www.siglo21sur.com/"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": ["EducationalOrganization", "LocalBusiness"],
+    "name": "CAU Villa Lugano - Universidad Siglo 21",
+    "url": "https://www.siglo21sur.com",
+    "description": "Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21.",
+    "address": POSTAL_ADDRESS,
+    "geo": { "@type": "GeoCoordinates", ...GEO },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "20:00"
+    },
+    // Zonas que la sede atiende. Es la via legitima de declarar alcance
+    // geografico: una pagina por barrio serian doorway pages.
+    "areaServed": [
+      "Villa Lugano", "Villa Soldati", "Mataderos", "Villa Riachuelo",
+      "Villa Celina", "Ciudad Madero", "Tapiales", "Ingeniero Budge",
+      "Comuna 8", "CABA"
+    ].map(name => ({ "@type": "Place", name })),
+    "telephone": "+5491166522722",
+    "sameAs": [
+      "https://www.facebook.com/ceducativovillalugano/",
+      "https://www.instagram.com/centroeducativovillalugano/"
+    ],
+    "parentOrganization": {
+      "@type": "CollegeOrUniversity",
+      "name": "Universidad Siglo 21",
+      "url": "https://21.edu.ar"
+    }
+  }
+]);
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${inter.variable} ${unbounded.variable}`} suppressHydrationWarning>
       <head>
         <link rel="dns-prefetch" href="https://wa.me" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "Universidad Siglo 21 | CAU Villa Lugano",
-                "url": "https://www.siglo21sur.com/"
-              },
-              {
-                "@context": "https://schema.org",
-                "@type": ["EducationalOrganization", "LocalBusiness"],
-                "name": "CAU Villa Lugano - Universidad Siglo 21",
-                "url": "https://www.siglo21sur.com",
-                "description": "Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21.",
-                "address": {
-                  "@type": "PostalAddress",
-                  "streetAddress": "Guaminí 4876",
-                  "addressLocality": "Villa Lugano",
-                  "addressRegion": "CABA",
-                  "postalCode": "C1439",
-                  "addressCountry": "AR"
-                },
-                // Coordenadas de la ficha "Siglo 21" en Google Maps
-                // (maps.app.goo.gl/mXu8TUH6FCLQvuYYA). Antes decian -34.6697 /
-                // -58.4725, casi 2 km al norte de la sede.
-                "geo": {
-                  "@type": "GeoCoordinates",
-                  "latitude": -34.6870295,
-                  "longitude": -58.4775718
-                },
-                "openingHoursSpecification": {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                  "opens": "08:00",
-                  "closes": "20:00"
-                },
-                // Zonas que la sede atiende. Es la via legitima de declarar alcance
-                // geografico: una pagina por barrio serian doorway pages.
-                "areaServed": [
-                  "Villa Lugano", "Villa Soldati", "Mataderos", "Villa Riachuelo",
-                  "Villa Celina", "Ciudad Madero", "Tapiales", "Ingeniero Budge",
-                  "Comuna 8", "CABA"
-                ].map(name => ({ "@type": "Place", name })),
-                "telephone": "+5491166522722",
-                "sameAs": [
-                  "https://www.facebook.com/ceducativovillalugano/",
-                  "https://www.instagram.com/centroeducativovillalugano/"
-                ],
-                "parentOrganization": {
-                  "@type": "CollegeOrUniversity",
-                  "name": "Universidad Siglo 21",
-                  "url": "https://21.edu.ar"
-                }
-              }
-            ])
-          }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       </head>
       <body className={inter.className}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#00c7b1] focus:text-black focus:rounded focus:font-bold">

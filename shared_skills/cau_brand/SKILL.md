@@ -21,9 +21,13 @@ Estética moderna con preferencia por temas oscuros.
 Enfoque Mobile-first y accesibilidad.
 
 Ubicación
-Maps link: https://maps.app.goo.gl/Bxfhe5BpQYUg1dxv7
-Maps embed: https://maps.google.com/maps?q=-34.686852,-58.477752&z=17&output=embed
-Coordenadas: <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d287.30386866002505!2d-58.478021869563335!3d-34.68692280959655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcceb304e92bc7%3A0x2c1bd7e026f4751a!2sCentro%20de%20Capacitacion%20Lugano!5e0!3m2!1ses-419!2sus!4v1772370527929!5m2!1ses-419!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+Los valores viven en `lib/sede.ts` (`MAPS_URL`, `MAPS_EMBED_SRC`, `GEO`, `POSTAL_ADDRESS`) — importarlos desde ahí, no copiar la URL.
+
+Dirección: Guaminí 4876, Villa Lugano, CABA (C1439)
+Maps link: https://maps.app.goo.gl/mXu8TUH6FCLQvuYYA
+Coordenadas: -34.6870295, -58.4775718
+
+Ojo: Google tiene dos fichas del mismo lugar. La correcta es "Siglo 21"; "Centro de Capacitacion Lugano" (CID `0x95bcceb304e92bc7`, coordenadas `-34.68692, -58.47802`) cae a ~2 km y no hay que usarla.
 Zona: Villa Lugano, CABA. Cerca de Mataderos, Liniers, Villa Celina y Zona Sur del GBA.
 
 Botón primario (btn-cau-primary)
