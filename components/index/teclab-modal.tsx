@@ -588,30 +588,34 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
 
       {/* Sin la bajada de la ficha: era el texto mas largo del slide y hacia
           aparecer scroll apenas se achicaba el modal. Lo que importa aca son
-          los datos y los botones. */}
-      <h3 className="flex-shrink-0 text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
-        Educación para
-        <span className="block" style={{ color: acento }}>
-          cambiarlo todo
-        </span>
-      </h3>
+          los datos y los botones.
+          El titulo y las dos cintas van juntos y centrados en el alto libre:
+          arriba de todo quedaban colgados, con un hueco enorme hasta los
+          botones del pie. Cuando no sobra alto, el centrado no hace nada. */}
+      <div className="flex-1 min-h-fit flex flex-col justify-center gap-3">
+        <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
+          Educación para
+          <span className="block" style={{ color: acento }}>
+            cambiarlo todo
+          </span>
+        </h3>
 
-      {/* Pegados al titulo: el aire que sobra queda antes de la cocreacion y
-          los botones, que van al pie. Cada cinta toma el ancho de su texto;
-          estiradas a media pantalla quedaban dos barras casi vacias. */}
-      <div className="flex-1 min-h-fit flex flex-wrap items-start gap-2">
-        {beneficios.map(b => (
-          <div
-            key={b.titulo}
-            className="rounded px-4 py-2.5"
-            style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
-          >
-            <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
-              {b.titulo}
-            </p>
-            <p className="text-[0.85rem] font-bold text-white leading-snug mt-0.5">{b.detalle}</p>
-          </div>
-        ))}
+        {/* Cada cinta toma el ancho de su texto; estiradas a media pantalla
+            quedaban dos barras casi vacias. */}
+        <div className="flex flex-wrap items-start gap-2">
+          {beneficios.map(b => (
+            <div
+              key={b.titulo}
+              className="rounded px-4 py-2.5"
+              style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+            >
+              <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
+                {b.titulo}
+              </p>
+              <p className="text-[0.85rem] font-bold text-white leading-snug mt-0.5">{b.detalle}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {ficha?.partner && (
