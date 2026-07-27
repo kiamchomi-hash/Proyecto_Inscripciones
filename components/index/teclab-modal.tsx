@@ -502,6 +502,53 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
       ? { background: acento, color: textoActivo, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
       : { background: 'rgba(255,255,255,0.05)', color: CLARO[acento], boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' };
 
+  // En mobile no hay indice al costado: el plan va entero y las pastillas de
+  // arriba llevan a cada año. La que esta encendida y el boton flotante salen
+  // de lo que se esta viendo, como en el plan de las carreras de Siglo 21.
+  const marcoRef = useRef<HTMLDivElement>(null);
+  const [añoVisible, setAñoVisible] = useState(0);
+  const [alFinal, setAlFinal] = useState(false);
+
+  const posicionDe = (el: HTMLElement, marco: HTMLElement) =>
+    el.getBoundingClientRect().top - marco.getBoundingClientRect().top + marco.scrollTop;
+
+  useEffect(() => {
+    const marco = marcoRef.current;
+    if (!marco) return;
+    const alScrollear = () => {
+      const items = Array.from(marco.querySelectorAll<HTMLElement>('[data-año]'));
+      if (!items.length) return;
+      // Al fondo del scroll el ultimo año ya no llega a la cabecera, asi que
+      // se lo da por visible a mano: si no, la pastilla nunca se enciende.
+      const final = marco.scrollHeight - marco.scrollTop - marco.clientHeight < 40;
+      setAlFinal(final);
+      if (final) {
+        setAñoVisible(items.length - 1);
+        return;
+      }
+      let cerca = 0;
+      let distancia = Infinity;
+      items.forEach((el, i) => {
+        const d = Math.abs(posicionDe(el, marco) - marco.scrollTop);
+        if (d < distancia) {
+          distancia = d;
+          cerca = i;
+        }
+      });
+      setAñoVisible(cerca);
+    };
+    marco.addEventListener('scroll', alScrollear, { passive: true });
+    return () => marco.removeEventListener('scroll', alScrollear);
+  }, [años.length]);
+
+  const irAlAño = useCallback((i: number) => {
+    const marco = marcoRef.current;
+    const el = marco?.querySelector<HTMLElement>(`[data-año="${i}"]`);
+    if (marco && el) marco.scrollTo({ top: Math.max(0, posicionDe(el, marco) - 10), behavior: 'smooth' });
+  }, []);
+
+  const siguienteAño = añoVisible + 1 < años.length ? años[añoVisible + 1] : null;
+
   return (
     <div className="teclab-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
       <div className="flex-shrink-0 flex items-baseline justify-between gap-3">
@@ -511,14 +558,86 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
         </span>
       </div>
 
-      {/* Mobile: el plan completo, con scroll */}
-      <div
-        className="md:hidden flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
-      >
-        {periodos.map((p, i) => (
-          <PeriodoDetalle key={i} periodo={p} acento={acento} />
+      {/* Mobile: pastillas de año arriba y el plan completo abajo, con scroll */}
+      <div className="md:hidden flex-shrink-0 flex gap-1.5 overflow-x-auto">
+        {años.map((a, i) => (
+          <button
+            key={i}
+            onClick={() => irAlAño(i)}
+            className="flex-1 min-h-[2.5rem] whitespace-nowrap px-3 py-2 rounded text-[0.6rem] font-black uppercase tracking-[0.08em] transition-all cursor-pointer"
+            style={estiloBoton(añoVisible === i)}
+          >
+            {a.año}
+          </button>
         ))}
+      </div>
+
+      {/* El marco va aparte del scroll para que el boton flotante quede quieto
+          en la esquina en vez de irse con el contenido. */}
+      <div className="md:hidden relative flex-1 min-h-0">
+        <div
+          ref={marcoRef}
+          className="h-full overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
+          style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        >
+          {años.map((a, i) => {
+            // El ultimo año ocupa el marco entero -min-h-full- para que su
+            // rotulo pueda llegar arriba de todo: si no, "Ver ..." se queda a
+            // mitad de camino y el año arranca por la mitad de la pantalla.
+            const ultimo = i === años.length - 1 && años.length > 1;
+            return (
+              <div key={i} data-año={i} className={`flex-shrink-0 flex flex-col gap-2.5 ${ultimo ? 'min-h-full' : ''}`}>
+                <p className={`text-[0.95rem] font-black text-white uppercase tracking-wider pb-1 border-b border-white/10 ${i > 0 ? 'mt-2' : ''}`}>
+                  {a.año}
+                </p>
+                {a.cuatrimestres.map((c, j) => (
+                  <PeriodoDetalle key={j} periodo={c} acento={acento} />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Velos arriba y abajo: avisan que el contenido sigue */}
+        <div
+          className="absolute top-0 left-0 right-0 h-4 rounded-t-lg pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, rgba(7,24,34,0.85) 0%, transparent 100%)' }}
+        />
+        <div
+          className="absolute bottom-0 left-0 right-0 h-10 rounded-b-lg pointer-events-none"
+          style={{ background: 'linear-gradient(to top, rgba(7,24,34,0.8) 0%, transparent 100%)' }}
+        />
+
+        {(siguienteAño || alFinal) && (
+          <button
+            onClick={() => {
+              if (alFinal) marcoRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              else irAlAño(añoVisible + 1);
+            }}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3.5 py-2 rounded-full cursor-pointer transition-all"
+            style={{
+              background: acento,
+              color: textoActivo,
+              boxShadow: `0 4px 20px ${acento}4d, 0 2px 8px rgba(0,0,0,0.35)`,
+            }}
+          >
+            {alFinal ? (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+                <span className="text-[0.6rem] font-black uppercase tracking-wider whitespace-nowrap">Inicio</span>
+              </>
+            ) : (
+              <>
+                <span className="text-[0.6rem] font-black uppercase tracking-wider whitespace-nowrap">Ver {siguienteAño?.año}</span>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Desktop: indice a la izquierda y el contenido a la derecha */}
@@ -608,7 +727,8 @@ function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: st
   );
 }
 
-/** Tarjeta de un cuatrimestre, para el plan en mobile */
+/** Tarjeta de un cuatrimestre, para el plan en mobile. El año no se repite
+ *  adentro: ya esta en el rotulo que encabeza al grupo. */
 function PeriodoDetalle({ periodo, acento }: { periodo: TeclabPeriodo; acento: string }) {
   return (
     <div
@@ -619,10 +739,9 @@ function PeriodoDetalle({ periodo, acento }: { periodo: TeclabPeriodo; acento: s
         borderLeft: `3px solid ${acento}`,
       }}
     >
-      <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
-        {periodo.año}
+      <p className="text-[0.6rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
+        {periodo.label}
       </p>
-      <p className="text-[0.9rem] font-bold text-white leading-snug mt-0.5">{periodo.label}</p>
       <ListaMaterias materias={periodo.materias} acento={acento} />
     </div>
   );
