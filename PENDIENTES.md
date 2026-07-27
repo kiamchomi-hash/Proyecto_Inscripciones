@@ -4,8 +4,6 @@
 
 ## Urgente
 
-- [ ] **Contestar la consulta perdida** — fila `id 43` de la tabla `consultas` (27/07, 00:04, Diplomatura en Oratoria). Los datos de contacto están ahí; este repo es público, así que no van escritos acá. Es el lead que entró mientras los avisos estaban rotos y del que nunca llegó notificación.
-
 - [ ] **Revocar el Personal Access Token de Supabase** — https://supabase.com/dashboard/account/tokens, se llama `claude-fix-webhook`. Se creó el 27/07 para arreglar el trigger de notificaciones y ya no hace falta. Da acceso a todos los proyectos de la cuenta.
 
 ## Verificar
@@ -35,6 +33,9 @@
   **Listo para correr:** `sql/2026-07-27_cron_digest_clicks.sql` programa el job sacando el secreto vigente del trigger `notify_edge_function`, así que no hay nada que pegar. Incluye una invocación de prueba para no esperar a las 20hs y el `select` sobre `net._http_response` para ver si respondió 200.
 
 ## Para tener presente
+
+El corte de avisos del 20 al 27/07 **no costó ningún lead real**: la única consulta de
+ese período (`id 43`) era una prueba propia. Verificado el 27/07.
 
 Los avisos de formularios **fallan en silencio**. `net.http_post` encola el pedido sin bloquear el `INSERT`, así que la web responde `201` aunque la notificación se caiga. Fue exactamente lo que pasó del 20/07 al 27/07: el endurecimiento de seguridad le agregó validación de secreto a la Edge Function y el trigger de la base nunca se actualizó para mandarlo.
 
