@@ -71,8 +71,6 @@ export interface TeclabFicha {
   imagen: string;
   /** Segunda foto de la ficha (la del pie), para el slide de cierre del modal */
   imagenCierre: string;
-  /** Bajada oficial de la ficha (su meta description) */
-  resumen: string;
   /**
    * Empresa con la que Teclab cocreo la carrera. `logo` es el archivo blanco que
    * publica la ficha; las que no muestran logo van solo con el nombre.
@@ -91,7 +89,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-programacion/',
       imagen: '/imagenes/teclab/carreras/programacion.webp',
       imagenCierre: '/imagenes/teclab/carreras/programacion-cierre.webp',
-      resumen: 'Estudiá programación 100% online y convertite en desarrollador en 2 años. Aprendé desde cero y entrá al nuevo mercado laboral.',
       partner: { nombre: 'Avenga', logo: '/imagenes/teclab/partners/avenga.webp' },
     },
   },
@@ -101,7 +98,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/carrera-de-data-science/',
       imagen: '/imagenes/teclab/carreras/data-science.webp',
       imagenCierre: '/imagenes/teclab/carreras/data-science-cierre.webp',
-      resumen: 'Convertite en Analista de Datos con la carrera de Data Science. Preparate para destacarte en industrias de tecnología y negocios.',
       partner: { nombre: 'AWS Academy', logo: '/imagenes/teclab/partners/aws.webp' },
     },
   },
@@ -111,7 +107,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-quality-assurance/',
       imagen: '/imagenes/teclab/carreras/quality-assurance.webp',
       imagenCierre: '/imagenes/teclab/carreras/quality-assurance-cierre.webp',
-      resumen: 'Lográ tu título en Quality Assurance con una carrera que te permite avanzar a tu ritmo. Convertite en QA Tester y crecé en testing de software.',
       partner: { nombre: 'Microsoft', logo: '/imagenes/teclab/partners/microsoft.webp' },
     },
   },
@@ -121,7 +116,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-en-cloud-administration/',
       imagen: '/imagenes/teclab/carreras/cloud-administration.webp',
       imagenCierre: '/imagenes/teclab/carreras/cloud-administration-cierre.webp',
-      resumen: 'Aprendé a administrar servicios en la nube con herramientas AWS y desarrollate en una de las áreas con mayor crecimiento en IT.',
       partner: { nombre: 'AWS Academy', logo: '/imagenes/teclab/partners/aws.webp' },
     },
   },
@@ -131,7 +125,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-en-seguridad-informatica/',
       imagen: '/imagenes/teclab/carreras/seguridad-informatica.webp',
       imagenCierre: '/imagenes/teclab/carreras/seguridad-informatica-cierre.webp',
-      resumen: 'Estudiá Seguridad Informática 100% online y protegé sistemas y datos. Formate en 2 años y preparate para crecer en ciberseguridad.',
       partner: { nombre: 'Mercado IT' },
     },
   },
@@ -141,7 +134,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-redes-informaticas/',
       imagen: '/imagenes/teclab/carreras/redes-informaticas.webp',
       imagenCierre: '/imagenes/teclab/carreras/redes-informaticas-cierre.webp',
-      resumen: 'Lográ tu título en Redes Informáticas 100% online. Aprendé sobre redes y telecomunicaciones con las habilidades que buscan las industrias en crecimiento.',
       partner: { nombre: 'Cisco Networking' },
     },
   },
@@ -151,7 +143,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-marketing-digital/',
       imagen: '/imagenes/teclab/carreras/marketing-digital.webp',
       imagenCierre: '/imagenes/teclab/carreras/marketing-digital-cierre.webp',
-      resumen: 'Estudiá Marketing Digital 100% online y aprendé publicidad, redes sociales y estrategia. Recibite en 2 años con lo que busca el nuevo mercado laboral.',
       partner: { nombre: 'Google', logo: '/imagenes/teclab/partners/google.webp' },
     },
   },
@@ -161,7 +152,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-inbound-marketing/',
       imagen: '/imagenes/teclab/carreras/inbound-marketing.webp',
       imagenCierre: '/imagenes/teclab/carreras/inbound-marketing-cierre.webp',
-      resumen: 'Aprendé a crear contenidos, automatizar campañas y generar leads en una carrera de 2 años y con un amplio campo laboral.',
       partner: { nombre: 'HubSpot', logo: '/imagenes/teclab/partners/hubspot.webp' },
     },
   },
@@ -171,7 +161,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-customer-experience/',
       imagen: '/imagenes/teclab/carreras/customer-experience.webp',
       imagenCierre: '/imagenes/teclab/carreras/customer-experience-cierre.webp',
-      resumen: 'Diseñá experiencias centradas en clientes y resolvé casos de atención y fidelización usando herramientas y metodologías de Zendesk.',
       partner: { nombre: 'Zendesk', logo: '/imagenes/teclab/partners/zendesk.webp' },
     },
   },
@@ -182,7 +171,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: TECLAB_CARRERAS,
       imagen: '/imagenes/teclab/carreras/venta-directa.webp',
       imagenCierre: '/imagenes/teclab/carreras/venta-directa-cierre.webp',
-      resumen: 'Formate en venta directa y gestión comercial con una carrera oficial de 2 años, 100% online.',
     },
   },
   {
@@ -191,7 +179,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-gestion-contable/',
       imagen: '/imagenes/teclab/carreras/gestion-contable.webp',
       imagenCierre: '/imagenes/teclab/carreras/gestion-contable-cierre.webp',
-      resumen: 'Estudiá Gestión Contable y aprendé contabilidad, impuestos y finanzas. Recibite en 2 años con un perfil clave para las industrias en crecimiento.',
     },
   },
   {
@@ -200,7 +187,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-seguros/',
       imagen: '/imagenes/teclab/carreras/seguros.webp',
       imagenCierre: '/imagenes/teclab/carreras/seguros-cierre.webp',
-      resumen: 'Estudiá Seguros 100% online y lográ tu matrícula PAS sin necesidad de examen. Una carrera de 2 años que te vuelve imprescindible en el mundo laboral.',
     },
   },
   {
@@ -209,7 +195,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-gestion-empresa-agraria/',
       imagen: '/imagenes/teclab/carreras/gestion-agraria.webp',
       imagenCierre: '/imagenes/teclab/carreras/gestion-agraria-cierre.webp',
-      resumen: 'Formate en Gestión Agraria 100% online y aprendé sobre empresas agropecuarias y agronegocios con las habilidades que busca el mercado laboral.',
     },
   },
   {
@@ -218,7 +203,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-relaciones-laborales/',
       imagen: '/imagenes/teclab/carreras/relaciones-laborales.webp',
       imagenCierre: '/imagenes/teclab/carreras/relaciones-laborales-cierre.webp',
-      resumen: 'Formate en Relaciones Laborales de manera 100% online. Aprendé junto a expertos y lográ tu título dominando la gestión de personas.',
     },
   },
   {
@@ -227,7 +211,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-gestion-hotelera/',
       imagen: '/imagenes/teclab/carreras/gestion-hotelera.webp',
       imagenCierre: '/imagenes/teclab/carreras/gestion-hotelera-cierre.webp',
-      resumen: 'Estudiá Gestión Hotelera 100% online y obtené tu título oficial en 2 años. Formate en operaciones, turismo, eventos y hospitalidad.',
     },
   },
   {
@@ -236,7 +219,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-planificacion-y-organizacion-de-eventos/',
       imagen: '/imagenes/teclab/carreras/eventos.webp',
       imagenCierre: '/imagenes/teclab/carreras/eventos-cierre.webp',
-      resumen: 'Aprendé a crear experiencias memorables desde el inicio de tu carrera, con una formación práctica orientada al mundo de eventos y producción.',
     },
   },
   {
@@ -245,7 +227,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-periodismo-y-nuevas-tecnologias/',
       imagen: '/imagenes/teclab/carreras/periodismo.webp',
       imagenCierre: '/imagenes/teclab/carreras/periodismo-cierre.webp',
-      resumen: 'Incorporá tecnologías de vanguardia a la comunicación y desarrollate en medios, contenidos digitales y entornos multiplataforma.',
     },
   },
 ];
