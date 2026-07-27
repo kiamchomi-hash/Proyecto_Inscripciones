@@ -302,6 +302,17 @@
   background: color-mix(in srgb, var(--teclab-ink) 62%, transparent);
 }
 
+/* En el telefono van mas grandes que los de la portada: ahi son una etiqueta al
+   costado del titulo y aca, con el titulo a toda la pantalla, quedaban como
+   letra chica. */
+@media (max-width: 767px) {
+  .teclab-cierre .teclab-chip {
+    font-size: 0.78rem;
+    padding: 0.32rem 0.7rem;
+    letter-spacing: 0.045em;
+  }
+}
+
 /* El contenido tiene que quedar por encima de la foto de fondo */
 .teclab-cierre > *:not(.teclab-cierre-fondo) {
   position: relative;
