@@ -462,7 +462,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
         <h3 className="text-[2.2rem] min-[380px]:text-[2.6rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight text-center sm:text-left">
           Estudiá con
           <span className="block" style={{ color: AMARILLO }}>
-            certificación real
+            nosotros
           </span>
         </h3>
 
@@ -476,7 +476,10 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
       </div>
 
       {/* Pegado al titulo. En el telefono los botones van en columna, a todo el
-          ancho y mas altos: a media pantalla cada uno quedaban chicos. */}
+          ancho y mas altos: a media pantalla cada uno quedaban chicos.
+          Sin el enlace a identidadargentina.com.ar que iba al pie: el contacto
+          pasa por WhatsApp o por el formulario del CAU, no por el sitio del
+          convenio. */}
       <div className="relative flex-shrink-0 flex flex-col gap-2.5">
         <div className="flex flex-col sm:flex-row gap-2">
           <a
@@ -497,18 +500,6 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
             Guaminí 4876
           </a>
         </div>
-
-        <a
-          href="https://identidadargentina.com.ar/"
-          target="_blank"
-          rel="noopener"
-          className="flex items-center justify-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/45 hover:text-white/75 transition-colors"
-        >
-          identidadargentina.com.ar
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V7a1 1 0 011-1h4" />
-          </svg>
-        </a>
       </div>
     </div>
   );
