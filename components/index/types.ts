@@ -65,6 +65,9 @@ export interface Carrera {
   activa: boolean;
   destacada: boolean;
   nueva: boolean;
+  // Anunciada por Universidad Siglo 21 pero todavia sin inscripcion abierta. La
+  // ficha se publica igual (capta la busqueda) pero no ofrece inscribirse.
+  proximamente?: boolean;
 }
 
 // Lo minimo que necesita el select del formulario de inscripcion. Mandarle la

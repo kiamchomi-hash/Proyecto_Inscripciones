@@ -100,6 +100,13 @@
   color: #fff;
 }
 
+/* Anunciada pero sin inscripcion abierta: dorado, para que no se lea como oferta
+   disponible ni compita con el rojo de "Nueva". */
+.career-badge--proximamente {
+  background: var(--color-gold);
+  color: #1a1200;
+}
+
 .career-badge--destacada {
   background: var(--color-highlight);
   color: #013729;

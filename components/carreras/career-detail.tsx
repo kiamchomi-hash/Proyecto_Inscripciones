@@ -261,9 +261,15 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                   `Formate en ${nombreCompleto} con el acompañamiento del CAU Villa Lugano.`}
               </p>
             )}
+            {carrera.proximamente && (
+              <p className="career-proximamente">
+                Universidad Siglo 21 anunció esta carrera, pero todavía no abrió la
+                inscripción. Dejanos tus datos y te avisamos apenas se habilite.
+              </p>
+            )}
             <div className="career-hero-actions">
               <a href="#formulario" className="career-button career-button--primary">
-                Quiero inscribirme <ArrowIcon />
+                {carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
               <a
                 href={waHref}
