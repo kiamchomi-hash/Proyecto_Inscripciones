@@ -38,13 +38,28 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // Nombre completo con prefijo ("Licenciatura en Administracion", no solo
   // "Administracion"): es el termino que la gente busca y da mejor CTR.
   const nombreCompleto = carreraFullName(carrera);
-  const title = `${nombreCompleto} | Universidad Siglo 21 CAU Villa Lugano`;
-  const description = `Estudia ${nombreCompleto} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.nivel} · ${carrera.duracion}. Modalidad virtual, cerca de Zona Sur y Oeste.`;
+
+  // Google corta el <title> alrededor de los 60 caracteres. Se elige el sufijo
+  // mas informativo que entre: antes quedaban titulos de 89 con "Siglo 21"
+  // repetido dos veces, porque a este title el layout le sumaba su template.
+  const sufijos = [
+    ' a Distancia | Siglo 21 Villa Lugano',
+    ' | Siglo 21 Villa Lugano',
+    ' | Siglo 21',
+  ];
+  const sufijo = sufijos.find(s => nombreCompleto.length + s.length <= 62) ?? sufijos[sufijos.length - 1];
+  const title = `${nombreCompleto}${sufijo}`;
+
+  const description = carrera.proximamente
+    ? `${nombreCompleto} en Universidad Siglo 21: ${carrera.duracion}, a distancia. Todavia no abrio la inscripcion, dejanos tus datos y te avisamos.`
+    : `Estudia ${nombreCompleto} a distancia en Universidad Siglo 21. ${carrera.duracion}. Sede CAU Villa Lugano: atencion cerca de Zona Sur y Oeste.`;
 
   const canonicalSlug = carreraToSlug(carrera);
 
   return {
-    title,
+    // absolute: sin esto el layout le agrega " | Siglo 21" al final y la marca
+    // aparece duplicada.
+    title: { absolute: title },
     description,
     keywords: [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
     alternates: {
@@ -75,11 +90,26 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
 
   const url = `https://www.siglo21sur.com/carreras/${canonicalSlug}`;
 
-  // Otras carreras del mismo nivel: dan enlaces internos entre paginas de carrera.
+  // Enlaces internos entre paginas de carrera: seis del mismo nivel y dos de
+  // otro. Enlazar solo dentro del nivel dejaba cinco silos incomunicados, y se
+  // nota en la medicion: las 15 carreras que Google indexo solo despues del
+  // deploy del 24/07 son todas de Grado, mientras Pregrado, CCC e Identidad
+  // Argentina siguen enteros afuera. Las dos de afuera del nivel le dan a esos
+  // grupos una puerta desde las fichas que Google ya rastrea.
+  //
+  // El corte rota con el id para que no todas las fichas apunten a las mismas
+  // dos carreras, y es deterministico para no romper el cache de ISR.
+  const mismoNivel = carreras.filter(c => c.nivel === carrera.nivel && c.id !== carrera.id).slice(0, 6);
+  const otrosNiveles = carreras.filter(c => c.nivel !== carrera.nivel);
+  const desde = otrosNiveles.length ? (carrera.id * 2) % otrosNiveles.length : 0;
+  const cruzadas = otrosNiveles.length
+    ? [otrosNiveles[desde], otrosNiveles[(desde + 1) % otrosNiveles.length]].filter(
+        (c, i, arr) => c && arr.indexOf(c) === i
+      )
+    : [];
+
   // Solo se manda lo que se pinta; la fila entera arrastra todos los slides.
-  const relacionadas = carreras
-    .filter(c => c.nivel === carrera.nivel && c.id !== carrera.id)
-    .slice(0, 8)
+  const relacionadas = [...mismoNivel, ...cruzadas]
     .map(c => ({ id: c.id, nombre: c.nombre, prefix: c.prefix }));
 
   // El formulario solo necesita id/nombre/nivel: mandarle la fila entera metia

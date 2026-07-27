@@ -4,8 +4,12 @@ import Link from 'next/link';
 import './sobre-nosotros.css';
 
 export const metadata: Metadata = {
-  title: 'Sobre Nosotros',
-  description: 'Conocé el Centro de Aprendizaje Universitario Villa Lugano. Capacitaciones, carreras universitarias con Siglo 21, talleres y más.',
+  // Es la pagina con mas impresiones del sitio despues del home (124 en 30 dias)
+  // y cero clics: "Sobre Nosotros | Siglo 21" no le decia a nadie que aca hay una
+  // sede fisica con direccion. El titulo va absolute para no arrastrar el
+  // template del layout.
+  title: { absolute: 'Sede Siglo 21 en Villa Lugano | CAU, Guaminí 4876' },
+  description: 'El CAU Villa Lugano es sede de Universidad Siglo 21 en CABA: Guaminí 4876. Inscripciones, tutorías y atención presencial para Zona Sur y Oeste.',
   keywords: ['CAU villa lugano', 'centro de aprendizaje', 'universidad siglo 21', 'educación a distancia', 'CABA zona sur'],
   alternates: {
     canonical: '/sobre-nosotros',
