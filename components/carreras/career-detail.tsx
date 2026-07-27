@@ -81,17 +81,19 @@ const MOBILE_HERO_ORIGINS: Record<string, string> = {
   'Tecnicatura en Administración y Gestión Tributaria': 'center top',
 };
 
+// Sin children queda solo el rotulo: hay secciones donde el titulo grande no
+// decia mas que el rotulo de arriba y era una linea de mas.
 function SectionHeading({
   eyebrow,
   children,
 }: {
   eyebrow: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <div className="career-section-heading">
       <span>{eyebrow}</span>
-      <h2>{children}</h2>
+      {children && <h2>{children}</h2>}
     </div>
   );
 }
@@ -306,9 +308,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
 
           {teclabCompetencias.length > 0 && (
             <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow="Competencias profesionales">
-                Qué vas a saber hacer
-              </SectionHeading>
+              <SectionHeading eyebrow="Competencias profesionales" />
               <ul className="career-learning-list">
                 {teclabCompetencias.map((competencia, index) => (
                   <li key={index}>
@@ -319,7 +319,6 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               </ul>
               {teclabSalida && (
                 <div className="career-salida">
-                  <h3>Dónde vas a trabajar</h3>
                   <p>{teclabSalida}</p>
                 </div>
               )}

@@ -346,6 +346,12 @@
   margin-bottom: .75rem;
 }
 
+/* Secciones sin titulo grande: el rotulo es todo el encabezado y no tiene que
+   dejar aire abajo como si viniera un h2. */
+.career-section-heading > span:only-child {
+  margin-bottom: 0;
+}
+
 .career-section-heading h2,
 .career-related-heading h2 {
   max-width: 17ch;
