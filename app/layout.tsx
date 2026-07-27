@@ -76,11 +76,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   "postalCode": "C1439",
                   "addressCountry": "AR"
                 },
+                // Coordenadas tomadas del mapa de /sobre-nosotros. Las anteriores
+                // (-34.6697, -58.4725) caian a casi 2 km de la sede.
                 "geo": {
                   "@type": "GeoCoordinates",
-                  "latitude": -34.6697,
-                  "longitude": -58.4725
+                  "latitude": -34.686923,
+                  "longitude": -58.478022
                 },
+                "openingHoursSpecification": {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                  "opens": "08:00",
+                  "closes": "20:00"
+                },
+                // Zonas que la sede atiende. Es la via legitima de declarar alcance
+                // geografico: una pagina por barrio serian doorway pages.
+                "areaServed": [
+                  "Villa Lugano", "Villa Soldati", "Mataderos", "Villa Riachuelo",
+                  "Villa Celina", "Ciudad Madero", "Tapiales", "Ingeniero Budge",
+                  "Comuna 8", "CABA"
+                ].map(name => ({ "@type": "Place", name })),
                 "telephone": "+5491166522722",
                 "sameAs": [
                   "https://www.facebook.com/ceducativovillalugano/",
