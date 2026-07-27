@@ -583,18 +583,18 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         </div>
       )}
 
-      {/* Titulo arriba, cocreacion y botones al pie, y la foto en el medio.
-          Todo junto abajo dejaba el modal cabeza abajo; todo junto arriba o
-          centrado, el aire quedaba de un solo lado. */}
+      {/* Todo el contenido es un solo bloque centrado en el alto (el centrado va
+          en modales.css, con `safe` para que se apague si no entra). Repartido
+          entre las dos puntas quedaba un hueco en el medio. */}
       <div className="flex-shrink-0 flex flex-col gap-2.5">
-        <h3 className="text-[2.35rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight">
+        <h3 className="text-[2.2rem] min-[380px]:text-[2.6rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight text-center sm:text-left">
           Educación para
           <span className="block" style={{ color: acento }}>
             cambiarlo todo
           </span>
         </h3>
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5">
           {chips.map(c => (
             <span key={c} className="teclab-chip">
               {c}
@@ -603,11 +603,10 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         </div>
       </div>
 
-      {/* Bloque de contacto: pegado al pie, con la foto ocupando lo que sobra
-          entre el titulo y esto. En el telefono los botones van mas altos y en
-          una columna: a media pantalla cada uno se leia como un boton chico
-          perdido abajo de una foto grande. */}
-      <div className="mt-auto flex-shrink-0 flex flex-col gap-2.5">
+      {/* Bloque de contacto, pegado al titulo. En el telefono los botones van
+          mas altos y en una columna: a media pantalla cada uno se leia como un
+          boton chico perdido abajo de una foto grande. */}
+      <div className="flex-shrink-0 flex flex-col gap-2.5">
         {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} />}
 
         <div className="flex flex-col sm:flex-row gap-2">

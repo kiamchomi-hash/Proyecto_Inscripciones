@@ -279,21 +279,28 @@
   z-index: 0;
 }
 
-/* Tinta arriba para el titulo, tinta abajo para los botones y en el medio se
-   abre para que se vea la foto, que es lo que ocupa esa franja. Opaco de punta
-   a punta -como estaba- un cierre que de texto tiene dos lineas se veia como un
-   rectangulo negro. */
+/* El contenido va centrado en un solo bloque, asi que el velo se cierra en el
+   medio -donde esta el texto- y se abre en las dos puntas, que es el alto que
+   sobra y donde se ve la foto. Opaco de punta a punta -como estaba- un cierre
+   que de texto tiene dos lineas se veia como un rectangulo negro. */
 .teclab-cierre-velo {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--teclab-ink) 92%, transparent) 0%,
-    color-mix(in srgb, var(--teclab-ink) 74%, transparent) 22%,
-    color-mix(in srgb, var(--teclab-ink) 34%, transparent) 44%,
-    color-mix(in srgb, var(--teclab-ink) 72%, transparent) 64%,
-    color-mix(in srgb, var(--teclab-ink) 94%, transparent) 80%
+    color-mix(in srgb, var(--teclab-ink) 48%, transparent) 0%,
+    color-mix(in srgb, var(--teclab-ink) 82%, transparent) 16%,
+    color-mix(in srgb, var(--teclab-ink) 92%, transparent) 32%,
+    color-mix(in srgb, var(--teclab-ink) 92%, transparent) 70%,
+    color-mix(in srgb, var(--teclab-ink) 78%, transparent) 86%,
+    color-mix(in srgb, var(--teclab-ink) 50%, transparent) 100%
   );
+}
+
+/* Centrado en el alto. `safe`: si el contenido no entra, el centrado se apaga
+   solo y el slide arranca desde arriba en vez de cortar el titulo. */
+.teclab-cierre {
+  justify-content: safe center;
 }
 
 /* Los chips del cierre van sobre la foto, asi que necesitan fondo propio: con
