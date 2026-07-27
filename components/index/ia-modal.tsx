@@ -613,7 +613,7 @@ export default function IAModal({ carrera, onClose }: Props) {
       {/* El tope en rem evita que en pantallas altas (tablet vertical) el modal
           se estire mucho mas de lo que el contenido necesita y queden huecos. */}
       <div
-        className="relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
+        className="ia-modal relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
           h-[88dvh] sm:h-[min(92vh,52rem)] max-h-[88dvh] sm:max-h-[min(92vh,52rem)] overflow-hidden flex flex-col"
         style={{
           background: '#101820',

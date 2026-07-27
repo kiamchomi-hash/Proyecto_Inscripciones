@@ -26,8 +26,12 @@
 /* Dentro de un modal de Teclab la barra toma el acento de la familia -cian en
    tecnologia, violeta en gestion- en vez del verde del sitio, que ahi es un
    color que no pinta nada mas. */
+/* Con `scrollbar-color` puesto, Chrome ignora las reglas ::-webkit- de arriba
+   -incluido el ancho de 6px-, asi que la barra fina se pide de nuevo con
+   `scrollbar-width`. */
 .teclab-tecnologia .custom-scrollbar,
 .teclab-gestion .custom-scrollbar {
+  scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--teclab-accent) 45%, transparent) transparent;
 }
 
@@ -44,6 +48,22 @@
 /* ===================== Identidad Argentina =====================
    Mismo lenguaje del video: lavados ambientales amarillo/azul sobre tinta,
    trama fina y filo de luz al pie del encabezado. */
+
+/* La barra de scroll va en el amarillo de la marca, no en el verde del sitio:
+   el azul es el color del marco y el amarillo el que resalta adentro. */
+.ia-modal .custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(241, 207, 28, 0.5) transparent;
+}
+
+.ia-modal .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(241, 207, 28, 0.5);
+}
+
+.ia-modal .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(241, 207, 28, 0.8);
+}
+
 .ia-modal-header {
   position: relative;
   overflow: hidden;
