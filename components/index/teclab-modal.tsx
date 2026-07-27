@@ -564,14 +564,13 @@ function PeriodoDetalle({ periodo, acento, enTarjeta }: { periodo: TeclabPeriodo
 
 // ── Slide 4: cierre ──
 function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
-  const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
-  // Los dos datos largos van a todo el ancho y los cortos comparten fila: en el
-  // telefono, cuatro cintas apiladas ocupaban de mas y traian scroll.
+  const { modalidad } = parseEnfoqueTeclab(carrera.enfoque);
+  // Solo los dos datos de una linea. El titulo y el certificado ya estan en la
+  // portada, y aca eran las dos cintas mas largas: repetian informacion y
+  // hacian aparecer scroll apenas se achicaba el modal.
   const beneficios = [
-    { titulo: 'Título', detalle: carrera.titulo, ancho: true },
-    { titulo: 'Modalidad', detalle: modalidad, ancho: false },
-    { titulo: 'Duración', detalle: carrera.duracion, ancho: false },
-    { titulo: 'Certificado intermedio', detalle: certificado || 'Al finalizar el primer año', ancho: true },
+    { titulo: 'Modalidad', detalle: modalidad },
+    { titulo: 'Duración', detalle: carrera.duracion },
   ];
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
     `Hola, quiero consultar precios y fechas de ${carrera.nombre}`,
@@ -598,12 +597,13 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
       </h3>
 
       {/* Pegados al titulo: el aire que sobra queda antes de la cocreacion y
-          los botones, que van al pie */}
-      <div className="flex-1 min-h-fit grid grid-cols-2 gap-2 content-start">
+          los botones, que van al pie. Cada cinta toma el ancho de su texto;
+          estiradas a media pantalla quedaban dos barras casi vacias. */}
+      <div className="flex-1 min-h-fit flex flex-wrap items-start gap-2">
         {beneficios.map(b => (
           <div
             key={b.titulo}
-            className={`rounded p-3 ${b.ancho ? 'col-span-2' : ''}`}
+            className="rounded px-4 py-2.5"
             style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
           >
             <p className="text-[0.55rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
