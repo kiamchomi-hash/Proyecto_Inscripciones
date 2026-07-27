@@ -1,8 +1,90 @@
 # Estado de indexación REAL — Google Search Console
 
-**Fecha:** 2026-07-24 · **Fuente:** Search Console URL Inspection API (dato oficial de Google) · **Propiedad:** `sc-domain:siglo21sur.com`
+**Fuente:** Search Console (URL Inspection API + Search Analytics) · **Propiedad:** `sc-domain:siglo21sur.com`
 
-> ⚠️ Esto refleja producción **ANTES** de deployar los cambios de hoy (contenido propio, enlaces internos, sitemap depurado). Es la línea de base contra la que vamos a medir la mejora.
+Este documento tiene dos mediciones. La del **24/07** es la línea de base, tomada
+justo antes de deployar el arreglo (contenido propio, enlaces internos, sitemap
+depurado). La del **27/07** mide qué pasó tres días después. La base no se toca:
+es contra lo que se compara en agosto.
+
+---
+
+# Estado al 27/07 — tres días después del deploy
+
+**Al menos 38 de las 96 carreras están indexadas.** Eran 23 el 24/07.
+
+| | 24/07 (base) | 27/07 | Cambio |
+|---|--:|--:|--:|
+| Carreras indexadas | 23 | **38** | **+15** |
+| Sobre el total de 96 | 24% | **40%** | +16 pts |
+
+Es un piso, no un techo: se contaron las carreras que **aparecieron en resultados de
+Google** en los últimos 30 días, y una página puede estar indexada sin haber recibido
+impresiones en ese lapso. El número real es 38 o más.
+
+## Qué se movió
+
+Las **10 carreras del Día 1** del plan estaban todas en ❌ *Descubierta, sin rastrear*
+y hoy aparecen en Google:
+
+| Carrera | Impresiones (30 días) | Posición |
+|---|--:|--:|
+| Higiene, Seguridad y Medio Ambiente del Trabajo | 28 | 9,3 |
+| Seguridad Informática | 20 | 10,9 |
+| Logística Global | 15 | 8,3 |
+| Inteligencia Artificial y Robótica | 12 | 14,7 |
+| Finanzas | 10 | 8,8 |
+| Comercio Internacional | 9 | 9,3 |
+| Ciencias de Datos | 9 | 14,0 |
+| Gestión Ambiental | 9 | 13,6 |
+| Matemática | 9 | 6,3 · 1 clic |
+| Comercialización | 5 | 14,0 |
+
+Y cinco más de otros grupos: **Gestión de Recursos Humanos**, **Relaciones
+Internacionales**, **Periodismo**, **Marketing Digital** (Teclab) y **Cloud
+Administration** (Teclab).
+
+**Ninguna se pidió a mano.** Google las rastreó solo después del deploy.
+
+Verificado además con inspección directa de URL el 27/07:
+
+| Carrera | 24/07 | 27/07 |
+|---|---|---|
+| Tecnicatura Superior en Marketing Digital | ❌ Descubierta | ✅ **Indexada** (rastreada 25/07, con breadcrumbs) |
+| Tecnicatura Superior en Inbound Marketing | ✅ Indexada | ✅ Indexada (rastreada 23/07) |
+| Tecnicatura Superior en Seguros | ⬜ Desconocida | ❌ **Descubierta** |
+| Tecnicatura Superior en Gestión Agraria | ⬜ Desconocida | ❌ **Descubierta** |
+| Tecnicatura Superior en Gestión Contable | ❌ Descubierta | ❌ Descubierta |
+
+## El cuello de botella se movió
+
+Ocho páginas están en **posición 8 a 11 con cero clics**: Sobre nosotros (124
+impresiones), Administración Agraria (55), Actuario (54), Investigación de la Escena
+del Crimen (50), Redes Informáticas (35), Marketing Digital (33), Higiene y Seguridad
+(28), Bioinformática (27).
+
+Google ya las muestra. Lo que falla ahora es el `<title>` y la meta description.
+Referencia: Agroinformática convierte al **10%** en posición 6,2; Actuario al **0%**
+en 8,7.
+
+## Tráfico total del sitio (30 días, 28/06 – 27/07)
+
+| | |
+|---|--:|
+| Páginas con impresiones | 55 |
+| Impresiones | 1.578 |
+| Clics | 38 |
+
+El home se lleva 631 impresiones (40%) con posición 15,3 y CTR 2,85%. Agroinformática
+sola aporta 11 de los 38 clics — el 29% del total, en una carrera que todavía no se
+dicta (ver `proximamente` en `components/index/types.ts`).
+
+---
+
+# Línea de base — 24/07
+
+> ⚠️ Lo que sigue refleja producción **ANTES** del deploy del 24/07. Se conserva sin
+> cambios como punto de comparación.
 
 ## Qué significa cada estado
 
@@ -178,8 +260,11 @@ del sitio el 27/07/2026 y no se miden.
 - Las ⬜ *Desconocidas* son URLs que Google todavía no registró; deberían resolverse solas cuando vuelva a leer el sitemap.
 - **Dato clave:** las que están ✅ son casi todas las que Google rastreó hace poco (últimas semanas). Cuando se deployen los cambios y Google vuelva a rastrear con contenido propio + enlaces, las ❌ y 🟠 deberían empezar a pasar a ✅.
 
-## Próximo paso recomendado
+## Próximo paso recomendado (escrito el 24/07 — ya cumplido)
 
-1. **Deployar** los cambios de hoy (contenido server-side + enlaces + sitemap depurado).
-2. En Search Console, reinspeccionar unas carreras testigo y pedir **"Solicitar indexación"** en 5-10 de las que hoy están ❌.
-3. Volver a correr este mismo informe en 2-4 semanas para medir cuántas pasaron a ✅.
+1. ✅ **Deployar** los cambios (contenido server-side + enlaces + sitemap depurado). Hecho el 24/07.
+2. ✅ Pedir indexación de algunas carreras testigo. **No hizo falta:** 15 se indexaron solas.
+3. Volver a correr este informe en 2-4 semanas. Pendiente: mediados de agosto.
+
+Lo vigente está arriba, en el estado al 27/07, y el plan de solicitudes actualizado en
+`PLAN_INDEXACION.md` (23 URLs de convenio, que son las que no se están indexando solas).
