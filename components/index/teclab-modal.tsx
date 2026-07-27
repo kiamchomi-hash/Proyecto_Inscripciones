@@ -587,7 +587,7 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
           Todo junto abajo dejaba el modal cabeza abajo; todo junto arriba o
           centrado, el aire quedaba de un solo lado. */}
       <div className="flex-shrink-0 flex flex-col gap-2.5">
-        <h3 className="text-[1.7rem] sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
+        <h3 className="text-[2.35rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight">
           Educación para
           <span className="block" style={{ color: acento }}>
             cambiarlo todo
