@@ -463,10 +463,16 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // handleClose se recrea en cada render; guardarlo en una ref permite que el
+  // listener de abajo dependa solo de `open` y no se re-registre al tipear.
+  const handleCloseRef = useRef(handleClose);
+  useEffect(() => { handleCloseRef.current = handleClose; });
+
+  // Escape + trampa de foco mientras el modal está abierto.
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { handleClose(); return; }
+      if (e.key === 'Escape') { handleCloseRef.current(); return; }
       if (e.key === 'Tab') {
         const modal = modalRef.current;
         if (!modal) return;
@@ -484,16 +490,21 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
       }
     };
     document.addEventListener('keydown', handleKey);
-    // Enfocar el primer elemento al abrir
-    requestAnimationFrame(() => {
-      const modal = modalRef.current;
-      if (modal) {
-        const first = modal.querySelector<HTMLElement>('button, input, textarea');
-        first?.focus();
-      }
-    });
     return () => document.removeEventListener('keydown', handleKey);
-  });
+  }, [open]);
+
+  // Enfocar al abrir, y solo al abrir. Sin el array de dependencias esto corría
+  // después de cada render: al tipear, el foco volvía al primer botón (la X).
+  useEffect(() => {
+    if (!open) return;
+    const id = requestAnimationFrame(() => {
+      const modal = modalRef.current;
+      if (!modal) return;
+      const campo = modal.querySelector<HTMLElement>('input, textarea');
+      (campo ?? modal.querySelector<HTMLElement>('button'))?.focus();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [open]);
 
   if (!open) return null;
 
