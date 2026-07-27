@@ -76,12 +76,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   "postalCode": "C1439",
                   "addressCountry": "AR"
                 },
-                // Coordenadas tomadas del mapa de /sobre-nosotros. Las anteriores
-                // (-34.6697, -58.4725) caian a casi 2 km de la sede.
+                // Coordenadas de la ficha "Siglo 21" en Google Maps
+                // (maps.app.goo.gl/mXu8TUH6FCLQvuYYA). Antes decian -34.6697 /
+                // -58.4725, casi 2 km al norte de la sede.
                 "geo": {
                   "@type": "GeoCoordinates",
-                  "latitude": -34.686923,
-                  "longitude": -58.478022
+                  "latitude": -34.6870295,
+                  "longitude": -58.4775718
                 },
                 "openingHoursSpecification": {
                   "@type": "OpeningHoursSpecification",
