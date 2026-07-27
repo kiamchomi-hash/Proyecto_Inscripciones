@@ -47,6 +47,8 @@ function ContactForm() {
   const [localidad, setLocalidad] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
+  // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
+  const [captchaKey, setCaptchaKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -82,11 +84,18 @@ function ContactForm() {
           },
         }),
       });
-      if (!response.ok) throw new Error('submit_failed');
-    } catch {
-      setError('Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
+      if (!response.ok) {
+        const detalle = await response.json().catch(() => null) as { error?: string } | null;
+        throw new Error(detalle?.error || 'submit_failed');
+      }
+    } catch (err) {
+      const motivo = err instanceof Error ? err.message : '';
+      setError(motivo === 'Demasiadas solicitudes'
+        ? 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'
+        : 'Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
       setSubmitting(false);
       setTurnstileToken('');
+      setCaptchaKey((k) => k + 1);
       return;
     }
 
@@ -95,6 +104,7 @@ function ContactForm() {
     setTimeout(() => {
       setSuccess(false);
       setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad(''); setMensaje(''); setTurnstileToken('');
+      setCaptchaKey((k) => k + 1);
     }, 4000);
   };
 
@@ -162,12 +172,11 @@ function ContactForm() {
 
           {/* Turnstile + Submit */}
           <div className="px-5 pb-4 space-y-2.5">
-            {!turnstileToken && (
-              <TurnstileWidget
-                onVerify={(token) => setTurnstileToken(token)}
-                onExpire={() => setTurnstileToken('')}
-              />
-            )}
+            <TurnstileWidget
+              key={captchaKey}
+              onVerify={(token) => setTurnstileToken(token)}
+              onExpire={() => setTurnstileToken('')}
+            />
 
             {error && <p className="text-[11px] text-red-400">{error}</p>}
 

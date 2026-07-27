@@ -408,6 +408,9 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   const [submitting, setSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
+  // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const resetCaptcha = () => { setTurnstileToken(''); setCaptchaKey((k) => k + 1); };
 
   async function saveQuestion(payload: Record<string, unknown>) {
     try {
@@ -432,10 +435,10 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     setSubmitting(true);
     const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'publica', contacto: c });
     setSubmitting(false);
-    if (!saved) { setErrorPub(true); setTurnstileToken(''); return; }
+    if (!saved) { setErrorPub(true); resetCaptcha(); return; }
     recordSubmission();
     localStorage.setItem('faq-contact', c);
-    setTurnstileToken('');
+    resetCaptcha();
     setSlide(3);
   }
 
@@ -450,11 +453,11 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     setSubmitting(true);
     const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'privada', contacto: c, nombre_contacto: n });
     setSubmitting(false);
-    if (!saved) { setErrorPriv(true); setTurnstileToken(''); return; }
+    if (!saved) { setErrorPriv(true); resetCaptcha(); return; }
     recordSubmission();
     localStorage.setItem('faq-contact', c);
     if (n) localStorage.setItem('faq-contact-name', n);
-    setTurnstileToken('');
+    resetCaptcha();
     setSlide(3);
   }
 
@@ -579,12 +582,11 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                 <div className={`text-xs mt-1 text-red-400 ${errorPub ? 'block' : 'hidden'}`}>Ingresá tu email para poder avisarte cuando sea respondida.</div>
                 <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
               </div>
-              {!turnstileToken && (
-                <TurnstileWidget
-                  onVerify={setTurnstileToken}
-                  onExpire={() => setTurnstileToken('')}
-                />
-              )}
+              <TurnstileWidget
+                key={captchaKey}
+                onVerify={setTurnstileToken}
+                onExpire={() => setTurnstileToken('')}
+              />
               <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPub} disabled={submitting || !turnstileToken}>
                 {submitting ? 'Enviando...' : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Publicar pregunta</>)}
               </button>
@@ -619,12 +621,11 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               </div>
               <div className={`text-xs mt-1 text-red-400 ${errorPriv ? 'block' : 'hidden'}`}>Ingresá un contacto para poder responderte.</div>
               <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
-              {!turnstileToken && (
-                <TurnstileWidget
-                  onVerify={setTurnstileToken}
-                  onExpire={() => setTurnstileToken('')}
-                />
-              )}
+              <TurnstileWidget
+                key={captchaKey}
+                onVerify={setTurnstileToken}
+                onExpire={() => setTurnstileToken('')}
+              />
               <button type="button" className="ask-cta-btn w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base disabled:opacity-50 disabled:cursor-not-allowed" onClick={submitPriv} disabled={submitting || !turnstileToken}>
                 {submitting ? 'Enviando...' : 'Enviar consulta'}
               </button>
