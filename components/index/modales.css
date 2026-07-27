@@ -272,37 +272,40 @@
   }
 }
 
-/* Cierre: la segunda foto de la ficha se queda con todo el alto que sobra entre
-   los chips y la botonera. Es la unica pieza elastica del slide -el resto son
-   dos lineas de texto y los botones- asi que sin ella el modal quedaba con mas
-   de la mitad del alto en negro. Puesta de fondo bajo un velo ocupaba lo mismo
-   pero apenas se adivinaba, que es lo que hacia que se leyera como un hueco. */
-.teclab-cierre-foto {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
+/* Cierre: la segunda foto de la ficha, de fondo y bajo un velo tinta */
+.teclab-cierre-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
-.teclab-cierre-foto .teclab-foto {
-  flex: 1;
-  aspect-ratio: auto;
-  min-height: 0;
+/* El velo se abre en el medio: arriba y abajo tapa lo necesario para el titulo
+   y para la botonera, y en la franja del medio deja ver la foto. Opaco de punta
+   a punta, el alto que sobra en un cierre -que de texto tiene dos lineas- se
+   leia como un rectangulo negro. */
+.teclab-cierre-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--teclab-ink) 92%, transparent) 0%,
+    color-mix(in srgb, var(--teclab-ink) 84%, transparent) 30%,
+    color-mix(in srgb, var(--teclab-ink) 70%, transparent) 52%,
+    color-mix(in srgb, var(--teclab-ink) 88%, transparent) 72%,
+    color-mix(in srgb, var(--teclab-ink) 96%, transparent) 86%
+  );
 }
 
-/* Ventana baja: no hay alto que repartir y la foto quedaria como una franja de
-   dos centimetros. Se va, y el cierre queda como una tarjeta de contacto
-   centrada: sin la foto no queda ningun elemento elastico, asi que sin centrar
-   el contenido se apilaria arriba y volveria el hueco al pie.
-   `safe` es por si el contenido no entra: ahi el centrado se apaga solo y el
-   slide arranca desde arriba, sin cortar el titulo. */
-@media (max-height: 560px) {
-  .teclab-cierre-foto {
-    display: none;
-  }
+/* Los chips del cierre van sobre la foto, asi que necesitan fondo propio: con
+   el blanco translucido de la portada se perdian contra la imagen. */
+.teclab-cierre .teclab-chip {
+  background: color-mix(in srgb, var(--teclab-ink) 62%, transparent);
+}
 
-  .teclab-cierre {
-    justify-content: safe center;
-  }
+/* El contenido tiene que quedar por encima de la foto de fondo */
+.teclab-cierre > *:not(.teclab-cierre-fondo) {
+  position: relative;
+  z-index: 1;
 }
 
 .teclab-slide {

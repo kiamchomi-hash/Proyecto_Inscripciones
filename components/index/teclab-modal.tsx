@@ -575,10 +575,19 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
 
   return (
     <div className="teclab-slide teclab-cierre h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      {/* Titulo y chips arriba, la foto al medio y los botones al pie. Sin la
-          bajada de la ficha, que era el texto mas largo y hacia aparecer scroll
-          apenas se achicaba el modal. */}
-      <div className="flex-shrink-0 flex flex-col gap-2.5">
+      {/* La segunda foto de la ficha, de fondo y bajo un velo tinta */}
+      {ficha && (
+        <div className="teclab-cierre-fondo" aria-hidden="true">
+          <Image src={ficha.imagenCierre} alt="" fill quality={90} sizes="(max-width: 768px) 100vw, 64rem" className="object-cover" />
+          <div className="teclab-cierre-velo" />
+        </div>
+      )}
+
+      {/* Sin la bajada de la ficha, que era el texto mas largo y hacia aparecer
+          scroll apenas se achicaba el modal. Lo que queda es poco a proposito
+          -es un cierre- asi que va centrado en el alto: apilado arriba dejaba
+          todo el aire junto al pie y se leia como un hueco. */}
+      <div className="flex-1 min-h-fit flex flex-col justify-center gap-2.5">
         <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
           Educación para
           <span className="block" style={{ color: acento }}>
@@ -594,26 +603,6 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
           ))}
         </div>
       </div>
-
-      {/* La segunda foto de la ficha, enmarcada como la de la portada y del alto
-          que sobre. De fondo, bajo un velo tinta, ocupaba lo mismo pero el slide
-          se leia medio vacio: la imagen apenas se adivinaba. */}
-      {ficha && (
-        <div className="teclab-cierre-foto">
-          <div className="teclab-foto" style={{ borderColor: acento }}>
-            <Image
-              src={ficha.imagenCierre}
-              alt=""
-              fill
-              quality={90}
-              sizes="(max-width: 768px) 92vw, 60rem"
-              /* Encuadre alto: en desktop la franja es apaisada y con el centro
-                 por defecto las fichas quedaban cortadas a la altura del menton */
-              className="object-cover object-[50%_28%]"
-            />
-          </div>
-        </div>
-      )}
 
       {ficha?.partner && (
         <div className="flex-shrink-0">
