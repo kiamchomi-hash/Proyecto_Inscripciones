@@ -583,12 +583,11 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         </div>
       )}
 
-      {/* Todo el contenido apoyado en el pie, en un solo bloque con la
-          cocreacion y los botones: asi el alto que sobra queda junto arriba,
-          que es donde esta la foto. Centrado se partia en dos y quedaba un
-          hueco a cada lado del titulo; arriba de todo, un hueco al pie. */}
-      <div className="mt-auto flex flex-col gap-2.5">
-        <h3 className="text-2xl sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
+      {/* Titulo arriba, cocreacion y botones al pie, y la foto en el medio.
+          Todo junto abajo dejaba el modal cabeza abajo; todo junto arriba o
+          centrado, el aire quedaba de un solo lado. */}
+      <div className="flex-shrink-0 flex flex-col gap-2.5">
+        <h3 className="text-[1.7rem] sm:text-4xl font-black text-white uppercase leading-none tracking-tight">
           Educación para
           <span className="block" style={{ color: acento }}>
             cambiarlo todo
@@ -604,40 +603,42 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
         </div>
       </div>
 
-      {ficha?.partner && (
-        <div className="flex-shrink-0">
-          <BloqueCocreacion ficha={ficha} acento={acento} />
+      {/* Bloque de contacto: pegado al pie, con la foto ocupando lo que sobra
+          entre el titulo y esto. En el telefono los botones van mas altos y en
+          una columna: a media pantalla cada uno se leia como un boton chico
+          perdido abajo de una foto grande. */}
+      <div className="mt-auto flex-shrink-0 flex flex-col gap-2.5">
+        {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} />}
+
+        <div className="flex flex-col sm:flex-row gap-2">
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener nofollow"
+            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
+          >
+            Consultar precios
+          </a>
+          <a
+            href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg text-white font-bold text-[0.95rem] sm:text-sm transition-all"
+            style={{ background: 'rgba(255,255,255,0.08)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
+          >
+            Guaminí 4876
+          </a>
         </div>
-      )}
 
-      <div className="flex-shrink-0 flex flex-wrap gap-2">
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener nofollow"
-          className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-sm hover:brightness-110 transition-all"
-        >
-          Consultar precios
-        </a>
-        <a
-          href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-2.5 rounded-lg text-white font-bold text-sm transition-all"
-          style={{ background: 'rgba(255,255,255,0.08)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
-        >
-          Guaminí 4876
-        </a>
+        {/* Lockup oficial: la carrera es de Teclab y articula con la Siglo 21 */}
+        <Image
+          src="/imagenes/teclab/logo-teclab-siglo21.webp"
+          alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
+          width={380}
+          height={69}
+          className="h-8 w-auto mx-auto opacity-80"
+        />
       </div>
-
-      {/* Lockup oficial: la carrera es de Teclab y articula con la Siglo 21 */}
-      <Image
-        src="/imagenes/teclab/logo-teclab-siglo21.webp"
-        alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
-        width={380}
-        height={69}
-        className="flex-shrink-0 h-7 sm:h-8 w-auto mx-auto opacity-80"
-      />
     </div>
   );
 }
