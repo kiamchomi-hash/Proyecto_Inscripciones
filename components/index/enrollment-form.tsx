@@ -22,6 +22,8 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [telefono, setTelefono] = useState('');
   const [localidad, setLocalidad] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
+  // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
+  const [captchaKey, setCaptchaKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -113,11 +115,18 @@ export default function EnrollmentForm({ carreras }: Props) {
           },
         }),
       });
-      if (!response.ok) throw new Error('submit_failed');
-    } catch {
-      setError('Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
+      if (!response.ok) {
+        const detalle = await response.json().catch(() => null) as { error?: string } | null;
+        throw new Error(detalle?.error || 'submit_failed');
+      }
+    } catch (err) {
+      const motivo = err instanceof Error ? err.message : '';
+      setError(motivo === 'Demasiadas solicitudes'
+        ? 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'
+        : 'Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
       setSubmitting(false);
       setTurnstileToken('');
+      setCaptchaKey((k) => k + 1);
       return;
     }
 
@@ -406,12 +415,11 @@ export default function EnrollmentForm({ carreras }: Props) {
 
             {/* Turnstile + Submit */}
             <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2">
-              {!turnstileToken && (
-                <TurnstileWidget
-                  onVerify={(token) => setTurnstileToken(token)}
-                  onExpire={() => setTurnstileToken('')}
-                />
-              )}
+              <TurnstileWidget
+                key={captchaKey}
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken('')}
+              />
               <button
                 type="submit"
                 disabled={!isValid || submitting}
