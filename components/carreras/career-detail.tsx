@@ -402,7 +402,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             </section>
           )}
 
-          {/* Franja de marca del convenio: la diplomatura la dicta la Academia */}
+          {/* Franja de marca del convenio: la diplomatura la dicta la Academia.
+              Sin enlace a su sitio, igual que la de Teclab: el contacto se hace
+              por WhatsApp o por el formulario de esta pagina. */}
           {isIA && (
             <section className="career-oficial career-oficial--ia career-reveal">
               <IsotipoIA className="career-oficial-isotipo" />
@@ -411,10 +413,10 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 Argentina. Se cursa por la plataforma Innova Virtual, con certificación nacional e
                 internacional.
               </p>
-              <a href="https://identidadargentina.com.ar/" target="_blank" rel="noopener">
-                Conocé la Academia Identidad Argentina
+              <a href="#formulario">
+                Solicitar información
                 <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" />
+                  <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </a>
             </section>
