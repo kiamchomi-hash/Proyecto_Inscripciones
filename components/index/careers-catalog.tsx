@@ -819,7 +819,7 @@ function prefetchImages(carrera: Carrera) {
 // Individual career card
 function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carrera) => void }) {
   const { prefix, cleanName } = getCareerInfo(carrera);
-  const badge = carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
+  const badge = carrera.proximamente ? 'Próximamente' : carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
   const isIA = getCategoryForCarrera(carrera) === 'identidad_argentina';
   const escuela = isIA ? getEscuelaIA(carrera) : null;
   const familiaTeclab = getFamiliaTeclab(carrera);
@@ -852,7 +852,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
         aria-label={`Ver detalles de ${carrera.nombre}`}
       >
         {badge && (
-          <span className={`career-badge ${carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
+          <span className={`career-badge ${carrera.proximamente ? 'career-badge--proximamente' : carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
             {badge}
           </span>
         )}

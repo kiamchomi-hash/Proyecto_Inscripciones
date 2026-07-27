@@ -201,6 +201,18 @@
   animation: career-copy-in .75s .3s ease-out both;
 }
 
+/* Aviso de carrera anunciada sin inscripcion abierta. Va antes de los botones
+   para que se lea antes de tocar "Avisame cuando abra". */
+.career-proximamente {
+  border-left: 3px solid var(--color-gold);
+  padding: .7rem 0 .7rem 1rem;
+  margin-bottom: 1.4rem;
+  font-size: .95rem;
+  line-height: 1.55;
+  color: var(--color-text-light);
+  max-width: 46ch;
+}
+
 .career-hero-actions {
   display: flex;
   flex-wrap: wrap;
