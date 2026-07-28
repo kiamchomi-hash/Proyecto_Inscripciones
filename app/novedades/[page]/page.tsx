@@ -8,7 +8,9 @@ import '../novedades.css';
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
 
-export const revalidate = 3600;
+// 24 h para no gastar ISR Writes: las novedades se publican a mano y un
+// redeploy fuerza la regeneracion cuando hace falta verlas antes.
+export const revalidate = 86400;
 
 async function getTotalPages(): Promise<number> {
   const { count } = await supabase
