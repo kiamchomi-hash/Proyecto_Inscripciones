@@ -60,9 +60,15 @@ Todo esto es **gratis**: el plan es el free, lo que se paga por año es sólo el
 
   Estado del resto al 28/07, con `vercel env pull --environment=production`: `TURNSTILE_SECRET_KEY` **sigue legible** (35 caracteres en claro), y `GITHUB_PAT` (40 caracteres) y `RESEND_API` (36) **siguen ahí y también se leen enteros**. Efecto lateral a tener presente: desde la máquina local ya no hay ninguna credencial con permiso de escritura sobre la base, así que todo `UPDATE`/`INSERT` va por el SQL Editor del dashboard.
 
-- [ ] **Revisar y borrar variables sin uso en Vercel.** No aparecen en ningún lado del código:
-  - `GITHUB_PAT` (creada hace ~120 días) — un token de GitHub en el runtime de la web. Revocarlo en GitHub, no solo borrarlo de Vercel.
-  - `RESEND_API` (~127 días) — parece un duplicado viejo de `RESEND_API_KEY`, que es la que sí se usa.
+- [x] ~~**Revisar y borrar variables sin uso en Vercel.**~~ Hecho el 28/07. `GITHUB_PAT` y `RESEND_API` borradas de los tres entornos; `vercel env ls` ya no las lista. Ninguna la usaba el código. En la misma pasada se revocaron en GitHub los **cuatro** PAT clásicos que había en la cuenta (`vercelsincexcel`, `sync-precios-admin`, `iniciotoken`, `Token_CLaude`): los cuatro con scope `repo`, sin vencimiento y marcados "Never used". El `git push` no dependía de ninguno — usa un token OAuth (`gho_`) del Credential Manager de Windows.
+
+- [ ] **Revocar en Resend la clave que estaba en `RESEND_API`.** Borrarla de Vercel sacó la exposición, pero la clave **sigue viva en Resend**: se comprobó el 28/07 que responde 200 y que tiene **acceso total** — pudo listar todas las claves de la cuenta. Ningún código la usa (la única función que manda mail es `notificar`; `digest-clicks` no toca Resend).
+
+  **No se pudo determinar cuál de las tres es**: Resend no expone el id dentro del token. Por fecha calza `aviso_clicks` (creada 21/03) con la variable de Vercel (creada hace 129 días = 21/03), pero es correlación, no prueba. Las otras dos son `topykly-dev` (10/07) y `Onboarding` (15/03).
+
+  **Cómo hacerlo sin romper los avisos:** borrar la candidata en https://resend.com/api-keys y correr enseguida `herramientas/4 - Verificar avisos (SQL).bat`. Si llega el mail, era la correcta. Si no llega, generar una nueva y actualizar el secret `RESEND_API_KEY` en Supabase (Edge Functions → Secrets) y la variable homónima en Vercel. Sin esa verificación el error no se nota: `net.http_post` no bloquea el INSERT.
+
+  Conviene rotarla igual aunque se acierte a la primera: para identificarla hubo que leer su valor.
 
 ## Encontrado de paso
 
