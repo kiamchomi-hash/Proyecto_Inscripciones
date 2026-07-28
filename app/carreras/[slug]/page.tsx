@@ -9,7 +9,11 @@ import IndexFooter from '@/components/index/footer';
 import { POSTAL_ADDRESS } from '@/lib/sede';
 import '../career-detail.css';
 
-export const revalidate = 3600;
+// 24 h, no 1 h: son ~96 paginas y cada regeneracion es un ISR Write de Vercel.
+// A 3600 el techo era ~69.000 writes/mes solo por reloj, sobre 200.000 de cuota
+// gratuita. Los datos de carreras cambian una vez por mes; si hace falta que un
+// cambio de Supabase se vea antes, un redeploy fuerza la regeneracion.
+export const revalidate = 86400;
 
 async function getCarreras() {
   const { data } = await supabase

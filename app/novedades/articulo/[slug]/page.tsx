@@ -7,7 +7,8 @@ import { sanitizeContent } from '@/lib/sanitize-content';
 import CopyLinkButton from '@/components/novedades/copy-link-button';
 import '../../novedades.css';
 
-export const revalidate = 3600;
+// 24 h para no gastar ISR Writes: ver el comentario en novedades/[page].
+export const revalidate = 86400;
 
 interface Novedad {
   id: number;
