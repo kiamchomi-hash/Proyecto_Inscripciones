@@ -26,9 +26,13 @@ Todo esto es **gratis**: el plan es el free, lo que se paga por año es sólo el
 
 **El orden importa.** Cada paso queda funcionando por sí solo y ninguno rompe el anterior:
 
-- [ ] **1. Prender DNSSEC.** Cloudflare → DNS → Settings → Enable DNSSEC. Un clic, sin riesgo, independiente de todo lo demás. Hoy está apagado (`delegationSigned: false`).
+- [x] ~~**1. Prender DNSSEC.**~~ Hecho el 28/07 y verificado: RDAP devuelve `delegationSigned: True` y el DS está publicado en el registro de `.com` (keytag 2371). Ojo al hacerlo: entre que Cloudflare firma la zona y que el DS aparece en el registro pasa un rato, y hasta que aparece **DNSSEC no protege nada** — una zona firmada sin DS no la valida nadie.
 
-- [ ] **2. Email Routing** para tener `contacto@siglo21sur.com` reenviando a `kiamchomi@gmail.com`. Cloudflare → Email → Email Routing. Agrega solo sus MX y su SPF. Hoy el único contacto del sitio es WhatsApp.
+- [x] ~~**2. Email Routing.**~~ Hecho el 28/07: `contacto@siglo21sur.com` reenvía a `kiamchomi@gmail.com`. Verificado desde afuera que resuelven los 3 MX de Cloudflare, el SPF y el DKIM (`cf2024-1._domainkey`).
+
+  Notas de la UI nueva, que confunde: los registros no se agregan desde la pantalla de DNS sino desde **Email Routing → Settings**, con el botón **Add missing record**. La dirección de destino tiene que estar en **Verified** antes de nada; si no, se puede configurar todo igual y el reenvío no funciona sin dar ningún error.
+
+  **El SPF quedó como `v=spf1 include:_spf.mx.cloudflare.net ~all` y Cloudflare lo deja "Unlocked" a propósito**, justo para poder fusionarlo. Es el registro a editar en el paso 3 si Resend pide SPF en la raíz.
 
 - [ ] **3. Verificar `siglo21sur.com` en Resend** y cargar en Cloudflare los registros que dé (DKIM y, según el caso, un MX de rebotes).
 
