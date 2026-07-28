@@ -101,6 +101,18 @@ const nextConfig: NextConfig = {
         destination: 'https://www.siglo21sur.com/:path*',
         permanent: true,
       },
+      // El alias .vercel.app de produccion servia el sitio entero con 200 y sin
+      // noindex: contenido duplicado compitiendo con el dominio propio. Los otros
+      // aliases (los de deployment y el de rama) ya estan detras del SSO de Vercel
+      // y con X-Robots-Tag: noindex, asi que este era el unico abierto. El canonical
+      // apunta bien, pero es una sugerencia; el 308 no. Matchea ese host exacto:
+      // ni localhost ni los previews entran.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'proyecto-inscripciones.vercel.app' }],
+        destination: 'https://www.siglo21sur.com/:path*',
+        permanent: true,
+      },
     ];
   },
 };
