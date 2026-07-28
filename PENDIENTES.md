@@ -4,7 +4,11 @@
 
 ## Urgente
 
-- [ ] **Revocar el Personal Access Token de Supabase** — https://supabase.com/dashboard/account/tokens, se llama `claude-fix-webhook`. Se creó el 27/07 para arreglar el trigger de notificaciones y ya no hace falta. Da acceso a todos los proyectos de la cuenta.
+Nada abierto.
+
+- [x] ~~**Revocar el PAT de Supabase `claude-fix-webhook`**~~ — al revisar la lista el 27/07 **ese token no existía**: o se revocó antes de anotarlo acá, o quedó mal el nombre. En la misma pasada se limpiaron los tokens de https://supabase.com/dashboard/account/tokens: se revocó un `codex-release` duplicado que nunca se había usado y el `claudeco` ya vencido.
+
+  Quedan vivos `codex-release` (`sbp_ae97…`, en uso) y `mercadolibrebot` (`sbp_bc7d…`). **Ninguno de los dos vence**, y un PAT da acceso a todos los proyectos de la cuenta — conviene revisarlos cada tanto y borrar el que deje de usarse.
 
 ## Verificar
 
