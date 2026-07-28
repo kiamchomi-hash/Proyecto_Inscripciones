@@ -36,7 +36,7 @@ Todo esto es **gratis**: el plan es el free, lo que se paga por año es sólo el
 
 **Decisión del 28/07: los pasos 3 a 6 quedan descartados.** El plan free de Resend permite un solo dominio verificado y ese lugar lo ocupa topykly. Telegram pasa a ser el canal de avisos y el mail queda como está, saliendo de `onboarding@resend.dev`. Si algún día topykly deja de usarlo, o se pasa a Pro, los pasos siguen escritos acá abajo y siguen siendo válidos.
 
-Consecuencia de quedarse con un solo canal: **hay que desplegar la Edge Function `notificar`** con el cambio de `Promise.all` a `Promise.allSettled`. Con `all`, un timeout de Resend rechazaba todo y podía cortar el envío de Telegram que iba en paralelo. Mientras no se despliegue, el único canal de avisos sigue colgando del que se abandonó.
+Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó de `Promise.all` a `Promise.allSettled`, porque con `all` un timeout de Resend rechazaba todo y podía cortar el envío de Telegram que iba en paralelo. **Desplegada y verificada el 28/07**: la función devuelve 401 sin credencial y 405 con GET, y la prueba de los tres formularios entregó los tres avisos por Telegram.
 
 - [ ] ~~**3. Verificar `siglo21sur.com` en Resend**~~ (descartado) y cargar en Cloudflare los registros que dé (DKIM y, según el caso, un MX de rebotes).
 
