@@ -5,6 +5,13 @@ const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID")!;
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET")!;
 const EMAIL_TO = "kiamchomi@gmail.com";
+// Remitente de los avisos. Sin RESEND_FROM seteado cae al dominio compartido de
+// pruebas de Resend, que entrega peor y termina en spam mas seguido -y estos
+// avisos ya fallaron una semana entera sin que nadie se enterara-. Para pasar al
+// dominio propio: verificar siglo21sur.com en Resend, cargar los DKIM que da en
+// el DNS de Cloudflare y setear RESEND_FROM en los secrets. No hay que tocar
+// codigo ni redeployar; el procedimiento completo esta en PENDIENTES.md.
+const RESEND_FROM = Deno.env.get("RESEND_FROM") || "CAU Villa Lugano <onboarding@resend.dev>";
 
 interface WebhookPayload {
   type: "INSERT";
@@ -168,7 +175,7 @@ async function sendEmail(subject: string, html: string) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({ from: "CAU Villa Lugano <onboarding@resend.dev>", to: [EMAIL_TO], subject, html }),
+    body: JSON.stringify({ from: RESEND_FROM, to: [EMAIL_TO], subject, html }),
     signal: AbortSignal.timeout(8_000),
   });
   if (!res.ok) console.error("Resend error:", await res.text());

@@ -16,6 +16,38 @@ Nada abierto.
 
   No se puede automatizar: Cloudflare no emite token para un navegador manejado por Playwright, ni headless ni con ventana visible.
 
+## Correo del dominio
+
+El dominio **no tiene un solo registro de correo**: sin MX no recibe nada, y sin SPF ni DMARC cualquiera puede mandar mails haciéndose pasar por `@siglo21sur.com`. Para un sitio que le pide a la gente DNI y documentación del legajo, eso es un vector de phishing real.
+
+Y los avisos de formulario salen desde `onboarding@resend.dev`, el dominio compartido de pruebas de Resend. Entrega peor que un dominio propio y cae en spam más seguido — justo lo que no querés en el canal que ya estuvo mudo una semana entera sin que nadie se enterara.
+
+Todo esto es **gratis**: el plan es el free, lo que se paga por año es sólo el registro del dominio (Cloudflare Registrar, vence el 03/03/2027).
+
+**El orden importa.** Cada paso queda funcionando por sí solo y ninguno rompe el anterior:
+
+- [ ] **1. Prender DNSSEC.** Cloudflare → DNS → Settings → Enable DNSSEC. Un clic, sin riesgo, independiente de todo lo demás. Hoy está apagado (`delegationSigned: false`).
+
+- [ ] **2. Email Routing** para tener `contacto@siglo21sur.com` reenviando a `kiamchomi@gmail.com`. Cloudflare → Email → Email Routing. Agrega solo sus MX y su SPF. Hoy el único contacto del sitio es WhatsApp.
+
+- [ ] **3. Verificar `siglo21sur.com` en Resend** y cargar en Cloudflare los registros que dé (DKIM y, según el caso, un MX de rebotes).
+
+  **Dos trampas acá:**
+  - Los CNAME de DKIM van con la **nube gris** (sin proxear). Proxeados, Cloudflare los reescribe y la verificación no pasa nunca.
+  - **Un dominio admite un solo registro SPF.** Si Resend pide SPF en la raíz y ya está el de Email Routing del paso 2, hay que **fusionarlos en un único TXT**, no agregar otro: dos SPF invalidan los dos. Si Resend te lo pide sobre un subdominio (`send.siglo21sur.com`), no hay conflicto y no tocás el de la raíz.
+
+- [ ] **4. Desplegar la Edge Function `notificar`.** Ya está el cambio en el repo: el remitente se lee de `RESEND_FROM` y, si no está seteada, cae al sandbox de siempre. O sea que **desplegarla no cambia nada todavía** — se puede hacer en cualquier momento sin riesgo.
+
+  No hay CLI de Supabase ni Deno en esta máquina: va por el dashboard, Edge Functions → `notificar` → pegar el código y Deploy.
+
+- [ ] **5. Recién ahí, setear el secret `RESEND_FROM`** con `CAU Villa Lugano <avisos@siglo21sur.com>`. Edge Functions → Secrets.
+
+  **No adelantar este paso**: si se setea antes de que Resend diga "verified", Resend rechaza cada envío con 403 y los avisos se cortan — otra vez en silencio, porque `net.http_post` no bloquea el INSERT.
+
+- [ ] **6. Verificar con `herramientas/4 - Verificar avisos (SQL).bat`.** Tiene que llegar el mail desde la dirección nueva y no caer en spam. Si el paso 5 salió mal, acá se ve.
+
+- [ ] **7. DMARC al final**, cuando el resto ande. TXT en `_dmarc` arrancando en `v=DMARC1; p=none; rua=mailto:kiamchomi@gmail.com`. Dejarlo en `p=none` unas semanas y mirar los reportes antes de endurecerlo a `quarantine`. Ir derecho a `reject` puede tirar mail legítimo sin aviso.
+
 ## Seguridad — variables de entorno en Vercel
 
 - [ ] **Rotar `TURNSTILE_SECRET_KEY` y marcarla Sensitive.** Vercel avisa que cualquiera con acceso al proyecto puede leer su valor. No hubo filtración: la clave solo se usa server-side (`lib/turnstile.ts` tiene `import 'server-only'`) y nunca entra al bundle del navegador.
