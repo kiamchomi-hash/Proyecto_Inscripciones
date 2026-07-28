@@ -239,12 +239,17 @@ $html$,
 
 <h2>Teclab Gestión (11 carreras)</h2>
 <ul>
-  <li>Marketing Digital e Inbound Marketing</li>
-  <li>Customer Experience y Venta Directa</li>
-  <li>Gestión Contable, Seguros y Relaciones Laborales</li>
-  <li>Gestión Hotelera y Planificación y Organización de Eventos</li>
-  <li>Gestión Agraria</li>
-  <li>Periodismo y Nuevas Tecnologías</li>
+  <li>Tecnicatura Superior en Marketing Digital</li>
+  <li>Tecnicatura Superior en Inbound Marketing</li>
+  <li>Tecnicatura Superior en Customer Experience</li>
+  <li>Tecnicatura Superior en Venta Directa</li>
+  <li>Tecnicatura Superior en Gestión Contable</li>
+  <li>Tecnicatura Superior en Seguros</li>
+  <li>Tecnicatura Superior en Relaciones Laborales</li>
+  <li>Tecnicatura Superior en Gestión Hotelera</li>
+  <li>Tecnicatura Superior en Planificación y Organización de Eventos</li>
+  <li>Tecnicatura Superior en Gestión Agraria</li>
+  <li>Tecnicatura Superior en Periodismo y Nuevas Tecnologías</li>
 </ul>
 
 <h2>Para quién es</h2>
