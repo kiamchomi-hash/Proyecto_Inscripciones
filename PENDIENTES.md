@@ -34,7 +34,11 @@ Todo esto es **gratis**: el plan es el free, lo que se paga por año es sólo el
 
   **El SPF quedó como `v=spf1 include:_spf.mx.cloudflare.net ~all` y Cloudflare lo deja "Unlocked" a propósito**, justo para poder fusionarlo. Es el registro a editar en el paso 3 si Resend pide SPF en la raíz.
 
-- [ ] **3. Verificar `siglo21sur.com` en Resend** y cargar en Cloudflare los registros que dé (DKIM y, según el caso, un MX de rebotes).
+**Decisión del 28/07: los pasos 3 a 6 quedan descartados.** El plan free de Resend permite un solo dominio verificado y ese lugar lo ocupa topykly. Telegram pasa a ser el canal de avisos y el mail queda como está, saliendo de `onboarding@resend.dev`. Si algún día topykly deja de usarlo, o se pasa a Pro, los pasos siguen escritos acá abajo y siguen siendo válidos.
+
+Consecuencia de quedarse con un solo canal: **hay que desplegar la Edge Function `notificar`** con el cambio de `Promise.all` a `Promise.allSettled`. Con `all`, un timeout de Resend rechazaba todo y podía cortar el envío de Telegram que iba en paralelo. Mientras no se despliegue, el único canal de avisos sigue colgando del que se abandonó.
+
+- [ ] ~~**3. Verificar `siglo21sur.com` en Resend**~~ (descartado) y cargar en Cloudflare los registros que dé (DKIM y, según el caso, un MX de rebotes).
 
   **Dos trampas acá:**
   - Los CNAME de DKIM van con la **nube gris** (sin proxear). Proxeados, Cloudflare los reescribe y la verificación no pasa nunca.
