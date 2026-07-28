@@ -35,3 +35,5 @@ supabase/.temp/
 # Aranceles para mandar por WhatsApp. El repo es publico y los importes cambian
 # por cuatrimestre: una version vieja indexada es peor que no tenerla.
 mensaje_*.md
+# Cache incremental de tsc. Cambia en cada typecheck, o sea en cada commit.
+tsconfig.tsbuildinfo
