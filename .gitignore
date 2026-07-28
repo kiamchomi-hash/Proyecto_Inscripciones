@@ -32,3 +32,6 @@ supabase/.temp/
 *service_account*.json
 *gsc*.json
 *-credentials.json
+# Aranceles para mandar por WhatsApp. El repo es publico y los importes cambian
+# por cuatrimestre: una version vieja indexada es peor que no tenerla.
+mensaje_*.md
