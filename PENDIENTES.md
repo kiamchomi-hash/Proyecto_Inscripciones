@@ -54,7 +54,15 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
 
 - [ ] **6. Verificar con `herramientas/4 - Verificar avisos (SQL).bat`.** Tiene que llegar el mail desde la dirección nueva y no caer en spam. Si el paso 5 salió mal, acá se ve.
 
-- [ ] **7. DMARC al final**, cuando el resto ande. TXT en `_dmarc` arrancando en `v=DMARC1; p=none; rua=mailto:kiamchomi@gmail.com`. Dejarlo en `p=none` unas semanas y mirar los reportes antes de endurecerlo a `quarantine`. Ir derecho a `reject` puede tirar mail legítimo sin aviso.
+- [x] ~~**7. DMARC.**~~ Hecho el 28/07 y verificado en dos resolvers: `v=DMARC1; p=reject; rua=mailto:…@dmarc-reports.cloudflare.net`.
+
+  Se fue **directo a `p=reject`** en vez de pasar por `p=none` unas semanas, y acá el motivo importa: **ningún sistema manda mails como `@siglo21sur.com`**. Los avisos salen desde `onboarding@resend.dev` y Email Routing sólo recibe, así que no hay remitente legítimo que se pueda romper. Y `p=none` no protege de nada — es sólo observación —, con lo cual dejarlo ahí «hasta revisar los reportes» hubiera significado quedarse sin protección por tiempo indefinido.
+
+  **Lo único que lo rompería:** configurar el Gmail para "enviar como" `contacto@siglo21sur.com`. Si algún día se hace, hay que aflojar la política o sumar el remitente al SPF antes.
+
+  Detalle de la UI: el panel de DMARC Management muestra `DMARC policy: N/A` y avisa que falta el RUA durante un rato después de crear el registro. Es la pantalla que no releyó la zona; el registro ya estaba publicado y correcto. No tocar "Fix record" por eso.
+
+  Queda como mejora menor: el SPF está en `~all` (soft fail) y podría ir a `-all`. Con DMARC en `reject` el margen que agrega es chico.
 
 ## Seguridad — variables de entorno en Vercel
 
