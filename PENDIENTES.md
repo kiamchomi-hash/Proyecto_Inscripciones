@@ -78,13 +78,13 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
 
 - [x] ~~**Revisar y borrar variables sin uso en Vercel.**~~ Hecho el 28/07. `GITHUB_PAT` y `RESEND_API` borradas de los tres entornos; `vercel env ls` ya no las lista. Ninguna la usaba el código. En la misma pasada se revocaron en GitHub los **cuatro** PAT clásicos que había en la cuenta (`vercelsincexcel`, `sync-precios-admin`, `iniciotoken`, `Token_CLaude`): los cuatro con scope `repo`, sin vencimiento y marcados "Never used". El `git push` no dependía de ninguno — usa un token OAuth (`gho_`) del Credential Manager de Windows.
 
-- [ ] **Revocar en Resend la clave que estaba en `RESEND_API`.** Borrarla de Vercel sacó la exposición, pero la clave **sigue viva en Resend**: se comprobó el 28/07 que responde 200 y que tiene **acceso total** — pudo listar todas las claves de la cuenta. Ningún código la usa (la única función que manda mail es `notificar`; `digest-clicks` no toca Resend).
+- [x] ~~**Revocar en Resend la clave que estaba en `RESEND_API`.**~~ Hecha el 28/07: era **`aviso_clicks`**, la única con **acceso total** de la cuenta, y quedó borrada.
 
-  **No se pudo determinar cuál de las tres es**: Resend no expone el id dentro del token. Por fecha calza `aviso_clicks` (creada 21/03) con la variable de Vercel (creada hace 129 días = 21/03), pero es correlación, no prueba. Las otras dos son `topykly-dev` (10/07) y `Onboarding` (15/03).
+  **Cómo se identificó, que es lo reutilizable.** Primero por el prefijo: los tokens de Resend son `re_<id>_<secreto>` y el panel muestra el `re_<id>` en la lista, así que alcanza con haberlo anotado antes de borrar la variable — de `re_5dnuWKfK…` salió el match exacto. Y se confirmó por la columna **Last used**: `aviso_clicks` figuraba usada "hace 1 hora", que fue la verificación desde acá, mientras que `Onboarding` figuraba "hace 15 minutos", justo la prueba de avisos que había entregado los tres mensajes. O sea que la que manda los avisos es `Onboarding`, no la que se borró.
 
-  **Cómo hacerlo sin romper los avisos:** borrar la candidata en https://resend.com/api-keys y correr enseguida `herramientas/4 - Verificar avisos (SQL).bat`. Si llega el mail, era la correcta. Si no llega, generar una nueva y actualizar el secret `RESEND_API_KEY` en Supabase (Edge Functions → Secrets) y la variable homónima en Vercel. Sin esa verificación el error no se nota: `net.http_post` no bloquea el INSERT.
+  Dato de contexto que confundió un rato: **siglo21sur y topykly comparten la misma cuenta de Resend**. Se dedujo de que la clave de siglo21sur pudo listar `topykly-dev` — una clave sólo lista las de su propia cuenta. Por eso choca con el límite de un dominio del plan free.
 
-  Conviene rotarla igual aunque se acierte a la primera: para identificarla hubo que leer su valor.
+  Estado resultante: quedan `Onboarding` (Sending access, la de los avisos) y `topykly-dev` (Sending access, el otro proyecto). **Ninguna clave con acceso total en la cuenta.**
 
 ## Encontrado de paso
 
