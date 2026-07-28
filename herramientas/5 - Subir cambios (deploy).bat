@@ -24,18 +24,49 @@ if not "!rama!"=="main" (
   exit /b 1
 )
 
+rem Dos cosas distintas pueden estar pendientes: archivos sin commitear, y
+rem commits ya hechos que nunca se subieron. Hay que mirar las dos.
 set "haycambios="
 for /f "delims=" %%s in ('git status --porcelain') do set "haycambios=1"
+
+set "pendientes=0"
+for /f "delims=" %%p in ('git rev-list --count origin/main..HEAD 2^>nul') do set "pendientes=%%p"
+
 if not defined haycambios (
-  echo   No hay nada para subir: el repo esta limpio.
+  if "!pendientes!"=="0" (
+    echo   No hay nada para subir: todo commiteado y todo publicado.
+    echo.
+    pause >nul
+    exit /b 0
+  )
+  rem Nada de parentesis en los echo de adentro de un bloque if: el ")" lo
+  rem cierra antes de tiempo y cmd se come la linea entera.
+  echo   No hay archivos sin commitear, pero quedaron !pendientes! commits
+  echo   sin subir:
+  echo   ------------------------------------------------------------
+  git log origin/main..HEAD --oneline
+  echo   ------------------------------------------------------------
   echo.
-  pause >nul
-  exit /b 0
+  set "ok="
+  set /p "ok=  Publicarlos? (S/N): "
+  if /i not "!ok!"=="S" (
+    echo.
+    echo   Cancelado. No se toco nada.
+    echo.
+    pause >nul
+    exit /b 1
+  )
+  goto :revisar
 )
 
 echo   Esto es lo que se va a subir:
 echo   ------------------------------------------------------------
 git status --short
+if not "!pendientes!"=="0" (
+  echo.
+  echo   Ademas van !pendientes! commits de antes que nunca se subieron:
+  git log origin/main..HEAD --oneline
+)
 echo   ------------------------------------------------------------
 echo.
 echo   Si aparece algo que no querias subir, cancela y sacalo primero.
@@ -62,6 +93,7 @@ if /i not "!ok!"=="S" (
   exit /b 1
 )
 
+:revisar
 echo.
 echo   [1/3] Revisando el codigo (lint + tipos + tests)...
 echo.
@@ -76,6 +108,8 @@ if errorlevel 1 (
   exit /b 1
 )
 
+if not defined haycambios goto :publicar
+
 echo.
 echo   [2/3] Guardando el commit...
 git add -A
@@ -88,6 +122,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
+:publicar
 echo.
 echo   [3/3] Subiendo a GitHub...
 git push
