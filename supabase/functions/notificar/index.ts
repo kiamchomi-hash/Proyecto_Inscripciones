@@ -230,10 +230,19 @@ Deno.serve(async (req: Request) => {
         return new Response(JSON.stringify({ ok: true, skipped: true }), { headers: { "Content-Type": "application/json" } });
     }
 
-    const [emailOk, telegramOk] = await Promise.all([
+    // allSettled y no all: los dos canales son independientes y ninguno tiene
+    // que poder tumbar al otro. sendEmail no solo devuelve false cuando Resend
+    // rechaza, tambien *lanza* si se cumple el timeout de 8s o si falla la red,
+    // y con Promise.all eso rechazaba todo y caia al catch, pudiendo cortar el
+    // envio de Telegram que iba en paralelo. Telegram es hoy el canal principal.
+    const [email, telegram] = await Promise.allSettled([
       sendEmail(message.subject, message.html),
       sendTelegram(message.telegram),
     ]);
+    const emailOk = email.status === "fulfilled" && email.value;
+    const telegramOk = telegram.status === "fulfilled" && telegram.value;
+    if (email.status === "rejected") console.error("Resend fallo:", email.reason);
+    if (telegram.status === "rejected") console.error("Telegram fallo:", telegram.reason);
 
     return new Response(JSON.stringify({ ok: true, email: emailOk, telegram: telegramOk }), {
       headers: { "Content-Type": "application/json" },
