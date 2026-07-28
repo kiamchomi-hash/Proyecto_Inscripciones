@@ -147,7 +147,9 @@ El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada
 
 ### Variables de entorno
 
-Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_EXPECTED_HOSTNAME`, `NEXT_PUBLIC_GA_ID`, `RESEND_API_KEY`. `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` los consume la Edge Function, no Next.
+Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_EXPECTED_HOSTNAME`, `NEXT_PUBLIC_GA_ID`, `RESEND_API_KEY`. `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` y `RESEND_FROM` los consume la Edge Function, no Next.
+
+`RESEND_FROM` es opcional y define el remitente de los avisos. Sin setear cae a `onboarding@resend.dev`, el dominio compartido de pruebas de Resend. **No setearla antes de que Resend dé por verificado `siglo21sur.com`**: rechaza los envíos con 403 y los avisos se cortan en silencio. Procedimiento completo en `PENDIENTES.md`.
 
 El `.env.local` de esta máquina tiene sólo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_GA_ID`. Alcanza para levantar el sitio y leer de la base, pero **cualquier POST a `/api/formularios` devuelve 503 en local** porque falta la service role, y `vercel env pull` no la trae (está marcada Sensitive). Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
 
