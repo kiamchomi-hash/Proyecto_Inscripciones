@@ -32,6 +32,14 @@ Nada abierto.
 
 ## Encontrado de paso
 
+- [x] ~~**Correr `sql/2026-07-28_planes_identidad_argentina.sql`.**~~ Hecho y verificado el 28/07: los 11 planes de la base coinciden carácter por carácter con el archivo (sólo difiere el fin de línea, por el pegado desde Windows) y producción ya sirve el temario nuevo — `/carreras/diplomatura-en-fraude-financiero-y-digital` abre en "Panorama del fraude financiero y digital" y no queda rastro del programa viejo.
+
+  Repuso el `plan_estudios` de las **11 carreras de convenio** desde las fichas oficiales (`Desktop\Academia Identidad Argentina\fichas-diplomaturas\*.txt`). Lo que había cargado eran resúmenes, no el temario real: de los 331 puntos de las fichas faltaban 162 en la base. El caso extremo era Fraude Financiero y Digital (`id 177`), que directamente tenía **otro programa** — abría en "Introducción al sistema financiero".
+
+  El archivo documenta arriba las limpiezas aplicadas sobre las fichas, que vienen de un PDF a dos columnas y arrastran artefactos (puntos pegados con `" - "`, rótulos "Unidad N", líneas cortadas al medio). **Dos decisiones quedaron para revisar**: los módulos 2 a 6 de Bienestar Integral no tienen título en la ficha (dice literal "MÓDULO 2") y se conservaron los de la base; y Mindfulness pasa de 8 módulos a los 4 de la ficha, sin perder contenido pero con un cambio visible.
+
+  **Origen del desfasaje sin resolver:** las fichas se regeneran solas desde las landings, pero nada vuelca eso a Supabase — la carga fue manual y quedó vieja. Mientras siga así, va a volver a pasar.
+
 - [ ] **El digest diario de clicks nunca corre.** `sql/2026-07-22_clicks_carreras.sql` programa un `pg_cron` a las 23:00 UTC que llama a la Edge Function `digest-clicks`, pero la tabla `cron.job` está **vacía** — ese bloque nunca se ejecutó, porque pedía reemplazar `<WEBHOOK_SECRET>` a mano. La función está desplegada y sin nadie que la invoque.
 
   **Listo para correr:** `sql/2026-07-27_cron_digest_clicks.sql` programa el job sacando el secreto vigente del trigger `notify_edge_function`, así que no hay nada que pegar. Incluye una invocación de prueba para no esperar a las 20hs y el `select` sobre `net._http_response` para ver si respondió 200.
