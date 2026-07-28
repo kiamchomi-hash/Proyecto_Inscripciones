@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit *)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint)",
+      "Bash(npm run check)",
+      "Bash(npm test)",
+      "Bash(npm run format:check)",
+      "Bash(npx vercel ls *)",
+      "mcp__gsc__inspect_url_enhanced",
+      "mcp__gsc__batch_url_inspection",
+      "mcp__gsc__get_advanced_search_analytics",
+      "mcp__gsc__get_search_analytics",
+      "mcp__gsc__get_search_by_page_query",
+      "mcp__gsc__get_performance_overview",
+      "mcp__gsc__compare_search_periods",
+      "mcp__gsc__check_indexing_issues",
+      "mcp__gsc__get_sitemaps",
+      "mcp__gsc__get_sitemap_details",
+      "mcp__gsc__list_sitemaps_enhanced",
+      "mcp__gsc__list_properties",
+      "mcp__gsc__get_site_details",
+      "mcp__gsc__get_capabilities",
+      "mcp__gsc__get_creator_info"
+    ]
+  }
+}
