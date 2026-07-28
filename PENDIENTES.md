@@ -54,9 +54,11 @@ Todo esto es **gratis**: el plan es el free, lo que se paga por año es sólo el
 
   Pasos: rotar en el dashboard de Cloudflare Turnstile → borrar la variable en Vercel → volver a crearla con el check **Sensitive** → redeploy. Ojo: una vez Sensitive no se puede volver a leer nunca, y `vercel env pull` la trae censurada, así que guardarla antes en el gestor de contraseñas y pegarla a mano en `.env.local`.
 
-- [ ] **Mismo tratamiento para `RESEND_API_KEY`.** Es igual de sensible y está como variable normal.
+- [x] ~~**Mismo tratamiento para `RESEND_API_KEY`.**~~ Ya está marcada Sensitive — verificado el 28/07, `vercel env pull` la devuelve como `[SENSITIVE]`.
 
-  `SUPABASE_SERVICE_ROLE_KEY` ya está marcada Sensitive — verificado el 27/07: `vercel env pull` la devuelve como `[SENSITIVE]`. Efecto lateral a tener presente: desde la máquina local ya no hay ninguna credencial con permiso de escritura sobre la base, así que todo `UPDATE`/`INSERT` va por el SQL Editor del dashboard.
+  `SUPABASE_SERVICE_ROLE_KEY` ya está marcada Sensitive — verificado el 27/07: `vercel env pull` la devuelve como `[SENSITIVE]`.
+
+  Estado del resto al 28/07, con `vercel env pull --environment=production`: `TURNSTILE_SECRET_KEY` **sigue legible** (35 caracteres en claro), y `GITHUB_PAT` (40 caracteres) y `RESEND_API` (36) **siguen ahí y también se leen enteros**. Efecto lateral a tener presente: desde la máquina local ya no hay ninguna credencial con permiso de escritura sobre la base, así que todo `UPDATE`/`INSERT` va por el SQL Editor del dashboard.
 
 - [ ] **Revisar y borrar variables sin uso en Vercel.** No aparecen en ningún lado del código:
   - `GITHUB_PAT` (creada hace ~120 días) — un token de GitHub en el runtime de la web. Revocarlo en GitHub, no solo borrarlo de Vercel.
