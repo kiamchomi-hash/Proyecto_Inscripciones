@@ -88,7 +88,7 @@ export function parseDocente(raw: string): { nombre: string; bio: string[] } {
 
 // ── Acceso a los slides ──
 
-export function getPortada(carrera: Carrera): SlidePortada | null {
+export function getPortada(carrera: Pick<Carrera, 'slides'>): SlidePortada | null {
   return (carrera.slides?.find(s => s.type === 'portada') as SlidePortada) ?? null;
 }
 

@@ -57,3 +57,5 @@ Esperado: `200` y `{"ok":true,"email":true,"telegram":true}`. Un `401` significa
 **Los PAT de Supabase no vencen y dan acceso a todos los proyectos de la cuenta.** Al 27/07 quedan vivos `codex-release` (`sbp_ae97…`, en uso) y `mercadolibrebot` (`sbp_bc7d…`). Conviene revisarlos cada tanto en https://supabase.com/dashboard/account/tokens y borrar el que deje de usarse.
 
 **En Resend no queda ninguna clave con acceso total.** Quedan `Onboarding` (Sending access, la que manda los avisos) y `topykly-dev`, del otro proyecto que comparte la cuenta.
+
+**Google Imágenes no es un canal que pague** — medido en GSC el 29/07: ~90 impresiones y 0 clicks en 3 meses, casi todo gente buscando el logo de la universidad. Lo barato ya se hizo (el sitemap declara las imágenes reales de cada página desde el 29/07); crear contenido visual nuevo para ese canal no se justifica. La única imagen que podría rankear con intención es una buena foto del frente del CAU, que ya está pedida arriba.
