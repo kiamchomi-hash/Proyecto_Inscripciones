@@ -283,6 +283,11 @@ pedir a mano rinde de verdad.
 
 # 3 · El cuello de botella ya no es la indexación
 
+> **Estado al 29/07/2026: atacado, sin medir todavía.** El 27/07 (`36e53d6`) se sacó
+> la marca duplicada del `<title>`, y el 29/07 se reescribieron título y description
+> de las 96 fichas — detalle abajo, en *Qué se hizo*. La próxima medición dirá si
+> movió el CTR; hasta entonces esto es una hipótesis desplegada, no un resultado.
+
 Ocho páginas están en **posición 8 a 11 con cero clics**:
 
 | Página | Impresiones | Posición |
@@ -302,6 +307,53 @@ al **0%** en 8,7.
 
 Reescribir esos títulos le pega a tráfico que ya existe, y es más barato que conseguir
 páginas nuevas.
+
+## Qué se hizo — 29/07/2026
+
+**El dato que ordenó las decisiones:** casi todas las consultas que traen impresiones
+son `"<carrera> siglo 21"` o `"siglo 21 <carrera>"` — "siglo 21 seguridad e higiene"
+(14), "actuario siglo 21" (8), "siglo 21 martillero publico" (6). O sea que **la marca
+es la mitad de lo que la persona escribió**, y es la mitad que Google resalta en negrita.
+
+Ojo con la fuente: el desglose por consulta subcuenta fuerte, porque Google anonimiza
+las consultas raras. `/sobre-nosotros` da 6 impresiones por consulta y 124 por página.
+**Para volumen hay que pedir la dimensión `page`; el desglose por query sirve para saber
+qué se busca, no cuánto.**
+
+**1. Títulos que no se cortan.** Eran 36 de 96 los que pasaban de 60 caracteres — el
+`??` del selector de sufijo pegaba `" | Siglo 21"` aunque no entrara, así que Google
+cortaba justo la marca. Ahora se prueba el nombre completo con el sufijo más informativo
+que entre y, si ninguno entra, se baja a `nombre_corto` (poblado en 94 de 96).
+
+| | antes | ahora |
+|---|--:|--:|
+| Títulos de más de 60 caracteres | 36 | **8** |
+| De esos, los que pierden la marca | 36 | **3** |
+| Largo medio | — | 54,8 |
+
+Los 5 que se pasan por poco lo hacen a propósito: `Martillero, Corredor Público y
+Corredor Inmobiliario | Siglo 21` son 63 caracteres, y la consulta que le trae
+impresiones es "siglo 21 martillero publico". Soltar la marca era soltar media consulta.
+
+**2. Descripciones con contenido propio.** Antes eran la misma plantilla en las 96 y
+media línea se iba en "atención cerca de Zona Sur y Oeste", que no es lo que se busca
+cuando se escribe "plan de estudio comercio internacional siglo 21". Ahora cada familia
+arranca por lo que no repite ninguna otra ficha:
+
+- **Siglo 21** (68) → la columna `enfoque`, que viene limpia y distinta en las 68:
+  "Prevención de Riesgos, Normativas OHSAS y Ergonomía."
+- **Teclab** (17) → el título técnico y la empresa cocreadora de la ficha oficial:
+  "Recibite de Técnico Superior en Redes Informáticas en 2 años… cocreada con Cisco."
+- **Identidad Argentina** (11) → duración, modalidad y certificación, sin nombrar a la
+  universidad, que no dicta estas diplomaturas.
+
+Además se les pusieron los acentos: la plantilla vieja publicaba "Estudia", "atencion",
+"inscripcion" y "Todavia no abrio" **en el resultado de Google**.
+
+**3. Verificado sobre el HTML del build**, no sobre el código: 96 fichas, 0 descripciones
+vacías, 0 títulos repetidos, 0 descripciones repetidas, largo medio 152 y ninguna sobre
+165. Y ninguna promete "Plan de estudios" en una ficha que no lo tiene — las 93 que
+renderizan la sección son exactamente las que marca `npm run auditar`.
 
 ---
 
@@ -498,3 +550,28 @@ impresiones y 0 clics en posición 6,4— y hoy devuelve 404.
 
 Mediados de agosto de 2026. Se compara contra la línea de base del 24/07 (23 de 96) y
 contra el estado del 27/07 (38 de 96).
+
+**Qué mirar además de la indexación:** el CTR de las páginas de la sección 3, que son
+las que tenían impresiones y cero clics. Son el único modo de saber si la reescritura
+de títulos y descripciones del 29/07 sirvió de algo. Línea de base para comparar, del
+30/06 al 28/07 y **por dimensión `page`**:
+
+| Página | Impresiones | Clics | Posición |
+|---|--:|--:|--:|
+| Higiene, Seguridad y Medio Ambiente | 72 | 0 | 8,5 |
+| Licenciatura en Finanzas | 61 | 0 | 7,4 |
+| Administración Agraria | 56 | 0 | 9,6 |
+| Investigación de la Escena del Crimen | 54 | 0 | 8,2 |
+| Actuario | 53 | 0 | 8,0 |
+| Logística Global | 49 | 0 | 7,6 |
+| Seguridad Informática | 48 | 0 | 9,5 |
+| Martillero y Corredor | 43 | 0 | 5,7 |
+| Comercio Internacional | 42 | 0 | 8,1 |
+| Bioinformática | 34 | 0 | 7,3 |
+| — referencia — | | | |
+| Agroinformática | 111 | 11 | 6,1 |
+| Marketing Digital (Teclab) | 97 | 2 | 8,2 |
+
+Agroinformática es la referencia de arriba: **9,9% de CTR en posición 6,1**. Si las
+otras se le acercaran aunque sea a la mitad, el sitio pasaría de 38 clics por mes a
+tres dígitos sin ganar una sola posición.

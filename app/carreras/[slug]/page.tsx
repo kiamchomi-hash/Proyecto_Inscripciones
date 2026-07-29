@@ -3,7 +3,8 @@ import { supabase } from '@/lib/supabase';
 import { notFound, permanentRedirect } from 'next/navigation';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, carreraFullName, esCarreraVisible } from '@/components/index/types';
-import { getFamiliaTeclab } from '@/components/index/teclab';
+import { getFamiliaTeclab, esTeclab, getFichaTeclab, parseEnfoqueTeclab } from '@/components/index/teclab';
+import { parseIAMeta, tienePlanDeEstudios } from '@/components/carreras/career-content';
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import IndexFooter from '@/components/index/footer';
@@ -36,6 +37,142 @@ function ogCarrera(carrera: Carrera): string {
   return '/imagenes/og/default.jpg';
 }
 
+// Google corta el <title> alrededor de los 60 caracteres.
+const MAX_TITULO = 60;
+
+// Pero el corte real se mide en pixeles, no en caracteres, asi que hay unos
+// pocos de margen. Se usan solo para los nombres que no entran de ninguna
+// forma: ahi vale mas un titulo que se pasa por poco y llega a mostrar la marca
+// que uno cortito que se queda sin ella. Mas alla de esto la marca sale cortada
+// a mitad de palabra, que es peor que no ponerla.
+const TOLERANCIA_TITULO = 66;
+
+// Y la description alrededor de los 160, tambien por pixeles. El presupuesto va
+// un poco por encima a proposito: pasarse hace que Google corte la ultima frase,
+// que es la que menos importa, mientras que quedarse corto la borra entera. Con
+// 158 habia fichas que perdian "Plan de estudios e inscripcion en el CAU Villa
+// Lugano" -- lo unico que invita a hacer algo -- por un solo caracter.
+const MAX_DESCRIPCION = 165;
+
+/**
+ * Titulo que entra entero en el resultado de Google.
+ *
+ * Se prueba el nombre completo con el sufijo mas informativo que entre y, si
+ * ninguno entra, se baja a `nombre_corto` -- el mismo nombre sin el prefijo,
+ * que ya viene cargado en Supabase para 94 de las 96 carreras.
+ *
+ * Antes el `??` del final pegaba " | Siglo 21" aunque no entrara, asi que 36 de
+ * las 96 fichas pasaban de 60 caracteres y Google cortaba justo la marca. Es la
+ * peor mitad para perder: las consultas que traen impresiones son casi todas
+ * "<carrera> siglo 21" o "siglo 21 <carrera>", o sea que la marca es la mitad
+ * de lo que la persona escribio y lo que espera ver en negrita.
+ */
+function tituloSEO(carrera: Carrera): string {
+  const nombreCompleto = carreraFullName(carrera);
+
+  // Las diplomaturas son de convenio con la Academia Identidad Argentina, no de
+  // la universidad: su titulo no la nombra.
+  const sufijos = carrera.nivel === 'Identidad Argentina'
+    ? [' | Academia Identidad Argentina', ' | Identidad Argentina']
+    : [' a Distancia | Siglo 21 Villa Lugano', ' | Siglo 21 Villa Lugano', ' | Siglo 21'];
+
+  // Del nombre mas informativo al mas corto, sin repetir: en las carreras de una
+  // sola palabra ("Abogacia") los dos son iguales.
+  const nombres = [nombreCompleto, carrera.nombre_corto]
+    .filter((n): n is string => Boolean(n))
+    .filter((n, i, arr) => arr.indexOf(n) === i);
+
+  for (const nombre of nombres) {
+    for (const sufijo of sufijos) {
+      if (nombre.length + sufijo.length <= MAX_TITULO) return `${nombre}${sufijo}`;
+    }
+  }
+
+  // Ninguno entra limpio. Se prueba el par mas corto que exista, aunque se pase:
+  // "Martillero, Corredor Publico y Corredor Inmobiliario | Siglo 21" son 63
+  // caracteres y la consulta que le trae impresiones es "siglo 21 martillero
+  // publico", o sea que soltar la marca seria soltar media consulta.
+  const masCorto = `${nombres[nombres.length - 1]}${sufijos[sufijos.length - 1]}`;
+  if (masCorto.length <= TOLERANCIA_TITULO) return masCorto;
+
+  // Ni asi: mejor el nombre entero sin marca que el nombre entero con la marca
+  // cortada a mitad de palabra.
+  return nombreCompleto;
+}
+
+/**
+ * Junta las partes de una description y suelta las de atras hasta entrar en el
+ * presupuesto. Por eso el orden importa: adelante va lo que distingue a esta
+ * carrera de las otras 95, atras lo que se repite en todas y no se extraña.
+ */
+function armarDescripcion(partes: (string | false | null | undefined)[]): string {
+  const vivas = partes.filter((p): p is string => Boolean(p));
+  while (vivas.length > 1 && vivas.join(' ').length > MAX_DESCRIPCION) vivas.pop();
+  return vivas.join(' ');
+}
+
+/**
+ * Description con contenido propio de la carrera.
+ *
+ * La anterior era la misma plantilla para las 96 fichas y gastaba media linea en
+ * "atencion cerca de Zona Sur y Oeste", que no es lo que se busca cuando se
+ * escribe "plan de estudio comercio internacional siglo 21". Ahora arranca por
+ * el dato que ninguna otra ficha repite: el enfoque en las de Siglo 21, el
+ * titulo tecnico en Teclab, la certificacion en las de convenio.
+ */
+function descripcionSEO(carrera: Carrera): string {
+  const nombreCompleto = carreraFullName(carrera);
+  const conPlan = tienePlanDeEstudios(carrera);
+
+  // Las `proximamente` estan anunciadas pero sin inscripcion abierta: la ficha
+  // capta la busqueda igual, y prometer inscripcion seria mentir.
+  const cierre = carrera.proximamente
+    ? 'Todavía no abrió la inscripción: dejanos tus datos y te avisamos.'
+    : conPlan
+      ? 'Plan de estudios e inscripción en el CAU Villa Lugano.'
+      : 'Inscripción y consultas en el CAU Villa Lugano.';
+
+  if (carrera.nivel === 'Identidad Argentina') {
+    const { modalidad } = parseIAMeta(carrera.enfoque || '');
+    // Nombre corto y no el completo: el largo se comia el cierre, que es la
+    // unica parte que invita a hacer algo. Pero algun nombre tiene que ir, y no
+    // por repetir el <title>: sin el, las diplomaturas que comparten duracion y
+    // modalidad quedaban con la description identica caracter por caracter, que
+    // es de las pocas cosas que Google penaliza de verdad.
+    const nombre = carrera.nombre_corto || nombreCompleto;
+    return armarDescripcion([
+      `${nombre} con la Academia Identidad Argentina: ${carrera.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`,
+      cierre,
+      'Certificación nacional e internacional.',
+    ]);
+  }
+
+  if (esTeclab(carrera)) {
+    const { titulo, modalidad } = parseEnfoqueTeclab(carrera.enfoque);
+    // El titulo de Teclab viene con el nombre en ingles entre parentesis y a
+    // veces con punto final ("... en la Nube (Cloud Administration)."). El
+    // parentesis se saca: son 20 caracteres que el <title> ya cubre.
+    const grado = (titulo || nombreCompleto).replace(/\s*\([^)]*\)/g, '').replace(/\.$/, '');
+    // El partner sale de la ficha oficial y no del campo "Cocreación" de
+    // Supabase, donde quedaron valores genericos que no son empresas.
+    const partner = getFichaTeclab(carrera)?.partner?.nombre;
+    return armarDescripcion([
+      `Recibite de ${grado} en ${carrera.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`,
+      cierre,
+      partner && `Carrera cocreada con ${partner}.`,
+    ]);
+  }
+
+  return armarDescripcion([
+    // El enfoque es la unica frase que ninguna otra carrera repite, y viene
+    // limpio en las 68: sin saltos de linea y de 21 a 68 caracteres.
+    `${carrera.enfoque.trim().replace(/\.$/, '')}.`,
+    'A distancia con Universidad Siglo 21.',
+    cierre,
+    `Duración: ${carrera.duracion}.`,
+  ]);
+}
+
 function findBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
   // Try exact match first
   const exact = carreras.find(c => carreraToSlug(c) === slug);
@@ -59,30 +196,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // universidad: ni el titulo, ni la descripcion, ni las keywords la nombran.
   const esIA = carrera.nivel === 'Identidad Argentina';
 
-  // Google corta el <title> alrededor de los 60 caracteres. Se elige el sufijo
-  // mas informativo que entre: antes quedaban titulos de 89 con "Siglo 21"
-  // repetido dos veces, porque a este title el layout le sumaba su template.
-  const sufijos = esIA
-    ? [
-        ' | Academia Identidad Argentina',
-        ' | Identidad Argentina',
-      ]
-    : [
-        ' a Distancia | Siglo 21 Villa Lugano',
-        ' | Siglo 21 Villa Lugano',
-        ' | Siglo 21',
-      ];
-  const sufijo = sufijos.find(s => nombreCompleto.length + s.length <= 62) ?? sufijos[sufijos.length - 1];
-  const title = `${nombreCompleto}${sufijo}`;
-
-  // El CAU si se nombra: es quien toma la inscripcion y sostiene el SEO local.
-  const description = esIA
-    ? carrera.proximamente
-      ? `${nombreCompleto} de la Academia Identidad Argentina: ${carrera.duracion}, online. Todavia no abrio la inscripcion, dejanos tus datos y te avisamos.`
-      : `Estudia ${nombreCompleto} online con la Academia Identidad Argentina. ${carrera.duracion}. Inscripcion y consultas en el CAU Villa Lugano.`
-    : carrera.proximamente
-      ? `${nombreCompleto} en Universidad Siglo 21: ${carrera.duracion}, a distancia. Todavia no abrio la inscripcion, dejanos tus datos y te avisamos.`
-      : `Estudia ${nombreCompleto} a distancia en Universidad Siglo 21. ${carrera.duracion}. Sede CAU Villa Lugano: atencion cerca de Zona Sur y Oeste.`;
+  const title = tituloSEO(carrera);
+  const description = descripcionSEO(carrera);
 
   const canonicalSlug = carreraToSlug(carrera);
 

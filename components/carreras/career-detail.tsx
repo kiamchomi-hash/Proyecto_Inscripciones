@@ -28,6 +28,7 @@ import {
   planSlideToAnios,
   planSlideToExtras,
   contarMaterias,
+  tienePlanDeEstudios,
 } from './career-content';
 
 interface Props {
@@ -196,11 +197,10 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   const extras = planSlide ? planSlideToExtras(planSlide) : [];
   const iaDocente = isIA && carrera.seccion_modalidad ? parseDocente(carrera.seccion_modalidad) : null;
   const iaModulos = isIA && carrera.plan_estudios ? parsePlanModulos(carrera.plan_estudios) : null;
-  const hasPlan = Boolean(
-    (iaModulos && iaModulos.length > 0) ||
-    anios.length > 0 ||
-    (!isIA && !isTeclab && carrera.plan_estudios),
-  );
+  // Mismo criterio que usa la meta description de /carreras/[slug] para decidir
+  // si puede prometer el plan, y que `npm run auditar` para marcar las carreras
+  // que no lo tienen. Vive en career-content.ts para que los tres no se separen.
+  const hasPlan = tienePlanDeEstudios(carrera);
 
   const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
