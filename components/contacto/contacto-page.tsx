@@ -129,9 +129,11 @@ function ContactForm() {
   const inputClass = "w-full bg-[#261820] border border-[#5a2838] rounded-lg px-3 py-1.5 text-xs text-[#e8d0d8] placeholder-white focus:outline-none focus:border-[#8a3050] transition-colors";
 
   return (
-    <div className="ct-channel-card rounded-2xl overflow-hidden">
-      {success ? (
-        <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+    <div className="ct-channel-card rounded-2xl overflow-hidden relative">
+      {/* El cartel de éxito va superpuesto, no en lugar del formulario: si lo
+          reemplazara, la tarjeta se achicaría y volvería a crecer a los 4 s. */}
+      {success && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
           <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: '#00c7b1' }}>
             <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -140,8 +142,8 @@ function ContactForm() {
           <p className="text-lg font-black text-white uppercase tracking-tight">Consulta enviada</p>
           <p className="text-sm" style={{ color: '#7ca19b' }}>Nos comunicaremos a la brevedad</p>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} noValidate>
+      )}
+      <form onSubmit={handleSubmit} noValidate className={success ? 'invisible' : undefined} aria-hidden={success}>
           {/* Header */}
           <div className="px-5 pt-4 pb-3 flex items-center gap-3" style={{ borderBottom: '1px solid #4a2030' }}>
             <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
@@ -218,7 +220,6 @@ function ContactForm() {
             </button>
           </div>
         </form>
-      )}
     </div>
   );
 }
