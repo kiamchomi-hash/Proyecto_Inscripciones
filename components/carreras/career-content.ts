@@ -9,6 +9,10 @@ import type {
   SlideCierre,
 } from '@/components/index/types';
 import type { TeclabPeriodo } from '@/components/index/teclab';
+// Primer import de runtime del modulo: hasta ahora solo traia tipos, que el type
+// stripping borra. O sea que este archivo ya no se puede abrir con node pelado
+// desde herramientas/ -- el alias `@/` lo resuelve el bundler, no Node.
+import { esTeclab, parsePlanTeclab } from '@/components/index/teclab';
 
 /** Separa el nombre en prefijo ("Licenciatura en") y nombre limpio. */
 export function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string } {
@@ -142,4 +146,30 @@ export function contarMaterias(slide: SlidePlanEstudios): number {
     (total, a) => total + a.cuatrimestres.reduce((n, c) => n + c.materias.length, 0),
     0,
   );
+}
+
+/**
+ * Si la ficha llega a pintar la seccion de plan de estudios. El dato vive en
+ * tres lugares distintos segun la familia -- modulos de texto en Identidad
+ * Argentina, periodos en Teclab, o la columna suelta en las de Siglo 21 -- asi
+ * que el criterio se comparte en vez de reescribirse en cada lado.
+ *
+ * Lo usa la meta description para decidir si puede prometer el plan. Prometerlo
+ * sin tenerlo es la peor version del problema que estamos arreglando: alguien
+ * hace clic buscando el plan, no lo encuentra y se vuelve a Google.
+ */
+export function tienePlanDeEstudios(carrera: Carrera): boolean {
+  if (esTeclab(carrera)) {
+    return periodosTeclabToAnios(parsePlanTeclab(carrera.plan_estudios)).length > 0;
+  }
+
+  const slide = getPlanSlide(carrera);
+  const conMaterias = Boolean(slide && contarMaterias(slide) > 0);
+
+  // parsePlanModulos('') devuelve un modulo vacio, no una lista vacia: sin este
+  // guarda toda carrera de convenio sin plan diria que si.
+  if (carrera.nivel === 'Identidad Argentina') {
+    return conMaterias || (Boolean(carrera.plan_estudios) && parsePlanModulos(carrera.plan_estudios!).length > 0);
+  }
+  return conMaterias || Boolean(carrera.plan_estudios);
 }
