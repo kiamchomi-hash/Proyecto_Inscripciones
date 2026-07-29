@@ -195,7 +195,38 @@ for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { 
 
   await sharp(buf).toFile(`${DIR_OG}/default.jpg`);
   if (DIR_EXTRA) await sharp(buf).toFile(`${DIR_EXTRA}/final-og-default.jpg`);
-  console.log(`default (sitio) — og ${Math.round(buf.length / 1024)} KB\n`);
+  console.log(`default (sitio) — og ${Math.round(buf.length / 1024)} KB`);
+}
+
+// Imagen por defecto de las fichas de Identidad Argentina. Con la del sitio, las 11
+// diplomaturas de convenio se compartirian con el cartel de Siglo 21 encima.
+{
+  const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${IA_TINTA}" stop-opacity="0.98"/>
+      <stop offset="52%" stop-color="${IA_TINTA}" stop-opacity="0.91"/>
+      <stop offset="100%" stop-color="${IA_TINTA}" stop-opacity="0.12"/>
+    </linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="url(#g)"/>
+    <text x="76" y="92" font-family="${FUENTE}" font-size="27" font-weight="800" fill="#ffffff" letter-spacing="3.5">ACADEMIA IDENTIDAD ARGENTINA</text>
+    <rect x="76" y="112" width="58" height="5" fill="${IA_AMARILLO}"/>
+    <text font-family="${FUENTE}" font-size="60" font-weight="800" fill="#ffffff">
+      <tspan x="76" y="282">Diplomaturas cortas,</tspan>
+      <tspan x="76" y="356">100% online</tspan>
+    </text>
+    <text x="76" y="418" font-family="${FUENTE}" font-size="27" font-weight="600" fill="rgba(255,255,255,0.80)">De 1 a 6 meses, con certificación</text>
+    ${IA_ISOTIPO}
+  </svg>`;
+
+  const buf = await sharp('public/imagenes/Modales/Licenciatura en Relaciones Públicas e Institucionales/Foto-hero-relaciones-publicas-e-institucionales.webp')
+    .resize(W, H, { fit: 'cover', position: 'attention', kernel: 'lanczos3' })
+    .composite([{ input: Buffer.from(svg), top: 0, left: 0 }])
+    .jpeg({ quality: 82, mozjpeg: true })
+    .toBuffer();
+
+  await sharp(buf).toFile(`${DIR_OG}/default-identidad-argentina.jpg`);
+  if (DIR_EXTRA) await sharp(buf).toFile(`${DIR_EXTRA}/final-og-default-ia.jpg`);
+  console.log(`default (Identidad Argentina) — og ${Math.round(buf.length / 1024)} KB\n`);
 }
 
 for (const a of ARTICULOS) {
