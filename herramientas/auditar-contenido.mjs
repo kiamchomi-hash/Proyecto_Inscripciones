@@ -12,6 +12,7 @@
 // Importa esCarreraVisible() del modulo real (Node 24 strippea los tipos): si
 // manana se agrega una categoria, la auditoria la toma sola.
 
+import { existsSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { carreraToSlug, esCarreraVisible, getCategoryForCarrera } from '../components/index/types.ts';
 
@@ -180,7 +181,13 @@ if (errNovedades) {
       slugsNovedad.get(n.slug).push(n.id);
     }
     if (!n.imagen_url || !n.imagen_url.trim()) {
-      problema('Novedades publicadas sin imagen (og:image vacio al compartir)', nombre);
+      problema('Novedades publicadas sin imagen (tarjeta y cabecera vacias)', nombre);
+    }
+    // La imagen para compartir no vive en la base: se sirve por convencion de ruta
+    // desde generateMetadata. Si falta el archivo, el og:image apunta a un 404 y no
+    // hay forma de notarlo desde la base — por eso se chequea el disco.
+    if (n.slug && n.slug.trim() && !existsSync(`public/imagenes/og/${n.slug}.jpg`)) {
+      problema('Novedades sin imagen para compartir (correr `node herramientas/generar-og.mjs`)', nombre);
     }
     if (!n.extracto || !n.extracto.trim()) {
       aviso('Novedades publicadas sin extracto', nombre);

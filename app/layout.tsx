@@ -27,11 +27,16 @@ export const metadata: Metadata = {
     siteName: 'Universidad Siglo 21 | CAU Villa Lugano',
     title: 'Universidad Siglo 21 | CAU Villa Lugano',
     description: 'Carreras universitarias a distancia en Villa Lugano. ¡Inscribite hoy!',
+    // Miniatura por defecto de todo el sitio: sin esto, home y fichas de carrera se
+    // comparten sin imagen. Cada pagina que defina su propio openGraph.images la pisa.
+    // La genera `node herramientas/generar-og.mjs`.
+    images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'CAU Villa Lugano — Universidad Siglo 21 a distancia' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Universidad Siglo 21 | CAU Villa Lugano',
     description: 'Carreras universitarias a distancia en Villa Lugano. ¡Inscribite hoy!',
+    images: ['/imagenes/og/default.jpg'],
   },
   verification: {
     google: 'google2ba266d8a709b848',
