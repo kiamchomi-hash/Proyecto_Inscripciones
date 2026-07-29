@@ -226,7 +226,61 @@ for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { 
 
   await sharp(buf).toFile(`${DIR_OG}/default-identidad-argentina.jpg`);
   if (DIR_EXTRA) await sharp(buf).toFile(`${DIR_EXTRA}/final-og-default-ia.jpg`);
-  console.log(`default (Identidad Argentina) — og ${Math.round(buf.length / 1024)} KB\n`);
+  console.log(`default (Identidad Argentina) — og ${Math.round(buf.length / 1024)} KB`);
+}
+
+// Portadas de Teclab. Es el Instituto Tecnico Superior, otra marca: hasta ahora sus
+// 17 tecnicaturas se compartian con la portada de Siglo 21. Van las dos esteticas
+// del render, cian para Tecnologia y violeta para Gestion, sobre tinta #071822.
+{
+  const TECLAB_INK = '#071822';
+  const FAMILIAS = [
+    { id: 'tecnologia', etiqueta: 'Tecnología', acento: '#2ee7d7',
+      linea1: 'Tecnicaturas en', linea2: 'tecnología',
+      bajada: 'Programación, Data Science, Cloud, Redes',
+      foto: 'public/imagenes/teclab/carreras/programacion.webp' },
+    { id: 'gestion', etiqueta: 'Gestión', acento: '#8e2cf2',
+      linea1: 'Tecnicaturas en', linea2: 'gestión y negocios',
+      bajada: 'Marketing, Seguros, Hotelería, Eventos',
+      // venta-directa recortaba a una escena a contraluz, casi negra.
+      foto: 'public/imagenes/teclab/carreras/inbound-marketing.webp' },
+  ];
+
+  const logo = await sharp('public/imagenes/teclab/logo-teclab.webp')
+    .resize({ width: 210 })
+    .toBuffer();
+
+  for (const f of FAMILIAS) {
+    const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="${TECLAB_INK}" stop-opacity="0.98"/>
+        <stop offset="52%" stop-color="${TECLAB_INK}" stop-opacity="0.91"/>
+        <stop offset="100%" stop-color="${TECLAB_INK}" stop-opacity="0.12"/>
+      </linearGradient></defs>
+      <rect width="${W}" height="${H}" fill="url(#g)"/>
+      <text x="76" y="92" font-family="${FUENTE}" font-size="25" font-weight="800" fill="${f.acento}" letter-spacing="3.5">TECLAB · ${esc(f.etiqueta.toUpperCase())}</text>
+      <rect x="76" y="112" width="58" height="5" fill="${f.acento}"/>
+      <text font-family="${FUENTE}" font-size="60" font-weight="800" fill="#ffffff">
+        <tspan x="76" y="286">${f.linea1}</tspan>
+        <tspan x="76" y="360">${f.linea2}</tspan>
+      </text>
+      <text x="76" y="422" font-family="${FUENTE}" font-size="26" font-weight="600" fill="rgba(255,255,255,0.78)">${esc(f.bajada)}</text>
+    </svg>`;
+
+    const buf = await sharp(f.foto)
+      .resize(W, H, { fit: 'cover', position: 'attention', kernel: 'lanczos3' })
+      .composite([
+        { input: Buffer.from(svg), top: 0, left: 0 },
+        { input: logo, top: 494, left: 76 },
+      ])
+      .jpeg({ quality: 82, mozjpeg: true })
+      .toBuffer();
+
+    await sharp(buf).toFile(`${DIR_OG}/default-teclab-${f.id}.jpg`);
+    if (DIR_EXTRA) await sharp(buf).toFile(`${DIR_EXTRA}/final-og-teclab-${f.id}.jpg`);
+    console.log(`default (Teclab ${f.etiqueta}) — og ${Math.round(buf.length / 1024)} KB`);
+  }
+  console.log('');
 }
 
 for (const a of ARTICULOS) {
