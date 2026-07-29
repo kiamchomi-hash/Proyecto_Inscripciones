@@ -42,6 +42,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!data) return { title: 'Novedad no encontrada' };
 
+  // La imagen para compartir no es la misma que ilustra el articulo: lleva el titulo
+  // compuesto encima, que al lado del <h1> quedaria duplicado. Vive en /imagenes/og/
+  // bajo el mismo slug y la genera `herramientas/generar-og.mjs`; si falta, se cae a
+  // la foto limpia de imagen_url. `npm run auditar` avisa cuando alguna no esta.
+  const og = `/imagenes/og/${slug}.jpg`;
+
   return {
     title: data.titulo,
     description: data.extracto || `${data.titulo} — CAU Villa Lugano, Universidad Siglo 21.`,
@@ -49,8 +55,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: data.titulo,
       description: data.extracto || undefined,
-      images: data.imagen_url ? [data.imagen_url] : undefined,
+      images: [og, ...(data.imagen_url ? [data.imagen_url] : [])],
     },
+    // Sin esto hereda el twitter:image del layout y X muestra la imagen por defecto
+    // en vez de la del articulo: twitter:image gana sobre og:image cuando esta.
+    twitter: { title: data.titulo, description: data.extracto || undefined, images: [og] },
   };
 }
 
