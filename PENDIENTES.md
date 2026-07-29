@@ -1,6 +1,6 @@
 # Pendientes
 
-Última actualización: 2026-07-27
+Última actualización: 2026-07-29
 
 ## Urgente
 
@@ -87,6 +87,21 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
   Estado resultante: quedan `Onboarding` (Sending access, la de los avisos) y `topykly-dev` (Sending access, el otro proyecto). **Ninguna clave con acceso total en la cuenta.**
 
 ## Encontrado de paso
+
+- [x] ~~**Imágenes para compartir en todo el sitio.**~~ Hecho y verificado en producción el 29/07. **Ninguna página tenía `og:image`**: ni la home, ni las 96 fichas de carrera, ni los 10 artículos. Todo link compartido por WhatsApp salía sin miniatura.
+
+  Se generaron 23 imágenes de 1200×630 con `herramientas/generar-og.mjs` (sharp, a partir de las fotos que ya estaban en `public/`), y se corrió `sql/2026-07-29_novedades_imagenes.sql`. La auditoría bajó de 14 problemas a 4.
+
+  **Dos derivados por artículo, y el motivo importa:** `imagen_url` no alimenta solo el og — también la tarjeta del listado y la cabecera del artículo. La compuesta lleva el título encima, que al lado del `<h1>` quedaría duplicado; por eso a la base va la foto limpia y la compuesta se sirve por convención de ruta desde `/imagenes/og/<slug>.jpg`. Como esa no está en la base, `npm run auditar` ahora chequea el disco: un artículo nuevo sin generar dejaría el og:image en 404 sin que nada lo delate.
+
+  **La trampa que costó dos deploys:** declarar `openGraph` dentro de un `generateMetadata` **reemplaza** el del layout, no lo completa. Por eso el fallback global no alcanzó para las fichas de carrera, que declaran el suyo. Lo mismo con `twitter:image`, que además gana sobre `og:image` cuando está presente.
+
+  **Identidad Argentina va con marca propia** (`default-identidad-argentina.jpg` y la del artículo): sin sello CAU, sin verde institucional y sin el dominio escrito encima. Son diplomaturas de convenio, no de Siglo 21.
+
+- [ ] **Falta una foto decente de la entrada del CAU.** La única imagen del local es `public/imagenes/imagenes_cau/entrada_estetica.png`, de 475×598: estirada a 1200×630 queda blanda, y el recorte automático agarra el logo de la marquesina en vez del cartel. Hoy la usa el og de "Dónde queda el CAU Villa Lugano".
+
+  Con una foto sacada de frente con cualquier celular actual se resuelve: hay que dejarla en `public/imagenes/imagenes_cau/` y volver a correr `node herramientas/generar-og.mjs` apuntando esa ruta en la entrada `#69` del script. La alternativa —usar el campus— se ve nítida pero no es la sede de Lugano, que es justo lo que el artículo explica.
+
 
 - [x] ~~**Correr `sql/2026-07-28_planes_identidad_argentina.sql`.**~~ Hecho y verificado el 28/07: los 11 planes de la base coinciden carácter por carácter con el archivo (sólo difiere el fin de línea, por el pegado desde Windows) y producción ya sirve el temario nuevo — `/carreras/diplomatura-en-fraude-financiero-y-digital` abre en "Panorama del fraude financiero y digital" y no queda rastro del programa viejo.
 
