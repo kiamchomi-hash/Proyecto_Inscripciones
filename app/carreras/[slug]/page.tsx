@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { notFound, permanentRedirect } from 'next/navigation';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, carreraFullName, esCarreraVisible } from '@/components/index/types';
+import { getFamiliaTeclab } from '@/components/index/teclab';
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import IndexFooter from '@/components/index/footer';
@@ -25,12 +26,14 @@ async function getCarreras() {
   return ((data || []) as Carrera[]).filter(esCarreraVisible);
 }
 
-// Miniatura para compartir. Las diplomaturas de convenio no son Siglo 21, asi que
-// no pueden salir con la portada institucional. Las genera `herramientas/generar-og.mjs`.
+// Miniatura para compartir, una por familia. Ni Teclab ni las diplomaturas de
+// convenio son Siglo 21: cada marca lleva su portada, con sus colores y su logo, y
+// ninguna de las dos menciona a la universidad. Las genera `herramientas/generar-og.mjs`.
 function ogCarrera(carrera: Carrera): string {
-  return carrera.nivel === 'Identidad Argentina'
-    ? '/imagenes/og/default-identidad-argentina.jpg'
-    : '/imagenes/og/default.jpg';
+  if (carrera.nivel === 'Identidad Argentina') return '/imagenes/og/default-identidad-argentina.jpg';
+  const familia = getFamiliaTeclab(carrera);
+  if (familia) return `/imagenes/og/default-teclab-${familia}.jpg`;
+  return '/imagenes/og/default.jpg';
 }
 
 function findBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
