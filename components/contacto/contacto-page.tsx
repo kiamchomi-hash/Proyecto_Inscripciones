@@ -62,11 +62,13 @@ function ContactForm() {
   // Espeja al PHONE de app/api/formularios/route.ts, pero contando dígitos en vez de
   // caracteres: así el server nunca rechaza un teléfono que acá dimos por bueno.
   const telefonoTrim = telefono.trim();
+  // Los mensajes van cortos a propósito: el hueco que los aloja mide una línea fija,
+  // así aparecen y desaparecen sin mover el resto del formulario.
   const telefonoError =
     telefonoTrim === '' ? ''
-    : !/^[\d\s()+-]+$/.test(telefonoTrim) ? 'El teléfono solo puede tener números, espacios y los signos + - ( ).'
-    : telefonoTrim.replace(/\D/g, '').length < 8 ? 'Ingresá el teléfono completo con característica: al menos 8 dígitos.'
-    : telefonoTrim.length > 30 ? 'El teléfono es demasiado largo.'
+    : !/^[\d\s()+-]+$/.test(telefonoTrim) ? 'Solo números, espacios y + - ( ).'
+    : telefonoTrim.replace(/\D/g, '').length < 8 ? 'Ingresá al menos 8 dígitos.'
+    : telefonoTrim.length > 30 ? 'Teléfono demasiado largo.'
     : '';
   const telefonoInvalid = telefonoError !== '';
 
@@ -171,7 +173,7 @@ function ContactForm() {
                 maxLength={100}
                 className={`${inputClass} ${emailInvalid ? '!border-red-400/60' : ''}`}
               />
-              {emailInvalid && <p className="text-[11px] text-red-400">El formato del email no es válido.</p>}
+              <p className="text-[11px] leading-4 min-h-4 text-red-400">{emailInvalid ? 'El formato del email no es válido.' : ''}</p>
             </div>
 
             <div className="space-y-1">
@@ -183,7 +185,7 @@ function ContactForm() {
                 maxLength={100}
                 className={`${inputClass} ${telefonoInvalid ? '!border-red-400/60' : ''}`}
               />
-              {telefonoInvalid && <p className="text-[11px] text-red-400">{telefonoError}</p>}
+              <p className="text-[11px] leading-4 min-h-4 text-red-400">{telefonoError}</p>
             </div>
 
             <input type="text" placeholder="Localidad" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={inputClass} />
@@ -201,9 +203,9 @@ function ContactForm() {
               onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }}
             />
 
-            {captchaExpirado && (
-              <p className="text-[11px] text-amber-300">El captcha venció por inactividad. Volvé a tildarlo para enviar.</p>
-            )}
+            <p className="text-[11px] leading-4 min-h-4 text-amber-300">
+              {captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}
+            </p>
 
             {error && <p className="text-[11px] text-red-400">{error}</p>}
 

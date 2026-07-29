@@ -69,11 +69,13 @@ export default function EnrollmentForm({ carreras }: Props) {
   // Espeja al PHONE de app/api/formularios/route.ts, pero contando dígitos en vez de
   // caracteres: así el server nunca rechaza un teléfono que acá dimos por bueno.
   const telefonoTrim = telefono.trim();
+  // Los mensajes van cortos a propósito: el hueco que los aloja mide una línea fija,
+  // así aparecen y desaparecen sin mover el resto del formulario.
   const telefonoError =
     telefonoTrim === '' ? ''
-    : !/^[\d\s()+-]+$/.test(telefonoTrim) ? 'El teléfono solo puede tener números, espacios y los signos + - ( ).'
-    : telefonoTrim.replace(/\D/g, '').length < 8 ? 'Ingresá el teléfono completo con característica: al menos 8 dígitos.'
-    : telefonoTrim.length > 30 ? 'El teléfono es demasiado largo.'
+    : !/^[\d\s()+-]+$/.test(telefonoTrim) ? 'Solo números, espacios y + - ( ).'
+    : telefonoTrim.replace(/\D/g, '').length < 8 ? 'Ingresá al menos 8 dígitos.'
+    : telefonoTrim.length > 30 ? 'Teléfono demasiado largo.'
     : '';
   const telefonoInvalid = telefonoError !== '';
 
@@ -381,9 +383,9 @@ export default function EnrollmentForm({ carreras }: Props) {
                       maxLength={100}
                       className={`w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors ${emailInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60'}`}
                     />
-                    {emailInvalid && (
-                      <p className="text-[11px] text-red-400 mt-0.5">El formato del email no es válido.</p>
-                    )}
+                    <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">
+                      {emailInvalid ? 'El formato del email no es válido.' : ''}
+                    </p>
                   </div>
 
                   <div>
@@ -399,9 +401,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                       maxLength={100}
                       className={`w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors ${telefonoInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60'}`}
                     />
-                    {telefonoInvalid && (
-                      <p className="text-[11px] text-red-400 mt-0.5">{telefonoError}</p>
-                    )}
+                    <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{telefonoError}</p>
                   </div>
                 </div>
 
@@ -434,9 +434,9 @@ export default function EnrollmentForm({ carreras }: Props) {
                 onVerify={(token) => { setTurnstileToken(token); setCaptchaExpirado(false); }}
                 onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }}
               />
-              {captchaExpirado && (
-                <p className="text-[11px] text-amber-300">El captcha venció por inactividad. Volvé a tildarlo para enviar.</p>
-              )}
+              <p className="text-[11px] leading-4 min-h-4 text-amber-300">
+                {captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}
+              </p>
               <button
                 type="submit"
                 disabled={!isValid || submitting}
