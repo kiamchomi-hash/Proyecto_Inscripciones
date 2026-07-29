@@ -13,13 +13,13 @@ export const TECLAB_INK = '#071822';
 /** Las dos familias de carreras, cada una con su acento. */
 export type TeclabFamilia = 'tecnologia' | 'gestion';
 
-export function getFamiliaTeclab(c: Carrera): TeclabFamilia | null {
+export function getFamiliaTeclab(c: Pick<Carrera, 'nivel'>): TeclabFamilia | null {
   if (c.nivel === 'Teclab - Tecnología') return 'tecnologia';
   if (c.nivel === 'Teclab - Gestión') return 'gestion';
   return null;
 }
 
-export function esTeclab(c: Carrera): boolean {
+export function esTeclab(c: Pick<Carrera, 'nivel'>): boolean {
   return getFamiliaTeclab(c) !== null;
 }
 
