@@ -314,7 +314,9 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
   const cols = modoManana ? 'grid-cols-4' : 'grid-cols-3';
   const parsedBloqueados = useMemo(() => parseHorariosBloqueados(horariosBloqueados || []), [horariosBloqueados]);
   const bloqueadosSet = parsedBloqueados.global;
-  const [showTurnstile, setShowTurnstile] = useState(false);
+  // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const [captchaPendiente, setCaptchaPendiente] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [confirmAction, setConfirmAction] = useState<'same' | 'perday'>('same');
   const pendingSubmitRef = useRef<'same' | 'perday' | null>(null);
@@ -352,7 +354,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
       return false;
     } finally {
       setTurnstileToken('');
-      setShowTurnstile(false);
+      setCaptchaKey(k => k + 1);
     }
   };
 
@@ -395,6 +397,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
 
   const handleTurnstileVerify = (token: string) => {
     setTurnstileToken(token);
+    setCaptchaPendiente(false);
     const action = pendingSubmitRef.current;
     pendingSubmitRef.current = null;
     if (action === 'same') void handleChooseSame(token);
@@ -407,7 +410,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
       else void handleSubmitPerDay(turnstileToken);
     } else {
       pendingSubmitRef.current = action;
-      setShowTurnstile(true);
+      setCaptchaPendiente(true);
     }
   };
 
@@ -478,7 +481,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
                 : `Días solicitados: ${submittedDays.map(formatDay).join(', ')}`}
             </span>
             <button
-              onClick={() => { setMode('picking'); setSelectedHours(new Set()); setPerDayHours({}); setSubmittedDays([]); setTurnstileToken(''); setShowTurnstile(false); setBloqueoSemanal(false); onReset(); }}
+              onClick={() => { setMode('picking'); setSelectedHours(new Set()); setPerDayHours({}); setSubmittedDays([]); setTurnstileToken(''); setCaptchaPendiente(false); setBloqueoSemanal(false); onReset(); }}
               className="mt-1 px-4 py-1.5 rounded-full text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
               style={{ background: 'rgba(0,199,177,0.1)', border: '1px solid rgba(0,199,177,0.3)', color: 'var(--ca-teal)' }}
             >
@@ -547,12 +550,13 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
                 <span className="block text-[0.58rem] font-normal uppercase tracking-widest mt-0.5" style={{ color: bloqueoSemanal ? 'rgba(255,255,255,0.6)' : 'rgba(230,155,5,0.5)' }}>Descuento por continuidad</span>
               </button>
             )}
-            {showTurnstile && !turnstileToken && (
-              <TurnstileWidget
-                onVerify={handleTurnstileVerify}
-                onExpire={() => setTurnstileToken('')}
-              />
-            )}
+            {/* Montado desde que se entra al paso: si apareciera recién al tocar
+                Confirmar, correría el botón 71 px justo debajo del dedo. */}
+            <TurnstileWidget
+              key={captchaKey}
+              onVerify={handleTurnstileVerify}
+              onExpire={() => setTurnstileToken('')}
+            />
             <button
               onClick={() => {
                 onInteract?.();
@@ -576,8 +580,13 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
                   : 'Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx'}
               </div>
             )}
+            {captchaPendiente && !turnstileToken && datosCompletos && (
+              <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#e69b05' }}>
+                Marcá la casilla de verificación y la solicitud se envía sola.
+              </div>
+            )}
             <button
-              onClick={() => { setMode('picking'); setShowTurnstile(false); setTurnstileToken(''); setShowInputError(false); }}
+              onClick={() => { setMode('picking'); setCaptchaPendiente(false); setTurnstileToken(''); setShowInputError(false); }}
               className="w-full py-1.5 rounded-lg text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
               style={{ background: 'rgba(200,50,50,0.1)', border: '1.5px solid rgba(220,60,60,0.7)', color: '#e8a0a0' }}
             >
