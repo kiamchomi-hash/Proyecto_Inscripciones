@@ -111,9 +111,21 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
 
   **Origen del desfasaje sin resolver:** las fichas se regeneran solas desde las landings, pero nada vuelca eso a Supabase — la carga fue manual y quedó vieja. Mientras siga así, va a volver a pasar.
 
-- [ ] **El digest diario de clicks nunca corre.** `sql/2026-07-22_clicks_carreras.sql` programa un `pg_cron` a las 23:00 UTC que llama a la Edge Function `digest-clicks`, pero la tabla `cron.job` está **vacía** — ese bloque nunca se ejecutó, porque pedía reemplazar `<WEBHOOK_SECRET>` a mano. La función está desplegada y sin nadie que la invoque.
+- [x] ~~**El digest diario de clicks nunca corría.**~~ Resuelto y verificado de punta a punta el 29/07: llegó el mensaje por Telegram y `net._http_response` devolvió `200` con `{"ok":true,"telegram":true}`.
 
-  **Listo para correr:** `sql/2026-07-27_cron_digest_clicks.sql` programa el job sacando el secreto vigente del trigger `notify_edge_function`, así que no hay nada que pegar. Incluye una invocación de prueba para no esperar a las 20hs y el `select` sobre `net._http_response` para ver si respondió 200.
+  **Estaban rotas las tres piezas, no una.** Acá figuraba que sólo faltaba programar el cron; era incorrecto:
+
+  1. **La tabla `career_clicks` no existía.** El bloque `BEGIN…COMMIT` de `sql/2026-07-22_clicks_carreras.sql` nunca se había ejecutado, así que tampoco existía la RPC `registrar_click_carrera`. **Consecuencia que nadie había notado: `/api/track-click` venía fallando desde el 22/07** — devolvía `{"ok":false}` con status **200**, o sea que fallaba en silencio, y ningún click se registró en esa semana. Los datos de ese período están perdidos; no se pueden reconstruir.
+  2. **La Edge Function `digest-clicks` no estaba desplegada.**
+  3. **El `pg_cron` no estaba programado** — `cron.job` vacía.
+
+  **La trampa del deploy, que es lo reutilizable.** Al crearla desde el dashboard, la función quedó con `name` = `digest-clicks` pero `slug` = `rapid-responder`. **La URL se arma con el slug, no con el nombre**, así que la lista mostraba el nombre correcto mientras `/functions/v1/digest-clicks` devolvía 404. Encima quedó con `verify_jwt: true`, que habría rechazado el `Bearer <WEBHOOK_SECRET>` del cron por no ser un JWT. Ambas cosas sólo se ven con `npx supabase functions list`, no en la UI.
+
+  Se resolvió desplegando por CLI, que fija el slug y permite la bandera: `npx supabase functions deploy digest-clicks --project-ref yuwfkdehaowkselkhtck --no-verify-jwt` (requiere `npx supabase login` una vez; no hace falta Docker ni instalar nada). La función huérfana `rapid-responder` se borró.
+
+  **Correr esos scripts por partes, no todo junto:** `pg_net` recién despacha el pedido cuando la transacción commitea, así que el `select` sobre `net._http_response` ejecutado en la misma tanda no muestra nada y parece que falló.
+
+  Queda como mejora menor: el digest se manda a las 20:00 pero informa **el día en curso**, así que se pierde lo que pase entre las 20 y la medianoche.
 
 ## Para tener presente
 
