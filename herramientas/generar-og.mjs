@@ -229,9 +229,13 @@ for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { 
   console.log(`default (Identidad Argentina) — og ${Math.round(buf.length / 1024)} KB`);
 }
 
-// Portadas de Teclab. Es el Instituto Tecnico Superior, otra marca: hasta ahora sus
-// 17 tecnicaturas se compartian con la portada de Siglo 21. Van las dos esteticas
-// del render, cian para Tecnologia y violeta para Gestion, sobre tinta #071822.
+// Portadas de Teclab: las dos esteticas del render, cian para Tecnologia y violeta
+// para Gestion, sobre tinta #071822.
+//
+// Van con el logo co-branded "teclab + Universidad Siglo 21", no con el de Teclab
+// solo: Teclab se dicta por convenio con la universidad, asi que aca la marca
+// compartida corresponde. Es lo contrario del caso de Identidad Argentina, donde no
+// hay convenio con Siglo 21 y la portada no puede nombrarla.
 {
   const TECLAB_INK = '#071822';
   const FAMILIAS = [
@@ -246,9 +250,10 @@ for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { 
       foto: 'public/imagenes/teclab/carreras/inbound-marketing.webp' },
   ];
 
-  const logo = await sharp('public/imagenes/teclab/logo-teclab.webp')
-    .resize({ width: 210 })
+  const logo = await sharp('public/imagenes/teclab/logo-teclab-siglo21.webp')
+    .resize({ width: 300 })
     .toBuffer();
+  const altoLogo = (await sharp(logo).metadata()).height;
 
   for (const f of FAMILIAS) {
     const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
@@ -271,7 +276,7 @@ for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { 
       .resize(W, H, { fit: 'cover', position: 'attention', kernel: 'lanczos3' })
       .composite([
         { input: Buffer.from(svg), top: 0, left: 0 },
-        { input: logo, top: 494, left: 76 },
+        { input: logo, top: 560 - altoLogo, left: 76 },
       ])
       .jpeg({ quality: 82, mozjpeg: true })
       .toBuffer();
