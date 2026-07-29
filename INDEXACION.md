@@ -71,7 +71,7 @@ verla para cambiar de opinión.
 
 ---
 
-# 2 · Cola de pedidos manuales — 40 carreras
+# 2 · Cola de pedidos manuales — 10 recrawls + 40 sin indexar
 
 **Pedir a mano dejó de ser urgente para Grado y sigue siendo lo único que mueve el
 resto.** Las 36 de Grado se indexaron solas; los otros grupos llevan tres semanas
@@ -83,8 +83,40 @@ botón **"Solicitar indexación"** → esperás ~1 min. Tope práctico: ~10-12 p
 propiedad. Al pasarte devuelve *"Se superó la cuota diaria de esta función"* y seguís
 al día siguiente.
 
-Orden: primero Siglo 21 (Pregrado y CCC), después Teclab, después Identidad Argentina.
-Son 4 días.
+**Empezá por el Día 0, no por el Día 1.** El Día 0 no son carreras sin indexar: son
+las páginas que ya tienen impresiones y a las que Google todavía no les leyó el título
+nuevo del 29/07 (el porqué está en la sección 3). Convierte tráfico que ya existe, y
+además es lo único que hace medible la reescritura en agosto.
+
+Después: Siglo 21 (Pregrado y CCC), Teclab, Identidad Argentina. Son 5 días en total.
+
+### Día 0 — recrawl de las páginas con tráfico
+
+- [ ] **Actuario** — un mes sin rastrear (27/06), 53 impresiones, 0 clics
+      https://www.siglo21sur.com/carreras/actuario
+- [ ] **Sobre nosotros** — 124 impresiones, la página con más de todo el sitio
+      https://www.siglo21sur.com/sobre-nosotros
+- [ ] **Lic. en Higiene, Seguridad y Medio Ambiente del Trabajo** — 72 impresiones
+      https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo
+- [ ] **Lic. en Finanzas** — 61 impresiones
+      https://www.siglo21sur.com/carreras/licenciatura-en-finanzas
+- [ ] **Lic. en Administración Agraria** — 56 impresiones
+      https://www.siglo21sur.com/carreras/licenciatura-en-administracion-agraria
+- [ ] **Tec. en Investigación de la Escena del Crimen** — 54 impresiones
+      https://www.siglo21sur.com/carreras/tecnicatura-en-investigacion-de-la-escena-del-crimen
+- [ ] **Lic. en Logística Global** — 49 impresiones
+      https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global
+- [ ] **Lic. en Seguridad Informática** — 48 impresiones
+      https://www.siglo21sur.com/carreras/licenciatura-en-seguridad-informatica
+- [ ] **Martillero, Corredor Público y Corredor Inmobiliario** — 43 impresiones
+      https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario
+- [ ] **Lic. en Comercio Internacional** — 42 impresiones
+      https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional
+
+Si sobra cuota ese día, siguen **Bioinformática** (34 impresiones, rastreada el 19/07)
+y **`/clases-apoyo`**, que no tiene impresiones pero está rastreada el **11/06**: es
+`force-dynamic` y muestra un calendario relativo a hoy, así que lo que Google tiene
+indexado ahí es contenido vencido.
 
 ### Día 1 — Pregrado
 
@@ -189,10 +221,52 @@ URLs salen de `https://www.siglo21sur.com/sitemap.xml` filtrando por `/carreras/
 
 # 3 · El cuello de botella ya no es la indexación
 
-> **Estado al 29/07/2026: atacado, sin medir todavía.** El 27/07 (`36e53d6`) se sacó
-> la marca duplicada del `<title>`, y el 29/07 se reescribieron título y description
-> de las 96 fichas — detalle abajo, en *Qué se hizo*. La próxima medición dirá si
-> movió el CTR; hasta entonces esto es una hipótesis desplegada, no un resultado.
+> **Estado al 29/07/2026: desplegado y todavía invisible.** El 27/07 (`36e53d6`) se
+> sacó la marca duplicada del `<title>`, y el 29/07 se reescribieron título y
+> description de las 96 fichas — detalle abajo, en *Qué se hizo*.
+>
+> **Google no vio nada de eso.** La inspección de las 96 fichas del 29/07 muestra que
+> la fecha de último rastreo más nueva de todo el sitio es el **28/07**, un día antes
+> del deploy. O sea que Google sirve los títulos viejos en las 56 fichas indexadas,
+> incluidas las 8 de la tabla de acá abajo, que son justo las que el arreglo apuntaba.
+> Se verificó que las páginas nuevas sí están publicadas: `/carreras/actuario` responde
+> con el `<title>` reescrito.
+>
+> **Consecuencia para la medición de agosto:** si esas páginas no se rastrean antes,
+> el CTR va a dar igual que hoy y la lectura fácil —"la reescritura no sirvió"— sería
+> falsa. No se puede medir un cambio que el buscador no llegó a publicar. Por eso la
+> cola de la sección 2 arranca con un **Día 0** de recrawl, antes que las 40 sin
+> indexar.
+
+## Día 0 — forzar el recrawl de las páginas que ya tienen tráfico
+
+Estas **no** están sin indexar: están indexadas, tienen impresiones y acaban de recibir
+título y description nuevos que Google todavía no leyó. Un pedido de indexación las
+hace releer. Rinde más que las 40 sin indexar, porque acá el tráfico ya existe y lo
+único que falta es que cambie el texto del resultado.
+
+Ordenadas por impresiones, con el último rastreo que informó la API el 29/07:
+
+| Página | Impresiones (30 d) | Último rastreo |
+|---|--:|---|
+| Sobre nosotros | 124 | 21/07 |
+| Higiene, Seguridad y Medio Ambiente | 72 | 25/07 |
+| Licenciatura en Finanzas | 61 | 25/07 |
+| Administración Agraria | 56 | 21/07 |
+| Investigación de la Escena del Crimen | 54 | 19/07 |
+| Actuario | 53 | **27/06** |
+| Logística Global | 49 | 25/07 |
+| Seguridad Informática | 48 | 25/07 |
+| Martillero y Corredor | 43 | 28/07 |
+| Comercio Internacional | 42 | 25/07 |
+| Bioinformática | 34 | 19/07 |
+
+Actuario es el caso extremo: **un mes sin rastrear**, con 53 impresiones y cero clics.
+Es la que más tarda en volver sola.
+
+Nota aparte: el home (rastreado el 27/07) y `/clases-apoyo` (**11/06**) también están
+viejos. `/clases-apoyo` es `force-dynamic` y muestra un calendario relativo a hoy, así
+que un rastreo de hace mes y medio es contenido muerto en el índice.
 
 Ocho páginas están en **posición 8 a 11 con cero clics**:
 
@@ -465,8 +539,14 @@ sección 2, ahí sí la comparación dice algo.
 
 **Qué mirar además de la indexación:** el CTR de las páginas de la sección 3, que son
 las que tenían impresiones y cero clics. Son el único modo de saber si la reescritura
-de títulos y descripciones del 29/07 sirvió de algo. Línea de base para comparar, del
-30/06 al 28/07 y **por dimensión `page`**:
+de títulos y descripciones del 29/07 sirvió de algo.
+
+**Antes de leer ese CTR, chequeá la fecha de último rastreo de cada página.** Si sigue
+siendo anterior al 29/07, Google todavía está mostrando el título viejo y el CTR no
+mide la reescritura: mide la versión anterior. En ese caso el dato no dice nada y hay
+que hacer el Día 0 de la sección 2 y esperar. Es el error más fácil de cometer acá.
+
+Línea de base para comparar, del 30/06 al 28/07 y **por dimensión `page`**:
 
 | Página | Impresiones | Clics | Posición |
 |---|--:|--:|--:|
