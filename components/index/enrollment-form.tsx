@@ -24,6 +24,8 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [turnstileToken, setTurnstileToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
   const [captchaKey, setCaptchaKey] = useState(0);
+  // El token vence a los 300 s; sin avisar, el botón se apaga sin motivo visible
+  const [captchaExpirado, setCaptchaExpirado] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -64,8 +66,19 @@ export default function EnrollmentForm({ carreras }: Props) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
 
-  // Form validity: at least email or telefono, and email must be valid
-  const contactValid = (email.trim() || telefono.trim()) && !emailInvalid;
+  // Espeja al PHONE de app/api/formularios/route.ts, pero contando dígitos en vez de
+  // caracteres: así el server nunca rechaza un teléfono que acá dimos por bueno.
+  const telefonoTrim = telefono.trim();
+  const telefonoError =
+    telefonoTrim === '' ? ''
+    : !/^[\d\s()+-]+$/.test(telefonoTrim) ? 'El teléfono solo puede tener números, espacios y los signos + - ( ).'
+    : telefonoTrim.replace(/\D/g, '').length < 8 ? 'Ingresá el teléfono completo con característica: al menos 8 dígitos.'
+    : telefonoTrim.length > 30 ? 'El teléfono es demasiado largo.'
+    : '';
+  const telefonoInvalid = telefonoError !== '';
+
+  // Form validity: at least email or telefono, and both must be valid
+  const contactValid = (email.trim() || telefono.trim()) && !emailInvalid && !telefonoInvalid;
   const isValid = contactValid && !!turnstileToken;
 
   // Close dropdowns on outside click
@@ -127,6 +140,7 @@ export default function EnrollmentForm({ carreras }: Props) {
       setSubmitting(false);
       setTurnstileToken('');
       setCaptchaKey((k) => k + 1);
+      setCaptchaExpirado(false);
       return;
     }
 
@@ -383,8 +397,11 @@ export default function EnrollmentForm({ carreras }: Props) {
                       value={telefono}
                       onChange={e => setTelefono(e.target.value)}
                       maxLength={100}
-                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                      className={`w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors ${telefonoInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60'}`}
                     />
+                    {telefonoInvalid && (
+                      <p className="text-[11px] text-red-400 mt-0.5">{telefonoError}</p>
+                    )}
                   </div>
                 </div>
 
@@ -406,9 +423,6 @@ export default function EnrollmentForm({ carreras }: Props) {
                 {error && (
                   <p className="text-[11px] text-red-400">{error}</p>
                 )}
-                {!contactValid && (email.trim() || telefono.trim()) && (
-                  <p className="text-[11px] text-red-400">Completa al menos email o telefono.</p>
-                )}
               </div>
             </div>
 
@@ -417,9 +431,12 @@ export default function EnrollmentForm({ carreras }: Props) {
             <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2">
               <TurnstileWidget
                 key={captchaKey}
-                onVerify={(token) => setTurnstileToken(token)}
-                onExpire={() => setTurnstileToken('')}
+                onVerify={(token) => { setTurnstileToken(token); setCaptchaExpirado(false); }}
+                onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }}
               />
+              {captchaExpirado && (
+                <p className="text-[11px] text-amber-300">El captcha venció por inactividad. Volvé a tildarlo para enviar.</p>
+              )}
               <button
                 type="submit"
                 disabled={!isValid || submitting}

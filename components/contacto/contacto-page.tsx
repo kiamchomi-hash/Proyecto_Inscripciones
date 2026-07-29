@@ -50,13 +50,27 @@ function ContactForm() {
   const [turnstileToken, setTurnstileToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
   const [captchaKey, setCaptchaKey] = useState(0);
+  // El token vence a los 300 s; sin avisar, el botón se apaga sin motivo visible
+  const [captchaExpirado, setCaptchaExpirado] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const emailInvalid = email.trim() !== '' && !emailRegex.test(email.trim());
-  const contactValid = (email.trim() || telefono.trim()) && !emailInvalid;
+
+  // Espeja al PHONE de app/api/formularios/route.ts, pero contando dígitos en vez de
+  // caracteres: así el server nunca rechaza un teléfono que acá dimos por bueno.
+  const telefonoTrim = telefono.trim();
+  const telefonoError =
+    telefonoTrim === '' ? ''
+    : !/^[\d\s()+-]+$/.test(telefonoTrim) ? 'El teléfono solo puede tener números, espacios y los signos + - ( ).'
+    : telefonoTrim.replace(/\D/g, '').length < 8 ? 'Ingresá el teléfono completo con característica: al menos 8 dígitos.'
+    : telefonoTrim.length > 30 ? 'El teléfono es demasiado largo.'
+    : '';
+  const telefonoInvalid = telefonoError !== '';
+
+  const contactValid = (email.trim() || telefono.trim()) && !emailInvalid && !telefonoInvalid;
   const isValid = contactValid && !!turnstileToken;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,6 +111,7 @@ function ContactForm() {
       setSubmitting(false);
       setTurnstileToken('');
       setCaptchaKey((k) => k + 1);
+      setCaptchaExpirado(false);
       return;
     }
 
@@ -106,6 +121,7 @@ function ContactForm() {
       setSuccess(false);
       setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad(''); setMensaje(''); setTurnstileToken('');
       setCaptchaKey((k) => k + 1);
+      setCaptchaExpirado(false);
     }, 4000);
   };
 
@@ -158,13 +174,19 @@ function ContactForm() {
               {emailInvalid && <p className="text-[11px] text-red-400">El formato del email no es válido.</p>}
             </div>
 
-            <input type="tel" placeholder="Teléfono" value={telefono} onChange={e => setTelefono(e.target.value)} maxLength={100} className={inputClass} />
+            <div className="space-y-1">
+              <input
+                type="tel"
+                placeholder="Teléfono"
+                value={telefono}
+                onChange={e => setTelefono(e.target.value)}
+                maxLength={100}
+                className={`${inputClass} ${telefonoInvalid ? '!border-red-400/60' : ''}`}
+              />
+              {telefonoInvalid && <p className="text-[11px] text-red-400">{telefonoError}</p>}
+            </div>
 
             <input type="text" placeholder="Localidad" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={inputClass} />
-
-            {!contactValid && (email.trim() || telefono.trim()) && (
-              <p className="text-[11px] text-red-400">Completa al menos email o teléfono.</p>
-            )}
 
             <p className="text-[11px] text-white">
               Solo necesitamos un dato de contacto (email o teléfono). El resto es opcional.
@@ -175,9 +197,13 @@ function ContactForm() {
           <div className="px-5 pb-4 space-y-2.5">
             <TurnstileWidget
               key={captchaKey}
-              onVerify={(token) => setTurnstileToken(token)}
-              onExpire={() => setTurnstileToken('')}
+              onVerify={(token) => { setTurnstileToken(token); setCaptchaExpirado(false); }}
+              onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }}
             />
+
+            {captchaExpirado && (
+              <p className="text-[11px] text-amber-300">El captcha venció por inactividad. Volvé a tildarlo para enviar.</p>
+            )}
 
             {error && <p className="text-[11px] text-red-400">{error}</p>}
 
