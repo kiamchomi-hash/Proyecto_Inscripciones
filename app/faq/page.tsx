@@ -11,17 +11,21 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/faq',
   },
+  // Declarar openGraph aca reemplaza el del layout, no lo completa: sin images
+  // explicitas la pagina se comparte sin miniatura.
   openGraph: {
     title: 'Preguntas Frecuentes — CAU Villa Lugano',
     description: 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano. La universidad cerca de Celina y todo Zona Sur/Oeste.',
     url: '/faq',
     siteName: 'CAU Villa Lugano — Universidad Siglo 21',
     type: 'website',
+    images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'CAU Villa Lugano — Universidad Siglo 21 a distancia' }],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Preguntas Frecuentes — CAU Villa Lugano',
     description: 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano.',
+    images: ['/imagenes/og/default.jpg'],
   },
 };
 
