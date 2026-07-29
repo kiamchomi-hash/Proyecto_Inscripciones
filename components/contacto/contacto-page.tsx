@@ -46,7 +46,6 @@ function ContactForm() {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [localidad, setLocalidad] = useState('');
-  const [mensaje, setMensaje] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -121,7 +120,7 @@ function ContactForm() {
     setSuccess(true);
     setTimeout(() => {
       setSuccess(false);
-      setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad(''); setMensaje(''); setTurnstileToken('');
+      setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad(''); setTurnstileToken('');
       setCaptchaKey((k) => k + 1);
       setCaptchaExpirado(false);
     }, 4000);
