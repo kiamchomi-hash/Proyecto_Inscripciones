@@ -12,6 +12,17 @@ Nada abierto.
 
 ## Verificar
 
+- [ ] **Correr los dos scripts del 29/07 que cierran la auditoría de contenido.** Van al SQL Editor del dashboard, en este orden (son independientes entre sí):
+
+  1. `sql/2026-07-29_sociologia.sql` — carga la ficha de la Licenciatura en Sociología (id 131), que estaba con `slides` y `plan_estudios` en NULL.
+  2. `sql/2026-07-29_estadistica_proximamente.sql` — marca la Tecnicatura en Estadística Aplicada (id 132) como `proximamente`.
+
+  Después, `npm run auditar` tiene que dar **0 problemas** (Agroinformática y Estadística quedan como avisos). Cada archivo trae su propio `select` de verificación al final.
+
+  **Lo que hay que decidir antes del segundo:** marcar Estadística como `proximamente` cambia el botón de la ficha de "Quiero inscribirme" a "Avisame cuando abra", y la píldora de "Nueva" a "Próximamente". Si Villa Lugano ya inscribe para el inicio de octubre, no corras ese script: conseguí el temario y cargalo como el de Sociología.
+
+- [ ] **Pedirle a la universidad el plan de la Tecnicatura en Estadística Aplicada y Análisis Avanzado.** Es la única carrera visible sin temario del que agarrarse: al 29/07 no existe ni el PDF de `contenidos.21.edu.ar` ni la página en `21.edu.ar` ni una entrada en su sitemap. Mientras no aparezca, la ficha no puede prometer plan de estudios.
+
 - [ ] **Confirmar el arreglo del captcha vencido.** Está desplegado (commit `4e12ea9`) pero sin probar de punta a punta. El test: abrir la home, tildar el captcha apenas cargue, **dejar la pestaña quieta 8-10 minutos** (el token de Turnstile vence a los 300 s), después completar el formulario y enviar. Antes eso daba 403 seguro.
 
   No se puede automatizar: Cloudflare no emite token para un navegador manejado por Playwright, ni headless ni con ventana visible.
