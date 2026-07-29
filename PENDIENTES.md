@@ -12,16 +12,9 @@ Nada abierto.
 
 ## Verificar
 
-- [ ] **Correr los dos scripts del 29/07 que cierran la auditoría de contenido.** Van al SQL Editor del dashboard, en este orden (son independientes entre sí):
+- [ ] **Pedirle a la universidad el plan de la Tecnicatura en Estadística Aplicada y Análisis Avanzado** (id 132). Es la única carrera visible sin temario del que agarrarse: al 29/07 no existe ni el PDF de `contenidos.21.edu.ar` ni la página en `21.edu.ar` ni una entrada en su sitemap; lo único público es un posteo del CAU Corrientes (2 años, inicio en octubre). Quedó marcada `proximamente` mientras tanto.
 
-  1. `sql/2026-07-29_sociologia.sql` — carga la ficha de la Licenciatura en Sociología (id 131), que estaba con `slides` y `plan_estudios` en NULL.
-  2. `sql/2026-07-29_estadistica_proximamente.sql` — marca la Tecnicatura en Estadística Aplicada (id 132) como `proximamente`.
-
-  Después, `npm run auditar` tiene que dar **0 problemas** (Agroinformática y Estadística quedan como avisos). Cada archivo trae su propio `select` de verificación al final.
-
-  **Lo que hay que decidir antes del segundo:** marcar Estadística como `proximamente` cambia el botón de la ficha de "Quiero inscribirme" a "Avisame cuando abra", y la píldora de "Nueva" a "Próximamente". Si Villa Lugano ya inscribe para el inicio de octubre, no corras ese script: conseguí el temario y cargalo como el de Sociología.
-
-- [ ] **Pedirle a la universidad el plan de la Tecnicatura en Estadística Aplicada y Análisis Avanzado.** Es la única carrera visible sin temario del que agarrarse: al 29/07 no existe ni el PDF de `contenidos.21.edu.ar` ni la página en `21.edu.ar` ni una entrada en su sitemap. Mientras no aparezca, la ficha no puede prometer plan de estudios.
+  **Cuando llegue el temario**, el cambio son dos cosas: cargar el slide de plan como el de Sociología y sacarle el `proximamente` —`update public.carreras set proximamente = false where id = 132;`—, que le devuelve el botón "Quiero inscribirme" y la píldora "Nueva". Ojo: si el CAU empieza a inscribir **antes** de que aparezca el plan, hay que sacar el `proximamente` igual, aunque la ficha se quede sin temario.
 
 - [ ] **Confirmar el arreglo del captcha vencido.** Está desplegado (commit `4e12ea9`) pero sin probar de punta a punta. El test: abrir la home, tildar el captcha apenas cargue, **dejar la pestaña quieta 8-10 minutos** (el token de Turnstile vence a los 300 s), después completar el formulario y enviar. Antes eso daba 403 seguro.
 
@@ -98,6 +91,12 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
   Estado resultante: quedan `Onboarding` (Sending access, la de los avisos) y `topykly-dev` (Sending access, el otro proyecto). **Ninguna clave con acceso total en la cuenta.**
 
 ## Encontrado de paso
+
+- [x] ~~**Las dos carreras sin contenido que marcaba la auditoría.**~~ Corridos y verificados el 29/07: `npm run auditar` da **0 problemas** por primera vez. Quedan dos avisos, los dos esperando temario de la universidad (Agroinformática y Estadística).
+
+  **Sociología (131) no tenía plan porque no tiene plan propio.** La ficha oficial —`https://contenidos.21.edu.ar/pdf/carreras/grado/lic-sociologia.pdf`, página 2— dice que la carrera *sólo* se dicta como doble titulación de la Licenciatura en Relaciones Internacionales: son 11 materias adicionales al plan de RRII. El sitio la publicaba como una licenciatura suelta de 4 años. Ahora el grid replica los 4 años de RRII (46 materias, copiadas de la fila 69 sin reescribir ninguna) y cierra con las 11 propias en un bloque `extras` que explica la condición; la aclaración va además en `descripcion`, porque el bloque `extras` se renderiza último y quien escanea la página leería el plan de RRII como si fuera el de Sociología.
+
+  **Lo reutilizable:** las fichas de las carreras propias están en `contenidos.21.edu.ar/pdf/carreras/<grado|pregrado>/<lic|tec>-<slug>.pdf`, sueltan texto real y se extraen con PyMuPDF (no hay poppler en esta máquina, así que no hay otra vía). El sitemap de `21.edu.ar` **no sirve** para buscarlas: sólo lista cursos, certificados y diplomaturas de APLV. Un 404 en todas las variantes del slug significa que la carrera no tiene ficha publicada, no que erraste la URL — fue exactamente el caso de Estadística.
 
 - [x] ~~**Imágenes para compartir en todo el sitio.**~~ Hecho y verificado en producción el 29/07. **Ninguna página tenía `og:image`**: ni la home, ni las 96 fichas de carrera, ni los 10 artículos. Todo link compartido por WhatsApp salía sin miniatura.
 
