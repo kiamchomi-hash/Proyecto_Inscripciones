@@ -573,18 +573,17 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
             >
               {showInputError && !datosCompletos ? 'Completá el teléfono' : 'Confirmar solicitud'}
             </button>
-            {showInputError && !datosCompletos && (
-              <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#ff6b6b' }}>
-                {telefono.trim().length === 0
+            {/* Línea reservada para los avisos: la columna usa justify-evenly, así
+                que insertar contenido movería el botón que se acaba de tocar. */}
+            <div className="text-[0.6rem] leading-4 min-h-4 text-center" style={{ color: showInputError && !datosCompletos ? '#ff6b6b' : '#e69b05' }}>
+              {showInputError && !datosCompletos
+                ? (telefono.trim().length === 0
                   ? 'Ingresá tu teléfono para continuar.'
-                  : 'Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx'}
-              </div>
-            )}
-            {captchaPendiente && !turnstileToken && datosCompletos && (
-              <div className="text-[0.6rem] text-center ca-slide-in" style={{ color: '#e69b05' }}>
-                Marcá la casilla de verificación y la solicitud se envía sola.
-              </div>
-            )}
+                  : 'Formato válido: +54 911xxxx-xxxx o 11-xxxx-xxxx')
+                : captchaPendiente && !turnstileToken && datosCompletos
+                  ? 'Marcá la casilla de verificación para enviar.'
+                  : ''}
+            </div>
             <button
               onClick={() => { setMode('picking'); setCaptchaPendiente(false); setTurnstileToken(''); setShowInputError(false); }}
               className="w-full py-1.5 rounded-lg text-[0.6rem] font-bold uppercase tracking-wider transition-all hover:brightness-125"
