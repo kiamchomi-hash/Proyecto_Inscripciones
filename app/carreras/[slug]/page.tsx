@@ -25,6 +25,14 @@ async function getCarreras() {
   return ((data || []) as Carrera[]).filter(esCarreraVisible);
 }
 
+// Miniatura para compartir. Las diplomaturas de convenio no son Siglo 21, asi que
+// no pueden salir con la portada institucional. Las genera `herramientas/generar-og.mjs`.
+function ogCarrera(carrera: Carrera): string {
+  return carrera.nivel === 'Identidad Argentina'
+    ? '/imagenes/og/default-identidad-argentina.jpg'
+    : '/imagenes/og/default.jpg';
+}
+
 function findBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
   // Try exact match first
   const exact = carreras.find(c => carreraToSlug(c) === slug);
@@ -70,8 +78,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: {
       canonical: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
     },
-    openGraph: { title, description, url: `https://www.siglo21sur.com/carreras/${canonicalSlug}` },
-    twitter: { card: 'summary_large_image', title, description },
+    // Declarar openGraph aca reemplaza el del layout, no lo completa: sin images
+    // explicitas la ficha se comparte sin miniatura. Las diplomaturas de convenio
+    // llevan la portada de la Academia, que no menciona a Siglo 21.
+    openGraph: {
+      title,
+      description,
+      url: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
+      images: [ogCarrera(carrera)],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [ogCarrera(carrera)] },
   };
 }
 
