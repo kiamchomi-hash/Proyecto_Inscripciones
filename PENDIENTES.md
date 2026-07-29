@@ -50,7 +50,7 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
 
 - [ ] **4. Desplegar la Edge Function `notificar`.** Ya está el cambio en el repo: el remitente se lee de `RESEND_FROM` y, si no está seteada, cae al sandbox de siempre. O sea que **desplegarla no cambia nada todavía** — se puede hacer en cualquier momento sin riesgo.
 
-  No hay CLI de Supabase ni Deno en esta máquina: va por el dashboard, Edge Functions → `notificar` → pegar el código y Deploy.
+  Va por CLI, que no necesita Docker ni Deno instalados: `npx supabase functions deploy notificar --project-ref yuwfkdehaowkselkhtck --no-verify-jwt`. (Antes acá decía que había que hacerlo por el dashboard; es al revés — el deploy por dashboard fue justo el que dejó la función con un slug distinto del nombre y rompió la URL.)
 
 - [ ] **5. Recién ahí, setear el secret `RESEND_FROM`** con `CAU Villa Lugano <avisos@siglo21sur.com>`. Edge Functions → Secrets.
 
@@ -135,7 +135,7 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
 
   **Correr esos scripts por partes, no todo junto:** `pg_net` recién despacha el pedido cuando la transacción commitea, así que el `select` sobre `net._http_response` ejecutado en la misma tanda no muestra nada y parece que falló.
 
-  Queda como mejora menor: el digest se manda a las 20:00 pero informa **el día en curso**, así que se pierde lo que pase entre las 20 y la medianoche.
+  ~~Queda como mejora menor: el digest se manda a las 20:00 pero informa **el día en curso**.~~ Resuelto el 29/07: la función ahora informa **el día anterior completo** y el cron pasa a las 09:00 (12:00 UTC). La función además acepta `{"fecha":"AAAA-MM-DD"}` en el body para reenviar un día puntual sin tocar el cron.
 
 ## Para tener presente
 
