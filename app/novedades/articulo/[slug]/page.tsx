@@ -188,7 +188,7 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
                 </svg>
                 Facebook
               </a>
-              <CopyLinkButton url={shareUrl} />
+              <CopyLinkButton url={shareUrl} titulo={novedad.titulo} />
             </div>
           </div>
         </div>

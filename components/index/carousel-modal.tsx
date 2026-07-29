@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
 import { sanitizeContent } from '@/lib/sanitize-content';
+import { useCompartir, textoCompartir } from './use-compartir';
+import IconoCompartir from './icono-compartir';
 
 interface Props {
   carrera: Carrera;
@@ -870,6 +872,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}`
     : '';
+  const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 
   return (
     <div
@@ -956,12 +959,10 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
             <div className="order-2 sm:order-1 w-full sm:flex-1 flex items-center gap-1.5 min-w-0">
               <input type="text" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()}
                 className="flex-1 min-w-0 px-3 py-2 bg-[#013729] border border-[#00c7b1]/20 rounded-lg text-[#7ca19b] text-[11px] font-mono focus:outline-none focus:border-[#00c7b1]/50 cursor-text transition-colors truncate" />
-              <button onClick={() => navigator.clipboard?.writeText(shareUrl)} title="Compartir enlace"
+              <button onClick={compartir} title="Compartir enlace" aria-live="polite"
                 className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 bg-[#00c7b1] text-[#013729] font-bold rounded-lg hover:brightness-110 transition-colors text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-                <span>Compartir</span>
+                <IconoCompartir estado={estadoCompartir} />
+                <span>{textoCompartir(estadoCompartir)}</span>
               </button>
             </div>
           </div>
