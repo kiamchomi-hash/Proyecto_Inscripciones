@@ -55,20 +55,34 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // "Administracion"): es el termino que la gente busca y da mejor CTR.
   const nombreCompleto = carreraFullName(carrera);
 
+  // Las diplomaturas son de convenio con la Academia Identidad Argentina, no de la
+  // universidad: ni el titulo, ni la descripcion, ni las keywords la nombran.
+  const esIA = carrera.nivel === 'Identidad Argentina';
+
   // Google corta el <title> alrededor de los 60 caracteres. Se elige el sufijo
   // mas informativo que entre: antes quedaban titulos de 89 con "Siglo 21"
   // repetido dos veces, porque a este title el layout le sumaba su template.
-  const sufijos = [
-    ' a Distancia | Siglo 21 Villa Lugano',
-    ' | Siglo 21 Villa Lugano',
-    ' | Siglo 21',
-  ];
+  const sufijos = esIA
+    ? [
+        ' | Academia Identidad Argentina',
+        ' | Identidad Argentina',
+      ]
+    : [
+        ' a Distancia | Siglo 21 Villa Lugano',
+        ' | Siglo 21 Villa Lugano',
+        ' | Siglo 21',
+      ];
   const sufijo = sufijos.find(s => nombreCompleto.length + s.length <= 62) ?? sufijos[sufijos.length - 1];
   const title = `${nombreCompleto}${sufijo}`;
 
-  const description = carrera.proximamente
-    ? `${nombreCompleto} en Universidad Siglo 21: ${carrera.duracion}, a distancia. Todavia no abrio la inscripcion, dejanos tus datos y te avisamos.`
-    : `Estudia ${nombreCompleto} a distancia en Universidad Siglo 21. ${carrera.duracion}. Sede CAU Villa Lugano: atencion cerca de Zona Sur y Oeste.`;
+  // El CAU si se nombra: es quien toma la inscripcion y sostiene el SEO local.
+  const description = esIA
+    ? carrera.proximamente
+      ? `${nombreCompleto} de la Academia Identidad Argentina: ${carrera.duracion}, online. Todavia no abrio la inscripcion, dejanos tus datos y te avisamos.`
+      : `Estudia ${nombreCompleto} online con la Academia Identidad Argentina. ${carrera.duracion}. Inscripcion y consultas en el CAU Villa Lugano.`
+    : carrera.proximamente
+      ? `${nombreCompleto} en Universidad Siglo 21: ${carrera.duracion}, a distancia. Todavia no abrio la inscripcion, dejanos tus datos y te avisamos.`
+      : `Estudia ${nombreCompleto} a distancia en Universidad Siglo 21. ${carrera.duracion}. Sede CAU Villa Lugano: atencion cerca de Zona Sur y Oeste.`;
 
   const canonicalSlug = carreraToSlug(carrera);
 
@@ -77,7 +91,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     // aparece duplicada.
     title: { absolute: title },
     description,
-    keywords: [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
+    keywords: esIA
+      ? [nombreCompleto, carrera.nombre, 'academia identidad argentina', 'diplomatura online', 'villa lugano', carrera.nivel, 'CABA']
+      : [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
     alternates: {
       canonical: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
     },
@@ -140,17 +156,32 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // todas las carreras completas en el HTML de cada pagina.
   const opcionesFormulario = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel }));
 
+  // Quien dicta cada programa. Ojo: esto no es texto de marketing sino un dato
+  // estructurado, o sea la afirmacion mas fuerte que la pagina le hace a Google.
+  // Las diplomaturas son de la Academia Identidad Argentina, no de la universidad:
+  // declararlas con provider "Universidad Siglo 21" seria decir que las dicta ella.
+  const esDiplomaturaIA = carrera.nivel === 'Identidad Argentina';
+  const provider = esDiplomaturaIA
+    ? {
+        "@type": "Organization",
+        "name": "Academia Identidad Argentina",
+        "url": "https://identidadargentina.com.ar",
+      }
+    : {
+        "@type": "CollegeOrUniversity",
+        "name": "Universidad Siglo 21",
+        "url": "https://21.edu.ar",
+      };
+
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
     "name": carreraFullName(carrera),
     "url": url,
-    "description": carrera.descripcion || `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`,
-    "provider": {
-      "@type": "CollegeOrUniversity",
-      "name": "Universidad Siglo 21",
-      "url": "https://21.edu.ar",
-    },
+    "description": carrera.descripcion || (esDiplomaturaIA
+      ? `Estudia ${carrera.nombre} con la Academia Identidad Argentina. ${carrera.enfoque}.`
+      : `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`),
+    provider,
     "educationalLevel": carrera.nivel,
     "timeToComplete": carrera.duracion,
     "educationalCredentialAwarded": carrera.titulo,
