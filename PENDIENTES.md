@@ -98,7 +98,7 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
 
 ## Encontrado de paso
 
-- [ ] **El teléfono no se valida en el cliente, en ningún formulario.** Salió probando el captcha el 29/07: se escribió `11` en el teléfono y el formulario dejó enviar igual, el servidor lo rechazó y lo que se vio fue el mensaje genérico *"Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp"* — que no menciona el teléfono y hace pensar que el sitio está caído.
+- [x] ~~**El teléfono no se valida en el cliente, en ningún formulario.**~~ Resuelto y desplegado el 29/07 (`9a30d15`), con el layout ajustado en `e5f1dc2`. Salió probando el captcha el 29/07: se escribió `11` en el teléfono y el formulario dejó enviar igual, el servidor lo rechazó y lo que se vio fue el mensaje genérico *"Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp"* — que no menciona el teléfono y hace pensar que el sitio está caído.
 
   El servidor pide 8 caracteres (`PHONE = /^[\d\s()+-]{8,30}$/` en `app/api/formularios/route.ts`), pero `contactValid` (`enrollment-form.tsx:68` y `contacto-page.tsx:59`) sólo mira que el campo no esté vacío. **La asimetría está al lado**: el email sí valida en cliente y muestra *"El formato del email no es válido"*.
 
@@ -106,7 +106,9 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
 
   **Ojo con el criterio al arreglarlo:** el regex del servidor cuenta *caracteres*, no dígitos, así que `((((((((` pasa y `1 1 1 1` no. `clases-apoyo-page.tsx` ya tiene el criterio bueno y conviene reusarlo: `soloDigitos.length >= 8`.
 
-- [ ] **El captcha vencido apaga el botón sin explicar por qué.** Derivado de la verificación del 29/07. Pasados los 300 s el widget se desmarca y `onExpire` limpia el token, así que el botón de enviar se apaga. Es muchísimo mejor que el 403 de antes —no se pierde lo escrito y se recupera con un clic— pero no hay ningún cartel que diga qué hacer. Un mensaje enganchado al `onExpire` (*"El captcha venció, volvé a tildarlo"*) lo resuelve.
+- [x] ~~**El captcha vencido apaga el botón sin explicar por qué.**~~ Resuelto el 29/07: `onExpire` muestra *"El captcha venció. Volvé a tildarlo."* en ámbar. **Lo único de esta tanda que no se verificó en producción**, porque pide otra espera de 5 minutos con la pestaña quieta.
+
+  **Al medir layout en producción, ojo con el captcha.** Un primer intento dio "SALTA" en los dos viewports y era falso positivo: en local el widget de Turnstile no se renderiza —`.env.local` no tiene `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, así que el componente devuelve `null`—, pero en producción sí, y monta un iframe de ~70 px *después* del `load`. Hay que esperar a que la altura se estabilice antes de tomar la medida de referencia.
 
 - [x] ~~**Las dos carreras sin contenido que marcaba la auditoría.**~~ Corridos y verificados el 29/07: `npm run auditar` da **0 problemas** por primera vez. Quedan dos avisos, los dos esperando temario de la universidad (Agroinformática y Estadística).
 
