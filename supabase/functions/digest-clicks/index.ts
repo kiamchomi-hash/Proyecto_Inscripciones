@@ -18,9 +18,28 @@ function secureEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-function hoyEnBuenosAires(): string {
+function fechaEnBuenosAires(offsetDias = 0): string {
   // en-CA da YYYY-MM-DD, que es el formato que espera PostgREST.
-  return new Date().toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" });
+  const hoy = new Date().toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" });
+  if (offsetDias === 0) return hoy;
+  // El corrimiento se hace sobre la fecha ya convertida a Buenos Aires, no sobre
+  // el instante UTC: asi "ayer" es ayer aunque el cron corra a cualquier hora.
+  const [y, m, d] = hoy.split("-").map(Number);
+  const base = new Date(Date.UTC(y, m - 1, d));
+  base.setUTCDate(base.getUTCDate() + offsetDias);
+  return base.toISOString().slice(0, 10);
+}
+
+// Permite reenviar un dia puntual: POST {"fecha":"2026-07-28"}. Sirve para
+// recuperar un digest que no salio, sin tocar el cron.
+async function fechaPedida(req: Request): Promise<string | null> {
+  try {
+    const body = await req.json();
+    const f = body?.fecha;
+    return typeof f === "string" && /^\d{4}-\d{2}-\d{2}$/.test(f) ? f : null;
+  } catch {
+    return null; // body vacio o no-JSON: se usa el default
+  }
 }
 
 // Markdown de Telegram: los nombres de carrera traen paréntesis y guiones.
@@ -50,7 +69,7 @@ function buildDigest(fecha: string, rows: ClickRow[]): string {
   const encabezado = `📊 *Resumen del ${d}/${m}/${y}*`;
 
   if (!total) {
-    return `${encabezado}\n\nSin aperturas de tarjetas hoy.`;
+    return `${encabezado}\n\nSin aperturas de tarjetas ese día.`;
   }
 
   const top = rows.slice(0, TOP_N).map((r, i) => {
@@ -87,7 +106,10 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const fecha = hoyEnBuenosAires();
+    // Por defecto informa el dia anterior completo. Antes informaba el dia en
+    // curso y el cron corria a las 20:00, asi que todos los dias se perdian los
+    // clicks de 20:00 a medianoche.
+    const fecha = (await fechaPedida(req)) ?? fechaEnBuenosAires(-1);
     const rows = await fetchClicks(fecha);
     const enviado = await sendTelegram(buildDigest(fecha, rows));
 
