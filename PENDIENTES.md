@@ -16,7 +16,13 @@ Nada abierto.
 
   **Cuando llegue el temario**, el cambio son dos cosas: cargar el slide de plan como el de Sociología y sacarle el `proximamente` —`update public.carreras set proximamente = false where id = 132;`—, que le devuelve el botón "Quiero inscribirme" y la píldora "Nueva". Ojo: si el CAU empieza a inscribir **antes** de que aparezca el plan, hay que sacar el `proximamente` igual, aunque la ficha se quede sin temario.
 
-- [ ] **Confirmar el arreglo del captcha vencido.** Está desplegado (commit `4e12ea9`) pero sin probar de punta a punta. El test: abrir la home, tildar el captcha apenas cargue, **dejar la pestaña quieta 8-10 minutos** (el token de Turnstile vence a los 300 s), después completar el formulario y enviar. Antes eso daba 403 seguro.
+- [x] ~~**Confirmar el arreglo del captcha vencido.**~~ Probado a mano y **funciona** (29/07). Se dejó la home quieta pasados los 300 s y el envío entró: llegó la consulta.
+
+  **La señal que confirma el arreglo no es el envío, es el desmarque.** Pasados los 5 minutos el checkbox se desmarca solo y el botón de enviar se apaga. Eso es el `expired-callback` llegando al componente, que es justo lo que el widget desmontado hacía imposible: antes el token vencido se quedaba guardado en el estado de React, el botón seguía habilitado y el 403 aparecía recién al enviar. Sirve como test rápido — no hace falta llegar a mandar el formulario para saber si el fix está desplegado.
+
+  **El widget no se re-marca solo.** La renovación automática de Turnstile vuelve a correr el desafío, pero como pide interacción queda el checkbox vacío esperando el clic. Es un clic y sigue; no se pierde nada de lo escrito.
+
+  Queda derivado de esto el hueco de UX anotado abajo (botón apagado sin explicación).
 
   No se puede automatizar: Cloudflare no emite token para un navegador manejado por Playwright, ni headless ni con ventana visible.
 
@@ -91,6 +97,16 @@ Consecuencia de quedarse con un solo canal: la Edge Function `notificar` pasó d
   Estado resultante: quedan `Onboarding` (Sending access, la de los avisos) y `topykly-dev` (Sending access, el otro proyecto). **Ninguna clave con acceso total en la cuenta.**
 
 ## Encontrado de paso
+
+- [ ] **El teléfono no se valida en el cliente, en ningún formulario.** Salió probando el captcha el 29/07: se escribió `11` en el teléfono y el formulario dejó enviar igual, el servidor lo rechazó y lo que se vio fue el mensaje genérico *"Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp"* — que no menciona el teléfono y hace pensar que el sitio está caído.
+
+  El servidor pide 8 caracteres (`PHONE = /^[\d\s()+-]{8,30}$/` en `app/api/formularios/route.ts`), pero `contactValid` (`enrollment-form.tsx:68` y `contacto-page.tsx:59`) sólo mira que el campo no esté vacío. **La asimetría está al lado**: el email sí valida en cliente y muestra *"El formato del email no es válido"*.
+
+  Por qué importa: es el formulario de captación. Quien escribe el teléfono incompleto recibe un error que parece falla del sitio y encima quema 1 de sus 5 envíos del rate limit. Es pérdida de leads silenciosa.
+
+  **Ojo con el criterio al arreglarlo:** el regex del servidor cuenta *caracteres*, no dígitos, así que `((((((((` pasa y `1 1 1 1` no. `clases-apoyo-page.tsx` ya tiene el criterio bueno y conviene reusarlo: `soloDigitos.length >= 8`.
+
+- [ ] **El captcha vencido apaga el botón sin explicar por qué.** Derivado de la verificación del 29/07. Pasados los 300 s el widget se desmarca y `onExpire` limpia el token, así que el botón de enviar se apaga. Es muchísimo mejor que el 403 de antes —no se pierde lo escrito y se recupera con un clic— pero no hay ningún cartel que diga qué hacer. Un mensaje enganchado al `onExpire` (*"El captcha venció, volvé a tildarlo"*) lo resuelve.
 
 - [x] ~~**Las dos carreras sin contenido que marcaba la auditoría.**~~ Corridos y verificados el 29/07: `npm run auditar` da **0 problemas** por primera vez. Quedan dos avisos, los dos esperando temario de la universidad (Agroinformática y Estadística).
 
