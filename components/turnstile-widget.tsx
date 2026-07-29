@@ -88,5 +88,7 @@ export default function TurnstileWidget({ onVerify, onExpire }: TurnstileWidgetP
 
   if (!sitekey) return null;
 
-  return <div ref={containerRef} />;
+  // El iframe del widget mide 71 px al montar (medido en prod, desktop y mobile);
+  // sin reservar ese lugar, todo lo que está debajo salta cuando aparece.
+  return <div ref={containerRef} className="min-h-[71px]" />;
 }
