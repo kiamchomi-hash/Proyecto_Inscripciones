@@ -9,6 +9,7 @@ import { carreraToSlug, carreraFullName } from '@/components/index/types';
 import { getEscuelaIA } from '@/components/index/identidad-argentina';
 import IsotipoIA from '@/components/index/ia-isotipo';
 import {
+  esCursoTeclab,
   esTeclab,
   getFichaTeclab,
   parseCompetenciasTeclab,
@@ -117,12 +118,13 @@ function CheckIcon() {
 
 export default function CareerDetail({ carrera, relacionadas }: Props) {
   const isIA = carrera.nivel === 'Identidad Argentina';
+  const isTeclabCourse = esCursoTeclab(carrera);
   // Las carreras de Teclab traen su material de la ficha oficial del instituto:
   // foto de portada, competencias, plan por periodo y el enlace a teclab.edu.ar.
   const isTeclab = esTeclab(carrera);
   const ficha = isTeclab ? getFichaTeclab(carrera) : null;
-  const accent = isIA ? '#25a9db' : '#00c7b1';
-  const accentBright = isIA ? '#f1cf1c' : '#70f0dc';
+  const accent = isIA ? '#25a9db' : isTeclabCourse ? '#f4aa22' : '#00c7b1';
+  const accentBright = isIA ? '#f1cf1c' : isTeclabCourse ? '#ffc95e' : '#70f0dc';
   const ink = isIA ? '#101820' : '#071d1b';
   const soft = isIA ? '#b9d9e8' : '#b7d1cd';
   const { prefix, cleanName } = getCareerPrefix(carrera);
@@ -178,7 +180,14 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           { label: 'Título', value: carrera.titulo },
           { label: 'Certificado intermedio', value: teclabMeta!.certificado || 'Al finalizar el primer año' },
         ]
-      : [
+      : isTeclabCourse
+        ? [
+            { label: 'Institución', value: 'Teclab' },
+            { label: 'Tipo', value: 'Curso' },
+            { label: 'Duración', value: carrera.duracion },
+            { label: 'Modalidad', value: carrera.modalidad || 'Consultar' },
+          ]
+        : [
           { label: 'Nivel', value: carrera.nivel },
           { label: 'Duración', value: carrera.duracion },
           { label: 'Título', value: carrera.titulo },
@@ -285,7 +294,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         </div>
       </header>
 
-      <dl className="career-facts" aria-label="Información principal de la carrera">
+      <dl className="career-facts" aria-label={`Información principal ${isTeclabCourse ? 'del curso' : 'de la carrera'}`}>
         {metaItems.map((item) => (
           <div key={item.label}>
             <dt>{item.label}</dt>
@@ -483,7 +492,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           <div className="career-related-heading">
             <div>
               <span>Seguí explorando</span>
-              <h2>Otras carreras de {carrera.nivel}</h2>
+              <h2>{isTeclabCourse ? 'Otros cursos de Teclab' : `Otras carreras de ${carrera.nivel}`}</h2>
             </div>
             <Link href="/#carreras" prefetch={false}>Ver todas <ArrowIcon /></Link>
           </div>

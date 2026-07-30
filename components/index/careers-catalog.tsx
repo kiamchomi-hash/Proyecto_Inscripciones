@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { sendGAEvent } from '@next/third-parties/google';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup, MARCA_MODAL } from './types';
 import { getEscuelaIA } from './identidad-argentina';
-import { esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
+import { esCursoTeclab, esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 import CareerInfoModal from './career-info-modal';
 
 // Levenshtein distance for fuzzy search
@@ -258,7 +258,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
     // Las de convenio y las de Teclab tienen su propio modal de slides armado
     // desde los campos de texto: no cuentan como faltantes
-    if (carrera.nivel !== 'Identidad Argentina' && !esTeclab(carrera) && (!carrera.slides || carrera.slides.length === 0)) {
+    if (carrera.nivel !== 'Identidad Argentina' && !esTeclab(carrera) && !esCursoTeclab(carrera) && (!carrera.slides || carrera.slides.length === 0)) {
       fetch('/api/notificar-carrera', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -823,6 +823,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
   const isIA = getCategoryForCarrera(carrera) === 'identidad_argentina';
   const escuela = isIA ? getEscuelaIA(carrera) : null;
   const familiaTeclab = getFamiliaTeclab(carrera);
+  const isTeclabCourse = esCursoTeclab(carrera);
   const tipoTeclab = familiaTeclab ? getTipoTeclab(carrera) : null;
   const prefetched = useRef(false);
   const handlePrefetch = useCallback(() => {
@@ -844,7 +845,7 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
     <li className="contents">
       <Link
         href={href}
-        className={`career-card group w-full ${isIA ? 'career-card-ia' : ''} ${familiaTeclab ? `career-card-teclab teclab-${familiaTeclab}` : ''}`}
+        className={`career-card group w-full ${isIA ? 'career-card-ia' : ''} ${familiaTeclab ? `career-card-teclab teclab-${familiaTeclab}` : ''} ${isTeclabCourse ? 'career-card-teclab career-card-teclab-curso teclab-curso' : ''}`}
         data-testid="career-card"
         onClick={handleClick}
         onMouseEnter={handlePrefetch}
@@ -863,11 +864,17 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
             {tipoTeclab && <span className="teclab-badge teclab-badge-tipo">{tipoTeclab}</span>}
           </div>
         )}
+        {isTeclabCourse && (
+          <div className="teclab-card-head">
+            <span className="teclab-badge">Teclab</span>
+            <span className="teclab-badge teclab-badge-tipo">Curso</span>
+          </div>
+        )}
         <div className="flex-grow relative min-w-0">
           {prefix && (
             <span className="career-prefix block mb-0.5">{prefix}</span>
           )}
-          <span className={`block font-semibold text-[1.1rem] leading-tight ${familiaTeclab ? 'text-[#071822]' : 'text-white'}`}>
+          <span className={`block font-semibold text-[1.1rem] leading-tight ${familiaTeclab || isTeclabCourse ? 'text-[#071822]' : 'text-white'}`}>
             {cleanName}
           </span>
         </div>
