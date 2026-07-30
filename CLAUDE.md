@@ -39,6 +39,12 @@ npm run capturas     # PNG desktop + mobile a screenshots/<AAAAMMDD-HHMM>/
 
 Para los avisos de formulario (mail + Telegram) está `herramientas/verificar-avisos.sql`: prueba los tres triggers de una sola pasada, con los pasos separados porque `pg_net` recién despacha el pedido cuando la transacción commitea.
 
+También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada novedad dos derivados de 1200×630 desde las fotos de `public/` — la foto limpia (`public/imagenes/novedades/<slug>.jpg`, para `imagen_url`) y la versión con el título compuesto encima (`public/imagenes/og/<slug>.jpg`, para el og:image). Depende de `sharp` (declarado como devDependency).
+
+### Deploy
+
+**Push a `main` = deploy**: Vercel publica automáticamente. `herramientas/5 - Subir cambios (deploy).bat` es el flujo guiado (muestra el diff, pide descripción, corre `npm run check` y recién ahí commitea y pushea). Antes de un push manual, vaciar `GH_TOKEN` y `GITHUB_TOKEN` si están seteados: valores viejos hacen fallar el push con un error que no explica nada.
+
 ## Arquitectura
 
 ### Next.js 16 + App Router
@@ -168,3 +174,6 @@ Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano 
 - Colores en `app/globals.css` `:root` — fondo `--color-deep-dark-bg: #013729`, acento `--color-highlight: #00c7b1`, tarjetas `--color-card-bg: #1c2f31`, dorado `--color-gold: #e69b05`, marca `--cau-brand-blue: #005587` / `--cau-brand-green: #058c70`.
 - `migracion_pendiente/` y `archivados/` **no tienen código** — sólo notas en Markdown (y un PDF), y están fuera de ESLint. Cuidado: `migracion_pendiente/pendientes-admin.md` y `pendientes-presencia-digital.md` son **backlogs vivos** (textos para el panel, faltantes de `og:image`), no descarte. El servidor Express con Zod que menciona `MIGRACION.md` ya no está en el repo.
 - `PENDIENTES.md` es el backlog vivo, con las verificaciones manuales que no se pueden automatizar.
+- `scripts/` son utilitarios de carga de datos de una sola vez (parseo e insert de carreras, descarga de assets de Teclab); no participan del build ni de `check`.
+- `shared_skills/` es una biblioteca local de skills para Claude Code: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), SEO, y guías generales de Next/React.
+- `docs/plans/` y `plan_migracion/` son planes de implementación históricos, no estado actual. `docs/resumen-proyecto.md` es un resumen para reutilizar patrones en otros proyectos — ante una contradicción, manda este archivo y el código.
