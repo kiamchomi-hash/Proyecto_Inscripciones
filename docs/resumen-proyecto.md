@@ -14,9 +14,9 @@ Documento de referencia para reutilizar patrones, stack y decisiones en futuros 
 | Base de datos | Supabase (PostgreSQL) | SDK v2 | Client en `lib/supabase.ts`, sin ORM |
 | Hosting | Vercel | — | Deploy automático desde `main` |
 | Analytics | Vercel Analytics + Speed Insights + Google Analytics | — | GA via `@next/third-parties` |
-| Validación | Zod | v4 | Schemas tipados para datos de formularios |
-| CI/CD | GitHub Actions | — | Cron diario para sync de datos externos |
-| CAPTCHA | Cloudflare Turnstile | via `react-turnstile` | Invisible, verificación server-side |
+| Validación | A mano en el handler | — | Regex de email/teléfono y chequeos de forma en `/api/formularios`, sin librería |
+| Tareas programadas | `pg_cron` (Supabase) | — | Limpieza de clases pasadas y digest diario de clicks |
+| CAPTCHA | Cloudflare Turnstile | componente propio | `components/turnstile-widget.tsx`, verificación server-side en `lib/turnstile.ts` |
 | PDF | jsPDF + jspdf-autotable | — | Generación client-side de documentos |
 | Email | Resend | — | Envío transaccional desde API routes |
 | Tipografía | Inter (body) + Unbounded (headings) | — | `next/font/google`, sin request externo |
@@ -179,16 +179,18 @@ Configurada en `next.config.ts` → `headers()`:
 
 ## Supabase — Patrones
 
-### Client único
+### Cuatro clientes según credencial y contexto
 
 ```tsx
-// lib/supabase.ts
+// lib/supabase.ts — anon, lecturas públicas desde Server Components
 import { createClient } from '@supabase/supabase-js';
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 ```
+
+Además: `lib/supabase-auth.ts` (anon + sesión en cookies, panel admin en el navegador), `lib/supabase-server.ts` (sesión en Server Components) y `lib/supabase-admin.ts` (service role con `import 'server-only'`, escrituras del público vía API). La tabla completa de cuál usar está en `CLAUDE.md`.
 
 ### Fetch pattern en Server Components
 
@@ -203,37 +205,34 @@ const { data, error } = await supabase
 const items = data ?? [];
 ```
 
-### Storage (imágenes)
+### Imágenes
 
-- Bucket público `novedades` para imágenes de artículos
-- Formato `.webp`, 1200×630px, ratio 1.91:1 (óptimo para OG)
-- URLs vía `supabase.storage.from('novedades').getPublicUrl()`
-- Dominio en `next.config.ts` → `images.remotePatterns`
+- Las de novedades viven en el repo: `herramientas/generar-og.mjs` produce los derivados 1200×630 (foto limpia para `imagen_url` + versión con título para og:image) en `public/imagenes/`
+- Storage de Supabase sólo para lo que sube el admin: bucket público `clases-apoyo` (flyers), URLs vía `getPublicUrl()`
+- Dominio de Supabase en `next.config.ts` → `images.remotePatterns`
 
 ### Tablas principales
 
 | Tabla | Uso |
 |---|---|
-| `carreras` | Catálogo de carreras con slides, precios, metadata |
-| `faq_preguntas` | Preguntas frecuentes (estado, orden, destacada) |
+| `carreras` | Catálogo de carreras con slides y metadata |
 | `materias` | Materias de clases de apoyo |
+| `clases_apoyo` | Calendario de clases |
+| `solicitudes_clase` | Turnos pedidos por el público |
+| `consultas` | Formulario de inscripción/consulta |
+| `faq_preguntas` | Preguntas frecuentes (estado, orden, destacada) |
 | `novedades` | Artículos de noticias (título, contenido HTML, slug, imagen) |
-| `precios_carreras` | Precios por carrera y período |
-| `precios_meta` | Metadata de sync de precios |
-| `descuentos` | Descuentos sede y especiales |
-| `inscripciones` | Formulario de inscripción |
+| `profesores` | Usuarios del panel (estado, rol) |
+
+Infraestructura sin acceso público (sólo service role vía RPC): `form_rate_limits`, `career_clicks`.
 
 ---
 
-## GitHub Actions
+## Tareas programadas
 
-### Sync automático de datos (`sync-precios.yml`)
+Sin GitHub Actions: los cron viven en `pg_cron` dentro de Supabase (limpieza de clases pasadas, digest diario de clicks a Telegram), programados a mano desde el SQL Editor — ver `sql/`. Las notificaciones de formulario salen por triggers de Postgres + `pg_net` hacia la Edge Function `notificar`.
 
-- **Trigger**: cron diario a las 8:00 AM Argentina (11:00 UTC)
-- **Qué hace**: descarga Excel de precios de Siglo 21, parsea con ExcelJS, sube a Supabase
-- **Secrets necesarios**: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
-
-**Patrón reutilizable**: para cualquier dato externo que cambie periódicamente, crear un script Node que parsee la fuente y lo suba a Supabase, triggereado por cron de GitHub Actions.
+**Patrón reutilizable**: para datos o avisos periódicos, preferir `pg_cron` + Edge Functions dentro de Supabase antes que un runner externo — no necesita secrets fuera de la base ni repo con CI.
 
 ---
 
@@ -262,8 +261,7 @@ images: {
 | `cau_brand` | Recursos visuales de marca (colores, logo, tipografía) |
 | `cau_design_patterns` | Patrones de diseño del sitio |
 | `cargar_carrera` | Cargar nueva carrera en Supabase con slides |
-| `sync_descuentos` | Sincronizar descuentos especiales desde Excel |
-| `/migracion` | Auditar estado de migración HTML → Next.js |
+| `migracion` | Auditar estado de migración HTML → Next.js |
 | `frontend-design` | Diseño de interfaces premium |
 | `seo-audit` | Auditoría SEO |
 | `webapp-testing` | Testing con Playwright |
@@ -271,12 +269,7 @@ images: {
 
 ### MCP Servers usados
 
-- **Supabase** — queries SQL, migraciones, edge functions, tipos TypeScript
-- **Vercel** — deploy, dominios, configuración de proyecto
-- **GitHub** — PRs, issues, code search
-- **Google Search Console** — analytics de búsqueda, inspección de URLs, sitemaps
-- **Brave Search** — búsqueda web para investigación
-- **Context7** — documentación actualizada de librerías
+- **Google Search Console** (`gsc`) — el único configurado hoy: analytics de búsqueda, inspección de URLs, sitemaps. Supabase y Vercel se operan por sus CLIs (`npx supabase`, `npx vercel`), ya autenticadas.
 
 ---
 
@@ -335,7 +328,7 @@ public/
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_GA_ID=
-SUPABASE_SERVICE_ROLE_KEY=  # solo server-side / GitHub Actions
+SUPABASE_SERVICE_ROLE_KEY=  # solo server-side (marcada Sensitive en Vercel)
 ```
 
 ---
@@ -347,7 +340,7 @@ SUPABASE_SERVICE_ROLE_KEY=  # solo server-side / GitHub Actions
 3. **ISR > SSR** — `revalidate = 3600` para datos que cambian pocas veces al día. `force-dynamic` solo cuando es imprescindible.
 4. **Tailwind v4 + CSS variables** — las variables permiten theming sin config extra de Tailwind. Usar `style={{ color: 'var(--color-highlight)' }}` para valores dinámicos.
 5. **Sitemap dinámico** — genera todas las URLs desde Supabase en build/revalidation. Google indexa mejor con sitemap completo.
-6. **GitHub Actions para datos externos** — cualquier Excel, API o scraping se automatiza con cron + script Node + Supabase upsert.
+6. **Cron dentro de Supabase** — `pg_cron` + Edge Functions cubren limpiezas y avisos periódicos sin runner externo ni secrets duplicados.
 7. **Skills de Claude Code** — crear skills custom para operaciones repetitivas (cargar datos, auditar, sincronizar). Ahorran contexto y estandarizan procesos.
 8. **CSP desde el inicio** — configurar Content Security Policy temprano evita problemas cuando se agregan terceros.
 9. **Imágenes en Supabase Storage** — formato `.webp`, tamaño OG (1200×630), bucket público. Configurar `remotePatterns` en Next.js.
