@@ -1091,6 +1091,18 @@ mark {
   transform: translate(-3px, -3px);
 }
 
+/* Los cursos no son tecnicaturas: el ámbar y la superficie cálida los separan
+   visualmente de las dos familias de carreras de Teclab. */
+.teclab-curso {
+  --teclab-accent: var(--teclab-amber);
+  --teclab-on-accent: var(--teclab-ink);
+}
+
+.career-card-teclab-curso,
+.career-card-teclab-curso:hover {
+  background-color: #fff5d9;
+}
+
 /* La textura de ruido del hover generico ensucia el blanco */
 .career-card-teclab:hover::after {
   background-image: none;

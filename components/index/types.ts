@@ -90,7 +90,7 @@ export const CATEGORIES: CarreraCategory[] = [
   { id: 'licenciaturas', label: 'Licenciaturas', sublabel: 'Grado', niveles: ['Grado', 'Grado (CCC)'], featured: true },
   { id: 'tecnicaturas', label: 'Tecnicaturas', sublabel: 'Pregrado', niveles: ['Pregrado'], featured: true },
   { id: 'identidad_argentina', label: 'Identidad Argentina', sublabel: 'Convenio', niveles: ['Identidad Argentina'], featured: true },
-  { id: 'teclab_tecnologia', label: 'Teclab Tecnología', sublabel: 'Tecnicaturas', niveles: ['Teclab - Tecnología'], featured: true },
+  { id: 'teclab_tecnologia', label: 'Teclab Tecnología', sublabel: 'Tecnicaturas y cursos', niveles: ['Teclab - Tecnología', 'Teclab - Curso'], featured: true },
   { id: 'teclab_gestion', label: 'Teclab Gestión', sublabel: 'Tecnicaturas', niveles: ['Teclab - Gestión'], featured: true },
 ];
 
@@ -99,18 +99,17 @@ export function getCategoryForCarrera(c: Pick<Carrera, 'nivel'>): string {
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';
   if (c.nivel === 'Pregrado') return 'tecnicaturas';
   if (c.nivel === 'Identidad Argentina') return 'identidad_argentina';
-  if (c.nivel === 'Teclab - Tecnología') return 'teclab_tecnologia';
+  if (c.nivel === 'Teclab - Tecnología' || c.nivel === 'Teclab - Curso') return 'teclab_tecnologia';
   if (c.nivel === 'Teclab - Gestión') return 'teclab_gestion';
 
   // Any other nivel is not displayed in the current categories
   return '_hidden';
 }
 
-// La oferta del sitio son Grado, Pregrado, Teclab e Identidad Argentina. Los
-// niveles que quedaron afuera -Posgrado (maestrias y especializaciones),
-// APLV - Extragrado, Certificacion y Curso- se filtran al leer de Supabase, asi
-// que no se listan, no se pueden elegir en el formulario y no tienen pagina.
-// Las filas siguen en la base: para reponer un nivel alcanza con darle categoria.
+// La oferta del sitio son Grado, Pregrado, Teclab e Identidad Argentina. De los
+// cursos se publica unicamente el nivel especifico "Teclab - Curso", dentro de
+// Teclab Tecnologia. Los cursos historicos de Siglo 21 siguen ocultos junto con
+// Posgrado, APLV - Extragrado y Certificacion.
 export function esCarreraVisible(c: Pick<Carrera, 'nivel'>): boolean {
   return getCategoryForCarrera(c) !== '_hidden';
 }

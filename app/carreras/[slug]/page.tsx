@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { notFound, permanentRedirect } from 'next/navigation';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, carreraFullName, esCarreraVisible } from '@/components/index/types';
-import { getFamiliaTeclab, esTeclab, getFichaTeclab, parseEnfoqueTeclab } from '@/components/index/teclab';
+import { esCursoTeclab, getFamiliaTeclab, esTeclab, getFichaTeclab, parseEnfoqueTeclab } from '@/components/index/teclab';
 import { parseIAMeta, tienePlanDeEstudios } from '@/components/carreras/career-content';
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
@@ -147,6 +147,13 @@ function descripcionSEO(carrera: Carrera): string {
     ]);
   }
 
+  if (esCursoTeclab(carrera)) {
+    return armarDescripcion([
+      `${carrera.nombre_corto || nombreCompleto} es un curso de actualización profesional de Teclab.`,
+      'Consultá modalidad, duración e inscripción en el CAU Villa Lugano.',
+    ]);
+  }
+
   if (esTeclab(carrera)) {
     const { titulo, modalidad } = parseEnfoqueTeclab(carrera.enfoque);
     // El titulo de Teclab viene con el nombre en ingles entre parentesis y a
@@ -276,13 +283,20 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // Las diplomaturas son de la Academia Identidad Argentina, no de la universidad:
   // declararlas con provider "Universidad Siglo 21" seria decir que las dicta ella.
   const esDiplomaturaIA = carrera.nivel === 'Identidad Argentina';
+  const esCursoTeclabActual = esCursoTeclab(carrera);
   const provider = esDiplomaturaIA
     ? {
         "@type": "Organization",
         "name": "Academia Identidad Argentina",
         "url": "https://identidadargentina.com.ar",
       }
-    : {
+    : esCursoTeclabActual
+      ? {
+          "@type": "EducationalOrganization",
+          "name": "Teclab Instituto Técnico Superior",
+          "url": "https://teclab.edu.ar",
+        }
+      : {
         "@type": "CollegeOrUniversity",
         "name": "Universidad Siglo 21",
         "url": "https://21.edu.ar",
@@ -293,20 +307,26 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     "@type": "Course",
     "name": carreraFullName(carrera),
     "url": url,
-    "description": carrera.descripcion || (esDiplomaturaIA
-      ? `Estudia ${carrera.nombre} con la Academia Identidad Argentina. ${carrera.enfoque}.`
-      : `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`),
+    "description": carrera.descripcion || (
+      esDiplomaturaIA
+        ? `Estudia ${carrera.nombre} con la Academia Identidad Argentina. ${carrera.enfoque}.`
+        : esCursoTeclabActual
+          ? `Curso de ${carrera.nombre} dictado por Teclab. Consultas en el CAU Villa Lugano.`
+          : `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`
+    ),
     provider,
-    "educationalLevel": carrera.nivel,
-    "timeToComplete": carrera.duracion,
-    "educationalCredentialAwarded": carrera.titulo,
+    "educationalLevel": esCursoTeclabActual ? 'Curso' : carrera.nivel,
+    ...(!esCursoTeclabActual && carrera.duracion ? { "timeToComplete": carrera.duracion } : {}),
+    ...(!esCursoTeclabActual && carrera.titulo ? { "educationalCredentialAwarded": carrera.titulo } : {}),
     "inLanguage": "es",
-    "courseMode": "blended",
-    "location": {
-      "@type": "Place",
-      "name": "CAU Villa Lugano",
-      "address": POSTAL_ADDRESS,
-    },
+    ...(!esCursoTeclabActual ? {
+      "courseMode": "blended",
+      "location": {
+        "@type": "Place",
+        "name": "CAU Villa Lugano",
+        "address": POSTAL_ADDRESS,
+      },
+    } : {}),
   };
 
   const breadcrumbSchema = {

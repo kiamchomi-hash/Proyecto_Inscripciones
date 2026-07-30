@@ -95,7 +95,7 @@ for (const c of visibles) {
 
   const slides = Array.isArray(c.slides) ? c.slides : null;
   if (!slides || slides.length === 0) {
-    // Convenio y Teclab tienen modal propio, no necesitan slides.
+    // Convenio y la oferta Teclab arman la ficha desde sus campos, sin slides.
     const cat = getCategoryForCarrera(c);
     const tieneModalPropio = cat === 'identidad_argentina' || cat === 'teclab_tecnologia' || cat === 'teclab_gestion';
     if (!tieneModalPropio) {

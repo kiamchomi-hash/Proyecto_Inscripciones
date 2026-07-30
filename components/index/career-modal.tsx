@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
+import { esCursoTeclab } from './teclab';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 import {
@@ -26,16 +27,25 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   const openerRef = useRef<HTMLElement | null>(null);
   const { prefix, cleanName } = getCareerPrefix(carrera);
   const isIA = carrera.nivel === 'Identidad Argentina';
+  const isTeclabCourse = esCursoTeclab(carrera);
 
   // Paleta: la del convenio (azul #0090C1 / amarillo #F1CF1C / tinta #101820)
-  // o la de Siglo 21 para el resto de las carreras.
-  const accent = isIA ? '#0090c1' : '#00c7b1';
-  const accentLight = isIA ? '#f1cf1c' : '#00ffe1';
-  const accentBg = isIA ? '#16242e' : '#013729';
-  const accentBorder = isIA ? 'rgba(0,144,193,0.35)' : 'rgba(0,199,177,0.2)';
-  const accentGlow = isIA ? 'rgba(0,144,193,0.3)' : 'rgba(0,199,177,0.3)';
+  // la ámbar del curso de Teclab o la de Siglo 21 para el resto.
+  const accent = isIA ? '#0090c1' : isTeclabCourse ? '#f4aa22' : '#00c7b1';
+  const accentLight = isIA ? '#f1cf1c' : isTeclabCourse ? '#ffc95e' : '#00ffe1';
+  const accentBg = isIA ? '#16242e' : isTeclabCourse ? '#33250c' : '#013729';
+  const accentBorder = isIA
+    ? 'rgba(0,144,193,0.35)'
+    : isTeclabCourse
+      ? 'rgba(244,170,34,0.35)'
+      : 'rgba(0,199,177,0.2)';
+  const accentGlow = isIA
+    ? 'rgba(0,144,193,0.3)'
+    : isTeclabCourse
+      ? 'rgba(244,170,34,0.3)'
+      : 'rgba(0,199,177,0.3)';
   const panelBg = isIA ? '#101820' : '#1c2f31';
-  const headerBg = isIA ? '#0a1219' : '#051a1a';
+  const headerBg = isIA ? '#0a1219' : isTeclabCourse ? '#1d1608' : '#051a1a';
 
   useEffect(() => {
     openerRef.current = document.activeElement as HTMLElement | null;
@@ -113,6 +123,13 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
       { label: 'Duración', value: carrera.duracion },
       { label: 'Modalidad', value: iaMeta.modalidad },
       { label: 'Certificación', value: iaMeta.certificacion },
+    ];
+  } else if (isTeclabCourse) {
+    metaItems = [
+      { label: 'Institución', value: 'Teclab' },
+      { label: 'Tipo', value: 'Curso' },
+      { label: 'Duración', value: carrera.duracion },
+      { label: 'Modalidad', value: carrera.modalidad || 'Consultar' },
     ];
   } else {
     metaItems = [

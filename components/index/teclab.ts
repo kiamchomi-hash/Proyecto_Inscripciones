@@ -8,7 +8,9 @@ import type { Carrera } from './types';
 
 export const TECLAB_CYAN = '#2ee7d7';
 export const TECLAB_PURPLE = '#8e2cf2';
+export const TECLAB_AMBER = '#f4aa22';
 export const TECLAB_INK = '#071822';
+export const NIVEL_CURSO_TECLAB = 'Teclab - Curso';
 
 /** Las dos familias de carreras, cada una con su acento. */
 export type TeclabFamilia = 'tecnologia' | 'gestion';
@@ -21,6 +23,11 @@ export function getFamiliaTeclab(c: Pick<Carrera, 'nivel'>): TeclabFamilia | nul
 
 export function esTeclab(c: Pick<Carrera, 'nivel'>): boolean {
   return getFamiliaTeclab(c) !== null;
+}
+
+/** Cursos breves de Teclab: se presentan separados de sus tecnicaturas. */
+export function esCursoTeclab(c: Pick<Carrera, 'nivel'>): boolean {
+  return c.nivel === NIVEL_CURSO_TECLAB;
 }
 
 export function acentoTeclab(familia: TeclabFamilia): string {
