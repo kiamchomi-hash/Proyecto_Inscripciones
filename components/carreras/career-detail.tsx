@@ -9,6 +9,7 @@ import { carreraToSlug, carreraFullName } from '@/components/index/types';
 import { getEscuelaIA } from '@/components/index/identidad-argentina';
 import IsotipoIA from '@/components/index/ia-isotipo';
 import {
+  articulaConSiglo21,
   esCursoTeclab,
   esTeclab,
   getFichaTeclab,
@@ -126,6 +127,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   // competencias, perfil-, pero no un plan por cuatrimestre.
   const conMaterialTeclab = isTeclab || isTeclabCourse;
   const ficha = conMaterialTeclab ? getFichaTeclab(carrera) : null;
+  const articula = articulaConSiglo21(carrera);
   const accent = isIA ? '#25a9db' : isTeclabCourse ? '#f4aa22' : '#00c7b1';
   const accentBright = isIA ? '#f1cf1c' : isTeclabCourse ? '#ffc95e' : '#70f0dc';
   const ink = isIA ? '#101820' : '#071d1b';
@@ -265,6 +267,35 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               <span className="career-breadcrumb-separator" aria-hidden="true">›</span>
               <span className="career-breadcrumb-current" aria-current="page">{cleanName}</span>
             </nav>
+
+            {/* Quien dicta el programa. Hasta el 01/08/2026 la unica marca de
+                Teclab o de la Academia estaba en la fila de datos y en la franja
+                del final: quien llegaba desde Google leia el titulo, el hero y
+                los botones creyendo que era una carrera de Siglo 21, y se
+                enteraba despues de decidir.
+
+                Va en esta fila y no arriba del kicker porque suelto entre las
+                migas y el nombre quedaba aislado, sin nada con que alinearse. Al
+                otro extremo de la fila comparte alto con las dos pildoras y se
+                lee como parte del encabezado. En movil la fila ya es una columna
+                (<=900px), asi que ahi cae igual que antes: debajo de las migas. */}
+            {conMaterialTeclab && (
+              <div className="career-hero-marca">
+                <Image
+                  src="/imagenes/teclab/logo-teclab.webp"
+                  alt="Teclab"
+                  width={296}
+                  height={100}
+                />
+                <span>Instituto Técnico Superior</span>
+              </div>
+            )}
+            {isIA && (
+              <div className="career-hero-marca career-hero-marca--ia">
+                <IsotipoIA />
+                <span>Academia Identidad Argentina</span>
+              </div>
+            )}
           </div>
 
           <div className="career-hero-copy">
@@ -475,6 +506,29 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Desde el CAU Villa
                 Lugano te acompañamos en la inscripción y durante toda la cursada.
               </p>
+              {/* El titulo no es un punto final: es la mitad de una licenciatura
+                  ya cursada. Va aca y no en el hero porque se lee despues del
+                  plan de estudios, que es cuando la pregunta aparece sola. */}
+              {articula && (
+                <p className="career-oficial-articulacion">
+                  <strong>Después podés seguir en Universidad Siglo 21.</strong> El título
+                  articula con las licenciaturas de la universidad reconociendo todas las
+                  materias de la tecnicatura: no repetís ninguna. Mirá cuáles te
+                  corresponden en el{' '}
+                  {/* Unico enlace externo de la ficha, y es a un dominio de la
+                      propia universidad -- no al sitio del instituto. Ahi se
+                      carga el titulo previo y sale la lista de licenciaturas con
+                      equivalencia, que es lo que no podemos contestar desde aca:
+                      depende de cada plan. */}
+                  <a
+                    href="https://tusestudiosprevios.21.edu.ar/explorar-equivalencia"
+                    target="_blank"
+                    rel="noopener nofollow"
+                  >
+                    simulador de equivalencias de Siglo 21
+                  </a>.
+                </p>
+              )}
               <a href="#formulario">
                 Solicitar información
                 <svg aria-hidden="true" viewBox="0 0 24 24">

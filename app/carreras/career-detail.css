@@ -168,6 +168,48 @@
   max-width: 780px;
 }
 
+/* Sello de la institucion que dicta el programa. Va arriba del kicker, o sea lo
+   primero que se lee del hero: es el dato que la ficha no daba hasta la fila de
+   datos y la persona que llega desde Google necesita antes que el nombre.
+   Aparece con menos delay que el kicker para que entre en ese orden. */
+.career-hero-marca {
+  width: fit-content;
+  min-height: 2.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .5rem .85rem;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(4, 18, 26, .55);
+  backdrop-filter: blur(6px);
+  animation: career-copy-in .7s .06s ease-out both;
+}
+
+.career-hero-marca img {
+  height: 1.55rem;
+  width: auto;
+}
+
+.career-hero-marca svg {
+  height: 1.3rem;
+  width: auto;
+}
+
+.career-hero-marca span {
+  padding-left: .7rem;
+  border-left: 1px solid rgba(255, 255, 255, .22);
+  color: rgba(240, 249, 247, .92);
+  font-size: clamp(.7rem, 2.2vw, .79rem);
+  font-weight: 650;
+  letter-spacing: .04em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.career-hero-marca--ia {
+  background: rgba(16, 24, 32, .6);
+}
+
 .career-kicker {
   margin-bottom: .7rem;
   color: var(--career-accent-bright);
@@ -639,6 +681,43 @@
   line-height: 1.65;
 }
 
+/* La continuidad hacia la licenciatura es lo que mas distingue a esta carrera,
+   no una aclaracion al pie: se despega del parrafo de marca con el acento al
+   costado para que se lea aunque la persona venga escaneando la pagina. */
+.career-oficial-articulacion {
+  padding-left: 1rem;
+  border-left: 3px solid var(--career-accent);
+}
+
+.career-oficial-articulacion strong {
+  color: #f4fbfa;
+  font-weight: 750;
+}
+
+/* Enlace de texto, no un boton: `.career-oficial a` pinta el CTA de la franja y
+   sin esto el simulador saldria como un segundo boton compitiendo con
+   "Solicitar informacion", que es el que tiene que ganar. El selector lleva las
+   dos clases a proposito: con una sola empata en especificidad con
+   `.career-oficial a`, que va despues en el archivo y le ganaba por orden. */
+.career-oficial .career-oficial-articulacion a {
+  display: inline;
+  padding: 0;
+  border: 0;
+  color: var(--career-accent-bright);
+  font-size: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  text-decoration-color: color-mix(in srgb, var(--career-accent) 55%, transparent);
+  transition: text-decoration-color .2s ease;
+}
+
+.career-oficial .career-oficial-articulacion a:hover {
+  background: none;
+  border: 0;
+  text-decoration-color: var(--career-accent-bright);
+}
+
 .career-oficial a {
   display: inline-flex;
   align-items: center;
@@ -839,6 +918,18 @@
 }
 
 @media (min-width: 901px) {
+  /* El sello de la institucion se va al extremo opuesto de las migas. Hace
+     falta el ancho completo: dentro del hero, que es un flex column con
+     align-items:flex-start, la fila mide lo que miden las dos pildoras y el
+     margin auto no tendria contra que empujar. */
+  .career-hero-nav-row {
+    width: 100%;
+  }
+
+  .career-hero-marca {
+    margin-left: auto;
+  }
+
   .career-page:not(.career-page--no-image) .career-hero-inner {
     position: relative;
     align-self: stretch;
@@ -909,6 +1000,24 @@
     flex-direction: column;
     gap: .65rem;
     margin-bottom: 1.1rem;
+  }
+
+  /* Las migas envuelven en vez de recortarse. El `max-width: 26rem` con
+     `nowrap` del escritorio son 416 px: mas anchos que un telefono, asi que el
+     nombre largo se cortaba contra el borde -- no se veia el tajo porque
+     `.career-page` tiene `overflow: clip`, pero la ultima palabra desaparecia.
+     Con esto "Inicio > Carreras >" queda en una linea y el nombre baja entero
+     abajo, en las que necesite. */
+  .career-breadcrumb {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .career-breadcrumb-current {
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .career-facts {

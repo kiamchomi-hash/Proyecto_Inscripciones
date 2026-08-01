@@ -71,10 +71,28 @@ function tituloSEO(carrera: Carrera): string {
   const nombreCompleto = carreraFullName(carrera);
 
   // Las diplomaturas son de convenio con la Academia Identidad Argentina, no de
-  // la universidad: su titulo no la nombra.
+  // la universidad: su titulo no la nombra. Las de Teclab si articulan con la
+  // Siglo 21, pero el titulo lo emite el instituto: nombrar solo a la
+  // universidad hacia que el resultado de Google se leyera como una carrera de
+  // Siglo 21 y la persona se enterara recien despues de entrar.
+  const conTeclab = esTeclab(carrera) || esCursoTeclab(carrera);
   const sufijos = carrera.nivel === 'Identidad Argentina'
     ? [' | Academia Identidad Argentina', ' | Identidad Argentina']
-    : [' a Distancia | Siglo 21 Villa Lugano', ' | Siglo 21 Villa Lugano', ' | Siglo 21'];
+    : conTeclab
+      // Las dos marcas siempre juntas: el titulo lo emite el instituto, pero la
+      // carrera articula para seguir en la universidad, asi que Siglo 21 no es
+      // relleno de marca sino parte de lo que se ofrece -- y ademas es la mitad
+      // de lo que la gente escribe en el buscador. No hay variante con la sede
+      // sola ("Teclab · CAU Villa Lugano") ni con el instituto solo: cualquiera
+      // de las dos entra en los nombres largos y les gana a esta, que es la
+      // unica que nombra a las dos.
+      ? [' | Teclab · Siglo 21 Villa Lugano', ' | Teclab · Siglo 21']
+      : [' a Distancia | Siglo 21 Villa Lugano', ' | Siglo 21 Villa Lugano', ' | Siglo 21'];
+
+  // Con que quedarse cuando ni el nombre mas corto entra con el sufijo mas
+  // corto. Solo ahi vale " | Teclab" pelado: el curso tiene el nombre mas largo
+  // de las 96 fichas y la alternativa era dejarlo sin ninguna marca.
+  const sufijoMinimo = conTeclab ? ' | Teclab' : sufijos[sufijos.length - 1];
 
   // Del nombre mas informativo al mas corto, sin repetir: en las carreras de una
   // sola palabra ("Abogacia") los dos son iguales.
@@ -92,7 +110,7 @@ function tituloSEO(carrera: Carrera): string {
   // "Martillero, Corredor Publico y Corredor Inmobiliario | Siglo 21" son 63
   // caracteres y la consulta que le trae impresiones es "siglo 21 martillero
   // publico", o sea que soltar la marca seria soltar media consulta.
-  const masCorto = `${nombres[nombres.length - 1]}${sufijos[sufijos.length - 1]}`;
+  const masCorto = `${nombres[nombres.length - 1]}${sufijoMinimo}`;
   if (masCorto.length <= TOLERANCIA_TITULO) return masCorto;
 
   // Ni asi: mejor el nombre entero sin marca que el nombre entero con la marca
@@ -165,9 +183,16 @@ function descripcionSEO(carrera: Carrera): string {
     // Supabase, donde quedaron valores genericos que no son empresas.
     const partner = getFichaTeclab(carrera)?.partner?.nombre;
     return armarDescripcion([
-      `Recibite de ${grado} en ${carrera.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`,
+      // "Carrera de Teclab" adelante y no al final: es lo primero que hay que
+      // saber, y las partes de atras son justo las que Google corta.
+      `Carrera de Teclab. Recibite de ${grado} en ${carrera.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`,
       cierre,
-      partner && `Carrera cocreada con ${partner}.`,
+      // La articulacion con la licenciatura no entra aca y no es por descuido:
+      // medido sobre las 17 fichas, la frase mas corta que la dice son 50
+      // caracteres y el presupuesto ya se agota en el cierre. Elegir seria
+      // cambiar el CTA por el diferencial. Vive en la franja de marca de la
+      // pagina, que es donde igual se lee mejor.
+      partner && `Cocreada con ${partner}.`,
     ]);
   }
 
@@ -216,7 +241,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description,
     keywords: esIA
       ? [nombreCompleto, carrera.nombre, 'academia identidad argentina', 'diplomatura online', 'villa lugano', carrera.nivel, 'CABA']
-      : [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
+      : esTeclab(carrera) || esCursoTeclab(carrera)
+        ? [nombreCompleto, carrera.nombre, 'teclab', 'instituto tecnico superior teclab', 'universidad siglo 21', 'villa lugano', carrera.nivel, 'CABA']
+        : [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
     alternates: {
       canonical: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
     },
@@ -295,13 +322,18 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // declararlas con provider "Universidad Siglo 21" seria decir que las dicta ella.
   const esDiplomaturaIA = carrera.nivel === 'Identidad Argentina';
   const esCursoTeclabActual = esCursoTeclab(carrera);
+  // El titulo de una tecnicatura de Teclab lo emite el instituto, igual que el
+  // del curso. Hasta el 01/08/2026 la excepcion cubria solo los cursos y las 17
+  // tecnicaturas salian declaradas con provider "Universidad Siglo 21": no era
+  // un matiz de redaccion sino un dato estructurado equivocado.
+  const conTeclab = esCursoTeclabActual || esTeclab(carrera);
   const provider = esDiplomaturaIA
     ? {
         "@type": "Organization",
         "name": "Academia Identidad Argentina",
         "url": "https://identidadargentina.com.ar",
       }
-    : esCursoTeclabActual
+    : conTeclab
       ? {
           "@type": "EducationalOrganization",
           "name": "Teclab Instituto Técnico Superior",
@@ -323,7 +355,9 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         ? `Estudia ${carrera.nombre} con la Academia Identidad Argentina. ${carrera.enfoque}.`
         : esCursoTeclabActual
           ? `Curso de ${carrera.nombre} dictado por Teclab. Consultas en el CAU Villa Lugano.`
-          : `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`
+          : conTeclab
+            ? `${carrera.nombre}, carrera de Teclab Instituto Técnico Superior. Inscripción y acompañamiento en el CAU Villa Lugano.`
+            : `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`
     ),
     provider,
     "educationalLevel": esCursoTeclabActual ? 'Curso' : carrera.nivel,

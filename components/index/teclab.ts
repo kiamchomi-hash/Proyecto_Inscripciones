@@ -98,6 +98,24 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
   return null;
 }
 
+/**
+ * Si el titulo habilita a seguir despues en una licenciatura de Universidad
+ * Siglo 21 reconociendo **todas** las materias de la tecnicatura. Es el corazon
+ * del convenio y vale para las 17 menos Seguros, la unica sin continuidad.
+ *
+ * Los cursos quedan afuera por definicion: no entregan titulo de tecnico, o sea
+ * que no hay nada que articular.
+ *
+ * Dato del usuario (01/08/2026). Teclab lo publica con un simulador de
+ * equivalencias que dice a que licenciatura lleva cada tecnicatura; el enlace no
+ * esta en el sitio a proposito, por lo mismo que no se enlaza la ficha oficial:
+ * el contacto se hace por el formulario de esta pagina o por WhatsApp.
+ */
+export function articulaConSiglo21(c: Pick<Carrera, 'nombre' | 'nivel'>): boolean {
+  if (!esTeclab(c)) return false;
+  return !c.nombre.toLowerCase().includes('seguros');
+}
+
 // ── Ficha oficial de cada carrera en teclab.edu.ar ──
 
 export const TECLAB_SITIO = 'https://teclab.edu.ar';
