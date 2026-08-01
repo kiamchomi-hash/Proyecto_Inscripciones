@@ -220,7 +220,10 @@ export function carreraFullName(carrera: Pick<Carrera, 'nombre' | 'prefix'>): st
   if (p.includes('especialización') || p.includes('especializacion')) return `Especialización en ${nombre}`;
   if (p.includes('diplomatura')) return `Diplomatura en ${nombre}`;
   if (p.includes('certificado')) return `Certificado en ${nombre}`;
-  if (p.includes('curso')) return `Curso en ${nombre}`;
+  // "Curso de", no "en": el prefijo de la base ya viene asi y "Curso en
+  // Actualizacion Profesional..." no se dice. La pagina redirige sola el slug
+  // viejo, que compara contra el canonico.
+  if (p.includes('curso')) return `Curso de ${nombre}`;
   return nombre;
 }
 

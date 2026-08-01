@@ -909,7 +909,12 @@ function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carre
         )}
         {isTeclabCourse && (
           <div className="teclab-card-head">
-            <span className="teclab-badge">Teclab</span>
+            {/* La duracion decia "Consultar" mientras Teclab no publicaba la
+                ficha; ahi el badge mostraba el instituto, que en esta seccion ya
+                se sabe. Con el dato cargado vuelve a servir la duracion. */}
+            <span className="teclab-badge">
+              {carrera.duracion && carrera.duracion !== 'Consultar' ? carrera.duracion : 'Teclab'}
+            </span>
             <span className="teclab-badge teclab-badge-tipo">Curso</span>
           </div>
         )}

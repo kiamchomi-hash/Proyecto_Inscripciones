@@ -262,7 +262,14 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   //
   // El corte rota con el id para que no todas las fichas apunten a las mismas
   // dos carreras, y es deterministico para no romper el cache de ISR.
-  const mismoNivel = carreras.filter(c => c.nivel === carrera.nivel && c.id !== carrera.id).slice(0, 6);
+  //
+  // El curso de Teclab es el unico de su nivel: sin excepcion se quedaba sin
+  // enlaces propios y la seccion mostraba dos carreras de Siglo 21 bajo un
+  // titulo que prometia Teclab. Sus hermanas son las tecnicaturas del instituto.
+  const hermanas = esCursoTeclab(carrera)
+    ? carreras.filter(c => esTeclab(c))
+    : carreras.filter(c => c.nivel === carrera.nivel && c.id !== carrera.id);
+  const mismoNivel = hermanas.slice(0, 6);
   const otrosNiveles = carreras.filter(c => c.nivel !== carrera.nivel);
   const desde = otrosNiveles.length ? (carrera.id * 2) % otrosNiveles.length : 0;
   const cruzadas = otrosNiveles.length
@@ -272,7 +279,10 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     : [];
 
   // Solo se manda lo que se pinta; la fila entera arrastra todos los slides.
+  // Sin el filtro por id, en el curso -cuyas hermanas salen de otro nivel- una
+  // misma carrera podia entrar dos veces.
   const relacionadas = [...mismoNivel, ...cruzadas]
+    .filter((c, i, arr) => arr.findIndex(o => o.id === c.id) === i)
     .map(c => ({ id: c.id, nombre: c.nombre, prefix: c.prefix }));
 
   // El formulario solo necesita id/nombre/nivel: mandarle la fila entera metia
