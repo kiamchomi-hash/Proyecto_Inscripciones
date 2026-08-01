@@ -43,6 +43,10 @@
 
 ## Para tener presente
 
+**La fuente buena de Identidad Argentina es `respuestas-whatsapp/*.md`, no los PDF.** Los PDF de las diplomaturas dicen "certificación nacional e internacional avalado por normas ISO 9001-2015", y eso induce a error: el ISO es el aval de calidad de la academia, no de la certificación. Lo que respalda a la certificación son dos entidades, idénticas en las 11 diplomaturas: **aval nacional de la Cámara Argentina para la Formación y Capacitación Laboral** y **aval internacional de la Organización Internacional para la Educación Permanente (OIEP)**.
+
+Esa misma carpeta trae dos cosas más que los PDF no dicen: que **sí hay evaluación o trabajo final** (la mayoría de las actividades son multiple choice, se aprueba con 6 o más) y las reglas de trato por WhatsApp. Las clases **quedan grabadas** en Innova Virtual — no está escrito en ningún archivo, lo confirmó el CAU el 01/08/2026.
+
 **Los cuatro pendientes que dependen de un tercero ya están redactados** en `herramientas/pedidos-a-enviar.md`: uno a la universidad (plan de Estadística Aplicada, las 5 carreras sin página, el link roto, la fecha del 2B, becas y doble carrera) y otro a Teclab (precio, fecha, temario y fotos del curso de IA). Cada uno trae abajo la tabla de dónde va cada dato cuando llegue la respuesta.
 
 **El KB quedó completo hasta donde hay fuente pública** (01/08/2026): de las 68 fichas, 65 tienen resolución y 66 perfil profesional, y las que faltan son justamente las carreras sin página en 21.edu.ar. En el mismo pase se recortó el eslogan con el que cierran los perfiles bajados del sitio —no es perfil profesional sino el CTA de la landing pegado al final— y ahí apareció que en **dos** carreras estaba mal pegado: Políticas Públicas y Gestión Contable cerraban las dos con "Ejercé el derecho con visión global", que es de Abogacía. El bot venía diciéndoselo a los aspirantes.
