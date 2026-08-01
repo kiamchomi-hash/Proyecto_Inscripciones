@@ -28,9 +28,11 @@
 
   Aparte: **Licenciatura en Administración** figura enlazada en el índice del sitio pero `licenciatura-en-administracion` (sin tilde) devuelve 404. El link está roto del lado de ellos; ya va incluido en el pedido.
 
-- [ ] **El corpus del bot tiene 73 respuestas sin revisar.** De 130, hay 50 aprobadas y 7 descartadas (al 01/08). Aprobar o descartar **lo decide una persona**, no se puede automatizar: se revisan en `entrenar-bot.html` (solapa "Revisar respuestas", que esconde las ya aprobadas) y se vuelven a instalar con `aplicar-corpus.mjs --instalar`.
+- [ ] **El corpus del bot tiene 89 respuestas sin revisar.** De 146, hay 50 aprobadas y 7 descartadas (al 01/08). Aprobar o descartar **lo decide una persona**, no se puede automatizar: se revisan en `entrenar-bot.html` (solapa "Revisar respuestas", que esconde las ya aprobadas) y se vuelven a instalar con `aplicar-corpus.mjs --instalar`.
 
-  El hueco grande es **Identidad Argentina: 30 de 44 intenciones sin una sola respuesta propia**, contra 5 de Teclab —que son estructurales, no faltantes— y 0 de Siglo 21. Sus carreras ya entran al entrenador desde `extraer-externos.mjs`, pero casi todas las intenciones les contestan con el texto genérico.
+  **Las 16 de Identidad Argentina son las primeras de la fila.** Se escribieron el 01/08 desde los 11 PDF oficiales y cubren las intenciones que antes contestaban con el texto genérico de Siglo 21. Cinco de ellas no llenan un hueco: **corrigen una respuesta que era falsa** para una diplomatura de convenio —la de `validez` prometía "título oficial con validez nacional" y "número de resolución ministerial"—, así que conviene mirarlas antes que el resto.
+
+  Identidad quedó con respuesta propia en 40 de 44 intenciones. Las 4 que faltan (`pedir-datos`, `seguimiento`, `no-entiendo`, `convenio-organismo`) están bien con la universal: no afirman nada específico de la institución.
 
 - [ ] **Cuatro datos institucionales sin confirmar**, que hoy el bot responde con un "lo confirmo y te aviso" en vez de inventar:
 
