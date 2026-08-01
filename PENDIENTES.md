@@ -51,9 +51,9 @@
 
 ## Para tener presente
 
-**Los avisos van sólo por Telegram desde el 01/08/2026.** Se sacó el envío por mail de la Edge Function y de `/api/notificar-carrera`: salía del dominio compartido de pruebas de Resend, entregaba mal y nadie lo leía. Con eso se cerró el pendiente de conseguir un remitente propio, que estaba trabado por el plan free de Resend (un solo dominio verificado, ocupado por topykly).
+**Los avisos van sólo por Telegram desde el 01/08/2026,** y sólo los de los tres formularios. Se sacó el envío por mail de la Edge Function —salía del dominio compartido de pruebas de Resend, entregaba mal y nadie lo leía— y se eliminó entero `/api/notificar-carrera`, el aviso que saltaba al abrirse una ficha sin contenido: `npm run auditar` lista esas mismas carreras leyendo la base, sin esperar a que entre un visitante. Con eso se cerró también el pendiente del remitente propio, trabado por el plan free de Resend.
 
-Consecuencia práctica: **un canal caído ahora es el canal**. La función devuelve `502` cuando Telegram rechaza el envío, justamente para que se vea en `net._http_response`. Si alguna vez hay que volver al mail, el envío por Resend y la plantilla HTML con la marca del CAU están en el historial de git, hasta el commit del 01/08/2026.
+Consecuencia práctica: **un canal caído ahora es el canal**. La función devuelve `502` cuando Telegram rechaza el envío, justamente para que se vea en `net._http_response`. Si alguna vez hay que volver al mail o al aviso por clic, los dos están en el historial de git, hasta el commit del 01/08/2026.
 
 **Los avisos de formularios fallan en silencio.** `net.http_post` encola el pedido sin bloquear el `INSERT`, así que la web responde `201` aunque la notificación se caiga. Fue exactamente lo que pasó del 20/07 al 27/07: el endurecimiento de seguridad le agregó validación de secreto a la Edge Function y el trigger de la base nunca se actualizó para mandarlo. (Ese corte no costó ningún lead real: la única consulta del período, `id 43`, era una prueba propia.)
 

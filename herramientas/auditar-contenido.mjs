@@ -103,8 +103,9 @@ for (const c of visibles) {
     const cat = getCategoryForCarrera(c);
     const tieneModalPropio = cat === 'identidad_argentina' || cat === 'teclab_tecnologia' || cat === 'teclab_gestion';
     if (!tieneModalPropio) {
-      // Estas disparan el mail de /api/notificar-carrera cada vez que alguien abre la ficha.
-      registrar('Carreras sin slides (avisan por mail al abrirse)', nombre + sufijo);
+      // Esta lista es la unica red que queda: hasta el 01/08/2026 habia ademas
+      // un aviso por clic (/api/notificar-carrera), que se elimino.
+      registrar('Carreras sin slides (la ficha se abre vacia)', nombre + sufijo);
     }
   }
 
