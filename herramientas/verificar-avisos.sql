@@ -1,4 +1,4 @@
--- Verificacion de los avisos de formulario (mail por Resend + Telegram).
+-- Verificacion de los avisos de formulario (Telegram, unico canal).
 --
 -- CUANDO CORRERLO: cada vez que se toque WEBHOOK_SECRET, la Edge Function
 -- `notificar` o el trigger notify_edge_function(). Los avisos fallan en
@@ -36,10 +36,12 @@ LIMIT 1;
 -- PASO 2 — esperar y mirar las respuestas
 --
 -- Esperado: tres filas con status_code 200 y
---   {"ok":true,"email":true,"telegram":true}
+--   {"ok":true,"telegram":true}
 --
 -- 401  -> el secreto del trigger no coincide con el de la Edge Function.
 --         Ver sql/2026-07-27_webhook_notificar.sql para reponer el header.
+-- 502  -> la funcion corrio pero Telegram rechazo el mensaje. Revisar
+--         TELEGRAM_BOT_TOKEN y TELEGRAM_CHAT_ID en los secrets.
 -- 0 filas nuevas -> el trigger no disparo. Revisar el PASO 4.
 -- ─────────────────────────────────────────────────────────────
 

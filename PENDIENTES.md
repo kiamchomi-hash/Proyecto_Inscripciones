@@ -49,15 +49,11 @@
 
 - [ ] **Cuando arranque el 2B, revisar el corpus y la planilla.** El cálculo ya contempla que en 2B se cobran sólo Matrícula y Ticket B, y `periodoPorDefecto()` cambia solo el 4 de agosto. Lo que hay que mirar es el texto: las respuestas de precio hablan de "primer período" y "segundo período", y en 2B queda uno solo.
 
-- [ ] **Avisos por mail desde un remitente propio** — bloqueado por Resend, no por el sitio. El plan free permite **un solo dominio verificado** y ese lugar lo ocupa topykly, con el que se comparte la cuenta. Decisión del 28/07: Telegram es el canal principal de avisos y el mail sigue saliendo de `onboarding@resend.dev` (entrega peor y cae en spam más seguido).
-
-  Si algún día se libera el lugar o se pasa a Pro, quedan tres pasos **en este orden**:
-
-  1. Verificar `siglo21sur.com` en Resend y cargar en Cloudflare los registros que dé. **Los CNAME de DKIM van con la nube gris** (sin proxear): proxeados, Cloudflare los reescribe y la verificación no pasa nunca. Y **un dominio admite un solo registro SPF**: si Resend lo pide en la raíz, hay que fusionarlo con el de Email Routing (`v=spf1 include:_spf.mx.cloudflare.net ~all`, que Cloudflare deja "Unlocked" justo para eso), no agregar un segundo TXT — dos SPF invalidan los dos. Si lo pide sobre un subdominio (`send.siglo21sur.com`), no hay conflicto.
-  2. **Recién ahí** setear el secret `RESEND_FROM` = `CAU Villa Lugano <avisos@siglo21sur.com>` en Edge Functions → Secrets. Adelantarlo hace que Resend rechace cada envío con 403 y los avisos se corten en silencio. El deploy de la función ya está hecho (v10, 28/07, con el fallback al sandbox), así que sólo falta el secret.
-  3. Verificar con `herramientas/4 - Verificar avisos (SQL).bat`: tiene que llegar el mail desde la dirección nueva y no caer en spam.
-
 ## Para tener presente
+
+**Los avisos van sólo por Telegram desde el 01/08/2026.** Se sacó el envío por mail de la Edge Function y de `/api/notificar-carrera`: salía del dominio compartido de pruebas de Resend, entregaba mal y nadie lo leía. Con eso se cerró el pendiente de conseguir un remitente propio, que estaba trabado por el plan free de Resend (un solo dominio verificado, ocupado por topykly).
+
+Consecuencia práctica: **un canal caído ahora es el canal**. La función devuelve `502` cuando Telegram rechaza el envío, justamente para que se vea en `net._http_response`. Si alguna vez hay que volver al mail, el envío por Resend y la plantilla HTML con la marca del CAU están en el historial de git, hasta el commit del 01/08/2026.
 
 **Los avisos de formularios fallan en silencio.** `net.http_post` encola el pedido sin bloquear el `INSERT`, así que la web responde `201` aunque la notificación se caiga. Fue exactamente lo que pasó del 20/07 al 27/07: el endurecimiento de seguridad le agregó validación de secreto a la Edge Function y el trigger de la base nunca se actualizó para mandarlo. (Ese corte no costó ningún lead real: la única consulta del período, `id 43`, era una prueba propia.)
 
@@ -73,7 +69,7 @@ FROM net._http_response ORDER BY created DESC LIMIT 3;
 DELETE FROM public.consultas WHERE nombre='PRUEBA' AND apellido='WEBHOOK';
 ```
 
-Esperado: `200` y `{"ok":true,"email":true,"telegram":true}`. Un `401` significa que el secreto del trigger no coincide con el de la Edge Function. Detalle completo en `sql/2026-07-27_webhook_notificar.sql`.
+Esperado: `200` y `{"ok":true,"telegram":true}`. Un `401` significa que el secreto del trigger no coincide con el de la Edge Function; un `502`, que la función corrió bien pero Telegram rechazó el mensaje. Detalle completo en `sql/2026-07-27_webhook_notificar.sql`.
 
 **Las Edge Functions se despliegan por CLI, nunca por el dashboard.** El deploy por dashboard deja el `slug` distinto del `name` y la URL se arma con el slug, así que la lista muestra el nombre correcto mientras la ruta devuelve 404; además queda con `verify_jwt: true`, que rechaza el `Bearer <WEBHOOK_SECRET>` del cron por no ser un JWT. Las dos cosas sólo se ven con `npx supabase functions list`. La forma buena: `npx supabase functions deploy <fn> --project-ref yuwfkdehaowkselkhtck --no-verify-jwt`.
 
@@ -89,11 +85,11 @@ Esperado: `200` y `{"ok":true,"email":true,"telegram":true}`. Un `401` significa
 
 **Hay un hueco en los datos de clicks entre el 22 y el 29/07.** `/api/track-click` fallaba en silencio —devolvía `{"ok":false}` con status 200— porque la tabla `career_clicks` y su RPC no existían. No se puede reconstruir.
 
-**DMARC está en `p=reject`** y hoy no lo rompe nada, porque ningún sistema manda mails como `@siglo21sur.com` (los avisos salen del sandbox de Resend y Email Routing sólo recibe). **Lo único que lo rompería** es configurar el Gmail para "enviar como" `contacto@siglo21sur.com`: si algún día se hace, primero hay que aflojar la política o sumar el remitente al SPF. Mejora menor pendiente: el SPF está en `~all` y podría ir a `-all`, aunque con DMARC en `reject` el margen es chico.
+**DMARC está en `p=reject`** y hoy no lo rompe nada: desde que los avisos salen sólo por Telegram, **ningún sistema manda mails** como `@siglo21sur.com` (Email Routing sólo recibe). **Lo único que lo rompería** es configurar el Gmail para "enviar como" `contacto@siglo21sur.com`: si algún día se hace, primero hay que aflojar la política o sumar el remitente al SPF. Mejora menor pendiente: el SPF está en `~all` y podría ir a `-all`, aunque con DMARC en `reject` el margen es chico.
 
 **Los PAT de Supabase no vencen y dan acceso a todos los proyectos de la cuenta.** Al 27/07 quedan vivos `codex-release` (`sbp_ae97…`, en uso) y `mercadolibrebot` (`sbp_bc7d…`). Conviene revisarlos cada tanto en https://supabase.com/dashboard/account/tokens y borrar el que deje de usarse.
 
-**En Resend no queda ninguna clave con acceso total.** Quedan `Onboarding` (Sending access, la que manda los avisos) y `topykly-dev`, del otro proyecto que comparte la cuenta.
+**Resend ya no se usa acá.** Al sacar el mail quedaron sin uso la clave `Onboarding` y la variable `RESEND_API_KEY` de Vercel; el secret `RESEND_FROM` de Supabase nunca llegó a setearse. Conviene borrarlos: `topykly-dev` es del otro proyecto que comparte la cuenta y no hay que tocarla.
 
 **Google Imágenes no es un canal que pague** — medido en GSC el 29/07: ~90 impresiones y 0 clicks en 3 meses, casi todo gente buscando el logo de la universidad. Lo barato ya se hizo (el sitemap declara las imágenes reales de cada página desde el 29/07); crear contenido visual nuevo para ese canal no se justifica. La única imagen que podría rankear con intención es una buena foto del frente del CAU, que ya está pedida arriba.
 

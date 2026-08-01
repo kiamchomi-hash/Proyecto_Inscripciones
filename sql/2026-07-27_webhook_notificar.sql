@@ -71,7 +71,9 @@ $fn$;
 --   SELECT id, status_code, content, created
 --   FROM net._http_response ORDER BY created DESC LIMIT 3;
 --
--- Esperado: status_code 200 y content {"ok":true,"email":true,"telegram":true}
+-- Esperado: status_code 200 y content {"ok":true,"telegram":true}
+--   (el 01/08/2026 se sacó el envío por mail: Telegram es el único canal, y
+--    por eso la función ahora responde 502 cuando ese envío falla.)
 -- Si da 401, el secret del trigger no coincide con el de la Edge Function.
 --
 -- Y después borrá la fila de prueba:
