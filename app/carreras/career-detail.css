@@ -995,19 +995,42 @@
   }
 
   .career-hero-inner { padding: 1.25rem 0 2.5rem; }
+
+  /* El boton de volver y las migas comparten linea, y el sello de la
+     institucion baja a una barra propia del ancho de las dos. Apilados de a
+     uno el sello quedaba colgando a la izquierda sin nada con que alinearse;
+     asi cierra el bloque. */
   .career-hero-nav-row {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: .65rem;
+    flex-wrap: wrap;
+    gap: .5rem;
     margin-bottom: 1.1rem;
+  }
+
+  /* La base va en 0, no en `auto`. Con `auto` el ancho base de los dos juntos
+     ya supera el de un telefono, y flex decide envolver *antes* de achicar
+     nada: terminaban uno debajo del otro igual. Con base 0 entran los dos en la
+     linea y despues se reparten el ancho, 40/60 a favor de las migas, que son
+     las que llevan mas texto. */
+  .career-all-careers {
+    flex: 2 1 0;
+    min-width: 0;
+  }
+
+  .career-breadcrumb {
+    flex: 3 1 0;
+    min-width: 0;
+  }
+
+  .career-hero-marca {
+    flex: 1 0 100%;
+    width: auto;
+    justify-content: center;
   }
 
   /* Las migas envuelven en vez de recortarse. El `max-width: 26rem` con
      `nowrap` del escritorio son 416 px: mas anchos que un telefono, asi que el
      nombre largo se cortaba contra el borde -- no se veia el tajo porque
-     `.career-page` tiene `overflow: clip`, pero la ultima palabra desaparecia.
-     Con esto "Inicio > Carreras >" queda en una linea y el nombre baja entero
-     abajo, en las que necesite. */
+     `.career-page` tiene `overflow: clip`, pero la ultima palabra desaparecia. */
   .career-breadcrumb {
     max-width: 100%;
     flex-wrap: wrap;
