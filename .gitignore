@@ -20,6 +20,10 @@ scripts/precios-con-descuentos.*
 screenshots/
 output/
 .playwright-cli/
+.hermes-temp/
+# Base de conocimiento comercial (fichas KB CAU, precios vigentes, tips de venta).
+# Precios y datos internos: nunca al repo, que es publico.
+herramientas/conocimiento-hermes/
 docs/guias/
 TUTORIAL_ADMIN.md
 DOCUMENTACION_PROYECTO.md

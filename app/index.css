@@ -1191,17 +1191,36 @@ mark {
   );
 }
 
-/* ── Pildoras de tipo dentro de la seccion de gestion ── */
-.teclab-tipo-pills {
+/* ── Categorías internas de cada familia académica ── */
+.section-category-pills {
+  --section-category-accent: var(--color-highlight);
+  --section-category-on-accent: #013729;
+  --section-category-surface: #0f2825;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-bottom: 0.75rem;
 }
 
-/* Cajas tinta con filo grueso del acento, como los rotulos NEGOCIOS / GESTION /
-   COMUNICACION del render */
-.teclab-tipo-pill {
+.section-category-pills--teclab_tecnologia {
+  --section-category-accent: var(--teclab-cyan);
+  --section-category-on-accent: var(--teclab-ink);
+  --section-category-surface: var(--teclab-ink);
+}
+
+.section-category-pills--teclab_gestion {
+  --section-category-accent: var(--teclab-purple);
+  --section-category-on-accent: #ffffff;
+  --section-category-surface: var(--teclab-ink);
+}
+
+.section-category-pills--identidad_argentina {
+  --section-category-accent: var(--ia-blue);
+  --section-category-on-accent: #ffffff;
+  --section-category-surface: #101820;
+}
+
+.section-category-pill {
   font-size: 0.66rem;
   font-weight: 950;
   letter-spacing: 0.1em;
@@ -1210,22 +1229,23 @@ mark {
   border-radius: 6px;
   line-height: 1.2;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   color: #ffffff;
-  background: var(--teclab-ink);
-  border: 2px solid color-mix(in srgb, var(--teclab-accent) 70%, transparent);
+  background: var(--section-category-surface);
+  border: 2px solid color-mix(in srgb, var(--section-category-accent) 70%, transparent);
 }
 
-.teclab-tipo-pill:hover {
-  border-color: var(--teclab-accent);
-  box-shadow: 3px 3px 0 color-mix(in srgb, var(--teclab-accent) 60%, transparent);
+.section-category-pill:hover {
+  transform: translateY(-1px);
+  border-color: var(--section-category-accent);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--section-category-accent) 60%, transparent);
 }
 
-.teclab-tipo-pill.active {
-  color: var(--teclab-on-accent);
-  background: var(--teclab-accent);
-  border-color: var(--teclab-accent);
-  box-shadow: 3px 3px 0 var(--teclab-ink);
+.section-category-pill.active {
+  color: var(--section-category-on-accent);
+  background: var(--section-category-accent);
+  border-color: var(--section-category-accent);
+  box-shadow: 3px 3px 0 var(--section-category-surface);
 }
 
 /* ── Pildoras de categoria del filtro principal ── */

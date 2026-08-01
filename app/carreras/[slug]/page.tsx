@@ -148,9 +148,10 @@ function descripcionSEO(carrera: Carrera): string {
   }
 
   if (esCursoTeclab(carrera)) {
+    const { modalidad } = parseEnfoqueTeclab(carrera.enfoque);
     return armarDescripcion([
-      `${carrera.nombre_corto || nombreCompleto} es un curso de actualización profesional de Teclab.`,
-      'Consultá modalidad, duración e inscripción en el CAU Villa Lugano.',
+      `${carrera.nombre_corto || nombreCompleto}: curso de Teclab de ${carrera.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`,
+      'Certificado oficial. Inscripción y consultas en el CAU Villa Lugano.',
     ]);
   }
 
@@ -316,17 +317,23 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     ),
     provider,
     "educationalLevel": esCursoTeclabActual ? 'Curso' : carrera.nivel,
-    ...(!esCursoTeclabActual && carrera.duracion ? { "timeToComplete": carrera.duracion } : {}),
-    ...(!esCursoTeclabActual && carrera.titulo ? { "educationalCredentialAwarded": carrera.titulo } : {}),
+    // "Consultar" es el relleno de una ficha sin datos confirmados: declararlo
+    // como dato estructurado seria afirmarle a Google algo que no sabemos.
+    ...(carrera.duracion && carrera.duracion !== 'Consultar' ? { "timeToComplete": carrera.duracion } : {}),
+    ...(carrera.titulo && carrera.titulo !== 'Consultar' ? { "educationalCredentialAwarded": carrera.titulo } : {}),
     "inLanguage": "es",
-    ...(!esCursoTeclabActual ? {
+    // El curso se dicta entero por videollamada; las carreras combinan la
+    // plataforma con la tutoria presencial del CAU.
+    ...(esCursoTeclabActual ? {
+      "courseMode": "online",
+    } : {
       "courseMode": "blended",
       "location": {
         "@type": "Place",
         "name": "CAU Villa Lugano",
         "address": POSTAL_ADDRESS,
       },
-    } : {}),
+    }),
   };
 
   const breadcrumbSchema = {

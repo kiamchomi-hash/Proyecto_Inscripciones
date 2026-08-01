@@ -122,7 +122,10 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   // Las carreras de Teclab traen su material de la ficha oficial del instituto:
   // foto de portada, competencias, plan por periodo y el enlace a teclab.edu.ar.
   const isTeclab = esTeclab(carrera);
-  const ficha = isTeclab ? getFichaTeclab(carrera) : null;
+  // Los cursos traen el mismo material de texto que las tecnicaturas -foto,
+  // competencias, perfil-, pero no un plan por cuatrimestre.
+  const conMaterialTeclab = isTeclab || isTeclabCourse;
+  const ficha = conMaterialTeclab ? getFichaTeclab(carrera) : null;
   const accent = isIA ? '#25a9db' : isTeclabCourse ? '#f4aa22' : '#00c7b1';
   const accentBright = isIA ? '#f1cf1c' : isTeclabCourse ? '#ffc95e' : '#70f0dc';
   const ink = isIA ? '#101820' : '#071d1b';
@@ -182,10 +185,11 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         ]
       : isTeclabCourse
         ? [
-            { label: 'Institución', value: 'Teclab' },
-            { label: 'Tipo', value: 'Curso' },
+            { label: 'Institución', value: 'Teclab · Instituto Técnico Superior' },
             { label: 'Duración', value: carrera.duracion },
             { label: 'Modalidad', value: carrera.modalidad || 'Consultar' },
+            // Un curso no entrega titulo: la columna guarda el certificado.
+            { label: 'Certificado', value: carrera.titulo },
           ]
         : [
           { label: 'Nivel', value: carrera.nivel },
@@ -195,9 +199,12 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         ];
 
   const planSlide = getPlanSlide(carrera);
-  const teclabCompetencias = isTeclab ? parseCompetenciasTeclab(carrera.seccion_modalidad) : [];
-  const teclabSalida = isTeclab ? partirDescripcionTeclab(carrera.descripcion).salida : '';
-  const teclabIntro = isTeclab ? partirDescripcionTeclab(carrera.descripcion).perfil : '';
+  const teclabCompetencias = conMaterialTeclab ? parseCompetenciasTeclab(carrera.seccion_modalidad) : [];
+  const teclabSalida = conMaterialTeclab ? partirDescripcionTeclab(carrera.descripcion).salida : '';
+  const teclabIntro = conMaterialTeclab ? partirDescripcionTeclab(carrera.descripcion).perfil : '';
+  // En un curso plan_estudios no es el temario sino como se cursa: una lista de
+  // vinetas, igual que las competencias.
+  const cursada = isTeclabCourse ? parseCompetenciasTeclab(carrera.plan_estudios) : [];
   const anios = isTeclab
     ? periodosTeclabToAnios(parsePlanTeclab(carrera.plan_estudios))
     : planSlide && contarMaterias(planSlide) > 0
@@ -323,7 +330,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
 
           {teclabCompetencias.length > 0 && (
             <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow="Competencias profesionales" />
+              <SectionHeading eyebrow={isTeclabCourse ? 'Qué vas a aprender' : 'Competencias profesionales'} />
               <ul className="career-learning-list">
                 {teclabCompetencias.map((competencia, index) => (
                   <li key={index}>
@@ -337,6 +344,22 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                   <p>{teclabSalida}</p>
                 </div>
               )}
+            </section>
+          )}
+
+          {/* Reemplaza al plan de estudios en los cursos: no tienen temario por
+              cuatrimestre, pero si hay que contar como es la cursada. */}
+          {cursada.length > 0 && (
+            <section id="plan" className="career-section career-reveal">
+              <SectionHeading eyebrow="La cursada">Cómo se cursa</SectionHeading>
+              <ul className="career-learning-list">
+                {cursada.map((item, index) => (
+                  <li key={index}>
+                    <span><CheckIcon /></span>
+                    <p>{item}</p>
+                  </li>
+                ))}
+              </ul>
             </section>
           )}
 

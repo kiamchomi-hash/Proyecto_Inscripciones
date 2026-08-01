@@ -34,6 +34,22 @@ export function acentoTeclab(familia: TeclabFamilia): string {
   return familia === 'tecnologia' ? TECLAB_CYAN : TECLAB_PURPLE;
 }
 
+/**
+ * Acento y clase con la que se pinta el modal. Los cursos no son una familia
+ * -no arman seccion propia, entran en Teclab Tecnologia- pero si tienen color
+ * propio: el ambar que ya usan su tarjeta del catalogo y su ficha en /carreras.
+ */
+export function getMarcoTeclab(c: Pick<Carrera, 'nivel'>): { clase: string; acento: string } {
+  if (esCursoTeclab(c)) return { clase: 'teclab-curso', acento: TECLAB_AMBER };
+  const familia = getFamiliaTeclab(c) ?? 'gestion';
+  return { clase: `teclab-${familia}`, acento: acentoTeclab(familia) };
+}
+
+/** Sobre el violeta el texto va blanco; sobre el cian y el ambar, tinta. */
+export function textoSobreAcentoTeclab(acento: string): string {
+  return acento === TECLAB_PURPLE ? '#ffffff' : TECLAB_INK;
+}
+
 // Tipo de cada programa, tal como se rotula en el render. Es lo que alimenta
 // las pildoras de la seccion de gestion y el chip de cada tarjeta.
 // La clave es una palabra distintiva del nombre en Supabase.
@@ -60,6 +76,26 @@ export function getTipoTeclab(carrera: Carrera): string | null {
   if (familia === 'tecnologia') return 'Tecnología';
   const nombre = carrera.nombre.toLowerCase();
   return TIPOS.find(t => nombre.includes(t.match))?.tipo ?? null;
+}
+
+/** Categorías internas de la sección Teclab Tecnología. */
+export const CATEGORIAS_TECNOLOGIA = [
+  'Desarrollo',
+  'Datos e IA',
+  'Infraestructura',
+  'Ciberseguridad',
+] as const;
+
+export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | 'nivel'>): string | null {
+  const esTecnologia = getFamiliaTeclab(carrera) === 'tecnologia' || esCursoTeclab(carrera);
+  if (!esTecnologia) return null;
+
+  const nombre = carrera.nombre.toLowerCase();
+  if (nombre.includes('data science') || nombre.includes('inteligencia artificial')) return 'Datos e IA';
+  if (nombre.includes('cloud administration') || nombre.includes('redes informáticas')) return 'Infraestructura';
+  if (nombre.includes('seguridad informática')) return 'Ciberseguridad';
+  if (nombre.includes('programación') || nombre.includes('quality assurance')) return 'Desarrollo';
+  return null;
 }
 
 // ── Ficha oficial de cada carrera en teclab.edu.ar ──
@@ -236,6 +272,17 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       imagenCierre: '/imagenes/teclab/carreras/periodismo-cierre.webp',
     },
   },
+  {
+    // Curso, no tecnicatura: su landing no publica fotos propias -el hero es un
+    // recorte sobre fondo liso-, asi que usa dos del mismo banco de imagenes que
+    // el resto. Con nombre propio, para poder cambiarlas sin tocar el codigo.
+    match: 'inteligencia artificial',
+    ficha: {
+      url: 'https://teclab.edu.ar/landing/curso-profesional-ia/',
+      imagen: '/imagenes/teclab/carreras/curso-ia.webp',
+      imagenCierre: '/imagenes/teclab/carreras/curso-ia-cierre.webp',
+    },
+  },
 ];
 
 export function getFichaTeclab(carrera: Pick<Carrera, 'nombre'>): TeclabFicha | null {
@@ -282,7 +329,11 @@ const sinTildes = (texto: string) =>
  * texto de la ficha- se completa con las primeras de la lista, asi el slide
  * nunca queda corto.
  */
-export function destacarCompetencias(competencias: string[], carrera: Pick<Carrera, 'nombre'>): string[] {
+export function destacarCompetencias(competencias: string[], carrera: Pick<Carrera, 'nombre' | 'nivel'>): string[] {
+  // Los cursos publican una lista corta y hecha para leerse entera: no hay
+  // formulas genericas que podar, asi que van las cuatro.
+  if (esCursoTeclab(carrera)) return competencias;
+
   const nombre = carrera.nombre.toLowerCase();
   const clave = Object.keys(DESTACADAS).find(k => nombre.includes(k));
   const elegidas: string[] = [];

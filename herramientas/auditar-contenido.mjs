@@ -15,6 +15,7 @@
 import { existsSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { carreraToSlug, esCarreraVisible, getCategoryForCarrera } from '../components/index/types.ts';
+import { esCursoTeclab } from '../components/index/teclab.ts';
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -84,8 +85,11 @@ for (const c of visibles) {
   const enSlides = slideDePlanConMaterias(c.slides);
   // Una carrera anunciada pero sin inscripcion abierta todavia no tiene por que
   // tener el temario: la universidad no lo publico. Se avisa, no se marca falla.
-  const registrar = c.proximamente ? aviso : problema;
-  const sufijo = c.proximamente ? ' (proximamente)' : '';
+  // Un curso corto tampoco: no tiene plan de estudios por cuatrimestre, y en su
+  // columna plan_estudios va como se cursa, que es mas corto que el umbral.
+  const curso = esCursoTeclab(c);
+  const registrar = c.proximamente || curso ? aviso : problema;
+  const sufijo = c.proximamente ? ' (proximamente)' : curso ? ' (curso)' : '';
 
   if (!columna && !enSlides) {
     registrar('Carreras sin plan de estudios (ni columna ni slide)', nombre + sufijo);
