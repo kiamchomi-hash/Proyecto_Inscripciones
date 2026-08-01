@@ -33,7 +33,7 @@ npm run smoke        # producción: rutas, cabeceras, redirects, sitemap y peso 
 npm run capturas     # PNG desktop + mobile a screenshots/<AAAAMMDD-HHMM>/
 ```
 
-- **`auditar`** (`herramientas/auditar-contenido.mjs`) busca el desfasaje entre la base y las fuentes reales: carreras visibles sin plan de estudios (ni en la columna ni en un slide `plan_estudios`, mismo criterio que el `hasPlan` de `career-detail.tsx`), carreras sin slides —que disparan el aviso de Telegram de `/api/notificar-carrera` cada vez que alguien abre la ficha—, slugs duplicados, niveles desconocidos y novedades publicadas sin `imagen_url` (og:image vacío al compartir). Las carreras `proximamente` bajan a aviso: todavía no tienen temario publicado. Importa `esCarreraVisible()` del módulo real (Node 24 strippea los tipos), así que sigue sola los cambios de taxonomía.
+- **`auditar`** (`herramientas/auditar-contenido.mjs`) busca el desfasaje entre la base y las fuentes reales: carreras visibles sin plan de estudios (ni en la columna ni en un slide `plan_estudios`, mismo criterio que el `hasPlan` de `career-detail.tsx`), carreras sin slides —que abren una ficha vacía—, slugs duplicados, niveles desconocidos y novedades publicadas sin `imagen_url` (og:image vacío al compartir). Las carreras `proximamente` bajan a aviso: todavía no tienen temario publicado. Importa `esCarreraVisible()` del módulo real (Node 24 strippea los tipos), así que sigue sola los cambios de taxonomía.
 - **`smoke`** (`herramientas/smoke.mjs`) acepta `--base=http://localhost:3000` y `--rapido` (saltea el barrido de las ~119 URLs del sitemap). Los redirects sólo se prueban contra el dominio propio. Mide el peso pidiendo a prod, no comprimiendo local: Vercel comprime el HTML al vuelo con otra calidad.
 - **`capturas`** (`herramientas/capturas.mjs`) acepta `--base=`, `--rutas=/faq,/contacto`, `--solo=mobile|desktop` y `--viewport` (sólo la primera pantalla). Usa `devices['iPhone 13']` de Playwright: `chrome --headless --window-size` **no** da un viewport CSS del ancho pedido e inventa recortes falsos en móvil. Navega con `waitUntil: 'load'` porque `networkidle` nunca llega en las páginas con formulario (Turnstile deja tráfico abierto). Desde Git Bash las rutas con `/` inicial se mangean: usar PowerShell o `--rutas=faq,contacto`.
 
@@ -129,7 +129,7 @@ Públicas dentro de `/admin`: `login`, `auth/callback`, `reset-password`, `pendi
 3. tiene `slides` → `carousel-modal.tsx`
 4. si no → `career-modal.tsx`
 
-Las carreras sin slides *y* fuera de convenio disparan `POST /api/notificar-carrera`, que avisa por Telegram que falta cargar contenido.
+Las carreras sin slides *y* fuera de convenio caen en `career-modal.tsx`, que arma la ficha con los campos sueltos. Detectarlas es tarea de `npm run auditar`: hasta el 01/08/2026 lo hacía además un aviso por clic (`/api/notificar-carrera`), que se eliminó por redundante.
 
 `components/carreras/career-content.ts` tiene los helpers puros que comparten el modal (cliente) y la página `/carreras/[slug]` (servidor) — por eso viven fuera de todo componente `'use client'`.
 
@@ -153,9 +153,7 @@ El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada
 
 ### Variables de entorno
 
-Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_EXPECTED_HOSTNAME`, `NEXT_PUBLIC_GA_ID`, `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID`. `WEBHOOK_SECRET` lo consume sólo la Edge Function.
-
-Las dos variables de Telegram están **en los dos lados**: la Edge Function las usa para los avisos de formulario y Next para el de `/api/notificar-carrera`. Si se rota el bot, hay que cambiarlas en Vercel *y* en los secrets de Supabase.
+Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_EXPECTED_HOSTNAME` y `NEXT_PUBLIC_GA_ID`. `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` los consumen las Edge Functions, no Next.
 
 El `.env.local` de esta máquina tiene sólo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_GA_ID`. Alcanza para levantar el sitio y leer de la base, pero **cualquier POST a `/api/formularios` devuelve 503 en local** porque falta la service role, y `vercel env pull` no la trae (está marcada Sensitive). Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
 

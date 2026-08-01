@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { sendGAEvent } from '@next/third-parties/google';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup, MARCA_MODAL } from './types';
 import { getEscuelaIA } from './identidad-argentina';
-import { CATEGORIAS_TECNOLOGIA, esCursoTeclab, esTeclab, getCategoriaTeclabTecnologia, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
+import { CATEGORIAS_TECNOLOGIA, esCursoTeclab, getCategoriaTeclabTecnologia, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 import CareerInfoModal from './career-info-modal';
 
 // Levenshtein distance for fuzzy search
@@ -262,15 +262,10 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       keepalive: true,
     }).catch(() => {});
 
-    // Las de convenio y las de Teclab tienen su propio modal de slides armado
-    // desde los campos de texto: no cuentan como faltantes
-    if (carrera.nivel !== 'Identidad Argentina' && !esTeclab(carrera) && !esCursoTeclab(carrera) && (!carrera.slides || carrera.slides.length === 0)) {
-      fetch('/api/notificar-carrera', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: carrera.nombre }),
-      }).catch(() => {});
-    }
+    // Aca vivia un aviso a /api/notificar-carrera cuando la ficha no tenia
+    // slides. Se saco el 01/08/2026: `npm run auditar` lista esas mismas
+    // carreras leyendo la base, sin esperar a que entre un visitante ni gastar
+    // un pedido por clic.
   }, []);
 
 

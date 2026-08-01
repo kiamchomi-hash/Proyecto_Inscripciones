@@ -22,10 +22,12 @@ desde una terminal: `npm run auditar`, `npm run smoke`, `npm run capturas`.
 ### 1 — Auditar contenido
 
 Busca el desfasaje entre la base y las fuentes reales, que es lo que nadie avisa:
-carreras visibles sin plan de estudios, carreras sin slides (esas disparan un
-mail de `/api/notificar-carrera` **cada vez** que alguien abre la ficha), slugs
-duplicados, niveles desconocidos y novedades publicadas sin imagen, que salen con
-el `og:image` vacío al compartirlas.
+carreras visibles sin plan de estudios, carreras sin slides (esas abren una ficha
+vacía), slugs duplicados, niveles desconocidos y novedades publicadas sin imagen,
+que salen con el `og:image` vacío al compartirlas.
+
+Correrla es la única forma de enterarse: antes había además un aviso por Telegram
+cada vez que alguien abría una ficha vacía, y se eliminó el 01/08/2026.
 
 Las carreras marcadas `proximamente` bajan a aviso: todavía no tienen temario
 publicado, no es un error.
