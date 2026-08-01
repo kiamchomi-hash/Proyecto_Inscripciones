@@ -32,24 +32,22 @@
 
   Aparte: **Licenciatura en Administración** figura enlazada en el índice del sitio pero `licenciatura-en-administracion` (sin tilde) devuelve 404. El link está roto del lado de ellos; conviene avisarles.
 
-- [ ] **El corpus del bot tiene 41 respuestas sin revisar.** De 52, hay 11 aprobadas. Se revisan en `entrenar-bot.html` (solapa "Revisar respuestas", que ahora esconde las ya aprobadas) y se vuelven a instalar con `aplicar-corpus.mjs --instalar`.
+- [ ] **El corpus del bot tiene 73 respuestas sin revisar.** De 130, hay 50 aprobadas y 7 descartadas (al 01/08). Aprobar o descartar **lo decide una persona**, no se puede automatizar: se revisan en `entrenar-bot.html` (solapa "Revisar respuestas", que esconde las ya aprobadas) y se vuelven a instalar con `aplicar-corpus.mjs --instalar`.
 
-  Teclab e Identidad Argentina están apenas cubiertas: 4 y 5 respuestas propias contra 13 universales. Sus carreras ya entran al entrenador desde `extraer-externos.mjs`, pero casi todas las intenciones les contestan con el texto genérico.
+  El hueco grande es **Identidad Argentina: 30 de 44 intenciones sin una sola respuesta propia**, contra 5 de Teclab —que son estructurales, no faltantes— y 0 de Siglo 21. Sus carreras ya entran al entrenador desde `extraer-externos.mjs`, pero casi todas las intenciones les contestan con el texto genérico.
 
 - [ ] **Cuatro datos institucionales sin confirmar**, que hoy el bot responde con un "lo confirmo y te aviso" en vez de inventar:
 
-  1. La **fecha exacta de inicio del 2B** — sólo se sabe que es en octubre. El 2A arranca el 3 de agosto y ese sí está cargado.
+  1. La **fecha exacta de inicio del 2B** — sólo se sabe que es en octubre. El 2A arranca el 3 de agosto y ese sí está cargado. Ojo: `periodoPorDefecto()` pasa a 2B el 4 de agosto, así que a partir de ahí el bot ofrece un período cuya fecha de inicio no sabe.
   2. Si hay **becas reales** más allá del descuento por beneficio. Se mencionan programas para situaciones vulnerables y por rendimiento, sin confirmar.
   3. Las condiciones para **cursar dos carreras a la vez** (hay requisitos de avance académico).
   4. El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse. Los requisitos por carrera sí están.
 
-- [ ] **El pipeline de precios de Teclab viene fallando.** `Teclab_Info/price-automation/update_teclab_prices.py` —el que corre la tarea programada "Teclab - Actualizar precios"— abortó el 31/07 en la segunda carrera: `Falló el extractor para Cloud Administration: EXTRACTOR_FAILED: El inicio de sesión no avanzó`. Como extrae carrera por carrera y una sola falla corta todo, **no se regeneran las guías de WhatsApp ni las de HTML** de Teclab.
-
-  Los precios del bot no dependen de eso: `actualizar-todo.mjs` usa `marketing-agent/carreras_precios_extractor.js`, que trae las 18 carreras de una pasada y anda bien. Lo que hay que arreglar es el login del extractor por carrera, o hacer que el pipeline no aborte entero cuando falla uno. Log en `price-automation/logs/precios_<fecha>.log`.
-
-- [ ] **Cuando arranque el 2B, revisar el corpus y la planilla.** El cálculo ya contempla que en 2B se cobran sólo Matrícula y Ticket B, y `periodoPorDefecto()` cambia solo el 4 de agosto. Lo que hay que mirar es el texto: las respuestas de precio hablan de "primer período" y "segundo período", y en 2B queda uno solo.
-
 ## Para tener presente
+
+**El login del portal de Teclab falla cada tanto, y como la actualización es transaccional se lleva puesto el lote entero.** Pasó el 31/07/2026 en la segunda carrera (`EXTRACTOR_FAILED: El inicio de sesión no avanzó`) y al día siguiente las 18 salieron a la primera. No es un pipeline roto: es un login intermitente. El 01/08 se le agregaron **3 intentos con 20 s de espera** por carrera (`EXTRACTOR_ATTEMPTS` en `update_teclab_prices.py`).
+
+No hay que "seguir de largo" con 17 carreras: el script es transaccional a propósito —si una falla no toca las guías vigentes— y una extracción parcial dejaría los mensajes de WhatsApp y los HTML mezclando dos corridas. Log en `price-automation/logs/precios_<fecha>.log`.
 
 **Los avisos van sólo por Telegram desde el 01/08/2026,** y sólo los de los tres formularios. Se sacó el envío por mail de la Edge Function —salía del dominio compartido de pruebas de Resend, entregaba mal y nadie lo leía— y se eliminó entero `/api/notificar-carrera`, el aviso que saltaba al abrirse una ficha sin contenido: `npm run auditar` lista esas mismas carreras leyendo la base, sin esperar a que entre un visitante. Con eso se cerró también el pendiente del remitente propio, trabado por el plan free de Resend.
 
