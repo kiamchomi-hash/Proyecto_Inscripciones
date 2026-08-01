@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { sendGAEvent } from '@next/third-parties/google';
 import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup, MARCA_MODAL } from './types';
 import { getEscuelaIA } from './identidad-argentina';
-import { esCursoTeclab, esTeclab, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
+import { CATEGORIAS_TECNOLOGIA, esCursoTeclab, esTeclab, getCategoriaTeclabTecnologia, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 import CareerInfoModal from './career-info-modal';
 
 // Levenshtein distance for fuzzy search
@@ -220,7 +220,13 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   // Sections to display (filtered by category)
   const sectionsToShow = useMemo(() => {
     if (searchResults) return []; // hide sections when searching
-    const displayOrder = ['licenciaturas', 'tecnicaturas', 'teclab_tecnologia', 'teclab_gestion', 'identidad_argentina'];
+    const displayOrder = [
+      'licenciaturas',
+      'tecnicaturas',
+      'teclab_tecnologia',
+      'teclab_gestion',
+      'identidad_argentina',
+    ];
     if (activeCategory === 'all') return displayOrder.filter(id => filteredGrouped[id]?.length);
     return [activeCategory].filter(id => filteredGrouped[id]?.length);
   }, [activeCategory, filteredGrouped, searchResults]);
@@ -676,6 +682,34 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   );
 }
 
+const ESCUELAS_IDENTIDAD = ['Liderazgo', 'Tecnología', 'Bienestar', 'Negocios', 'Derecho', 'Administración'] as const;
+
+function getCategoriaDeSeccion(sectionId: string, carrera: Carrera): string | null {
+  if (sectionId === 'teclab_tecnologia') {
+    return getCategoriaTeclabTecnologia(carrera);
+  }
+  if (sectionId === 'teclab_gestion') {
+    return getTipoTeclab(carrera);
+  }
+  if (sectionId === 'identidad_argentina') {
+    return getEscuelaIA(carrera);
+  }
+  return null;
+}
+
+function getOrdenCategorias(sectionId: string): readonly { id: string; label: string }[] {
+  if (sectionId === 'teclab_tecnologia') {
+    return CATEGORIAS_TECNOLOGIA.map(label => ({ id: label, label }));
+  }
+  if (sectionId === 'teclab_gestion') {
+    return TIPOS_GESTION.map(label => ({ id: label, label }));
+  }
+  if (sectionId === 'identidad_argentina') {
+    return ESCUELAS_IDENTIDAD.map(label => ({ id: label, label }));
+  }
+  return [];
+}
+
 // Career section component
 function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab }: {
   sectionId: string;
@@ -688,22 +722,31 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
 }) {
   const [sectionSearch, setSectionSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  // Pildora de tipo activa dentro de la seccion de gestion de Teclab
-  const [tipoActivo, setTipoActivo] = useState<string | null>(null);
+  const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
 
-  // Tipos presentes en esta seccion, en el orden del render
-  const tipos = useMemo(() => {
-    if (familiaTeclab !== 'gestion') return [];
-    const presentes = new Set(carreras.map(c => getTipoTeclab(c)).filter(Boolean) as string[]);
-    return TIPOS_GESTION.filter(t => presentes.has(t));
-  }, [carreras, familiaTeclab]);
+  // Sólo se muestran categorías que tienen al menos un programa en la sección.
+  const categorias = useMemo(() => {
+    const orden = getOrdenCategorias(sectionId);
+    return orden
+      .map(categoria => ({
+        ...categoria,
+        count: carreras.filter(c => getCategoriaDeSeccion(sectionId, c) === categoria.id).length,
+      }))
+      .filter(categoria => categoria.count > 0);
+  }, [carreras, sectionId]);
+
+  const categoriaAplicada = categoriaActiva && categorias.some(c => c.id === categoriaActiva)
+    ? categoriaActiva
+    : null;
 
   const filteredCarreras = useMemo(() => {
     let items = carreras;
-    if (tipoActivo) items = items.filter(c => getTipoTeclab(c) === tipoActivo);
+    if (categoriaAplicada) {
+      items = items.filter(c => getCategoriaDeSeccion(sectionId, c) === categoriaAplicada);
+    }
     if (sectionSearch.trim()) items = items.filter(c => fuzzyMatch(c.nombre, sectionSearch.trim()));
     return items;
-  }, [carreras, sectionSearch, tipoActivo]);
+  }, [carreras, sectionId, sectionSearch, categoriaAplicada]);
 
   const colorAcento = isIdentidadArgentina
     ? 'var(--ia-blue)'
@@ -763,22 +806,22 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           </div>
         )}
 
-        {/* Pildoras de tipo: cada familia del render tiene su propio rotulo */}
-        {tipos.length > 0 && (
-          <div className="teclab-tipo-pills" role="group" aria-label="Filtrar por tipo de programa">
-            {tipos.map(tipo => {
-              const count = carreras.filter(c => getTipoTeclab(c) === tipo).length;
-              return (
-                <button
-                  key={tipo}
-                  onClick={() => setTipoActivo(tipoActivo === tipo ? null : tipo)}
-                  className={`teclab-tipo-pill ${tipoActivo === tipo ? 'active' : ''}`}
-                  aria-pressed={tipoActivo === tipo}
-                >
-                  {tipo} ({count})
-                </button>
-              );
-            })}
+        {categorias.length > 0 && (
+          <div
+            className={`section-category-pills section-category-pills--${sectionId}`}
+            role="group"
+            aria-label={`Filtrar ${title} por categoría`}
+          >
+            {categorias.map(categoria => (
+              <button
+                key={categoria.id}
+                onClick={() => setCategoriaActiva(categoriaAplicada === categoria.id ? null : categoria.id)}
+                className={`section-category-pill ${categoriaAplicada === categoria.id ? 'active' : ''}`}
+                aria-pressed={categoriaAplicada === categoria.id}
+              >
+                {categoria.label} ({categoria.count})
+              </button>
+            ))}
           </div>
         )}
 

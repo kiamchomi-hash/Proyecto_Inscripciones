@@ -1,0 +1,101 @@
+---
+name: bot-respuestas
+version: 1.0.0
+description: Cuando se trabaja sobre el bot de respuestas de WhatsApp del CAU Villa Lugano — agregar o corregir respuestas del corpus, atender notas del entrenador, resolver de dónde sale un dato, o cotizar Siglo 21 / Teclab / Identidad Argentina. Úsese también ante cualquier duda sobre qué fuente manda cuando dos se contradicen.
+---
+
+# Bot de respuestas del CAU
+
+Motor sin IA que, ante lo que escribe un lead por WhatsApp, propone tres respuestas para copiar y pegar. Elige por parecido entre la consulta y las preguntas de ejemplo de cada intención. **El corpus es el producto**: `datos/respuestas-bot.json`.
+
+## Dónde vive cada cosa
+
+Todo cuelga de `herramientas/conocimiento-hermes/` (gitignored: Grep no lo ve, buscar con Bash).
+
+| Archivo | Qué es |
+|---|---|
+| `datos/respuestas-bot.json` | **el corpus**: intenciones, preguntas, respuestas, estados y notas |
+| `herramientas/bot-respuestas.mjs` | el motor. Se inyecta en las páginas con `toString()`, así el navegador corre el mismo código que cubren los tests |
+| `entrenar-bot.html` | la página de trabajo: probar consultas, revisar y aprobar respuestas |
+| `buscador-carreras.html` | la página de atención: ficha, precios y **el mismo bot**, en la caja "Responder al lead" |
+| `herramientas/contexto-carreras.mjs` | **arma el contexto de marcadores** de las tres instituciones. Lo usan los dos generadores: si cada uno armara el suyo, una respuesta probada en el entrenador saldría distinta al atender |
+| `herramientas/generar-entrenador.mjs` | arma la página de entrenamiento |
+| `herramientas/aplicar-corpus.mjs` | compara la descarga contra el corpus instalado y lo reemplaza |
+| `datos/carreras-externas.json` | carreras de Teclab e Identidad, con precios ya resueltos |
+| `herramientas/extraer-externos.mjs` | las lee de las carpetas del escritorio y arma ese archivo |
+
+## El ciclo
+
+```bash
+# 1. Se trabaja en entrenar-bot.html (aprobar / descartar / anotar) y se descarga.
+# 2. Ver qué cambió y reemplazar:
+node herramientas/aplicar-corpus.mjs              # sólo muestra
+node herramientas/aplicar-corpus.mjs --instalar
+# 3. Editar el corpus a mano si hace falta, y siempre LOS DOS:
+node --test herramientas/tests/*.test.mjs
+node herramientas/generar-entrenador.mjs --promocion 5 --descuento-beneficio 10
+node herramientas/generar-buscador.mjs  --promocion 5 --descuento-beneficio 10
+```
+
+**El buscador también lleva el bot**, leyendo el mismo `respuestas-bot.json` al generarse: lo que se aprueba en el entrenador aparece en el buscador recién al regenerarlo. Regenerar sólo uno deja las dos páginas contestando distinto.
+
+`--promocion` es obligatorio y sale de `datos/promocion-vigente.json`. Para actualizar precios de las tres instituciones y rearmar todo: `Actualizar precios de las tres.bat`.
+
+**Ojo con `node --test herramientas/tests/`** (la carpeta): falla. Va con `*.test.mjs`.
+
+## Jerarquía de fuentes
+
+Cuando dos se contradicen, manda la de arriba. No elegir en silencio: dejar la contradicción anotada en la respuesta.
+
+1. **Reglamento Institucional** — el árbitro.
+   - Teclab: `portalalumnopre.teclab.edu.ar/5e01120d0cdce5c39761b58700f275b4.pdf` (37 pp.). No se lee por web: bajarlo y extraerlo con PyMuPDF.
+   - Siglo 21: `contenidos.21.edu.ar/microsites/reglamento/` — versión **2026**, 14 capítulos, navegable por `index.php?put=<capitulo>-<seccion>-<slug>`.
+2. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
+3. **Fichas del KB** del proyecto (`datos/fichas-sitio-oficial.json`, `datos/carreras/`).
+4. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
+
+Casos ya resueltos, para no rediscutirlos:
+
+- **Tarjetas de Teclab**: van las 8 (Visa, Mastercard, American Express, Naranja, Cabal, Diners, Argencard, Sucrédito). El FAQ del sitio nombra 4; es la versión corta, no una corrección.
+- **Quién elige la empresa de las prácticas**: la elige el alumno. Lo dice el reglamento 3.5.2, contra lo que sugería el FAQ.
+- **Convenios de Teclab**: hay "más de 200 empresas y organizaciones" y categoría "Gobiernos & ONGs". La lista de fuerzas armadas, policía y municipios **sólo existe en el documento interno**: no afirmarla.
+
+## Cómo se cotiza
+
+**Siglo 21.** El período A cobra Matrícula + Ticket A + Ticket B; desde el 2B, sólo Matrícula + Ticket B. Al aspirante nunca se le dice "ticket": es **primer período** y **segundo período**. Una matrícula por ciclo, y el ciclo cubre los dos períodos — hoy 2A + 2B; en 2027 arranca otro con 1A + 1B y matrícula nueva. El total es el del ciclo, no el de la carrera. Financiación: 6 cuotas con tarjeta.
+
+**Teclab.** Matrícula + bimestre 2A + bimestre 2B. La matrícula es **cuatrimestral** (reglamento 4.1: "el pago de la matrícula y aranceles tienen una periodicidad cuatrimestral"), y el cuatrimestre son esos dos bimestres, de 9 semanas cada uno — 8 de cursada y 1 de repaso. Los descuentos por bimestre vienen como campo; el **50% off de matrícula que tienen algunas carreras no viene**: se deduce restando los descuentos de bimestre a `ahorroTotal`. `extraer-externos.mjs` controla que el desglose sume el total y, si no cierra, manda sólo el total y deja aviso.
+
+**Regla dura**: toda respuesta que escriba un importe tiene que exigir `preciosVigentes`. Hay un test que recorre el corpus y falla si alguna no lo hace. Cuando la fuente queda vieja, el bot no cotiza: contesta que lo confirma.
+
+## Reglas del corpus
+
+- **No inventar.** Si el dato no está, la respuesta dice que se confirma. Cada respuesta lleva en `notas` de dónde salió.
+- **Estados**: `aprobada`, `descartada`, `sin revisar`. Los decide una persona. Lo aprobado sale primero; lo descartado no sale nunca. **Si se cambia el texto de una respuesta aprobada, vuelve a `sin revisar`** — la aprobación era sobre el texto anterior.
+- **`institucion`**: sin declararla, la respuesta sirve para las tres. Si el texto nombra una casa ("en Siglo 21", "el CAU"), hay que declararla.
+- **`requiere` va en la respuesta, no en la intención.** Un `requiere` a nivel intención la apaga para las tres instituciones aunque una tenga su propia respuesta. Este error ya dejó mudas a `requisitos`, `cuotas`, `horarios` y `doble-titulacion`.
+- Al agregar una respuesta a una intención existente, mirar **el orden**: entre dos sin revisar gana la que está antes en el array.
+
+## Cobertura al 01/08/2026
+
+| | Carreras | Intenciones mudas (de 44) | Aprobadas |
+|---|---|---|---|
+| Universidad Siglo 21 | 65 | **0** | 21 |
+| Teclab | 18 | **5** | 34 |
+| Academia Identidad Argentina | 12 | **30** | 9 |
+
+Las 5 de Teclab son estructurales, no huecos: `doble-titulacion`, `dos-carreras`, `titulo-exterior` y `titulo-terciario` no aplican, y `enviar-ficha` necesita la URL de cada carrera, que no está cargada.
+
+**Identidad Argentina es el trabajo pendiente**: 30 intenciones sin una sola respuesta y ninguna fuente oficial procesada. Su sitio bloquea el scraping (robots + SPA); el material está en la carpeta del escritorio.
+
+## Sin confirmar
+
+- **Secundario incompleto en Siglo 21.** El reglamento 2026 pide "copia legalizada del certificado de estudios secundario completo" y no contempla excepciones. La vía de mayores de 25 está en la base de conocimiento del CAU y la respuesta la linkea, pero el reglamento no la respalda. Adeudar materias o título en trámite: sin dato.
+- **Convenio con la Legislatura porteña o el Senado.** En la lista pública de convenios de la Legislatura (ILCP) no figura ni Teclab ni Siglo 21. Teclab no publica su lista: se consulta al 0810-888-9900.
+- **Financiación mensual.** No existe pago mensual: el reglamento compromete el pago por cuatrimestre o bimestre. Las 6 cuotas son financiación de tarjeta. Las consultas de "¿cuánto por mes?" siguen contestándose con el total.
+
+## Trampas conocidas
+
+- La solapa Revisar rellena los marcadores con la carrera elegida. Si la respuesta exige un dato que esa carrera no tiene, se muestra con otra **de la misma institución** y lo avisa. Antes cruzaba instituciones y mostraba Abogacía revisando Data Science.
+- `finalAmounts` en el archivo de precios de Teclab **sólo existe** cuando lo generó el pipeline de Python. Con el extractor de una pasada hay que leer `prices`.
+- El perfil profesional de las fichas viene como párrafo corrido y varias cierran con "Texto para enviar por mail": se corta en viñetas y se limpia en `generar-entrenador.mjs`.

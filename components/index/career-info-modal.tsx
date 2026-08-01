@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import type { Carrera } from './types';
-import { esTeclab } from './teclab';
+import { esCursoTeclab, esTeclab } from './teclab';
 
 const CareerModal = dynamic(() => import('./career-modal'));
 const CarouselModal = dynamic(() => import('./carousel-modal'));
@@ -19,7 +19,9 @@ export default function CareerInfoModal({ carrera, onClose }: Props) {
     return <IAModal carrera={carrera} onClose={onClose} />;
   }
 
-  if (esTeclab(carrera)) {
+  // Los cursos comparten el modal de las tecnicaturas: mismo armado desde los
+  // campos de texto, con el ambar de curso en vez del acento de la familia.
+  if (esTeclab(carrera) || esCursoTeclab(carrera)) {
     return <TeclabModal carrera={carrera} onClose={onClose} />;
   }
 

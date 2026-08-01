@@ -30,18 +30,21 @@
    -incluido el ancho de 6px-, asi que la barra fina se pide de nuevo con
    `scrollbar-width`. */
 .teclab-tecnologia .custom-scrollbar,
-.teclab-gestion .custom-scrollbar {
+.teclab-gestion .custom-scrollbar,
+.teclab-curso .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--teclab-accent) 45%, transparent) transparent;
 }
 
 .teclab-tecnologia .custom-scrollbar::-webkit-scrollbar-thumb,
-.teclab-gestion .custom-scrollbar::-webkit-scrollbar-thumb {
+.teclab-gestion .custom-scrollbar::-webkit-scrollbar-thumb,
+.teclab-curso .custom-scrollbar::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--teclab-accent) 45%, transparent);
 }
 
 .teclab-tecnologia .custom-scrollbar::-webkit-scrollbar-thumb:hover,
-.teclab-gestion .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+.teclab-gestion .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.teclab-curso .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--teclab-accent) 70%, transparent);
 }
 
@@ -164,9 +167,10 @@
 }
 
 /* ===================== Teclab =====================
-   Dos esteticas sobre la misma estructura, como en el render: cian para las
-   carreras de tecnologia y violeta para las de gestion. Cada contenedor declara
-   su acento en --teclab-accent y todo lo de adentro lo lee. */
+   Tres esteticas sobre la misma estructura: cian para las carreras de
+   tecnologia y violeta para las de gestion, como en el render, mas el ambar de
+   los cursos. Cada contenedor declara su acento en --teclab-accent y todo lo de
+   adentro lo lee. */
 
 .teclab-tecnologia {
   --teclab-accent: var(--teclab-cyan);
@@ -174,10 +178,17 @@
   --teclab-on-accent: var(--teclab-ink);
 }
 
-.teclab-gestion,
-.teclab-tipo-pills {
+.teclab-gestion {
   --teclab-accent: var(--teclab-purple);
   --teclab-on-accent: #fff;
+}
+
+/* Los cursos ya venian en ambar en la tarjeta del catalogo y en su ficha de
+   /carreras; el modal sigue esa marca. La regla se repite en index.css para la
+   tarjeta, que se pinta sin este archivo. */
+.teclab-curso {
+  --teclab-accent: var(--teclab-amber);
+  --teclab-on-accent: var(--teclab-ink);
 }
 
 /* ── Chips: mismo tipografico que los rotulos del render ── */

@@ -119,9 +119,11 @@ export function esCarreraVisible(c: Pick<Carrera, 'nivel'>): boolean {
 export const AREAS = [
   { id: 'derecho', label: 'Derecho' },
   { id: 'tecnologia', label: 'Tecnología' },
+  { id: 'exactas', label: 'Ciencias Exactas' },
   { id: 'negocios', label: 'Negocios' },
   { id: 'salud', label: 'Salud' },
   { id: 'educacion', label: 'Educación' },
+  { id: 'sociales', label: 'Ciencias Sociales' },
   { id: 'comunicacion', label: 'Comunicación y Diseño' },
   { id: 'ambiente', label: 'Ambiente y Agro' },
   { id: 'turismo', label: 'Turismo y Hotelería' },
@@ -133,16 +135,18 @@ export const AREAS = [
 export type AreaId = (typeof AREAS)[number]['id'];
 
 const AREA_KEYWORDS: Record<AreaId, string[]> = {
-  derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense'],
-  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales', 'programación', 'data science', 'quality assurance', 'cloud administration'],
-  negocios: ['administración', 'finanzas', 'comercialización', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'e-commerce', 'business analysis', 'martillero', 'corredor', 'venta directa', 'customer experience', 'seguros'],
-  salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas'],
+  derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense', 'constitución de sociedades'],
+  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude'],
+  exactas: ['matemática', 'estadística'],
+  negocios: ['administración', 'finanzas', 'comercialización', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'martillero', 'corredor', 'venta directa', 'customer experience', 'seguros', 'logística', 'marketing para emprendedores', 'compliance', 'management hotelero'],
+  salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas', 'mindfulness', 'bienestar integral'],
   educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia'],
+  sociales: ['sociología', 'trabajo social', 'promoción comunitaria'],
   comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos'],
   ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
   turismo: ['turística', 'turísticos', 'hotelera', 'turismo'],
   gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
-  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social'],
+  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'oratoria', 'equipos de alto desempeño', 'rrhh'],
   deporte: ['deportiva', 'deportivo', 'nutrición deportiva', 'fútbol'],
 };
 

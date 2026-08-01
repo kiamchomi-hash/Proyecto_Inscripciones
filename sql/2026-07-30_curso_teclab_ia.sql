@@ -6,16 +6,37 @@
 -- comunicar datos no verificados. Cuando Teclab entregue la ficha comercial,
 -- completar esta misma sentencia y volver a ejecutarla.
 
-update carreras
+begin;
+
+-- Consolida una posible fila histórica con el nombre mal codificado. Conserva
+-- el ID más antiguo para no romper referencias externas.
+with coincidencias as (
+  select
+    id,
+    row_number() over (order by id) as posicion
+  from public.carreras
+  where
+    lower(nombre) = lower('Actualizaci' || chr(243) || 'n Profesional en Inteligencia Artificial')
+    or nombre like 'Actualizaci% Profesional en Inteligencia Artificial'
+)
+delete from public.carreras
+where id in (
+  select id
+  from coincidencias
+  where posicion > 1
+);
+
+update public.carreras
 set
+  nombre = 'Actualizaci' || chr(243) || 'n Profesional en Inteligencia Artificial',
   nivel = 'Teclab - Curso',
   duracion = 'Consultar',
-  titulo = 'Curso de actualización profesional',
-  enfoque = 'Inteligencia artificial aplicada al ámbito laboral',
+  titulo = 'Curso de actualizaci' || chr(243) || 'n profesional',
+  enfoque = 'Inteligencia artificial aplicada al ' || chr(225) || 'mbito laboral',
   modalidad = 'Consultar',
-  descripcion = 'Actualización profesional orientada a incorporar herramientas de inteligencia artificial al trabajo y al desarrollo del perfil profesional.',
+  descripcion = 'Actualizaci' || chr(243) || 'n profesional orientada a incorporar herramientas de inteligencia artificial al trabajo y al desarrollo del perfil profesional.',
   prefix = 'Curso de',
-  nombre_corto = 'Actualización Profesional en Inteligencia Artificial',
+  nombre_corto = 'Actualizaci' || chr(243) || 'n Profesional en Inteligencia Artificial',
   seccion_duracion = null,
   seccion_modalidad = null,
   plan_estudios = null,
@@ -25,9 +46,12 @@ set
   destacada = false,
   nueva = true,
   proximamente = false
-where lower(nombre) = lower('Actualización Profesional en Inteligencia Artificial');
+where
+  lower(nombre) = lower('Actualizaci' || chr(243) || 'n Profesional en Inteligencia Artificial')
+  -- Corrige también el registro que una ejecución antigua guardó con U+FFFD.
+  or nombre like 'Actualizaci% Profesional en Inteligencia Artificial';
 
-insert into carreras (
+insert into public.carreras (
   nombre,
   nivel,
   duracion,
@@ -48,15 +72,15 @@ insert into carreras (
   proximamente
 )
 select
-  'Actualización Profesional en Inteligencia Artificial',
+  'Actualizaci' || chr(243) || 'n Profesional en Inteligencia Artificial',
   'Teclab - Curso',
   'Consultar',
-  'Curso de actualización profesional',
-  'Inteligencia artificial aplicada al ámbito laboral',
+  'Curso de actualizaci' || chr(243) || 'n profesional',
+  'Inteligencia artificial aplicada al ' || chr(225) || 'mbito laboral',
   'Consultar',
-  'Actualización profesional orientada a incorporar herramientas de inteligencia artificial al trabajo y al desarrollo del perfil profesional.',
+  'Actualizaci' || chr(243) || 'n profesional orientada a incorporar herramientas de inteligencia artificial al trabajo y al desarrollo del perfil profesional.',
   'Curso de',
-  'Actualización Profesional en Inteligencia Artificial',
+  'Actualizaci' || chr(243) || 'n Profesional en Inteligencia Artificial',
   null,
   null,
   null,
@@ -68,6 +92,8 @@ select
   false
 where not exists (
   select 1
-  from carreras
-  where lower(nombre) = lower('Actualización Profesional en Inteligencia Artificial')
+  from public.carreras
+  where lower(nombre) = lower('Actualizaci' || chr(243) || 'n Profesional en Inteligencia Artificial')
 );
+
+commit;

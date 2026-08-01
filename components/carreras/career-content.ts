@@ -12,7 +12,7 @@ import type { TeclabPeriodo } from '@/components/index/teclab';
 // Primer import de runtime del modulo: hasta ahora solo traia tipos, que el type
 // stripping borra. O sea que este archivo ya no se puede abrir con node pelado
 // desde herramientas/ -- el alias `@/` lo resuelve el bundler, no Node.
-import { esTeclab, parsePlanTeclab } from '@/components/index/teclab';
+import { esCursoTeclab, esTeclab, parsePlanTeclab } from '@/components/index/teclab';
 
 /** Separa el nombre en prefijo ("Licenciatura en") y nombre limpio. */
 export function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string } {
@@ -159,6 +159,10 @@ export function contarMaterias(slide: SlidePlanEstudios): number {
  * hace clic buscando el plan, no lo encuentra y se vuelve a Google.
  */
 export function tienePlanDeEstudios(carrera: Carrera): boolean {
+  // Un curso corto no tiene plan: su columna plan_estudios guarda como se cursa
+  // y la ficha la pinta en su propia seccion.
+  if (esCursoTeclab(carrera)) return false;
+
   if (esTeclab(carrera)) {
     return periodosTeclabToAnios(parsePlanTeclab(carrera.plan_estudios)).length > 0;
   }

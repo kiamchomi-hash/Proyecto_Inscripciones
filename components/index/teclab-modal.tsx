@@ -17,15 +17,16 @@ import { type Carrera, carreraToSlug } from './types';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 import {
-  acentoTeclab,
   destacarCompetencias,
-  getFamiliaTeclab,
+  esCursoTeclab,
   getFichaTeclab,
+  getMarcoTeclab,
   getTipoTeclab,
   parseCompetenciasTeclab,
   parseEnfoqueTeclab,
   parsePlanTeclab,
   partirDescripcionTeclab,
+  textoSobreAcentoTeclab,
   type TeclabFicha,
   type TeclabPeriodo,
 } from './teclab';
@@ -40,6 +41,7 @@ interface Props {
 const CLARO: Record<string, string> = {
   '#2ee7d7': '#8ff5ec',
   '#8e2cf2': '#c9a0ff',
+  '#f4aa22': '#ffd48a',
 };
 
 // Grilla de una tanda de competencias (y de la copia que se usa para medir):
@@ -168,11 +170,13 @@ function useArrastre(siguiente: () => void, anterior: () => void) {
 /** Flecha chica para pasar de tanda dentro del marco */
 function FlechaTanda({
   acento,
+  rotulo,
   sentido,
   disabled,
   onClick,
 }: {
   acento: string;
+  rotulo: string;
   sentido: 'anterior' | 'siguiente';
   disabled: boolean;
   onClick: () => void;
@@ -181,7 +185,7 @@ function FlechaTanda({
     <button
       onClick={onClick}
       disabled={disabled}
-      aria-label={sentido === 'anterior' ? 'Competencias anteriores' : 'Más competencias'}
+      aria-label={`${rotulo}: ${sentido === 'anterior' ? 'anteriores' : 'siguientes'}`}
       className="w-6 h-6 flex items-center justify-center rounded transition-all cursor-pointer disabled:opacity-25 disabled:pointer-events-none"
       style={{ color: CLARO[acento], boxShadow: `inset 0 0 0 1px ${acento}59` }}
     >
@@ -194,7 +198,7 @@ function FlechaTanda({
 
 /** Una competencia: numero en el acento y el texto de la ficha */
 function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: number; acento: string }) {
-  const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
+  const textoAcento = textoSobreAcentoTeclab(acento);
   return (
     // min-h-fit: la tarjeta no baja de lo que mide su texto. Sin eso, en una
     // ventana muy baja las filas de la grilla se aprietan y los renglones se
@@ -293,7 +297,7 @@ function BloqueDato({
   principal?: boolean;
   className?: string;
 }) {
-  const textoPrincipal = acento === '#2ee7d7' ? '#071822' : '#fff';
+  const textoPrincipal = textoSobreAcentoTeclab(acento);
   return (
     <div
       className={`rounded px-2.5 py-1.5 ${className}`}
@@ -322,7 +326,10 @@ function BloqueDato({
 // ── Slide 1: portada ──
 function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
   const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
-  const tipo = getTipoTeclab(carrera);
+  const curso = esCursoTeclab(carrera);
+  // Un curso no entrega titulo: el chip y el cuadro hablan de certificado, como
+  // la ficha de /carreras. El chip de tipo lo escribe la tarjeta del catalogo.
+  const tipo = curso ? 'Curso' : getTipoTeclab(carrera);
   const nombre = carrera.nombre_corto || carrera.nombre;
   const { perfil } = partirDescripcionTeclab(carrera.descripcion);
 
@@ -359,7 +366,7 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
         {tipo && <span className="teclab-chip teclab-chip-tipo">{tipo}</span>}
         <span className="teclab-chip">{modalidad}</span>
         <span className="teclab-chip">{carrera.duracion}</span>
-        <span className="teclab-chip">Título oficial</span>
+        <span className="teclab-chip">{curso ? 'Certificado oficial' : 'Título oficial'}</span>
       </div>
 
       {ficha && (
@@ -384,7 +391,7 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
           estiran para igualarse, el del titulo queda enorme al lado de un
           certificado de dos lineas. */}
       <div className="teclab-portada-datos flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
-        <BloqueDato label="Título" valor={carrera.titulo} acento={acento} principal />
+        <BloqueDato label={curso ? 'Certificado' : 'Título'} valor={carrera.titulo} acento={acento} principal />
         {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} />}
       </div>
     </div>
@@ -396,7 +403,20 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
 // DESTACADAS, en ./teclab); la lista completa queda en la pagina de la carrera.
 // Las tres entran de una: el contador y las flechas aparecen unicamente si la
 // ventana es tan baja que no entran, para que ninguna quede cortada.
-function SlideCompetencias({ competencias, salida, acento }: { competencias: string[]; salida: string; acento: string }) {
+//
+// El mismo slide sirve para el "como se cursa" de los cursos: es otra lista
+// corta con un rotulo distinto y sin destacado arriba.
+function SlideCompetencias({
+  rotulo,
+  competencias,
+  salida,
+  acento,
+}: {
+  rotulo: string;
+  competencias: string[];
+  salida: string;
+  acento: string;
+}) {
   const { marcoRef, medidorRef, tandas } = useTandas(competencias);
   const [tanda, setTanda] = useState(0);
   useEffect(() => setTanda(t => Math.min(t, tandas.length - 1)), [tandas.length]);
@@ -413,14 +433,14 @@ function SlideCompetencias({ competencias, salida, acento }: { competencias: str
           el marco se achicaria, entrarian menos tarjetas y el contador podria
           aparecer y desaparecer solo, temblando. */}
       <div className="flex-shrink-0 h-6 flex items-center justify-between gap-3">
-        <Rotulo acento={acento}>Competencias profesionales</Rotulo>
+        <Rotulo acento={acento}>{rotulo}</Rotulo>
         {tandas.length > 1 && (
           <div className="flex items-center gap-1.5">
-            <FlechaTanda acento={acento} sentido="anterior" disabled={tanda === 0} onClick={() => irA(tanda - 1)} />
+            <FlechaTanda acento={acento} rotulo={rotulo} sentido="anterior" disabled={tanda === 0} onClick={() => irA(tanda - 1)} />
             <span className="text-[0.55rem] font-black tabular-nums tracking-[0.12em] text-white/50">
               {tanda + 1}/{tandas.length}
             </span>
-            <FlechaTanda acento={acento} sentido="siguiente" disabled={tanda === tandas.length - 1} onClick={() => irA(tanda + 1)} />
+            <FlechaTanda acento={acento} rotulo={rotulo} sentido="siguiente" disabled={tanda === tandas.length - 1} onClick={() => irA(tanda + 1)} />
           </div>
         )}
       </div>
@@ -498,7 +518,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
   const [activo, setActivo] = useState(-1);
   const visibles = activo === -1 ? años : [años[activo]];
   const titulo = activo === -1 ? 'Plan completo' : años[activo]?.año;
-  const textoActivo = acento === '#2ee7d7' ? '#071822' : '#fff';
+  const textoActivo = textoSobreAcentoTeclab(acento);
   const estiloBoton = (encendido: boolean) =>
     encendido
       ? { background: acento, color: textoActivo, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
@@ -768,7 +788,7 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
   // Los datos van como chips, igual que en la portada. Con cuadros rotulados
   // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
   // en medio de la nada. El titulo y el certificado ya estan en la portada.
-  const chips = [modalidad, carrera.duracion, 'Título oficial'].filter(Boolean);
+  const chips = [modalidad, carrera.duracion, esCursoTeclab(carrera) ? 'Certificado oficial' : 'Título oficial'].filter(Boolean);
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
     `Hola, quiero consultar precios y fechas de ${carrera.nombre}`,
   )}`;
@@ -844,27 +864,54 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
 
 // ── Modal ──
 export default function TeclabModal({ carrera, onClose }: Props) {
-  const familia = getFamiliaTeclab(carrera) ?? 'gestion';
-  const acento = acentoTeclab(familia);
-  const textoAcento = acento === '#2ee7d7' ? '#071822' : '#fff';
+  const curso = esCursoTeclab(carrera);
+  const { clase, acento } = getMarcoTeclab(carrera);
+  const textoAcento = textoSobreAcentoTeclab(acento);
 
   const ficha = useMemo(() => getFichaTeclab(carrera), [carrera]);
   const competencias = useMemo(
     () => destacarCompetencias(parseCompetenciasTeclab(carrera.seccion_modalidad), carrera),
     [carrera],
   );
-  const periodos = useMemo(() => parsePlanTeclab(carrera.plan_estudios), [carrera.plan_estudios]);
+  // En los cursos plan_estudios no es un temario por cuatrimestre sino como se
+  // cursa: una lista de vinetas, del mismo formato que las competencias.
+  const periodos = useMemo(
+    () => (curso ? [] : parsePlanTeclab(carrera.plan_estudios)),
+    [carrera.plan_estudios, curso],
+  );
+  const cursada = useMemo(
+    () => (curso ? parseCompetenciasTeclab(carrera.plan_estudios) : []),
+    [carrera.plan_estudios, curso],
+  );
   const salida = useMemo(() => partirDescripcionTeclab(carrera.descripcion).salida, [carrera.descripcion]);
 
   const slides = useMemo(() => {
     const s: { key: string; node: React.ReactNode }[] = [
       { key: 'portada', node: <SlidePortada carrera={carrera} acento={acento} ficha={ficha} /> },
     ];
-    if (competencias.length) s.push({ key: 'competencias', node: <SlideCompetencias competencias={competencias} salida={salida} acento={acento} /> });
+    if (competencias.length) {
+      s.push({
+        key: 'competencias',
+        node: (
+          <SlideCompetencias
+            rotulo={curso ? 'Qué vas a aprender' : 'Competencias profesionales'}
+            competencias={competencias}
+            salida={salida}
+            acento={acento}
+          />
+        ),
+      });
+    }
+    if (cursada.length) {
+      s.push({
+        key: 'cursada',
+        node: <SlideCompetencias rotulo="Cómo se cursa" competencias={cursada} salida="" acento={acento} />,
+      });
+    }
     if (periodos.length) s.push({ key: 'plan', node: <SlidePlan carrera={carrera} periodos={periodos} acento={acento} /> });
     s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} /> });
     return s;
-  }, [carrera, acento, competencias, ficha, periodos, salida]);
+  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida]);
 
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -960,7 +1007,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       {/* El tope en rem evita que en pantallas altas (tablet vertical) el modal
           se estire mucho mas de lo que el contenido necesita y queden huecos. */}
       <div
-        className={`teclab-${familia} relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
+        className={`${clase} relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
           h-[88dvh] sm:h-[min(92vh,52rem)] max-h-[88dvh] sm:max-h-[min(92vh,52rem)] overflow-hidden flex flex-col`}
         style={{
           background: '#071822',
