@@ -3,7 +3,9 @@
 Archivo único de indexación. Reemplaza a `INDEXACION_CARRERAS.md`,
 `INDEXACION_REAL_GSC.md` y `PLAN_INDEXACION.md`, que se unificaron acá el 27/07/2026.
 
-**Última medición: 29/07/2026**, con la URL Inspection API sobre las 96 fichas.
+**Última medición: 01/08/2026** — Search Analytics completo más una inspección de
+muestra (20 URLs). El último censo de indexación de las 96 fichas sigue siendo el del
+**29/07**.
 
 **Propiedad:** `sc-domain:siglo21sur.com` · **Fuente:** Search Console (URL Inspection
 API + Search Analytics)
@@ -13,7 +15,78 @@ e Identidad Argentina.
 
 ---
 
-# 1 · Estado actual — 29/07/2026
+# 1 · Estado actual
+
+## Tráfico — medición del 01/08/2026
+
+**El deploy del 24/07 aterrizó entre el 26 y el 30/07, y el salto es grande.**
+
+| | 04–14/07 | 27–30/07 |
+|---|--:|--:|
+| Impresiones por día | 30–50 | **350 → 664** |
+| Clics por día | 1–2 | **5 → 11** |
+| Posición media | 14,1 | **8,6** |
+
+Totales de los 28 días cerrados (04/07–01/08): **68 clics, 3.547 impresiones, CTR 1,92%,
+posición 10,1.** El 31/07 figura con 271 impresiones y 1 clic: es dato parcial del último
+día, no una caída.
+
+Las impresiones se multiplicaron por trece en cuatro días. Ya no las trae el home: las
+traen sesenta y pico de fichas de carrera que entraron a la primera página.
+
+### El cuello de botella es el CTR, y el dato de hoy todavía no lo mide
+
+En los 6 días del 26 al 31/07, estas fichas están en primera página y no traen a nadie:
+
+| Página | Impresiones | Posición | Clics |
+|---|--:|--:|--:|
+| Martillero y Corredor | 247 | 7,5 | **0** |
+| Higiene, Seguridad y Medio Ambiente | 128 | 8,7 | **0** |
+| Licenciatura en Finanzas | 90 | 7,7 | **0** |
+| Comercio Internacional | 73 | 8,2 | **0** |
+| Procurador | 72 | 7,7 | **0** |
+| Gestión Deportiva | 54 | 8,4 | **0** |
+| Ciencias de Datos | 50 | 12,4 | **0** |
+| Nutrición | 50 | 7,2 | **0** |
+
+Son unas 800 impresiones en posición ~8 sin un solo clic. Contra las que sí funcionan:
+Agroinformática **16,7%** en posición 5,8, Responsabilidad y Gestión Social **13,6%** en
+6,0, Redes Informáticas **6,25%** en 6,7.
+
+**Pero este CTR no mide la reescritura del 29/07.** Se inspectaron las 10 páginas con más
+impresiones: **8 tienen último rastreo entre el 25 y el 28/07**, o sea anterior al deploy
+de títulos y descriptions. Google sigue sirviendo el snippet viejo. Es exactamente lo que
+la sección 3 anticipó y lo que la sección 7 marca como el error más fácil de cometer acá.
+
+**Conclusión operativa: no tocar títulos ni descriptions todavía.** Primero el Día 0 de la
+sección 2 —que al 01/08 sigue sin ejecutarse, con todos los casilleros vacíos—, después
+medir. Cambiarlos ahora quema la única lectura limpia que va a haber.
+
+Único de esa tanda ya rastreado después del deploy: **Lic. en Finanzas (31/07)**. Sale de
+la cola.
+
+### Movimientos en la indexación, sobre una muestra de 10
+
+De diez pendientes del 29/07 que se volvieron a inspeccionar, **cuatro se indexaron solos**
+sin pedido manual:
+
+| Carrera | Estado 29/07 | Estado 01/08 | Rastreo |
+|---|---|---|---|
+| Tec. Sup. en Seguridad Informática | ⬜ desconocida | ✅ indexada | 31/07 |
+| Tec. Sup. en Relaciones Laborales | ⬜ desconocida | ✅ indexada | 31/07 |
+| Tec. en Relaciones Laborales | 🟠 rastreada sin indexar | ✅ indexada | 29/07 |
+| Tec. en Gestión Admin. de Servicios de Salud | ⬜ desconocida | ✅ indexada | 29/07 |
+
+Los otros seis siguen igual. Cinco están en ❌ *Discovered* con **último rastreo `Never`**:
+Tec. Sup. en Programación, Tec. Sup. en Data Science, Lic. en Educación (CCC), Lic. en
+Psicopedagogía (CCC) y Tec. en Diseño y Desarrollo de Videojuegos.
+
+**Es una muestra de 10 sobre 40, no un censo.** No sirve para actualizar el conteo global:
+para eso hay que rehacer las 10 llamadas de *Cómo volver a medir*. Lo que sí muestra es que
+las ⬜ y 🟠 —el grupo que el 29/07 se marcó como "el caso más urgente"— se resolvieron
+solas, y que el resto sigue quieto.
+
+## Indexación — censo del 29/07/2026
 
 **56 de las 96 carreras están indexadas (58%).** Eran 23 el 24/07.
 
@@ -71,12 +144,20 @@ verla para cambiar de opinión.
 
 ---
 
-# 2 · Cola de pedidos manuales — 10 recrawls + 40 sin indexar
+# 2 · Cola de pedidos manuales — 10 recrawls + las que falten indexar
+
+> **Al 01/08/2026 esta cola no se ejecutó**: los cinco días siguen con los casilleros
+> vacíos, salvo los cuatro que Google resolvió por su cuenta y quedaron tachados.
 
 **Pedir a mano dejó de ser urgente para Grado y sigue siendo lo único que mueve el
 resto.** Las 36 de Grado se indexaron solas; los otros grupos llevan tres semanas
 quietos en "descubierta, sin rastrear", que es Google diciendo que conoce la URL y no
 le da prioridad para visitarla.
+
+Matiz del 01/08: Google avanza solo, pero despacio y desparejo. De diez pendientes que se
+volvieron a mirar, cuatro se indexaron sin pedido —incluidas las tres ⬜ que el 29/07 se
+habían marcado como el caso más urgente— y cinco siguen con **rastreo `Never`**. Esas
+cinco son las que de verdad necesitan el pedido a mano; están señaladas abajo.
 
 **Cómo se pide (2 clics):** pegás la URL en la barra de inspección de Search Console →
 botón **"Solicitar indexación"** → esperás ~1 min. Tope práctico: ~10-12 por día por
@@ -92,45 +173,59 @@ Después: Siglo 21 (Pregrado y CCC), Teclab, Identidad Argentina. Son 5 días en
 
 ### Día 0 — recrawl de las páginas con tráfico
 
-- [ ] **Actuario** — un mes sin rastrear (27/06), 53 impresiones, 0 clics
-      https://www.siglo21sur.com/carreras/actuario
-- [ ] **Sobre nosotros** — 124 impresiones, la página con más de todo el sitio
-      https://www.siglo21sur.com/sobre-nosotros
-- [ ] **Lic. en Higiene, Seguridad y Medio Ambiente del Trabajo** — 72 impresiones
-      https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo
-- [ ] **Lic. en Finanzas** — 61 impresiones
-      https://www.siglo21sur.com/carreras/licenciatura-en-finanzas
-- [ ] **Lic. en Administración Agraria** — 56 impresiones
-      https://www.siglo21sur.com/carreras/licenciatura-en-administracion-agraria
-- [ ] **Tec. en Investigación de la Escena del Crimen** — 54 impresiones
-      https://www.siglo21sur.com/carreras/tecnicatura-en-investigacion-de-la-escena-del-crimen
-- [ ] **Lic. en Logística Global** — 49 impresiones
-      https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global
-- [ ] **Lic. en Seguridad Informática** — 48 impresiones
-      https://www.siglo21sur.com/carreras/licenciatura-en-seguridad-informatica
-- [ ] **Martillero, Corredor Público y Corredor Inmobiliario** — 43 impresiones
-      https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario
-- [ ] **Lic. en Comercio Internacional** — 42 impresiones
-      https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional
+> **Lista rehecha el 01/08/2026.** La versión anterior se armó con impresiones del
+> 30/06–28/07, o sea antes del salto de tráfico. Con seis días de datos nuevos el orden
+> cambió bastante: **Actuario se cayó de la lista** (pasó de 53 impresiones a 1, en
+> posición 29) y entraron cuatro fichas que antes no aparecían. Impresiones y posición
+> son del 26 al 31/07, por dimensión `page`.
 
-Si sobra cuota ese día, siguen **Bioinformática** (34 impresiones, rastreada el 19/07)
-y **`/clases-apoyo`**, que no tiene impresiones pero está rastreada el **11/06**: es
-`force-dynamic` y muestra un calendario relativo a hoy, así que lo que Google tiene
-indexado ahí es contenido vencido.
+- [ ] **Martillero, Corredor Público y Corredor Inmobiliario** — 247 impr · pos 7,5 · 0 clics · rastreo 28/07
+      https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario
+- [ ] **Tec. Sup. en Marketing Digital** (Teclab) — 163 · pos 9,3 · 2 clics · rastreo 25/07
+      https://www.siglo21sur.com/carreras/tecnicatura-superior-en-marketing-digital
+- [ ] **Lic. en Higiene, Seguridad y Medio Ambiente del Trabajo** — 128 · pos 8,7 · 0 clics · rastreo 25/07
+      https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo
+- [ ] **Lic. en Inteligencia Artificial y Robótica** — 87 · pos 9,8 · 1 clic · rastreo 25/07
+      https://www.siglo21sur.com/carreras/licenciatura-en-inteligencia-artificial-y-robotica
+- [ ] **Lic. en Seguridad Informática** — 84 · pos 9,4 · 1 clic · rastreo 25/07
+      https://www.siglo21sur.com/carreras/licenciatura-en-seguridad-informatica
+- [ ] **Lic. en Comercio Internacional** — 73 · pos 8,2 · 0 clics · rastreo 25/07
+      https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional
+- [ ] **Procurador** — 72 · pos 7,7 · 0 clics · rastreo 28/07
+      https://www.siglo21sur.com/carreras/procurador
+- [ ] **Lic. en Gestión Deportiva** — 54 · pos 8,4 · 0 clics · rastreo sin verificar
+      https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva
+- [ ] **Lic. en Ciencias de Datos** — 50 · pos 12,4 · 0 clics · rastreo sin verificar
+      https://www.siglo21sur.com/carreras/licenciatura-en-ciencias-de-datos
+- [ ] **Lic. en Nutrición** — 50 · pos 7,2 · 0 clics · rastreo sin verificar
+      https://www.siglo21sur.com/carreras/licenciatura-en-nutricion
+
+Las tres últimas no se inspeccionaron: la fecha de rastreo está sin verificar y se piden
+por volumen de impresiones con cero clics, que es señal suficiente.
+
+**Lic. en Finanzas salió de la lista**: tiene 90 impresiones y 0 clics, pero Google la
+rastreó el **31/07** y ya está sirviendo el título nuevo. Es el control natural del
+experimento — si en dos semanas su CTR sube y el de las otras no, la reescritura sirvió.
+
+Si sobra cuota ese día:
+
+- **Agroinformática** — rastreo **06/07**, anterior al deploy del 24/07. Es la ficha de
+  mejor CTR del sitio (16,7% en posición 5,8) sirviendo una versión vieja de la página.
+- **Sobre nosotros** — rastreo 21/07.
+- **`/clases-apoyo`** — rastreo **11/06**. Es `force-dynamic` y muestra un calendario
+  relativo a hoy, así que lo que Google tiene indexado ahí es contenido vencido.
 
 ### Día 1 — Pregrado
 
-- [ ] **Tec. en Gestión Administrativa de Servicios de Salud** ⬜ desconocida para Google
-      https://www.siglo21sur.com/carreras/tecnicatura-en-gestion-administrativa-de-servicios-de-salud
-- [ ] **Tec. en Relaciones Laborales** 🟠 rastreada sin indexar, con la página vieja del 30/03
-      https://www.siglo21sur.com/carreras/tecnicatura-en-relaciones-laborales
+- [x] ~~**Tec. en Gestión Administrativa de Servicios de Salud**~~ ✅ se indexó sola — rastreada el 29/07
+- [x] ~~**Tec. en Relaciones Laborales**~~ ✅ se indexó sola — rastreada el 29/07, ya no sirve la página del 30/03
 - [ ] **Tec. en Dirección de Protocolo, Organización de Eventos y RRPP**
       https://www.siglo21sur.com/carreras/tecnicatura-en-direccion-de-protocolo-organizacion-de-eventos-y-rrpp
 - [ ] **Tec. en Dirección de Equipos de Venta**
       https://www.siglo21sur.com/carreras/tecnicatura-en-direccion-de-equipos-de-venta
 - [ ] **Tec. en Estadística Aplicada y Análisis Avanzado**
       https://www.siglo21sur.com/carreras/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado
-- [ ] **Tec. en Diseño y Desarrollo de Videojuegos**
+- [ ] **Tec. en Diseño y Desarrollo de Videojuegos** ❌ rastreo `Never` al 01/08
       https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 - [ ] **Tec. en Gestión de Moda**
       https://www.siglo21sur.com/carreras/tecnicatura-en-gestion-de-moda
@@ -153,23 +248,21 @@ indexado ahí es contenido vencido.
       https://www.siglo21sur.com/carreras/licenciatura-en-gerontologia-ccc
 - [ ] **Profesorado Universitario para Nivel Secundario y Superior (CCC)**
       https://www.siglo21sur.com/carreras/profesorado-universitario-para-nivel-secundario-y-superior-ccc
-- [ ] **Lic. en Educación (CCC)**
+- [ ] **Lic. en Educación (CCC)** ❌ rastreo `Never` al 01/08
       https://www.siglo21sur.com/carreras/licenciatura-en-educacion-ccc
-- [ ] **Lic. en Psicopedagogía (CCC)**
+- [ ] **Lic. en Psicopedagogía (CCC)** ❌ rastreo `Never` al 01/08
       https://www.siglo21sur.com/carreras/licenciatura-en-psicopedagogia-ccc
 - [ ] **Tec. Sup. en Redes Informáticas** — _Teclab_
       https://www.siglo21sur.com/carreras/tecnicatura-superior-en-redes-informaticas
-- [ ] **Tec. Sup. en Programación** — _Teclab_
+- [ ] **Tec. Sup. en Programación** — _Teclab_ ❌ rastreo `Never` al 01/08
       https://www.siglo21sur.com/carreras/tecnicatura-superior-en-programacion
-- [ ] **Tec. Sup. en Data Science** — _Teclab_
+- [ ] **Tec. Sup. en Data Science** — _Teclab_ ❌ rastreo `Never` al 01/08
       https://www.siglo21sur.com/carreras/tecnicatura-superior-en-data-science
 
 ### Día 3 — Teclab
 
-- [ ] **Tec. Sup. en Seguridad Informática** ⬜ desconocida para Google
-      https://www.siglo21sur.com/carreras/tecnicatura-superior-en-seguridad-informatica
-- [ ] **Tec. Sup. en Relaciones Laborales** ⬜ desconocida para Google
-      https://www.siglo21sur.com/carreras/tecnicatura-superior-en-relaciones-laborales
+- [x] ~~**Tec. Sup. en Seguridad Informática**~~ ✅ se indexó sola — rastreada el 31/07
+- [x] ~~**Tec. Sup. en Relaciones Laborales**~~ ✅ se indexó sola — rastreada el 31/07
 - [ ] **Tec. Sup. en Quality Assurance**
       https://www.siglo21sur.com/carreras/tecnicatura-superior-en-quality-assurance
 - [ ] **Tec. Sup. en Gestión Hotelera**
@@ -237,6 +330,15 @@ URLs salen de `https://www.siglo21sur.com/sitemap.xml` filtrando por `/carreras/
 > falsa. No se puede medir un cambio que el buscador no llegó a publicar. Por eso la
 > cola de la sección 2 arranca con un **Día 0** de recrawl, antes que las 40 sin
 > indexar.
+>
+> **Confirmado el 01/08/2026.** Pasó lo previsto: el tráfico se multiplicó por trece y el
+> CTR quedó en 1,5%, con ocho de las diez páginas más vistas todavía sirviendo el título
+> viejo (rastreos del 25 al 28/07). **Ese 1,5% no es el resultado de la reescritura y no
+> debe leerse como tal.** El detalle está en la sección 1.
+
+**La tabla de esta sección quedó vieja.** Se armó con impresiones del 30/06–28/07, antes
+del salto de tráfico. Para pedir recrawls usá la lista rehecha del **Día 0 en la sección
+2**; lo de acá abajo se conserva como registro de lo que se veía el 29/07.
 
 ## Día 0 — forzar el recrawl de las páginas que ya tienen tráfico
 
@@ -533,37 +635,82 @@ medición exacta que hay; el 23 del 24/07 y el 38 del 27/07 son de otro método 
 por impresiones— y sólo sirven para ver la tendencia, no para restar.
 
 Se mide igual que el 29/07: 10 llamadas a `batch_url_inspection`, 10 URLs cada una.
-Sin pedidos manuales, lo esperable es que se mueva poco: los 40 pendientes llevan tres
-semanas en "descubierta, sin rastrear". Si se hicieron los 4 días de la cola de la
-sección 2, ahí sí la comparación dice algo.
+Sin pedidos manuales, lo esperable es que se mueva poco pero no nada: la muestra del
+01/08 mostró que Google indexa cuatro de cada diez pendientes por su cuenta en tres días,
+mientras otras cinco siguen sin haber sido rastreadas nunca. Si se hicieron los 4 días de
+la cola de la sección 2, la comparación dice bastante más.
 
-**Qué mirar además de la indexación:** el CTR de las páginas de la sección 3, que son
-las que tenían impresiones y cero clics. Son el único modo de saber si la reescritura
-de títulos y descripciones del 29/07 sirvió de algo.
+**Qué mirar además de la indexación:** el CTR de las páginas de la tabla de acá abajo,
+que son las que tienen impresiones y cero clics. Son el único modo de saber si la
+reescritura de títulos y descripciones del 29/07 sirvió de algo.
 
 **Antes de leer ese CTR, chequeá la fecha de último rastreo de cada página.** Si sigue
 siendo anterior al 29/07, Google todavía está mostrando el título viejo y el CTR no
 mide la reescritura: mide la versión anterior. En ese caso el dato no dice nada y hay
 que hacer el Día 0 de la sección 2 y esperar. Es el error más fácil de cometer acá.
 
-Línea de base para comparar, del 30/06 al 28/07 y **por dimensión `page`**:
+**Línea de base para comparar — actualizada el 01/08/2026.** Del 26 al 31/07 y **por
+dimensión `page`**. Reemplaza a la del 30/06–28/07, que quedó sin sentido: se tomó antes
+del salto de tráfico y sobre un volumen diez veces menor.
 
-| Página | Impresiones | Clics | Posición |
-|---|--:|--:|--:|
-| Higiene, Seguridad y Medio Ambiente | 72 | 0 | 8,5 |
-| Licenciatura en Finanzas | 61 | 0 | 7,4 |
-| Administración Agraria | 56 | 0 | 9,6 |
-| Investigación de la Escena del Crimen | 54 | 0 | 8,2 |
-| Actuario | 53 | 0 | 8,0 |
-| Logística Global | 49 | 0 | 7,6 |
-| Seguridad Informática | 48 | 0 | 9,5 |
-| Martillero y Corredor | 43 | 0 | 5,7 |
-| Comercio Internacional | 42 | 0 | 8,1 |
-| Bioinformática | 34 | 0 | 7,3 |
-| — referencia — | | | |
-| Agroinformática | 111 | 11 | 6,1 |
-| Marketing Digital (Teclab) | 97 | 2 | 8,2 |
+| Página | Impresiones | Clics | CTR | Posición | Rastreo |
+|---|--:|--:|--:|--:|---|
+| Martillero y Corredor | 247 | 0 | 0% | 7,5 | 28/07 |
+| Marketing Digital (Teclab) | 163 | 2 | 1,2% | 9,3 | 25/07 |
+| Higiene, Seguridad y Medio Ambiente | 128 | 0 | 0% | 8,7 | 25/07 |
+| Licenciatura en Finanzas | 90 | 0 | 0% | 7,7 | **31/07** |
+| Logística Global | 88 | 2 | 2,3% | 7,2 | — |
+| Inteligencia Artificial y Robótica | 87 | 1 | 1,1% | 9,8 | 25/07 |
+| Terapia Ocupacional | 86 | 2 | 2,3% | 6,3 | — |
+| Seguridad Informática | 84 | 1 | 1,2% | 9,4 | 25/07 |
+| Gestión de Recursos Humanos | 80 | 1 | 1,3% | 8,2 | — |
+| Comercio Internacional | 73 | 0 | 0% | 8,2 | 25/07 |
+| Procurador | 72 | 0 | 0% | 7,7 | 28/07 |
+| — referencia, las que sí convierten — | | | | | |
+| Responsabilidad y Gestión Social | 22 | 3 | **13,6%** | 6,0 | — |
+| Agroinformática | 6 | 1 | **16,7%** | 5,8 | 06/07 |
+| Redes Informáticas y Telecom. | 48 | 3 | **6,3%** | 6,7 | — |
+| — el home, para contexto — | | | | | |
+| `/` | 190 | 8 | 4,2% | 14,2 | 27/07 |
 
-Agroinformática es la referencia de arriba: **9,9% de CTR en posición 6,1**. Si las
-otras se le acercaran aunque sea a la mitad, el sitio pasaría de 38 clics por mes a
+Totales del sitio en los 28 días al 01/08: **68 clics, 3.547 impresiones, CTR 1,92%,
+posición 10,1**.
+
+La brecha es toda la tesis: **Agroinformática y Responsabilidad y Gestión Social
+convierten arriba del 13% en posición 6, y Martillero convierte 0% en posición 7,5.** Si
+las de la mitad de arriba llegaran aunque sea al 4%, el sitio pasa de 68 clics por mes a
 tres dígitos sin ganar una sola posición.
+
+**Lic. en Finanzas es el control.** Es la única de la tanda rastreada después del deploy
+del 29/07, así que es la única que hoy muestra el título nuevo. Si en la medición de
+agosto su CTR sube y el de Martillero, Higiene o Comercio Internacional no, la reescritura
+funcionó y lo que falta es recrawl. Si no sube ninguna, el problema es el texto y hay que
+volver a escribirlo.
+
+---
+
+# 8 · Lo que este archivo no puede medir
+
+Todo lo de acá sale de Search Console: **impresiones y clics hasta el borde del sitio.**
+Lo que pasa después —si esos 68 clics se convirtieron en una consulta— no está medido en
+ningún lado de este repo.
+
+Las dos fuentes que lo tienen están activas en el sitio (`app/layout.tsx:117-119`:
+`PublicGoogleAnalytics`, `Analytics` de Vercel, `SpeedInsights`) pero **no se pueden leer
+desde acá**:
+
+- **GA4** — no hay MCP ni service account configurada. GSC sí la tiene
+  (`sc-domain:siglo21sur.com`, service account con permiso de Owner); GA4 necesitaría el
+  mismo tratamiento.
+- **Vercel Web Analytics** — el CLI está autenticado y llega al proyecto
+  (`prj_Bzj99aKZd8l83qLGYKHdeSFf76Qt`, team `team_4UpMwvtzs6qttpxOeBk0qgNi`), pero la API
+  de analytics no es pública: `web-analytics/overview`, `web-analytics/timeseries` y
+  `web/insights/overview` devuelven 404 con un token válido. Sólo por el dashboard.
+- **La tabla `consultas`** tiene el número real de inscripciones, pero es service role:
+  desde la máquina local no hay credencial de lectura (ver `CLAUDE.md`, *Los cuatro
+  clientes de Supabase*).
+
+**Por qué importa:** el criterio de éxito de todo lo de arriba es "más clics", que es un
+proxy. Si las carreras que traen clics no son las que traen inscripciones, la cola de
+recrawls está priorizada por la métrica equivocada. Mientras GA4 no se pueda leer, esto
+se decide a ciegas.
