@@ -1011,14 +1011,22 @@
      nada: terminaban uno debajo del otro igual. Con base 0 entran los dos en la
      linea y despues se reparten el ancho, 40/60 a favor de las migas, que son
      las que llevan mas texto. */
+  /* Los tres recuadros centran su contenido: al repartirse el ancho quedan mas
+     anchos que su texto, y pegado a la izquierda se leia como si sobrara
+     espacio a la derecha. */
   .career-all-careers {
     flex: 2 1 0;
     min-width: 0;
+    justify-content: center;
   }
 
   .career-breadcrumb {
     flex: 3 1 0;
     min-width: 0;
+    justify-content: center;
+    /* El padding de escritorio es asimetrico (mas a la izquierda, donde arranca
+       "Inicio"). Centrado hay que emparejarlo o el texto queda corrido. */
+    padding: .45rem .6rem;
   }
 
   .career-hero-marca {
@@ -1041,6 +1049,9 @@
     overflow: visible;
     text-overflow: clip;
     white-space: normal;
+    /* El chip ya va centrado dentro de las migas, pero cuando el nombre ocupa
+       dos lineas la segunda arrancaba pegada a la izquierda. */
+    text-align: center;
   }
 
   .career-facts {
