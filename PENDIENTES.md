@@ -20,17 +20,13 @@
 
   Si algún día llega el temario por encuentro, va en `plan_estudios` **con el formato de viñetas que usa hoy** ("Cómo se cursa"), no con el de "Primer Año | 1er cuatrimestre" de las tecnicaturas: el código parsea distinto cuando `nivel = 'Teclab - Curso'`.
 
-- [ ] **Cargar en el KB los reconocimientos oficiales que se bajaron del sitio.** `datos/fichas-sitio-oficial.json` tiene el contenido público de 61 carreras, y de ahí salen **16 reconocimientos y 12 perfiles profesionales que el KB deja vacíos**. Hoy los usa el bot, pero el KB sigue incompleto.
+- [ ] **Cinco carreras sin página pública en 21.edu.ar.** `datos/enlaces-sitio-oficial.json` tiene 61 de 66, cada uno verificado con un pedido real. Faltan Administración Pública, Agroinformática, Responsabilidad y Gestión Social, Estadística Aplicada y Negocios Agroecológicos — tres de ellas ya documentadas más abajo como sin oferta oficial verificable. **Son las mismas que dejan huecos en el KB**: 3 fichas sin resolución y 2 sin perfil profesional, que no se pueden completar porque no hay fuente pública.
 
-  No confundir con los cursos "certificado en…": acá se habla del instrumento que le da validez oficial al título, y **no siempre es el mismo**. De las 61: 51 por Resolución Ministerial, 2 por **Disposición** (Contador Público va con `DI-2025-1024-APN-SSPU#MCH` y `DI-2025-1028`, una por modalidad) y 1 por Resolución. Llamar "resolución ministerial" a una Disposición es incorrecto.
-
-  Quedan 7 sin identificador y las 5 carreras sin página, que hay que pedirle a la universidad.
-
-- [ ] **Cinco carreras sin página pública en 21.edu.ar.** `datos/enlaces-sitio-oficial.json` tiene 61 de 66, cada uno verificado con un pedido real. Faltan Administración Pública, Agroinformática, Responsabilidad y Gestión Social, Estadística Aplicada y Negocios Agroecológicos — tres de ellas ya documentadas más abajo como sin oferta oficial verificable.
+  Pedido redactado en `herramientas/pedidos-a-enviar.md`.
 
   **El slug del sitio no se deriva del nombre del KB.** Las diferencias no siguen ninguna regla: "Desarrollos" contra "Desarrollo", "inteligencia en" contra "inteligencia de", "Venta" contra "Ventas", "Relaciones Públicas" contra "RRPP", con y sin "Universitaria", y algunos conservan las tildes en la URL (`licenciatura-en-administración`, `promoción-comunitaria-en-niñez`). Por eso hay un mapa `EXCEPCIONES` en `extraer-enlaces-sitio.mjs` que se completa a mano cuando aparece una nueva.
 
-  Aparte: **Licenciatura en Administración** figura enlazada en el índice del sitio pero `licenciatura-en-administracion` (sin tilde) devuelve 404. El link está roto del lado de ellos; conviene avisarles.
+  Aparte: **Licenciatura en Administración** figura enlazada en el índice del sitio pero `licenciatura-en-administracion` (sin tilde) devuelve 404. El link está roto del lado de ellos; ya va incluido en el pedido.
 
 - [ ] **El corpus del bot tiene 73 respuestas sin revisar.** De 130, hay 50 aprobadas y 7 descartadas (al 01/08). Aprobar o descartar **lo decide una persona**, no se puede automatizar: se revisan en `entrenar-bot.html` (solapa "Revisar respuestas", que esconde las ya aprobadas) y se vuelven a instalar con `aplicar-corpus.mjs --instalar`.
 
@@ -44,6 +40,10 @@
   4. El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse. Los requisitos por carrera sí están.
 
 ## Para tener presente
+
+**Los cuatro pendientes que dependen de un tercero ya están redactados** en `herramientas/pedidos-a-enviar.md`: uno a la universidad (plan de Estadística Aplicada, las 5 carreras sin página, el link roto, la fecha del 2B, becas y doble carrera) y otro a Teclab (precio, fecha, temario y fotos del curso de IA). Cada uno trae abajo la tabla de dónde va cada dato cuando llegue la respuesta.
+
+**El KB quedó completo hasta donde hay fuente pública** (01/08/2026): de las 68 fichas, 65 tienen resolución y 66 perfil profesional, y las que faltan son justamente las carreras sin página en 21.edu.ar. En el mismo pase se recortó el eslogan con el que cierran los perfiles bajados del sitio —no es perfil profesional sino el CTA de la landing pegado al final— y ahí apareció que en **dos** carreras estaba mal pegado: Políticas Públicas y Gestión Contable cerraban las dos con "Ejercé el derecho con visión global", que es de Abogacía. El bot venía diciéndoselo a los aspirantes.
 
 **El login del portal de Teclab falla cada tanto, y como la actualización es transaccional se lleva puesto el lote entero.** Pasó el 31/07/2026 en la segunda carrera (`EXTRACTOR_FAILED: El inicio de sesión no avanzó`) y al día siguiente las 18 salieron a la primera. No es un pipeline roto: es un login intermitente. El 01/08 se le agregaron **3 intentos con 20 s de espera** por carrera (`EXTRACTOR_ATTEMPTS` en `update_teclab_prices.py`).
 
