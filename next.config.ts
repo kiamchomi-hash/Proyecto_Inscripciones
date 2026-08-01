@@ -94,6 +94,14 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      // El curso de Teclab estuvo dos días con el slug que salía de "Curso en"
+      // (30/07 al 01/08/2026). Se corrigió a "Curso de", que es como se dice y
+      // como viene el prefijo en la base; el slug viejo pudo entrar al sitemap.
+      {
+        source: '/carreras/curso-en-actualizacion-profesional-en-inteligencia-artificial',
+        destination: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
+        permanent: true,
+      },
       // Redirect non-www to www
       {
         source: '/:path*',

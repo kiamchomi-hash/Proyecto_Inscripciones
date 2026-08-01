@@ -471,7 +471,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 height={69}
               />
               <p>
-                Carrera oficial de Teclab
+                {isTeclabCourse ? 'Curso oficial de Teclab' : 'Carrera oficial de Teclab'}
                 {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Desde el CAU Villa
                 Lugano te acompañamos en la inscripción y durante toda la cursada.
               </p>
@@ -489,8 +489,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           <div className="career-aside-inner">
             <nav>
               {((portada?.bullets.length ?? 0) > 0 || teclabCompetencias.length > 0) && (
-                <a href="#perfil">Perfil profesional</a>
+                <a href="#perfil">{isTeclabCourse ? 'Qué vas a aprender' : 'Perfil profesional'}</a>
               )}
+              {cursada.length > 0 && <a href="#plan">Cómo se cursa</a>}
               {hasPlan && <a href="#plan">Plan de estudios</a>}
             </nav>
             <div className="career-aside-cta">
@@ -515,7 +516,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           <div className="career-related-heading">
             <div>
               <span>Seguí explorando</span>
-              <h2>{isTeclabCourse ? 'Otros cursos de Teclab' : `Otras carreras de ${carrera.nivel}`}</h2>
+              {/* El curso es el unico de su nivel: sus enlaces son las carreras
+                  del instituto, no otros cursos. */}
+              <h2>{isTeclabCourse ? 'Otras carreras de Teclab' : `Otras carreras de ${carrera.nivel}`}</h2>
             </div>
             <Link href="/#carreras" prefetch={false}>Ver todas <ArrowIcon /></Link>
           </div>
