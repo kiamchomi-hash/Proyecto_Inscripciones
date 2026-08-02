@@ -80,6 +80,23 @@ html {
   align-items: center;
   padding: 0 1rem;
   overflow: hidden;
+  position: relative;
+}
+
+/* El titulo movil se centra respecto al navbar entero. Dentro del flujo flex
+   arrancaba despues del boton hamburguesa (60px), asi que centrarlo con
+   text-align lo dejaba corrido 30px a la derecha. */
+.navbar-brand-mobile {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: white;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .navbar-menu {
