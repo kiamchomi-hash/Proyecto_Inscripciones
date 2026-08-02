@@ -19,7 +19,34 @@ import os from 'node:os';
 const RAIZ = path.resolve(import.meta.dirname, '..');
 const LOGS = path.join(RAIZ, 'herramientas', 'vigilancia-logs');
 const ESTADO = path.join(LOGS, 'estado.json');
-const AVISO = path.join(os.homedir(), 'Desktop', 'REVISAR-SITIO.txt');
+const AVISO = path.join(resolverEscritorio(), 'REVISAR-SITIO.txt');
+
+// El escritorio no se llama igual en todos lados: en Windows es Desktop y en un
+// Linux en espanol, Escritorio. La ruta real la declara XDG en user-dirs.dirs;
+// si no hay nada de eso, cae al home, que siempre existe. Un aviso que nadie ve
+// es lo mismo que no avisar, asi que esto no puede quedar hardcodeado.
+function resolverEscritorio() {
+  const home = os.homedir();
+
+  if (process.env.XDG_DESKTOP_DIR) return process.env.XDG_DESKTOP_DIR;
+
+  const config = process.env.XDG_CONFIG_HOME || path.join(home, '.config');
+  const userDirs = path.join(config, 'user-dirs.dirs');
+  if (existsSync(userDirs)) {
+    const linea = readFileSync(userDirs, 'utf8').match(/^\s*XDG_DESKTOP_DIR="(.+)"\s*$/m);
+    if (linea) {
+      const dir = linea[1].replace('$HOME', home);
+      if (existsSync(dir)) return dir;
+    }
+  }
+
+  for (const nombre of ['Desktop', 'Escritorio']) {
+    const dir = path.join(home, nombre);
+    if (existsSync(dir)) return dir;
+  }
+
+  return home;
+}
 
 const CHEQUEOS = {
   deps: {
