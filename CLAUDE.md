@@ -25,7 +25,7 @@ Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --
 
 ### Verificaciones que no cubre `npm run check`
 
-`check` sólo mira el código. En `herramientas/` están las que miran los datos y el sitio publicado, cada una con un `.bat` de doble clic al lado (`LEER.md` explica cada una). Nada de esa carpeta entra al bundle de Next. Las tres primeras salen con código 1 si encuentran algo:
+`check` sólo mira el código. En `herramientas/` están las que miran los datos y el sitio publicado, cada una con un `.bat` (Windows) y un `.sh` (Linux) de doble clic al lado (`LEER.md` explica cada una). Los envoltorios son dos, el `.mjs` que hace el trabajo es uno solo: la lógica se toca ahí. Nada de esa carpeta entra al bundle de Next. Las tres primeras salen con código 1 si encuentran algo:
 
 ```bash
 npm run auditar      # contenido faltante en Supabase (lee con la anon key, corre local)
@@ -43,7 +43,17 @@ También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada n
 
 ### Deploy
 
-**Push a `main` = deploy**: Vercel publica automáticamente. `herramientas/5 - Subir cambios (deploy).bat` es el flujo guiado (muestra el diff, pide descripción, corre `npm run check` y recién ahí commitea y pushea). Antes de un push manual, vaciar `GH_TOKEN` y `GITHUB_TOKEN` si están seteados: valores viejos hacen fallar el push con un error que no explica nada.
+**Push a `main` = deploy**: Vercel publica automáticamente. `herramientas/5 - Subir cambios (deploy).bat` (o el `.sh` gemelo) es el flujo guiado (muestra el diff, pide descripción, corre `npm run check` y recién ahí commitea y pushea). Antes de un push manual, vaciar `GH_TOKEN` y `GITHUB_TOKEN` si están seteados: valores viejos hacen fallar el push con un error que no explica nada.
+
+### Dos máquinas: Windows y Linux
+
+El proyecto se trabaja desde las dos, con el mismo repo y el mismo comportamiento. Lo que sostiene la paridad:
+
+- **Nada de rutas absolutas de una máquina** en archivos versionados. El caso testigo fue `.claude/skills`, que era un symlink a `/home/coco/...`: en Windows git lo bajaba como un archivo de texto y las skills no cargaban.
+- **`.gitattributes` fija los finales de línea** por extensión. Un `.sh` con CRLF falla con `bad interpreter: ^M`.
+- **Los envoltorios son por sistema, la lógica no.** Cada verificación es un `.mjs` con un `.bat` y un `.sh` al lado; ninguno de los dos tiene lógica propia.
+- **`node herramientas/entorno.mjs exportar|importar`** mueve lo que no viaja por git: `.env.local`, la memoria de Claude Code, la credencial de Search Console y `.agents/`. La memoria vive en `~/.claude/projects/<ruta del proyecto con guiones>/memory`, así que el nombre de la carpeta cambia con la ruta y el script lo recalcula. El procedimiento completo está en `herramientas/LEER.md`.
+- **`fs.cpSync` recursivo no se usa**: en Node 24 sobre Windows revienta el proceso (0xC0000409, no lanza excepción) si la ruta tiene un carácter no ASCII, y la de este proyecto tiene un acento.
 
 ## Arquitectura
 
@@ -173,5 +183,5 @@ Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano 
 - `migracion_pendiente/` y `archivados/` **no tienen código** — sólo notas en Markdown (y un PDF), y están fuera de ESLint. Cuidado: `migracion_pendiente/pendientes-admin.md` y `pendientes-presencia-digital.md` son **backlogs vivos** (textos para el panel, faltantes de `og:image`), no descarte. El servidor Express con Zod que menciona `MIGRACION.md` ya no está en el repo.
 - `PENDIENTES.md` es el backlog vivo, con las verificaciones manuales que no se pueden automatizar.
 - `scripts/` son utilitarios de carga de datos de una sola vez (parseo e insert de carreras, descarga de assets de Teclab); no participan del build ni de `check`.
-- `shared_skills/` es una biblioteca local de skills para Claude Code: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), SEO, y guías generales de Next/React.
+- `.claude/skills/` es una biblioteca local de skills para Claude Code: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), SEO, y guías generales de Next/React. Antes vivía en `shared_skills/` con un symlink al lado, que sólo funcionaba en Linux; ahora es un directorio real y carga en los dos sistemas.
 - `docs/plans/` y `plan_migracion/` son planes de implementación históricos, no estado actual. `docs/resumen-proyecto.md` es un resumen para reutilizar patrones en otros proyectos — ante una contradicción, manda este archivo y el código.

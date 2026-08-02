@@ -11,7 +11,7 @@ export default defineConfig([
     'node_modules/**',
     'migracion_pendiente/**',
     'archivados/**',
-    'shared_skills/**',
+    '.claude/**',
     'testsprite_tests/**',
     'scripts/**',
     'next-env.d.ts',

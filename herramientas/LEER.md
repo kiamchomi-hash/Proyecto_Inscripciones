@@ -6,6 +6,12 @@ bundle, así que se pueden correr y editar sin miedo a romper producción.
 
 **Doble clic en el `.bat`** y listo. La ventana queda abierta al terminar.
 
+En Linux, al lado de cada `.bat` hay un `.sh` con el mismo nombre y el mismo
+comportamiento (`bash "herramientas/1 - Auditar contenido.sh"`, o doble clic si
+el escritorio ofrece «Ejecutar en una terminal»). Son envoltorios: los `.mjs` que
+hacen el trabajo son los mismos en los dos sistemas, así que un cambio de fondo
+se toca una sola vez.
+
 | Archivo | Qué hace | Cuándo |
 |---|---|---|
 | `1 - Auditar contenido.bat` | Lee Supabase y lista lo que falta cargar | Después de tocar carreras o novedades |
@@ -81,7 +87,10 @@ sin bloquear, así que el `INSERT` responde 201 aunque la notificación se caiga
 Exactamente eso pasó del 20 al 27/07/2026, una semana entera, sin un solo error
 visible desde la web.
 
-El `.bat` copia `verificar-avisos.sql` al portapapeles y abre el SQL Editor.
+El `.bat` copia `verificar-avisos.sql` al portapapeles y abre el SQL Editor. El
+`.sh` hace lo mismo, pero el portapapeles en Linux depende del servidor gráfico:
+usa `wl-copy` (Wayland), `xclip` o `xsel`, el primero que encuentre. Si no hay
+ninguno instalado no se rompe: avisa la ruta del archivo para abrirlo a mano.
 Correr **un PASO por vez** (seleccionar el bloque y Run): no anda de una sola
 pasada porque `pg_net` recién despacha el pedido cuando la transacción commitea,
 y un `pg_sleep` en el mismo bloque que el `INSERT` esperaría algo que todavía no
@@ -113,14 +122,15 @@ resuelve después.
 Vacía `GH_TOKEN` y `GITHUB_TOKEN` antes de empujar. Si quedaron seteados en el
 entorno con valores viejos, el push falla con un error que no explica nada.
 
-En el mensaje no usar comillas dobles: cmd las come. Acentos, `%` y `&` van bien.
+En Windows, en el mensaje no usar comillas dobles: cmd las come. Acentos, `%` y
+`&` van bien. El `.sh` de Linux no tiene esa limitación.
 
 ## Vigilancia automática (sin doble clic)
 
-Los cinco `.bat` numerados son para usar a mano: abren una ventana y terminan en
-`pause`. Aparte de esos está `vigilancia.bat`, que es lo contrario — corre solo,
-sin ventana, y devuelve el código de salida de verdad. Es el que usan las tareas
-programadas de Windows:
+Los cinco numerados son para usar a mano: abren una ventana y esperan una tecla
+al terminar. Aparte de esos está `vigilancia.bat` (y su `vigilancia.sh`), que es
+lo contrario — corre solo, sin ventana, y devuelve el código de salida de verdad.
+Es el que usan las tareas programadas de Windows:
 
 | Tarea programada | Cuándo | Qué corre |
 |---|---|---|
@@ -156,3 +166,48 @@ Dos decisiones que conviene conocer:
 
 Para cambiar horarios o desactivarlas, buscar `CAU - Vigilancia` en el
 Programador de tareas de Windows.
+
+En Linux lo mismo va por cron (`crontab -e`), con la ruta absoluta del proyecto:
+
+```cron
+0  9 * * 1 cd /ruta/al/proyecto && herramientas/vigilancia.sh deps
+15 9 * * * cd /ruta/al/proyecto && herramientas/vigilancia.sh smoke
+30 9 * * 1 cd /ruta/al/proyecto && herramientas/vigilancia.sh contenido
+```
+
+Cuidado con el `PATH` de cron, que es mínimo: si node está instalado con nvm o
+fnm no lo va a encontrar y las tres tareas fallan sin decir por qué. La forma
+más simple de zanjarlo es una línea `PATH=...` arriba del crontab, con el
+resultado de `dirname $(which node)` incluido.
+
+El aviso sale al escritorio en los dos sistemas: `vigilancia.mjs` resuelve la
+carpeta real (`Desktop`, `Escritorio` o lo que declare XDG), no la hardcodea.
+
+## Mudarse a otra máquina
+
+`git clone` trae el código, `CLAUDE.md`, los agentes de `.claude/agents/` y las
+skills de `.claude/skills/`. Lo que **no** trae es lo que está gitignoreado a
+propósito: las credenciales, la memoria de Claude Code y las preferencias.
+
+Para eso está `entorno.mjs`. En la máquina que ya funciona:
+
+```bash
+node herramientas/entorno.mjs exportar
+```
+
+Deja `entorno-cau.tar.gz` en el home — fuera del repo, porque adentro van la
+anon key de Supabase y la service account de Search Console. **No subirlo a
+ningún lado.** Del otro lado, con el repo ya clonado:
+
+```bash
+node herramientas/entorno.mjs importar --desde=~/entorno-cau.tar.gz
+```
+
+No pisa nada que ya exista salvo que se le pase `--forzar`. Lo importante que
+resuelve solo: la memoria de Claude Code vive en una carpeta cuyo nombre sale de
+la ruta del proyecto (`~/.claude/projects/<ruta con guiones>/memory`), así que la
+de Windows no le sirve a Linux; el script la recalcula.
+
+Lo que no se puede empaquetar porque es un login, lo lista al terminar: el clone
+del repo aparte `conocimiento-hermes`, `vercel login`, `supabase login`,
+`gh auth login` y el alta del MCP de Search Console.

@@ -38,7 +38,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "shared_skills",
+    ".claude",
     "supabase",
     ".next/dev"
   ]
