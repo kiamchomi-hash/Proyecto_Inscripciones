@@ -8,6 +8,7 @@ import { parseIAMeta, tienePlanDeEstudios } from '@/components/carreras/career-c
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import IndexFooter from '@/components/index/footer';
+import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
 import '../career-detail.css';
 
@@ -393,11 +394,11 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(courseSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbSchema) }}
       />
       <main className="flex-1">
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />

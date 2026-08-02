@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import FaqPageContent from '@/components/faq-page';
+import { jsonLdScript } from '@/lib/json-ld';
 import { supabase } from '@/lib/supabase';
 import type { FaqPregunta } from '@/lib/types';
 import './faq.css';
@@ -58,7 +59,7 @@ export default async function FaqPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(faqSchema) }}
       />
       <FaqPageContent initialQuestions={faqs} />
     </>

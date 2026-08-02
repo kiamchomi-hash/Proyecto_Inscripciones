@@ -48,3 +48,27 @@ test('las APIs administrativas exigen rol admin en el proxy', async () => {
   assert.match(source, /profile\.rol !== 'admin'/);
   assert.match(source, /profile\.estado !== 'aprobado'/);
 });
+
+test('el JSON-LD escapa el contenido que viene de la base', async () => {
+  const { jsonLdScript } = await import('../lib/json-ld.ts');
+
+  // El titulo de una FAQ nace en el formulario publico: si se publica con un
+  // cierre de script adentro, JSON.stringify a secas lo deja pasar tal cual y
+  // corta el <script> del schema antes de tiempo.
+  const veneno = { name: `</script><script>alert(1)</script>` };
+  const salida = jsonLdScript(veneno);
+
+  assert.doesNotMatch(salida, /<\/?script/i);
+  assert.deepEqual(JSON.parse(salida), veneno);
+});
+
+test('ningún bloque de datos estructurados se serializa sin escapar', async () => {
+  const files = (await sourceFiles('app')).concat(await sourceFiles('components'));
+  const crudos = [];
+  for (const file of files) {
+    const source = await readFile(path.join(root, file), 'utf8');
+    if (!source.includes('ld+json')) continue;
+    if (/__html: JSON.stringify/.test(source)) crudos.push(file);
+  }
+  assert.deepEqual(crudos, []);
+});
