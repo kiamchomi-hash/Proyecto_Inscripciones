@@ -41,3 +41,5 @@ supabase/.temp/
 mensaje_*.md
 # Cache incremental de tsc. Cambia en cada typecheck, o sea en cada commit.
 tsconfig.tsbuildinfo
+# Logs y estado de las tareas de vigilancia. Se regeneran solos en cada corrida.
+herramientas/vigilancia-logs/
