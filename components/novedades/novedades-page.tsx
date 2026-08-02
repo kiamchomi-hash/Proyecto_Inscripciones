@@ -57,7 +57,7 @@ function PinnedCard({ item }: { item: Novedad }) {
     >
       <div className="news-card__img relative flex-shrink-0 h-[260px] overflow-hidden">
         {item.imagen_url ? (
-          <Image src={item.imagen_url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+          <Image src={item.imagen_url} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 580px" quality={90} />
         ) : (
           <ImagePlaceholder tall />
         )}
@@ -103,9 +103,12 @@ function SubCard({ item, delay }: { item: Novedad; delay: number }) {
       style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.06)' }}
     >
       <div className="flex flex-col sm:flex-row h-full">
+        {/* En movil la foto ocupa el ancho completo de la tarjeta; recien desde sm baja a la
+            columna de 240px. Con un `sizes` fijo el navegador bajaba la variante de 256px y la
+            estiraba a ~350 CSS px: en pantallas 2x/3x se veia pixelada. */}
         <div className="news-card__img w-full sm:w-[40%] sm:max-w-[240px] flex-shrink-0 overflow-hidden h-[160px] sm:h-auto relative">
           {item.imagen_url ? (
-            <Image src={item.imagen_url} alt="" fill className="object-cover" sizes="200px" />
+            <Image src={item.imagen_url} alt="" fill className="object-cover" sizes="(max-width: 640px) 100vw, 240px" quality={90} />
           ) : (
             <ImagePlaceholder />
           )}

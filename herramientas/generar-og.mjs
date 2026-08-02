@@ -115,13 +115,25 @@ function capaIdentidadArgentina({ titulo, tag }) {
 
 // La foto limpia lleva un velo muy suave: unifica el set y despega el texto blanco
 // de las tarjetas del listado, que se dibujan encima.
-const VELO_LIMPIA = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+const velo = (w, h) => `<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
   <defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="${VERDE}" stop-opacity="0.06"/>
     <stop offset="100%" stop-color="${VERDE}" stop-opacity="0.30"/>
   </linearGradient></defs>
-  <rect width="${W}" height="${H}" fill="url(#s)"/>
+  <rect width="${w}" height="${h}" fill="url(#s)"/>
 </svg>`;
+
+// El og:image va si o si a 1200x630 (lo que esperan las redes), pero la foto limpia
+// tambien la muestra la cabecera del articulo, que pide 720 CSS px: en una pantalla
+// 2x son 1440 y a 1200 se veia blanda. Se genera hasta 1800 de ancho, sin pasarse
+// del ancho real de la foto original — estirarla no agrega detalle, solo peso.
+const W_LIMPIA_MAX = 1800;
+
+async function medidasLimpia(foto) {
+  const { width } = await sharp(foto).metadata();
+  const w = Math.max(W, Math.min(W_LIMPIA_MAX, width));
+  return { w, h: Math.round((w * H) / W) };
+}
 
 const ARTICULOS = [
   { id: 60, slug: 'segundo-semestre-2026-inicio-3-de-agosto', tag: 'Institucional',
@@ -136,9 +148,11 @@ const ARTICULOS = [
   { id: 63, slug: 'clases-de-apoyo-como-reservar-turno', tag: 'Académico',
     titulo: 'Clases de apoyo: cómo reservar un turno',
     foto: 'public/imagenes/Modales/Licenciatura en Educación y Nuevas Tecnologías/Foto-hero-educacion-y-nuevas-tecnologias.webp' },
+  // La foto del campus paso a la #69, que habla del lugar. Aca va una de estudio a
+  // distancia, que es de lo que trata la nota.
   { id: 64, slug: 'carreras-de-grado-a-distancia', tag: 'Académico',
     titulo: 'Las 43 licenciaturas que podés cursar a distancia',
-    foto: 'public/imagenes/imagenes_cau/edificio_siglo21_campus.jpg' },
+    foto: 'public/imagenes/Modales/Tecnicatura en Relaciones Laborales/Licenciatura en Gestión de Recursos Humanos.webp' },
   { id: 65, slug: 'tecnicaturas-pregrado-dos-tres-anos', tag: 'Académico',
     titulo: 'Tecnicaturas: un título universitario en 2 o 3 años',
     foto: 'public/imagenes/Modales/Tecnicatura en Gestión Contable e impositiva/Foto-hero-gestion-contable-e-impositiva.webp' },
@@ -150,18 +164,16 @@ const ARTICULOS = [
   { id: 67, slug: 'identidad-argentina-diplomaturas', tag: 'Institucional', marca: 'ia',
     titulo: 'Identidad Argentina: 11 diplomaturas cortas',
     foto: 'public/imagenes/Modales/Licenciatura en Relaciones Públicas e Institucionales/Foto-hero-relaciones-publicas-e-institucionales.webp' },
+  // Siglo21IMG_2555.jpg mide 640x427 y estirada quedaba blanda.
   { id: 68, slug: 'ivu-universitario-21-inicio-cursada', tag: 'Académico',
     titulo: 'Antes de la primera materia: IVU y Universitario 21',
-    foto: 'public/imagenes/imagenes_cau/Siglo21IMG_2555.jpg' },
-  // La entrada real del local mide 475x598: es la unica foto correcta para este tema,
-  // pero estirarla a 1200x630 la deja blanda. Se genera tambien la variante con el
-  // campus para poder comparar antes de decidir.
+    foto: 'public/imagenes/Modales/Licenciatura en Gestión Turística/Foto-hero-licenciatura-gestion-turistica.webp' },
+  // La entrada real del local (entrada_estetica.png) es la foto mas correcta para el
+  // tema, pero mide 475x598: estirarla a 1800x945 la dejaba irreconocible. Va el campus,
+  // que es la unica foto propia con resolucion de sobra.
   { id: 69, slug: 'donde-queda-el-cau-villa-lugano', tag: 'Institucional',
     titulo: 'Dónde queda el CAU Villa Lugano y cómo llegar',
-    foto: 'public/imagenes/imagenes_cau/entrada_estetica.png' },
-  { id: 69, slug: 'donde-queda-el-cau-villa-lugano-ALT', tag: 'Institucional', alterna: true,
-    titulo: 'Dónde queda el CAU Villa Lugano y cómo llegar',
-    foto: 'public/imagenes/imagenes_cau/Edificio_siglo21_campus3.jpg' },
+    foto: 'public/imagenes/imagenes_cau/edificio_siglo21_campus.jpg' },
 ];
 
 for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { recursive: true });
@@ -291,9 +303,11 @@ for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { 
 for (const a of ARTICULOS) {
   const base = () => sharp(a.foto).resize(W, H, { fit: 'cover', position: 'attention', kernel: 'lanczos3' });
 
-  const limpia = await base()
-    .composite([{ input: Buffer.from(VELO_LIMPIA), top: 0, left: 0 }])
-    .jpeg({ quality: 84, mozjpeg: true })
+  const { w: wL, h: hL } = await medidasLimpia(a.foto);
+  const limpia = await sharp(a.foto)
+    .resize(wL, hL, { fit: 'cover', position: 'attention', kernel: 'lanczos3' })
+    .composite([{ input: Buffer.from(velo(wL, hL)), top: 0, left: 0 }])
+    .jpeg({ quality: 88, mozjpeg: true })
     .toBuffer();
 
   const dibujar = a.marca === 'ia' ? capaIdentidadArgentina : capa;
@@ -312,8 +326,10 @@ for (const a of ARTICULOS) {
     await sharp(og).toFile(`${DIR_EXTRA}/final-og-${a.slug}.jpg`);
   }
 
-  const kb = Math.round(og.length / 1024);
-  console.log(`#${a.id} ${a.alterna ? '(alternativa) ' : ''}${a.slug} — og ${kb} KB`);
+  console.log(
+    `#${a.id} ${a.alterna ? '(alternativa) ' : ''}${a.slug} — ` +
+    `limpia ${wL}x${hL} ${Math.round(limpia.length / 1024)} KB · og ${Math.round(og.length / 1024)} KB`
+  );
 }
 
 console.log(`\nLimpias -> ${DIR_LIMPIA}/`);
