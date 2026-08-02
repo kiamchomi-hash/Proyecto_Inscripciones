@@ -169,11 +169,9 @@ export default function Navbar() {
         </button>
 
         {/* Mobile branding */}
-        <div className="flex lg:hidden flex-1 items-center min-w-0">
-          <span className="flex-1 text-center text-2xl whitespace-nowrap" style={{ fontFamily: "'Unbounded',sans-serif", fontWeight: 600, color: 'white', lineHeight: 1 }}>
-            CAU <span style={{ fontFamily: "'Unbounded',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
-          </span>
-        </div>
+        <span className="navbar-brand-mobile lg:hidden">
+          CAU <span style={{ color: '#00c7b1' }}>Siglo 21</span>
+        </span>
 
         {/* Menu */}
         <div
