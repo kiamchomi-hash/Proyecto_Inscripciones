@@ -3,6 +3,7 @@ import { Inter, Unbounded } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import ScrollToTop, { ScrollResetOnLoad } from '@/components/scroll-to-top';
 import PublicGoogleAnalytics from '@/components/google-analytics';
+import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
 
 import { Analytics } from '@vercel/analytics/next';
@@ -55,7 +56,7 @@ export const metadata: Metadata = {
 
 // Datos fijos: se serializa una sola vez por proceso y no en cada render del
 // layout, que es el componente por el que pasa todas las paginas del sitio.
-const jsonLd = JSON.stringify([
+const jsonLd = jsonLdScript([
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
