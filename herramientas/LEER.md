@@ -114,3 +114,45 @@ Vacía `GH_TOKEN` y `GITHUB_TOKEN` antes de empujar. Si quedaron seteados en el
 entorno con valores viejos, el push falla con un error que no explica nada.
 
 En el mensaje no usar comillas dobles: cmd las come. Acentos, `%` y `&` van bien.
+
+## Vigilancia automática (sin doble clic)
+
+Los cinco `.bat` numerados son para usar a mano: abren una ventana y terminan en
+`pause`. Aparte de esos está `vigilancia.bat`, que es lo contrario — corre solo,
+sin ventana, y devuelve el código de salida de verdad. Es el que usan las tareas
+programadas de Windows:
+
+| Tarea programada | Cuándo | Qué corre |
+|---|---|---|
+| `CAU - Vigilancia dependencias` | lunes 9:00 | `npm audit` |
+| `CAU - Vigilancia produccion` | todos los días 9:15 | el smoke completo contra producción |
+| `CAU - Vigilancia contenido` | lunes 9:30 | `npm run auditar` |
+
+**Esto no gasta créditos de Claude.** Los tres chequeos son programas de Node que
+no llaman a ningún modelo; corren gratis las veces que haga falta. Los agentes de
+`.claude/agents/` entran después, a mano, y sólo cuando hay algo que interpretar.
+
+Cómo avisa: si un chequeo encuentra algo, aparece **`REVISAR-SITIO.txt` en el
+escritorio** con el resumen, la ruta al log completo y qué agente pedirle a Claude
+Code. El archivo se reconstruye entero en cada corrida a partir del estado de los
+tres chequeos, así que **desaparece solo** cuando todos vuelven a dar limpio — no
+hay que acordarse de borrarlo. Si no hay nada que reportar, no aparece nada.
+
+Los logs quedan en `herramientas/vigilancia-logs/` (fuera de git) junto con
+`estado.json`, que es lo que sostiene el borrado automático del aviso.
+
+Dos decisiones que conviene conocer:
+
+- **Sin internet no avisa, saltea.** Las tres tareas consultan la red, y una
+  notebook arranca fuera de línea seguido. Antes de correr, resuelve un host
+  neutral (`github.com`, no el dominio propio — si preguntara por el propio, una
+  caída del sitio se confundiría con una caída de la conexión). Sin conexión deja
+  constancia en el log y sale con 0.
+- **`npm audit` se lee, no se obedece.** El código de salida es 1 ante cualquier
+  vulnerabilidad, incluso una moderada en una devDependency, así que el aviso
+  parsea el JSON y lista paquete, severidad y de qué se trata. La decisión de qué
+  actualizar es del agente `auditor-dependencias`, que sabe que `npm audit fix`
+  a veces propone downgrades peligrosos.
+
+Para cambiar horarios o desactivarlas, buscar `CAU - Vigilancia` en el
+Programador de tareas de Windows.
