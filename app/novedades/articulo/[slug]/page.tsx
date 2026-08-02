@@ -113,6 +113,7 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 720px"
+              quality={90}
               priority
             />
           </div>
