@@ -117,12 +117,16 @@
     border: 1px solid rgba(0, 199, 177, 0.3);
     border-left: none;
     border-radius: 0 1rem 1rem 0;
-    /* El SVG está dibujado en 640x427; encuadrado a la derecha muestra la
-       marca 21, igual que la foto que había antes. */
-    background-image: url('/imagenes/imagenes_cau/siglo21-pared.svg');
-    background-size: cover;
-    background-position: right center;
-    background-repeat: no-repeat;
+    /* El logotipo va centrado y a tamaño fijo, no en `cover`: estirarlo al
+       ancho del panel agrandaba las letras hasta recortarlas. El panel sigue
+       el verde de la tarjeta para que se lea como una sola pieza. */
+    background-color: #16403b;
+    background-image:
+      url('/imagenes/imagenes_cau/siglo21-marca.svg'),
+      radial-gradient(circle at 32% 22%, rgba(0, 199, 177, 0.1), transparent 62%);
+    background-size: 58% auto, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
   }
 
   .form-side-image::before {
