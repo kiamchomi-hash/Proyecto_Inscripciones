@@ -1,0 +1,305 @@
+/* ── Biblioteca de imágenes (herramienta interna, /imagenes) ───────────── */
+
+.bib {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 5rem;
+}
+
+@media (min-width: 768px) {
+  .bib {
+    padding: 3rem 2rem 5rem;
+  }
+}
+
+.bib__titulo {
+  font-family: var(--font-unbounded), 'Inter', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 0.4rem;
+}
+
+.bib__bajada {
+  max-width: 46rem;
+  margin: 0 0 1.75rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-light);
+}
+
+.bib__bajada code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.85em;
+  color: var(--color-highlight);
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(0, 199, 177, 0.16);
+  border-radius: 5px;
+  padding: 0.1em 0.4em;
+}
+
+/* ── Controles ────────────────────────────────────────────────────────── */
+
+.bib__controles {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  /* Pegajoso sobre una grilla que scrollea: sin fondo propio las tarjetas se
+     ven pasar por debajo del buscador. El color es el del degradé de body::before
+     a esta altura, no --color-deep-dark-bg, que aca se ve como un recuadro verde. */
+  background: #061716;
+  padding: 0.85rem 0 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 199, 177, 0.14);
+}
+
+.bib__buscador {
+  width: 100%;
+  max-width: 30rem;
+  padding: 0.65rem 0.95rem;
+  font-size: 0.95rem;
+  color: #fff;
+  background: var(--color-card-bg);
+  border: 1px solid rgba(0, 199, 177, 0.22);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bib__buscador::placeholder {
+  color: var(--color-text-light);
+}
+
+.bib__buscador:focus-visible {
+  border-color: var(--color-highlight);
+  box-shadow: 0 0 0 3px rgba(0, 199, 177, 0.18);
+}
+
+.bib__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+}
+
+.bib__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bib__chip span {
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-light);
+}
+
+.bib__chip:hover {
+  border-color: rgba(0, 199, 177, 0.35);
+  color: #fff;
+}
+
+.bib__chip--activo {
+  color: #04211c;
+  background: var(--color-highlight);
+  border-color: transparent;
+}
+
+.bib__chip--activo span {
+  color: rgba(4, 33, 28, 0.7);
+}
+
+.bib__resumen {
+  margin: 0.8rem 0 0;
+  font-size: 0.78rem;
+  color: var(--color-text-light);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Aviso de faltantes ───────────────────────────────────────────────── */
+
+.bib__aviso {
+  margin: 0 0 1.75rem;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(230, 155, 5, 0.07);
+  border: 1px solid rgba(230, 155, 5, 0.22);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 0 12px 12px 0;
+}
+
+.bib__aviso p {
+  margin: 0;
+}
+
+.bib__aviso-titulo {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-gold);
+  margin-bottom: 0.3rem !important;
+}
+
+/* ── Grilla ───────────────────────────────────────────────────────────── */
+
+.bib__grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(9rem, 30vw, 13rem), 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bib__tarjeta {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  text-align: left;
+  background: var(--color-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.bib__tarjeta:hover {
+  border-color: rgba(0, 199, 177, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.bib__tarjeta:focus-visible {
+  outline: 2px solid var(--color-highlight);
+  outline-offset: 2px;
+}
+
+.bib__marco {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  /* Tablero de ajedrez tenue: deja ver el recorte real de los PNG y SVG con
+     transparencia, que sobre fondo liso parecen tener fondo propio. */
+  background-color: #0d1f1e;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+.bib__marco img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.bib__copiado {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #04211c;
+  background: rgba(0, 199, 177, 0.92);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.bib__tarjeta--copiada .bib__copiado {
+  opacity: 1;
+}
+
+.bib__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.7rem 0.7rem;
+}
+
+.bib__nombre {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #fff;
+  /* Los nombres de carrera son largos y de ancho muy dispar: cortarlos a dos
+     líneas mantiene la grilla pareja. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bib__archivo {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.66rem;
+  color: var(--color-secondary-highlight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bib__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  color: var(--color-text-light);
+  font-variant-numeric: tabular-nums;
+}
+
+.bib__nivel {
+  padding: 0.05rem 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-highlight);
+  background: rgba(0, 199, 177, 0.1);
+  border: 1px solid rgba(0, 199, 177, 0.2);
+  border-radius: 4px;
+}
+
+.bib__vacio {
+  padding: 3rem 0;
+  text-align: center;
+  color: var(--color-text-light);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bib__tarjeta,
+  .bib__chip,
+  .bib__copiado {
+    transition: none;
+  }
+
+  .bib__tarjeta:hover {
+    transform: none;
+  }
+}
