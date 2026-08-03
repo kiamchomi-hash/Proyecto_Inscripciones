@@ -649,14 +649,21 @@ export default function ContactoPageContent() {
           <div className="md:w-[320px] lg:w-[360px] shrink-0">
             <ContactForm />
           </div>
-          <div className="hidden md:block flex-1 relative">
-            <Image
-              src="/imagenes/imagenes_cau/Siglo21IMG_2555.jpg"
-              alt="Entrada del Centro Educativo Villa Lugano"
-              fill
-              className="object-cover"
-            />
-          </div>
+          {/* Marca lateral, decorativa. Va como background y no por next/image:
+              el logotipo es SVG, que ademas exigiria dangerouslyAllowSVG. A
+              tamaño fijo y centrado, para que no se estire ni se recorte. */}
+          <div
+            className="hidden md:block flex-1"
+            aria-hidden="true"
+            style={{
+              backgroundColor: '#241620',
+              backgroundImage:
+                "url('/imagenes/imagenes_cau/siglo21-marca.svg'), radial-gradient(circle at 32% 22%, rgba(138, 48, 80, 0.3), transparent 62%)",
+              backgroundSize: '52% auto, cover',
+              backgroundPosition: 'center, center',
+              backgroundRepeat: 'no-repeat, no-repeat',
+            }}
+          />
         </div>
       </section>
 
