@@ -121,12 +121,10 @@
        ancho del panel agrandaba las letras hasta recortarlas. El panel sigue
        el verde de la tarjeta para que se lea como una sola pieza. */
     background-color: #16403b;
-    background-image:
-      url('/imagenes/imagenes_cau/siglo21-marca.svg'),
-      radial-gradient(circle at 32% 22%, rgba(0, 199, 177, 0.1), transparent 62%);
-    background-size: 58% auto, cover;
-    background-position: center, center;
-    background-repeat: no-repeat, no-repeat;
+    background-image: url('/imagenes/imagenes_cau/siglo21-marca.svg');
+    background-size: 58% auto;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .form-side-image::before {

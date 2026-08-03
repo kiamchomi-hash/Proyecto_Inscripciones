@@ -656,12 +656,11 @@ export default function ContactoPageContent() {
             className="hidden md:block flex-1"
             aria-hidden="true"
             style={{
-              backgroundColor: '#241620',
-              backgroundImage:
-                "url('/imagenes/imagenes_cau/siglo21-marca.svg'), radial-gradient(circle at 32% 22%, rgba(138, 48, 80, 0.3), transparent 62%)",
-              backgroundSize: '52% auto, cover',
-              backgroundPosition: 'center, center',
-              backgroundRepeat: 'no-repeat, no-repeat',
+              backgroundColor: '#2a1823',
+              backgroundImage: "url('/imagenes/imagenes_cau/siglo21-marca.svg')",
+              backgroundSize: '52% auto',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
             }}
           />
         </div>
