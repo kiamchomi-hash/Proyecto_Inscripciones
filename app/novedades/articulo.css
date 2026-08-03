@@ -106,24 +106,26 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* Resaltado de dato clave: subrayado grueso al ras de la línea de base, sin
-   fondo de bloque, que en fondo oscuro tapa el texto. */
+/* Resaltado de dato clave: línea fina al pie del renglón, pintada en el fondo y
+   por debajo de las descendentes. Ni fondo de bloque ni barra gruesa: las dos
+   tapan el texto sobre fondo oscuro. */
 .art mark {
   background: linear-gradient(
     to top,
-    rgba(0, 199, 177, 0.32) 0.36em,
-    transparent 0.36em
+    rgba(0, 199, 177, 0.75) 2px,
+    transparent 2px
   );
   color: #fff;
-  font-weight: 600;
-  padding: 0 0.1em;
-  border-radius: 2px;
+  font-weight: 700;
+  padding: 0;
 }
 
 .art u {
   text-decoration: underline;
   text-decoration-color: rgba(0, 199, 177, 0.6);
-  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-skip-ink: auto;
 }
 
 .art code {
