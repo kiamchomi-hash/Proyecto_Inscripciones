@@ -1,0 +1,670 @@
+/* ── Cuerpo de artículo de novedades ──────────────────────────────────────
+   El contenido llega como HTML desde Supabase y se inyecta con
+   dangerouslySetInnerHTML, así que ninguna utilidad de Tailwind lo alcanza:
+   sin estas reglas el preflight deja los <h2> del tamaño de un párrafo y a
+   las listas sin viñeta, y todo el artículo se lee como texto corrido.
+
+   Las clases `art-*` son las únicas que el sanitizador deja pasar
+   (lib/sanitize-content.ts): sirven para que cada nota use el formato que le
+   conviene —tabla, pasos, ficha de datos— sin tocar el componente. */
+
+.art {
+  --art-linea: rgba(0, 199, 177, 0.16);
+  --art-texto: rgba(255, 255, 255, 0.76);
+  --art-tenue: rgba(255, 255, 255, 0.5);
+
+  color: var(--art-texto);
+  font-size: 1rem;
+  line-height: 1.75;
+  /* Justificar en una columna angosta abre rios de espacio en blanco entre
+     palabras; en movil es peor. `pretty` acomoda el corte de linea sin eso. */
+  text-align: left;
+  text-wrap: pretty;
+}
+
+/* ── Párrafos ─────────────────────────────────────────────────────────── */
+
+.art p {
+  margin: 0 0 1.25em;
+}
+
+.art > p:first-child {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.art > *:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Títulos ──────────────────────────────────────────────────────────── */
+
+.art h2 {
+  font-family: var(--font-unbounded), 'Inter', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin: 2.5em 0 0.9em;
+  padding-top: 1.4em;
+  border-top: 1px solid var(--art-linea);
+  position: relative;
+}
+
+/* Marca de agua sobre la línea divisoria: ubica el comienzo de cada bloque
+   sin cargar el título con otro color. */
+.art h2::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--color-highlight);
+  border-radius: 2px;
+}
+
+.art > h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.art > h2:first-child::before {
+  display: none;
+}
+
+.art h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 1.9em 0 0.6em;
+}
+
+.art h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-secondary-highlight);
+  margin: 1.8em 0 0.5em;
+}
+
+/* ── Énfasis ──────────────────────────────────────────────────────────── */
+
+.art strong,
+.art b {
+  color: #fff;
+  font-weight: 700;
+}
+
+.art em,
+.art i {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Resaltado de dato clave: subrayado grueso al ras de la línea de base, sin
+   fondo de bloque, que en fondo oscuro tapa el texto. */
+.art mark {
+  background: linear-gradient(
+    to top,
+    rgba(0, 199, 177, 0.32) 0.36em,
+    transparent 0.36em
+  );
+  color: #fff;
+  font-weight: 600;
+  padding: 0 0.1em;
+  border-radius: 2px;
+}
+
+.art u {
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 199, 177, 0.6);
+  text-underline-offset: 3px;
+}
+
+.art code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.88em;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--art-linea);
+  border-radius: 5px;
+  padding: 0.12em 0.4em;
+  color: var(--color-accent);
+}
+
+/* ── Enlaces ──────────────────────────────────────────────────────────── */
+
+.art a {
+  color: var(--color-highlight);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 199, 177, 0.35);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.art a:hover {
+  color: var(--color-accent);
+  text-decoration-color: currentColor;
+}
+
+/* ── Listas ───────────────────────────────────────────────────────────── */
+
+.art ul,
+.art ol {
+  margin: 0 0 1.35em;
+  padding: 0;
+  list-style: none;
+}
+
+.art li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.6em;
+}
+
+.art li:last-child {
+  margin-bottom: 0;
+}
+
+.art ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 0.66em;
+  width: 6px;
+  height: 6px;
+  background: var(--color-highlight);
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+
+.art ol {
+  counter-reset: art-num;
+}
+
+.art ol > li {
+  counter-increment: art-num;
+  padding-left: 2rem;
+}
+
+.art ol > li::before {
+  content: counter(art-num);
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--color-highlight);
+  background: rgba(0, 199, 177, 0.1);
+  border: 1px solid rgba(0, 199, 177, 0.28);
+  border-radius: 50%;
+}
+
+/* Lista de verificación: para requisitos y cosas que hay que traer. */
+.art ul.art-check > li {
+  padding-left: 1.85rem;
+}
+
+.art ul.art-check > li::before {
+  content: '';
+  left: 0;
+  top: 0.42em;
+  width: 1.15rem;
+  height: 1.15rem;
+  background: rgba(0, 199, 177, 0.12);
+  border: 1px solid rgba(0, 199, 177, 0.3);
+  border-radius: 5px;
+  transform: none;
+}
+
+.art ul.art-check > li::after {
+  content: '';
+  position: absolute;
+  left: 0.32rem;
+  top: 0.72em;
+  width: 0.5rem;
+  height: 0.26rem;
+  border-left: 2px solid var(--color-highlight);
+  border-bottom: 2px solid var(--color-highlight);
+  transform: rotate(-45deg);
+}
+
+/* Pasos: la numeración se convierte en una línea de tiempo vertical. */
+.art ol.art-pasos {
+  counter-reset: art-num;
+  margin-bottom: 1.6em;
+}
+
+.art ol.art-pasos > li {
+  padding-left: 3rem;
+  padding-bottom: 1.15em;
+  margin-bottom: 0;
+}
+
+.art ol.art-pasos > li::before {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.85rem;
+  top: 0;
+  color: #04211c;
+  background: var(--color-highlight);
+  border-color: transparent;
+}
+
+/* El tramo de línea que une un paso con el siguiente. */
+.art ol.art-pasos > li::after {
+  content: '';
+  position: absolute;
+  left: calc(1rem - 1px);
+  top: 2.2rem;
+  bottom: 0.15rem;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 199, 177, 0.6),
+    rgba(0, 199, 177, 0.25)
+  );
+}
+
+.art ol.art-pasos > li:last-child {
+  padding-bottom: 0;
+}
+
+.art ol.art-pasos > li:last-child::after {
+  display: none;
+}
+
+/* Lista por rubro: el <strong> inicial pasa a ser el encabezado del ítem. */
+.art ul.art-rubros {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1.6em;
+}
+
+.art ul.art-rubros > li {
+  padding: 0.7rem 0.9rem 0.75rem;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid rgba(0, 199, 177, 0.55);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.94rem;
+}
+
+.art ul.art-rubros > li::before {
+  display: none;
+}
+
+.art ul.art-rubros > li > strong:first-child {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--color-highlight);
+  margin-bottom: 0.2rem;
+}
+
+/* Tarjetas: catálogos cortos donde cada ítem es un nombre, no una oración. */
+.art ul.art-tarjetas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.6em;
+}
+
+@media (min-width: 640px) {
+  .art ul.art-tarjetas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.art ul.art-tarjetas > li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.8rem;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.art ul.art-tarjetas > li::before {
+  position: static;
+  flex: none;
+  top: auto;
+  left: auto;
+}
+
+.art ul.art-tarjetas > li:hover {
+  background: rgba(0, 199, 177, 0.06);
+  border-color: rgba(0, 199, 177, 0.28);
+}
+
+/* ── Tablas ───────────────────────────────────────────────────────────── */
+
+/* El artículo vive en una columna de 768 px y se lee sobre todo en celular:
+   el contenedor scrollea solo la tabla en vez de romper el ancho de la página. */
+.art .art-tabla {
+  margin: 0 0 1.7em;
+  overflow-x: auto;
+  border: 1px solid var(--art-linea);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  -webkit-overflow-scrolling: touch;
+}
+
+.art table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 22rem;
+}
+
+.art thead th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--color-highlight);
+  background: rgba(0, 199, 177, 0.07);
+  padding: 0.7rem 0.95rem;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--art-linea);
+}
+
+.art tbody td {
+  padding: 0.7rem 0.95rem;
+  vertical-align: top;
+  line-height: 1.55;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.art tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.art tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+/* Primera columna como etiqueta de la fila. */
+.art tbody td:first-child {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Columna de duración/valor: número corto que no debe partirse. */
+.art td.art-valor,
+.art th.art-valor {
+  white-space: nowrap;
+  color: var(--color-secondary-highlight);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Ficha de datos ───────────────────────────────────────────────────── */
+
+.art .art-ficha {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0 0 1.7em;
+  padding: 0;
+  border: 1px solid var(--art-linea);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+@media (min-width: 560px) {
+  .art .art-ficha {
+    grid-template-columns: 11rem 1fr;
+  }
+}
+
+.art .art-ficha dt {
+  padding: 0.75rem 1rem 0.15rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--color-highlight);
+}
+
+.art .art-ficha dd {
+  margin: 0;
+  padding: 0 1rem 0.85rem;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.5;
+}
+
+@media (min-width: 560px) {
+  .art .art-ficha dt {
+    padding: 0.85rem 0.5rem 0.85rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .art .art-ficha dd {
+    padding: 0.85rem 1rem 0.85rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .art .art-ficha dt:first-of-type,
+  .art .art-ficha dt:first-of-type + dd {
+    border-top: 0;
+  }
+}
+
+/* ── Bloques destacados ───────────────────────────────────────────────── */
+
+.art .art-nota {
+  margin: 0 0 1.7em;
+  padding: 1rem 1.15rem;
+  background: rgba(0, 199, 177, 0.06);
+  border: 1px solid rgba(0, 199, 177, 0.2);
+  border-left: 3px solid var(--color-highlight);
+  border-radius: 0 12px 12px 0;
+}
+
+.art .art-nota > *:last-child {
+  margin-bottom: 0;
+}
+
+.art .art-nota p {
+  margin-bottom: 0.7em;
+  font-size: 0.94rem;
+}
+
+/* Título del bloque: se escribe como un <strong> suelto en la primera línea. */
+.art .art-nota > p:first-child > strong:first-child {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-highlight);
+  margin-bottom: 0.25rem;
+}
+
+/* Aviso: mismo bloque en dorado, para plazos y advertencias. */
+.art .art-nota.art-nota--aviso {
+  background: rgba(230, 155, 5, 0.07);
+  border-color: rgba(230, 155, 5, 0.24);
+  border-left-color: var(--color-gold);
+}
+
+.art .art-nota.art-nota--aviso > p:first-child > strong:first-child {
+  color: var(--color-gold);
+}
+
+/* Dato grande: una sola cifra que ordena la nota (fecha de inicio, cantidad). */
+.art .art-cifra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+  margin: 0 0 1.7em;
+  padding: 1.1rem 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 199, 177, 0.13),
+    rgba(0, 199, 177, 0.03)
+  );
+  border: 1px solid rgba(0, 199, 177, 0.25);
+  border-radius: 14px;
+}
+
+.art .art-cifra strong {
+  font-family: var(--font-unbounded), 'Inter', sans-serif;
+  font-size: 1.45rem;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-highlight);
+}
+
+.art .art-cifra span {
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.art blockquote {
+  margin: 0 0 1.7em;
+  padding: 0.2rem 0 0.2rem 1.15rem;
+  border-left: 3px solid rgba(0, 199, 177, 0.4);
+  font-size: 1.02rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.art hr {
+  height: 1px;
+  border: 0;
+  margin: 2em 0;
+  background: var(--art-linea);
+}
+
+.art figure {
+  margin: 0 0 1.7em;
+}
+
+.art figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--art-tenue);
+}
+
+.art img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* ── Pie de fuente ────────────────────────────────────────────────────── */
+
+/* La línea de "verificado el ..." de cada nota: se separa del cuerpo para que
+   no se confunda con el contenido, sin llamar la atención. */
+.art .art-fuente {
+  margin: 2em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--art-tenue);
+}
+
+.art .art-fuente em,
+.art .art-fuente a {
+  color: inherit;
+}
+
+.art .art-fuente a {
+  font-weight: 500;
+  text-decoration-color: rgba(255, 255, 255, 0.25);
+}
+
+.art .art-fuente a:hover {
+  color: var(--color-secondary-highlight);
+}
+
+/* ── Llamada a la acción final ────────────────────────────────────────── */
+
+.art .art-cta {
+  margin: 1.9em 0 0;
+  padding: 1.15rem 1.25rem;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--art-linea);
+  border-radius: 14px;
+  font-size: 0.95rem;
+}
+
+.art .art-cta > *:last-child {
+  margin-bottom: 0;
+}
+
+.art .art-cta + .art-fuente {
+  margin-top: 1.4em;
+}
+
+/* ── Móvil ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .art {
+    font-size: 0.96rem;
+    line-height: 1.7;
+  }
+
+  .art > p:first-child {
+    font-size: 1.04rem;
+  }
+
+  .art h2 {
+    font-size: 1.05rem;
+  }
+
+  .art .art-cifra strong {
+    font-size: 1.25rem;
+  }
+
+  .art table {
+    font-size: 0.85rem;
+    min-width: 0;
+  }
+
+  .art thead th,
+  .art tbody td {
+    padding: 0.6rem 0.7rem;
+  }
+
+  /* En 390 px el `nowrap` de la duración empuja la tabla fuera del recuadro y
+     el último valor queda cortado. Se prefiere que envuelva antes que scrollear. */
+  .art td.art-valor,
+  .art th.art-valor {
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art a,
+  .art ul.art-tarjetas > li {
+    transition: none;
+  }
+}
