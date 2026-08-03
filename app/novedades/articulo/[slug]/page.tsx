@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { sanitizeContent } from '@/lib/sanitize-content';
 import CopyLinkButton from '@/components/novedades/copy-link-button';
-import '../../novedades.css';
+import '../../articulo.css';
 
 // 24 h para no gastar ISR Writes: ver el comentario en novedades/[page].
 export const revalidate = 86400;
@@ -142,21 +142,23 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
             {novedad.titulo}
           </h1>
 
-          {/* Cuerpo */}
-          <div
-            className="text-[0.95rem] leading-relaxed text-justify"
-            style={{ color: 'rgba(255,255,255,0.75)' }}
-          >
-            {novedad.contenido ? (
-              <div dangerouslySetInnerHTML={{ __html: sanitizeContent(novedad.contenido) }} />
-            ) : novedad.extracto ? (
-              <p>{novedad.extracto}</p>
-            ) : (
-              <p className="italic" style={{ color: 'var(--color-text-light)' }}>
-                Contenido próximamente.
-              </p>
-            )}
-          </div>
+          {/* Cuerpo — el maquetado vive en articulo.css bajo `.art`, porque el
+              HTML viene de la base y ninguna utilidad de Tailwind lo alcanza. */}
+          {novedad.contenido ? (
+            // La clase va en el mismo nodo que el HTML inyectado: `.art > p:first-child`
+            // estiliza la bajada, y un div intermedio rompe ese hijo directo.
+            <div className="art" dangerouslySetInnerHTML={{ __html: sanitizeContent(novedad.contenido) }} />
+          ) : (
+            <div className="art">
+              {novedad.extracto ? (
+                <p>{novedad.extracto}</p>
+              ) : (
+                <p className="italic" style={{ color: 'var(--color-text-light)' }}>
+                  Contenido próximamente.
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Compartir */}
           <div className="mt-10 pt-6" style={{ borderTop: '1px solid rgba(0,199,177,0.12)' }}>
