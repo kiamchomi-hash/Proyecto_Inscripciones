@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, getCategoryForCarrera } from './types';
 
@@ -462,15 +461,10 @@ export default function EnrollmentForm({ carreras }: Props) {
         </div>
         </div>
 
-        {/* Side image (visible >= 1600px) */}
-        <div className="form-side-image relative" aria-hidden="true">
-          <Image
-            src="/imagenes/imagenes_cau/Siglo21IMG_2555.jpg"
-            alt="Estudiantes en el Centro de Aprendizaje Universitario Villa Lugano"
-            fill
-            className="object-cover object-right-center"
-          />
-        </div>
+        {/* Ilustración lateral (visible >= 1600px). Es decorativa y va como
+            background en el CSS: siendo SVG no gana nada pasando por next/image,
+            que ademas exige habilitar dangerouslyAllowSVG. */}
+        <div className="form-side-image" aria-hidden="true" />
       </div>
     </section>
   );
