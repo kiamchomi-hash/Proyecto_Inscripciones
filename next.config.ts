@@ -110,6 +110,16 @@ const nextConfig: NextConfig = {
         destination: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
         permanent: true,
       },
+      // Agroinformática se sacó de la oferta el 03/08/2026 (`activa = false` en
+      // Supabase): el CAU no la dicta. La ficha estaba indexada y traía ~10
+      // clics cada 90 días, todos de búsquedas navegacionales por el nombre de
+      // la carrera, así que no se manda a otra ficha —sería otra cosa de la que
+      // buscaron— sino al catálogo de la home.
+      {
+        source: '/carreras/licenciatura-en-agroinformatica',
+        destination: '/',
+        permanent: true,
+      },
       // Redirect non-www to www
       {
         source: '/:path*',
