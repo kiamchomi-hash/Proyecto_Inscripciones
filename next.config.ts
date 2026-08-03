@@ -63,6 +63,14 @@ const nextConfig: NextConfig = {
         source: '/api/:path*',
         headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
       },
+      {
+        // Biblioteca de imagenes: herramienta interna, sin enlaces desde el
+        // sitio y fuera del sitemap. A proposito NO va al disallow de
+        // robots.ts: si se bloquea el rastreo, Google no llega a leer el
+        // noindex y la URL puede listarse igual, sin descripcion.
+        source: '/imagenes',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
     ];
   },
   async redirects() {
