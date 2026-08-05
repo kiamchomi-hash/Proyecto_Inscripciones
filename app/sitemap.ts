@@ -48,11 +48,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       };
     });
 
-  // Materias activas (clases de apoyo)
+  // Materias activas (clases de apoyo). Las que están en construcción quedan
+  // afuera: su página es el cartel de "vuelva pronto" y no hay nada que
+  // indexar. Vuelven solas al sitemap cuando se les carga el contenido.
   const { data: materias } = await supabase
     .from('materias')
     .select('slug')
-    .eq('activa', true);
+    .eq('activa', true)
+    .eq('en_construccion', false);
 
   const materiasEntries: MetadataRoute.Sitemap = (materias || []).map(m => ({
     url: `${baseUrl}/clases-apoyo/${m.slug}`,

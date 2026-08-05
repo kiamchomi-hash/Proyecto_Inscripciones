@@ -31,10 +31,10 @@ BEGIN
   PERFORM cron.unschedule('digest-clicks-diario')
   WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'digest-clicks-diario');
 
-  -- 23:00 UTC = 20:00 en Buenos Aires.
+  -- 12:00 UTC = 09:00 en Buenos Aires.
   PERFORM cron.schedule(
     'digest-clicks-diario',
-    '0 23 * * *',
+    '0 12 * * *',
     format($f$
       SELECT net.http_post(
         url     := 'https://yuwfkdehaowkselkhtck.supabase.co/functions/v1/digest-clicks',
@@ -54,7 +54,7 @@ select jobid, jobname, schedule, active
 from cron.job
 where jobname = 'digest-clicks-diario';
 
--- 2. Probarlo sin esperar a las 20hs: dispara el digest ahora mismo
+-- 2. Probarlo sin esperar a las 9hs: dispara el digest ahora mismo
 --    (mandalo y revisa el paso 3; deberia llegar el mensaje de Telegram)
 select net.http_post(
   url     := 'https://yuwfkdehaowkselkhtck.supabase.co/functions/v1/digest-clicks',
@@ -79,7 +79,7 @@ limit 3;
 -- ─────────────────────────────────────────────────────────────
 -- select cron.schedule(
 --   'digest-clicks-diario',
---   '0 23 * * *',
+--   '0 12 * * *',
 --   $cron$
 --     SELECT net.http_post(
 --       url     := 'https://yuwfkdehaowkselkhtck.supabase.co/functions/v1/digest-clicks',

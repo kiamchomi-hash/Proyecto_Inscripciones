@@ -6,7 +6,7 @@ description: Cuando se trabaja sobre el bot de respuestas de WhatsApp del CAU Vi
 
 # Bot de respuestas del CAU
 
-Motor sin IA que, ante lo que escribe un lead por WhatsApp, propone tres respuestas para copiar y pegar. Elige por parecido entre la consulta y las preguntas de ejemplo de cada intención. **El corpus es el producto**: `datos/respuestas-bot.json`.
+Motor sin IA que, ante lo que escribe un lead por WhatsApp, propone **hasta** tres respuestas para copiar y pegar. Elige por parecido entre la consulta y las preguntas de ejemplo de cada intención. Sólo ofrece las intenciones que quedan a menos del 30% de puntaje de la que ganó (`RELEVANCIA` en el motor): a una consulta clara le propone una sola respuesta, y las tres aparecen cuando de verdad hay tres lecturas posibles. El relleno con intenciones de respaldo corre nada más cuando no hubo ninguna coincidencia. **El corpus es el producto**: `datos/respuestas-bot.json`.
 
 ## Dónde vive cada cosa
 
@@ -26,12 +26,15 @@ Todo cuelga de `herramientas/conocimiento-hermes/` (gitignored: Grep no lo ve, b
 
 ## El ciclo
 
+**Desde el 04/08/2026 el corpus se edita acá, en la conversación**: se lee el
+mensaje que salió mal, se corrige `datos/respuestas-bot.json` y se regenera. El
+entrenador dejó de usarse — no mandar a nadie a aprobar ahí ni esperar una
+descarga suya. `aplicar-corpus.mjs` queda para el día que se vuelva a usar.
+
 ```bash
-# 1. Se trabaja en entrenar-bot.html (aprobar / descartar / anotar) y se descarga.
-# 2. Ver qué cambió y reemplazar:
-node herramientas/aplicar-corpus.mjs              # sólo muestra
-node herramientas/aplicar-corpus.mjs --instalar
-# 3. Editar el corpus a mano si hace falta, y siempre LOS DOS:
+# 1. Editar datos/respuestas-bot.json.
+# 2. Y siempre LOS DOS, aunque el entrenador ya no se abra: si sólo se regenera
+#    uno, las dos páginas contestan distinto.
 node --test herramientas/tests/*.test.mjs
 node herramientas/generar-entrenador.mjs --promocion 5 --descuento-beneficio 10
 node herramientas/generar-buscador.mjs  --promocion 5 --descuento-beneficio 10
@@ -59,6 +62,8 @@ Casos ya resueltos, para no rediscutirlos:
 - **Tarjetas de Teclab**: van las 8 (Visa, Mastercard, American Express, Naranja, Cabal, Diners, Argencard, Sucrédito). El FAQ del sitio nombra 4; es la versión corta, no una corrección.
 - **Quién elige la empresa de las prácticas**: la elige el alumno. Lo dice el reglamento 3.5.2, contra lo que sugería el FAQ.
 - **Convenios de Teclab**: hay "más de 200 empresas y organizaciones" y categoría "Gobiernos & ONGs". La lista de fuerzas armadas, policía y municipios **sólo existe en el documento interno**: no afirmarla.
+- **Legislatura porteña y Senado de la Nación**: Teclab **no** tiene convenio con ninguno de los dos; **con ATE sí**. Lo confirmó la dirección el 03/08/2026 ante la consulta de un lead. Es de Teclab: para Siglo 21 no hay dato y ahí sigue contestando la respuesta general ("pasame el nombre del organismo y lo consulto").
+- **Becas de Teclab: por el momento no hay.** Lo confirmó el administrador de Teclab el 04/08/2026. Contradice a `teclab.edu.ar/becas` y al FAQ comercial, que publican la Beca de Inclusión y la de mejor alumno de secundario: manda el administrador, que es más reciente y habla de lo que se puede ofrecer hoy. **Las dos versiones conviven**: en `becas` y en `becas-ayuda`, Teclab tiene primero la del administrador (aprobada, la que se manda) y detrás la oficial con las dos becas (sin revisar), para el día que vuelvan a abrirse o si el lead llega diciendo que las vio publicadas. Las cuatro llevan la contradicción anotada en `fuente`. Lo que sí se ofrece hoy: el descuento ya aplicado, las 6 cuotas y el convenio de la empresa u organismo.
 
 ## Cómo se cotiza
 
@@ -71,7 +76,7 @@ Casos ya resueltos, para no rediscutirlos:
 ## Reglas del corpus
 
 - **No inventar.** Si el dato no está, la respuesta dice que se confirma. Cada respuesta lleva en `notas` de dónde salió.
-- **Estados**: `aprobada`, `descartada`, `sin revisar`. Los decide una persona. Lo aprobado sale primero; lo descartado no sale nunca. **Si se cambia el texto de una respuesta aprobada, vuelve a `sin revisar`** — la aprobación era sobre el texto anterior.
+- **Estados**: `aprobada`, `descartada`, `sin revisar`. Los decide una persona. Lo aprobado sale primero; lo descartado no sale nunca. **Si se cambia el texto de una respuesta aprobada, vuelve a `sin revisar`** — la aprobación era sobre el texto anterior. Ahora que se trabaja en la conversación, la aprobación es el "así está bien" del usuario sobre el mensaje que se le mostró: ahí se marca `aprobada`. Lo que se escribe por iniciativa propia queda `sin revisar`.
 - **`institucion`**: sin declararla, la respuesta sirve para las tres. Si el texto nombra una casa ("en Siglo 21", "el CAU"), hay que declararla.
 - **`requiere` va en la respuesta, no en la intención.** Un `requiere` a nivel intención la apaga para las tres instituciones aunque una tenga su propia respuesta. Este error ya dejó mudas a `requisitos`, `cuotas`, `horarios` y `doble-titulacion`.
 - Al agregar una respuesta a una intención existente, mirar **el orden**: entre dos sin revisar gana la que está antes en el array.
@@ -91,7 +96,6 @@ Las 5 de Teclab son estructurales, no huecos: `doble-titulacion`, `dos-carreras`
 ## Sin confirmar
 
 - **Secundario incompleto en Siglo 21.** El reglamento 2026 pide "copia legalizada del certificado de estudios secundario completo" y no contempla excepciones. La vía de mayores de 25 está en la base de conocimiento del CAU y la respuesta la linkea, pero el reglamento no la respalda. Adeudar materias o título en trámite: sin dato.
-- **Convenio con la Legislatura porteña o el Senado.** En la lista pública de convenios de la Legislatura (ILCP) no figura ni Teclab ni Siglo 21. Teclab no publica su lista: se consulta al 0810-888-9900.
 - **Financiación mensual.** No existe pago mensual: el reglamento compromete el pago por cuatrimestre o bimestre. Las 6 cuotas son financiación de tarjeta. Las consultas de "¿cuánto por mes?" siguen contestándose con el total.
 
 ## Trampas conocidas

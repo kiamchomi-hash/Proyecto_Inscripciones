@@ -1,21 +1,22 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { sanitizeContent } from '@/lib/sanitize-content';
 
-export interface CalendarWeek {
-  label: string;
-  month: string;
-  days: { num: string; past: boolean }[];
-}
-
-export interface MateriaDB {
+// Lo mínimo para pintar la navegación entre materias. Las páginas de materia
+// mandan esto de las otras cinco y la ficha completa sólo de la propia: si van
+// las seis enteras, las seis URLs sirven el mismo HTML y Google las descarta
+// como duplicadas (pasó: sólo indexó dos de seis).
+export interface MateriaNav {
   id: string;
   slug: string;
   label: string;
+}
+
+export interface MateriaDB extends MateriaNav {
   nombre_profesor: string;
   whatsapp: string;
   telefono_display: string;
@@ -707,40 +708,32 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
   );
 }
 
-/* ── Sidebar Button ── */
-function SidebarButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+/* ── Sidebar Link ── */
+// Enlace real, no botón con onClick: cada materia es una URL propia y Google
+// necesita poder seguirla. `replace` y `scroll: false` mantienen la navegación
+// como estaba (sin apilar historial ni saltar al tope).
+function SidebarLink({ label, slug, active }: { label: string; slug: string; active: boolean }) {
   return (
-    <button
+    <Link
+      href={`/clases-apoyo/${slug}`}
+      replace
+      scroll={false}
       className={`ca-sb-btn ${active ? 'on' : ''}`}
-      onClick={onClick}
-      role="tab"
-      aria-selected={active}
+      aria-current={active ? 'page' : undefined}
     >
       <span className="ca-sb-bar" />
       <span className="ca-sb-dot" />
       <span className="font-bold text-[0.72rem] uppercase tracking-wide">{label}</span>
-    </button>
+    </Link>
   );
 }
 
 /* ── Main Page Component ── */
-export default function ClasesApoyoPage({ materiasData, initialSlug }: { calendarWeeks?: CalendarWeek[]; materiasData: MateriaDB[]; initialSlug?: string }) {
-  const router = useRouter();
-  const activeIdx = initialSlug ? materiasData.findIndex(m => m.slug === initialSlug) : null;
-
-  const switchMateria = useCallback((i: number) => {
-    const slug = materiasData[i]?.slug;
-    if (slug) {
-      router.replace(`/clases-apoyo/${slug}`, { scroll: false });
-    } else {
-      router.replace('/clases-apoyo', { scroll: false });
-    }
-  }, [materiasData, router]);
+export default function ClasesApoyoPage({ materiasNav, materia = null }: { materiasNav: MateriaNav[]; materia?: MateriaDB | null }) {
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
   const [selectedDayInfoMap, setSelectedDayInfoMap] = useState<Record<string, { num: string; month: string; calendarKey: string }>>({});
   const [requestDone, setRequestDone] = useState(false);
   const [calendarLocked, setCalendarLocked] = useState(false);
-  const materia = activeIdx !== null ? materiasData[activeIdx] : null;
   const footerRef = useRef<HTMLElement>(null);
   const scrollToBottom = useCallback(() => {
     if (window.innerWidth <= 768) {
@@ -769,7 +762,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
 
   const selectedDayInfos = Array.from(selectedDays).map(key => selectedDayInfoMap[key]).filter(Boolean) as DayInfo[];
 
-  if (!materiasData.length) {
+  if (!materiasNav.length) {
     return (
       <div className="flex items-center justify-center h-screen" style={{ color: 'var(--ca-text-muted)' }}>
         No hay materias disponibles.
@@ -782,29 +775,35 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
       <div className="flex-1 min-h-0 flex justify-center items-stretch p-2 md:p-2 max-md:p-0 max-md:overflow-visible">
         <div className="ca-app w-full max-w-[1400px]">
           {/* Mobile tabs (above header) */}
-          <div className="ca-mobile-tabs overflow-x-auto" role="tablist" style={{ background: '#051211', borderBottom: '1px solid var(--ca-border-light)' }}>
-            {materiasData.map((m, i) => (
-              <button
-                key={m.id}
-                onClick={() => switchMateria(i)}
-                role="tab"
-                aria-selected={activeIdx === i}
-                className="ca-mobile-tab flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors"
-                style={{
-                  color: activeIdx === i ? '#fff' : 'var(--ca-text-muted)',
-                  background: activeIdx === i ? '#051d1a' : 'transparent',
-                  borderBottom: activeIdx === i ? '2px solid var(--ca-teal)' : '2px solid transparent',
-                }}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
+          <nav className="ca-mobile-tabs overflow-x-auto" aria-label="Materias" style={{ background: '#051211', borderBottom: '1px solid var(--ca-border-light)' }}>
+            {materiasNav.map(m => {
+              const active = m.slug === materia?.slug;
+              return (
+                <Link
+                  key={m.id}
+                  href={`/clases-apoyo/${m.slug}`}
+                  replace
+                  scroll={false}
+                  aria-current={active ? 'page' : undefined}
+                  className="ca-mobile-tab flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors"
+                  style={{
+                    color: active ? '#fff' : 'var(--ca-text-muted)',
+                    background: active ? '#051d1a' : 'transparent',
+                    borderBottom: active ? '2px solid var(--ca-teal)' : '2px solid transparent',
+                  }}
+                >
+                  {m.label}
+                </Link>
+              );
+            })}
+          </nav>
 
           {/* Header */}
           <header className="ca-header">
-            <button
-              onClick={() => { router.replace('/clases-apoyo', { scroll: false }); }}
+            <Link
+              href="/clases-apoyo"
+              replace
+              scroll={false}
               className="ca-header-brand flex items-center justify-center px-4 cursor-pointer transition-opacity hover:opacity-80"
               style={{ background: 'rgba(0,0,0,0.15)', borderRightWidth: '1px', borderRightStyle: 'solid', borderRightColor: 'var(--ca-border-light)' }}
             >
@@ -816,24 +815,30 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
                 className="object-contain brightness-0 invert opacity-90"
               />
             </div>
-            </button>
+            </Link>
             <div className="flex items-center justify-center w-full">
-              <span className="text-base font-bold uppercase tracking-widest" style={{ color: 'var(--ca-teal)' }}>
+              {/* El h1 de cada página. Se ve sólo el nombre de la materia, como
+                  antes; el resto de la frase va a lectores de pantalla y a
+                  Google, y es lo que distingue una URL de la otra. */}
+              <h1 className="text-base font-bold uppercase tracking-widest" style={{ color: 'var(--ca-teal)' }}>
                 {materia ? materia.label : 'Clases de Apoyo'}
-              </span>
+                <span className="sr-only">
+                  {materia ? ` — clases de apoyo en Villa Lugano` : ' en Villa Lugano'}
+                </span>
+              </h1>
             </div>
           </header>
 
           {/* Body */}
           <div className="ca-body">
             {/* Sidebar */}
-            <nav className="ca-sidebar" role="tablist" aria-orientation="vertical">
-              {materiasData.map((m, i) => (
-                <SidebarButton
+            <nav className="ca-sidebar" aria-label="Materias">
+              {materiasNav.map(m => (
+                <SidebarLink
                   key={m.id}
                   label={m.label}
-                  active={activeIdx === i}
-                  onClick={() => switchMateria(i)}
+                  slug={m.slug}
+                  active={m.slug === materia?.slug}
                 />
               ))}
               <div className="flex-1" />
@@ -841,7 +846,6 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
 
             {/* Main content */}
             <main className="ca-main">
-              <h1 className="sr-only">Clases de apoyo en Villa Lugano</h1>
               {materia ? (
                 <div className="ca-panel flex flex-col h-full overflow-hidden" key={materia.id}>
                   {materia.en_construccion ? (
@@ -892,10 +896,12 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
                     </p>
 
                     <div className="grid grid-cols-3 gap-3 md:gap-4 w-full">
-                      {materiasData.map((m, i) => (
-                        <button
+                      {materiasNav.map(m => (
+                        <Link
                           key={m.id}
-                          onClick={() => switchMateria(i)}
+                          href={`/clases-apoyo/${m.slug}`}
+                          replace
+                          scroll={false}
                           className="flex items-center justify-center rounded-xl font-bold text-sm md:text-base uppercase tracking-wide transition-all hover:scale-[1.03]"
                           style={{
                             color: 'var(--ca-text-main)',
@@ -906,7 +912,7 @@ export default function ClasesApoyoPage({ materiasData, initialSlug }: { calenda
                           }}
                         >
                           {m.label}
-                        </button>
+                        </Link>
                       ))}
                     </div>
                   </div>

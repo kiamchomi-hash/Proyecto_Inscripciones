@@ -528,3 +528,38 @@
     margin: 0 auto !important;
   }
 }
+
+/* ── Texto propio de cada materia ──
+   Va debajo de la app, fuera de la pantalla completa: no toca el diseño de
+   arriba y le da a cada URL el contenido que la distingue de las otras cinco. */
+.ca-seo {
+  background: var(--ca-bg-temas);
+  border-top: 1px solid var(--ca-border-light);
+  padding: 3rem 1.25rem 4rem;
+}
+
+.ca-seo-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--ca-text-main);
+}
+
+.ca-seo-inner h2 {
+  color: var(--ca-teal);
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 1.25rem;
+}
+
+.ca-seo-inner p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: var(--ca-text-muted);
+}
+
+.ca-seo-inner strong {
+  color: var(--ca-text-main);
+  font-weight: 700;
+}
