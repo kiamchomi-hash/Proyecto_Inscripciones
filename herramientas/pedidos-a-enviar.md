@@ -92,8 +92,15 @@ hacer con cada dato está en `PENDIENTES.md`.
 > 4. **Material gráfico propio del curso**, si tienen: fotos o piezas que podamos
 >    usar en la ficha. Hoy estamos usando imágenes genéricas.
 >
-> Y una consulta aparte: ¿el curso tiene algún requisito de ingreso, o está
-> abierto a cualquier persona interesada?
+> Y tres consultas aparte, que nos hacen seguido y no queremos responder de
+> memoria:
+>
+> - ¿El curso tiene algún requisito de ingreso, o está abierto a cualquier
+>   persona interesada?
+> - **¿Desde cuándo existe Teclab?** Nos preguntan por la antigüedad de la
+>   institución y no la tenemos publicada en ningún lado.
+> - **Un aspirante extranjero, ¿necesita convalidar su secundario** antes de
+>   inscribirse, o alcanza con el título de su país?
 >
 > Gracias!
 
