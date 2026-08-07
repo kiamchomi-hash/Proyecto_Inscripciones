@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
-import { type CarreraOpcion, CATEGORIES, getCategoryForCarrera } from './types';
+import { type CarreraOpcion, CATEGORIES, getCategoryForCarrera, ordenarParaFormulario } from './types';
 import { trackConsulta } from '@/lib/analytics';
 
 interface Props {
@@ -46,9 +46,12 @@ export default function EnrollmentForm({ carreras }: Props) {
   // The active filter: manual selection always wins, fallback to detected
   const activeFilter = selectedTipo || detectedCategory;
 
+  // Destacadas arriba y el convenio al final, en vez del `orden` crudo de la base
+  const carrerasOrdenadas = useMemo(() => ordenarParaFormulario(carreras), [carreras]);
+
   // Filtered carrera list for dropdown
   const filteredCarreras = useMemo(() => {
-    let list = carreras;
+    let list = carrerasOrdenadas;
     if (activeFilter) {
       const cat = CATEGORIES.find(c => c.id === activeFilter);
       if (cat) {
@@ -60,7 +63,7 @@ export default function EnrollmentForm({ carreras }: Props) {
       list = list.filter(c => c.nombre.toLowerCase().includes(q));
     }
     return list;
-  }, [carreras, carreraSearch, activeFilter]);
+  }, [carrerasOrdenadas, carreraSearch, activeFilter]);
 
   // Email format validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
