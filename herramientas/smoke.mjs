@@ -19,14 +19,25 @@
 
 import { request as httpsRequest } from 'node:https';
 import { request as httpRequest } from 'node:http';
+// Que se espera de produccion lo declara un solo archivo, que tambien lee el
+// cron de Vercel (app/api/vigilancia). Si la lista viviera duplicada, uno de
+// los dos chequeos quedaria viejo sin que nadie se entere.
+import {
+  BASE_PROD,
+  CABECERAS_ESPERADAS,
+  HSTS_ESPERADO,
+  NOINDEX,
+  RUTAS,
+  redirectsEsperados,
+} from '../lib/vigilancia-esperado.ts';
 
 const args = process.argv.slice(2);
 const baseArg = args.find(a => a.startsWith('--base='));
-const BASE = (baseArg ? baseArg.slice('--base='.length) : 'https://www.siglo21sur.com').replace(/\/$/, '');
+const BASE = (baseArg ? baseArg.slice('--base='.length) : BASE_PROD).replace(/\/$/, '');
 const RAPIDO = args.includes('--rapido');
 const CONCURRENCIA = 8;
 
-const esProd = BASE === 'https://www.siglo21sur.com';
+const esProd = BASE === BASE_PROD;
 const fallos = [];
 const notas = [];
 
@@ -93,8 +104,6 @@ async function enTandas(items, fn, limite = CONCURRENCIA) {
 console.log(`\nBase: ${BASE}\n`);
 console.log('Rutas principales');
 
-const RUTAS = ['/', '/clases-apoyo', '/contacto', '/faq', '/sobre-nosotros', '/novedades/1', '/robots.txt', '/sitemap.xml'];
-
 for (const ruta of RUTAS) {
   try {
     const r = await pedir(BASE + ruta);
@@ -110,13 +119,7 @@ for (const ruta of RUTAS) {
 console.log('\nCabeceras de seguridad (home)');
 
 const home = await pedir(BASE + '/');
-const ESPERADAS = {
-  'content-security-policy': /frame-ancestors 'none'/,
-  'x-content-type-options': /^nosniff$/,
-  'referrer-policy': /strict-origin-when-cross-origin/,
-  'permissions-policy': /camera=\(\)/,
-};
-for (const [cabecera, patron] of Object.entries(ESPERADAS)) {
+for (const [cabecera, patron] of Object.entries(CABECERAS_ESPERADAS)) {
   const valor = home.headers[cabecera];
   if (!valor) fallo(cabecera, 'ausente');
   else if (!patron.test(valor)) fallo(cabecera, `valor inesperado: ${String(valor).slice(0, 80)}`);
@@ -125,14 +128,14 @@ for (const [cabecera, patron] of Object.entries(ESPERADAS)) {
 // HSTS solo tiene sentido sobre https.
 if (BASE.startsWith('https://')) {
   const hsts = home.headers['strict-transport-security'];
-  if (hsts && /max-age=63072000/.test(hsts)) ok('strict-transport-security');
+  if (hsts && HSTS_ESPERADO.test(hsts)) ok('strict-transport-security');
   else fallo('strict-transport-security', hsts ? `valor inesperado: ${hsts}` : 'ausente');
 }
 
 // ── 3. noindex en el panel y las APIs ───────────────────────────────────────
 
 console.log('\nnoindex donde corresponde');
-for (const [ruta, esperado] of [['/admin/login', /noindex/], ['/api/formularios', /noindex/]]) {
+for (const [ruta, esperado] of NOINDEX) {
   try {
     const r = await pedir(BASE + ruta);
     const tag = r.headers['x-robots-tag'];
@@ -147,14 +150,7 @@ for (const [ruta, esperado] of [['/admin/login', /noindex/], ['/api/formularios'
 
 if (esProd) {
   console.log('\nRedirects');
-  const REDIRECTS = [
-    ['https://siglo21sur.com/', 'https://www.siglo21sur.com/'],
-    ['https://proyecto-inscripciones.vercel.app/', 'https://www.siglo21sur.com/'],
-    [`${BASE}/contactos`, `${BASE}/contacto`],
-    [`${BASE}/carreras`, `${BASE}/`],
-    [`${BASE}/novedades`, `${BASE}/novedades/1`],
-  ];
-  for (const [desde, hasta] of REDIRECTS) {
+  for (const [desde, hasta] of redirectsEsperados(BASE)) {
     try {
       const r = await pedir(desde);
       const destino = r.headers.location
