@@ -114,6 +114,51 @@ export function esCarreraVisible(c: Pick<Carrera, 'nivel'>): boolean {
   return getCategoryForCarrera(c) !== '_hidden';
 }
 
+// ── Orden del select del formulario ──
+
+// Las que van arriba de la lista, en este orden. Editar aca es todo lo que hace
+// falta para cambiar la vidriera del formulario: el nombre tiene que coincidir
+// exacto con la columna `nombre` de Supabase, y si una carrera se da de baja
+// simplemente no aparece (no rompe nada).
+export const DESTACADAS_FORMULARIO: string[] = [
+  'Abogacía',
+  'Tecnicatura Superior en Programación',
+  'Contador Público',
+  'Tecnicatura Superior en Data Science',
+  'Inteligencia Artificial y Robótica',
+  'Administración',
+  'Escribanía',
+  'Tecnicatura Superior en Marketing Digital',
+  'Gestión de Recursos Humanos',
+  'Psicopedagogía (CCC)',
+];
+
+// Despues de las destacadas, por categoria. El convenio va al final: son
+// diplomaturas cortas y arriba tapaban las carreras largas, que es lo que el
+// visitante viene a buscar.
+const PESO_CATEGORIA: Record<string, number> = {
+  licenciaturas: 0,
+  teclab_tecnologia: 1,
+  tecnicaturas: 2,
+  teclab_gestion: 3,
+  identidad_argentina: 4,
+};
+
+// El `orden` de Supabase arranca en 1 dentro de cada nivel, asi que ordenar solo
+// por esa columna intercala las diplomaturas de Identidad Argentina entre las
+// primeras licenciaturas (Abogacía 1, Oratoria 1, Escribanía 2...). Esto reordena
+// sin tocar la base. El sort de JS es estable, asi que dentro de cada categoria
+// se conserva el `orden` con que vino la consulta.
+export function ordenarParaFormulario<T extends Pick<Carrera, 'nombre' | 'nivel'>>(carreras: T[]): T[] {
+  const rango = (c: T) => {
+    const destacada = DESTACADAS_FORMULARIO.indexOf(c.nombre);
+    if (destacada !== -1) return destacada;
+    const peso = PESO_CATEGORIA[getCategoryForCarrera(c)] ?? 99;
+    return DESTACADAS_FORMULARIO.length + peso;
+  };
+  return [...carreras].sort((a, b) => rango(a) - rango(b));
+}
+
 // ── Area classification ──
 
 export const AREAS = [
