@@ -98,14 +98,17 @@ FOR EACH ROW EXECUTE FUNCTION public.notify_revalidar();
 -- transaccion commitea, asi que el UPDATE y el SELECT van por separado.
 -- ─────────────────────────────────────────────────────────────
 --
---   UPDATE public.faq_preguntas SET id = id WHERE id = (
---     SELECT id FROM public.faq_preguntas LIMIT 1
+-- Va sobre `carreras` y no sobre `faq_preguntas` porque esa tabla esta vacia:
+-- un UPDATE que toca cero filas no dispara nada y parece que fallo.
+--
+--   UPDATE public.carreras SET orden = orden WHERE id = (
+--     SELECT id FROM public.carreras WHERE activa ORDER BY id LIMIT 1
 --   );
 --
 --   SELECT id, status_code, content, created
 --   FROM net._http_response ORDER BY created DESC LIMIT 3;
 --
--- Esperado: status_code 200 y content {"ok":true,"rutas":["/faq"]}.
+-- Esperado: status_code 200 y content {"ok":true,"rutas":["/",...]}.
 --   401 -> el secreto del trigger no es el que tiene Vercel.
 --   503 -> falta REVALIDATE_SECRET en Vercel (o el deploy es anterior).
 --   400 -> la tabla no esta mapeada en app/api/revalidar/route.ts.
