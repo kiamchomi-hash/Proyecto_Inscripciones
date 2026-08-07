@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon, ChevronDownIcon } from './icons';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
+import { trackPreguntaFaq } from '@/lib/analytics';
 
 /* ── Data ──────────────────────────────────────────────── */
 
@@ -421,6 +422,9 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kind: 'faq', token: turnstileToken, payload }),
       });
+      // Una sola vez aca, y no en submitPub/submitPriv, porque las dos pasan por
+      // este mismo punto y el modo ya viene en el payload.
+      if (response.ok) trackPreguntaFaq(String(payload.modo ?? ''));
       return response.ok;
     } catch {
       return false;

@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, getCategoryForCarrera } from './types';
+import { trackConsulta } from '@/lib/analytics';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -109,6 +110,10 @@ export default function EnrollmentForm({ carreras }: Props) {
     setSubmitting(true);
     setError('');
 
+    const tipoElegido = activeFilter
+      ? (CATEGORIES.find(c => c.id === activeFilter)?.label || activeFilter)
+      : null;
+
     try {
       const response = await fetch('/api/formularios', {
         method: 'POST',
@@ -118,7 +123,7 @@ export default function EnrollmentForm({ carreras }: Props) {
           token: turnstileToken,
           payload: {
             carrera: selectedCarrera || null,
-            tipo: activeFilter ? (CATEGORIES.find(c => c.id === activeFilter)?.label || activeFilter) : null,
+            tipo: tipoElegido,
             modalidad: 'virtual',
             equivalencias,
             nombre,
@@ -145,6 +150,7 @@ export default function EnrollmentForm({ carreras }: Props) {
       return;
     }
 
+    trackConsulta('home', selectedCarrera || null, tipoElegido);
     setSubmitting(false);
     setSuccess(true);
   };

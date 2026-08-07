@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
+import { trackConsulta } from '@/lib/analytics';
 import './contacto.css';
 
 /* ── Publicaciones ────────────────────────────────────── *
@@ -116,6 +117,8 @@ function ContactForm() {
       return;
     }
 
+    // El form de contacto no pregunta carrera ni tipo: es la consulta generica.
+    trackConsulta('contacto', null, null);
     setSubmitting(false);
     setSuccess(true);
     setTimeout(() => {

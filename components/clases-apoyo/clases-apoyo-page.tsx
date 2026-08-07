@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { sanitizeContent } from '@/lib/sanitize-content';
+import { trackSolicitudClase } from '@/lib/analytics';
 
 // Lo mínimo para pintar la navegación entre materias. Las páginas de materia
 // mandan esto de las otras cinco y la ficha completa sólo de la propia: si van
@@ -350,6 +351,8 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kind: 'clase', token, payload: { rows } }),
       });
+      // Una fila por turno pedido: sirve para ver si piden un horario o varios.
+      if (response.ok) trackSolicitudClase(rows.length);
       return response.ok;
     } catch {
       return false;
