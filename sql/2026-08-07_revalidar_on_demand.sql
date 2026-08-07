@@ -1,0 +1,112 @@
+-- Revalidacion on-demand: la base le avisa a Next cuando cambia el contenido.
+--
+-- POR QUE
+-- Cada pagina cachea lo suyo: la home una hora, las fichas de carrera y las
+-- novedades veinticuatro, y /faq y /clases-apoyo/<materia> no declaran
+-- revalidate, o sea que se congelan hasta el proximo deploy. Cargar una carrera
+-- y tener que pushear cualquier cosa para verla publicada era el sintoma.
+-- Con esto, un UPDATE en el SQL Editor se ve en el sitio a los pocos segundos.
+--
+-- NO confundir con notify_edge_function(), que es otra cosa: aquel avisa por
+-- Telegram cuando entra un formulario (consultas, solicitudes_clase,
+-- faq_preguntas) y estos rehacen paginas cuando cambia el contenido. Son
+-- triggers distintos, con nombres distintos, y faq_preguntas tiene uno de cada
+-- familia: on_faq_pregunta_insert avisa, on_faq_preguntas_revalidar rehace.
+--
+-- SECURITY DEFINER a proposito: el panel admin escribe en `materias` con el rol
+-- `authenticated`, que no necesariamente puede usar el schema net. Sin esto, un
+-- profesor bloqueando un horario se comeria un error y el UPDATE fallaria.
+--
+-- Antes de correrlo, reemplazar <REVALIDATE_SECRET> por el valor que este
+-- cargado en Vercel (Settings -> Environment Variables). Si no coincide, el
+-- endpoint responde 401 y la revalidacion no ocurre; se ve en la verificacion
+-- del final.
+
+CREATE OR REPLACE FUNCTION public.notify_revalidar()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $fn$
+DECLARE
+  fila  jsonb;
+  antes jsonb;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    fila := to_jsonb(OLD);
+  ELSE
+    fila := to_jsonb(NEW);
+  END IF;
+
+  IF TG_OP = 'UPDATE' THEN
+    antes := to_jsonb(OLD);
+  END IF;
+
+  -- Solo los campos con los que /api/revalidar arma las rutas. Mandar la fila
+  -- entera haria viajar los slides de cada carrera por HTTP al pedo.
+  PERFORM net.http_post(
+    url     := 'https://www.siglo21sur.com/api/revalidar',
+    headers := jsonb_build_object(
+                 'Content-Type',  'application/json',
+                 'Authorization', 'Bearer <REVALIDATE_SECRET>'
+               ),
+    body    := jsonb_build_object(
+                 'tabla',    TG_TABLE_NAME,
+                 'accion',   TG_OP,
+                 'slug',     fila->>'slug',
+                 'nombre',   fila->>'nombre',
+                 'prefix',   fila->>'prefix',
+                 'nivel',    fila->>'nivel',
+                 'anterior', CASE WHEN antes IS NULL THEN NULL ELSE jsonb_build_object(
+                               'slug',   antes->>'slug',
+                               'nombre', antes->>'nombre',
+                               'prefix', antes->>'prefix'
+                             ) END
+               )
+  );
+
+  RETURN NULL;  -- AFTER trigger: el valor de retorno se ignora.
+END;
+$fn$;
+
+REVOKE EXECUTE ON FUNCTION public.notify_revalidar() FROM public;
+
+-- Un trigger por tabla de contenido. DROP IF EXISTS primero para que reaplicar
+-- el archivo no duplique nada.
+DROP TRIGGER IF EXISTS on_carreras_revalidar ON public.carreras;
+CREATE TRIGGER on_carreras_revalidar
+AFTER INSERT OR UPDATE OR DELETE ON public.carreras
+FOR EACH ROW EXECUTE FUNCTION public.notify_revalidar();
+
+DROP TRIGGER IF EXISTS on_novedades_revalidar ON public.novedades;
+CREATE TRIGGER on_novedades_revalidar
+AFTER INSERT OR UPDATE OR DELETE ON public.novedades
+FOR EACH ROW EXECUTE FUNCTION public.notify_revalidar();
+
+DROP TRIGGER IF EXISTS on_materias_revalidar ON public.materias;
+CREATE TRIGGER on_materias_revalidar
+AFTER INSERT OR UPDATE OR DELETE ON public.materias
+FOR EACH ROW EXECUTE FUNCTION public.notify_revalidar();
+
+DROP TRIGGER IF EXISTS on_faq_preguntas_revalidar ON public.faq_preguntas;
+CREATE TRIGGER on_faq_preguntas_revalidar
+AFTER INSERT OR UPDATE OR DELETE ON public.faq_preguntas
+FOR EACH ROW EXECUTE FUNCTION public.notify_revalidar();
+
+-- ─────────────────────────────────────────────────────────────
+-- Verificacion. net.http_post encola: el pedido recien sale cuando la
+-- transaccion commitea, asi que el UPDATE y el SELECT van por separado.
+-- ─────────────────────────────────────────────────────────────
+--
+--   UPDATE public.faq_preguntas SET id = id WHERE id = (
+--     SELECT id FROM public.faq_preguntas LIMIT 1
+--   );
+--
+--   SELECT id, status_code, content, created
+--   FROM net._http_response ORDER BY created DESC LIMIT 3;
+--
+-- Esperado: status_code 200 y content {"ok":true,"rutas":["/faq"]}.
+--   401 -> el secreto del trigger no es el que tiene Vercel.
+--   503 -> falta REVALIDATE_SECRET en Vercel (o el deploy es anterior).
+--   400 -> la tabla no esta mapeada en app/api/revalidar/route.ts.
+--   403 -> lo esta frenando el firewall de Vercel; habilitar el pedido ahi.

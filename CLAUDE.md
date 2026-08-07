@@ -59,7 +59,7 @@ El proyecto se trabaja desde las dos, con el mismo repo y el mismo comportamient
 
 ### Next.js 16 + App Router
 
-Las páginas son Server Components que leen de Supabase en el render. `revalidate = 3600` en casi todas (home, `/carreras/[slug]`, artículos de novedades); `/clases-apoyo` usa `dynamic = 'force-dynamic'` porque muestra un calendario relativo a hoy.
+Las páginas son Server Components que leen de Supabase en el render. La home usa `revalidate = 3600`; `/carreras/[slug]`, `/novedades/[page]` y los artículos usan 86400 para no gastar ISR Writes; `/faq`, `/clases-apoyo/[materia]`, `/imagenes` y `/sitemap.xml` no declaran ninguno, así que son estáticos puros. Esos números son la red de abajo, no el mecanismo: lo que publica de verdad es la revalidación on-demand (ver más abajo). `/clases-apoyo` usa `dynamic = 'force-dynamic'` porque muestra un calendario relativo a hoy.
 
 `proxy.ts` en la raíz **es el middleware** — Next 16 renombró `middleware.ts` a `proxy.ts` y exporta una función `proxy()`. Ahí vive todo el control de acceso del panel admin.
 
@@ -109,6 +109,23 @@ Hay **tres** triggers de Postgres, uno por tabla de formulario, y todos llaman a
 Como `net.http_post` encola sin bloquear, **el `INSERT` responde 201 aunque la notificación se caiga**. Pasó del 20 al 27/07/2026: se le agregó validación de secreto a la función y el trigger nunca se actualizó.
 
 Cada vez que se toque `WEBHOOK_SECRET`, la función `notificar` o el trigger, hay que verificar a mano — el procedimiento SQL está en `PENDIENTES.md` y en `sql/2026-07-27_webhook_notificar.sql`. Un `401` en `net._http_response` significa que los secretos no coinciden.
+
+### Revalidación on-demand
+
+Hay una **segunda familia de triggers**, que no tiene nada que ver con los avisos: `notify_revalidar()` (en `sql/2026-08-07_revalidar_on_demand.sql`) cuelga de las cuatro tablas de contenido y le pega a `POST /api/revalidar`, que llama a `revalidatePath`. Sin esto, publicar contenido no se veía hasta que venciera el `revalidate` de la página —o hasta el próximo deploy, en las que no declaran ninguno—.
+
+| Tabla | Trigger de aviso | Trigger de revalidación |
+|---|---|---|
+| `carreras` | — | `on_carreras_revalidar` |
+| `novedades` | — | `on_novedades_revalidar` |
+| `materias` | — | `on_materias_revalidar` |
+| `faq_preguntas` | `on_faq_pregunta_insert` | `on_faq_preguntas_revalidar` |
+
+`faq_preguntas` tiene uno de cada familia: son distintos y los dos tienen que estar.
+
+El endpoint no recibe la fila entera sino los campos con los que arma las rutas (`slug`, `nombre`, `prefix`, `nivel` y los anteriores, para cubrir el renombre). El mapeo tabla → rutas vive en `rutasA()`; **una tabla nueva sin mapear devuelve 400 a propósito**, para que el trigger no dispare contra la nada en silencio. `tabla: 'todo'` rehace el sitio entero, sin deploy.
+
+Se autentica con `REVALIDATE_SECRET` (Vercel), que tiene que coincidir con el literal del cuerpo del trigger. Igual que con los avisos, `net.http_post` encola: si esto falla el `UPDATE` responde ok lo mismo y la página queda vieja. Se diagnostica en `net._http_response` — 401 secretos distintos, 503 falta la variable en Vercel, 400 tabla sin mapear.
 
 ### Panel admin
 
