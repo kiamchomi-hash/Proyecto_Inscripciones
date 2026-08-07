@@ -11,6 +11,9 @@
 //
 // Solo avisa cuando encuentra algo. Si el cron mismo dejara de correr, eso se ve
 // en el tab Cron Jobs del proyecto en Vercel, no aca.
+//
+// Con ?prueba=1 manda un aviso de prueba y no corre ningun chequeo, para poder
+// confirmar que el canal de Telegram sigue vivo sin esperar a que algo falle.
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
@@ -163,6 +166,17 @@ export async function GET(request: NextRequest) {
   }
   if (request.headers.get('authorization') !== `Bearer ${secreto}`) {
     return NextResponse.json({ error: 'no autorizado' }, { status: 401 });
+  }
+
+  // Modo prueba: fuerza un aviso sin correr los chequeos. El canal de avisos de
+  // este proyecto ya fallo callado una vez (el trigger encola y el INSERT
+  // responde 201 igual), asi que poder confirmarlo cuando uno quiere, y no el
+  // dia que algo se rompe, es la diferencia entre saber y suponer.
+  if (request.nextUrl.searchParams.has('prueba')) {
+    const aviso = await avisar(
+      `Prueba de vigilancia de ${BASE_PROD}. Si estas leyendo esto, el canal de avisos funciona.`,
+    );
+    return NextResponse.json({ prueba: true, aviso });
   }
 
   const arranque = Date.now();
