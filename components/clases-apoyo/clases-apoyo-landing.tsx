@@ -98,7 +98,9 @@ function Tarjeta({ materia }: { materia: MateriaCard }) {
   if (materia.en_construccion) {
     return (
       <div className="ca-card ca-card-off" aria-label={`${materia.label} — próximamente`}>
-        <IconoMateria slug={materia.slug} />
+        <span className="ca-card-ico">
+          <IconoMateria slug={materia.slug} />
+        </span>
         <h3 className="ca-card-title">{materia.label}</h3>
         <span className="ca-card-badge">Próximamente</span>
       </div>
@@ -107,33 +109,37 @@ function Tarjeta({ materia }: { materia: MateriaCard }) {
 
   return (
     <Link href={`/clases-apoyo/${materia.slug}`} className="ca-card">
-      <IconoMateria slug={materia.slug} />
+      <span className="ca-card-ico">
+        <IconoMateria slug={materia.slug} />
+      </span>
       <h3 className="ca-card-title">{materia.label}</h3>
       {blurb && (
         <p className="ca-card-blurb" dangerouslySetInnerHTML={{ __html: sanitizeContent(blurb) }} />
       )}
       <span className="ca-card-cta">
-        Ver días y horarios
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-          <path d="M5 12h13M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        Ver horarios
+        <span className="ca-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M5 12h13M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
       </span>
     </Link>
   );
 }
 
 export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard[] }) {
-  const disponibles = materias.filter(m => !m.en_construccion).length;
-
   return (
     <div className="ca-landing">
+      {/* Encabezado corto a propósito: lo que la persona vino a buscar son las
+          materias, así que la primera tarjeta tiene que entrar en pantalla. El
+          detalle largo va abajo, después de la grilla. */}
       <header className="ca-landing-hero">
-        <span className="ca-landing-kicker">Centro Educativo Villa Lugano</span>
-        <h1>Clases de apoyo en Villa Lugano</h1>
+        <h1>
+          Clases de apoyo en <span>Villa Lugano</span>
+        </h1>
         <p className="ca-landing-lead">
-          Clases <strong>individuales y presenciales</strong> en Guaminí 4876, de lunes a viernes.
-          Elegís la materia, el día y el horario que te queden cómodos, y te responde el profesor
-          por WhatsApp.
+          Individuales y presenciales en Guaminí 4876, de lunes a viernes.
         </p>
         <ul className="ca-landing-datos">
           <li>Un alumno por turno</li>
@@ -143,10 +149,7 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
       </header>
 
       <section className="ca-landing-grid-wrap" aria-labelledby="ca-materias-titulo">
-        <h2 id="ca-materias-titulo" className="ca-landing-h2">
-          Materias
-          <span className="ca-landing-h2-nota">{disponibles} disponibles</span>
-        </h2>
+        <h2 id="ca-materias-titulo" className="sr-only">Materias</h2>
         <div className="ca-card-grid">
           {materias.map(m => (
             <Tarjeta key={m.id} materia={m} />

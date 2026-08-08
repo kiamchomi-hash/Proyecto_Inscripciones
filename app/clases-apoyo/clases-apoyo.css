@@ -543,8 +543,12 @@
     radial-gradient(ellipse at 50% -10%, rgba(0, 199, 177, 0.13) 0%, transparent 60%),
     linear-gradient(170deg, #051211 0%, #082422 55%, #051d1a 100%);
   min-height: calc(100dvh - var(--navbar-height, 60px));
-  padding: 3.5rem 1.25rem 4.5rem;
+  padding: 2rem 1.25rem 4rem;
   color: var(--ca-text-main);
+}
+
+@media (min-width: 700px) {
+  .ca-landing { padding-top: 2.6rem; }
 }
 
 .ca-landing > * {
@@ -553,144 +557,146 @@
 }
 
 /* ── Encabezado ── */
-.ca-landing-kicker {
-  display: block;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  color: var(--ca-teal);
-  margin-bottom: 0.9rem;
-}
-
 .ca-landing-hero h1 {
-  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-size: clamp(1.55rem, 4vw, 2.35rem);
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.12;
   letter-spacing: -0.02em;
   color: #fff;
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.55rem;
 }
+
+.ca-landing-hero h1 span { color: var(--ca-teal); }
 
 .ca-landing-lead {
-  font-size: clamp(0.95rem, 1.9vw, 1.1rem);
-  line-height: 1.65;
+  font-size: clamp(0.85rem, 1.7vw, 0.98rem);
+  line-height: 1.5;
   color: var(--ca-text-muted);
-  max-width: 60ch;
-}
-
-.ca-landing-lead strong {
-  color: var(--ca-text-main);
-  font-weight: 700;
+  max-width: 52ch;
 }
 
 .ca-landing-datos {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 0.45rem;
   list-style: none;
   padding: 0;
-  margin-top: 1.6rem;
+  margin-top: 1rem;
 }
 
 .ca-landing-datos li {
-  font-size: 0.72rem;
+  font-size: 0.63rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--ca-teal);
   background: rgba(0, 199, 177, 0.08);
-  border: 1px solid rgba(0, 199, 177, 0.22);
+  border: 1px solid rgba(0, 199, 177, 0.2);
   border-radius: 999px;
-  padding: 0.4rem 0.9rem;
+  padding: 0.3rem 0.7rem;
 }
 
 /* ── Grilla ── */
 .ca-landing-grid-wrap {
-  margin-top: 3rem;
-}
-
-.ca-landing-h2 {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--ca-text-muted);
-  padding-bottom: 0.8rem;
-  margin-bottom: 1.4rem;
-  border-bottom: 1px solid var(--ca-border-light);
-}
-
-.ca-landing-h2-nota {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: none;
-  color: var(--ca-teal);
+  margin-top: 1.6rem;
 }
 
 .ca-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
+  gap: 0.75rem;
 }
 
 @media (min-width: 700px) {
-  .ca-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+  .ca-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
 }
 
 /* ── Tarjeta ── */
 .ca-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.55rem;
-  padding: 1.4rem 1.25rem 1.25rem;
-  border-radius: 14px;
-  background: linear-gradient(160deg, rgba(0, 199, 177, 0.09) 0%, rgba(0, 199, 177, 0.02) 100%);
-  border: 1px solid rgba(0, 199, 177, 0.2);
-  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  gap: 0.45rem;
+  padding: 1.15rem 1.05rem 0.95rem;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(0, 199, 177, 0.15) 0%, transparent 55%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 6px 18px rgba(0, 0, 0, 0.28);
   text-decoration: none;
   color: inherit;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
+/* Filo superior que se enciende al pasar por encima. */
+.ca-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ca-teal), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
 a.ca-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(0, 199, 177, 0.55);
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 199, 177, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 28px rgba(0, 0, 0, 0.38);
 }
+
+a.ca-card:hover::before { opacity: 0.9; }
 
 a.ca-card:focus-visible {
   outline: 2px solid var(--ca-teal);
   outline-offset: 3px;
 }
 
-.ca-card-icon {
-  width: 30px;
-  height: 30px;
+/* ── Ícono en pastilla: se invierte a teal sólido en hover ── */
+.ca-card-ico {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: rgba(0, 199, 177, 0.12);
+  border: 1px solid rgba(0, 199, 177, 0.26);
   color: var(--ca-teal);
   flex-shrink: 0;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ca-card-icon {
+  width: 21px;
+  height: 21px;
+}
+
+a.ca-card:hover .ca-card-ico {
+  background: var(--ca-teal);
+  border-color: var(--ca-teal);
+  color: var(--ca-selected-text);
+  box-shadow: 0 0 18px rgba(0, 199, 177, 0.35);
 }
 
 .ca-card-title {
-  font-size: 1.02rem;
+  font-size: 1rem;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.2;
   color: #fff;
+  margin-top: 0.15rem;
 }
 
 .ca-card-blurb {
-  font-size: 0.78rem;
-  line-height: 1.5;
+  font-size: 0.74rem;
+  line-height: 1.45;
   color: var(--ca-text-muted);
   /* Las descripciones tienen largos muy distintos; sin el corte las tarjetas
      de la misma fila quedan desparejas. */
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -701,47 +707,78 @@ a.ca-card:focus-visible {
 }
 
 .ca-card-cta {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
   margin-top: auto;
-  padding-top: 0.7rem;
-  font-size: 0.68rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.64rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.1em;
   color: var(--ca-teal);
 }
 
-.ca-card-cta svg {
-  width: 13px;
-  height: 13px;
-  transition: transform 0.18s ease;
+.ca-card-arrow {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 199, 177, 0.14);
+  flex-shrink: 0;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
-a.ca-card:hover .ca-card-cta svg { transform: translateX(3px); }
+.ca-card-arrow svg {
+  width: 11px;
+  height: 11px;
+}
+
+a.ca-card:hover .ca-card-arrow {
+  background: var(--ca-teal);
+  color: var(--ca-selected-text);
+  transform: translateX(3px);
+}
 
 /* ── Tarjeta de materia todavía sin contenido ──
    No es un enlace: gris, sin hover y sin destino. */
 .ca-card-off {
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.022);
+  border-color: rgba(255, 255, 255, 0.07);
   box-shadow: none;
   cursor: default;
 }
 
-.ca-card-off .ca-card-icon { color: var(--ca-slate); }
-.ca-card-off .ca-card-title { color: rgba(255, 255, 255, 0.45); }
+.ca-card-off .ca-card-ico {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--ca-slate);
+}
+
+.ca-card-off .ca-card-title { color: rgba(255, 255, 255, 0.42); }
 
 .ca-card-badge {
+  width: 100%;
   margin-top: auto;
-  padding-top: 0.7rem;
-  font-size: 0.63rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.6rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--ca-gold);
-  opacity: 0.75;
+  opacity: 0.7;
+}
+
+@media (max-width: 420px) {
+  .ca-card { padding: 0.95rem 0.85rem 0.8rem; border-radius: 14px; }
+  .ca-card-ico { width: 34px; height: 34px; border-radius: 9px; }
+  .ca-card-icon { width: 18px; height: 18px; }
+  .ca-card-title { font-size: 0.9rem; }
 }
 
 /* ── Bloque de zona ── */
