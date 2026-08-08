@@ -145,6 +145,15 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      // Teclab dejo de ofrecer Venta Directa (07/08/2026), asi que el CAU no la
+      // puede vender: `activa = false` en Supabase. La ficha ya estaba indexada
+      // (31/07), asi que la URL va a la home como las demas bajas — quien buscó
+      // esta carrera por su nombre no quiere que le abran otra.
+      {
+        source: '/carreras/tecnicatura-superior-en-venta-directa',
+        destination: '/',
+        permanent: true,
+      },
       // Redirect non-www to www
       {
         source: '/:path*',

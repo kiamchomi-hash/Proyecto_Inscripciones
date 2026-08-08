@@ -14,8 +14,8 @@ const RAIZ = path.join(process.cwd(), 'public', 'imagenes', 'teclab');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
 // [foto de portada, foto de cierre] de cada ficha, en rutas del WordPress de Teclab.
-// Programacion y Venta Directa no tienen fotos propias en buena resolucion (las
-// suyas son de 600 px), asi que usan fotos del blog del mismo instituto.
+// Programacion no tiene fotos propias en buena resolucion (las suyas son de
+// 600 px), asi que usa fotos del blog del mismo instituto.
 const CARRERAS = {
   'programacion': [
     '2026/07/typing-on-laptop-keyboard-with-illuminated-keys-2026-03-18-14-53-48-utc-scaled.jpg',
@@ -29,10 +29,6 @@ const CARRERAS = {
   'marketing-digital': ['2026/03/header-h-7.png', '2026/03/footer-6.png'],
   'inbound-marketing': ['2026/03/header-h-6.png', '2026/03/footer-5.png'],
   'customer-experience': ['2026/03/header-h-2.png', '2026/03/footer-1.png'],
-  'venta-directa': [
-    '2025/11/Candela-Teclab_11zon-scaled-1.webp',
-    '2026/07/business-team-collaborating-on-design-projects-in-2026-01-09-11-59-05-utc-scaled.jpg',
-  ],
   'gestion-contable': ['2026/03/header-h-4.png', '2026/03/footer-3.png'],
   'seguros': ['2026/04/woman-3.png', '2026/04/Collaborative-Workspace-3.png'],
   'gestion-agraria': ['2026/03/header-h-3.png', '2026/03/footer-2.png'],

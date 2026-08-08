@@ -57,7 +57,6 @@ const TIPOS: { match: string; tipo: string }[] = [
   { match: 'marketing digital', tipo: 'Marketing' },
   { match: 'inbound marketing', tipo: 'Marketing' },
   { match: 'customer experience', tipo: 'Negocios' },
-  { match: 'venta directa', tipo: 'Negocios' },
   { match: 'contable', tipo: 'Gestión' },
   { match: 'seguros', tipo: 'Gestión' },
   { match: 'agraria', tipo: 'Gestión' },
@@ -101,7 +100,7 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
 /**
  * Si el titulo habilita a seguir despues en una licenciatura de Universidad
  * Siglo 21 reconociendo **todas** las materias de la tecnicatura. Es el corazon
- * del convenio y vale para las 17 menos Seguros, la unica sin continuidad.
+ * del convenio y vale para las 16 menos Seguros, la unica sin continuidad.
  *
  * Los cursos quedan afuera por definicion: no entregan titulo de tecnico, o sea
  * que no hay nada que articular.
@@ -119,7 +118,6 @@ export function articulaConSiglo21(c: Pick<Carrera, 'nombre' | 'nivel'>): boolea
 // ── Ficha oficial de cada carrera en teclab.edu.ar ──
 
 export const TECLAB_SITIO = 'https://teclab.edu.ar';
-export const TECLAB_CARRERAS = 'https://teclab.edu.ar/carreras/';
 
 export interface TeclabFicha {
   /**
@@ -226,15 +224,6 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
     },
   },
   {
-    // Teclab todavia no le abrio ficha propia: su URL cae en el listado general.
-    match: 'venta directa',
-    ficha: {
-      url: TECLAB_CARRERAS,
-      imagen: '/imagenes/teclab/carreras/venta-directa.webp',
-      imagenCierre: '/imagenes/teclab/carreras/venta-directa-cierre.webp',
-    },
-  },
-  {
     match: 'gestión contable',
     ficha: {
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-gestion-contable/',
@@ -329,7 +318,6 @@ const DESTACADAS: Record<string, string[]> = {
   'marketing digital': ['Diseñar, implementar y evaluar', 'Gestionar campañas publicitarias', 'Elaborar diferentes reportes'],
   'inbound marketing': ['Diseñar estrategias efectivas', 'Analizar y comprender el proceso', 'Desarrollar, revisar y publicar'],
   'customer experience': ['Diseñar e implementar, a través del Design Thinking', 'Crear y ejecutar estrategias', 'Determinar y analizar las métricas'],
-  'venta directa': ['Gestionar las etapas del proceso', 'Gestionar prospectos', 'Utilizar herramientas de monitoreo'],
   'gestión contable': ['Registrar operaciones comerciales', 'Dominar el marco legal', 'Utilizar sistemas y bases de datos'],
   'seguros': ['Asesorar sobre los distintos tipos', 'Gestionar solicitudes de cotizaciones', 'Asistir al cliente'],
   'agraria': ['Gestionar planes de producción', 'Seleccionar y utilizar tecnologías', 'Gestionar en forma eficiente'],
