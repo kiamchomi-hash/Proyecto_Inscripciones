@@ -41,8 +41,11 @@ supabase/.temp/
 *gsc*.json
 *-credentials.json
 # Aranceles para mandar por WhatsApp. El repo es publico y los importes cambian
-# por cuatrimestre: una version vieja indexada es peor que no tenerla.
+# por cuatrimestre: una version vieja indexada es peor que no tenerla. Lo mismo
+# vale para las notas de fuentes: se escapo una con importes por no llamarse
+# "mensaje_", asi que van listadas aparte.
 mensaje_*.md
+fuentes_siglo21.md
 # Cache incremental de tsc. Cambia en cada typecheck, o sea en cada commit.
 tsconfig.tsbuildinfo
 # Logs y estado de las tareas de vigilancia. Se regeneran solos en cada corrida.

@@ -101,7 +101,7 @@ components/
 | Metadata por página | Cada `page.tsx` | `title`, `description`, `canonical`, OG/Twitter donde aplica |
 | `generateMetadata` dinámica | `app/novedades/articulo/[slug]/page.tsx` | Título e imagen OG desde Supabase |
 | Sitemap dinámico | `app/sitemap.ts` | Genera URLs de: páginas estáticas, carreras, materias, novedades (listado + artículos individuales) |
-| robots.txt | `app/robots.ts` | Permite `/`, bloquea `/api/`, `/admin/`, `/migracion_pendiente/` |
+| robots.txt | `app/robots.ts` | Permite `/`, bloquea `/api/` y `/admin/` |
 | Schema.org JSON-LD | `app/layout.tsx` (global) + `app/faq/page.tsx` (FAQPage) | Structured data para Google |
 | Redirects | `next.config.ts` | non-www → www, legacy `.html` → clean URLs |
 | Canonical URLs | Cada página | `alternates.canonical` |
