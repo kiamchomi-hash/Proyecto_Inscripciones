@@ -19,9 +19,10 @@ Si sobra cuota: Lic. en Informática (04/06), Lic. en Administración (26/06) y 
 
 ## Pedir
 
-Inspección de URL → **Solicitar indexación**. Tope ~10-12 por día; estas cinco entran en uno.
+Inspección de URL → **Solicitar indexación**. Tope ~10-12 por día; estas seis entran en uno.
 
 ```
+https://www.siglo21sur.com/novedades/articulo/inicio-de-clases
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/clases-apoyo/fisico-quimica
 https://www.siglo21sur.com/carreras/licenciatura-en-emprendimiento-ccc
@@ -29,7 +30,7 @@ https://www.siglo21sur.com/carreras/tecnicatura-en-hidrocarburos-y-geociencias
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
 ```
 
-Las dos primeras son `URL is unknown to Google`; las otras tres, `Discovered`.
+La primera reemplaza a `/novedades/articulo/segundo-semestre-2026-inicio-3-de-agosto` (indexada), que ahora va con 301 al slug nuevo: el artículo dejó de tener la fecha en la URL para no rehacerla en cada cambio de fecha. De las otras, las dos primeras son `URL is unknown to Google`; las tres últimas, `Discovered`.
 
 **No pedir `/novedades/2`**: `Crawled - currently not indexed` desde el 05/04, y está bien — es paginación y compite con sus propios artículos.
 

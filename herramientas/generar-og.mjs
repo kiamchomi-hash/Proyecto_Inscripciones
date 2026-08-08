@@ -136,8 +136,10 @@ async function medidasLimpia(foto) {
 }
 
 const ARTICULOS = [
-  { id: 60, slug: 'segundo-semestre-2026-inicio-3-de-agosto', tag: 'Institucional',
-    titulo: 'El segundo semestre 2026 empieza el 3 de agosto',
+  // El titulo no lleva fecha a proposito: la fecha del inicio se cambia en el
+  // cuerpo del articulo y esta portada no hay que regenerarla cada vez.
+  { id: 60, slug: 'inicio-de-clases', tag: 'Institucional',
+    titulo: 'Cuándo empiezan las clases en el CAU Villa Lugano',
     foto: 'public/imagenes/Modales/Tecnicatura en Marketing y Publicidad Digital/Foto hero Tecnicatura en Marketing.webp' },
   { id: 61, slug: 'documentacion-legajo-inscripcion', tag: 'Académico',
     titulo: 'Qué papeles pide el legajo de inscripción',

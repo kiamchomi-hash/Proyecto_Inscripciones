@@ -110,6 +110,16 @@ const nextConfig: NextConfig = {
         destination: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
         permanent: true,
       },
+      // La novedad del inicio de clases dejo de tener la fecha en el slug
+      // (08/08/2026): era `segundo-semestre-2026-inicio-3-de-agosto` y pasa a
+      // `inicio-de-clases`, que no vence. La URL vieja estaba indexada, asi que
+      // va con 301 al articulo nuevo — es el mismo tema, no hay que mandarla a
+      // la home como las carreras de baja.
+      {
+        source: '/novedades/articulo/segundo-semestre-2026-inicio-3-de-agosto',
+        destination: '/novedades/articulo/inicio-de-clases',
+        statusCode: 301,
+      },
       // ── Carreras dadas de baja ──
       // Estas van con `statusCode: 301` y no con `permanent: true`, que emite
       // 308. Para Google los dos son equivalentes, pero el 301 es el que espera
