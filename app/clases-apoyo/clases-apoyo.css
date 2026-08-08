@@ -568,13 +568,6 @@
 
 .ca-landing-hero h1 span { color: var(--ca-teal); }
 
-.ca-landing-lead {
-  font-size: clamp(0.85rem, 1.7vw, 0.98rem);
-  line-height: 1.5;
-  color: var(--ca-text-muted);
-  max-width: 52ch;
-}
-
 .ca-landing-datos {
   display: flex;
   flex-wrap: wrap;
@@ -781,21 +774,29 @@ a.ca-card:hover .ca-card-arrow {
   .ca-card-title { font-size: 0.9rem; }
 }
 
-/* ── Bloque de zona ── */
-.ca-landing-zona {
-  margin-top: 3.5rem;
+/* ── Bloques de texto, debajo de la grilla ──
+   Sólo el primero lleva la línea que lo separa de las tarjetas; el que sigue
+   se apoya en el de arriba. */
+.ca-landing-texto {
+  margin-top: 2.8rem;
   padding-top: 2.2rem;
   border-top: 1px solid var(--ca-border-light);
 }
 
-.ca-landing-zona h2 {
+.ca-landing-texto + .ca-landing-texto {
+  margin-top: 2.2rem;
+  padding-top: 0;
+  border-top: none;
+}
+
+.ca-landing-texto h2 {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--ca-teal);
   margin-bottom: 1rem;
 }
 
-.ca-landing-zona p {
+.ca-landing-texto p {
   font-size: 0.92rem;
   line-height: 1.75;
   color: var(--ca-text-muted);
@@ -803,7 +804,7 @@ a.ca-card:hover .ca-card-arrow {
   margin-bottom: 0.9rem;
 }
 
-.ca-landing-zona strong {
+.ca-landing-texto strong {
   color: var(--ca-text-main);
   font-weight: 700;
 }

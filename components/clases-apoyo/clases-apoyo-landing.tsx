@@ -35,11 +35,15 @@ const ICONOS: Record<string, React.ReactNode> = {
       <path d="M8 20h8M12 16v4" strokeLinecap="round" />
     </>
   ),
+  // Tabla periódica como grilla, no como silueta: a 21 px la muesca entre el
+  // hidrógeno y el helio se cierra y el ícono termina pareciendo una caja. Con
+  // tres columnas y una celda marcada se lee, y el título de la tarjeta está
+  // justo debajo para desambiguar.
   'fisico-quimica': (
     <>
-      <path d="M9.5 3v6.2L4.6 18a2 2 0 001.7 3h11.4a2 2 0 001.7-3l-4.9-8.8V3" />
-      <path d="M8.5 3h7" strokeLinecap="round" />
-      <path d="M7.2 14h9.6" strokeLinecap="round" />
+      <rect x="3" y="5.5" width="18" height="13" rx="1.5" />
+      <path d="M9 5.5v13M15 5.5v13M3 12h18" />
+      <rect x="4.7" y="7.2" width="2.6" height="3.1" rx="0.5" fill="currentColor" stroke="none" />
     </>
   ),
   ingles: (
@@ -132,15 +136,12 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
   return (
     <div className="ca-landing">
       {/* Encabezado corto a propósito: lo que la persona vino a buscar son las
-          materias, así que la primera tarjeta tiene que entrar en pantalla. El
-          detalle largo va abajo, después de la grilla. */}
+          materias, así que la primera tarjeta tiene que entrar en pantalla.
+          Todo el texto explicativo va abajo, después de la grilla. */}
       <header className="ca-landing-hero">
         <h1>
           Clases de apoyo en <span>Villa Lugano</span>
         </h1>
-        <p className="ca-landing-lead">
-          Individuales y presenciales en Guaminí 4876, de lunes a viernes.
-        </p>
         <ul className="ca-landing-datos">
           <li>Un alumno por turno</li>
           <li>Primaria y secundaria</li>
@@ -157,7 +158,21 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
         </div>
       </section>
 
-      <section className="ca-landing-zona" aria-labelledby="ca-zona-titulo">
+      <section className="ca-landing-texto" aria-labelledby="ca-como-titulo">
+        <h2 id="ca-como-titulo">Cómo son las clases</h2>
+        <p>
+          <strong>Individuales y presenciales</strong>: un alumno por turno, en Guaminí 4876, de
+          lunes a viernes. No hay un programa cerrado ni un grupo al que alcanzar — traés los temas
+          que estás viendo en la escuela y se trabaja sobre eso.
+        </p>
+        <p>
+          Para tomar una clase entrás a la materia, elegís el día y el horario que te queden
+          cómodos, dejás tus datos y te responde el profesor por WhatsApp. Quienes vienen todas las
+          semanas tienen un descuento por continuidad.
+        </p>
+      </section>
+
+      <section className="ca-landing-texto" aria-labelledby="ca-zona-titulo">
         <h2 id="ca-zona-titulo">A quién le queda cerca</h2>
         <p>
           La sede está en <strong>Guaminí 4876</strong>, sobre el límite de Villa Lugano con{' '}
@@ -166,10 +181,9 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
           II, Villa Soldati y Mataderos.
         </p>
         <p>
-          Hay siete escuelas primarias y secundarias a menos de un kilómetro, y más de cincuenta a
-          menos de tres. Se trabaja sobre los temas que estás viendo en tu escuela —del distrito
-          escolar que sea— y no sobre un programa cerrado: traés la carpeta y la consigna, y se
-          arranca por ahí.
+          Hay siete escuelas primarias y secundarias a menos de un kilómetro de la sede, y más de
+          cincuenta a menos de tres. Da igual de qué distrito escolar vengas: se trabaja con la
+          carpeta y las consignas de tu propia escuela.
         </p>
       </section>
     </div>
