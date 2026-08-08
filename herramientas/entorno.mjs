@@ -180,7 +180,6 @@ function importar(desde, forzar) {
   console.log(`  Instaladas ${instaladas}, salteadas ${salteadas}.`);
   console.log('');
   console.log('  Falta lo que no se puede empaquetar, que es todo login:');
-  console.log('    git clone https://github.com/kiamchomi-hash/conocimiento-hermes.git herramientas/conocimiento-hermes');
   console.log('    npx vercel login');
   console.log('    npx supabase login');
   console.log('    gh auth login');

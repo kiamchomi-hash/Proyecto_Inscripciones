@@ -20,10 +20,14 @@ scripts/precios-con-descuentos.*
 screenshots/
 output/
 .playwright-cli/
-.hermes-temp/
-# Base de conocimiento comercial (fichas KB CAU, precios vigentes, tips de venta).
-# Precios y datos internos: nunca al repo, que es publico.
-herramientas/conocimiento-hermes/
+# Base de conocimiento comercial: fichas de carreras, precios vigentes, corpus del
+# bot y tips de venta. Precios y datos internos: nunca al repo, que es publico.
+# Las tres van ancladas con "/" porque sin la barra el patron matchea a cualquier
+# nivel, y "carreras/" suelto se comeria app/carreras/ y components/carreras/,
+# que son codigo del sitio.
+/carreras/
+/ventas/
+/herramientas/ventas/
 docs/guias/
 TUTORIAL_ADMIN.md
 DOCUMENTACION_PROYECTO.md

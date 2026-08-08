@@ -208,6 +208,13 @@ resuelve solo: la memoria de Claude Code vive en una carpeta cuyo nombre sale de
 la ruta del proyecto (`~/.claude/projects/<ruta con guiones>/memory`), así que la
 de Windows no le sirve a Linux; el script la recalcula.
 
-Lo que no se puede empaquetar porque es un login, lo lista al terminar: el clone
-del repo aparte `conocimiento-hermes`, `vercel login`, `supabase login`,
-`gh auth login` y el alta del MCP de Search Console.
+Lo que no se puede empaquetar porque es un login, lo lista al terminar:
+`vercel login`, `supabase login`, `gh auth login` y el alta del MCP de Search
+Console.
+
+Lo que **tampoco** viaja, y hoy no tiene solución automática, es el material
+comercial: `carreras/`, `ventas/` y `herramientas/ventas/`. Están gitignoradas
+—el repo es público y ahí hay precios— y desde la reorganización del 08/08/2026
+ya no son un repo aparte que se clone. Son ~600 MB (los videos de Teclab pesan
+casi todo), así que hay que copiarlas a mano entre máquinas. La historia vieja
+quedó archivada en `~/Desktop/historico-repo-ventas.git`.
