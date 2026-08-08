@@ -43,3 +43,8 @@ mensaje_*.md
 tsconfig.tsbuildinfo
 # Logs y estado de las tareas de vigilancia. Se regeneran solos en cada corrida.
 herramientas/vigilancia-logs/
+# Notas de trabajo e investigaciones propias (relevamiento de escuelas de la
+# zona, analisis de competencia). El repo es publico: los datos de origen suelen
+# ser abiertos, pero el analisis es la estrategia y no va a la vista. Viajan
+# entre maquinas con `node herramientas/entorno.mjs exportar`.
+notas-locales/
