@@ -139,7 +139,7 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
           Clases de apoyo en <span>Villa Lugano</span>
         </h1>
         <ul className="ca-landing-datos">
-          <li>Un alumno por turno</li>
+          <li>Día y horario a elección</li>
           <li>Primaria y secundaria</li>
           <li>Descuento por continuidad</li>
         </ul>
@@ -157,9 +157,9 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
       <section className="ca-landing-texto" aria-labelledby="ca-como-titulo">
         <h2 id="ca-como-titulo">Cómo son las clases</h2>
         <p>
-          <strong>Individuales y presenciales</strong>: un alumno por turno, en Guaminí 4876, de
-          lunes a viernes. No hay un programa cerrado ni un grupo al que alcanzar — traés los temas
-          que estás viendo en la escuela y se trabaja sobre eso.
+          <strong>Individuales y presenciales</strong>, en Guaminí 4876, de lunes a viernes. No hay
+          un programa cerrado: traés los temas que estás viendo en la escuela y se trabaja sobre
+          eso, al ritmo que te haga falta.
         </p>
         <p>
           Para tomar una clase entrás a la materia, elegís el día y el horario que te queden
