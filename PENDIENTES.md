@@ -1,6 +1,6 @@
 # Pendientes
 
-Última actualización: 2026-08-01
+Última actualización: 2026-08-08
 
 ## Abierto
 
@@ -40,6 +40,8 @@
   2. Si hay **becas reales** más allá del descuento por beneficio. Se mencionan programas para situaciones vulnerables y por rendimiento, sin confirmar.
   3. Las condiciones para **cursar dos carreras a la vez** (hay requisitos de avance académico).
   4. El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse. Los requisitos por carrera sí están.
+
+- [ ] **Confirmar que el sitemap ya se rehace on-demand.** El 08/08/2026 se arregló `revalidatePath('/sitemap.xml')` —iba con el tipo `'page'` y no hacía nada, así que el sitemap sólo se actualizaba en el deploy—. El fix está deployado pero sin verificar de punta a punta: la próxima vez que se cargue, renombre o dé de baja una carrera o una novedad **sin pushear nada**, pedir `https://www.siglo21sur.com/sitemap.xml` y ver si el cambio está. Si no está, mirar `net._http_response` (el endpoint responde 200 igual: devuelve la lista de rutas que revalidó).
 
 ## Para tener presente
 
