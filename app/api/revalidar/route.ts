@@ -45,13 +45,23 @@ function slugDeCarrera(nombre?: string | null, prefix?: string | null) {
 }
 
 /**
- * Que rutas toca rehacer. Devuelve pares [ruta, tipo]: 'page' sobre un patron
- * con corchetes rehace todas las paginas de esa ruta dinamica, que es lo que
- * hace falta cuando cambia el conjunto y no una fila (las fichas se enlazan
- * entre si, y la paginacion de novedades se corre entera al publicar una).
+ * Que rutas toca rehacer. Devuelve pares [ruta, tipo].
+ *
+ * El tipo va SOLO cuando la ruta es un patron ('/carreras/[slug]') o una pagina
+ * estatica ('/faq'), y rehace todas las paginas de esa ruta. Cuando la ruta es
+ * una URL concreta ('/carreras/contador-publico') va sin tipo: pasarle 'page'
+ * hace que revalidatePath la interprete como patron, no encuentre ningun
+ * archivo que matchee y no rehaga nada — devolviendo ok igual.
+ *
+ * Esto ultimo fue un bug real hasta el 07/08/2026: el trigger respondia 200 y
+ * las fichas quedaban viejas hasta el proximo deploy. Se vio comparando, con el
+ * mismo UPDATE, /clases-apoyo (literal, se rehizo) contra
+ * /clases-apoyo/computacion (dinamica, no).
  */
-function rutasA(aviso: Aviso): Array<[string, 'page' | 'layout']> {
-  const rutas: Array<[string, 'page' | 'layout']> = [];
+type Ruta = [string, ('page' | 'layout')?];
+
+function rutasA(aviso: Aviso): Ruta[] {
+  const rutas: Ruta[] = [];
   const esAltaOBaja = aviso.accion !== 'UPDATE';
 
   switch (aviso.tabla) {
@@ -62,13 +72,13 @@ function rutasA(aviso: Aviso): Array<[string, 'page' | 'layout']> {
       // Las carreras de un nivel fuera de la oferta no tienen pagina: no hay
       // nada que rehacer mas alla de la home y el sitemap.
       if (slug && esCarreraVisible({ nivel: aviso.nivel ?? '' })) {
-        rutas.push([`/carreras/${slug}`, 'page']);
+        rutas.push([`/carreras/${slug}`]);
       }
 
       // Si le cambiaron el nombre, la URL vieja ahora tiene que redirigir a la
       // nueva; sin rehacerla sigue sirviendo la ficha con el nombre anterior.
       const anterior = slugDeCarrera(aviso.anterior?.nombre, aviso.anterior?.prefix);
-      if (anterior && anterior !== slug) rutas.push([`/carreras/${anterior}`, 'page']);
+      if (anterior && anterior !== slug) rutas.push([`/carreras/${anterior}`]);
 
       if (esAltaOBaja) {
         rutas.push(['/carreras/[slug]', 'page'], ['/imagenes', 'page']);
@@ -78,9 +88,9 @@ function rutasA(aviso: Aviso): Array<[string, 'page' | 'layout']> {
 
     case 'novedades': {
       rutas.push(['/novedades/[page]', 'page'], ['/sitemap.xml', 'page']);
-      if (aviso.slug) rutas.push([`/novedades/articulo/${aviso.slug}`, 'page']);
+      if (aviso.slug) rutas.push([`/novedades/articulo/${aviso.slug}`]);
       if (aviso.anterior?.slug && aviso.anterior.slug !== aviso.slug) {
-        rutas.push([`/novedades/articulo/${aviso.anterior.slug}`, 'page']);
+        rutas.push([`/novedades/articulo/${aviso.anterior.slug}`]);
       }
       break;
     }
@@ -90,9 +100,9 @@ function rutasA(aviso: Aviso): Array<[string, 'page' | 'layout']> {
       // calendario): ahora es estatica y lista las materias en tarjetas, asi
       // que hay que revalidarla o el alta de una materia no se ve nunca.
       rutas.push(['/clases-apoyo', 'page']);
-      if (aviso.slug) rutas.push([`/clases-apoyo/${aviso.slug}`, 'page']);
+      if (aviso.slug) rutas.push([`/clases-apoyo/${aviso.slug}`]);
       if (aviso.anterior?.slug && aviso.anterior.slug !== aviso.slug) {
-        rutas.push([`/clases-apoyo/${aviso.anterior.slug}`, 'page']);
+        rutas.push([`/clases-apoyo/${aviso.anterior.slug}`]);
       }
       // El sitemap lista las materias por slug: solo cambia si aparece o
       // desaparece una, no cada vez que se bloquea un horario desde el panel.
