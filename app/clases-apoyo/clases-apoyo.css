@@ -413,16 +413,21 @@
 
 /* ── Mobile ── */
 @media only screen and (max-width: 768px) {
+  /* Tira que scrollea, no grilla de 3 columnas: con 6 materias entraban en dos
+     filas, pero cada materia nueva agrega una fila entera arriba del contenido.
+     Así crece a lo ancho y la altura no se mueve. */
   .ca-mobile-tabs {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex !important;
+    flex-wrap: nowrap !important;
     width: 100%;
+    scrollbar-width: none;
   }
+  .ca-mobile-tabs::-webkit-scrollbar { display: none; }
   .ca-mobile-tab {
-    min-width: 0 !important;
-    padding: 8px 4px !important;
+    flex: 0 0 auto !important;
+    padding: 8px 14px !important;
     text-align: center !important;
-    font-size: 0.6rem !important;
+    font-size: 0.62rem !important;
     letter-spacing: 0 !important;
     line-height: 1.3 !important;
     white-space: nowrap !important;
@@ -527,6 +532,248 @@
     justify-content: center !important;
     margin: 0 auto !important;
   }
+}
+
+/* ══ Portada /clases-apoyo ══
+   Página normal, no la app: una tarjeta por materia que enlaza a su ficha.
+   Nada de acá se usa en /clases-apoyo/[materia]. */
+
+.ca-landing {
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(0, 199, 177, 0.13) 0%, transparent 60%),
+    linear-gradient(170deg, #051211 0%, #082422 55%, #051d1a 100%);
+  min-height: calc(100dvh - var(--navbar-height, 60px));
+  padding: 3.5rem 1.25rem 4.5rem;
+  color: var(--ca-text-main);
+}
+
+.ca-landing > * {
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+/* ── Encabezado ── */
+.ca-landing-kicker {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--ca-teal);
+  margin-bottom: 0.9rem;
+}
+
+.ca-landing-hero h1 {
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin-bottom: 1.1rem;
+}
+
+.ca-landing-lead {
+  font-size: clamp(0.95rem, 1.9vw, 1.1rem);
+  line-height: 1.65;
+  color: var(--ca-text-muted);
+  max-width: 60ch;
+}
+
+.ca-landing-lead strong {
+  color: var(--ca-text-main);
+  font-weight: 700;
+}
+
+.ca-landing-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  list-style: none;
+  padding: 0;
+  margin-top: 1.6rem;
+}
+
+.ca-landing-datos li {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ca-teal);
+  background: rgba(0, 199, 177, 0.08);
+  border: 1px solid rgba(0, 199, 177, 0.22);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+
+/* ── Grilla ── */
+.ca-landing-grid-wrap {
+  margin-top: 3rem;
+}
+
+.ca-landing-h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ca-text-muted);
+  padding-bottom: 0.8rem;
+  margin-bottom: 1.4rem;
+  border-bottom: 1px solid var(--ca-border-light);
+}
+
+.ca-landing-h2-nota {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--ca-teal);
+}
+
+.ca-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+@media (min-width: 700px) {
+  .ca-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+}
+
+/* ── Tarjeta ── */
+.ca-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 1.4rem 1.25rem 1.25rem;
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(0, 199, 177, 0.09) 0%, rgba(0, 199, 177, 0.02) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.2);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+a.ca-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 199, 177, 0.55);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+a.ca-card:focus-visible {
+  outline: 2px solid var(--ca-teal);
+  outline-offset: 3px;
+}
+
+.ca-card-icon {
+  width: 30px;
+  height: 30px;
+  color: var(--ca-teal);
+  flex-shrink: 0;
+}
+
+.ca-card-title {
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.ca-card-blurb {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ca-text-muted);
+  /* Las descripciones tienen largos muy distintos; sin el corte las tarjetas
+     de la misma fila quedan desparejas. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ca-card-blurb strong {
+  color: var(--ca-text-main);
+  font-weight: 700;
+}
+
+.ca-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ca-teal);
+}
+
+.ca-card-cta svg {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.18s ease;
+}
+
+a.ca-card:hover .ca-card-cta svg { transform: translateX(3px); }
+
+/* ── Tarjeta de materia todavía sin contenido ──
+   No es un enlace: gris, sin hover y sin destino. */
+.ca-card-off {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+  cursor: default;
+}
+
+.ca-card-off .ca-card-icon { color: var(--ca-slate); }
+.ca-card-off .ca-card-title { color: rgba(255, 255, 255, 0.45); }
+
+.ca-card-badge {
+  margin-top: auto;
+  padding-top: 0.7rem;
+  font-size: 0.63rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ca-gold);
+  opacity: 0.75;
+}
+
+/* ── Bloque de zona ── */
+.ca-landing-zona {
+  margin-top: 3.5rem;
+  padding-top: 2.2rem;
+  border-top: 1px solid var(--ca-border-light);
+}
+
+.ca-landing-zona h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ca-teal);
+  margin-bottom: 1rem;
+}
+
+.ca-landing-zona p {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--ca-text-muted);
+  max-width: 68ch;
+  margin-bottom: 0.9rem;
+}
+
+.ca-landing-zona strong {
+  color: var(--ca-text-main);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-card, .ca-card-cta svg { transition: none; }
+  a.ca-card:hover { transform: none; }
 }
 
 /* ── Texto propio de cada materia ──

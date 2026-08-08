@@ -731,8 +731,11 @@ function SidebarLink({ label, slug, active }: { label: string; slug: string; act
   );
 }
 
-/* ── Main Page Component ── */
-export default function ClasesApoyoPage({ materiasNav, materia = null }: { materiasNav: MateriaNav[]; materia?: MateriaDB | null }) {
+/* ── Main Page Component ──
+   Sólo la sirve /clases-apoyo/[materia]. La portada dejó de montar esta app en
+   agosto de 2026: es una página propia con tarjetas (clases-apoyo-landing), así
+   que `materia` ya no puede faltar. */
+export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav: MateriaNav[]; materia: MateriaDB }) {
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
   const [selectedDayInfoMap, setSelectedDayInfoMap] = useState<Record<string, { num: string; month: string; calendarKey: string }>>({});
   const [requestDone, setRequestDone] = useState(false);
@@ -780,7 +783,7 @@ export default function ClasesApoyoPage({ materiasNav, materia = null }: { mater
           {/* Mobile tabs (above header) */}
           <nav className="ca-mobile-tabs overflow-x-auto" aria-label="Materias" style={{ background: '#051211', borderBottom: '1px solid var(--ca-border-light)' }}>
             {materiasNav.map(m => {
-              const active = m.slug === materia?.slug;
+              const active = m.slug === materia.slug;
               return (
                 <Link
                   key={m.id}
@@ -803,10 +806,11 @@ export default function ClasesApoyoPage({ materiasNav, materia = null }: { mater
 
           {/* Header */}
           <header className="ca-header">
+            {/* Vuelve a la portada, que ya no es esta misma app sino una página
+                aparte: acá sí conviene navegación normal (apila historial y
+                sube al tope). Entre materias se sigue usando replace. */}
             <Link
               href="/clases-apoyo"
-              replace
-              scroll={false}
               className="ca-header-brand flex items-center justify-center px-4 cursor-pointer transition-opacity hover:opacity-80"
               style={{ background: 'rgba(0,0,0,0.15)', borderRightWidth: '1px', borderRightStyle: 'solid', borderRightColor: 'var(--ca-border-light)' }}
             >
@@ -824,10 +828,8 @@ export default function ClasesApoyoPage({ materiasNav, materia = null }: { mater
                   antes; el resto de la frase va a lectores de pantalla y a
                   Google, y es lo que distingue una URL de la otra. */}
               <h1 className="text-base font-bold uppercase tracking-widest" style={{ color: 'var(--ca-teal)' }}>
-                {materia ? materia.label : 'Clases de Apoyo'}
-                <span className="sr-only">
-                  {materia ? ` — clases de apoyo en Villa Lugano` : ' en Villa Lugano'}
-                </span>
+                {materia.label}
+                <span className="sr-only"> — clases de apoyo en Villa Lugano</span>
               </h1>
             </div>
           </header>
@@ -841,7 +843,7 @@ export default function ClasesApoyoPage({ materiasNav, materia = null }: { mater
                   key={m.id}
                   label={m.label}
                   slug={m.slug}
-                  active={m.slug === materia?.slug}
+                  active={m.slug === materia.slug}
                 />
               ))}
               <div className="flex-1" />
@@ -849,78 +851,25 @@ export default function ClasesApoyoPage({ materiasNav, materia = null }: { mater
 
             {/* Main content */}
             <main className="ca-main">
-              {materia ? (
-                <div className="ca-panel flex flex-col h-full overflow-hidden" key={materia.id}>
-                  {materia.en_construccion ? (
-                    <ConstructionBanner />
-                  ) : (
-                    <>
-                      {/* Row 1: Carousel + Description */}
-                      <div className="ca-r1">
-                        <Carousel images={materia.imagenes} />
-                        <DescriptionPanel desc={materia.descripcion} />
-                      </div>
-
-                      {/* Row 2: Calendar + Schedule */}
-                      <div className="ca-r2">
-                        <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} />
-                        <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div
-                  className="flex flex-col items-center justify-center h-full p-6"
-                  style={{ background: 'radial-gradient(ellipse at 50% 30%, rgba(0,199,177,0.12) 0%, transparent 60%), linear-gradient(170deg, #051211 0%, #082422 50%, #051d1a 100%)' }}
-                >
-                  <div className="flex flex-col items-center text-center w-full max-w-3xl">
-                    <div className="flex items-center gap-4 md:gap-6 mb-5 md:mb-8">
-                    <div className="relative w-16 h-16 md:w-24 md:h-24">
-                      <Image
-                        src="/imagenes/imagenes_cau/logo_cau.png"
-                        alt="Logo Centro Educativo Villa Lugano"
-                        fill
-                        className="object-contain brightness-0 invert opacity-90"
-                      />
-                    </div>
-                      <div className="text-left">
-                        <span className="block text-xl md:text-3xl font-black uppercase tracking-tight leading-tight" style={{ color: 'var(--ca-text-main)' }}>
-                          Centro Educativo
-                        </span>
-                        <span className="block text-2xl md:text-4xl font-black uppercase tracking-tight" style={{ color: 'var(--ca-teal)' }}>
-                          Villa Lugano
-                        </span>
-                      </div>
+              <div className="ca-panel flex flex-col h-full overflow-hidden" key={materia.id}>
+                {materia.en_construccion ? (
+                  <ConstructionBanner />
+                ) : (
+                  <>
+                    {/* Row 1: Carousel + Description */}
+                    <div className="ca-r1">
+                      <Carousel images={materia.imagenes} />
+                      <DescriptionPanel desc={materia.descripcion} />
                     </div>
 
-                    <p className="text-sm md:text-lg mb-6 md:mb-8" style={{ color: 'var(--ca-text-muted)' }}>
-                      Talleres, clases de apoyo y capacitaciones para toda la comunidad
-                    </p>
-
-                    <div className="grid grid-cols-3 gap-3 md:gap-4 w-full">
-                      {materiasNav.map(m => (
-                        <Link
-                          key={m.id}
-                          href={`/clases-apoyo/${m.slug}`}
-                          replace
-                          scroll={false}
-                          className="flex items-center justify-center rounded-xl font-bold text-sm md:text-base uppercase tracking-wide transition-all hover:scale-[1.03]"
-                          style={{
-                            color: 'var(--ca-text-main)',
-                            background: 'linear-gradient(160deg, rgba(0,199,177,0.1) 0%, rgba(0,199,177,0.03) 100%)',
-                            border: '1px solid rgba(0,199,177,0.2)',
-                            boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)',
-                            height: 'clamp(70px, 12vh, 130px)',
-                          }}
-                        >
-                          {m.label}
-                        </Link>
-                      ))}
+                    {/* Row 2: Calendar + Schedule */}
+                    <div className="ca-r2">
+                      <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} />
+                      <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
                     </div>
-                  </div>
-                </div>
-              )}
+                  </>
+                )}
+              </div>
             </main>
           </div>
 
@@ -940,28 +889,17 @@ export default function ClasesApoyoPage({ materiasNav, materia = null }: { mater
                 </div>
               </div>
             </div>
-            {materia ? (
-              <a
-                href={`https://wa.me/${materia.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                className="ca-wa-link"
-              >
-                <WhatsAppIcon />
-                <span>
-                  {materia.nombre_profesor} <span className="opacity-40 font-normal mx-1">|</span> {materia.telefono_display}
-                </span>
-              </a>
-            ) : (
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ color: 'var(--ca-teal)' }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                </svg>
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--ca-teal)' }}>
-                  Lunes a Viernes
-                </span>
-              </div>
-            )}
+            <a
+              href={`https://wa.me/${materia.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="ca-wa-link"
+            >
+              <WhatsAppIcon />
+              <span>
+                {materia.nombre_profesor} <span className="opacity-40 font-normal mx-1">|</span> {materia.telefono_display}
+              </span>
+            </a>
           </footer>
         </div>
       </div>

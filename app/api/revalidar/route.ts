@@ -86,8 +86,10 @@ function rutasA(aviso: Aviso): Array<[string, 'page' | 'layout']> {
     }
 
     case 'materias': {
-      // /clases-apoyo es force-dynamic (calendario relativo a hoy): no cachea,
-      // asi que no hay nada que revalidarle. La ficha por materia si.
+      // La portada dejo de ser force-dynamic en agosto de 2026 (se le saco el
+      // calendario): ahora es estatica y lista las materias en tarjetas, asi
+      // que hay que revalidarla o el alta de una materia no se ve nunca.
+      rutas.push(['/clases-apoyo', 'page']);
       if (aviso.slug) rutas.push([`/clases-apoyo/${aviso.slug}`, 'page']);
       if (aviso.anterior?.slug && aviso.anterior.slug !== aviso.slug) {
         rutas.push([`/clases-apoyo/${aviso.anterior.slug}`, 'page']);
