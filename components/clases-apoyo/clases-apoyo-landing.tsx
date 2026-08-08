@@ -35,15 +35,11 @@ const ICONOS: Record<string, React.ReactNode> = {
       <path d="M8 20h8M12 16v4" strokeLinecap="round" />
     </>
   ),
-  // Tabla periódica como grilla, no como silueta: a 21 px la muesca entre el
-  // hidrógeno y el helio se cierra y el ícono termina pareciendo una caja. Con
-  // tres columnas y una celda marcada se lee, y el título de la tarjeta está
-  // justo debajo para desambiguar.
   'fisico-quimica': (
     <>
-      <rect x="3" y="5.5" width="18" height="13" rx="1.5" />
-      <path d="M9 5.5v13M15 5.5v13M3 12h18" />
-      <rect x="4.7" y="7.2" width="2.6" height="3.1" rx="0.5" fill="currentColor" stroke="none" />
+      <path d="M9.5 3v6.2L4.6 18a2 2 0 001.7 3h11.4a2 2 0 001.7-3l-4.9-8.8V3" />
+      <path d="M8.5 3h7" strokeLinecap="round" />
+      <path d="M7.2 14h9.6" strokeLinecap="round" />
     </>
   ),
   ingles: (
