@@ -110,6 +110,13 @@ const nextConfig: NextConfig = {
         destination: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
         permanent: true,
       },
+      // ── Carreras dadas de baja ──
+      // Estas van con `statusCode: 301` y no con `permanent: true`, que emite
+      // 308. Para Google los dos son equivalentes, pero el 301 es el que espera
+      // el resto de las herramientas de SEO y el que figura en el seguimiento de
+      // INDEXACION.md; que la medición diga lo mismo que el config evita tener
+      // que explicar la diferencia cada vez.
+      //
       // Agroinformática se sacó de la oferta el 03/08/2026 (`activa = false` en
       // Supabase): el CAU no la dicta. La ficha estaba indexada y traía ~10
       // clics cada 90 días, todos de búsquedas navegacionales por el nombre de
@@ -118,7 +125,7 @@ const nextConfig: NextConfig = {
       {
         source: '/carreras/licenciatura-en-agroinformatica',
         destination: '/',
-        permanent: true,
+        statusCode: 301,
       },
       // Mismo caso que Agroinformática: salieron del catálogo teniendo la ficha
       // indexada, y quedaron devolviendo 404 —que tira a la basura la autoridad
@@ -128,22 +135,22 @@ const nextConfig: NextConfig = {
       {
         source: '/carreras/licenciatura-en-administracion-hotelera',
         destination: '/',
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: '/carreras/licenciatura-en-nutricion',
         destination: '/',
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: '/carreras/licenciatura-en-sociologia',
         destination: '/',
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: '/carreras/tecnicatura-en-responsabilidad-y-gestion-social',
         destination: '/',
-        permanent: true,
+        statusCode: 301,
       },
       // Teclab dejo de ofrecer Venta Directa (07/08/2026), asi que el CAU no la
       // puede vender: `activa = false` en Supabase. La ficha ya estaba indexada
@@ -152,7 +159,7 @@ const nextConfig: NextConfig = {
       {
         source: '/carreras/tecnicatura-superior-en-venta-directa',
         destination: '/',
-        permanent: true,
+        statusCode: 301,
       },
       // Redirect non-www to www
       {
