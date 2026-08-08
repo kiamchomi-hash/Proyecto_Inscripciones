@@ -57,6 +57,13 @@ function slugDeCarrera(nombre?: string | null, prefix?: string | null) {
  * las fichas quedaban viejas hasta el proximo deploy. Se vio comparando, con el
  * mismo UPDATE, /clases-apoyo (literal, se rehizo) contra
  * /clases-apoyo/computacion (dinamica, no).
+ *
+ * /sitemap.xml es el caso inverso y estuvo roto por lo mismo hasta el
+ * 08/08/2026: no es una pagina sino una metadata route, o sea un route handler,
+ * y el tipo 'page' hacia que revalidatePath buscara una pagina que no existe.
+ * Iba sin ruido: el sitemap solo se rehacia en el deploy. Se vio al renombrar el
+ * slug de una novedad — /novedades/1 salio con el nuevo y el sitemap, que viaja
+ * en la misma llamada, seguia listando el viejo. Va SIN tipo.
  */
 type Ruta = [string, ('page' | 'layout')?];
 
@@ -66,7 +73,7 @@ function rutasA(aviso: Aviso): Ruta[] {
 
   switch (aviso.tabla) {
     case 'carreras': {
-      rutas.push(['/', 'page'], ['/sitemap.xml', 'page']);
+      rutas.push(['/', 'page'], ['/sitemap.xml']);
 
       const slug = slugDeCarrera(aviso.nombre, aviso.prefix);
       // Las carreras de un nivel fuera de la oferta no tienen pagina: no hay
@@ -87,7 +94,7 @@ function rutasA(aviso: Aviso): Ruta[] {
     }
 
     case 'novedades': {
-      rutas.push(['/novedades/[page]', 'page'], ['/sitemap.xml', 'page']);
+      rutas.push(['/novedades/[page]', 'page'], ['/sitemap.xml']);
       if (aviso.slug) rutas.push([`/novedades/articulo/${aviso.slug}`]);
       if (aviso.anterior?.slug && aviso.anterior.slug !== aviso.slug) {
         rutas.push([`/novedades/articulo/${aviso.anterior.slug}`]);
@@ -107,7 +114,7 @@ function rutasA(aviso: Aviso): Ruta[] {
       // El sitemap lista las materias por slug: solo cambia si aparece o
       // desaparece una, no cada vez que se bloquea un horario desde el panel.
       if (esAltaOBaja || aviso.anterior?.slug !== aviso.slug) {
-        rutas.push(['/sitemap.xml', 'page']);
+        rutas.push(['/sitemap.xml']);
       }
       break;
     }
