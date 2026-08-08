@@ -83,6 +83,12 @@ const PIEZAS = [
     ruta: () => path.join(os.homedir(), '.claude', 'settings.json'),
     dentro: 'claude-settings.json',
   },
+  {
+    nombre: 'notas locales',
+    detalle: 'investigaciones propias que no van al repo publico',
+    ruta: () => path.join(RAIZ, 'notas-locales'),
+    dentro: 'notas-locales',
+  },
 ];
 
 function exportar() {
