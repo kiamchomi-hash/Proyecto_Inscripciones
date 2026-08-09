@@ -8,7 +8,7 @@
 
   **Cuando llegue el temario**, el cambio son dos cosas: cargar el slide de plan como el de Sociología y sacarle el `proximamente` —`update public.carreras set proximamente = false where id = 132;`—, que le devuelve el botón "Quiero inscribirme" y la píldora "Nueva". Ojo: si el CAU empieza a inscribir **antes** de que aparezca el plan, hay que sacar el `proximamente` igual, aunque la ficha se quede sin temario.
 
-  (Agroinformática está en la misma situación: tiene slides pero no plan de estudios. Las dos salen como aviso, no como problema, en `npm run auditar`.)
+  Sale como aviso, no como problema, en `npm run auditar`, y desde el 03/08/2026 es **la única**: Agroinformática estaba en la misma situación —slides pero sin plan— y al apagarse dejó de contar como activa, así que la auditoría ya no la lista.
 
 - [ ] **Falta una foto decente de la entrada del CAU.** La única imagen del local es `public/imagenes/imagenes_cau/entrada_estetica.png`, de 475×598: estirada a 1200×630 queda blanda, y el recorte automático agarra el logo de la marquesina en vez del cartel. Hoy la usa el og de "Dónde queda el CAU Villa Lugano".
 
