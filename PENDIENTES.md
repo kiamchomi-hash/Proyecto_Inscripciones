@@ -51,6 +51,13 @@
 
   Al pasar a esa máquina, ojo con lo otro: **hay que clonar el repo de nuevo, no hacer `pull`**. La historia se reescribió el 08/08/2026 y un pull mezcla las dos.
 
+- [ ] **Dos actualizaciones de dependencias que quedaron para un deploy dedicado.** Ninguna cierra una vulnerabilidad: el 08/08/2026 se arreglaron los `overrides` y `npm audit` quedó en 0 sin tocar ninguna de estas dos. Van **separadas, una por deploy**, porque si algo se rompe hay que saber cuál fue.
+
+  1. **Next 16.2.12 → 16.3.0** (y con él `eslint-config-next` y `@next/third-parties`, que van pegados). Es un minor de Next, que históricamente mueve cosas: hay que revalidar `proxy.ts`, la revalidación on-demand y el ISR. Después del deploy, `npm run smoke`. Beneficio lateral: 16.3.0 pinea `postcss` en 8.5.23, así que **al subir se puede sacar el override de `postcss`** y dejar el bloque con `sharp` solo.
+  2. **Tailwind 4.2.1 → 4.3.3** (`@tailwindcss/postcss` y `@tailwindcss/cli`). Trae `lightningcss`, que es un binario nativo por plataforma: se puede tener el build verde en Windows y rojo en el Linux de Vercel, así que hay que mirar el deploy y no sólo el build local. Puede cambiar el CSS de todo el sitio — `npm run capturas` antes y después, y comparar.
+
+  **Lo que no hay que hacer es `npm audit fix`**: no arregla nada que no esté arreglado y mete estos dos saltos juntos, de prepo. Tampoco tocar `@supabase/ssr` (0.9.0, rango `^0.9.0` que no sube solo: es 0.x, donde el minor *es* el breaking, y maneja las cookies de sesión de todo el panel) ni `sharp` (ya está en la última y sin advisories).
+
 ## Para tener presente
 
 **La fuente buena de Identidad Argentina es `respuestas-whatsapp/*.md`, no los PDF.** Los PDF de las diplomaturas dicen "certificación nacional e internacional avalado por normas ISO 9001-2015", y eso induce a error: el ISO es el aval de calidad de la academia, no de la certificación. Lo que respalda a la certificación son dos entidades, idénticas en las 11 diplomaturas: **aval nacional de la Cámara Argentina para la Formación y Capacitación Laboral** y **aval internacional de la Organización Internacional para la Educación Permanente (OIEP)**.
