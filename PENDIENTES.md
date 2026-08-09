@@ -1,6 +1,6 @@
 # Pendientes
 
-Última actualización: 2026-08-08
+Última actualización: 2026-08-09
 
 ## Abierto
 
@@ -28,11 +28,13 @@
 
   Aparte: **Licenciatura en Administración** figura enlazada en el índice del sitio pero `licenciatura-en-administracion` (sin tilde) devuelve 404. El link está roto del lado de ellos; ya va incluido en el pedido.
 
-- [ ] **El corpus del bot tiene 89 respuestas sin revisar.** De 146, hay 50 aprobadas y 7 descartadas (al 01/08). Aprobar o descartar **lo decide una persona**, no se puede automatizar: se revisan en `entrenar-bot.html` (solapa "Revisar respuestas", que esconde las ya aprobadas) y se vuelven a instalar con `aplicar-corpus.mjs --instalar`.
+- [ ] **El corpus del bot tiene 116 respuestas sin revisar.** De 184 vivas, 68 están aprobadas (Siglo 21 18/53, Teclab 35/20, Identidad 15/43, al 09/08). Aprobar o descartar **lo decide una persona**; desde el 04/08 se hace en la conversación —se lee el mensaje que salió mal, se corrige el JSON de esa casa en `ventas/corpus/` y se regeneran las dos páginas—, no en `entrenar-bot.html`.
 
-  **Las 16 de Identidad Argentina son las primeras de la fila.** Se escribieron el 01/08 desde los 11 PDF oficiales y cubren las intenciones que antes contestaban con el texto genérico de Siglo 21. Cinco de ellas no llenan un hueco: **corrigen una respuesta que era falsa** para una diplomatura de convenio —la de `validez` prometía "título oficial con validez nacional" y "número de resolución ministerial"—, así que conviene mirarlas antes que el resto.
+  ~~Las 5 de Identidad que corregían una respuesta falsa~~ Aprobadas el 08/08/2026: `validez`, `requisitos`, `equivalencias`, `inscripcion` y `doble-titulacion` ya contestan con el texto propio, y en el mismo pase se le sacaron a Identidad las 7 copias universales que le hablaban al lead como si la diplomatura fuera una carrera de grado.
 
-  Identidad quedó con respuesta propia en 40 de 44 intenciones. Las 4 que faltan (`pedir-datos`, `seguimiento`, `no-entiendo`, `convenio-organismo`) están bien con la universal: no afirman nada específico de la institución.
+  **Lo que apareció al revisar el resto (09/08/2026) fue la modalidad escrita a mano**: 13 respuestas afirmaban «100% online», que es cierto en 10 de las 11 diplomaturas y falso en **Gestión de Equipos de Alto Desempeño, que es híbrida**. Corregidas: donde la frase habla de la carrera va `{modalidad}`, y donde habla de la oferta entera, «casi todas 100% online». Se aprovechó para sacar de `extranjero` un «no te piden documentación argentina» sin fuente —la preinscripción pide DNI— y para que `clases-y-examenes` diga la evaluación en vez de ofrecer confirmarla, que ya estaba documentada y la contestaba `validez`.
+
+  **Quedan tres esperando el visto bueno**, que volvieron a `sin revisar` justamente por ese cambio de texto: `duracion-identidad`, `modalidad-identidad` y `doble-titulacion-identidad`. Y una decisión: `extranjero-identidad` sigue abriendo con «Sí, podés» y para la híbrida eso es discutible, aunque la misma oración ya dice «es híbrida» y el operador la lee antes de mandarla.
 
 - [ ] **Cuatro datos institucionales sin confirmar**, que hoy el bot responde con un "lo confirmo y te aviso" en vez de inventar:
 
@@ -41,7 +43,18 @@
   3. Las condiciones para **cursar dos carreras a la vez** (hay requisitos de avance académico).
   4. ~~El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse.~~ Escrito el 08/08/2026 contra el reglamento en vivo. Lo que quedó sin fuente está listado adentro: qué es la IVU en la práctica, qué materias son Universitario 21, dónde se certifica la firma y cómo se legaliza el analítico.
 
-- [ ] **Confirmar que el sitemap ya se rehace on-demand.** El 08/08/2026 se arregló `revalidatePath('/sitemap.xml')` —iba con el tipo `'page'` y no hacía nada, así que el sitemap sólo se actualizaba en el deploy—. El fix está deployado pero sin verificar de punta a punta: la próxima vez que se cargue, renombre o dé de baja una carrera o una novedad **sin pushear nada**, pedir `https://www.siglo21sur.com/sitemap.xml` y ver si el cambio está. Si no está, mirar `net._http_response` (el endpoint responde 200 igual: devuelve la lista de rutas que revalidó).
+- [ ] **Confirmar que el sitemap ya se rehace on-demand.** El 08/08/2026 se arregló `revalidatePath('/sitemap.xml')` —iba con el tipo `'page'` y no hacía nada, así que el sitemap sólo se actualizaba en el deploy—. El fix está deployado pero sin verificar de punta a punta.
+
+  **No hace falta esperar a un alta real.** Alcanza con tocar una carrera sin cambiarle nada y mirar si la respuesta del sitemap se rehizo, que es lo único que el fix promete:
+
+  ```sql
+  UPDATE public.carreras SET orden = orden WHERE id = 2;   -- Abogacía, no cambia nada
+  SELECT id, status_code, content, created FROM net._http_response ORDER BY created DESC LIMIT 3;
+  ```
+
+  Esperado en la base: `200` con `{"ok":true,"rutas":["/","/sitemap.xml","/carreras/abogacia"]}`. Y del lado del sitio, `curl -sI https://www.siglo21sur.com/sitemap.xml`: el `Age` tiene que volver a cero y el `Last-Modified` tiene que ser el del momento. La medición del 09/08 antes de tocar nada, para comparar: `Age: 6434`, `Last-Modified: Sun, 09 Aug 2026 16:42:32 GMT`, `X-Vercel-Cache: HIT`, `Etag: "97924cf3a319dcb7287a025a06dbdc8e"` (el Etag no tiene por qué cambiar: el contenido es el mismo, lo que se verifica es que se volvió a generar).
+
+  El secreto no se puede probar desde acá: `REVALIDATE_SECRET` está marcada Sensitive en Vercel, así que un POST directo a `/api/revalidar` no es opción y el disparo tiene que salir de la base.
 
 - [ ] **El sitio no tiene manifest ni íconos de PWA.** Falta `public/manifest.json` con los íconos de 192×192 y 512×512, y el `<link rel="manifest">` en `app/layout.tsx`. Está frenado por lo de siempre: no hay un ícono del CAU en PNG cuadrado en esos tamaños. Prioridad baja — sin manifest el sitio se ve y se indexa igual, lo único que se pierde es el "agregar a la pantalla de inicio" con nombre e ícono propios. El service worker para cache offline es aparte y opcional.
 
@@ -51,14 +64,13 @@
 
   Al pasar a esa máquina, ojo con lo otro: **hay que clonar el repo de nuevo, no hacer `pull`**. La historia se reescribió el 08/08/2026 y un pull mezcla las dos.
 
-- [ ] **Queda subir Tailwind, en su propio deploy.** De las dos actualizaciones que dejó la auditoría del 08/08/2026, Next ya se hizo y quedó ésta. No cierra ninguna vulnerabilidad: `npm audit` está en 0 desde que se arreglaron los `overrides`, sin tocarla. Va **sola**, para que si algo se rompe quede claro cuál fue el cambio.
-
-  1. ~~**Next 16.2.12 → 16.3.0**~~ Hecho el 08/08/2026, con `eslint-config-next` y `@next/third-parties`. Verificado en producción: proxy (`/admin` sin sesión → 307 a login, `/api/admin/*` → 401), `/api/revalidar` → 401 sin secreto, el ISR de 1d en el build y `npm run smoke` en verde. **El override de `postcss` se dejó**: 16.3.0 pinea 8.5.23 y sacarlo bajaba de 8.5.26 a 8.5.23; las dos están parcheadas y conviene la más nueva.
-  2. **Tailwind 4.2.1 → 4.3.3** (`@tailwindcss/postcss` y `@tailwindcss/cli`). Trae `lightningcss`, que es un binario nativo por plataforma: se puede tener el build verde en Windows y rojo en el Linux de Vercel, así que hay que mirar el deploy y no sólo el build local. Puede cambiar el CSS de todo el sitio — `npm run capturas` antes y después, y comparar.
-
-  **Lo que no hay que hacer es `npm audit fix`**: no arregla nada que no esté arreglado y mete estos dos saltos juntos, de prepo. Tampoco tocar `@supabase/ssr` (0.9.0, rango `^0.9.0` que no sube solo: es 0.x, donde el minor *es* el breaking, y maneja las cookies de sesión de todo el panel) ni `sharp` (ya está en la última y sin advisories).
+- [ ] **La home pesa 961 KB sin comprimir.** Lo midió `npm run smoke` el 09/08/2026 (126 KB en el cable con brotli). La última medición documentada era de 449 KB, así que más que duplicó y nadie anotó cuándo. No es una regresión conocida de nada: hay que ver qué la infló antes de tocar `inlineCss`, que ya se midió A/B y conviene dejar prendido.
 
 ## Para tener presente
+
+**Las dos actualizaciones que dejó la auditoría del 08/08/2026 están hechas**: Next 16.3.0 (con `eslint-config-next` y `@next/third-parties`) y Tailwind 4.3.3 (con `@tailwindcss/postcss`, `@tailwindcss/cli` y el `lightningcss` nativo que trae). Las dos fueron en su propio deploy y `npm run smoke` quedó en verde el 09/08 — rutas, cabeceras, redirects y las 115 URLs del sitemap. **El override de `postcss` se dejó**: Next pinea 8.5.23 y sacarlo bajaría desde 8.5.26; las dos están parcheadas y conviene la más nueva.
+
+Para la próxima: **nada de `npm audit fix`**, que mete los saltos juntos de prepo y no arregla nada que no esté arreglado (`npm audit` está en 0 desde que se corrigieron los `overrides`). Tampoco tocar `@supabase/ssr` (0.9.0, rango `^0.9.0` que no sube solo: es 0.x, donde el minor *es* el breaking, y maneja las cookies de sesión de todo el panel) ni `sharp`, ya en la última y sin advisories.
 
 **La fuente buena de Identidad Argentina es `respuestas-whatsapp/*.md`, no los PDF.** Los PDF de las diplomaturas dicen "certificación nacional e internacional avalado por normas ISO 9001-2015", y eso induce a error: el ISO es el aval de calidad de la academia, no de la certificación. Lo que respalda a la certificación son dos entidades, idénticas en las 11 diplomaturas: **aval nacional de la Cámara Argentina para la Formación y Capacitación Laboral** y **aval internacional de la Organización Internacional para la Educación Permanente (OIEP)**.
 

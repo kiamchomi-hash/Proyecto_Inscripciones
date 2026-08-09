@@ -99,15 +99,15 @@ Casos ya resueltos, para no rediscutirlos:
 - **`requiere` va en la respuesta, no en la intención.** Un `requiere` a nivel intención apaga la intención entera de esa casa, aunque tenga respuestas que sí podrían salir. Este error ya dejó mudas a `requisitos`, `cuotas`, `horarios` y `doble-titulacion`.
 - Al agregar una respuesta a una intención existente, mirar **el orden**: entre dos sin revisar gana la que está antes en el array.
 
-## Cobertura al 08/08/2026
+## Cobertura al 09/08/2026
 
 Las tres arrancan con las mismas 47 intenciones: las 12 respuestas que eran universales se copiaron a los tres archivos, así que ninguna casa quedó muda por el corte.
 
 | | Carreras | Intenciones sin respuesta | Aprobadas | Sin revisar |
 |---|---|---|---|---|
-| Universidad Siglo 21 | 65 | **0** | 16 | 54 |
+| Universidad Siglo 21 | 65 | **0** | 18 | 53 |
 | Teclab | 18 | **4** | 35 | 20 |
-| Academia Identidad Argentina | 11 | **0** | 18 | 40 |
+| Academia Identidad Argentina | 11 | **0** | 15 | 43 |
 
 Las 4 de Teclab son estructurales, no huecos: `dos-carreras`, `titulo-exterior` y `titulo-terciario` no aplican, y `enviar-ficha` necesita la URL de cada carrera, que no está cargada. `doble-titulacion` dejó de estar en la lista sólo porque heredó la copia universal, que exige `{dobleTitulacion}` y ninguna carrera de Teclab lo trae: en la práctica sigue sin contestarse.
 
@@ -134,6 +134,7 @@ Al revisar copias en las otras casas, mirar esto mismo: se escribieron pensando 
 
 ## Trampas conocidas
 
+- **No escribir la modalidad a mano.** «100% online» vale para 10 de las 11 diplomaturas de Identidad: **Gestión de Equipos de Alto Desempeño es híbrida**, y le salía una modalidad falsa en 13 respuestas (corregido el 09/08/2026). Va `{modalidad}` con `"modalidad"` en `requiere`; cuando la frase habla de la oferta entera y no de una carrera, «casi todas 100% online». En Teclab no pasa: las 17 son a distancia.
 - La solapa Revisar rellena los marcadores con la carrera elegida. Si la respuesta exige un dato que esa carrera no tiene, se muestra con otra **de la misma institución** y lo avisa. Antes cruzaba instituciones y mostraba Abogacía revisando Data Science.
 - `finalAmounts` en el archivo de precios de Teclab **sólo existe** cuando lo generó el pipeline de Python. Con el extractor de una pasada hay que leer `prices`.
 - El perfil profesional de las fichas viene como párrafo corrido y varias cierran con "Texto para enviar por mail": se corta en viñetas y se limpia en `generar-entrenador.mjs`.
