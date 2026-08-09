@@ -60,8 +60,7 @@ test('el curso muestra toda su lista de contenidos, la tecnicatura sólo tres', 
 });
 
 test('los filtros académicos reconocen Siglo 21 e Identidad Argentina', () => {
-  assert.equal(getAreaForCarrera({ nombre: 'Matemática' }), 'exactas');
-  assert.equal(getAreaForCarrera({ nombre: 'Sociología' }), 'sociales');
+  assert.equal(getAreaForCarrera({ nombre: 'Estadística Aplicada y Análisis Avanzado' }), 'exactas');
   assert.equal(getAreaForCarrera({ nombre: 'Logística Global' }), 'negocios');
   assert.equal(getAreaForCarrera({ nombre: 'Diplomatura en Oratoria' }), 'rrhh');
   assert.equal(getAreaForCarrera({ nombre: 'Diplomatura en Mindfulness' }), 'salud');
@@ -69,4 +68,28 @@ test('los filtros académicos reconocen Siglo 21 e Identidad Argentina', () => {
   assert.equal(getAreaForCarrera({ nombre: 'Curso de Constitución de Sociedades S.A.' }), 'derecho');
   assert.equal(getAreaForCarrera({ nombre: 'Diplomatura en Management Hotelero' }), 'negocios');
   assert.equal(getEscuelaIA({ nombre: 'Diplomatura en Inteligencia Artificial' }), 'Tecnología');
+});
+
+// Estas seis siguen el tag que la propia Siglo 21 le pone a la carrera en su ficha
+// (relevamiento en notas-locales/tags-oficiales-21.md), no la lectura literal del nombre.
+test('el área sigue el tag oficial de Siglo 21 donde difiere del nombre', () => {
+  assert.equal(getAreaForCarrera({ nombre: 'Martillero, Corredor Público y Corredor Inmobiliario' }), 'derecho');
+  assert.equal(getAreaForCarrera({ nombre: 'Comercialización' }), 'comunicacion');
+  assert.equal(getAreaForCarrera({ nombre: 'Negocios Digitales' }), 'negocios');
+  assert.equal(getAreaForCarrera({ nombre: 'Diseño y Desarrollo de Videojuegos' }), 'comunicacion');
+  assert.equal(getAreaForCarrera({ nombre: 'Matemática' }), 'educacion');
+  // 'informática' no puede comerse 'Bioinformática': Tecnología se evalúa antes que Salud.
+  assert.equal(getAreaForCarrera({ nombre: 'Bioinformática' }), 'salud');
+  assert.equal(getAreaForCarrera({ nombre: 'Informática' }), 'tecnologia');
+  // El match no exige límite al final: 'ambiental' tiene que seguir tomando 'Ambientales'.
+  assert.equal(getAreaForCarrera({ nombre: 'Gestión y Auditorías Ambientales' }), 'ambiente');
+});
+
+// `gobierno` va antes que `negocios` en AREA_KEYWORDS justamente por estas dos: si
+// se invierte el orden, 'administración' se las lleva a Negocios en silencio.
+test('lo público no cae en Negocios por la palabra Administración', () => {
+  assert.equal(getAreaForCarrera({ nombre: 'Administración Pública' }), 'gobierno');
+  assert.equal(getAreaForCarrera({ nombre: 'Administración y Gestión de Políticas Públicas' }), 'gobierno');
+  assert.equal(getAreaForCarrera({ nombre: 'Administración' }), 'negocios');
+  assert.equal(getAreaForCarrera({ nombre: 'Administración Agraria' }), 'negocios');
 });

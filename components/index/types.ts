@@ -168,7 +168,6 @@ export const AREAS = [
   { id: 'negocios', label: 'Negocios' },
   { id: 'salud', label: 'Salud' },
   { id: 'educacion', label: 'Educación' },
-  { id: 'sociales', label: 'Ciencias Sociales' },
   { id: 'comunicacion', label: 'Comunicación y Diseño' },
   { id: 'ambiente', label: 'Ambiente y Agro' },
   { id: 'turismo', label: 'Turismo y Hotelería' },
@@ -179,27 +178,48 @@ export const AREAS = [
 
 export type AreaId = (typeof AREAS)[number]['id'];
 
+// Varias de estas palabras las tomamos del tag que la propia Siglo 21 le pone a
+// cada carrera en el hero de su ficha (relevado en `notas-locales/tags-oficiales-21.md`):
+// por eso Martillero es Derecho y no Negocios, Comercialización es Comunicación,
+// y Matemática es Educación — el plan oficial es de perfil docente.
+//
+// OJO: el orden de las claves es la precedencia, gana la primera que matchea. Va de
+// lo específico a lo general: `gobierno` tiene que ir antes que `negocios` porque
+// 'administración' se come 'Administración Pública'. No es el orden de `AREAS`,
+// que es el de la lista del filtro.
 const AREA_KEYWORDS: Record<AreaId, string[]> = {
-  derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense', 'constitución de sociedades'],
-  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'bioinformática', 'redes informáticas', 'telecomunicaciones', 'videojuegos', 'prompt engineering', 'negocios digitales', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad'],
-  exactas: ['matemática', 'estadística'],
-  negocios: ['administración', 'finanzas', 'comercialización', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'martillero', 'corredor', 'customer experience', 'seguros', 'logística', 'marketing para emprendedores', 'compliance', 'management hotelero'],
-  salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas', 'mindfulness', 'bienestar integral'],
-  educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia'],
-  sociales: ['sociología', 'trabajo social', 'promoción comunitaria'],
-  comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos'],
+  derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense', 'constitución de sociedades', 'martillero', 'corredor'],
+  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad'],
+  exactas: ['estadística'],
+  gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
+  negocios: ['administración', 'finanzas', 'negocios digitales', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'customer experience', 'seguros', 'logística', 'marketing para emprendedores', 'compliance', 'management hotelero'],
+  salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas', 'mindfulness', 'bienestar integral', 'bioinformática'],
+  educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia', 'matemática'],
+  comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos', 'comercialización', 'videojuegos', 'marketing digital', 'inbound marketing'],
   ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
   turismo: ['turística', 'turísticos', 'hotelera', 'turismo'],
-  gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
   rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'oratoria', 'equipos de alto desempeño', 'rrhh'],
   deporte: ['deportiva', 'deportivo', 'nutrición deportiva', 'fútbol'],
 };
+
+// La palabra clave tiene que arrancar donde arranca una palabra del nombre. Sin
+// esto 'informatica' se come 'Bioinformatica', que va en Salud y se evalua despues.
+// El final queda libre a proposito: 'ambiental' tiene que seguir matcheando
+// 'Auditorias Ambientales'.
+function empiezaPalabra(nombre: string, kw: string): boolean {
+  let i = nombre.indexOf(kw);
+  while (i !== -1) {
+    if (!/[a-z0-9áéíóúüñ]/.test(nombre[i - 1] ?? ' ')) return true;
+    i = nombre.indexOf(kw, i + 1);
+  }
+  return false;
+}
 
 export function getAreaForCarrera(c: Carrera): AreaId | null {
   const nombre = c.nombre.toLowerCase();
   for (const [area, keywords] of Object.entries(AREA_KEYWORDS) as [AreaId, string[]][]) {
     for (const kw of keywords) {
-      if (nombre.includes(kw)) return area;
+      if (empiezaPalabra(nombre, kw)) return area;
     }
   }
   return null;
