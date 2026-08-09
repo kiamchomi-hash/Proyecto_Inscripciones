@@ -14,7 +14,7 @@
 import Image from 'next/image';
 import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
-import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
+import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 import {
@@ -790,9 +790,7 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
   // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
   // en medio de la nada. El titulo y el certificado ya estan en la portada.
   const chips = [modalidad, carrera.duracion, esCursoTeclab(carrera) ? 'Certificado oficial' : 'Título oficial'].filter(Boolean);
-  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
-    `Hola, quiero consultar precios y fechas de ${carrera.nombre}`,
-  )}`;
+  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
     <div className="teclab-slide teclab-cierre h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
 import { sanitizeContent } from '@/lib/sanitize-content';
-import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
+import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 
@@ -1229,7 +1229,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
         <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
-              href={`https://wa.me/5491166522722?text=${encodeURIComponent(`Hola, quiero consultar los precios de ${carrera.nombre}`)}`}
+              href={`https://wa.me/5491166522722?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2 md:py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white font-bold rounded-xl transition-all text-xs md:text-sm"

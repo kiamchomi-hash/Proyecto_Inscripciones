@@ -11,7 +11,7 @@ import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import Isotipo from './ia-isotipo';
-import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
+import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 
@@ -450,9 +450,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
   // La cursada no entra: es una frase, no un dato de dos palabras. Queda en la
   // portada y en el slide del docente.
   const chips = [modalidad, carrera.duracion, certificacion].filter(Boolean);
-  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
-    `Hola, quiero consultar precios y fechas de ${carrera.nombre}`,
-  )}`;
+  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
     <div className="ia-slide ia-cierre relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">

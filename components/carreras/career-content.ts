@@ -179,10 +179,12 @@ export function tienePlanDeEstudios(carrera: Carrera): boolean {
   return conMaterias || Boolean(carrera.plan_estudios);
 }
 
+type CarreraEnMensaje = Pick<Carrera, 'nombre' | 'prefix' | 'nivel'>;
+
 /**
- * El texto con el que se abre WhatsApp desde la ficha y desde los cuatro modales.
- * Los asteriscos son la negrita de WhatsApp: el lead manda el mensaje sin leerlo,
- * asi que del otro lado el nombre tiene que saltar sin buscarlo en el renglon.
+ * Como se nombra la carrera adentro de un mensaje de WhatsApp. Los asteriscos son
+ * la negrita de WhatsApp: el lead manda el mensaje sin leerlo, asi que del otro
+ * lado el nombre tiene que saltar sin buscarlo en el renglon.
  *
  * Va `carreraFullName` y no `nombre` para que no se pierda el tipo: en las filas
  * de Siglo 21 el "Licenciatura en" vive en `prefix`, y esa funcion ademas le saca
@@ -193,10 +195,18 @@ export function tienePlanDeEstudios(carrera: Carrera): boolean {
  * en Oratoria"). Identidad Argentina entra entera por ahi -- sus doce filas son
  * diplomaturas o cursos.
  */
-export function mensajeWhatsAppInfo(carrera: Pick<Carrera, 'nombre' | 'prefix' | 'nivel'>): string {
+function nombreEnMensaje(carrera: CarreraEnMensaje): string {
   const nombre = carreraFullName(carrera);
-  if (carrera.nivel === 'Identidad Argentina' || esCursoTeclab(carrera)) {
-    return `Hola, me gustaría recibir más información sobre ${nombre}`;
-  }
-  return `Hola, me gustaría recibir más información sobre la carrera *${nombre.toUpperCase()}*`;
+  if (carrera.nivel === 'Identidad Argentina' || esCursoTeclab(carrera)) return nombre;
+  return `la carrera *${nombre.toUpperCase()}*`;
+}
+
+/** Boton de WhatsApp de la ficha y de los cuatro modales. */
+export function mensajeWhatsAppInfo(carrera: CarreraEnMensaje): string {
+  return `Hola, me gustaría recibir más información sobre ${nombreEnMensaje(carrera)}`;
+}
+
+/** Boton "Consultar precios" del slide de cierre, en los tres modales que lo tienen. */
+export function mensajeWhatsAppPrecios(carrera: CarreraEnMensaje): string {
+  return `Hola, quiero consultar precios y fechas de ${nombreEnMensaje(carrera)}`;
 }
