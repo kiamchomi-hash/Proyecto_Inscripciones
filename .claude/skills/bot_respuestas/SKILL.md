@@ -129,7 +129,7 @@ Al revisar copias en las otras casas, mirar esto mismo: se escribieron pensando 
 
 ## Sin confirmar
 
-- **Secundario incompleto en Siglo 21.** El reglamento 2026 pide "copia legalizada del certificado de estudios secundario completo" y no contempla excepciones. La vía de mayores de 25 está en la base de conocimiento del CAU y la respuesta la linkea, pero el reglamento no la respalda. Adeudar materias o título en trámite: sin dato.
+- **Secundario incompleto en Siglo 21.** El reglamento 2026 pide "copia legalizada del certificado de estudios secundario completo" y no contempla excepciones. La vía de mayores de 25 está en la base de conocimiento del CAU y la respuesta la linkea, pero el reglamento no la respalda. **Título en trámite sí tiene respuesta** desde el 08/08/2026: el certificado de estudios en trámite vale un año como documentación provisoria, siempre que conste que no adeuda materias — o sea que adeudar materias sigue sin vía. Todo el detalle, con los plazos del legajo, en `ventas/requisitos.md`.
 - **Financiación mensual.** No existe pago mensual: el reglamento compromete el pago por cuatrimestre o bimestre. Las 6 cuotas son financiación de tarjeta. Las consultas de "¿cuánto por mes?" siguen contestándose con el total.
 
 ## Trampas conocidas
