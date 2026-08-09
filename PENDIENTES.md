@@ -28,13 +28,13 @@
 
   Aparte: **Licenciatura en Administración** figura enlazada en el índice del sitio pero `licenciatura-en-administracion` (sin tilde) devuelve 404. El link está roto del lado de ellos; ya va incluido en el pedido.
 
-- [ ] **El corpus del bot tiene 116 respuestas sin revisar.** De 184 vivas, 68 están aprobadas (Siglo 21 18/53, Teclab 35/20, Identidad 15/43, al 09/08). Aprobar o descartar **lo decide una persona**; desde el 04/08 se hace en la conversación —se lee el mensaje que salió mal, se corrige el JSON de esa casa en `ventas/corpus/` y se regeneran las dos páginas—, no en `entrenar-bot.html`.
+- [ ] **El corpus del bot tiene 113 respuestas sin revisar.** De 184 vivas, 71 están aprobadas (Siglo 21 18/53, Teclab 35/20, Identidad 18/40, al 09/08). Aprobar o descartar **lo decide una persona**; desde el 04/08 se hace en la conversación —se lee el mensaje que salió mal, se corrige el JSON de esa casa en `ventas/corpus/` y se regeneran las dos páginas—, no en `entrenar-bot.html`.
 
   ~~Las 5 de Identidad que corregían una respuesta falsa~~ Aprobadas el 08/08/2026: `validez`, `requisitos`, `equivalencias`, `inscripcion` y `doble-titulacion` ya contestan con el texto propio, y en el mismo pase se le sacaron a Identidad las 7 copias universales que le hablaban al lead como si la diplomatura fuera una carrera de grado.
 
   **Lo que apareció al revisar el resto (09/08/2026) fue la modalidad escrita a mano**: 13 respuestas afirmaban «100% online», que es cierto en 10 de las 11 diplomaturas y falso en **Gestión de Equipos de Alto Desempeño, que es híbrida**. Corregidas: donde la frase habla de la carrera va `{modalidad}`, y donde habla de la oferta entera, «casi todas 100% online». Se aprovechó para sacar de `extranjero` un «no te piden documentación argentina» sin fuente —la preinscripción pide DNI— y para que `clases-y-examenes` diga la evaluación en vez de ofrecer confirmarla, que ya estaba documentada y la contestaba `validez`.
 
-  **Quedan tres esperando el visto bueno**, que volvieron a `sin revisar` justamente por ese cambio de texto: `duracion-identidad`, `modalidad-identidad` y `doble-titulacion-identidad`. Y una decisión: `extranjero-identidad` sigue abriendo con «Sí, podés» y para la híbrida eso es discutible, aunque la misma oración ya dice «es híbrida» y el operador la lee antes de mandarla.
+  Las tres que el cambio de texto había devuelto a `sin revisar` —`duracion-identidad`, `modalidad-identidad` y `doble-titulacion-identidad`— se aprobaron el 09/08 con el texto nuevo a la vista. Queda una decisión abierta: `extranjero-identidad` sigue abriendo con «Sí, podés» y para la híbrida eso es discutible, aunque la misma oración ya dice «es híbrida» y el operador la lee antes de mandarla.
 
 - [ ] **Cuatro datos institucionales sin confirmar**, que hoy el bot responde con un "lo confirmo y te aviso" en vez de inventar:
 

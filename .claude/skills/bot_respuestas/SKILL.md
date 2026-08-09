@@ -107,7 +107,7 @@ Las tres arrancan con las mismas 47 intenciones: las 12 respuestas que eran univ
 |---|---|---|---|---|
 | Universidad Siglo 21 | 65 | **0** | 18 | 53 |
 | Teclab | 18 | **4** | 35 | 20 |
-| Academia Identidad Argentina | 11 | **0** | 15 | 43 |
+| Academia Identidad Argentina | 11 | **0** | 18 | 40 |
 
 Las 4 de Teclab son estructurales, no huecos: `dos-carreras`, `titulo-exterior` y `titulo-terciario` no aplican, y `enviar-ficha` necesita la URL de cada carrera, que no está cargada. `doble-titulacion` dejó de estar en la lista sólo porque heredó la copia universal, que exige `{dobleTitulacion}` y ninguna carrera de Teclab lo trae: en la práctica sigue sin contestarse.
 
