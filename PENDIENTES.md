@@ -47,6 +47,10 @@
 
   Venía anotado en `migracion_pendiente/pendientes-presencia-digital.md`, que se disolvió el 08/08/2026. Es lo único que quedaba de esa lista: Schema.org, las Twitter cards, los og:image y el sitemap de imágenes ya están hechos.
 
+- [ ] **Limpiar la API key muerta de TestSprite del `~/.claude.json` de la máquina de Linux.** La cuenta se configuró allá (`/home/coco/Escritorio/Pagina_Siglo21`), así que la entrada del MCP con la key vieja quedó en ese archivo; en Windows no hay rastro. **Es higiene, no seguridad**: la key se borró en testsprite.com el 08/08/2026 y ya no sirve para nada. Se busca `testsprite` en `~/.claude.json` y se saca la entrada entera, que el servidor tampoco se usa más.
+
+  Al pasar a esa máquina, ojo con lo otro: **hay que clonar el repo de nuevo, no hacer `pull`**. La historia se reescribió el 08/08/2026 y un pull mezcla las dos.
+
 ## Para tener presente
 
 **La fuente buena de Identidad Argentina es `respuestas-whatsapp/*.md`, no los PDF.** Los PDF de las diplomaturas dicen "certificación nacional e internacional avalado por normas ISO 9001-2015", y eso induce a error: el ISO es el aval de calidad de la academia, no de la certificación. Lo que respalda a la certificación son dos entidades, idénticas en las 11 diplomaturas: **aval nacional de la Cámara Argentina para la Formación y Capacitación Laboral** y **aval internacional de la Organización Internacional para la Educación Permanente (OIEP)**.
