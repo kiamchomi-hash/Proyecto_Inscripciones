@@ -1,4 +1,4 @@
--- Ajusta la oferta visible después de contrastar las carreras con el catálogo,
+﻿-- Ajusta la oferta visible después de contrastar las carreras con el catálogo,
 -- el sitemap y las fichas públicas de Universidad Siglo 21 el 30/07/2026.
 --
 -- Criterio:

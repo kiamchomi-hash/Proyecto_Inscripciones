@@ -1,4 +1,4 @@
--- La novedad del inicio de clases pasa a ser perenne.
+﻿-- La novedad del inicio de clases pasa a ser perenne.
 --
 -- Estaba como `segundo-semestre-2026-inicio-3-de-agosto`: slug, titulo y cuerpo
 -- clavados a una fecha que ya paso. Cada cambio de fecha obligaba a un slug

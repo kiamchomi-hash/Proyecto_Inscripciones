@@ -1,4 +1,4 @@
--- Novedades: cargar imagen_url en los 10 articulos publicados.
+﻿-- Novedades: cargar imagen_url en los 10 articulos publicados.
 --
 -- Contexto: las 10 novedades estaban con imagen_url NULL, asi que las tarjetas del
 -- listado caian en el placeholder y al compartir cualquier articulo no salia miniatura.

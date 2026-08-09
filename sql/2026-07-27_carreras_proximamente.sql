@@ -1,4 +1,4 @@
--- Marca Agroinformatica como anunciada pero sin inscripcion abierta.
+﻿-- Marca Agroinformatica como anunciada pero sin inscripcion abierta.
 --
 -- Contexto: es la carrera que mejor rankea del sitio (posicion 3,6 en
 -- "agroinformatica siglo 21", el mejor activo que tiene) pero no se puede

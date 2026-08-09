@@ -1,4 +1,4 @@
--- Eliminación irreversible del módulo y todos los datos personales de alumnos.
+﻿-- Eliminación irreversible del módulo y todos los datos personales de alumnos.
 -- Ejecutar una sola vez con un rol propietario de la base.
 BEGIN;
 

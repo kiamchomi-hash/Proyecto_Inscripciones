@@ -1,4 +1,4 @@
--- Corrige la lista de Teclab Gestion en la novedad 'teclab-tecnicaturas-online'.
+﻿-- Corrige la lista de Teclab Gestion en la novedad 'teclab-tecnicaturas-online'.
 --
 -- Problema: el encabezado decia "Teclab Gestion (11 carreras)" y la lista tenia
 -- 6 items, porque agrupaba carreras que en la tabla `carreras` son filas

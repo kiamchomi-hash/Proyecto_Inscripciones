@@ -1,4 +1,4 @@
--- Carga la ficha de la Licenciatura en Sociología (id 131), que estaba
+﻿-- Carga la ficha de la Licenciatura en Sociología (id 131), que estaba
 -- publicada con `slides` y `plan_estudios` en NULL: sin portada, sin temario y
 -- disparando el mail de /api/notificar-carrera cada vez que alguien la abría.
 -- Era una de las 2 carreras que marcaba `npm run auditar` el 29/07/2026.

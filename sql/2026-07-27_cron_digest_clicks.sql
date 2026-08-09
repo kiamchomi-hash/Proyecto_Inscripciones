@@ -1,4 +1,4 @@
--- Programa el digest diario de clicks, que nunca llego a correr.
+﻿-- Programa el digest diario de clicks, que nunca llego a correr.
 --
 -- Por que fallo: el bloque del cron en sql/2026-07-22_clicks_carreras.sql pedia
 -- reemplazar <WEBHOOK_SECRET> a mano antes de ejecutarlo. Nunca se ejecuto, asi

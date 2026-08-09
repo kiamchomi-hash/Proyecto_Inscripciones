@@ -1,4 +1,4 @@
--- Marca la Tecnicatura en Estadística Aplicada y Análisis Avanzado (id 132)
+﻿-- Marca la Tecnicatura en Estadística Aplicada y Análisis Avanzado (id 132)
 -- como anunciada pero sin inscripción abierta.
 --
 -- Motivo: es la otra carrera que marcaba `npm run auditar` el 29/07/2026 (sin

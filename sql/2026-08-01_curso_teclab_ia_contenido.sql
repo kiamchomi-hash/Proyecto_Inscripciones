@@ -1,4 +1,4 @@
--- Contenido del curso de Teclab en Inteligencia Artificial (id 235), tomado de
+﻿-- Contenido del curso de Teclab en Inteligencia Artificial (id 235), tomado de
 -- la landing oficial https://teclab.edu.ar/landing/curso-profesional-ia/ el
 -- 01/08/2026. Reemplaza los "Consultar" que dejó sql/2026-07-30_curso_teclab_ia.sql,
 -- escrito cuando el instituto todavía no había publicado la ficha comercial.

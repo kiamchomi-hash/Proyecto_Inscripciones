@@ -1,4 +1,4 @@
--- Curso de Actualización Profesional en Inteligencia Artificial de Teclab.
+﻿-- Curso de Actualización Profesional en Inteligencia Artificial de Teclab.
 -- Ejecutar en el SQL Editor de Supabase.
 --
 -- Teclab no publica una ficha abierta con duración, modalidad o plan de

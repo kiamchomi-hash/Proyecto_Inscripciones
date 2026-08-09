@@ -1,4 +1,4 @@
--- Cierra la lectura pública de datos personales.
+﻿-- Cierra la lectura pública de datos personales.
 -- El anon key viaja en el bundle del navegador: todo lo que anon pueda SELECT es público.
 BEGIN;
 

@@ -1,4 +1,4 @@
--- Conteo diario de aperturas de tarjetas + digest de las 20hs por Telegram.
+﻿-- Conteo diario de aperturas de tarjetas + digest de las 20hs por Telegram.
 -- Guarda sólo agregados: ni IP, ni sesión, ni nada que identifique a la persona.
 BEGIN;
 

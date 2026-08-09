@@ -1,4 +1,4 @@
--- Texto propio de cada materia en /clases-apoyo/<slug>, más los acentos que
+﻿-- Texto propio de cada materia en /clases-apoyo/<slug>, más los acentos que
 -- faltaban en las viñetas. Inglés y Apoyo Secundario van sin texto: están en
 -- construcción. El porqué está en INDEXACION.md § 1.
 

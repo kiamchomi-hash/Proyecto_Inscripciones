@@ -1,4 +1,4 @@
--- Repone el plan_estudios de las 11 carreras de convenio (nivel 'Identidad
+﻿-- Repone el plan_estudios de las 11 carreras de convenio (nivel 'Identidad
 -- Argentina') desde las fichas oficiales de la Academia.
 --
 -- Problema: los planes cargados en Supabase eran resúmenes condensados, no el

@@ -1,4 +1,4 @@
-BEGIN;
+﻿BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.form_rate_limits (
   key text PRIMARY KEY,

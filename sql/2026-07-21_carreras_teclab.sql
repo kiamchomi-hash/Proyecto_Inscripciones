@@ -1,4 +1,4 @@
--- Carreras del Instituto Técnico Superior Teclab (17 tecnicaturas).
+﻿-- Carreras del Instituto Técnico Superior Teclab (17 tecnicaturas).
 -- Generado desde los PDF oficiales de plan de estudio.
 -- Ejecutar en el SQL Editor de Supabase.
 

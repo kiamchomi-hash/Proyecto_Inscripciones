@@ -1,4 +1,4 @@
--- Corrige los hallazgos accionables de Security y Performance Advisors.
+﻿-- Corrige los hallazgos accionables de Security y Performance Advisors.
 -- Los avisos informativos de índices sin uso y tablas internas sin policies
 -- se conservan de forma intencional.
 BEGIN;

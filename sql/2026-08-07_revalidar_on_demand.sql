@@ -1,4 +1,4 @@
--- Revalidacion on-demand: la base le avisa a Next cuando cambia el contenido.
+﻿-- Revalidacion on-demand: la base le avisa a Next cuando cambia el contenido.
 --
 -- POR QUE
 -- Cada pagina cachea lo suyo: la home una hora, las fichas de carrera y las

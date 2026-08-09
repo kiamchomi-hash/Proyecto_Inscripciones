@@ -1,4 +1,4 @@
--- Repone la seccion de novedades con 10 guias del CAU.
+﻿-- Repone la seccion de novedades con 10 guias del CAU.
 --
 -- Contexto: 2026-07-27_despublicar_novedades_relleno.sql dejo la seccion vacia
 -- porque las 58 filas anteriores inventaban hechos del CAU que no ocurrieron

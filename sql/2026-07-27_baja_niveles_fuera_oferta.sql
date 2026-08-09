@@ -1,4 +1,4 @@
--- Baja de los niveles que quedaron fuera de la oferta del sitio
+﻿-- Baja de los niveles que quedaron fuera de la oferta del sitio
 --
 -- Contexto: Posgrado, APLV/Extragrado, Certificaciones y Cursos ya no aparecen en
 -- ningun lado. esCarreraVisible() (components/index/types.ts:111) los filtra del

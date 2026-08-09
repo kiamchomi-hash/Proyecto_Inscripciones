@@ -1,4 +1,4 @@
--- Arregla los avisos de formularios (mail + Telegram), que estaban rotos en silencio.
+﻿-- Arregla los avisos de formularios (mail + Telegram), que estaban rotos en silencio.
 --
 -- QUÉ PASABA
 -- El endurecimiento de seguridad le agregó a la Edge Function `notificar` una
