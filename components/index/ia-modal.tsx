@@ -11,6 +11,7 @@ import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import Isotipo from './ia-isotipo';
+import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 
@@ -593,9 +594,7 @@ export default function IAModal({ carrera, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [handleClose, slides.length]);
 
-  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(
-    `Hola, me gustaría recibir más información sobre ${carrera.nombre}`,
-  )}`;
+  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}` : '';
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 

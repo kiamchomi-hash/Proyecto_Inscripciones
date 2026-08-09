@@ -31,6 +31,7 @@ import {
   planSlideToExtras,
   contarMaterias,
   tienePlanDeEstudios,
+  mensajeWhatsAppInfo,
 } from './career-content';
 
 interface Props {
@@ -220,7 +221,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   // que no lo tienen. Vive en career-content.ts para que los tres no se separen.
   const hasPlan = tienePlanDeEstudios(carrera);
 
-  const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
+  const waMsg = mensajeWhatsAppInfo(carrera);
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
 
   return (

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
 import { sanitizeContent } from '@/lib/sanitize-content';
+import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 
@@ -867,7 +868,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
     return () => window.removeEventListener('keydown', handler);
   }, [handleClose]);
 
-  const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
+  const waMsg = mensajeWhatsAppInfo(carrera);
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}`

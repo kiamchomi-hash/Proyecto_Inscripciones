@@ -8,6 +8,7 @@ import type {
   SlidePlanEstudios,
   SlideCierre,
 } from '@/components/index/types';
+import { carreraFullName } from '@/components/index/types';
 import type { TeclabPeriodo } from '@/components/index/teclab';
 // Primer import de runtime del modulo: hasta ahora solo traia tipos, que el type
 // stripping borra. O sea que este archivo ya no se puede abrir con node pelado
@@ -176,4 +177,26 @@ export function tienePlanDeEstudios(carrera: Carrera): boolean {
     return conMaterias || (Boolean(carrera.plan_estudios) && parsePlanModulos(carrera.plan_estudios!).length > 0);
   }
   return conMaterias || Boolean(carrera.plan_estudios);
+}
+
+/**
+ * El texto con el que se abre WhatsApp desde la ficha y desde los cuatro modales.
+ * Los asteriscos son la negrita de WhatsApp: el lead manda el mensaje sin leerlo,
+ * asi que del otro lado el nombre tiene que saltar sin buscarlo en el renglon.
+ *
+ * Va `carreraFullName` y no `nombre` para que no se pierda el tipo: en las filas
+ * de Siglo 21 el "Licenciatura en" vive en `prefix`, y esa funcion ademas le saca
+ * el "Grado / " de adelante y no lo duplica en Teclab, que ya lo trae en el nombre.
+ *
+ * Cursos y diplomaturas se quedan con la redaccion vieja, sin "la carrera" ni
+ * mayuscula: no son carreras, y el nombre ya dice lo que son ("sobre Diplomatura
+ * en Oratoria"). Identidad Argentina entra entera por ahi -- sus doce filas son
+ * diplomaturas o cursos.
+ */
+export function mensajeWhatsAppInfo(carrera: Pick<Carrera, 'nombre' | 'prefix' | 'nivel'>): string {
+  const nombre = carreraFullName(carrera);
+  if (carrera.nivel === 'Identidad Argentina' || esCursoTeclab(carrera)) {
+    return `Hola, me gustaría recibir más información sobre ${nombre}`;
+  }
+  return `Hola, me gustaría recibir más información sobre la carrera *${nombre.toUpperCase()}*`;
 }

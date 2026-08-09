@@ -11,6 +11,7 @@ import {
   parseIAMeta,
   parsePlanModulos,
   parseDocente,
+  mensajeWhatsAppInfo,
 } from '@/components/carreras/career-content';
 
 interface Props {
@@ -104,7 +105,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   }, [handleClose]);
 
   // WhatsApp link
-  const waMsg = `Hola, me gustaría recibir más información sobre ${carrera.nombre}`;
+  const waMsg = mensajeWhatsAppInfo(carrera);
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
 
   // Share URL
