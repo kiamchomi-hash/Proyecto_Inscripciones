@@ -8,10 +8,8 @@ build/
 *.log
 .DS_Store
 public/styles.css
-migracion_pendiente/index.html
 public/rellenar_carreras.html
 public/tools/
-migracion_pendiente/resumen-plan-backup.html
 components/index/_carrera-navigation-arrows.tsx.bak
 scripts/explore-*.mjs
 scripts/debug_*.mjs

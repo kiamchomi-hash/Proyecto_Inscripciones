@@ -9,7 +9,6 @@ export default defineConfig([
     '.next/**',
     'dist/**',
     'node_modules/**',
-    'migracion_pendiente/**',
     '.claude/**',
     'scripts/**',
     'next-env.d.ts',

@@ -43,6 +43,10 @@
 
 - [ ] **Confirmar que el sitemap ya se rehace on-demand.** El 08/08/2026 se arregló `revalidatePath('/sitemap.xml')` —iba con el tipo `'page'` y no hacía nada, así que el sitemap sólo se actualizaba en el deploy—. El fix está deployado pero sin verificar de punta a punta: la próxima vez que se cargue, renombre o dé de baja una carrera o una novedad **sin pushear nada**, pedir `https://www.siglo21sur.com/sitemap.xml` y ver si el cambio está. Si no está, mirar `net._http_response` (el endpoint responde 200 igual: devuelve la lista de rutas que revalidó).
 
+- [ ] **El sitio no tiene manifest ni íconos de PWA.** Falta `public/manifest.json` con los íconos de 192×192 y 512×512, y el `<link rel="manifest">` en `app/layout.tsx`. Está frenado por lo de siempre: no hay un ícono del CAU en PNG cuadrado en esos tamaños. Prioridad baja — sin manifest el sitio se ve y se indexa igual, lo único que se pierde es el "agregar a la pantalla de inicio" con nombre e ícono propios. El service worker para cache offline es aparte y opcional.
+
+  Venía anotado en `migracion_pendiente/pendientes-presencia-digital.md`, que se disolvió el 08/08/2026. Es lo único que quedaba de esa lista: Schema.org, las Twitter cards, los og:image y el sitemap de imágenes ya están hechos.
+
 ## Para tener presente
 
 **La fuente buena de Identidad Argentina es `respuestas-whatsapp/*.md`, no los PDF.** Los PDF de las diplomaturas dicen "certificación nacional e internacional avalado por normas ISO 9001-2015", y eso induce a error: el ISO es el aval de calidad de la academia, no de la certificación. Lo que respalda a la certificación son dos entidades, idénticas en las 11 diplomaturas: **aval nacional de la Cámara Argentina para la Formación y Capacitación Laboral** y **aval internacional de la Organización Internacional para la Educación Permanente (OIEP)**.

@@ -197,7 +197,7 @@ Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano 
 - Alias `@/*` → raíz del proyecto.
 - El contenido HTML que viene de la base (novedades) pasa siempre por `lib/sanitize-content.ts` antes de renderizarse.
 - Colores en `app/globals.css` `:root` — fondo `--color-deep-dark-bg: #013729`, acento `--color-highlight: #00c7b1`, tarjetas `--color-card-bg: #1c2f31`, dorado `--color-gold: #e69b05`, marca `--cau-brand-blue: #005587` / `--cau-brand-green: #058c70`.
-- `migracion_pendiente/` **no tiene código** ni tiene nada pendiente de migrar: el nombre quedó de antes y adentro sólo hay dos **backlogs vivos** en Markdown, `pendientes-admin.md` y `pendientes-presencia-digital.md` (textos para el panel, faltantes de `og:image`). Está fuera de ESLint.
+- `docs/textos-whatsapp.md` son las respuestas institucionales para copiar y pegar al atender un lead a mano. **No las usa el bot**, que contesta desde `ventas/corpus/`. No llevan precios ni fechas a propósito.
 - `PENDIENTES.md` es el backlog vivo, con las verificaciones manuales que no se pueden automatizar.
 - `scripts/` son utilitarios de carga de datos de una sola vez (parseo e insert de carreras, descarga de assets de Teclab); no participan del build ni de `check`.
 - `.claude/skills/` es una biblioteca local de skills para Claude Code: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), SEO, y guías generales de Next/React. Antes vivía en `shared_skills/` con un symlink al lado, que sólo funcionaba en Linux; ahora es un directorio real y carga en los dos sistemas.
