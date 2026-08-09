@@ -60,8 +60,7 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "dompurify": "3.4.12",
-    "postcss": "8.5.20",
+    "postcss": "^8.5.26",
     "sharp": "$sharp"
   }
 }
