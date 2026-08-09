@@ -12,6 +12,7 @@ const ESCUELAS: { match: string; escuela: string }[] = [
   { match: 'equipos de alto desempeño', escuela: 'Liderazgo' },
   { match: 'rrhh', escuela: 'Tecnología' },
   { match: 'fraude', escuela: 'Tecnología' },
+  { match: 'ciberseguridad', escuela: 'Tecnología' },
   { match: 'inteligencia artificial', escuela: 'Tecnología' },
   { match: 'mindfulness', escuela: 'Bienestar' },
   { match: 'bienestar integral', escuela: 'Bienestar' },
