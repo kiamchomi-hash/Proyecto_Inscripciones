@@ -118,6 +118,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
+      // Las fechas son de todo el ano y no se tocan, pero la pagina responde una
+      // busqueda estacional ("calendario siglo 21 2026") que se renueva cada
+      // ciclo: conviene que Google la revisite seguido.
+      url: `${baseUrl}/calendario-academico`,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/sobre-nosotros`,
       changeFrequency: 'monthly',
       priority: 0.6,

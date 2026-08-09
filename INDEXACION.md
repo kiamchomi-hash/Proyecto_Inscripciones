@@ -5,6 +5,7 @@
 ## Pedir indexación
 
 ```
+https://www.siglo21sur.com/calendario-academico
 https://www.siglo21sur.com/carreras/diplomatura-en-ciberseguridad-aplicada
 https://www.siglo21sur.com/carreras/licenciatura-en-emprendimiento-ccc
 https://www.siglo21sur.com/clases-apoyo/fisico-quimica

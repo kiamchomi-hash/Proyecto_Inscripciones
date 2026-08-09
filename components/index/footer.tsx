@@ -29,6 +29,7 @@ export default function IndexFooter() {
               <li><Link href="/" className="text-[#c0d5d0] hover:text-white hover:lg:translate-x-1 inline-block transition-all duration-200">Inicio</Link></li>
               <li><Link href="/sobre-nosotros" className="text-[#c0d5d0] hover:text-white hover:lg:translate-x-1 inline-block transition-all duration-200">Sobre Nosotros</Link></li>
               <li><Link href="/clases-apoyo" className="text-[#c0d5d0] hover:text-white hover:lg:translate-x-1 inline-block transition-all duration-200">Clases de Apoyo</Link></li>
+              <li><Link href="/calendario-academico" className="text-[#c0d5d0] hover:text-white hover:lg:translate-x-1 inline-block transition-all duration-200">Calendario Académico 2026</Link></li>
               <li><Link href="/faq" className="text-[#c0d5d0] hover:text-white hover:lg:translate-x-1 inline-block transition-all duration-200">Preguntas Frecuentes</Link></li>
               <li><Link href="/contacto" className="text-[#c0d5d0] hover:text-white hover:lg:translate-x-1 inline-block transition-all duration-200">Contacto</Link></li>
             </ul>

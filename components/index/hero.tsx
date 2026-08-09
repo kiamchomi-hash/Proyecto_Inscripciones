@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import HeroCarousel from './hero-carousel';
 
 export default function Hero() {
@@ -135,6 +136,46 @@ export default function Hero() {
                     <strong className="text-[#00ffe1] text-[9px] sm:text-[11px] md:text-[13px] xl:text-[10px] 2xl:text-[13px] font-bold leading-tight mt-0.5 w-full px-0.5 wrap-break-word">Amigo<br />Referido</strong>
                   </div>
 
+                </div>
+              </div>
+            </div>
+
+            {/* Slide 4: Calendario academico. Es la puerta de entrada a
+                /calendario-academico, que no esta en el navbar por falta de
+                espacio. */}
+            <div className="banner-slide">
+              <div className="w-full h-full relative min-h-[120px] bg-linear-to-br from-[#0c2920] to-[#013729] overflow-hidden flex flex-col items-center justify-center p-2 sm:p-4">
+
+                {/* Almanaques decorativos en los extremos, igual que la slide 1 */}
+                <div className="absolute inset-0 pointer-events-none z-[1] overflow-hidden mix-blend-screen w-full">
+                  <svg className="absolute top-1/2 -translate-y-1/2 left-1 min-[400px]:left-2 sm:left-4 md:left-6 lg:left-8 xl:left-4 2xl:left-8 w-10 h-10 min-[400px]:w-12 min-[400px]:h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-40 lg:h-40 xl:w-24 xl:h-24 2xl:w-32 2xl:h-32 text-[#00c7b1] opacity-[0.20] -rotate-12 hidden min-[320px]:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                  </svg>
+                  <svg className="absolute top-1/2 -translate-y-1/2 right-1 min-[400px]:right-2 sm:right-4 md:right-6 lg:right-8 xl:right-4 2xl:right-8 w-10 h-10 min-[400px]:w-12 min-[400px]:h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-40 lg:h-40 xl:w-24 xl:h-24 2xl:w-32 2xl:h-32 text-[#00ff88] opacity-[0.15] rotate-12 hidden min-[320px]:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={0.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+
+                <h2
+                  // Escala mas chica que la slide 1: "Calendario Academico 2026"
+                  // son 25 caracteres contra los 18 de "Inscripciones 2026", y
+                  // con whitespace-nowrap el titulo se comia los margenes.
+                  className="relative z-10 text-white font-black text-[0.8rem] min-[380px]:text-[1.2rem] sm:text-[1.5rem] md:text-[1.75rem] lg:text-[2.25rem] xl:text-[1.65rem] 2xl:text-[1.95rem] text-center tracking-tight uppercase whitespace-nowrap leading-none px-2"
+                  style={{ textShadow: "1px 1px 0 #4b5563, 2px 2px 0 #374151, 3px 3px 0 #1f2937, 4px 4px 0 #111827, 4px 4px 10px rgba(0,0,0,0.6)" }}
+                >
+                  Calendario Académico 2026
+                </h2>
+
+                <div className="flex flex-col items-center gap-0.5 sm:gap-1 mt-2 sm:mt-3 z-10 w-full px-1">
+                  <Link
+                    href="/calendario-academico"
+                    className="flex items-center justify-center bg-white hover:bg-[#e2faec] text-[#013729] font-black py-1 px-2.5 sm:py-1.5 sm:px-5 rounded-full shadow-[0_4px_15px_rgba(255,255,255,0.3)] transition-transform hover:scale-105 active:scale-95 text-[7.5px] min-[380px]:text-[9px] sm:text-[11px] lg:text-[13px] uppercase tracking-widest border border-transparent text-center"
+                  >
+                    Consultá el calendario académico
+                  </Link>
+                  <span className="text-white/70 font-semibold text-[6.5px] min-[380px]:text-[8px] sm:text-[10px] lg:text-[11px] uppercase tracking-wider">
+                    Ver más
+                  </span>
                 </div>
               </div>
             </div>

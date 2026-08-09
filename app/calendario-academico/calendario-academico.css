@@ -1,0 +1,151 @@
+/* Calendario Academico 2026 — /calendario-academico
+   Mismo lenguaje visual que /sobre-nosotros: tarjetas de vidrio sobre el fondo
+   verde oscuro, acento #00c7b1 y titulos en Unbounded. */
+
+.ca-badge {
+  background: rgba(0, 199, 177, .08);
+  border: 1px solid rgba(0, 199, 177, .2);
+}
+
+.ca-titulo-degrade {
+  background: linear-gradient(135deg, #00c7b1 0%, #00ffe1 60%, #48b3a4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: var(--font-unbounded), sans-serif;
+}
+
+.ca-h2 {
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -.02em;
+  color: #fff;
+  margin-bottom: .5rem;
+}
+
+@media (min-width: 640px) {
+  .ca-h2 { font-size: 1.875rem; }
+}
+
+/* ── El cartel de la proxima fecha ─────────────────────── */
+
+.ca-destacado {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(0, 199, 177, .12) 0%, rgba(0, 255, 225, .05) 100%);
+  border: 1px solid rgba(0, 199, 177, .28);
+}
+
+.ca-destacado-pulso {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14rem;
+  height: 14rem;
+  pointer-events: none;
+  background: radial-gradient(circle at top right, rgba(0, 199, 177, .14) 0%, transparent 70%);
+}
+
+/* ── Tarjetas de periodo ───────────────────────────────── */
+
+.ca-card {
+  background: linear-gradient(160deg, rgba(28, 47, 49, .85) 0%, rgba(22, 47, 46, .55) 100%);
+  border: 1px solid rgba(0, 199, 177, .1);
+  transition: border-color .25s ease, transform .25s ease;
+}
+
+.ca-card:hover {
+  border-color: rgba(0, 199, 177, .3);
+  transform: translateY(-2px);
+}
+
+.ca-datos > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: .55rem 0;
+  border-top: 1px solid rgba(0, 199, 177, .1);
+}
+
+.ca-datos dt {
+  font-size: .8125rem;
+  color: #7ca19b;
+}
+
+.ca-datos dd {
+  font-size: .875rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── Feriados ──────────────────────────────────────────── */
+
+.ca-feriados {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .5rem;
+}
+
+@media (min-width: 640px) {
+  .ca-feriados { grid-template-columns: 1fr 1fr; }
+}
+
+.ca-feriados li {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem .9rem;
+  border-radius: .6rem;
+  background: rgba(28, 47, 49, .55);
+  border: 1px solid rgba(0, 199, 177, .07);
+}
+
+.ca-feriado-fecha {
+  flex-shrink: 0;
+  min-width: 3rem;
+  font-size: .8125rem;
+  font-weight: 800;
+  color: #00c7b1;
+}
+
+.ca-feriado-nombre {
+  font-size: .8125rem;
+  color: #c8dedd;
+  line-height: 1.35;
+}
+
+/* ── Cierre ────────────────────────────────────────────── */
+
+.ca-cierre {
+  background: linear-gradient(160deg, rgba(28, 47, 49, .8) 0%, rgba(22, 47, 46, .5) 100%);
+  border: 1px solid rgba(0, 199, 177, .12);
+}
+
+.ca-cta {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  transition: filter .2s ease, transform .2s ease;
+}
+
+.ca-cta:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.ca-cta-secundario {
+  color: #00c7b1;
+  background: rgba(0, 199, 177, .06);
+  border: 1px solid rgba(0, 199, 177, .3);
+  transition: filter .2s ease;
+}
+
+.ca-cta-secundario:hover { filter: brightness(1.15); }
+
+.ca-link {
+  color: #00c7b1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
