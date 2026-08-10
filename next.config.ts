@@ -171,6 +171,46 @@ const nextConfig: NextConfig = {
         destination: '/',
         statusCode: 301,
       },
+      // Estas cuatro diplomaturas de Identidad Argentina salieron del catálogo
+      // de la academia el 10/08/2026: su API pública (`/dev/cursos`, la que
+      // alimenta la lista de escuelas del sitio) dejó de listarlas y consultarlas
+      // por id ya no devuelve ni título ni precio. Se apagaron con
+      // `activa = false` en Supabase.
+      //
+      // Van con 302 y no con 301 como las bajas de arriba: éstas pueden volver
+      // —es la academia la que rota su oferta, no una carrera que el CAU dejó de
+      // dictar—. Las fichas estaban indexadas, así que tampoco pueden quedar en
+      // 404: con 302 Google mantiene la URL, y reponerlas es sacar la entrada y
+      // volver `activa` a true.
+      {
+        source: '/carreras/diplomatura-en-bienestar-integral-herramientas-para-transformar-te',
+        destination: '/',
+        statusCode: 302,
+      },
+      {
+        source: '/carreras/diplomatura-en-inteligencia-artificial',
+        destination: '/',
+        statusCode: 302,
+      },
+      {
+        source: '/carreras/diplomatura-en-marketing-para-emprendedores-y-duenos-de-negocios',
+        destination: '/',
+        statusCode: 302,
+      },
+      {
+        source: '/carreras/diplomatura-en-management-hotelero',
+        destination: '/',
+        statusCode: 302,
+      },
+      // Identidad Argentina renombró Mindfulness el 10/08/2026 —y además es
+      // Diplomatura, no Curso—, así que cambió el slug. Acá sí va 301: es la
+      // misma ficha con otro nombre, no una baja, y la URL vieja estaba indexada
+      // (rastreada el 05/08).
+      {
+        source: '/carreras/curso-de-mindfulness-y-tecnicas-de-gestion-del-estres',
+        destination: '/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos',
+        statusCode: 301,
+      },
       // Redirect non-www to www
       {
         source: '/:path*',
