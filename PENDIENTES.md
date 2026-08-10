@@ -118,7 +118,17 @@ Esperado: `200` y `{"ok":true,"telegram":true}`. Un `401` significa que el secre
 
 **Hay un hueco en los datos de clicks entre el 22 y el 29/07.** `/api/track-click` fallaba en silencio —devolvía `{"ok":false}` con status 200— porque la tabla `career_clicks` y su RPC no existían. No se puede reconstruir.
 
-**DMARC está en `p=reject`** y hoy no lo rompe nada: desde que los avisos salen sólo por Telegram, **ningún sistema manda mails** como `@siglo21sur.com` (Email Routing sólo recibe). **Lo único que lo rompería** es configurar el Gmail para "enviar como" `contacto@siglo21sur.com`: si algún día se hace, primero hay que aflojar la política o sumar el remitente al SPF. Mejora menor pendiente: el SPF está en `~all` y podría ir a `-all`, aunque con DMARC en `reject` el margen es chico.
+**DMARC está en `p=reject` y desde el 09/08/2026 sí sale mail del dominio**: `inscripciones@siglo21sur.com` se contesta desde el Gmail de siempre, pero el envío pasa por el relay de **SMTP2GO**, que firma DKIM con `d=siglo21sur.com`. Verificado con mail-tester el mismo día: 10/10, SPF + DKIM + DMARC alineados. La entrada la sigue manejando Cloudflare Email Routing (los MX no cambiaron); el relay es sólo salida.
+
+  El **SPF raíz no se tocó** —sigue `v=spf1 include:_spf.mx.cloudflare.net ~all`— y no hay que agregarle `_spf.google.com`: eso no serviría de nada, porque DMARC exige que el dominio autenticado coincida con el del `From:`, y en un Gmail común el sobre sale como `@gmail.com`. La alineación la da el return-path de SMTP2GO, que vive en un CNAME del propio dominio. Los tres CNAME están en Cloudflare y **van con la nube gris**: proxeado, el return-path devuelve IPs de Cloudflare y el DMARC deja de alinear.
+
+  | Nombre | Destino | Para qué |
+  |---|---|---|
+  | `em776964` | `return.smtp2go.net` | return-path — es el que alinea el DMARC |
+  | `s776964._domainkey` | `dkim.smtp2go.net` | DKIM |
+  | `link` | `track.smtp2go.net` | tracking de links |
+
+  La credencial del SMTP User de SMTP2GO la guarda Gmail en el "enviar como"; **no va en `.env`** — ningún código del sitio manda mails. Mejora menor pendiente: el SPF podría ir de `~all` a `-all`, aunque con DMARC en `reject` el margen es chico.
 
 **Los PAT de Supabase no vencen y dan acceso a todos los proyectos de la cuenta.** Al 27/07 quedan vivos `codex-release` (`sbp_ae97…`, en uso) y `mercadolibrebot` (`sbp_bc7d…`). Conviene revisarlos cada tanto en https://supabase.com/dashboard/account/tokens y borrar el que deje de usarse.
 
