@@ -1,8 +1,18 @@
 # Pendientes
 
-Última actualización: 2026-08-09
+Última actualización: 2026-08-10
 
 ## Abierto
+
+- [ ] **Remedir el CTR de las 8 fichas reescritas el 10/08/2026.** Se cambió la columna `enfoque` de 8 carreras, que es de donde `descripcionSEO()` saca la primera frase de la meta descripción. Venían escritas como listado de temas ("Prevención de Riesgos, Normativas OHSAS y Ergonomía") en vez de decir qué consigue quien estudia; el informe de `npm run seo` las marcaba con CTR por debajo de lo esperable para su posición. Son los ids **86, 21, 6** (primer pase) y **76, 87, 8, 19, 65** (segundo). Verificadas en producción el mismo día: las 8 meta descriptions salieron bien.
+
+  **Corrió por el SQL Editor, así que no hay rastro en git de este cambio** — de ahí esta entrada.
+
+  Remedir a partir del **24/08/2026**, no antes: Google tiene que rastrear de nuevo y después hay que juntar impresiones. Comparar contra el informe del 10/08 (`herramientas/vigilancia-logs/seo-20260810.md`). Ojo con leer de más: en juego había ~55 clics/mes repartidos entre las 8, así que una diferencia chica es ruido.
+
+  Quedan **6 carreras más con el mismo patrón** sin tocar (las que no llegaban al umbral de impresiones del informe). Si las 8 muestran mejora, van todas.
+
+  **Marketing Digital (#223) no se toca**: su `enfoque` no es prosa sino pares clave-valor (`Modalidad:`, `Título:`, `Cocreación:`) que `parseEnfoqueTeclab()` desarma para el modal de Teclab *y* para la descripción. Reescribirlo como frase rompe las dos cosas. Vale para toda la oferta Teclab.
 
 - [ ] **Pedirle a la universidad el plan de la Tecnicatura en Estadística Aplicada y Análisis Avanzado** (id 132). Es la única carrera visible sin temario del que agarrarse: al 29/07 no existe ni el PDF de `contenidos.21.edu.ar` ni la página en `21.edu.ar` ni una entrada en su sitemap; lo único público es un posteo del CAU Corrientes (2 años, inicio en octubre). Quedó marcada `proximamente` mientras tanto.
 
