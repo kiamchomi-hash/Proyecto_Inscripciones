@@ -1,11 +1,10 @@
 # Indexación — siglo21sur.com
 
-**10/08/2026 · 90 de 92 carreras (98%)** · total 111/115.
+**10/08/2026 · 90 de 92 carreras (98%)** · total 112/115.
 
 ## Pedir indexación
 
 ```
-https://www.siglo21sur.com/calendario-academico
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
 ```
@@ -121,7 +120,7 @@ https://www.siglo21sur.com/carreras/actuario
 ### Resto
 
 - ✅ `/` 08/08
-- ❌ `/calendario-academico` —
+- ✅ `/calendario-academico` 10/08
 - ✅ `/clases-apoyo` 11/06
 - ✅ `/clases-apoyo/arte` 06/08
 - ✅ `/clases-apoyo/computacion` 18/07
