@@ -1,18 +1,16 @@
 # Indexación — siglo21sur.com
 
-**09/08/2026 · 87 de 92 carreras (95%)** · total 107/114.
+**10/08/2026 · 90 de 92 carreras (98%)** · total 111/115.
 
 ## Pedir indexación
 
 ```
 https://www.siglo21sur.com/calendario-academico
-https://www.siglo21sur.com/carreras/diplomatura-en-ciberseguridad-aplicada
-https://www.siglo21sur.com/carreras/licenciatura-en-emprendimiento-ccc
-https://www.siglo21sur.com/clases-apoyo/fisico-quimica
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
-https://www.siglo21sur.com/carreras/tecnicatura-en-hidrocarburos-y-geociencias
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
 ```
+
+`/novedades/2` sale "Crawled, currently not indexed": es paginación y Google no le ve valor propio. No insistir.
 
 ## Recrawl
 
@@ -34,7 +32,7 @@ https://www.siglo21sur.com/carreras/actuario
 - ✅ `/carreras/curso-de-constitucion-de-sociedades-sa-sas-srl` 04/08
 - ✅ `/carreras/curso-de-mindfulness-y-tecnicas-de-gestion-del-estres` 05/08
 - ✅ `/carreras/diplomatura-en-bienestar-integral-herramientas-para-transformar-te` 19/07
-- ❌ `/carreras/diplomatura-en-ciberseguridad-aplicada` —
+- ✅ `/carreras/diplomatura-en-ciberseguridad-aplicada` 09/08
 - ✅ `/carreras/diplomatura-en-compliance` 19/07
 - ✅ `/carreras/diplomatura-en-fraude-financiero-y-digital` 04/08
 - ✅ `/carreras/diplomatura-en-gestion-de-equipos-de-alto-desempeno` 04/08
@@ -58,7 +56,7 @@ https://www.siglo21sur.com/carreras/actuario
 - ✅ `/carreras/licenciatura-en-diseno-y-animacion-digital` 27/07
 - ✅ `/carreras/licenciatura-en-educacion-ccc` 05/08
 - ✅ `/carreras/licenciatura-en-educacion-y-nuevas-tecnologias` 28/07
-- ❌ `/carreras/licenciatura-en-emprendimiento-ccc` —
+- ✅ `/carreras/licenciatura-en-emprendimiento-ccc` 09/08
 - ✅ `/carreras/licenciatura-en-finanzas` 31/07
 - ✅ `/carreras/licenciatura-en-gerontologia-ccc` 05/08
 - ✅ `/carreras/licenciatura-en-gestion-ambiental` 25/07
@@ -94,7 +92,7 @@ https://www.siglo21sur.com/carreras/actuario
 - ✅ `/carreras/tecnicatura-en-gestion-de-moda` 29/07
 - ✅ `/carreras/tecnicatura-en-gestion-del-clima-laboral-de-la-organizacion` 18/07
 - ✅ `/carreras/tecnicatura-en-gestion-y-auditorias-ambientales` 29/07
-- ❌ `/carreras/tecnicatura-en-hidrocarburos-y-geociencias` —
+- ✅ `/carreras/tecnicatura-en-hidrocarburos-y-geociencias` 09/08
 - ✅ `/carreras/tecnicatura-en-higiene-y-seguridad-laboral` 19/07
 - ✅ `/carreras/tecnicatura-en-investigacion-de-la-escena-del-crimen` 19/07
 - ✅ `/carreras/tecnicatura-en-marketing-y-publicidad-digital` 28/07
@@ -123,10 +121,11 @@ https://www.siglo21sur.com/carreras/actuario
 ### Resto
 
 - ✅ `/` 08/08
+- ❌ `/calendario-academico` —
 - ✅ `/clases-apoyo` 11/06
 - ✅ `/clases-apoyo/arte` 06/08
 - ✅ `/clases-apoyo/computacion` 18/07
-- ❌ `/clases-apoyo/fisico-quimica` —
+- ✅ `/clases-apoyo/fisico-quimica` 09/08
 - ✅ `/clases-apoyo/lengua` 06/08
 - ✅ `/clases-apoyo/matematica` 06/08
 - ✅ `/contacto` 19/07
