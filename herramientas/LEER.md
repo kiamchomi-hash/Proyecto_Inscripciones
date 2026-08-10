@@ -19,9 +19,11 @@ se toca una sola vez.
 | `3 - Capturas del sitio.bat` | PNG desktop + mobile de 6 páginas | Para revisar un cambio visual |
 | `4 - Verificar avisos (SQL).bat` | Copia el SQL y abre el editor de Supabase | Al tocar `WEBHOOK_SECRET`, la función `notificar` o el trigger |
 | `5 - Subir cambios (deploy).bat` | Commit + push a main, o sea **deploy** | Cuando el cambio está listo |
+| `6 - Informe SEO.bat` | Baja Search Console y deja el informe de la semana | Una vez por semana (ya corre solo los lunes) |
 
 Las tres primeras salen con código 1 si encontraron algo, así que también sirven
-desde una terminal: `npm run auditar`, `npm run smoke`, `npm run capturas`.
+desde una terminal: `npm run auditar`, `npm run smoke`, `npm run capturas`. La
+sexta va por `npm run seo`.
 
 ## Detalles de cada una
 
@@ -125,6 +127,40 @@ entorno con valores viejos, el push falla con un error que no explica nada.
 En Windows, en el mensaje no usar comillas dobles: cmd las come. Acentos, `%` y
 `&` van bien. El `.sh` de Linux no tiene esa limitación.
 
+### 6 — Informe SEO
+
+Baja los datos de Search Console con la service account de
+`~/.gsc/service_account.json` (la misma del MCP `gsc`) y deja
+`herramientas/vigilancia-logs/seo-ultimo.md` con lo que se puede medir:
+
+- páginas cuyo CTR está por debajo de lo esperable **para su posición**, que es
+  distinto de "las de CTR más bajo" (esas serían siempre las peor posicionadas y
+  no habría nada que hacer al respecto);
+- consultas entre la posición 4 y la 15, con la página que las recibe al lado;
+- páginas que perdieron posición contra el período anterior;
+- las URLs del sitemap que no están indexadas.
+
+Las carreras que salieron de la oferta **quedan fuera del informe**: siguen
+recibiendo tráfico y redirigen a la home, y está bien que así sea, pero si no se
+filtran copan la lista (hoy la página con más clics del sitio es una de esas).
+Para saber cuáles son lee la oferta vigente de Supabase con la anon key, así que
+sigue sola los cambios de catálogo.
+
+La ventana termina tres días antes de hoy a propósito: Search Console consolida
+con dos o tres días de atraso y, si la ventana llegara hasta hoy, la comparación
+contra el período anterior exageraría cualquier caída.
+
+Opciones desde una terminal:
+
+```
+npm run seo -- --rapido     # saltea la inspección URL por URL (la parte lenta)
+npm run seo -- --dias=7
+```
+
+El informe **no propone nada**: sólo mide. Las sugerencias las arma el agente
+`estratega-seo` de Claude Code, que lo lee cuando se lo invoca. Es la misma
+separación de siempre — bajar y contar sale gratis, interpretar es lo que cuesta.
+
 ## Vigilancia automática (sin doble clic)
 
 Los cinco numerados son para usar a mano: abren una ventana y esperan una tecla
@@ -137,10 +173,18 @@ Es el que usan las tareas programadas de Windows:
 | `CAU - Vigilancia dependencias` | lunes 9:00 | `npm audit` |
 | `CAU - Vigilancia produccion` | todos los días 9:15 | el smoke completo contra producción |
 | `CAU - Vigilancia contenido` | lunes 9:30 | `npm run auditar` |
+| `CAU - Vigilancia seo` | lunes 9:45 | `npm run seo` |
 
-**Esto no gasta créditos de Claude.** Los tres chequeos son programas de Node que
-no llaman a ningún modelo; corren gratis las veces que haga falta. Los agentes de
-`.claude/agents/` entran después, a mano, y sólo cuando hay algo que interpretar.
+**Esto no gasta créditos de Claude.** Los cuatro chequeos son programas de Node
+que no llaman a ningún modelo; corren gratis las veces que haga falta. Los agentes
+de `.claude/agents/` entran después, a mano, y sólo cuando hay algo que interpretar.
+
+El de SEO es el único que **deja algo aunque esté todo bien**: el informe de la
+semana queda en `vigilancia-logs/seo-ultimo.md` para leerlo cuando haya ganas.
+Sólo enciende el aviso del escritorio ante algo roto de verdad (una página que se
+cayó del índice, una canónica que Google cambió, una caída fuerte de tráfico). Si
+avisara por cada sugerencia, el aviso estaría prendido siempre y dejaría de
+significar algo.
 
 Cómo avisa: si un chequeo encuentra algo, aparece **`REVISAR-SITIO.txt` en el
 escritorio** con el resumen, la ruta al log completo y qué agente pedirle a Claude
@@ -173,6 +217,7 @@ En Linux lo mismo va por cron (`crontab -e`), con la ruta absoluta del proyecto:
 0  9 * * 1 cd /ruta/al/proyecto && herramientas/vigilancia.sh deps
 15 9 * * * cd /ruta/al/proyecto && herramientas/vigilancia.sh smoke
 30 9 * * 1 cd /ruta/al/proyecto && herramientas/vigilancia.sh contenido
+45 9 * * 1 cd /ruta/al/proyecto && herramientas/vigilancia.sh seo
 ```
 
 Cuidado con el `PATH` de cron, que es mínimo: si node está instalado con nvm o

@@ -68,6 +68,17 @@ const CHEQUEOS = {
     agente: 'auditor-contenido',
     necesitaRed: true,
   },
+  // Este deja informe siempre, avise o no: las sugerencias de SEO no son fallas
+  // y no tienen que encender la alarma del escritorio todas las semanas. Solo
+  // sale con codigo 1 ante algo que se rompio (una pagina que se cayo del
+  // indice, una caida fuerte de trafico). El informe queda en
+  // vigilancia-logs/seo-ultimo.md y lo lee el agente cuando se lo pide.
+  seo: {
+    titulo: 'SEO (Search Console)',
+    comando: 'npm run seo',
+    agente: 'estratega-seo',
+    necesitaRed: true,
+  },
 };
 
 const sello = () => {

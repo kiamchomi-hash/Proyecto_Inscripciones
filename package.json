@@ -12,7 +12,8 @@
     "check": "npm run lint && npm run typecheck && npm test",
     "auditar": "node --env-file-if-exists=.env.local herramientas/auditar-contenido.mjs",
     "smoke": "node herramientas/smoke.mjs",
-    "capturas": "node herramientas/capturas.mjs"
+    "capturas": "node herramientas/capturas.mjs",
+    "seo": "node --env-file-if-exists=.env.local herramientas/seo-semanal.mjs"
   },
   "repository": {
     "type": "git",
