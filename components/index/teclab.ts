@@ -69,7 +69,7 @@ const TIPOS: { match: string; tipo: string }[] = [
 /** Orden en que se muestran las pildoras de tipo dentro de la seccion de gestion. */
 export const TIPOS_GESTION = ['Negocios', 'Gestión', 'Servicios', 'Marketing', 'Comunicación'] as const;
 
-export function getTipoTeclab(carrera: Carrera): string | null {
+export function getTipoTeclab(carrera: Pick<Carrera, 'nombre' | 'nivel'>): string | null {
   const familia = getFamiliaTeclab(carrera);
   if (familia === null) return null;
   if (familia === 'tecnologia') return 'Tecnología';

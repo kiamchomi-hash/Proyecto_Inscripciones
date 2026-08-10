@@ -3,7 +3,8 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { sendGAEvent } from '@next/third-parties/google';
-import { type Carrera, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup, MARCA_MODAL } from './types';
+import { type Carrera, type CarreraCatalogo, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup, MARCA_MODAL } from './types';
+import { bajarDetalle, completar, useDetalleCarreras } from './detalle-carreras';
 import { getEscuelaIA } from './identidad-argentina';
 import { CATEGORIAS_TECNOLOGIA, esCursoTeclab, getCategoriaTeclabTecnologia, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 import CareerInfoModal from './career-info-modal';
@@ -42,7 +43,7 @@ function fuzzyMatch(text: string, query: string): boolean {
 
 // Parse career name into prefix + clean name
 // Uses DB fields (prefix, nombre_corto) if available, otherwise falls back to parsing
-function getCareerInfo(carrera: Carrera): { prefix: string; cleanName: string } {
+function getCareerInfo(carrera: Pick<Carrera, 'nombre' | 'prefix' | 'nombre_corto'>): { prefix: string; cleanName: string } {
   if (carrera.prefix !== null || carrera.nombre_corto !== null) {
     return { prefix: carrera.prefix || '', cleanName: carrera.nombre_corto || carrera.nombre };
   }
@@ -94,11 +95,13 @@ function parseCareerName(name: string): { prefix: string; cleanName: string } {
 }
 
 interface Props {
-  carreras: Carrera[];
+  carreras: CarreraCatalogo[];
   initialCarreraSlug?: string;
 }
 
 export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) {
+  // El texto largo de las fichas baja aparte, después del primer pintado.
+  const detalle = useDetalleCarreras();
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [placeholder, setPlaceholder] = useState('Buscar carrera');
@@ -165,7 +168,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
   // Group carreras by display category
   const grouped = useMemo(() => {
-    const groups: Record<string, Carrera[]> = {};
+    const groups: Record<string, CarreraCatalogo[]> = {};
     for (const c of carreras) {
       const cat = getCategoryForCarrera(c);
       if (!groups[cat]) groups[cat] = [];
@@ -196,7 +199,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   // Apply area/duration filters to grouped data
   const filteredGrouped = useMemo(() => {
     if (!hasFilters) return grouped;
-    const result: Record<string, Carrera[]> = {};
+    const result: Record<string, CarreraCatalogo[]> = {};
     for (const [key, items] of Object.entries(grouped)) {
       const filtered = items.filter(c => {
         if (filterArea && getAreaForCarrera(c) !== filterArea) return false;
@@ -245,8 +248,13 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       : (grouped[catId]?.length ?? 0)
   ), [carreras, grouped]);
 
-  const handleCareerClick = useCallback((carrera: Carrera) => {
-    setSelectedCarrera(carrera);
+  const handleCareerClick = useCallback((carrera: CarreraCatalogo) => {
+    // El modal abre ya: si el detalle todavía no bajó —sólo pasa si alguien hace
+    // clic en el primer segundo—, se completa apenas llega.
+    setSelectedCarrera(completar(carrera, detalle));
+    if (!detalle) {
+      bajarDetalle().then(mapa => setSelectedCarrera(completar(carrera, mapa)));
+    }
 
     // Telemetría: GA para el detalle, la tabla propia para el digest de las 20hs.
     if (process.env.NEXT_PUBLIC_GA_ID) {
@@ -266,7 +274,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
     // slides. Se saco el 01/08/2026: `npm run auditar` lista esas mismas
     // carreras leyendo la base, sin esperar a que entre un visitante ni gastar
     // un pedido por clic.
-  }, []);
+  }, [detalle]);
 
 
 
@@ -274,11 +282,12 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   const initialSlug = initialCarreraSlug || null;
   useEffect(() => {
     const slug = initialSlug || new URLSearchParams(window.location.search).get('carrera');
-    if (slug) {
-      const found = findCarreraBySlug(carreras, slug)
-        || carreras.find(c => c.nombre === slug);
-      if (found) setSelectedCarrera(found);
-    }
+    if (!slug) return;
+    const found = findCarreraBySlug(carreras, slug)
+      || carreras.find(c => c.nombre === slug);
+    // Esta apertura no la dispara un clic sino la URL, así que el detalle casi
+    // nunca bajó todavía: se espera a tenerlo en vez de abrir una ficha a medias.
+    if (found) bajarDetalle().then(mapa => setSelectedCarrera(completar(found, mapa)));
   }, [carreras, initialSlug]);
 
   // Update title and URL when modal opens/closes
@@ -679,7 +688,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
 
 const ESCUELAS_IDENTIDAD = ['Liderazgo', 'Tecnología', 'Bienestar', 'Negocios', 'Derecho', 'Administración'] as const;
 
-function getCategoriaDeSeccion(sectionId: string, carrera: Carrera): string | null {
+function getCategoriaDeSeccion(sectionId: string, carrera: Pick<Carrera, 'nombre' | 'nivel'>): string | null {
   if (sectionId === 'teclab_tecnologia') {
     return getCategoriaTeclabTecnologia(carrera);
   }
@@ -710,8 +719,8 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
   sectionId: string;
   title: string;
   accent?: string;
-  carreras: Carrera[];
-  onCareerClick: (c: Carrera) => void;
+  carreras: CarreraCatalogo[];
+  onCareerClick: (c: CarreraCatalogo) => void;
   isIdentidadArgentina?: boolean;
   familiaTeclab?: TeclabFamilia;
 }) {
@@ -836,11 +845,15 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
   );
 }
 
-// Prefetch slide images on hover/touch
-function prefetchImages(carrera: Carrera) {
-  if (!carrera.slides?.length) return;
+// Prefetch slide images on hover/touch. Las slides ya no viajan con la tarjeta,
+// así que primero hay que tener el detalle; el pedido es uno solo y compartido,
+// y para cuando alguien apunta a una tarjeta suele estar resuelto.
+async function prefetchImages(carrera: CarreraCatalogo) {
+  if (!carrera.tieneSlides) return;
+  const slides = (await bajarDetalle())[carrera.id]?.slides;
+  if (!slides?.length) return;
   const seen = new Set<string>();
-  for (const slide of carrera.slides) {
+  for (const slide of slides) {
     const src = ('imagen_desktop' in slide && slide.imagen_desktop) ||
       ('imagen' in slide && typeof slide.imagen === 'string' ? slide.imagen : undefined);
     if (src && !seen.has(src)) {
@@ -855,7 +868,7 @@ function prefetchImages(carrera: Carrera) {
 }
 
 // Individual career card
-function CareerCard({ carrera, onClick }: { carrera: Carrera; onClick: (c: Carrera) => void }) {
+function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (c: CarreraCatalogo) => void }) {
   const { prefix, cleanName } = getCareerInfo(carrera);
   const badge = carrera.proximamente ? 'Próximamente' : carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
   const isIA = getCategoryForCarrera(carrera) === 'identidad_argentina';

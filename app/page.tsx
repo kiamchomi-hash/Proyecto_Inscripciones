@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
-import { type Carrera, esCarreraVisible } from '@/components/index/types';
+import {
+  type Carrera, type CarreraCatalogo, COLUMNAS_CATALOGO, esCarreraVisible,
+} from '@/components/index/types';
 import Hero from '@/components/index/hero';
 import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
@@ -22,9 +24,12 @@ export const metadata: Metadata = {
 export const revalidate = 3600; // revalidate every hour
 
 export default async function HomePage() {
+  // Sólo lo liviano: el texto largo (slides, plan de estudios, secciones) lo
+  // baja el catálogo por su cuenta después del primer pintado. `slides` se pide
+  // igual, pero para saber si hay y no para mandarla — ver COLUMNAS_DETALLE.
   const { data: carreras, error } = await supabase
     .from('carreras')
-    .select('*')
+    .select(`${COLUMNAS_CATALOGO.join(', ')}, slides`)
     .eq('activa', true)
     .order('orden', { ascending: true });
 
@@ -32,7 +37,9 @@ export default async function HomePage() {
     console.error('Error fetching carreras:', error.message);
   }
 
-  const carrerasData = ((carreras || []) as Carrera[]).filter(esCarreraVisible);
+  const carrerasData: CarreraCatalogo[] = ((carreras || []) as unknown as Carrera[])
+    .filter(esCarreraVisible)
+    .map(({ slides, ...resto }) => ({ ...resto, tieneSlides: (slides?.length ?? 0) > 0 } as CarreraCatalogo));
 
   return (
     <main className="flex-1">

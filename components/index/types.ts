@@ -74,6 +74,36 @@ export interface Carrera {
 // fila completa metia todas las carreras enteras en el HTML de cada pagina.
 export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'>;
 
+// ── El texto largo no viaja en el HTML de la home ──
+//
+// Las 88 carreras visibles ocupan 348 KB de JSON y estas seis columnas son el
+// 93%: `slides` sola son 146 KB. Viajaban dentro del HTML porque la home le pasa
+// el array a componentes cliente, y todo lo que reciben se serializa al payload
+// RSC. Resultado: 963 KB de documento, que en 4G lenta tardan 2,3 s en bajar y
+// son exactamente el retraso del LCP --- aunque el visitante no abra un modal.
+//
+// Ahora la home manda sólo lo liviano y el detalle se baja aparte, después del
+// primer pintado, desde /api/carreras-detalle.
+export const COLUMNAS_DETALLE = [
+  'slides', 'plan_estudios', 'seccion_modalidad', 'seccion_duracion',
+  'descripcion', 'enfoque',
+] as const;
+
+export type CarreraDetalle = Pick<Carrera, (typeof COLUMNAS_DETALLE)[number]>;
+
+// Lo que necesitan las tarjetas, los filtros y el despachador de modales. Lleva
+// `tieneSlides` porque `career-info-modal` elige el modal según haya slides o no,
+// y esa decisión no puede esperar a que baje el detalle.
+export type CarreraCatalogo = Omit<Carrera, (typeof COLUMNAS_DETALLE)[number]>
+  & { tieneSlides: boolean };
+
+// Las columnas que sí van en el HTML. Se listan a mano para que agregar una
+// columna pesada a Supabase no la meta sola en la home.
+export const COLUMNAS_CATALOGO = [
+  'id', 'nombre', 'nivel', 'duracion', 'titulo', 'modalidad', 'prefix',
+  'nombre_corto', 'orden', 'activa', 'destacada', 'nueva', 'proximamente',
+] as const;
+
 // Lo minimo para pintar un enlace a otra carrera (nombre + slug).
 export type CarreraEnlace = Pick<Carrera, 'id' | 'nombre' | 'prefix'>;
 
@@ -215,7 +245,7 @@ function empiezaPalabra(nombre: string, kw: string): boolean {
   return false;
 }
 
-export function getAreaForCarrera(c: Carrera): AreaId | null {
+export function getAreaForCarrera(c: Pick<Carrera, 'nombre'>): AreaId | null {
   const nombre = c.nombre.toLowerCase();
   for (const [area, keywords] of Object.entries(AREA_KEYWORDS) as [AreaId, string[]][]) {
     for (const kw of keywords) {
@@ -304,7 +334,7 @@ export function carreraToSlug(carrera: Pick<Carrera, 'nombre' | 'prefix'> | stri
 }
 
 // Find carrera by slug (reverse of carreraToSlug), supports old format
-export function findCarreraBySlug(carreras: Carrera[], slug: string): Carrera | undefined {
+export function findCarreraBySlug<T extends Pick<Carrera, 'nombre' | 'prefix'>>(carreras: T[], slug: string): T | undefined {
   const normalized = slug.toLowerCase().replace(/_/g, '-');
   return carreras.find(c => carreraToSlug(c) === slug || carreraToSlug(c) === normalized);
 }

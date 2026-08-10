@@ -73,7 +73,10 @@ function rutasA(aviso: Aviso): Ruta[] {
 
   switch (aviso.tabla) {
     case 'carreras': {
-      rutas.push(['/', 'page'], ['/sitemap.xml']);
+      // `/api/carreras-detalle` es el texto largo que abre los modales de la
+      // home. Va aparte del HTML por peso, asi que si no se rehace acá los
+      // modales siguen mostrando la ficha vieja aunque la home ya esté al día.
+      rutas.push(['/', 'page'], ['/api/carreras-detalle'], ['/sitemap.xml']);
 
       const slug = slugDeCarrera(aviso.nombre, aviso.prefix);
       // Las carreras de un nivel fuera de la oferta no tienen pagina: no hay

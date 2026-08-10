@@ -22,7 +22,7 @@ const ESCUELAS: { match: string; escuela: string }[] = [
   { match: 'management hotelero', escuela: 'Administración' },
 ];
 
-export function getEscuelaIA(carrera: Carrera): string | null {
+export function getEscuelaIA(carrera: Pick<Carrera, 'nombre'>): string | null {
   const nombre = carrera.nombre.toLowerCase();
   return ESCUELAS.find(e => nombre.includes(e.match))?.escuela ?? null;
 }
