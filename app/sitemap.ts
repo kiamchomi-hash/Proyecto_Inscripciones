@@ -8,7 +8,9 @@ import { getPortada } from '@/components/carreras/career-content';
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
 
-type CarreraFila = Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'slides'>;
+type CarreraFila = Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'slides'> & {
+  updated_at: string | null;
+};
 
 // La foto que la ficha usa de hero, con la misma resolucion que career-detail.tsx
 // pero sin su fallback generico: repetir la misma foto de archivo en decenas de
@@ -33,7 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // catalogo (Posgrado, APLV, Certificacion, Curso) ya no tienen pagina.
   const { data: carreras } = await supabase
     .from('carreras')
-    .select('nombre, prefix, nivel, slides')
+    .select('nombre, prefix, nivel, slides, updated_at')
     .eq('activa', true);
 
   const carrerasEntries: MetadataRoute.Sitemap = ((carreras || []) as CarreraFila[])
@@ -42,6 +44,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const imagen = imagenDeCarrera(c);
       return {
         url: `${baseUrl}/carreras/${carreraToSlug(c)}`,
+        // Sin lastmod Google no tiene con que priorizar una ficha nueva sobre
+        // las 87 que ya conoce, y se le nota: al 11/08 hacia cuatro dias que no
+        // volvia a bajar el sitemap, y las tres fichas sin indexar figuraban con
+        // "descubierta" y ni un rastreo encima. `updated_at` es el dato honesto
+        // — cambia cuando cambia la ficha — y un lastmod que miente Google lo
+        // termina ignorando.
+        ...(c.updated_at ? { lastModified: new Date(c.updated_at) } : {}),
         changeFrequency: 'monthly' as const,
         priority: 0.7,
         ...(imagen ? { images: [urlImagen(imagen)] } : {}),
@@ -57,6 +66,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .eq('activa', true)
     .eq('en_construccion', false);
 
+  // Estas no llevan lastmod aunque `materias` tenga `updated_at`: la columna se
+  // mueve cada vez que un profesor toca sus horarios desde el panel, y eso no
+  // cambia nada de lo que se ve en la pagina (el calendario dejo de mostrarse).
+  // Seria avisar de un cambio que no existe.
   const materiasEntries: MetadataRoute.Sitemap = (materias || []).map(m => ({
     url: `${baseUrl}/clases-apoyo/${m.slug}`,
     changeFrequency: 'monthly',
