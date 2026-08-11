@@ -11,7 +11,7 @@ const BASE_URL = 'https://www.siglo21sur.com';
 export const metadata: Metadata = {
   title: 'Clases de apoyo en Villa Lugano',
   description:
-    'Clases de apoyo individuales y presenciales en Villa Lugano y Villa Riachuelo: Matemática, Lengua, Físico-Química, Computación y Arte. Guaminí 4876, de lunes a viernes.',
+    'Clases de apoyo individuales y presenciales en Villa Lugano y Villa Riachuelo: Matemática, Lengua, Física, Computación y Arte. Guaminí 4876, de lunes a viernes.',
   keywords: [
     'clases de apoyo villa lugano',
     'apoyo escolar villa lugano',

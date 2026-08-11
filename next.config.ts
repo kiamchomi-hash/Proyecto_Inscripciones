@@ -110,6 +110,15 @@ const nextConfig: NextConfig = {
         destination: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
         permanent: true,
       },
+      // La materia dejo de ser "Fisico-Quimica" y paso a ser solo "Fisica"
+      // (11/08/2026): el profesor no dicta quimica. La URL vieja estaba
+      // indexada desde el 09/08, asi que va con 301 a la nueva — es la misma
+      // pagina con otro nombre.
+      {
+        source: '/clases-apoyo/fisico-quimica',
+        destination: '/clases-apoyo/fisica',
+        statusCode: 301,
+      },
       // La novedad del inicio de clases dejo de tener la fecha en el slug
       // (08/08/2026): era `segundo-semestre-2026-inicio-3-de-agosto` y pasa a
       // `inicio-de-clases`, que no vence. La URL vieja estaba indexada, asi que

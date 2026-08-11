@@ -848,3 +848,44 @@ a.ca-card:hover .ca-card-arrow {
   color: var(--ca-text-main);
   font-weight: 700;
 }
+
+/* Los bloques de temas: un subtitulo con su lista. Van dentro de un div y no
+   de un <p> porque el <h3> cerraria el parrafo (ver texto-materia.tsx). */
+.ca-seo-bloque {
+  margin-bottom: 1.5rem;
+}
+
+.ca-seo-inner h3 {
+  color: var(--ca-text-main);
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+}
+
+.ca-seo-inner ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.ca-seo-inner li {
+  position: relative;
+  padding-left: 1.05rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ca-text-muted);
+}
+
+.ca-seo-inner li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ca-teal);
+}

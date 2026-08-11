@@ -132,7 +132,7 @@ no hay que pedir nada.
 - ✅ `/clases-apoyo` 11/06
 - ✅ `/clases-apoyo/arte` 06/08
 - ✅ `/clases-apoyo/computacion` 18/07
-- ✅ `/clases-apoyo/fisico-quimica` 09/08
+- ✅ `/clases-apoyo/fisica` 09/08 (indexada como `/clases-apoyo/fisico-quimica`; renombrada el 11/08, la vieja va con 301)
 - ✅ `/clases-apoyo/lengua` 06/08
 - ✅ `/clases-apoyo/matematica` 06/08
 - ✅ `/contacto` 19/07

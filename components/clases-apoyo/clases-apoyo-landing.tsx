@@ -35,11 +35,12 @@ const ICONOS: Record<string, React.ReactNode> = {
       <path d="M8 20h8M12 16v4" strokeLinecap="round" />
     </>
   ),
-  'fisico-quimica': (
+  fisica: (
     <>
-      <path d="M9.5 3v6.2L4.6 18a2 2 0 001.7 3h11.4a2 2 0 001.7-3l-4.9-8.8V3" />
-      <path d="M8.5 3h7" strokeLinecap="round" />
-      <path d="M7.2 14h9.6" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="2.1" fill="currentColor" stroke="none" />
+      <ellipse cx="12" cy="12" rx="9.5" ry="4" />
+      <ellipse cx="12" cy="12" rx="9.5" ry="4" transform="rotate(60 12 12)" />
+      <ellipse cx="12" cy="12" rx="9.5" ry="4" transform="rotate(120 12 12)" />
     </>
   ),
   ingles: (
