@@ -10,9 +10,9 @@ export const metadata: Metadata = {
   // y cero clics: "Sobre Nosotros | Siglo 21" no le decia a nadie que aca hay una
   // sede fisica con direccion. El titulo va absolute para no arrastrar el
   // template del layout.
-  title: { absolute: 'Sede Siglo 21 en Villa Lugano | CAU, Guaminí 4876' },
-  description: 'El CAU Villa Lugano es sede de Universidad Siglo 21 en CABA: Guaminí 4876. Inscripciones, tutorías y atención presencial para Zona Sur y Oeste.',
-  keywords: ['CAU villa lugano', 'centro de aprendizaje', 'universidad siglo 21', 'educación a distancia', 'CABA zona sur'],
+  title: { absolute: 'CAU Siglo 21 en CABA | Villa Lugano, Guaminí 4876' },
+  description: 'Centro de Aprendizaje Universitario de Universidad Siglo 21 en el sur de CABA: Guaminí 4876, Villa Lugano, Comuna 8. Inscripciones y tutorías presenciales.',
+  keywords: ['CAU CABA', 'CAU villa lugano', 'centro de aprendizaje universitario', 'universidad siglo 21 caba', 'comuna 8', 'CABA zona sur'],
   alternates: {
     canonical: '/sobre-nosotros',
   },
@@ -80,8 +80,12 @@ export default function SobreNosotrosPage() {
           </span>
         </div>
 
+        {/* El h1 decia "Educacion que transforma vidas": lindo y sin una sola
+            palabra de las que la gente escribe. La pagina recibe impresiones por
+            "universidad siglo 21 cau caba" y "cau siglo 21" en posicion 14-23, y
+            no nombraba ninguna de las dos cosas arriba de todo. */}
         <h1 className="text-3xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] mb-4 sm:mb-6">
-          <span className="block text-white">Educación que</span>
+          <span className="block text-white">El CAU de Universidad Siglo 21</span>
           <span
             className="block"
             style={{
@@ -90,15 +94,15 @@ export default function SobreNosotrosPage() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            transforma vidas
+            en el sur de CABA
           </span>
         </h1>
 
         <p className="max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed mb-5 sm:mb-7" style={{ color: '#c8dedd' }}>
-          En el Centro de Capacitación Villa Lugano creemos que{' '}
-          <strong className="font-semibold" style={{ color: '#c8dedd' }}>aprender, crecer y emprender</strong>{' '}
-          deben ser experiencias accesibles, humanas y transformadoras.
-          Acompañamos a cada persona en su camino educativo y profesional.
+          Un Centro de Aprendizaje Universitario es la sede física de la universidad:
+          el lugar donde te inscribís, rendís y te acompañan de verdad.{' '}
+          <strong className="font-semibold" style={{ color: '#c8dedd' }}>El nuestro está en Villa Lugano</strong>,
+          en la Comuna 8, y atiende a todo el sur y el oeste de la Ciudad.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
@@ -491,11 +495,11 @@ export default function SobreNosotrosPage() {
             <div className="flex-1 flex flex-col md:justify-between">
               <div>
                 <p className="text-sm leading-relaxed mb-4" style={{ color: '#c8dedd' }}>
-                  Nuestro centro está en <strong className="text-white">Villa Lugano</strong>, con fácil acceso desde <strong className="text-white">Mataderos</strong>, <strong className="text-white">Liniers</strong>, <strong className="text-white">Villa Celina</strong> y <strong className="text-white">Zona Sur del GBA</strong>.
+                  Nuestro centro está en <strong className="text-white">Villa Lugano</strong>, en la <strong className="text-white">Comuna 8</strong>, con fácil acceso desde <strong className="text-white">Villa Soldati</strong>, <strong className="text-white">Villa Riachuelo</strong>, <strong className="text-white">Mataderos</strong>, <strong className="text-white">Liniers</strong>, <strong className="text-white">Flores</strong>, <strong className="text-white">Nueva Pompeya</strong>, <strong className="text-white">Villa Celina</strong> y la <strong className="text-white">Zona Sur del GBA</strong>.
                   Atendemos <strong className="text-white">de lunes a viernes</strong> en turnos mañana y tarde.
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {['Villa Lugano', 'Mataderos', 'Liniers', 'Villa Celina', 'Zona Sur'].map((z) => (
+                  {['Villa Lugano', 'Comuna 8', 'Villa Soldati', 'Villa Riachuelo', 'Mataderos', 'Liniers', 'Flores', 'Nueva Pompeya', 'Villa Celina', 'Zona Sur GBA'].map((z) => (
                     <span
                       key={z}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
