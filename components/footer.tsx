@@ -1,12 +1,21 @@
 import Link from 'next/link';
 
-export default function IndexFooter() {
+/**
+ * Pie del sitio para las paginas que no son la home ni una ficha de carrera:
+ * esas dos usan `components/index/footer.tsx`, que es el pie grande con las
+ * columnas. Este archivo estuvo escrito y sin usar hasta el 11/08 — mientras
+ * tanto /novedades, /faq, /contacto, /sobre-nosotros y el propio
+ * /calendario-academico no tenian ningun pie, y por lo tanto ningun enlace
+ * interno hacia el resto del sitio.
+ */
+export default function SiteFooter() {
   return (
     <footer style={{ background: 'linear-gradient(180deg, rgba(6, 34, 31, 0.92) 0%, #081f1d 100%)', borderTop: '2px solid rgba(0, 199, 177, 0.26)' }}>
       <div className="container mx-auto px-6 py-14">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
-          {/* Brand */}
-          <div className="text-center md:text-left">
+          {/* Brand — shrink-0 para que el flex no lo apriete y parta
+              "CAU Villa Lugano" en dos lineas en desktop. */}
+          <div className="text-center md:text-left shrink-0">
             <p className="text-lg font-black text-white uppercase tracking-tighter">CAU Villa Lugano</p>
             <p className="text-sm mt-1 font-normal text-[#7ca19b]">Universidad Siglo 21</p>
           </div>
@@ -15,6 +24,7 @@ export default function IndexFooter() {
           <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium" aria-label="Enlaces del sitio">
             <Link href="/sobre-nosotros" className="text-[#7ca19b] hover:text-white transition-colors">Sobre Nosotros</Link>
             <Link href="/clases-apoyo" className="text-[#7ca19b] hover:text-white transition-colors">Clases de Apoyo</Link>
+            <Link href="/calendario-academico" className="text-[#7ca19b] hover:text-white transition-colors">Calendario Académico 2026</Link>
             <Link href="/faq" className="text-[#7ca19b] hover:text-white transition-colors">Preguntas Frecuentes</Link>
             <Link href="/contacto" className="text-[#7ca19b] hover:text-white transition-colors">Contacto</Link>
           </nav>

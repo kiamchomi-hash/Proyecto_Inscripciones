@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { sanitizeContent } from '@/lib/sanitize-content';
 import CopyLinkButton from '@/components/novedades/copy-link-button';
+import SiteFooter from '@/components/footer';
 import '../../articulo.css';
 
 // 24 h para no gastar ISR Writes: ver el comentario en novedades/[page].
@@ -196,6 +197,7 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
           </div>
         </div>
       </article>
+      <SiteFooter />
     </main>
   );
 }

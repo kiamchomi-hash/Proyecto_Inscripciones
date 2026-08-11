@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import NovedadesPage from '@/components/novedades/novedades-page';
 import type { Novedad } from '@/components/novedades/novedades-page';
+import SiteFooter from '@/components/footer';
 import '../novedades.css';
 
 const ITEMS_PAGE_1 = 3;
@@ -91,11 +92,14 @@ export default async function Page({ params }: { params: Promise<{ page: string 
   }
 
   return (
+    <>
     <NovedadesPage
       pinnedItem={pinnedItem}
       items={items}
       currentPage={pageNum}
       totalPages={totalPages}
     />
+    <SiteFooter />
+    </>
   );
 }

@@ -3,6 +3,7 @@ import FaqPageContent from '@/components/faq-page';
 import { jsonLdScript } from '@/lib/json-ld';
 import { supabase } from '@/lib/supabase';
 import type { FaqPregunta } from '@/lib/types';
+import SiteFooter from '@/components/footer';
 import './faq.css';
 
 export const metadata: Metadata = {
@@ -62,6 +63,7 @@ export default async function FaqPage() {
         dangerouslySetInnerHTML={{ __html: jsonLdScript(faqSchema) }}
       />
       <FaqPageContent initialQuestions={faqs} />
+      <SiteFooter />
     </>
   );
 }

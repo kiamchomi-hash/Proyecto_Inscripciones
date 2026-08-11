@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { jsonLdScript } from '@/lib/json-ld';
 import ProximoHito from './proximo-hito';
+import SiteFooter from '@/components/footer';
 import {
   PERIODOS,
   CUATRIMESTRALES,
@@ -221,6 +222,8 @@ export default function CalendarioAcademicoPage() {
           . Teclab y la Academia Identidad Argentina manejan calendarios propios.
         </p>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

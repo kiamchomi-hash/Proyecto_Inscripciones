@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
+import SiteFooter from '@/components/footer';
 import './sobre-nosotros.css';
 
 export const metadata: Metadata = {
@@ -568,6 +569,7 @@ export default function SobreNosotrosPage() {
         </div>
       </section>
 
+      <SiteFooter />
     </main>
   );
 }
