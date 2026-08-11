@@ -187,13 +187,18 @@ function descripcionSEO(carrera: Carrera): string {
       // "Carrera de Teclab" adelante y no al final: es lo primero que hay que
       // saber, y las partes de atras son justo las que Google corta.
       `Carrera de Teclab. Recibite de ${grado} en ${carrera.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`,
-      cierre,
+      // El partner va antes del cierre porque el presupuesto no alcanza para
+      // los dos: medido sobre las 16 fichas en vivo, con el cierre adelante el
+      // partner se caia en 15. Y es al reves de lo que conviene: el cierre se
+      // repite en las 96 fichas del sitio, mientras que el partner es justo lo
+      // unico que distingue a cada Teclab de las otras 16.
+      partner && `Cocreada con ${partner}.`,
       // La articulacion con la licenciatura no entra aca y no es por descuido:
       // medido sobre las 17 fichas, la frase mas corta que la dice son 50
-      // caracteres y el presupuesto ya se agota en el cierre. Elegir seria
-      // cambiar el CTA por el diferencial. Vive en la franja de marca de la
-      // pagina, que es donde igual se lee mejor.
-      partner && `Cocreada con ${partner}.`,
+      // caracteres y el presupuesto ya se agota antes. Elegir seria cambiar el
+      // CTA por el diferencial. Vive en la franja de marca de la pagina, que es
+      // donde igual se lee mejor.
+      cierre,
     ]);
   }
 

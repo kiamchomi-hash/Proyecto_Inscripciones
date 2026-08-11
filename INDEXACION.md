@@ -1,12 +1,13 @@
 # Indexación — siglo21sur.com
 
-**10/08/2026 · 90 de 92 carreras (98%)** · total 112/115.
+**11/08/2026 · 90 de 93 carreras (97%)** · total 107/111.
 
 ## Pedir indexación
 
 ```
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
+https://www.siglo21sur.com/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos
 ```
 
 `/novedades/2` sale "Crawled, currently not indexed": es paginación y Google no le ve valor propio. No insistir.
@@ -38,6 +39,7 @@ https://www.siglo21sur.com/carreras/actuario
 - ✅ `/carreras/diplomatura-en-inteligencia-artificial` 04/08
 - ✅ `/carreras/diplomatura-en-management-hotelero` 04/08
 - ✅ `/carreras/diplomatura-en-marketing-para-emprendedores-y-duenos-de-negocios` 04/08
+- ❌ `/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos` — Google no reconoce la URL
 - ✅ `/carreras/diplomatura-en-oratoria` 05/08
 - ✅ `/carreras/diplomatura-integral-en-rrhh` 03/08
 - ✅ `/carreras/escribania` 21/07
