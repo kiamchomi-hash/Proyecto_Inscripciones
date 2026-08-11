@@ -806,14 +806,17 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
           en modales.css, con `safe` para que se apague si no entra). Repartido
           entre las dos puntas quedaba un hueco en el medio. */}
       <div className="flex-shrink-0 flex flex-col gap-2.5">
-        <h3 className="text-[2.2rem] min-[380px]:text-[2.6rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight text-center sm:text-left">
+        {/* Centrado tambien en desktop: alineado a la izquierda, el titulo y los
+            chips quedaban desbalanceados contra el logo y la foto de fondo, que
+            ya estan al medio. */}
+        <h3 className="text-[2.2rem] min-[380px]:text-[2.6rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight text-center">
           Educación para
           <span className="block" style={{ color: acento }}>
             cambiarlo todo
           </span>
         </h3>
 
-        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5">
+        <div className="flex flex-wrap justify-center gap-1.5">
           {chips.map(c => (
             <span key={c} className="teclab-chip">
               {c}

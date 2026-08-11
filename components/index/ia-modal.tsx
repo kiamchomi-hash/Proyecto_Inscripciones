@@ -449,7 +449,11 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
   const { modalidad, certificacion } = parseEnfoque(carrera.enfoque);
   // La cursada no entra: es una frase, no un dato de dos palabras. Queda en la
   // portada y en el slide del docente.
-  const chips = [modalidad, carrera.duracion, certificacion].filter(Boolean);
+  // El chip no lleva rotulo como el cuadro de la portada, asi que "Nacional e
+  // Internacional" a secas no decia de que hablaba: va con la palabra adelante.
+  const chipCertificacion =
+    certificacion && (/^certificaci[oó]n/i.test(certificacion) ? certificacion : `Certificación ${certificacion}`);
+  const chips = [modalidad, carrera.duracion, chipCertificacion].filter(Boolean);
   const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
@@ -460,14 +464,16 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
       {/* Sin la bajada del convenio: lo dice el encabezado del modal y la placa
           de los slides de adentro, y era el texto mas largo del slide. */}
       <div className="relative flex-shrink-0 flex flex-col gap-2.5">
-        <h3 className="text-[2.2rem] min-[380px]:text-[2.6rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight text-center sm:text-left">
+        {/* Centrado tambien en desktop, como el cierre de Teclab: alineado a la
+            izquierda quedaba desbalanceado contra el isotipo, que va al medio. */}
+        <h3 className="text-[2.2rem] min-[380px]:text-[2.6rem] sm:text-4xl font-black text-white uppercase leading-[0.95] tracking-tight text-center">
           Estudiá con
           <span className="block" style={{ color: AMARILLO }}>
             nosotros
           </span>
         </h3>
 
-        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5">
+        <div className="flex flex-wrap justify-center gap-1.5">
           {chips.map(c => (
             <span key={c} className="ia-cierre-chip">
               {c}
