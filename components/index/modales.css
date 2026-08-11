@@ -129,7 +129,9 @@
 
 /* Los chips del cierre reemplazan a las cuatro cintas rotuladas. Van definidos
    aca y no en index.css -donde vive .ia-chip, el de las tarjetas del catalogo-
-   porque el modal tambien se abre desde /carreras/[slug]. */
+   porque el modal tambien se abre desde /carreras/[slug].
+   El relleno es opaco: detras esta el isotipo grande del convenio y con el
+   blanco translucido se leia el trazo por debajo de los textos. */
 .ia-cierre-chip {
   font-size: 0.63rem;
   font-weight: 900;
@@ -138,7 +140,7 @@
   padding: 0.2rem 0.55rem;
   border-radius: 4px;
   color: rgba(255, 255, 255, 0.82);
-  background: rgba(255, 255, 255, 0.075);
+  background: color-mix(in srgb, #fff 8%, var(--ia-ink));
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   line-height: 1.25;
   max-width: 100%;
@@ -369,9 +371,11 @@
 }
 
 /* Los chips del cierre van sobre la foto, asi que necesitan fondo propio: con
-   el blanco translucido de la portada se perdian contra la imagen. */
+   el blanco translucido de la portada se perdian contra la imagen. Opaco y no
+   translucido -como estaba- para que la foto no se cuele por detras del texto:
+   el mismo tono que darian el velo y el blanco al 7,5%, pero sin transparencia. */
 .teclab-cierre .teclab-chip {
-  background: color-mix(in srgb, var(--teclab-ink) 62%, transparent);
+  background: color-mix(in srgb, #fff 8%, var(--teclab-ink));
 }
 
 /* En el telefono van mas grandes que los de la portada: ahi son una etiqueta al

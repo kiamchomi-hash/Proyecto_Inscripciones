@@ -246,13 +246,33 @@ function FotoFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acen
  * anatomia de BloqueDato -rotulo arriba, dato abajo, mismo ancho- para que en
  * la portada las tres tarjetas se lean como un juego y no como un apunte
  * suelto al costado.
+ *
+ * El rotulo y el logo van centrados en el ancho del cuadro: el logo del partner
+ * cambia mucho de proporcion segun la empresa y, alineado a la izquierda,
+ * dejaba un hueco distinto en cada carrera.
+ *
+ * `solido` es para el cierre, que va sobre una foto: ahi el relleno translucido
+ * dejaba ver la imagen a traves del cuadro.
  */
-function BloqueCocreacion({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
+function BloqueCocreacion({
+  ficha,
+  acento,
+  solido,
+  className = '',
+}: {
+  ficha: TeclabFicha;
+  acento: string;
+  solido?: boolean;
+  className?: string;
+}) {
   if (!ficha.partner) return null;
   return (
     <div
-      className={`rounded px-2.5 py-1.5 ${className}`}
-      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+      className={`rounded px-2.5 py-1.5 flex flex-col items-center text-center ${className}`}
+      style={{
+        background: solido ? 'color-mix(in srgb, #fff 6%, var(--teclab-ink))' : 'rgba(255,255,255,0.05)',
+        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+      }}
     >
       <span className="block text-[0.55rem] font-black uppercase tracking-[0.14em]" style={{ color: CLARO[acento] }}>
         Carrera cocreada con
@@ -829,7 +849,7 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
           mas altos y en una columna: a media pantalla cada uno se leia como un
           boton chico perdido abajo de una foto grande. */}
       <div className="flex-shrink-0 flex flex-col gap-2.5">
-        {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} />}
+        {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} solido />}
 
         <div className="flex flex-col sm:flex-row gap-2">
           <a
@@ -845,7 +865,9 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg text-white font-bold text-[0.95rem] sm:text-sm transition-all"
-            style={{ background: 'rgba(255,255,255,0.08)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
+            // Relleno opaco, no translucido: el boton va sobre la foto de fondo
+            // y con el blanco al 8% la imagen se veia por debajo del texto.
+            style={{ background: 'color-mix(in srgb, #fff 9%, var(--teclab-ink))', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
           >
             Guaminí 4876
           </a>

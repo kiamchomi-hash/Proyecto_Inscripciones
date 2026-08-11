@@ -502,7 +502,9 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg text-white font-bold text-[0.95rem] sm:text-sm transition-all"
-            style={{ background: 'rgba(255,255,255,0.08)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
+            // Relleno opaco, no translucido: el boton va sobre el isotipo grande
+            // del fondo y con el blanco al 8% se veia la letra por debajo.
+            style={{ background: 'color-mix(in srgb, #fff 9%, var(--ia-ink))', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
           >
             Guaminí 4876
           </a>
