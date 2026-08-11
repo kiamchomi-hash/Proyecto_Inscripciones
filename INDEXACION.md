@@ -15,11 +15,17 @@ https://www.siglo21sur.com/carreras/diplomatura-en-mindfulness-liderazgo-persona
 ## Recrawl
 
 ```
-https://www.siglo21sur.com/clases-apoyo
-https://www.siglo21sur.com/carreras/licenciatura-en-informatica
 https://www.siglo21sur.com/carreras/licenciatura-en-administracion
-https://www.siglo21sur.com/carreras/actuario
 ```
+
+Las otras tres de esta lista (`/clases-apoyo`, `/carreras/licenciatura-en-informatica`
+y `/carreras/actuario`) se rastrearon solas entre el 09 y el 10/08: ya no hacen falta.
+
+Administración sigue con la copia del 26/06 y es la única de las cuatro que
+inspecciona con `rich_results: null` — o sea que lo que Google tiene indexado es
+anterior al BreadcrumbList. Su `updated_at` es del 19/07, posterior al rastreo,
+así que el `lastmod` del sitemap ya la señala: si en unos días se movió sola,
+no hay que pedir nada.
 
 ## La lista
 
