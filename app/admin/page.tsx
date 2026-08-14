@@ -116,6 +116,16 @@ export default function AdminDashboard() {
 
   const cards = [
     {
+      title: 'Carreras y precios',
+      description: 'Abrir el buscador comercial privado y publicar actualizaciones',
+      href: '/admin/buscador',
+      icon: (
+        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35m1.35-5.4A6.75 6.75 0 1 1 4.5 11.25a6.75 6.75 0 0 1 13.5 0Z" />
+        </svg>
+      ),
+    },
+    {
       title: 'Clases de Apoyo',
       description: 'Administrar materias, horarios y disponibilidad',
       href: '/admin/clases-apoyo',
@@ -140,10 +150,10 @@ export default function AdminDashboard() {
               <button
                 key={card.href}
                 onClick={() => router.push(card.href)}
-                className="group p-6 rounded-2xl border text-left transition hover:bg-white/[0.03] cursor-pointer"
+                className="p-6 rounded-2xl border text-left transition-colors hover:bg-white/[0.03] cursor-pointer"
                 style={{ background: 'var(--admin-card)', borderColor: 'var(--admin-border)' }}
               >
-                <div className="mb-4 group-hover:scale-110 transition-transform" style={{ color: 'var(--admin-accent)' }}>
+                <div className="mb-4" style={{ color: 'var(--admin-accent)' }}>
                   {card.icon}
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">{card.title}</h3>

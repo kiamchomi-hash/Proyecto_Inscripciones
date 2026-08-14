@@ -89,6 +89,7 @@ export async function proxy(request: NextRequest) {
 
   const requiresAdminRole =
     pathname === '/admin' ||
+    pathname.startsWith('/admin/buscador') ||
     pathname.startsWith('/api/admin');
 
   if (requiresAdminRole && profile.rol !== 'admin') {

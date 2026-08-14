@@ -1,0 +1,183 @@
+.buscador-app {
+  --workspace-bar: #071c17;
+  --workspace-ink: #e8f4ef;
+  --workspace-muted: #87a49a;
+  --workspace-accent: #16d3ba;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  color: var(--workspace-ink);
+  background: #050f0d;
+}
+
+.buscador-app__bar {
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: minmax(230px, .8fr) minmax(280px, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, .09);
+  background: var(--workspace-bar);
+  animation: buscador-bar-in 360ms ease-out both;
+}
+
+.buscador-app__identity,
+.buscador-app__status,
+.buscador-app__actions {
+  display: flex;
+  align-items: center;
+}
+
+.buscador-app__identity { gap: 12px; }
+.buscador-app__mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  color: #03241d;
+  background: var(--workspace-accent);
+  font-size: 15px;
+  font-weight: 950;
+  letter-spacing: -.04em;
+}
+
+.buscador-app__eyebrow {
+  margin: 0 0 2px;
+  color: var(--workspace-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.buscador-app h1 {
+  margin: 0;
+  font-size: clamp(16px, 2vw, 21px);
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+
+.buscador-app__status { gap: 10px; min-width: 0; }
+.buscador-app__status div { min-width: 0; }
+.buscador-app__status strong,
+.buscador-app__status span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.buscador-app__status strong { font-size: 12px; }
+.buscador-app__status span { margin-top: 3px; color: var(--workspace-muted); font-size: 10px; }
+.buscador-app__dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, .04);
+}
+.buscador-app__dot.is-ready { background: var(--workspace-accent); box-shadow: 0 0 0 5px rgba(22, 211, 186, .1); }
+.buscador-app__dot.is-empty { background: #e7a52a; }
+
+.buscador-app__actions { justify-content: flex-end; gap: 8px; }
+.buscador-app__button,
+.buscador-app__empty button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 10px;
+  color: #03241d;
+  background: var(--workspace-accent);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 150ms ease, opacity 150ms ease, background 150ms ease;
+}
+.buscador-app__button:hover,
+.buscador-app__empty button:hover { transform: translateY(-1px); background: #44e2cb; }
+.buscador-app__button:disabled { cursor: wait; opacity: .55; transform: none; }
+.buscador-app__button.is-secondary { color: var(--workspace-ink); background: rgba(255, 255, 255, .08); }
+.buscador-app__button.is-secondary:hover { background: rgba(255, 255, 255, .13); }
+
+.buscador-app__notice {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 20px;
+  color: #cfeae1;
+  background: #0d342b;
+  border-bottom: 1px solid rgba(22, 211, 186, .2);
+  font-size: 11px;
+  animation: buscador-notice-in 220ms ease-out both;
+}
+.buscador-app__notice button { border: 0; color: inherit; background: transparent; font-size: 20px; cursor: pointer; }
+
+.buscador-app__workspace { min-height: 0; position: relative; background: #061713; }
+.buscador-app__workspace iframe {
+  width: 100%;
+  height: 100%;
+  min-height: calc(100svh - 108px);
+  display: block;
+  border: 0;
+  background: #061713;
+  animation: buscador-workspace-in 420ms 80ms ease-out both;
+}
+
+.buscador-app__empty {
+  width: min(560px, calc(100% - 40px));
+  margin: clamp(70px, 14vh, 150px) auto;
+  border-left: 2px solid var(--workspace-accent);
+  padding: 8px 0 8px clamp(20px, 5vw, 48px);
+}
+.buscador-app__empty-index { color: var(--workspace-accent); font-size: 11px; font-weight: 800; letter-spacing: .16em; }
+.buscador-app__empty h2 { margin: 12px 0; font-size: clamp(25px, 5vw, 44px); letter-spacing: -.045em; }
+.buscador-app__empty p { max-width: 490px; margin: 0 0 24px; color: var(--workspace-muted); font-size: 13px; line-height: 1.65; }
+.buscador-app__empty code { color: #cfeae1; }
+
+.buscador-app__footer {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 20px;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  color: #66877d;
+  background: #050f0d;
+  font-size: 9px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+@keyframes buscador-bar-in { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes buscador-notice-in { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes buscador-workspace-in { from { opacity: 0; transform: scale(.995); } }
+
+@media (max-width: 860px) {
+  .buscador-app__bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 14px;
+  }
+  .buscador-app__status { grid-column: 1 / -1; grid-row: 2; }
+  .buscador-app__actions { grid-column: 2; grid-row: 1; }
+}
+
+@media (max-width: 560px) {
+  .buscador-app__bar { padding: 10px 12px; }
+  .buscador-app__identity { gap: 9px; }
+  .buscador-app__mark { width: 36px; height: 36px; border-radius: 10px; }
+  .buscador-app__eyebrow { display: none; }
+  .buscador-app h1 { max-width: 105px; line-height: 1.05; }
+  .buscador-app__button { min-height: 36px; padding: 0 11px; font-size: 10px; }
+  .buscador-app__button.is-secondary { display: none; }
+  .buscador-app__workspace iframe { min-height: calc(100svh - 132px); }
+  .buscador-app__footer { padding-inline: 12px; }
+  .buscador-app__footer span:last-child { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buscador-app__bar,
+  .buscador-app__notice,
+  .buscador-app__workspace iframe { animation: none; }
+  .buscador-app__button,
+  .buscador-app__empty button { transition: none; }
+}
