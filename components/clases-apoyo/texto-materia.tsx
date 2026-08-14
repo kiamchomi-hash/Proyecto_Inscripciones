@@ -18,7 +18,9 @@ export default function TextoMateria({ label, parrafos }: { label: string; parra
   return (
     <section className="ca-seo" aria-labelledby="ca-seo-titulo">
       <div className="ca-seo-inner">
-        <h2 id="ca-seo-titulo">Clases de apoyo de {label} en Villa Lugano</h2>
+        {/* El h1 de la pagina ya dice "Clases de apoyo de X en Villa Lugano":
+            repetirlo aca daba dos titulos identicos en la misma URL. */}
+        <h2 id="ca-seo-titulo">Sobre las clases de {label}</h2>
         {parrafos.map((p, i) =>
           // Una entrada que arranca con una etiqueta ya trae su propio bloque
           // (un subtitulo con su lista de temas, por ejemplo). Envolverla en un

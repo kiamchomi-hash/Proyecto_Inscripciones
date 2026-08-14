@@ -24,160 +24,303 @@
   --ca-sidebar-width: 180px;
 }
 
-/* ── App container ── */
-.ca-app {
-  display: grid;
-  grid-template-rows: 55px 1fr 55px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--ca-border-light);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-}
+/* ══ Ficha /clases-apoyo/[materia] ══
+   Dejó de ser una app encajonada de 100dvh con sidebar: es una página que
+   scrollea, igual que la portada. El calendario y el panel de horarios son los
+   mismos componentes; lo que cambió es la maqueta que los contiene. */
 
-/* ── Header ── */
-.ca-header {
-  background: var(--ca-bg-sidebar);
-  display: grid;
-  grid-template-columns: var(--ca-sidebar-width) 1fr;
-  border-bottom: 1px solid var(--ca-border-light);
-  z-index: 30;
-}
-
-/* ── Body ── */
-.ca-body {
-  display: grid;
-  grid-template-columns: var(--ca-sidebar-width) 1fr;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* ── Sidebar ── */
-.ca-sidebar {
-  background: #051211;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--ca-border-light);
-  height: 100%;
-}
-
-.ca-sb-btn {
-  width: 100%;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  padding: 0 25px;
-  cursor: pointer;
-  border: none;
-  background: #051211;
-  color: var(--ca-text-muted);
-  transition: var(--ca-transition);
+.ca-materia {
   position: relative;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.ca-sb-btn:hover {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(0, 199, 177, 0.13) 0%, transparent 60%),
+    linear-gradient(170deg, #051211 0%, #082422 55%, #051d1a 100%);
+  padding: 1.25rem 1.25rem 3.5rem;
   color: var(--ca-text-main);
-  background: #0a1716;
-}
-
-.ca-sb-btn.on {
-  color: #fff;
-  background: #051d1a;
-}
-
-.ca-sb-bar {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0%;
-  background: var(--ca-teal);
-  transition: var(--ca-transition);
-}
-.ca-sb-btn.on .ca-sb-bar { height: 40%; }
-
-.ca-sb-dot {
-  width: 5px;
-  height: 5px;
-  background: #203646;
-  border-radius: 50%;
-  margin-right: 12px;
-  transition: var(--ca-transition);
-}
-.ca-sb-btn.on .ca-sb-dot {
-  background: var(--ca-teal);
-  box-shadow: 0 0 8px var(--ca-teal);
-}
-
-/* ── Main content ── */
-.ca-main {
-  background: var(--ca-bg-main);
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ── Panel animation ── */
-@keyframes ca-fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.ca-panel { animation: ca-fadeIn 0.4s ease-out; }
-
-/* ── Row 1: carousel + description ── */
-.ca-r1 {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  flex: 4;
-  min-height: 0;
-  border-bottom: 1px solid var(--ca-border-light);
   overflow: hidden;
 }
 
-/* ── Row 2: calendar + management ── */
-.ca-r2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: rgba(0,0,0,0.18);
-  flex: 5;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* ── Carousel ── */
-.ca-carousel-track {
-  display: flex;
-  height: 100%;
-  transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-/* ── Description panel ── */
-.ca-desc-item {
-  position: relative;
-  padding-left: 35px;
-  font-size: clamp(0.7rem, 1.8vh, 1rem);
-  line-height: 1.4;
-  color: var(--ca-text-main);
-}
-
-.ca-desc-item::before {
+/* El mismo cuadriculado de hoja de carpeta que la portada. */
+.ca-materia::before {
   content: "";
   position: absolute;
-  left: 5px;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(0deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.3) 50%, transparent 85%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.3) 50%, transparent 85%);
+}
+
+@media (min-width: 700px) {
+  .ca-materia { padding: 1.5rem 2rem 4.5rem; }
+}
+
+.ca-materia > * {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+/* ── Migas ── */
+.ca-migas {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ca-text-muted);
+}
+
+.ca-migas a {
+  color: var(--ca-teal);
+  text-decoration: none;
+}
+
+.ca-migas a:hover { text-decoration: underline; }
+
+.ca-migas-actual { color: var(--ca-text-main); }
+
+/* ── Fila para cambiar de materia ──
+   Reemplaza la sidebar fija y las solapas de mobile por una sola tira. En
+   pantallas chicas scrollea a lo ancho: cada materia nueva no le suma una fila
+   entera arriba del contenido. */
+.ca-mat-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 0.2rem;
+}
+
+.ca-mat-tabs::-webkit-scrollbar { display: none; }
+
+.ca-mat-tab {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--ca-text-muted);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: var(--ca-transition);
+}
+
+.ca-mat-tab:hover {
+  color: var(--ca-text-main);
+  border-color: rgba(0, 199, 177, 0.35);
+}
+
+.ca-mat-tab.on {
+  color: var(--ca-selected-text);
+  background: var(--ca-teal);
+  border-color: var(--ca-teal);
+}
+
+/* ── Encabezado ── */
+.ca-mat-hero {
+  display: grid;
+  gap: 1.6rem;
+  padding: 1.6rem 0 2.4rem;
+}
+
+@media (min-width: 900px) {
+  .ca-mat-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+    gap: 2.75rem;
+    align-items: start;
+    padding: 2rem 0 3rem;
+  }
+}
+
+.ca-mat-hero-main h1 {
+  font-family: var(--font-unbounded), system-ui, sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.032em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.ca-mat-hero-main h1 span {
+  color: var(--ca-teal);
+  background-image: linear-gradient(90deg, rgba(0, 199, 177, 0.55), rgba(230, 155, 5, 0.55));
+  background-repeat: no-repeat;
+  background-size: 100% 3px;
+  background-position: 0 100%;
+  padding-bottom: 0.06em;
+}
+
+/* Los puntos que vienen de `descripcion` en la base. Antes estaban en un panel
+   aparte, apretados contra la foto; acá son la bajada del titular. */
+.ca-mat-bullets {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 0.7rem;
+  max-width: 52ch;
+}
+
+.ca-mat-bullets li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: var(--ca-text-main);
+}
+
+.ca-mat-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
   top: 0.6em;
   width: 7px;
   height: 7px;
-  background: var(--ca-teal);
   border-radius: 50%;
+  background: var(--ca-teal);
   box-shadow: 0 0 10px var(--ca-teal);
 }
 
-.ca-desc-item strong {
+.ca-mat-bullets strong {
   color: var(--ca-teal);
   font-weight: 700;
+}
+
+/* ── Ficha lateral ── */
+.ca-mat-ficha {
+  border-radius: 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(130% 100% at 100% 0%, rgba(0, 199, 177, 0.14) 0%, transparent 58%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.014) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 40px rgba(0, 0, 0, 0.32);
+}
+
+/* La foto, apaisada y recortada. Antes iba con object-contain en una caja de
+   alto libre y salía con dos barras negras a los costados. */
+.ca-mat-foto {
+  border-bottom: 1px solid rgba(0, 199, 177, 0.18);
+}
+
+.ca-carousel {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #04100f;
+}
+
+/* El riel va anclado con inset y no con height:100%: el padre saca su alto de
+   un `aspect-ratio`, y contra eso el porcentaje resuelve a 0 y la foto
+   desaparece sin dejar rastro en la consola. */
+.ca-carousel-track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.ca-mat-ficha dl {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 1.25rem 1.35rem;
+}
+
+.ca-mat-ficha dt {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--ca-text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.ca-mat-ficha dd {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.ca-mat-ficha .ca-wa-link {
+  width: auto;
+  margin: 0 1.35rem 1.35rem;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 11px 16px;
+}
+
+@media (max-width: 899px) {
+  .ca-mat-ficha dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem 1rem; }
+  /* El WhatsApp del hero ya está arriba en mobile: repetirlo acá es ruido. */
+  .ca-mat-ficha .ca-wa-link { display: none; }
+}
+
+/* ── Reserva ── */
+.ca-reserva-wrap {
+  padding-top: 2.4rem;
+  border-top: 1px solid var(--ca-border-light);
+  scroll-margin-top: calc(var(--navbar-height, 60px) + 1rem);
+}
+
+.ca-reserva {
+  display: grid;
+  gap: 1rem;
+  animation: ca-fadeIn 0.4s ease-out;
+}
+
+@media (min-width: 900px) {
+  .ca-reserva {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  /* Un piso, no un estirado a la altura del calendario: estirado, las seis
+     pastillas de hora quedaban flotando en el medio de un panel enorme. */
+  .ca-reserva-sched { min-height: 21rem; }
+}
+
+.ca-reserva-cal,
+.ca-reserva-sched {
+  border-radius: 18px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.012) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.16);
+  overflow: hidden;
+}
+
+.ca-cal-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0.9rem;
+}
+
+.ca-sched {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ca-sched-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-block: 0.5rem;
+}
+
+@keyframes ca-fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Calendar ── */
@@ -187,7 +330,6 @@
   border-radius: 12px;
   width: 100%;
   max-width: 500px;
-  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -260,6 +402,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  aspect-ratio: 1.6 / 1;
   font-size: 0.85rem;
   font-weight: 600;
   background: rgba(255,255,255,0.01);
@@ -271,7 +414,6 @@
   color: var(--ca-text-main);
   cursor: pointer;
   user-select: none;
-  height: 100%;
   position: relative;
 }
 
@@ -358,6 +500,11 @@
 .ca-construction {
   color: var(--ca-gold);
   opacity: 0.9;
+  margin-top: 2.4rem;
+  padding: 3rem 1.5rem;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(230, 155, 5, 0.18);
 }
 
 .ca-construction-icon {
@@ -408,190 +555,262 @@
   white-space: nowrap;
 }
 
-/* ── Desktop: hide mobile tabs row ── */
-.ca-mobile-tabs { display: none; }
-
-/* ── Mobile ── */
-@media only screen and (max-width: 768px) {
-  /* Tira que scrollea, no grilla de 3 columnas: con 6 materias entraban en dos
-     filas, pero cada materia nueva agrega una fila entera arriba del contenido.
-     Así crece a lo ancho y la altura no se mueve. */
-  .ca-mobile-tabs {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    scrollbar-width: none;
-  }
-  .ca-mobile-tabs::-webkit-scrollbar { display: none; }
-  .ca-mobile-tab {
-    flex: 0 0 auto !important;
-    padding: 8px 14px !important;
-    text-align: center !important;
-    font-size: 0.62rem !important;
-    letter-spacing: 0 !important;
-    line-height: 1.3 !important;
-    white-space: nowrap !important;
-  }
-
-  .ca-app {
-    display: flex !important;
-    flex-direction: column !important;
-    border-radius: 0 !important;
-    border: none !important;
-    min-height: 100% !important;
-    height: auto !important;
-  }
-
-  .ca-header {
-    grid-template-columns: 1fr !important;
-    height: 50px !important;
-    display: flex !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
-  }
-
-  .ca-header-brand {
-    display: none !important;
-  }
-
-  .ca-body {
-    display: block !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  .ca-sidebar {
-    display: none !important;
-  }
-
-  .ca-main {
-    width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    overflow: visible !important;
-  }
-
-  .ca-panel {
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  .ca-r1 {
-    display: flex !important;
-    flex-direction: column !important;
-    flex: none !important;
-    min-height: auto !important;
-  }
-
-  .ca-r1 > :first-child {
-    height: 200px;
-  }
-
-  .ca-r1 > :last-child {
-    min-height: 160px;
-  }
-
-  .ca-r2 {
-    display: flex !important;
-    flex-direction: column !important;
-    flex: none !important;
-    min-height: auto !important;
-  }
-
-  .ca-r2 > :first-child {
-    height: 280px;
-  }
-
-  .ca-r2 > :last-child {
-    padding: 20px !important;
-  }
-
-  .ca-footer {
-    display: flex !important;
-    padding: 8px 15px !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    min-height: 70px !important;
-    height: auto !important;
-    gap: 6px !important;
-    width: 100% !important;
-    flex-shrink: 0 !important;
-  }
-
-  .ca-footer-info {
-    display: none !important;
-  }
-
-  .ca-wa-link {
-    display: flex !important;
-    width: 95% !important;
-    max-width: 320px !important;
-    font-size: 0.65rem !important;
-    padding: 10px 12px !important;
-    justify-content: center !important;
-    margin: 0 auto !important;
-  }
-}
-
 /* ══ Portada /clases-apoyo ══
-   Página normal, no la app: una tarjeta por materia que enlaza a su ficha.
-   Nada de acá se usa en /clases-apoyo/[materia]. */
+   Página normal, no la app: hero, una tarjeta por materia, los pasos y el
+   texto local. Nada de acá se usa en /clases-apoyo/[materia]. */
 
 .ca-landing {
+  position: relative;
+  isolation: isolate;
   background:
     radial-gradient(ellipse at 50% -10%, rgba(0, 199, 177, 0.13) 0%, transparent 60%),
     linear-gradient(170deg, #051211 0%, #082422 55%, #051d1a 100%);
   min-height: calc(100dvh - var(--navbar-height, 60px));
   padding: 2rem 1.25rem 4rem;
   color: var(--ca-text-main);
+  overflow: hidden;
+}
+
+/* Cuadriculado de hoja de carpeta. Es la textura del contexto —apoyo escolar—
+   y sale gratis: dos gradientes repetidos, sin imagen que descargar. Se
+   desvanece hacia abajo para no competir con el texto largo. */
+.ca-landing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(0deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 80%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 80%);
 }
 
 @media (min-width: 700px) {
-  .ca-landing { padding-top: 2.6rem; }
+  .ca-landing { padding: 2.6rem 2rem 5rem; }
 }
 
 .ca-landing > * {
-  max-width: 1040px;
+  max-width: 1100px;
   margin-inline: auto;
 }
 
-/* ── Encabezado ── */
-.ca-landing-hero h1 {
-  font-size: clamp(1.55rem, 4vw, 2.35rem);
-  font-weight: 900;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-  color: #fff;
-  margin-bottom: 0.55rem;
+/* ── Hero ──
+   Columna ancha + ficha de datos. La ficha existe para llenar la derecha, que
+   en la versión anterior quedaba vacía en cualquier pantalla grande. */
+.ca-hero {
+  display: grid;
+  gap: 1.4rem;
+  padding-bottom: 2.2rem;
 }
 
-.ca-landing-hero h1 span { color: var(--ca-teal); }
+@media (min-width: 900px) {
+  .ca-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+    gap: 2.75rem;
+    align-items: center;
+    padding: 1.5rem 0 2.6rem;
+  }
+}
 
-.ca-landing-datos {
+.ca-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ca-gold);
+  margin-bottom: 1rem;
+}
+
+.ca-hero-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ca-gold);
+  box-shadow: 0 0 0 3px rgba(230, 155, 5, 0.18);
+}
+
+.ca-hero-main h1 {
+  font-family: var(--font-unbounded), system-ui, sans-serif;
+  font-size: clamp(2rem, 5.6vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+/* El nombre del barrio subrayado a mano alzada: el trazo es un gradiente al
+   pie del renglón, no un border, así respeta las dos líneas del título. */
+.ca-hero-main h1 span {
+  color: var(--ca-teal);
+  background-image: linear-gradient(90deg, rgba(0, 199, 177, 0.55), rgba(230, 155, 5, 0.55));
+  background-repeat: no-repeat;
+  background-size: 100% 3px;
+  background-position: 0 100%;
+  padding-bottom: 0.06em;
+}
+
+.ca-hero-deck {
+  margin-top: 1.05rem;
+  font-size: clamp(0.92rem, 2.2vw, 1.1rem);
+  line-height: 1.65;
+  color: var(--ca-text-main);
+  max-width: 46ch;
+}
+
+.ca-hero-cta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  list-style: none;
-  padding: 0;
-  margin-top: 1rem;
+  gap: 0.7rem;
+  margin-top: 1.75rem;
 }
 
-.ca-landing-datos li {
-  font-size: 0.63rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ca-teal);
-  background: rgba(0, 199, 177, 0.08);
-  border: 1px solid rgba(0, 199, 177, 0.2);
+/* ── Botones ── */
+.ca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.4rem;
   border-radius: 999px;
-  padding: 0.3rem 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease, color 0.18s ease;
 }
 
-/* ── Grilla ── */
+.ca-btn svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.ca-btn-wa {
+  background: #25d366;
+  color: #04261a;
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.22);
+}
+
+.ca-btn-wa:hover {
+  background: #2ee878;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.32);
+}
+
+.ca-btn-ghost {
+  background: rgba(0, 199, 177, 0.08);
+  border-color: rgba(0, 199, 177, 0.32);
+  color: var(--ca-teal);
+}
+
+.ca-btn-ghost:hover {
+  background: rgba(0, 199, 177, 0.16);
+  border-color: rgba(0, 199, 177, 0.6);
+  transform: translateY(-2px);
+}
+
+.ca-btn:focus-visible {
+  outline: 2px solid var(--ca-teal);
+  outline-offset: 3px;
+}
+
+/* ── Ficha de datos del hero ── */
+.ca-hero-ficha {
+  position: relative;
+  border-radius: 18px;
+  padding: 1.4rem 1.5rem;
+  background:
+    radial-gradient(130% 100% at 100% 0%, rgba(0, 199, 177, 0.14) 0%, transparent 58%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.014) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 40px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(4px);
+}
+
+.ca-hero-ficha dl {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+}
+
+/* En mobile la ficha va en dos columnas: apilada en cuatro renglones empujaba
+   la primera tarjeta de materia abajo del pliegue, que es justo lo que la
+   persona vino a ver. */
+@media (max-width: 899px) {
+  .ca-hero-ficha { padding: 1.15rem 1.2rem; }
+  .ca-hero-ficha dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem 1rem; }
+  .ca-hero-ficha dd { font-size: 0.86rem; }
+  .ca-hero-nota { margin-top: 1rem; padding-top: 0.85rem; font-size: 0.76rem; }
+}
+
+.ca-hero-ficha dt {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--ca-text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.ca-hero-ficha dd {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.ca-hero-nota {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ca-text-muted);
+}
+
+.ca-hero-nota strong {
+  color: var(--ca-gold);
+  font-weight: 800;
+}
+
+/* ── Encabezado de sección, compartido ── */
+.ca-seccion-head {
+  margin-bottom: 1.4rem;
+}
+
+.ca-seccion-head h2 {
+  /* El navbar es sticky: sin esto el ancla "Ver las materias" deja el titulo
+     tapado debajo de la barra. */
+  scroll-margin-top: calc(var(--navbar-height, 60px) + 1.25rem);
+  font-family: var(--font-unbounded), system-ui, sans-serif;
+  font-size: clamp(1.25rem, 3vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #fff;
+}
+
+.ca-seccion-head p {
+  margin-top: 0.45rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ca-text-muted);
+}
+
+/* ── Grilla de materias ──
+   Cuatro columnas en desktop: con tres, las siete materias dejaban una tarjeta
+   sola en la última fila. */
 .ca-landing-grid-wrap {
-  margin-top: 1.6rem;
+  padding-top: 2.2rem;
+  border-top: 1px solid var(--ca-border-light);
 }
 
 .ca-card-grid {
@@ -602,6 +821,10 @@
 
 @media (min-width: 700px) {
   .ca-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+}
+
+@media (min-width: 1000px) {
+  .ca-card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 /* ── Tarjeta ── */
@@ -774,23 +997,77 @@ a.ca-card:hover .ca-card-arrow {
   .ca-card-title { font-size: 0.9rem; }
 }
 
-/* ── Bloques de texto, debajo de la grilla ──
-   Sólo el primero lleva la línea que lo separa de las tarjetas; el que sigue
-   se apoya en el de arriba. */
-.ca-landing-texto {
-  margin-top: 2.8rem;
-  padding-top: 2.2rem;
+/* ── Los tres pasos ── */
+.ca-pasos-wrap {
+  margin-top: 3.2rem;
+  padding-top: 2.4rem;
   border-top: 1px solid var(--ca-border-light);
 }
 
-.ca-landing-texto + .ca-landing-texto {
-  margin-top: 2.2rem;
-  padding-top: 0;
-  border-top: none;
+.ca-pasos {
+  display: grid;
+  gap: 0.9rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: paso;
+}
+
+@media (min-width: 800px) {
+  .ca-pasos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+}
+
+.ca-paso {
+  position: relative;
+  padding: 1.35rem 1.3rem 1.25rem;
+  border-radius: 16px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* El número, en el color del lápiz. Grande y arriba a la derecha para que la
+   secuencia se lea de un vistazo sin agrandar el bloque. */
+.ca-paso-n {
+  position: absolute;
+  top: 0.85rem;
+  right: 1.1rem;
+  font-family: var(--font-unbounded), system-ui, sans-serif;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(230, 155, 5, 0.28);
+}
+
+.ca-paso h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.45rem;
+  padding-right: 2.2rem;
+}
+
+.ca-paso p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ca-text-muted);
+}
+
+/* ── Bloques de texto ──
+   Dos columnas en desktop: en una sola dejaban media pantalla vacía. */
+.ca-texto-grid {
+  display: grid;
+  gap: 2.2rem;
+  margin-top: 3.2rem;
+  padding-top: 2.4rem;
+  border-top: 1px solid var(--ca-border-light);
+}
+
+@media (min-width: 900px) {
+  .ca-texto-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; }
 }
 
 .ca-landing-texto h2 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--ca-teal);
   margin-bottom: 1rem;
@@ -800,7 +1077,7 @@ a.ca-card:hover .ca-card-arrow {
   font-size: 0.92rem;
   line-height: 1.75;
   color: var(--ca-text-muted);
-  max-width: 68ch;
+  max-width: 62ch;
   margin-bottom: 0.9rem;
 }
 
@@ -809,9 +1086,60 @@ a.ca-card:hover .ca-card-arrow {
   font-weight: 700;
 }
 
+/* Los barrios, como pastillas: es una enumeración, no una oración. */
+.ca-barrios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin-top: 1.1rem;
+}
+
+.ca-barrios li {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ca-text-main);
+  background: rgba(0, 199, 177, 0.07);
+  border: 1px solid rgba(0, 199, 177, 0.18);
+  border-radius: 999px;
+  padding: 0.32rem 0.75rem;
+}
+
+/* ── Cierre ── */
+.ca-cierre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.4rem;
+  margin-top: 3.2rem;
+  padding: 1.8rem;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(0, 199, 177, 0.16) 0%, transparent 60%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.24);
+}
+
+.ca-cierre h2 {
+  font-family: var(--font-unbounded), system-ui, sans-serif;
+  font-size: clamp(1.1rem, 2.6vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #fff;
+}
+
+.ca-cierre p {
+  margin-top: 0.4rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ca-text-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ca-card, .ca-card-cta svg { transition: none; }
-  a.ca-card:hover { transform: none; }
+  .ca-card, .ca-btn { transition: none; }
+  a.ca-card:hover, .ca-btn:hover { transform: none; }
 }
 
 /* ── Texto propio de cada materia ──
