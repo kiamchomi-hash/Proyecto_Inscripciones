@@ -24,7 +24,6 @@
   --ca-sidebar-width: 180px;
 }
 
-
 /* ── App container ── */
 .ca-app {
   display: grid;
@@ -301,51 +300,6 @@
   flex-shrink: 0;
 }
 
-.ca-week-label {
-  display: flex;
-  align-items: stretch;
-  height: 1.8rem;
-  width: 100%;
-  overflow: hidden;
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(0, 199, 177, 0.1);
-  position: relative;
-  z-index: 5;
-}
-
-.ca-month-tag {
-  background: var(--ca-slate);
-  color: #ffffff;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  width: 25%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 0 4px;
-}
-
-.ca-week-text {
-  background: rgba(113, 128, 150, 0.15);
-  color: #ffffff;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 0 25px 0 15px;
-  display: flex;
-  align-items: center;
-  position: relative;
-  clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
-  width: fit-content;
-}
-
 .ca-day-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -434,17 +388,6 @@
   stroke-dasharray: 30;
   stroke-dashoffset: 30;
   animation: ca-check-draw 0.4s ease 0.1s forwards;
-}
-
-/* ── Loader ── */
-.ca-loader-ring {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--ca-border-light);
-  border-top: 2px solid var(--ca-teal);
-  border-radius: 50%;
-  animation: ca-spin 1s linear infinite;
-  margin-bottom: 10px;
 }
 
 @keyframes ca-spin {
@@ -639,7 +582,6 @@
   }
 }
 
-
 /* ══ Sistema bento — la portada /clases-apoyo ══
    Nada de contenido suelto sobre el fondo: todo bloque vive adentro de una
    baldosa, todas con la misma superficie, el mismo radio y la misma
@@ -675,20 +617,6 @@
 @media (min-width: 760px) {
   .ca-bento { --ca-gap: 0.75rem; }
 }
-
-/* Una columna de baldosas apiladas adentro de la grilla. Existe porque
-   `grid-row: 1 / -1` no sirve acá: sin filas explícitas, `-1` resuelve a la
-   fila 1 y la baldosa de abajo se cae a la otra columna. Con la columna
-   anidada las dos mitades miden lo mismo sin que nadie declare cuántas filas
-   hay, que cambian entre la portada y la ficha. La ultima baldosa se come el
-   sobrante para que la columna no termine en un hueco. */
-.ca-bento-col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ca-gap);
-}
-
-.ca-bento-col > :last-child { flex: 1; }
 
 .ca-bento + .ca-bento { margin-top: 0.6rem; }
 
@@ -745,14 +673,6 @@ a.ca-tile:focus-visible {
   outline-offset: 3px;
 }
 
-/* Baldosa destacada: la del descuento y la de cierre. */
-.ca-tile-oro {
-  background:
-    radial-gradient(130% 110% at 100% 0%, rgba(230, 155, 5, 0.16) 0%, transparent 60%),
-    linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.014) 100%);
-  border-color: rgba(230, 155, 5, 0.26);
-}
-
 /* ── Títulos ──
    Inter en peso 900 con tracking cerrado, que es como titula el resto del
    sitio (ver el h1 de components/index/hero.tsx). */
@@ -798,8 +718,27 @@ a.ca-tile:focus-visible {
   padding-left: 0.3rem;
 }
 
-/* ── Baldosa principal (el titular) ── */
-.ca-tile-titular h1 {
+/* ── Banda del encabezado ──
+   Una sola baldosa a lo ancho. Antes eran tres —titular, datos y descuento— y
+   entre las tres se comian media pantalla antes de la primera materia; el
+   titular ademas quedaba con un agujero en el medio, porque los botones se
+   anclaban abajo y el texto no llegaba. */
+.ca-encabezado {
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 820px) {
+  .ca-encabezado {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .ca-encabezado .ca-btn { flex-shrink: 0; }
+}
+
+.ca-encabezado h1 {
   font-weight: 900;
   font-size: clamp(1.7rem, 4.4vw, 2.9rem);
   line-height: 1.05;
@@ -809,23 +748,35 @@ a.ca-tile:focus-visible {
 }
 
 /* Sólo color, sin subrayado. */
-.ca-tile-titular h1 span { color: var(--ca-teal); }
+.ca-encabezado h1 span { color: var(--ca-teal); }
 
 .ca-deck {
-  margin-top: 1rem;
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  margin-top: 0.75rem;
+  font-size: clamp(0.88rem, 2vw, 1rem);
   line-height: 1.6;
   color: var(--ca-text-main);
-  max-width: 46ch;
+  max-width: 62ch;
 }
 
-/* ── Botones ── */
-.ca-acciones {
+/* Los datos duros, en una linea. Eran una lista clave/valor en su propia
+   baldosa: la misma informacion ocupaba cuatro veces mas alto. */
+.ca-hechos {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: auto;
-  padding-top: 1.5rem;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.ca-hechos li {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ca-text-main);
+  background: rgba(0, 199, 177, 0.08);
+  border: 1px solid rgba(0, 199, 177, 0.2);
+  border-radius: 8px;
+  padding: 0.32rem 0.7rem;
 }
 
 .ca-btn {
@@ -856,71 +807,13 @@ a.ca-tile:focus-visible {
   transform: translateY(-2px);
 }
 
-.ca-btn-ghost {
-  background: rgba(0, 199, 177, 0.09);
-  border-color: rgba(0, 199, 177, 0.3);
-  color: var(--ca-teal);
-}
-
-.ca-btn-ghost:hover {
-  background: rgba(0, 199, 177, 0.17);
-  border-color: rgba(0, 199, 177, 0.55);
-  transform: translateY(-2px);
-}
-
 .ca-btn:focus-visible { outline: 2px solid var(--ca-teal); outline-offset: 3px; }
 
-/* ── Baldosa de datos (la lista clave/valor) ── */
-.ca-datos {
-  display: grid;
-  gap: 0.9rem;
-  margin: 0;
-}
-
-.ca-datos dt {
-  font-size: 0.58rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ca-text-muted);
-  margin-bottom: 0.15rem;
-}
-
-.ca-datos dd {
-  margin: 0;
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.3;
-  color: #fff;
-}
-
 @media (max-width: 759px) {
-  .ca-datos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem 1rem; }
 }
 
-/* ── Baldosa chica de texto destacado ── */
-.ca-tile-nota h3 {
-  font-size: 0.95rem;
-  margin-bottom: 0.4rem;
-}
-
-.ca-tile-nota p {
-  font-size: 0.8rem;
-  line-height: 1.55;
-  color: var(--ca-text-muted);
-}
-
-.ca-tile-nota strong { color: var(--ca-gold); font-weight: 800; }
-
-/* ══ Bloques de la portada ══ */
-
-/* Titular + datos + descuento */
-@media (min-width: 900px) {
-  .ca-bento-hero { grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr); }
-}
-
-/* Materias: cuatro columnas, y la octava casilla la ocupa el WhatsApp. Con
-   tres columnas las siete materias dejaban una baldosa huérfana. */
+/* Materias: cuatro columnas. Con tres, las siete dejaban una sola baldosa
+   colgada en la ultima fila. */
 .ca-bento-materias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 @media (min-width: 620px) {
@@ -932,7 +825,6 @@ a.ca-tile:focus-visible {
 }
 
 @media (min-width: 700px) {
-  .ca-bento-pasos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ca-bento-texto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -1039,60 +931,12 @@ a.ca-card:hover .ca-card-arrow {
   opacity: 0.7;
 }
 
-/* La baldosa que cierra la fila de materias. */
-.ca-card-wa {
-  background:
-    radial-gradient(130% 110% at 100% 0%, rgba(37, 211, 102, 0.16) 0%, transparent 62%),
-    linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.014) 100%);
-  border-color: rgba(37, 211, 102, 0.28);
-  justify-content: center;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.ca-card-wa .ca-card-ico {
-  background: rgba(37, 211, 102, 0.14);
-  border-color: rgba(37, 211, 102, 0.3);
-  color: #25d366;
-}
-
-a.ca-card-wa:hover {
-  border-color: rgba(37, 211, 102, 0.6);
-}
-
-a.ca-card-wa:hover .ca-card-ico {
-  background: #25d366;
-  border-color: #25d366;
-  color: #04261a;
-  box-shadow: 0 0 18px rgba(37, 211, 102, 0.35);
-}
-
-.ca-card-wa .ca-card-cta { color: #25d366; }
-
-.ca-card-wa .ca-card-arrow { background: rgba(37, 211, 102, 0.16); }
-
-a.ca-card-wa:hover .ca-card-arrow { background: #25d366; color: #04261a; }
-
 @media (max-width: 420px) {
   .ca-tile { padding: 0.95rem 0.9rem; border-radius: 14px; }
   .ca-card-ico { width: 34px; height: 34px; border-radius: 9px; }
   .ca-card-icon { width: 18px; height: 18px; }
   .ca-card-title { font-size: 0.9rem; }
 }
-
-/* ── Baldosa de paso ── */
-.ca-paso-n {
-  font-size: 1.7rem;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: rgba(230, 155, 5, 0.32);
-  margin-bottom: 0.6rem;
-}
-
-.ca-paso h3 { font-size: 0.98rem; margin-bottom: 0.4rem; }
-
-.ca-paso p { font-size: 0.84rem; line-height: 1.6; color: var(--ca-text-muted); }
 
 /* ── Baldosa de texto largo ── */
 .ca-tile-texto h2 {
@@ -1131,26 +975,6 @@ a.ca-card-wa:hover .ca-card-arrow { background: #25d366; color: #04261a; }
   border-radius: 8px;
   padding: 0.3rem 0.65rem;
 }
-
-/* ── Baldosa de cierre ── */
-.ca-tile-cierre {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.2rem;
-}
-
-.ca-tile-cierre h2 { font-size: clamp(1.05rem, 2.4vw, 1.3rem); }
-
-.ca-tile-cierre p {
-  margin-top: 0.35rem;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: var(--ca-text-muted);
-}
-
-.ca-tile-cierre .ca-btn { margin: 0; }
 
 /* ── Texto propio de cada materia ──
    Va debajo de la app, fuera de la pantalla completa: no toca el diseño de

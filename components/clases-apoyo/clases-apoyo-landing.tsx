@@ -146,28 +146,14 @@ function IconoWhatsapp() {
   );
 }
 
-/* Los datos duros. Es lo que la persona pregunta antes que cualquier otra cosa,
-   así que van arriba y no enterrados en un párrafo. */
-const DATOS = [
-  { k: 'Modalidad', v: 'Individual y presencial' },
-  { k: 'Niveles', v: 'Primaria y secundaria' },
-  { k: 'Días', v: 'Lunes a viernes, a elección' },
-  { k: 'Dónde', v: 'Guaminí 4876, Villa Lugano' },
-];
-
-const PASOS = [
-  {
-    t: 'Elegís la materia',
-    d: 'Entrás a la materia que necesitás y ves los días y horarios que tiene libres.',
-  },
-  {
-    t: 'Marcás tu horario',
-    d: 'Tocás el día y la hora que te queden cómodos y dejás tu nombre y tu teléfono.',
-  },
-  {
-    t: 'Te escribe el profesor',
-    d: 'Te confirma por WhatsApp y venís con la carpeta y los temas que estés viendo.',
-  },
+/* Los datos duros, como pastillas en el encabezado. Es lo que la persona
+   pregunta antes que cualquier otra cosa, y en una linea no le roban la
+   pantalla a las materias. */
+const HECHOS = [
+  'Presenciales, en la sede',
+  'Individuales o en grupo reducido',
+  'Primaria y secundaria',
+  'Lunes a viernes, horario a convenir',
 ];
 
 const BARRIOS = [
@@ -182,11 +168,12 @@ const BARRIOS = [
 export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard[] }) {
   return (
     <div className="ca-pagina">
-      {/* ── Titular, datos y descuento ──
-          Tres baldosas de la misma grilla: el titular ocupa las dos filas de la
-          columna ancha y las otras dos se apilan al costado. */}
-      <section className="ca-bento ca-bento-hero">
-        <header className="ca-tile ca-tile-titular">
+      {/* ── Encabezado ──
+          Una banda y no un bloque de media pantalla: lo que la persona vino a
+          buscar son las materias, así que la primera tarjeta tiene que entrar
+          en pantalla. Los datos van como pastillas en la misma linea. */}
+      <header className="ca-tile ca-encabezado">
+        <div className="ca-encabezado-texto">
           <p className="ca-eyebrow">
             <span className="ca-eyebrow-dot" aria-hidden="true" />
             Guaminí 4876 — Villa Lugano
@@ -195,95 +182,42 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
             Clases de apoyo en <span>Villa Lugano</span>
           </h1>
           <p className="ca-deck">
-            Traés los temas que estás viendo en la escuela y se trabaja sobre eso, al ritmo que te
-            haga falta. Sin programa cerrado y sin cursos armados.
+            Presenciales, de lunes a viernes. Traés los temas que estás viendo en la escuela y se
+            trabaja sobre eso, al ritmo que te haga falta.
           </p>
-          <div className="ca-acciones">
-            <a className="ca-btn ca-btn-wa" href={WA_HREF} target="_blank" rel="noopener nofollow">
-              <IconoWhatsapp />
-              Consultar por WhatsApp
-            </a>
-            <a className="ca-btn ca-btn-ghost" href="#ca-materias">
-              Ver las materias
-            </a>
-          </div>
-        </header>
-
-        <div className="ca-bento-col">
-          <div className="ca-tile" aria-label="Datos de las clases">
-            <dl className="ca-datos">
-              {DATOS.map(d => (
-                <div key={d.k}>
-                  <dt>{d.k}</dt>
-                  <dd>{d.v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <div className="ca-tile ca-tile-oro ca-tile-nota">
-            <h3>Descuento por continuidad</h3>
-            <p>
-              Quienes vienen <strong>todas las semanas</strong> pagan menos. Si necesitás una sola
-              clase antes de una prueba, también se puede.
-            </p>
-          </div>
+          <ul className="ca-hechos">
+            {HECHOS.map(h => (
+              <li key={h}>{h}</li>
+            ))}
+          </ul>
         </div>
-      </section>
+        <a className="ca-btn ca-btn-wa" href={WA_HREF} target="_blank" rel="noopener nofollow">
+          <IconoWhatsapp />
+          Consultar por WhatsApp
+        </a>
+      </header>
 
-      {/* ── Materias ──
-          Ocho casillas: las siete materias y el WhatsApp. Con tres columnas la
-          última fila quedaba con una sola baldosa colgada. */}
+      {/* ── Materias ── */}
       <h2 className="ca-grupo-label" id="ca-materias">Materias</h2>
       <section className="ca-bento ca-bento-materias" aria-labelledby="ca-materias">
         {materias.map(m => (
           <Tarjeta key={m.id} materia={m} />
         ))}
-        <a className="ca-tile ca-card ca-card-wa" href={WA_HREF} target="_blank" rel="noopener nofollow">
-          <span className="ca-card-ico">
-            <IconoWhatsapp />
-          </span>
-          <h3 className="ca-card-title">¿No sabés cuál?</h3>
-          <p className="ca-card-blurb">Escribinos y te decimos qué materia y qué horario te convienen.</p>
-          <span className="ca-card-cta">
-            Escribinos
-            <span className="ca-card-arrow" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h13M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-          </span>
-        </a>
       </section>
-
-      {/* ── Los tres pasos ──
-          El camino hasta la clase no estaba escrito en ningún lado: quien
-          entraba tenía que deducirlo del botón "Ver horarios". */}
-      <h2 className="ca-grupo-label" id="ca-pasos">Cómo se pide una clase</h2>
-      <ol className="ca-bento ca-bento-pasos" aria-labelledby="ca-pasos">
-        {PASOS.map((p, i) => (
-          <li key={p.t} className="ca-tile ca-paso">
-            <span className="ca-paso-n" aria-hidden="true">
-              {i + 1}
-            </span>
-            <h3>{p.t}</h3>
-            <p>{p.d}</p>
-          </li>
-        ))}
-      </ol>
 
       {/* ── Texto largo ── */}
       <section className="ca-bento ca-bento-texto">
         <article className="ca-tile ca-tile-texto">
           <h2>Cómo son las clases</h2>
           <p>
-            <strong>Individuales y presenciales</strong>, en Guaminí 4876, de lunes a viernes. No
-            hay un programa cerrado: se trabaja con la carpeta y las consignas de tu propia
-            escuela, sea del distrito que sea.
+            No hay un programa cerrado: se trabaja con la carpeta y las consignas de tu propia
+            escuela, sea del distrito que sea. Pueden ser <strong>individuales o en grupo
+            reducido</strong>, y si necesitás una sola clase antes de una prueba, también se puede.
           </p>
           <p>
             Para tomar una clase entrás a la materia, elegís el día y el horario que te queden
-            cómodos, dejás tus datos y te responde el profesor por WhatsApp.
+            cómodos, dejás tus datos y te responde el profesor por WhatsApp. Los turnos que ves son
+            los habituales: si necesitás uno más temprano, se puede coordinar.
           </p>
         </article>
 

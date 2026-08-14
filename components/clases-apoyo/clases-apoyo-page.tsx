@@ -458,7 +458,8 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, nombreProfesor, sel
           </dl>
           <p className="ca-vacio-nota">
             <strong>Solicitar no es reservar.</strong> {nombreProfesor} te confirma la
-            disponibilidad por WhatsApp.
+            disponibilidad por WhatsApp. Los turnos de abajo son los habituales: si necesitás uno
+            más temprano, se puede coordinar.
           </p>
         </div>
       ) : (
