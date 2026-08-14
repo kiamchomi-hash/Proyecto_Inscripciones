@@ -212,7 +212,7 @@ Nada de esto lo usa el sitio: es la base de conocimiento con la que se atiende a
 
 | Carpeta | Qué hay |
 |---|---|
-| `carreras/` | fichas `.md`, un JSON por carrera en `datos/`, material de Teclab en `teclab/` (PDFs y videos), y los JSON de manifiesto, alias y resoluciones |
+| `carreras/` | **una carpeta por casa**: `siglo21/` (fichas `.md`, un JSON por carrera en `datos/`, y los JSON de manifiesto, alias, planes y resoluciones), `teclab/` (PDFs y videos por carrera, planes, contenidos y calendario) e `identidad/` |
 | `ventas/` | **los `.bat` numerados del 1 al 7**, que son el menú de doble clic; precios vigentes y planillas en `precios/`, corpus del bot por institución en `corpus/`, tips de venta, y `buscador-carreras.html` y `entrenar-bot.html` (se generan) |
 | `herramientas/ventas/` | los ~30 scripts `.mjs`, sus tests, `temp/` (archivos de trabajo descartables, antes `.hermes-temp/`) y `perfil-navegador/` (el perfil de Brave con las sesiones de CASA y Teclab) |
 

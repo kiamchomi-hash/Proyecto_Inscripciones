@@ -11,7 +11,8 @@ Motor sin IA que, ante lo que escribe un lead por WhatsApp, propone **hasta** tr
 ## Dónde vive cada cosa
 
 Repartido en tres carpetas, todas gitignoradas (Grep no las ve, buscar con Bash):
-`herramientas/ventas/` los scripts, `carreras/` las fichas y el material de Teclab,
+`herramientas/ventas/` los scripts, `carreras/` el material academico separado por
+casa (`siglo21/`, `teclab/`, `identidad/`),
 `ventas/` los precios, el corpus y los dos HTML. El mapa de rutas vive en
 `herramientas/ventas/rutas.mjs`.
 
@@ -26,7 +27,7 @@ Repartido en tres carpetas, todas gitignoradas (Grep no las ve, buscar con Bash)
 | `herramientas/ventas/contexto-carreras.mjs` | **arma el contexto de marcadores** de las tres instituciones. Lo usan los dos generadores: si cada uno armara el suyo, una respuesta probada en el entrenador saldría distinta al atender |
 | `herramientas/ventas/generar-entrenador.mjs` | arma la página de entrenamiento |
 | `herramientas/ventas/aplicar-corpus.mjs` | compara la descarga contra el corpus instalado y lo reemplaza |
-| `carreras/carreras-externas.json` | carreras de Teclab e Identidad, con precios ya resueltos |
+| `carreras/teclab/carreras-externas.json`<br>`carreras/identidad/carreras-externas.json` | las carreras de esas dos casas, con precios ya resueltos: un archivo por institución |
 | `herramientas/ventas/extraer-externos.mjs` | las lee de las carpetas del escritorio y arma ese archivo |
 
 ## Un corpus por institución
@@ -72,7 +73,7 @@ Cuando dos se contradicen, manda la de arriba. No elegir en silencio: dejar la c
    - Teclab: `portalalumnopre.teclab.edu.ar/5e01120d0cdce5c39761b58700f275b4.pdf` (37 pp.). No se lee por web: bajarlo y extraerlo con PyMuPDF.
    - Siglo 21: `contenidos.21.edu.ar/microsites/reglamento/` — versión **2026**, 14 capítulos, navegable por `index.php?put=<capitulo>-<seccion>-<slug>`.
 2. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
-3. **Fichas del KB** del proyecto (`carreras/fichas-sitio-oficial.json`, `carreras/datos/`).
+3. **Fichas del KB** del proyecto (`carreras/siglo21/fichas-sitio-oficial.json`, `carreras/siglo21/datos/`).
 4. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
 
 Casos ya resueltos, para no rediscutirlos:
