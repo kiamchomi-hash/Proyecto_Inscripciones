@@ -427,9 +427,7 @@ export default function EnrollmentForm({ carreras }: Props) {
               {/* Col 2: los datos del lead. Ninguno es obligatorio: el resto de
                   lo que pide la preinscripción se le pide después, a mano. */}
               <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(0,199,177,0.15)' }}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#7ca19b]">
-                  Tus datos <span className="normal-case tracking-normal font-normal">— opcionales, agilizan el trámite</span>
-                </p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#7ca19b]">Opcional</p>
 
                 <div className="grid grid-cols-2 gap-1.5">
                   <CampoTexto id="form-nombre" label="Nombre" placeholder="Nombre" value={nombre} onChange={setNombre} />
@@ -464,7 +462,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     <path d="M12 16v-4" />
                     <path d="M12 8h.01" />
                   </svg>
-                  <span><strong className="text-[#00c7b1]">Obligatorio:</strong> con uno de los dos alcanza. Dejanos el mail o el teléfono y te escribimos.</span>
+                  <span><strong className="text-[#00c7b1]">Obligatorio:</strong> mail o teléfono</span>
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
