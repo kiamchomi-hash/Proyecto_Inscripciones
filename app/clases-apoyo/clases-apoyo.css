@@ -618,11 +618,11 @@ a.ca-tile:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--ca-gold);
+  color: #9ac5be;
   margin-bottom: 0.85rem;
 }
 
@@ -630,8 +630,8 @@ a.ca-tile:focus-visible {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ca-gold);
-  box-shadow: 0 0 0 3px rgba(230, 155, 5, 0.18);
+  background: var(--ca-teal);
+  box-shadow: 0 0 0 3px rgba(0, 199, 177, 0.16);
 }
 
 /* La etiqueta que encabeza un grupo de baldosas. Chica y pegada al grupo:
@@ -662,11 +662,18 @@ a.ca-tile:focus-visible {
 @media (min-width: 820px) {
   .ca-encabezado {
     flex-direction: row;
-    align-items: center;
+    /* Al pie y no al centro: centrado, el boton quedaba flotando a media altura
+       a la derecha del titular, sin alinearse con nada. */
+    align-items: flex-end;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 2.5rem;
   }
-  .ca-encabezado .ca-btn { flex-shrink: 0; }
+
+  .ca-encabezado .ca-btn {
+    flex-shrink: 0;
+    padding: 1rem 1.75rem;
+    font-size: 0.88rem;
+  }
 }
 
 .ca-encabezado h1 {
