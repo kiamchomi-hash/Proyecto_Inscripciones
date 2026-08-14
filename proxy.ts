@@ -17,6 +17,20 @@ export async function proxy(request: NextRequest) {
 
   if (!isProtected) return NextResponse.next();
 
+  // El actualizador de precios corre en una maquina de casa y publica el
+  // buscador sin sesion, con `Authorization: Bearer $BUSCADOR_SECRET`. Aca no
+  // se compara el secreto: en el bundle del proxy las variables se inlinean en
+  // el build, asi que tener la comparacion en dos lados significaria que
+  // rotarlo exige acordarse de redeployar para que las dos coincidan. La unica
+  // autoridad es la route, que devuelve 401 si el secreto no da. Esto se limita
+  // a no cortarle el paso antes de que llegue.
+  const publicaConSecreto =
+    pathname === '/api/admin/buscador' &&
+    request.method === 'PUT' &&
+    request.headers.get('authorization')?.startsWith('Bearer ');
+
+  if (publicaConSecreto) return NextResponse.next();
+
   // Create Supabase client with request/response cookie handling
   const response = NextResponse.next({ request });
 

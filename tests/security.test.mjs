@@ -49,6 +49,23 @@ test('las APIs administrativas exigen rol admin en el proxy', async () => {
   assert.match(source, /profile\.estado !== 'aprobado'/);
 });
 
+test('el único /api/admin sin sesión es la publicación del buscador, y valida el secreto', async () => {
+  const proxy = await readFile(path.join(root, 'proxy.ts'), 'utf8');
+
+  // El actualizador de precios publica sin sesión, así que el proxy lo deja
+  // pasar. La excepción tiene que seguir siendo una sola ruta y un solo verbo:
+  // si mañana alguien la afloja a `startsWith('/api/admin/buscador')` o le saca
+  // el método, todo lo que cuelgue de ahí queda sin la puerta de adelante.
+  assert.match(proxy, /pathname === '\/api\/admin\/buscador'/);
+  assert.match(proxy, /request\.method === 'PUT'/);
+
+  // Y el secreto se compara en la route, que es la única autoridad: si esto
+  // desaparece, la excepción del proxy deja el endpoint abierto de par en par.
+  const route = await readFile(path.join(root, 'app/api/admin/buscador/route.ts'), 'utf8');
+  assert.match(route, /header === `Bearer \$\{secreto\}`/);
+  assert.match(route, /process\.env\.BUSCADOR_SECRET/);
+});
+
 test('el JSON-LD escapa el contenido que viene de la base', async () => {
   const { jsonLdScript } = await import('../lib/json-ld.ts');
 

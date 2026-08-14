@@ -47,15 +47,33 @@ Sólo se documentan los nombres; no copiar valores ni secretos al repositorio.
 
 ## Renovación de datos
 
-Flujo disponible ahora:
+Los actualizadores siguen corriendo en la máquina de casa; lo que dejó de ser manual es la publicación.
 
-1. Ejecutar localmente los actualizadores actuales.
-2. Generar `ventas/buscador-carreras.html`.
-3. Entrar como administrador a `/admin/buscador`.
-4. Subir el HTML desde la acción de actualización.
-5. La API valida tamaño, estructura y datos antes de reemplazar el snapshot privado.
+1. `ventas/2 - Actualizar precios de las tres.bat` (o la tarea programada `CAU - Actualizar precios de las tres`) baja los precios y regenera `ventas/buscador-carreras.html`.
+2. El mismo script publica solo, con `herramientas/ventas/publicar-buscador.mjs`.
+3. La API valida tamaño, estructura y datos antes de reemplazar el snapshot privado.
 
-Pendiente: desacoplar los actualizadores de las carpetas externas del Escritorio y ejecutarlos online mediante jobs programados. No asumir que el cron ya está implementado.
+`ventas/3 - Actualizar buscador de carreras.bat` hace lo mismo en tres pasos, para cuando sólo hace falta rehacer el buscador.
+
+La subida a mano desde `/admin/buscador` sigue funcionando igual y es la salida cuando la automática se saltea.
+
+### Por qué no escribe directo en Storage
+
+Escribir el bucket pide la service role, que vive sólo en Vercel y está marcada Sensitive. Bajarla a una máquina de casa para que un script de precios pueda escribir sería mover la credencial más fuerte del proyecto al lugar más expuesto. En vez de eso el script le pega a `PUT /api/admin/buscador` con `Authorization: Bearer $BUSCADOR_SECRET`, el mismo patrón de `/api/revalidar` y `/api/vigilancia`.
+
+`proxy.ts` deja pasar ese caso —y sólo ese: la ruta exacta y el verbo `PUT`— sin sesión. **No compara el secreto**: en el bundle del proxy las variables se inlinean en el build, así que tenerlo en dos lados significaría que rotarlo exige acordarse de redeployar para que coincidan. La única autoridad es la route. `tests/security.test.mjs` falla si esa excepción se afloja o si la route deja de validar.
+
+### No publica con precios vencidos
+
+`actualizar-todo.mjs` publica al final y sólo si las tres instituciones se pueden cotizar. El buscador se rearma igual aunque una falle —queda con los precios de la corrida anterior—, pero eso es una cosa cuando el archivo se abre localmente y otra cuando queda publicado para atender leads. Si algo no está vigente, avisa y no sube; la subida a mano queda como decisión de quien mira.
+
+Ojo con el cuadro "Estado de los precios" que imprime el script: mide la antigüedad del CSV, no si la actualización de esta corrida anduvo. Una institución puede fallar y salir "al día" porque el archivo previo es de hoy.
+
+Pendiente: desacoplar los actualizadores de las carpetas externas del Escritorio (`Teclab_Info/`, el perfil de Brave de `herramientas/ventas/perfil-navegador/`) y del Python con `openpyxl` que lee el `.xlsx` de CASA. Hasta que eso pase, la generación no puede correr en la nube.
+
+### Lo que no viaja por git
+
+`herramientas/ventas/publicar-buscador.mjs` y los `.bat` de `ventas/` están en carpetas gitignoradas. En una máquina nueva hay que copiarlos a mano, junto con `BUSCADOR_SECRET` en `.env.local`.
 
 ## Ajuste visual reciente
 
