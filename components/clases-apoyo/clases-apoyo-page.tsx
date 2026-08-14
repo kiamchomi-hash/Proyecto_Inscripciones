@@ -746,43 +746,40 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
     );
   }
   return (
-    <div className="ca-materia">
-      {/* ── Migas ──
-          La ficha dejó de ser una app encajonada y pasó a ser una página, así
-          que necesita decir de dónde viene. Entre materias se navega con
-          `replace` (ver la fila de pastillas); acá no, que es subir un nivel. */}
-      <nav className="ca-migas" aria-label="Miga de pan">
-        <Link href="/clases-apoyo">Clases de apoyo</Link>
-        <span aria-hidden="true">/</span>
-        <span className="ca-migas-actual">{materia.label}</span>
+    <div className="ca-pagina">
+      {/* ── Migas y cambio de materia ──
+          Una baldosa baja que reemplaza a la sidebar fija y a las solapas de
+          mobile: la misma tira en las dos pantallas. */}
+      <nav className="ca-tile ca-tile-nav" aria-label="Materias">
+        <span className="ca-migas">
+          <Link href="/clases-apoyo">Clases de apoyo</Link>
+          <span aria-hidden="true">/</span>
+          <span>{materia.label}</span>
+        </span>
+        <span className="ca-mat-tabs">
+          {materiasNav.map(m => {
+            const active = m.slug === materia.slug;
+            return (
+              <Link
+                key={m.id}
+                href={`/clases-apoyo/${m.slug}`}
+                replace
+                scroll={false}
+                aria-current={active ? 'page' : undefined}
+                className={`ca-mat-tab${active ? ' on' : ''}`}
+              >
+                {m.label}
+              </Link>
+            );
+          })}
+        </span>
       </nav>
 
-      {/* ── Cambiar de materia ──
-          Reemplaza a la sidebar fija y a las solapas de mobile: una sola fila
-          de pastillas que funciona igual en las dos pantallas. */}
-      <nav className="ca-mat-tabs" aria-label="Materias">
-        {materiasNav.map(m => {
-          const active = m.slug === materia.slug;
-          return (
-            <Link
-              key={m.id}
-              href={`/clases-apoyo/${m.slug}`}
-              replace
-              scroll={false}
-              aria-current={active ? 'page' : undefined}
-              className={`ca-mat-tab${active ? ' on' : ''}`}
-            >
-              {m.label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* ── Encabezado ── */}
-      <header className="ca-mat-hero">
-        <div className="ca-mat-hero-main">
-          <p className="ca-hero-eyebrow">
-            <span className="ca-hero-dot" aria-hidden="true" />
+      {/* ── Titular, datos y foto ── */}
+      <section className="ca-bento ca-bento-hero">
+        <header className="ca-tile ca-tile-titular">
+          <p className="ca-eyebrow">
+            <span className="ca-eyebrow-dot" aria-hidden="true" />
             Guaminí 4876 — Villa Lugano
           </p>
           {/* El h1 completo y a la vista. Antes se veía sólo el nombre de la
@@ -800,10 +797,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
           )}
 
           {!materia.en_construccion && (
-            <div className="ca-hero-cta">
-              <a className="ca-btn ca-btn-ghost" href="#ca-reserva">
-                Elegir día y horario
-              </a>
+            <div className="ca-acciones">
               <a
                 className="ca-btn ca-btn-wa"
                 href={`https://wa.me/${materia.whatsapp}`}
@@ -813,70 +807,68 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
                 <WhatsAppIcon size={17} />
                 Escribirle a {materia.nombre_profesor}
               </a>
+              <a className="ca-btn ca-btn-ghost" href="#ca-reserva">
+                Elegir día y horario
+              </a>
             </div>
           )}
-        </div>
+        </header>
 
-        <aside className="ca-mat-ficha" aria-label={`Datos de las clases de ${materia.label}`}>
-          {materia.imagenes?.length > 0 && (
-            <div className="ca-mat-foto">
-              <Carousel images={materia.imagenes} />
-            </div>
-          )}
-          <dl>
+        <div className="ca-bento-col">
+          <div className="ca-tile" aria-label={`Datos de las clases de ${materia.label}`}>
+            <dl className="ca-datos">
             {/* Una materia en construccion todavia no tiene profesor asignado:
                 lo que hay en la base es relleno ("Profesor/a: Ingles") y el
                 telefono es el del CAU, no el de nadie que de esa clase. */}
-            {!materia.en_construccion && (
+              {!materia.en_construccion && (
+                <div>
+                  <dt>Profesor/a</dt>
+                  <dd>{materia.nombre_profesor}</dd>
+                </div>
+              )}
               <div>
-                <dt>Profesor/a</dt>
-                <dd>{materia.nombre_profesor}</dd>
+                <dt>Turnos</dt>
+                <dd>{materia.modo_manana ? 'Mañana y tarde, de lunes a viernes' : 'Tarde, de lunes a viernes'}</dd>
               </div>
-            )}
-            <div>
-              <dt>Turnos</dt>
-              <dd>{materia.modo_manana ? 'Mañana y tarde, de lunes a viernes' : 'Tarde, de lunes a viernes'}</dd>
+              <div>
+                <dt>Dónde</dt>
+                <dd>Guaminí 4876, Villa Lugano</dd>
+              </div>
+            </dl>
+          </div>
+
+          {materia.imagenes?.length > 0 && (
+            <div className="ca-tile ca-tile-foto">
+              <Carousel images={materia.imagenes} />
             </div>
-            <div>
-              <dt>Dónde</dt>
-              <dd>Guaminí 4876, Villa Lugano</dd>
-            </div>
-          </dl>
-          {!materia.en_construccion && (
-            <a
-              className="ca-wa-link"
-              href={`https://wa.me/${materia.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer nofollow"
-            >
-              <WhatsAppIcon />
-              <span>
-                {materia.nombre_profesor}
-                <span className="opacity-40 font-normal mx-1">|</span>
-                {materia.telefono_display}
-              </span>
-            </a>
           )}
-        </aside>
-      </header>
+
+          {/* La aclaracion de que solicitar no reserva. Hasta ahora vivia en
+              letra chica adentro del panel de horarios, donde se lee recien
+              despues de elegir el turno: tarde para fijar la expectativa. */}
+          {!materia.en_construccion && (
+            <div className="ca-tile ca-tile-oro ca-tile-nota">
+              <h3>Solicitar no es reservar</h3>
+              <p>
+                Marcás el día y la hora que te sirven y <strong>{materia.nombre_profesor}</strong>{' '}
+                te confirma la disponibilidad por WhatsApp.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* ── Reserva ──
           Antes esto era medio widget apretado contra el borde inferior de la
-          pantalla. Ahora es la sección principal de la página y el calendario
-          y las horas tienen el ancho que necesitan. */}
+          pantalla. Ahora son dos baldosas de la misma grilla y el calendario y
+          las horas tienen el ancho que necesitan. */}
       {materia.en_construccion ? (
         <ConstructionBanner />
       ) : (
-        <section id="ca-reserva" className="ca-reserva-wrap" aria-labelledby="ca-reserva-titulo">
-          <div className="ca-seccion-head">
-            <h2 id="ca-reserva-titulo">Elegí tu día y tu horario</h2>
-            <p>
-              Marcá uno o varios días en el calendario, después las horas que te queden cómodas.
-              Solicitar no reserva: {materia.nombre_profesor} te confirma por WhatsApp.
-            </p>
-          </div>
-          <div className="ca-reserva" key={materia.id}>
-            <div className="ca-reserva-cal">
+        <>
+          <h2 className="ca-grupo-label" id="ca-reserva">Elegí tu día y tu horario</h2>
+          <section className="ca-bento ca-bento-reserva" aria-labelledby="ca-reserva" key={materia.id}>
+            <div className="ca-tile ca-tile-cal">
               <MonthlyCalendar
                 selectedDays={selectedDays}
                 onToggleDay={handleToggleDay}
@@ -884,7 +876,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
                 diasBloqueados={materia.dias_bloqueados}
               />
             </div>
-            <div className="ca-reserva-sched" ref={footerRef}>
+            <div className="ca-tile ca-tile-sched" ref={footerRef}>
               <SchedulePanel
                 key={scheduleKey}
                 modoManana={materia.modo_manana}
@@ -903,8 +895,8 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
                 horariosBloqueados={materia.horarios_bloqueados}
               />
             </div>
-          </div>
-        </section>
+          </section>
+        </>
       )}
     </div>
   );

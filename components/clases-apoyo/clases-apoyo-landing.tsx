@@ -97,7 +97,7 @@ function IconoMateria({ slug }: { slug: string }) {
   );
 }
 
-/* ── Tarjeta ──
+/* ── Baldosa de materia ──
    La materia en construcción no es un enlace: su página es el cartel de "vuelva
    pronto" y ya está en noindex, así que mandar gente (y a Google) ahí sólo
    reparte autoridad hacia una página vacía. */
@@ -106,7 +106,7 @@ function Tarjeta({ materia }: { materia: MateriaCard }) {
 
   if (materia.en_construccion) {
     return (
-      <div className="ca-card ca-card-off" aria-label={`${materia.label} — próximamente`}>
+      <div className="ca-tile ca-card ca-card-off" aria-label={`${materia.label} — próximamente`}>
         <span className="ca-card-ico">
           <IconoMateria slug={materia.slug} />
         </span>
@@ -117,7 +117,7 @@ function Tarjeta({ materia }: { materia: MateriaCard }) {
   }
 
   return (
-    <Link href={`/clases-apoyo/${materia.slug}`} className="ca-card">
+    <Link href={`/clases-apoyo/${materia.slug}`} className="ca-tile ca-card">
       <span className="ca-card-ico">
         <IconoMateria slug={materia.slug} />
       </span>
@@ -137,8 +137,7 @@ function Tarjeta({ materia }: { materia: MateriaCard }) {
   );
 }
 
-/* ── Ícono de WhatsApp ──
-   El mismo trazo que usan los botones del resto del sitio. */
+/* ── Ícono de WhatsApp ── */
 function IconoWhatsapp() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -147,9 +146,9 @@ function IconoWhatsapp() {
   );
 }
 
-/* Los datos duros de la ficha del hero. Es lo que la persona pregunta antes de
-   cualquier otra cosa, así que va arriba y no enterrado en un párrafo. */
-const FICHA = [
+/* Los datos duros. Es lo que la persona pregunta antes que cualquier otra cosa,
+   así que van arriba y no enterrados en un párrafo. */
+const DATOS = [
   { k: 'Modalidad', v: 'Individual y presencial' },
   { k: 'Niveles', v: 'Primaria y secundaria' },
   { k: 'Días', v: 'Lunes a viernes, a elección' },
@@ -182,25 +181,24 @@ const BARRIOS = [
 
 export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard[] }) {
   return (
-    <div className="ca-landing">
-      {/* ── Hero ──
-          Asimétrico a propósito: el titular y los botones ocupan la columna
-          ancha y la ficha de datos llena la derecha, que antes quedaba vacía
-          en desktop. En mobile la ficha cae debajo. */}
-      <header className="ca-hero">
-        <div className="ca-hero-main">
-          <p className="ca-hero-eyebrow">
-            <span className="ca-hero-dot" aria-hidden="true" />
+    <div className="ca-pagina">
+      {/* ── Titular, datos y descuento ──
+          Tres baldosas de la misma grilla: el titular ocupa las dos filas de la
+          columna ancha y las otras dos se apilan al costado. */}
+      <section className="ca-bento ca-bento-hero">
+        <header className="ca-tile ca-tile-titular">
+          <p className="ca-eyebrow">
+            <span className="ca-eyebrow-dot" aria-hidden="true" />
             Guaminí 4876 — Villa Lugano
           </p>
           <h1>
             Clases de apoyo en <span>Villa Lugano</span>
           </h1>
-          <p className="ca-hero-deck">
+          <p className="ca-deck">
             Traés los temas que estás viendo en la escuela y se trabaja sobre eso, al ritmo que te
             haga falta. Sin programa cerrado y sin cursos armados.
           </p>
-          <div className="ca-hero-cta">
+          <div className="ca-acciones">
             <a className="ca-btn ca-btn-wa" href={WA_HREF} target="_blank" rel="noopener nofollow">
               <IconoWhatsapp />
               Consultar por WhatsApp
@@ -209,76 +207,88 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
               Ver las materias
             </a>
           </div>
-        </div>
+        </header>
 
-        <aside className="ca-hero-ficha" aria-label="Datos de las clases">
-          <dl>
-            {FICHA.map(f => (
-              <div key={f.k}>
-                <dt>{f.k}</dt>
-                <dd>{f.v}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="ca-hero-nota">
-            <strong>Descuento por continuidad</strong> para quienes vienen todas las semanas.
-          </p>
-        </aside>
-      </header>
+        <div className="ca-bento-col">
+          <div className="ca-tile" aria-label="Datos de las clases">
+            <dl className="ca-datos">
+              {DATOS.map(d => (
+                <div key={d.k}>
+                  <dt>{d.k}</dt>
+                  <dd>{d.v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
 
-      {/* ── Materias ── */}
-      <section className="ca-landing-grid-wrap" aria-labelledby="ca-materias">
-        <div className="ca-seccion-head">
-          <h2 id="ca-materias">Materias</h2>
-          <p>Elegí una y mirá los horarios que tiene libres esta semana.</p>
+          <div className="ca-tile ca-tile-oro ca-tile-nota">
+            <h3>Descuento por continuidad</h3>
+            <p>
+              Quienes vienen <strong>todas las semanas</strong> pagan menos. Si necesitás una sola
+              clase antes de una prueba, también se puede.
+            </p>
+          </div>
         </div>
-        <div className="ca-card-grid">
-          {materias.map(m => (
-            <Tarjeta key={m.id} materia={m} />
-          ))}
-        </div>
+      </section>
+
+      {/* ── Materias ──
+          Ocho casillas: las siete materias y el WhatsApp. Con tres columnas la
+          última fila quedaba con una sola baldosa colgada. */}
+      <h2 className="ca-grupo-label" id="ca-materias">Materias</h2>
+      <section className="ca-bento ca-bento-materias" aria-labelledby="ca-materias">
+        {materias.map(m => (
+          <Tarjeta key={m.id} materia={m} />
+        ))}
+        <a className="ca-tile ca-card ca-card-wa" href={WA_HREF} target="_blank" rel="noopener nofollow">
+          <span className="ca-card-ico">
+            <IconoWhatsapp />
+          </span>
+          <h3 className="ca-card-title">¿No sabés cuál?</h3>
+          <p className="ca-card-blurb">Escribinos y te decimos qué materia y qué horario te convienen.</p>
+          <span className="ca-card-cta">
+            Escribinos
+            <span className="ca-card-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h13M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </span>
+        </a>
       </section>
 
       {/* ── Los tres pasos ──
           El camino hasta la clase no estaba escrito en ningún lado: quien
           entraba tenía que deducirlo del botón "Ver horarios". */}
-      <section className="ca-pasos-wrap" aria-labelledby="ca-pasos">
-        <div className="ca-seccion-head">
-          <h2 id="ca-pasos">Cómo se pide una clase</h2>
-          <p>Tres pasos, y no hace falta llamar por teléfono.</p>
-        </div>
-        <ol className="ca-pasos">
-          {PASOS.map((p, i) => (
-            <li key={p.t} className="ca-paso">
-              <span className="ca-paso-n" aria-hidden="true">
-                {i + 1}
-              </span>
-              <h3>{p.t}</h3>
-              <p>{p.d}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <h2 className="ca-grupo-label" id="ca-pasos">Cómo se pide una clase</h2>
+      <ol className="ca-bento ca-bento-pasos" aria-labelledby="ca-pasos">
+        {PASOS.map((p, i) => (
+          <li key={p.t} className="ca-tile ca-paso">
+            <span className="ca-paso-n" aria-hidden="true">
+              {i + 1}
+            </span>
+            <h3>{p.t}</h3>
+            <p>{p.d}</p>
+          </li>
+        ))}
+      </ol>
 
-      {/* ── Texto largo ──
-          Dos columnas en desktop: es el contenido que sostiene la búsqueda
-          local, pero en una sola columna dejaba media pantalla en blanco. */}
-      <section className="ca-texto-grid">
-        <article className="ca-landing-texto" aria-labelledby="ca-como-titulo">
-          <h2 id="ca-como-titulo">Cómo son las clases</h2>
+      {/* ── Texto largo ── */}
+      <section className="ca-bento ca-bento-texto">
+        <article className="ca-tile ca-tile-texto">
+          <h2>Cómo son las clases</h2>
           <p>
             <strong>Individuales y presenciales</strong>, en Guaminí 4876, de lunes a viernes. No
             hay un programa cerrado: se trabaja con la carpeta y las consignas de tu propia
             escuela, sea del distrito que sea.
           </p>
           <p>
-            Quienes vienen todas las semanas tienen un descuento por continuidad. Si necesitás una
-            sola clase antes de una prueba, también se puede.
+            Para tomar una clase entrás a la materia, elegís el día y el horario que te queden
+            cómodos, dejás tus datos y te responde el profesor por WhatsApp.
           </p>
         </article>
 
-        <article className="ca-landing-texto" aria-labelledby="ca-zona-titulo">
-          <h2 id="ca-zona-titulo">A quién le queda cerca</h2>
+        <article className="ca-tile ca-tile-texto">
+          <h2>A quién le queda cerca</h2>
           <p>
             La sede está sobre el límite de Villa Lugano con Villa Riachuelo, a pocas cuadras de
             Avenida Piedra Buena y de General Paz. Hay siete escuelas a menos de un kilómetro y más
@@ -290,18 +300,6 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
             ))}
           </ul>
         </article>
-      </section>
-
-      {/* ── Cierre ── */}
-      <section className="ca-cierre">
-        <div>
-          <h2>¿No sabés por dónde empezar?</h2>
-          <p>Escribinos y te decimos qué materia y qué horario te convienen.</p>
-        </div>
-        <a className="ca-btn ca-btn-wa" href={WA_HREF} target="_blank" rel="noopener nofollow">
-          <IconoWhatsapp />
-          Escribinos por WhatsApp
-        </a>
       </section>
     </div>
   );

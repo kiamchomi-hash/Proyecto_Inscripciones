@@ -24,84 +24,553 @@
   --ca-sidebar-width: 180px;
 }
 
-/* ══ Ficha /clases-apoyo/[materia] ══
-   Dejó de ser una app encajonada de 100dvh con sidebar: es una página que
-   scrollea, igual que la portada. El calendario y el panel de horarios son los
-   mismos componentes; lo que cambió es la maqueta que los contiene. */
+/* ══ Sistema bento — lo comparten la portada y las fichas de materia ══
+   Nada de contenido suelto sobre el fondo: todo bloque vive adentro de una
+   baldosa, todas con la misma superficie, el mismo radio y la misma
+   separación. Lo que cambia entre bloques es cuánto ocupa cada una. */
 
-.ca-materia {
+.ca-pagina {
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(ellipse at 50% -10%, rgba(0, 199, 177, 0.13) 0%, transparent 60%),
-    linear-gradient(170deg, #051211 0%, #082422 55%, #051d1a 100%);
-  padding: 1.25rem 1.25rem 3.5rem;
+  background: linear-gradient(170deg, #051211 0%, #082422 55%, #051d1a 100%);
+  min-height: calc(100dvh - var(--navbar-height, 60px));
+  padding: 0.9rem 0.9rem 2.5rem;
   color: var(--ca-text-main);
-  overflow: hidden;
 }
 
-/* El mismo cuadriculado de hoja de carpeta que la portada. */
-.ca-materia::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(90deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px),
-    repeating-linear-gradient(0deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.3) 50%, transparent 85%);
-  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.3) 50%, transparent 85%);
+@media (min-width: 760px) {
+  .ca-pagina { padding: 1.25rem 1.5rem 3.5rem; }
 }
 
-@media (min-width: 700px) {
-  .ca-materia { padding: 1.5rem 2rem 4.5rem; }
-}
-
-.ca-materia > * {
-  max-width: 1100px;
+.ca-pagina > * {
+  max-width: 1180px;
   margin-inline: auto;
 }
 
-/* ── Migas ── */
-.ca-migas {
+/* La separación entre baldosas es una sola en todo el sitio: si cada bloque
+   elige la suya, la grilla deja de leerse como una sola pieza. */
+.ca-bento {
+  --ca-gap: 0.6rem;
+  display: grid;
+  gap: var(--ca-gap);
+}
+
+@media (min-width: 760px) {
+  .ca-bento { --ca-gap: 0.75rem; }
+}
+
+/* Una columna de baldosas apiladas adentro de la grilla. Existe porque
+   `grid-row: 1 / -1` no sirve acá: sin filas explícitas, `-1` resuelve a la
+   fila 1 y la baldosa de abajo se cae a la otra columna. Con la columna
+   anidada las dos mitades miden lo mismo sin que nadie declare cuántas filas
+   hay, que cambian entre la portada y la ficha. La ultima baldosa se come el
+   sobrante para que la columna no termine en un hueco. */
+.ca-bento-col {
   display: flex;
+  flex-direction: column;
+  gap: var(--ca-gap);
+}
+
+.ca-bento-col > :last-child { flex: 1; }
+
+.ca-bento + .ca-bento { margin-top: 0.6rem; }
+
+@media (min-width: 760px) {
+  .ca-bento + .ca-bento { margin-top: 0.75rem; }
+}
+
+/* ── La baldosa ── */
+.ca-tile {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.1rem;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(0, 199, 177, 0.1) 0%, transparent 58%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.016) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (min-width: 760px) {
+  .ca-tile { padding: 1.4rem 1.35rem; }
+}
+
+/* La baldosa que además es enlace: se levanta y enciende el filo de arriba. */
+a.ca-tile {
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+a.ca-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ca-teal), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+a.ca-tile:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 199, 177, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 28px rgba(0, 0, 0, 0.38);
+}
+
+a.ca-tile:hover::before { opacity: 0.9; }
+
+a.ca-tile:focus-visible {
+  outline: 2px solid var(--ca-teal);
+  outline-offset: 3px;
+}
+
+/* Baldosa destacada: la del descuento y la de cierre. */
+.ca-tile-oro {
+  background:
+    radial-gradient(130% 110% at 100% 0%, rgba(230, 155, 5, 0.16) 0%, transparent 60%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.014) 100%);
+  border-color: rgba(230, 155, 5, 0.26);
+}
+
+/* ── Títulos ──
+   Inter en peso 900 con tracking cerrado, que es como titula el resto del
+   sitio (ver el h1 de components/index/hero.tsx). */
+.ca-tile h2,
+.ca-tile h3 {
+  font-weight: 900;
+  letter-spacing: -0.022em;
+  color: #fff;
+}
+
+.ca-eyebrow {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ca-gold);
+  margin-bottom: 0.85rem;
+}
+
+.ca-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ca-gold);
+  box-shadow: 0 0 0 3px rgba(230, 155, 5, 0.18);
+}
+
+/* La etiqueta que encabeza un grupo de baldosas. Chica y pegada al grupo:
+   así rotula, en vez de flotar como un bloque más. */
+.ca-grupo-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ca-teal);
+  /* El `auto` va si o si: en shorthand, `margin: x 0 y z` pisa el
+     `margin-inline: auto` de `.ca-pagina > *` y la etiqueta se sale de la
+     grilla, pegada al borde izquierdo de la pantalla. */
+  margin: 1.4rem auto 0.55rem;
+  padding-left: 0.3rem;
+}
+
+/* ── Baldosa principal (el titular) ── */
+.ca-tile-titular h1 {
+  font-weight: 900;
+  font-size: clamp(1.7rem, 4.4vw, 2.9rem);
+  line-height: 1.05;
+  letter-spacing: -0.038em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+/* Sólo color, sin subrayado. */
+.ca-tile-titular h1 span { color: var(--ca-teal); }
+
+.ca-deck {
+  margin-top: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  line-height: 1.6;
+  color: var(--ca-text-main);
+  max-width: 46ch;
+}
+
+/* ── Botones ── */
+.ca-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+.ca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.3rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.ca-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.ca-btn-wa {
+  background: #25d366;
+  color: #04261a;
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.2);
+}
+
+.ca-btn-wa:hover {
+  background: #2ee878;
+  transform: translateY(-2px);
+}
+
+.ca-btn-ghost {
+  background: rgba(0, 199, 177, 0.09);
+  border-color: rgba(0, 199, 177, 0.3);
+  color: var(--ca-teal);
+}
+
+.ca-btn-ghost:hover {
+  background: rgba(0, 199, 177, 0.17);
+  border-color: rgba(0, 199, 177, 0.55);
+  transform: translateY(-2px);
+}
+
+.ca-btn:focus-visible { outline: 2px solid var(--ca-teal); outline-offset: 3px; }
+
+/* ── Baldosa de datos (la lista clave/valor) ── */
+.ca-datos {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+}
+
+.ca-datos dt {
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ca-text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.ca-datos dd {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #fff;
+}
+
+@media (max-width: 759px) {
+  .ca-datos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem 1rem; }
+}
+
+/* ── Baldosa chica de texto destacado ── */
+.ca-tile-nota h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.ca-tile-nota p {
+  font-size: 0.8rem;
+  line-height: 1.55;
   color: var(--ca-text-muted);
 }
 
-.ca-migas a {
-  color: var(--ca-teal);
-  text-decoration: none;
+.ca-tile-nota strong { color: var(--ca-gold); font-weight: 800; }
+
+/* ══ Bloques de la portada ══ */
+
+/* Titular + datos + descuento */
+@media (min-width: 900px) {
+  .ca-bento-hero { grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr); }
 }
 
-.ca-migas a:hover { text-decoration: underline; }
+/* Materias: cuatro columnas, y la octava casilla la ocupa el WhatsApp. Con
+   tres columnas las siete materias dejaban una baldosa huérfana. */
+.ca-bento-materias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-.ca-migas-actual { color: var(--ca-text-main); }
+@media (min-width: 620px) {
+  .ca-bento-materias { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 
-/* ── Fila para cambiar de materia ──
-   Reemplaza la sidebar fija y las solapas de mobile por una sola tira. En
-   pantallas chicas scrollea a lo ancho: cada materia nueva no le suma una fila
-   entera arriba del contenido. */
-.ca-mat-tabs {
+@media (min-width: 900px) {
+  .ca-bento-materias { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 700px) {
+  .ca-bento-pasos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ca-bento-texto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ── Baldosa de materia ── */
+.ca-card { gap: 0.4rem; }
+
+.ca-card-ico {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(0, 199, 177, 0.12);
+  border: 1px solid rgba(0, 199, 177, 0.26);
+  color: var(--ca-teal);
+  flex-shrink: 0;
+  margin-bottom: 0.35rem;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ca-card-icon { width: 20px; height: 20px; }
+
+a.ca-card:hover .ca-card-ico {
+  background: var(--ca-teal);
+  border-color: var(--ca-teal);
+  color: var(--ca-selected-text);
+  box-shadow: 0 0 18px rgba(0, 199, 177, 0.35);
+}
+
+.ca-card-title { font-size: 0.98rem; font-weight: 800; line-height: 1.2; color: #fff; }
+
+.ca-card-blurb {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--ca-text-muted);
+  /* Las descripciones tienen largos muy distintos; sin el corte las baldosas
+     de la misma fila quedan desparejas. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ca-card-blurb strong { color: var(--ca-text-main); font-weight: 700; }
+
+.ca-card-cta {
   display: flex;
-  gap: 0.4rem;
-  margin-top: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.9rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ca-teal);
+}
+
+.ca-card-arrow {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 199, 177, 0.14);
+  flex-shrink: 0;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.ca-card-arrow svg { width: 11px; height: 11px; }
+
+a.ca-card:hover .ca-card-arrow {
+  background: var(--ca-teal);
+  color: var(--ca-selected-text);
+  transform: translateX(3px);
+}
+
+/* Materia todavía sin contenido: no es enlace, no tiene destino. */
+.ca-card-off {
+  background: rgba(255, 255, 255, 0.022);
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: none;
+}
+
+.ca-card-off .ca-card-ico {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--ca-slate);
+}
+
+.ca-card-off .ca-card-title { color: rgba(255, 255, 255, 0.42); }
+
+.ca-card-badge {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.9rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ca-gold);
+  opacity: 0.7;
+}
+
+/* La baldosa que cierra la fila de materias. */
+.ca-card-wa {
+  background:
+    radial-gradient(130% 110% at 100% 0%, rgba(37, 211, 102, 0.16) 0%, transparent 62%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.014) 100%);
+  border-color: rgba(37, 211, 102, 0.28);
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.ca-card-wa .ca-card-ico {
+  background: rgba(37, 211, 102, 0.14);
+  border-color: rgba(37, 211, 102, 0.3);
+  color: #25d366;
+}
+
+a.ca-card-wa:hover {
+  border-color: rgba(37, 211, 102, 0.6);
+}
+
+a.ca-card-wa:hover .ca-card-ico {
+  background: #25d366;
+  border-color: #25d366;
+  color: #04261a;
+  box-shadow: 0 0 18px rgba(37, 211, 102, 0.35);
+}
+
+.ca-card-wa .ca-card-cta { color: #25d366; }
+
+.ca-card-wa .ca-card-arrow { background: rgba(37, 211, 102, 0.16); }
+
+a.ca-card-wa:hover .ca-card-arrow { background: #25d366; color: #04261a; }
+
+@media (max-width: 420px) {
+  .ca-tile { padding: 0.95rem 0.9rem; border-radius: 14px; }
+  .ca-card-ico { width: 34px; height: 34px; border-radius: 9px; }
+  .ca-card-icon { width: 18px; height: 18px; }
+  .ca-card-title { font-size: 0.9rem; }
+}
+
+/* ── Baldosa de paso ── */
+.ca-paso-n {
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgba(230, 155, 5, 0.32);
+  margin-bottom: 0.6rem;
+}
+
+.ca-paso h3 { font-size: 0.98rem; margin-bottom: 0.4rem; }
+
+.ca-paso p { font-size: 0.84rem; line-height: 1.6; color: var(--ca-text-muted); }
+
+/* ── Baldosa de texto largo ── */
+.ca-tile-texto h2 {
+  font-size: 1.1rem;
+  color: var(--ca-teal);
+  margin-bottom: 0.85rem;
+}
+
+.ca-tile-texto p {
+  font-size: 0.89rem;
+  line-height: 1.7;
+  color: var(--ca-text-muted);
+  margin-bottom: 0.8rem;
+}
+
+.ca-tile-texto p:last-child { margin-bottom: 0; }
+
+.ca-tile-texto strong { color: var(--ca-text-main); font-weight: 700; }
+
+.ca-barrios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+.ca-barrios li {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--ca-text-main);
+  background: rgba(0, 199, 177, 0.07);
+  border: 1px solid rgba(0, 199, 177, 0.18);
+  border-radius: 8px;
+  padding: 0.3rem 0.65rem;
+}
+
+/* ── Baldosa de cierre ── */
+.ca-tile-cierre {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.ca-tile-cierre h2 { font-size: clamp(1.05rem, 2.4vw, 1.3rem); }
+
+.ca-tile-cierre p {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ca-text-muted);
+}
+
+.ca-tile-cierre .ca-btn { margin: 0; }
+
+/* ══ Bloques de la ficha de materia ══ */
+
+/* Migas y cambio de materia, en una baldosa baja que arranca la página. */
+.ca-tile-nav {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
   overflow-x: auto;
   scrollbar-width: none;
-  padding-bottom: 0.2rem;
 }
 
-.ca-mat-tabs::-webkit-scrollbar { display: none; }
+.ca-tile-nav::-webkit-scrollbar { display: none; }
+
+.ca-migas {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding-right: 0.75rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.09);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ca-text-muted);
+}
+
+.ca-migas a { color: var(--ca-teal); text-decoration: none; }
+.ca-migas a:hover { text-decoration: underline; }
+
+.ca-mat-tabs { display: flex; gap: 0.35rem; }
 
 .ca-mat-tab {
   flex: 0 0 auto;
-  padding: 0.4rem 0.85rem;
-  border-radius: 999px;
-  font-size: 0.7rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.68rem;
   font-weight: 700;
   white-space: nowrap;
   text-decoration: none;
@@ -111,10 +580,7 @@
   transition: var(--ca-transition);
 }
 
-.ca-mat-tab:hover {
-  color: var(--ca-text-main);
-  border-color: rgba(0, 199, 177, 0.35);
-}
+.ca-mat-tab:hover { color: var(--ca-text-main); border-color: rgba(0, 199, 177, 0.35); }
 
 .ca-mat-tab.on {
   color: var(--ca-selected-text);
@@ -122,57 +588,21 @@
   border-color: var(--ca-teal);
 }
 
-/* ── Encabezado ── */
-.ca-mat-hero {
-  display: grid;
-  gap: 1.6rem;
-  padding: 1.6rem 0 2.4rem;
-}
-
-@media (min-width: 900px) {
-  .ca-mat-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
-    gap: 2.75rem;
-    align-items: start;
-    padding: 2rem 0 3rem;
-  }
-}
-
-.ca-mat-hero-main h1 {
-  font-family: var(--font-unbounded), system-ui, sans-serif;
-  font-size: clamp(1.6rem, 4vw, 2.6rem);
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.032em;
-  color: #fff;
-  text-wrap: balance;
-}
-
-.ca-mat-hero-main h1 span {
-  color: var(--ca-teal);
-  background-image: linear-gradient(90deg, rgba(0, 199, 177, 0.55), rgba(230, 155, 5, 0.55));
-  background-repeat: no-repeat;
-  background-size: 100% 3px;
-  background-position: 0 100%;
-  padding-bottom: 0.06em;
-}
-
-/* Los puntos que vienen de `descripcion` en la base. Antes estaban en un panel
-   aparte, apretados contra la foto; acá son la bajada del titular. */
+/* Los puntos que vienen de `descripcion` en la base. */
 .ca-mat-bullets {
   list-style: none;
   padding: 0;
-  margin-top: 1.25rem;
+  margin-top: 1.1rem;
   display: grid;
-  gap: 0.7rem;
+  gap: 0.6rem;
   max-width: 52ch;
 }
 
 .ca-mat-bullets li {
   position: relative;
-  padding-left: 1.5rem;
-  font-size: 0.94rem;
-  line-height: 1.6;
+  padding-left: 1.4rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
   color: var(--ca-text-main);
 }
 
@@ -180,7 +610,7 @@
   content: "";
   position: absolute;
   left: 0;
-  top: 0.6em;
+  top: 0.58em;
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -188,27 +618,12 @@
   box-shadow: 0 0 10px var(--ca-teal);
 }
 
-.ca-mat-bullets strong {
-  color: var(--ca-teal);
-  font-weight: 700;
-}
+.ca-mat-bullets strong { color: var(--ca-teal); font-weight: 700; }
 
-/* ── Ficha lateral ── */
-.ca-mat-ficha {
-  border-radius: 18px;
-  overflow: hidden;
-  background:
-    radial-gradient(130% 100% at 100% 0%, rgba(0, 199, 177, 0.14) 0%, transparent 58%),
-    linear-gradient(165deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.014) 100%);
-  border: 1px solid rgba(0, 199, 177, 0.22);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 40px rgba(0, 0, 0, 0.32);
-}
-
-/* La foto, apaisada y recortada. Antes iba con object-contain en una caja de
-   alto libre y salía con dos barras negras a los costados. */
-.ca-mat-foto {
-  border-bottom: 1px solid rgba(0, 199, 177, 0.18);
-}
+/* Baldosa de foto. Hoy ninguna materia tiene una cargada —las de stock se
+   borraron— pero el panel admin sigue teniendo su cargador, asi que si suben
+   una foto real del aula aparece como una baldosa mas. */
+.ca-tile-foto { padding: 0; }
 
 .ca-carousel {
   position: relative;
@@ -226,88 +641,19 @@
   transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-.ca-mat-ficha dl {
-  display: grid;
-  gap: 0.85rem;
-  margin: 0;
-  padding: 1.25rem 1.35rem;
-}
-
-.ca-mat-ficha dt {
-  font-size: 0.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
-  color: var(--ca-text-muted);
-  margin-bottom: 0.15rem;
-}
-
-.ca-mat-ficha dd {
-  margin: 0;
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #fff;
-}
-
-.ca-mat-ficha .ca-wa-link {
-  width: auto;
-  margin: 0 1.35rem 1.35rem;
-  justify-content: center;
-  border-radius: 10px;
-  padding: 11px 16px;
-}
-
-@media (max-width: 899px) {
-  .ca-mat-ficha dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem 1rem; }
-  /* El WhatsApp del hero ya está arriba en mobile: repetirlo acá es ruido. */
-  .ca-mat-ficha .ca-wa-link { display: none; }
-}
-
-/* ── Reserva ── */
-.ca-reserva-wrap {
-  padding-top: 2.4rem;
-  border-top: 1px solid var(--ca-border-light);
-  scroll-margin-top: calc(var(--navbar-height, 60px) + 1rem);
-}
-
-.ca-reserva {
-  display: grid;
-  gap: 1rem;
-  animation: ca-fadeIn 0.4s ease-out;
-}
+/* Reserva: calendario y horas, una baldosa cada uno. */
+.ca-bento-reserva { scroll-margin-top: calc(var(--navbar-height, 60px) + 0.75rem); }
 
 @media (min-width: 900px) {
-  .ca-reserva {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 1.25rem;
-    align-items: start;
-  }
-
-  /* Un piso, no un estirado a la altura del calendario: estirado, las seis
-     pastillas de hora quedaban flotando en el medio de un panel enorme. */
-  .ca-reserva-sched { min-height: 21rem; }
+  .ca-bento-reserva { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .ca-tile-sched { min-height: 21rem; }
 }
 
-.ca-reserva-cal,
-.ca-reserva-sched {
-  border-radius: 18px;
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.012) 100%);
-  border: 1px solid rgba(0, 199, 177, 0.16);
-  overflow: hidden;
-}
+.ca-tile-cal, .ca-tile-sched { padding: 0.75rem; }
 
-.ca-cal-wrap {
-  display: flex;
-  justify-content: center;
-  padding: 0.9rem;
-}
+.ca-cal-wrap { display: flex; justify-content: center; }
 
-.ca-sched {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+.ca-sched { display: flex; flex-direction: column; height: 100%; }
 
 .ca-sched-body {
   flex: 1;
@@ -315,18 +661,19 @@
   flex-direction: column;
   justify-content: center;
   gap: 0.5rem;
-  padding-block: 0.5rem;
 }
 
-@keyframes ca-fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.ca-tile-sched .ca-wa-link { width: auto; justify-content: center; border-radius: 10px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-tile, .ca-btn { transition: none; }
+  a.ca-tile:hover, .ca-btn:hover { transform: none; }
 }
 
 /* ── Calendar ── */
 .ca-cal-box {
   background: rgba(0, 0, 0, 0.12);
-  border: 1.5px solid var(--ca-border-visible);
+  border: 1px solid rgba(0, 199, 177, 0.22);
   border-radius: 12px;
   width: 100%;
   max-width: 500px;
@@ -341,7 +688,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   background: rgba(0, 199, 177, 0.04);
-  border-bottom: 1.5px solid var(--ca-border-visible);
+  border-bottom: 1px solid rgba(0, 199, 177, 0.22);
   flex-shrink: 0;
 }
 
@@ -553,593 +900,6 @@
   transition: var(--ca-transition);
   width: 330px;
   white-space: nowrap;
-}
-
-/* ══ Portada /clases-apoyo ══
-   Página normal, no la app: hero, una tarjeta por materia, los pasos y el
-   texto local. Nada de acá se usa en /clases-apoyo/[materia]. */
-
-.ca-landing {
-  position: relative;
-  isolation: isolate;
-  background:
-    radial-gradient(ellipse at 50% -10%, rgba(0, 199, 177, 0.13) 0%, transparent 60%),
-    linear-gradient(170deg, #051211 0%, #082422 55%, #051d1a 100%);
-  min-height: calc(100dvh - var(--navbar-height, 60px));
-  padding: 2rem 1.25rem 4rem;
-  color: var(--ca-text-main);
-  overflow: hidden;
-}
-
-/* Cuadriculado de hoja de carpeta. Es la textura del contexto —apoyo escolar—
-   y sale gratis: dos gradientes repetidos, sin imagen que descargar. Se
-   desvanece hacia abajo para no competir con el texto largo. */
-.ca-landing::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(90deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px),
-    repeating-linear-gradient(0deg, rgba(0, 199, 177, 0.055) 0 1px, transparent 1px 32px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 80%);
-  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 80%);
-}
-
-@media (min-width: 700px) {
-  .ca-landing { padding: 2.6rem 2rem 5rem; }
-}
-
-.ca-landing > * {
-  max-width: 1100px;
-  margin-inline: auto;
-}
-
-/* ── Hero ──
-   Columna ancha + ficha de datos. La ficha existe para llenar la derecha, que
-   en la versión anterior quedaba vacía en cualquier pantalla grande. */
-.ca-hero {
-  display: grid;
-  gap: 1.4rem;
-  padding-bottom: 2.2rem;
-}
-
-@media (min-width: 900px) {
-  .ca-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
-    gap: 2.75rem;
-    align-items: center;
-    padding: 1.5rem 0 2.6rem;
-  }
-}
-
-.ca-hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.66rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ca-gold);
-  margin-bottom: 1rem;
-}
-
-.ca-hero-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--ca-gold);
-  box-shadow: 0 0 0 3px rgba(230, 155, 5, 0.18);
-}
-
-.ca-hero-main h1 {
-  font-family: var(--font-unbounded), system-ui, sans-serif;
-  font-size: clamp(2rem, 5.6vw, 3.5rem);
-  font-weight: 800;
-  line-height: 1.03;
-  letter-spacing: -0.035em;
-  color: #fff;
-  text-wrap: balance;
-}
-
-/* El nombre del barrio subrayado a mano alzada: el trazo es un gradiente al
-   pie del renglón, no un border, así respeta las dos líneas del título. */
-.ca-hero-main h1 span {
-  color: var(--ca-teal);
-  background-image: linear-gradient(90deg, rgba(0, 199, 177, 0.55), rgba(230, 155, 5, 0.55));
-  background-repeat: no-repeat;
-  background-size: 100% 3px;
-  background-position: 0 100%;
-  padding-bottom: 0.06em;
-}
-
-.ca-hero-deck {
-  margin-top: 1.05rem;
-  font-size: clamp(0.92rem, 2.2vw, 1.1rem);
-  line-height: 1.65;
-  color: var(--ca-text-main);
-  max-width: 46ch;
-}
-
-.ca-hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  margin-top: 1.75rem;
-}
-
-/* ── Botones ── */
-.ca-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  padding: 0.85rem 1.4rem;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-  border: 1px solid transparent;
-  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease,
-    box-shadow 0.18s ease, color 0.18s ease;
-}
-
-.ca-btn svg {
-  width: 17px;
-  height: 17px;
-  flex-shrink: 0;
-}
-
-.ca-btn-wa {
-  background: #25d366;
-  color: #04261a;
-  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.22);
-}
-
-.ca-btn-wa:hover {
-  background: #2ee878;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.32);
-}
-
-.ca-btn-ghost {
-  background: rgba(0, 199, 177, 0.08);
-  border-color: rgba(0, 199, 177, 0.32);
-  color: var(--ca-teal);
-}
-
-.ca-btn-ghost:hover {
-  background: rgba(0, 199, 177, 0.16);
-  border-color: rgba(0, 199, 177, 0.6);
-  transform: translateY(-2px);
-}
-
-.ca-btn:focus-visible {
-  outline: 2px solid var(--ca-teal);
-  outline-offset: 3px;
-}
-
-/* ── Ficha de datos del hero ── */
-.ca-hero-ficha {
-  position: relative;
-  border-radius: 18px;
-  padding: 1.4rem 1.5rem;
-  background:
-    radial-gradient(130% 100% at 100% 0%, rgba(0, 199, 177, 0.14) 0%, transparent 58%),
-    linear-gradient(165deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.014) 100%);
-  border: 1px solid rgba(0, 199, 177, 0.22);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 40px rgba(0, 0, 0, 0.32);
-  backdrop-filter: blur(4px);
-}
-
-.ca-hero-ficha dl {
-  display: grid;
-  gap: 0.85rem;
-  margin: 0;
-}
-
-/* En mobile la ficha va en dos columnas: apilada en cuatro renglones empujaba
-   la primera tarjeta de materia abajo del pliegue, que es justo lo que la
-   persona vino a ver. */
-@media (max-width: 899px) {
-  .ca-hero-ficha { padding: 1.15rem 1.2rem; }
-  .ca-hero-ficha dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem 1rem; }
-  .ca-hero-ficha dd { font-size: 0.86rem; }
-  .ca-hero-nota { margin-top: 1rem; padding-top: 0.85rem; font-size: 0.76rem; }
-}
-
-.ca-hero-ficha dt {
-  font-size: 0.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
-  color: var(--ca-text-muted);
-  margin-bottom: 0.15rem;
-}
-
-.ca-hero-ficha dd {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #fff;
-}
-
-.ca-hero-nota {
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--ca-text-muted);
-}
-
-.ca-hero-nota strong {
-  color: var(--ca-gold);
-  font-weight: 800;
-}
-
-/* ── Encabezado de sección, compartido ── */
-.ca-seccion-head {
-  margin-bottom: 1.4rem;
-}
-
-.ca-seccion-head h2 {
-  /* El navbar es sticky: sin esto el ancla "Ver las materias" deja el titulo
-     tapado debajo de la barra. */
-  scroll-margin-top: calc(var(--navbar-height, 60px) + 1.25rem);
-  font-family: var(--font-unbounded), system-ui, sans-serif;
-  font-size: clamp(1.25rem, 3vw, 1.65rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: #fff;
-}
-
-.ca-seccion-head p {
-  margin-top: 0.45rem;
-  font-size: 0.88rem;
-  line-height: 1.55;
-  color: var(--ca-text-muted);
-}
-
-/* ── Grilla de materias ──
-   Cuatro columnas en desktop: con tres, las siete materias dejaban una tarjeta
-   sola en la última fila. */
-.ca-landing-grid-wrap {
-  padding-top: 2.2rem;
-  border-top: 1px solid var(--ca-border-light);
-}
-
-.ca-card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-@media (min-width: 700px) {
-  .ca-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-}
-
-@media (min-width: 1000px) {
-  .ca-card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
-/* ── Tarjeta ── */
-.ca-card {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.45rem;
-  padding: 1.15rem 1.05rem 0.95rem;
-  border-radius: 16px;
-  background:
-    radial-gradient(120% 90% at 0% 0%, rgba(0, 199, 177, 0.15) 0%, transparent 55%),
-    linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 100%);
-  border: 1px solid rgba(0, 199, 177, 0.18);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 6px 18px rgba(0, 0, 0, 0.28);
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-/* Filo superior que se enciende al pasar por encima. */
-.ca-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--ca-teal), transparent);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-a.ca-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(0, 199, 177, 0.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 28px rgba(0, 0, 0, 0.38);
-}
-
-a.ca-card:hover::before { opacity: 0.9; }
-
-a.ca-card:focus-visible {
-  outline: 2px solid var(--ca-teal);
-  outline-offset: 3px;
-}
-
-/* ── Ícono en pastilla: se invierte a teal sólido en hover ── */
-.ca-card-ico {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  background: rgba(0, 199, 177, 0.12);
-  border: 1px solid rgba(0, 199, 177, 0.26);
-  color: var(--ca-teal);
-  flex-shrink: 0;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.ca-card-icon {
-  width: 21px;
-  height: 21px;
-}
-
-a.ca-card:hover .ca-card-ico {
-  background: var(--ca-teal);
-  border-color: var(--ca-teal);
-  color: var(--ca-selected-text);
-  box-shadow: 0 0 18px rgba(0, 199, 177, 0.35);
-}
-
-.ca-card-title {
-  font-size: 1rem;
-  font-weight: 800;
-  line-height: 1.2;
-  color: #fff;
-  margin-top: 0.15rem;
-}
-
-.ca-card-blurb {
-  font-size: 0.74rem;
-  line-height: 1.45;
-  color: var(--ca-text-muted);
-  /* Las descripciones tienen largos muy distintos; sin el corte las tarjetas
-     de la misma fila quedan desparejas. */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.ca-card-blurb strong {
-  color: var(--ca-text-main);
-  font-weight: 700;
-}
-
-.ca-card-cta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  width: 100%;
-  margin-top: auto;
-  padding-top: 0.8rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 0.64rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--ca-teal);
-}
-
-.ca-card-arrow {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(0, 199, 177, 0.14);
-  flex-shrink: 0;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
-}
-
-.ca-card-arrow svg {
-  width: 11px;
-  height: 11px;
-}
-
-a.ca-card:hover .ca-card-arrow {
-  background: var(--ca-teal);
-  color: var(--ca-selected-text);
-  transform: translateX(3px);
-}
-
-/* ── Tarjeta de materia todavía sin contenido ──
-   No es un enlace: gris, sin hover y sin destino. */
-.ca-card-off {
-  background: rgba(255, 255, 255, 0.022);
-  border-color: rgba(255, 255, 255, 0.07);
-  box-shadow: none;
-  cursor: default;
-}
-
-.ca-card-off .ca-card-ico {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-  color: var(--ca-slate);
-}
-
-.ca-card-off .ca-card-title { color: rgba(255, 255, 255, 0.42); }
-
-.ca-card-badge {
-  width: 100%;
-  margin-top: auto;
-  padding-top: 0.8rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  font-size: 0.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ca-gold);
-  opacity: 0.7;
-}
-
-@media (max-width: 420px) {
-  .ca-card { padding: 0.95rem 0.85rem 0.8rem; border-radius: 14px; }
-  .ca-card-ico { width: 34px; height: 34px; border-radius: 9px; }
-  .ca-card-icon { width: 18px; height: 18px; }
-  .ca-card-title { font-size: 0.9rem; }
-}
-
-/* ── Los tres pasos ── */
-.ca-pasos-wrap {
-  margin-top: 3.2rem;
-  padding-top: 2.4rem;
-  border-top: 1px solid var(--ca-border-light);
-}
-
-.ca-pasos {
-  display: grid;
-  gap: 0.9rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  counter-reset: paso;
-}
-
-@media (min-width: 800px) {
-  .ca-pasos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
-}
-
-.ca-paso {
-  position: relative;
-  padding: 1.35rem 1.3rem 1.25rem;
-  border-radius: 16px;
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-/* El número, en el color del lápiz. Grande y arriba a la derecha para que la
-   secuencia se lea de un vistazo sin agrandar el bloque. */
-.ca-paso-n {
-  position: absolute;
-  top: 0.85rem;
-  right: 1.1rem;
-  font-family: var(--font-unbounded), system-ui, sans-serif;
-  font-size: 1.9rem;
-  font-weight: 800;
-  line-height: 1;
-  color: rgba(230, 155, 5, 0.28);
-}
-
-.ca-paso h3 {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 0.45rem;
-  padding-right: 2.2rem;
-}
-
-.ca-paso p {
-  font-size: 0.85rem;
-  line-height: 1.6;
-  color: var(--ca-text-muted);
-}
-
-/* ── Bloques de texto ──
-   Dos columnas en desktop: en una sola dejaban media pantalla vacía. */
-.ca-texto-grid {
-  display: grid;
-  gap: 2.2rem;
-  margin-top: 3.2rem;
-  padding-top: 2.4rem;
-  border-top: 1px solid var(--ca-border-light);
-}
-
-@media (min-width: 900px) {
-  .ca-texto-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; }
-}
-
-.ca-landing-texto h2 {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--ca-teal);
-  margin-bottom: 1rem;
-}
-
-.ca-landing-texto p {
-  font-size: 0.92rem;
-  line-height: 1.75;
-  color: var(--ca-text-muted);
-  max-width: 62ch;
-  margin-bottom: 0.9rem;
-}
-
-.ca-landing-texto strong {
-  color: var(--ca-text-main);
-  font-weight: 700;
-}
-
-/* Los barrios, como pastillas: es una enumeración, no una oración. */
-.ca-barrios {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  list-style: none;
-  padding: 0;
-  margin-top: 1.1rem;
-}
-
-.ca-barrios li {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--ca-text-main);
-  background: rgba(0, 199, 177, 0.07);
-  border: 1px solid rgba(0, 199, 177, 0.18);
-  border-radius: 999px;
-  padding: 0.32rem 0.75rem;
-}
-
-/* ── Cierre ── */
-.ca-cierre {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.4rem;
-  margin-top: 3.2rem;
-  padding: 1.8rem;
-  border-radius: 20px;
-  background:
-    radial-gradient(120% 140% at 0% 0%, rgba(0, 199, 177, 0.16) 0%, transparent 60%),
-    linear-gradient(150deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
-  border: 1px solid rgba(0, 199, 177, 0.24);
-}
-
-.ca-cierre h2 {
-  font-family: var(--font-unbounded), system-ui, sans-serif;
-  font-size: clamp(1.1rem, 2.6vw, 1.4rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: #fff;
-}
-
-.ca-cierre p {
-  margin-top: 0.4rem;
-  font-size: 0.88rem;
-  line-height: 1.55;
-  color: var(--ca-text-muted);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ca-card, .ca-btn { transition: none; }
-  a.ca-card:hover, .ca-btn:hover { transform: none; }
 }
 
 /* ── Texto propio de cada materia ──
