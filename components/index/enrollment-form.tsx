@@ -14,12 +14,11 @@ interface Props {
 const ETIQUETA = 'block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider';
 const CAMPO = 'w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors';
 const BORDE_OK = 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60';
-const BORDE_ERROR = 'border-red-400/60 focus:border-red-400';
 
 // Como figura en el DNI argentino.
 const SEXOS = ['Femenino', 'Masculino', 'Otro'];
 
-function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, inputMode, error }: {
+function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, inputMode }: {
   id: string;
   label: string;
   value: string;
@@ -27,7 +26,6 @@ function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, 
   placeholder?: string;
   maxLength?: number;
   inputMode?: 'numeric';
-  error?: string;
 }) {
   return (
     <div>
@@ -40,13 +38,8 @@ function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, 
         value={value}
         onChange={e => onChange(e.target.value)}
         maxLength={maxLength}
-        className={`${CAMPO} ${error ? BORDE_ERROR : BORDE_OK}`}
+        className={`${CAMPO} ${BORDE_OK}`}
       />
-      {/* El hueco del mensaje se reserva aunque no haya error: si apareciera
-          y desapareciera, cada tecla del DNI movería media pantalla. */}
-      {error !== undefined && (
-        <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{error}</p>
-      )}
     </div>
   );
 }
@@ -160,19 +153,9 @@ export default function EnrollmentForm({ carreras }: Props) {
     : '';
   const telefonoInvalid = telefonoError !== '';
 
-  // El DNI es opcional, pero si lo escriben tiene que servir para el legajo:
-  // un número a medias es peor que ninguno, porque hay que volver a pedirlo.
-  const dniDigitos = dni.replace(/\D/g, '');
-  const dniError =
-    dni.trim() === '' ? ''
-    : !/^[\d.\s]+$/.test(dni.trim()) ? 'Solo números.'
-    : dniDigitos.length < 7 || dniDigitos.length > 9 ? 'Tiene que tener entre 7 y 9 números.'
-    : '';
-  const dniInvalid = dniError !== '';
-
   // Form validity: at least email or telefono, and both must be valid
   const contactValid = (email.trim() || telefono.trim()) && !emailInvalid && !telefonoInvalid;
-  const isValid = contactValid && !dniInvalid && !!turnstileToken;
+  const isValid = contactValid && !!turnstileToken;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -439,16 +422,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-1.5">
-                  <CampoTexto
-                    id="form-dni"
-                    label="DNI"
-                    placeholder="Sin puntos"
-                    value={dni}
-                    onChange={setDni}
-                    maxLength={15}
-                    inputMode="numeric"
-                    error={dniError}
-                  />
+                  <CampoTexto id="form-dni" label="DNI" placeholder="Tu DNI" value={dni} onChange={setDni} maxLength={12} inputMode="numeric" />
                   <CampoSelect id="form-sexo" label="Sexo" value={sexo} onChange={setSexo} opciones={SEXOS} />
                 </div>
 
