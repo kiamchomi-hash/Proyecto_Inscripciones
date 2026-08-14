@@ -42,7 +42,7 @@ function WhatsAppIcon({ size = 20 }: { size?: number }) {
 /* ── Construction Banner ── */
 function ConstructionBanner() {
   return (
-    <div className="ca-construction flex flex-col items-center justify-center text-center">
+    <div className="ca-construction flex flex-col items-center justify-center h-full p-5 text-center" style={{ background: 'rgba(0,0,0,0.1)' }}>
       <svg className="ca-construction-icon mb-4" width="80" height="80" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 2L1 21h22L12 2zm0 3.45L20.14 19H3.86L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z" />
       </svg>
@@ -67,7 +67,7 @@ function Carousel({ images }: { images: string[] }) {
   }, [images.length]);
 
   return (
-    <div className="ca-carousel relative overflow-hidden">
+    <div className="relative h-full overflow-hidden bg-black">
       <div
         className="ca-carousel-track"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -78,12 +78,27 @@ function Carousel({ images }: { images: string[] }) {
               src={src}
               alt="Apoyo Escolar"
               fill
-              sizes="(max-width: 900px) 100vw, 340px"
-              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain"
               priority={i === 0}
             />
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Description Panel ── */
+function DescriptionPanel({ desc }: { desc: string[] }) {
+  return (
+    <div className="flex flex-col h-full overflow-hidden" style={{ background: 'var(--ca-bg-temas)' }}>
+      <div className="flex-1 flex flex-col justify-center rounded-xl m-[1.5vh_20px] p-[1vh_25px]" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,199,177,0.1)' }}>
+        <ul className="list-none flex flex-col h-full justify-evenly">
+          {desc.map((item, i) => (
+            <li key={i} className="ca-desc-item" dangerouslySetInnerHTML={{ __html: sanitizeContent(item) }} />
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -159,9 +174,9 @@ function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados }: 
   };
 
   return (
-    <div className="ca-cal-wrap">
+    <div className="flex flex-col items-center h-full min-h-0 w-full p-[8px_15px] overflow-hidden">
       {/* Day headers */}
-      <div className="ca-cal-box" style={locked ? { opacity: 0.5, pointerEvents: 'none' } : undefined}>
+      <div className="ca-cal-box flex-1" style={locked ? { opacity: 0.5, pointerEvents: 'none' } : undefined}>
         {/* Month navigation — inside ca-cal-box to align with grid */}
         <div className="flex items-center justify-between py-2 px-1">
           <button
@@ -282,7 +297,7 @@ function parseHorariosBloqueados(arr: string[]): { global: Set<string>; perDay: 
 
 function formatDay(d: DayInfo) { return `${d.num} de ${d.month}`; }
 
-function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDone, onReset, onInteract, onLockCalendar, horariosBloqueados }: { modoManana: boolean; materiaId: string; materiaSlug: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void; onLockCalendar?: (locked: boolean) => void; horariosBloqueados?: string[] }) {
+function SchedulePanel({ modoManana, materiaId, materiaSlug, nombreProfesor, selectedDays, onDone, onReset, onInteract, onLockCalendar, horariosBloqueados }: { modoManana: boolean; materiaId: string; materiaSlug: string; nombreProfesor: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void; onLockCalendar?: (locked: boolean) => void; horariosBloqueados?: string[] }) {
   const [mode, _setMode] = useState<ScheduleMode>('picking');
   const setMode = (m: ScheduleMode) => {
     _setMode(m);
@@ -406,7 +421,7 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
   const canProceed = selectedHours.size > 0 && selectedDays.length > 0;
 
   return (
-    <div className="ca-sched">
+    <div className="flex flex-col h-full min-h-0 overflow-hidden" style={{ borderLeft: '1px solid rgba(0,199,177,0.1)' }}>
       {/* Título fijo arriba */}
       <div className="px-3 pt-3 pb-2 flex items-center gap-3 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.18)', borderBottom: '1px solid var(--ca-border-light)' }}>
         <h3 className="text-sm font-extrabold whitespace-nowrap px-4 py-1.5 rounded-full text-white" style={{ background: 'rgba(0,85,135,0.15)', border: '1px solid rgba(0,85,135,0.4)' }}>Clases de Lunes a Viernes</h3>
@@ -414,18 +429,37 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
       </div>
 
       {/* Contenido scrollable */}
-      <div className="ca-sched-body">
+      <div className="flex-1 flex flex-col justify-evenly items-stretch min-h-0 overflow-y-auto ca-schedule-scroll">
 
       {selectedDays.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center px-3">
-          <div className="flex flex-col items-center justify-center gap-3 w-full py-6 rounded-xl" style={{ border: '2px dashed rgba(0,199,177,0.25)' }}>
-            <svg className="w-6 h-6" style={{ color: 'var(--ca-text-muted)', opacity: 0.5 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        /* Media pantalla del widget para una sola frase era mucho: mientras no
+           haya dia elegido, el panel muestra ademas con quien se cursa y que
+           pasa despues de solicitar. */
+        <div className="ca-vacio">
+          <div className="ca-vacio-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span className="text-[0.72rem] font-semibold text-center" style={{ color: 'var(--ca-text-muted)' }}>
-              Seleccioná uno o varios días<br />para empezar
-            </span>
+            <span>Elegí uno o varios días en el calendario para ver los horarios libres</span>
           </div>
+          <dl className="ca-vacio-datos">
+            <div>
+              <dt>Profesor/a</dt>
+              <dd>{nombreProfesor}</dd>
+            </div>
+            <div>
+              <dt>Turnos</dt>
+              <dd>{modoManana ? 'Mañana y tarde' : 'Tarde'}</dd>
+            </div>
+            <div>
+              <dt>Dónde</dt>
+              <dd>Guaminí 4876</dd>
+            </div>
+          </dl>
+          <p className="ca-vacio-nota">
+            <strong>Solicitar no es reservar.</strong> {nombreProfesor} te confirma la
+            disponibilidad por WhatsApp.
+          </p>
         </div>
       ) : (
       <>
@@ -700,6 +734,21 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
 // Enlace real, no botón con onClick: cada materia es una URL propia y Google
 // necesita poder seguirla. `replace` y `scroll: false` mantienen la navegación
 // como estaba (sin apilar historial ni saltar al tope).
+function SidebarLink({ label, slug, active }: { label: string; slug: string; active: boolean }) {
+  return (
+    <Link
+      href={`/clases-apoyo/${slug}`}
+      replace
+      scroll={false}
+      className={`ca-sb-btn ${active ? 'on' : ''}`}
+      aria-current={active ? 'page' : undefined}
+    >
+      <span className="ca-sb-bar" />
+      <span className="ca-sb-dot" />
+      <span className="font-bold text-[0.72rem] uppercase tracking-wide">{label}</span>
+    </Link>
+  );
+}
 
 /* ── Main Page Component ──
    Sólo la sirve /clases-apoyo/[materia]. La portada dejó de montar esta app en
@@ -710,7 +759,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
   const [selectedDayInfoMap, setSelectedDayInfoMap] = useState<Record<string, { num: string; month: string; calendarKey: string }>>({});
   const [requestDone, setRequestDone] = useState(false);
   const [calendarLocked, setCalendarLocked] = useState(false);
-  const footerRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
   const scrollToBottom = useCallback(() => {
     if (window.innerWidth <= 768) {
       setTimeout(() => footerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 50);
@@ -745,159 +794,146 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
       </div>
     );
   }
+
   return (
-    <div className="ca-pagina">
-      {/* ── Migas y cambio de materia ──
-          Una baldosa baja que reemplaza a la sidebar fija y a las solapas de
-          mobile: la misma tira en las dos pantallas. */}
-      <nav className="ca-tile ca-tile-nav" aria-label="Materias">
-        <span className="ca-migas">
-          <Link href="/clases-apoyo">Clases de apoyo</Link>
-          <span aria-hidden="true">/</span>
-          <span>{materia.label}</span>
-        </span>
-        <span className="ca-mat-tabs">
-          {materiasNav.map(m => {
-            const active = m.slug === materia.slug;
-            return (
-              <Link
-                key={m.id}
-                href={`/clases-apoyo/${m.slug}`}
-                replace
-                scroll={false}
-                aria-current={active ? 'page' : undefined}
-                className={`ca-mat-tab${active ? ' on' : ''}`}
-              >
-                {m.label}
-              </Link>
-            );
-          })}
-        </span>
-      </nav>
+    <div className="flex flex-col md:h-[calc(100dvh-var(--navbar-height,60px))] max-md:min-h-[calc(100dvh-var(--navbar-height,60px))]">
+      <div className="flex-1 min-h-0 flex justify-center items-stretch p-2 md:p-2 max-md:p-0 max-md:overflow-visible">
+        <div className="ca-app w-full max-w-[1400px]">
+          {/* Mobile tabs (above header) */}
+          <nav className="ca-mobile-tabs overflow-x-auto" aria-label="Materias" style={{ background: '#051211', borderBottom: '1px solid var(--ca-border-light)' }}>
+            {materiasNav.map(m => {
+              const active = m.slug === materia.slug;
+              return (
+                <Link
+                  key={m.id}
+                  href={`/clases-apoyo/${m.slug}`}
+                  replace
+                  scroll={false}
+                  aria-current={active ? 'page' : undefined}
+                  className="ca-mobile-tab flex-shrink-0 px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-wide transition-colors"
+                  style={{
+                    color: active ? '#fff' : 'var(--ca-text-muted)',
+                    background: active ? '#051d1a' : 'transparent',
+                    borderBottom: active ? '2px solid var(--ca-teal)' : '2px solid transparent',
+                  }}
+                >
+                  {m.label}
+                </Link>
+              );
+            })}
+          </nav>
 
-      {/* ── Titular, datos y foto ── */}
-      <section className="ca-bento ca-bento-hero">
-        <header className="ca-tile ca-tile-titular">
-          <p className="ca-eyebrow">
-            <span className="ca-eyebrow-dot" aria-hidden="true" />
-            Guaminí 4876 — Villa Lugano
-          </p>
-          {/* El h1 completo y a la vista. Antes se veía sólo el nombre de la
-              materia y el resto de la frase era sr-only. */}
-          <h1>
-            Clases de apoyo de <span>{materia.label}</span> en Villa Lugano
-          </h1>
-
-          {!materia.en_construccion && materia.descripcion?.length > 0 && (
-            <ul className="ca-mat-bullets">
-              {materia.descripcion.map((item, i) => (
-                <li key={i} dangerouslySetInnerHTML={{ __html: sanitizeContent(item) }} />
-              ))}
-            </ul>
-          )}
-
-          {!materia.en_construccion && (
-            <div className="ca-acciones">
-              <a
-                className="ca-btn ca-btn-wa"
-                href={`https://wa.me/${materia.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-              >
-                <WhatsAppIcon size={17} />
-                Escribirle a {materia.nombre_profesor}
-              </a>
-              <a className="ca-btn ca-btn-ghost" href="#ca-reserva">
-                Elegir día y horario
-              </a>
+          {/* Header */}
+          <header className="ca-header">
+            {/* Vuelve a la portada, que ya no es esta misma app sino una página
+                aparte: acá sí conviene navegación normal (apila historial y
+                sube al tope). Entre materias se sigue usando replace. */}
+            <Link
+              href="/clases-apoyo"
+              className="ca-header-brand flex items-center justify-center px-4 cursor-pointer transition-opacity hover:opacity-80"
+              style={{ background: 'rgba(0,0,0,0.15)', borderRightWidth: '1px', borderRightStyle: 'solid', borderRightColor: 'var(--ca-border-light)' }}
+            >
+            <div className="relative h-8 w-32">
+              <Image
+                src="/imagenes/imagenes_cau/logo_cau.png"
+                alt="Logo CAU — Volver al inicio"
+                fill
+                className="object-contain brightness-0 invert opacity-90"
+              />
             </div>
-          )}
-        </header>
+            </Link>
+            <div className="flex items-center justify-center w-full">
+              {/* El h1 completo y a la vista. Antes se veia solo el nombre de la
+                  materia y el resto de la frase era sr-only: la persona que
+                  entraba desde Google no leia en ningun lado que esto es en
+                  Villa Lugano hasta el texto del pie. */}
+              <h1 className="ca-widget-h1">
+                Clases de apoyo de <strong>{materia.label}</strong> en Villa Lugano
+              </h1>
+            </div>
+          </header>
 
-        <div className="ca-bento-col">
-          <div className="ca-tile" aria-label={`Datos de las clases de ${materia.label}`}>
-            <dl className="ca-datos">
-            {/* Una materia en construccion todavia no tiene profesor asignado:
-                lo que hay en la base es relleno ("Profesor/a: Ingles") y el
-                telefono es el del CAU, no el de nadie que de esa clase. */}
-              {!materia.en_construccion && (
-                <div>
-                  <dt>Profesor/a</dt>
-                  <dd>{materia.nombre_profesor}</dd>
-                </div>
-              )}
-              <div>
-                <dt>Turnos</dt>
-                <dd>{materia.modo_manana ? 'Mañana y tarde, de lunes a viernes' : 'Tarde, de lunes a viernes'}</dd>
+          {/* Body */}
+          <div className="ca-body">
+            {/* Sidebar */}
+            <nav className="ca-sidebar" aria-label="Materias">
+              {materiasNav.map(m => (
+                <SidebarLink
+                  key={m.id}
+                  label={m.label}
+                  slug={m.slug}
+                  active={m.slug === materia.slug}
+                />
+              ))}
+              <div className="flex-1" />
+            </nav>
+
+            {/* Main content */}
+            <main className="ca-main">
+              <div className="ca-panel flex flex-col h-full overflow-hidden" key={materia.id}>
+                {materia.en_construccion ? (
+                  <ConstructionBanner />
+                ) : (
+                  <>
+                    {/* Row 1: Carousel + Description */}
+                    <div className={`ca-r1${materia.imagenes?.length ? '' : ' ca-r1-solo'}`}>
+                      {/* Sin fotos cargadas, el carrusel dejaba medio widget en
+                          negro. En ese caso la descripcion toma la fila entera
+                          y la franja se achica, que le da alto al calendario. */}
+                      {materia.imagenes?.length > 0 && <Carousel images={materia.imagenes} />}
+                      <DescriptionPanel desc={materia.descripcion} />
+                    </div>
+
+                    {/* Row 2: Calendar + Schedule */}
+                    <div className="ca-r2">
+                      <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} />
+                      <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} nombreProfesor={materia.nombre_profesor} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
+                    </div>
+                  </>
+                )}
               </div>
-              <div>
-                <dt>Dónde</dt>
-                <dd>Guaminí 4876, Villa Lugano</dd>
-              </div>
-            </dl>
+            </main>
           </div>
 
-          {materia.imagenes?.length > 0 && (
-            <div className="ca-tile ca-tile-foto">
-              <Carousel images={materia.imagenes} />
+          {/* Footer */}
+          <footer ref={footerRef} className="ca-footer flex items-center justify-between px-10" style={{ background: 'var(--ca-bg-footer)', borderTop: '1px solid var(--ca-border-light)', zIndex: 200 }}>
+            <div className="ca-footer-info flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <div className="w-[34px] h-[34px] grid place-items-center rounded-md flex-shrink-0" style={{ background: 'var(--ca-teal)' }}>
+                  <svg className="w-5 h-5 text-[#042926]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <span className="block text-[0.5rem] font-extrabold uppercase tracking-[0.2em]" style={{ color: 'var(--ca-accent)' }}>Ubicación</span>
+                  <span className="text-[0.95rem] font-bold" style={{ fontFamily: "'Unbounded', sans-serif", color: 'var(--ca-text-main)' }}>Guaminí 4876</span>
+                </div>
+              </div>
             </div>
-          )}
-
-          {/* La aclaracion de que solicitar no reserva. Hasta ahora vivia en
-              letra chica adentro del panel de horarios, donde se lee recien
-              despues de elegir el turno: tarde para fijar la expectativa. */}
-          {!materia.en_construccion && (
-            <div className="ca-tile ca-tile-oro ca-tile-nota">
-              <h3>Solicitar no es reservar</h3>
-              <p>
-                Marcás el día y la hora que te sirven y <strong>{materia.nombre_profesor}</strong>{' '}
-                te confirma la disponibilidad por WhatsApp.
-              </p>
-            </div>
-          )}
+            <a
+              href={`https://wa.me/${materia.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="ca-wa-link"
+            >
+              <WhatsAppIcon />
+              {/* Una materia en construccion todavia no tiene profesor asignado:
+                  lo que hay en la base es relleno —el nombre de la materia— y el
+                  numero es el del CAU, no el de nadie que de esa clase. */}
+              <span>
+                {materia.en_construccion ? (
+                  'Consultar por WhatsApp'
+                ) : (
+                  <>
+                    {materia.nombre_profesor} <span className="opacity-40 font-normal mx-1">|</span> {materia.telefono_display}
+                  </>
+                )}
+              </span>
+            </a>
+          </footer>
         </div>
-      </section>
-
-      {/* ── Reserva ──
-          Antes esto era medio widget apretado contra el borde inferior de la
-          pantalla. Ahora son dos baldosas de la misma grilla y el calendario y
-          las horas tienen el ancho que necesitan. */}
-      {materia.en_construccion ? (
-        <ConstructionBanner />
-      ) : (
-        <>
-          <h2 className="ca-grupo-label" id="ca-reserva">Elegí tu día y tu horario</h2>
-          <section className="ca-bento ca-bento-reserva" aria-labelledby="ca-reserva" key={materia.id}>
-            <div className="ca-tile ca-tile-cal">
-              <MonthlyCalendar
-                selectedDays={selectedDays}
-                onToggleDay={handleToggleDay}
-                locked={requestDone || calendarLocked}
-                diasBloqueados={materia.dias_bloqueados}
-              />
-            </div>
-            <div className="ca-tile ca-tile-sched" ref={footerRef}>
-              <SchedulePanel
-                key={scheduleKey}
-                modoManana={materia.modo_manana}
-                materiaId={materia.id}
-                materiaSlug={materia.slug}
-                selectedDays={selectedDayInfos}
-                onDone={() => setRequestDone(true)}
-                onReset={() => {
-                  setRequestDone(false);
-                  setCalendarLocked(false);
-                  setSelectedDays(new Set());
-                  setSelectedDayInfoMap({});
-                }}
-                onInteract={scrollToBottom}
-                onLockCalendar={setCalendarLocked}
-                horariosBloqueados={materia.horarios_bloqueados}
-              />
-            </div>
-          </section>
-        </>
-      )}
+      </div>
     </div>
   );
 }
