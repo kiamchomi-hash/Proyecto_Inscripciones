@@ -70,7 +70,9 @@ const CHECKLIST = [
 export default function SobreNosotrosPage() {
   return (
     <>
-    <main className="max-w-6xl mx-auto px-5 sm:px-8">
+    {/* El pb es lo unico que separa la tarjeta del mapa del pie: la seccion de
+        ubicacion cierra con mb-0 y sin esto queda pegada, sin un pixel de aire. */}
+    <main className="max-w-6xl mx-auto px-5 sm:px-8 pb-16 sm:pb-20">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
       <section className="pt-4 sm:pt-8 pb-6 sm:pb-10 text-center">
