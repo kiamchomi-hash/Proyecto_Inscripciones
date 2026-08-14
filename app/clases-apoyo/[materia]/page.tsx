@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import ClasesApoyoPage from '@/components/clases-apoyo/clases-apoyo-page';
 import type { MateriaDB, MateriaNav } from '@/components/clases-apoyo/clases-apoyo-page';
 import TextoMateria from '@/components/clases-apoyo/texto-materia';
+import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { supabase } from '@/lib/supabase';
 import '../clases-apoyo.css';
@@ -116,6 +117,7 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
     <>
       <ClasesApoyoPage materiasNav={(nav ?? []) as MateriaNav[]} materia={ficha} />
       <TextoMateria label={ficha.label} parrafos={ficha.texto_seo} />
+      <SiteFooter />
       {!ficha.en_construccion && (
         <script
           type="application/ld+json"

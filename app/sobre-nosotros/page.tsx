@@ -69,6 +69,7 @@ const CHECKLIST = [
 
 export default function SobreNosotrosPage() {
   return (
+    <>
     <main className="max-w-6xl mx-auto px-5 sm:px-8">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
@@ -572,8 +573,8 @@ export default function SobreNosotrosPage() {
           </div>
         </div>
       </section>
-
-      <SiteFooter />
     </main>
+    <SiteFooter />
+    </>
   );
 }

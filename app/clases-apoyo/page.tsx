@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ClasesApoyoLanding from '@/components/clases-apoyo/clases-apoyo-landing';
+import SiteFooter from '@/components/footer';
 import type { MateriaCard } from '@/components/clases-apoyo/clases-apoyo-landing';
 import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
@@ -88,6 +89,7 @@ export default async function Page() {
   return (
     <>
       <ClasesApoyoLanding materias={materias} />
+      <SiteFooter />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(servicioSchema) }}

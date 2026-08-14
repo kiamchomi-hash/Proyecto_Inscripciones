@@ -7,7 +7,7 @@ import { esCursoTeclab, getFamiliaTeclab, esTeclab, getFichaTeclab, parseEnfoque
 import { parseIAMeta, tienePlanDeEstudios } from '@/components/carreras/career-content';
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
-import IndexFooter from '@/components/index/footer';
+import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
 import '../career-detail.css';
@@ -408,8 +408,8 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
       <main className="flex-1">
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
         <DeferredEnrollmentForm carreras={opcionesFormulario} />
-        <IndexFooter />
       </main>
+      <SiteFooter />
     </>
   );
 }

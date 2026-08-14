@@ -10,7 +10,7 @@ import CareersCatalog from '@/components/index/careers-catalog';
 
 // Dynamic imports for components below the fold
 const EnrollmentForm = dynamic(() => import('@/components/index/enrollment-form'));
-const IndexFooter = dynamic(() => import('@/components/index/footer'));
+const SiteFooter = dynamic(() => import('@/components/footer'));
 import './index.css';
 
 export const metadata: Metadata = {
@@ -42,13 +42,15 @@ export default async function HomePage() {
     .map(({ slides, ...resto }) => ({ ...resto, tieneSlides: (slides?.length ?? 0) > 0 } as CarreraCatalogo));
 
   return (
-    <main className="flex-1">
-      <h1 className="sr-only">Universidad Siglo 21 en Villa Lugano: carreras e inscripciones</h1>
-      <Hero />
-      <CareersCatalog carreras={carrerasData} />
-      <EnrollmentForm carreras={carrerasData} />
-      <StatsCounter />
-      <IndexFooter />
-    </main>
+    <>
+      <main className="flex-1">
+        <h1 className="sr-only">Universidad Siglo 21 en Villa Lugano: carreras e inscripciones</h1>
+        <Hero />
+        <CareersCatalog carreras={carrerasData} />
+        <EnrollmentForm carreras={carrerasData} />
+        <StatsCounter />
+      </main>
+      <SiteFooter />
+    </>
   );
 }

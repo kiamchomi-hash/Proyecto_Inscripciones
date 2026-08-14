@@ -68,6 +68,7 @@ export default function CalendarioAcademicoPage() {
   const segundoSemestre = PERIODOS.filter(p => p.semestre === 'Segundo semestre');
 
   return (
+    <>
     <main className="max-w-5xl mx-auto px-5 sm:px-8 pb-14">
       <script
         type="application/ld+json"
@@ -222,8 +223,8 @@ export default function CalendarioAcademicoPage() {
           . Teclab y la Academia Identidad Argentina manejan calendarios propios.
         </p>
       </section>
-
-      <SiteFooter />
     </main>
+    <SiteFooter />
+    </>
   );
 }

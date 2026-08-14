@@ -87,6 +87,9 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
   const shareUrlEncoded = encodeURIComponent(shareUrl);
 
   return (
+    <>
+    {/* El pie va afuera de este <main>: adentro heredaba el max-w-3xl y salia
+        como una cajita de 845 px flotando en el medio de la pantalla. */}
     <main className="max-w-3xl mx-auto px-5 sm:px-8 pt-6 pb-28 sm:pb-16">
       {/* Volver */}
       <Link
@@ -197,7 +200,8 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
           </div>
         </div>
       </article>
-      <SiteFooter />
     </main>
+    <SiteFooter />
+    </>
   );
 }
