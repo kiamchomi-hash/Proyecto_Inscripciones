@@ -1,65 +1,76 @@
 # Indexación — siglo21sur.com
 
-**11/08/2026 · 90 de 93 carreras (97%)** · total 107/111.
+**14/08/2026 · 86 de 88 carreras (98%)** · total 108/111.
+
+La oferta se achicó: cuatro diplomaturas de Identidad salieron (302 a la home) y el
+curso de mindfulness se renombró (301 a la diplomatura homónima, ya indexada). Por eso
+la lista de carreras baja de 93 a 88 filas.
 
 ## Pedir indexación
 
 ```
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
-https://www.siglo21sur.com/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos
 ```
 
-`/novedades/2` sale "Crawled, currently not indexed": es paginación y Google no le ve valor propio. No insistir.
+Las dos siguen en "Discovered - currently not indexed" y **nunca fueron rastreadas**.
+No es un problema técnico: responden 200, tienen `<title>` propio, están en el sitemap
+y reciben enlace interno desde una ficha hermana (Diseño y Animación Digital y
+Marketing Digital respectivamente). Google simplemente no llegó.
+
+`/novedades/2` sigue "Crawled, currently not indexed" con copia del 05/04: es paginación
+y Google no le ve valor propio. No insistir.
 
 ## Recrawl
 
+`/sobre-nosotros` es el único pedido que vale la pena: se reescribió el 11/08 para
+competir por "CAU en CABA" y lo que Google tiene indexado es del 21/07, o sea el texto
+viejo.
+
 ```
-https://www.siglo21sur.com/carreras/licenciatura-en-administracion
+https://www.siglo21sur.com/sobre-nosotros
 ```
 
-Las otras tres de esta lista (`/clases-apoyo`, `/carreras/licenciatura-en-informatica`
-y `/carreras/actuario`) se rastrearon solas entre el 09 y el 10/08: ya no hacen falta.
+Del resto no hace falta pedir nada. Administración era el caso testigo —copia del 26/06,
+sin BreadcrumbList— y se rastreó sola el 11/08; Informática (04/06) el 10/08 y
+`/clases-apoyo` (11/06) el 09/08. Google está barriendo el sitio de más viejo a más
+nuevo y ya se llevó puesta toda la cola de junio.
 
-Administración sigue con la copia del 26/06 y es la única de las cuatro que
-inspecciona con `rich_results: null` — o sea que lo que Google tiene indexado es
-anterior al BreadcrumbList. Su `updated_at` es del 19/07, posterior al rastreo,
-así que el `lastmod` del sitemap ya la señala: si en unos días se movió sola,
-no hay que pedir nada.
+Quedan 17 páginas cuya copia indexada es anterior al BreadcrumbList (deployado el 24/07);
+se reconocen por rastreo ≤23/07 y `rich_results: null` en la inspección. La más atrasada
+es Administración de Servicios de Salud, del 07/07. Van a caer solas, igual que las tres
+de arriba: no gastar cuota de "Solicitar indexación" en ellas.
 
 ## La lista
+
+`○` marca la copia indexada anterior al BreadcrumbList del 24/07.
 
 ### Carreras
 
 - ✅ `/carreras/abogacia` 06/08
-- ✅ `/carreras/actuario` 27/06
-- ✅ `/carreras/contador-publico` 19/07
+- ✅ `/carreras/actuario` 09/08
+- ✅ ○ `/carreras/contador-publico` 19/07
 - ✅ `/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial` 03/08
 - ✅ `/carreras/curso-de-constitucion-de-sociedades-sa-sas-srl` 04/08
-- ✅ `/carreras/curso-de-mindfulness-y-tecnicas-de-gestion-del-estres` 05/08
-- ✅ `/carreras/diplomatura-en-bienestar-integral-herramientas-para-transformar-te` 19/07
 - ✅ `/carreras/diplomatura-en-ciberseguridad-aplicada` 09/08
-- ✅ `/carreras/diplomatura-en-compliance` 19/07
+- ✅ ○ `/carreras/diplomatura-en-compliance` 19/07
 - ✅ `/carreras/diplomatura-en-fraude-financiero-y-digital` 04/08
 - ✅ `/carreras/diplomatura-en-gestion-de-equipos-de-alto-desempeno` 04/08
-- ✅ `/carreras/diplomatura-en-inteligencia-artificial` 04/08
-- ✅ `/carreras/diplomatura-en-management-hotelero` 04/08
-- ✅ `/carreras/diplomatura-en-marketing-para-emprendedores-y-duenos-de-negocios` 04/08
-- ❌ `/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos` — Google no reconoce la URL
+- ✅ `/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos` 12/08
 - ✅ `/carreras/diplomatura-en-oratoria` 05/08
 - ✅ `/carreras/diplomatura-integral-en-rrhh` 03/08
-- ✅ `/carreras/escribania` 21/07
-- ✅ `/carreras/licenciatura-en-administracion` 26/06
-- ✅ `/carreras/licenciatura-en-administracion-agraria` 21/07
-- ✅ `/carreras/licenciatura-en-administracion-de-servicios-de-salud-ccc` 07/07
+- ✅ ○ `/carreras/escribania` 21/07
+- ✅ `/carreras/licenciatura-en-administracion` 11/08
+- ✅ ○ `/carreras/licenciatura-en-administracion-agraria` 21/07
+- ✅ ○ `/carreras/licenciatura-en-administracion-de-servicios-de-salud-ccc` 07/07
 - ✅ `/carreras/licenciatura-en-administracion-publica` 08/08
-- ✅ `/carreras/licenciatura-en-bioinformatica` 19/07
+- ✅ ○ `/carreras/licenciatura-en-bioinformatica` 19/07
 - ✅ `/carreras/licenciatura-en-ciencia-politica-y-gobierno` 27/07
 - ✅ `/carreras/licenciatura-en-ciencias-de-datos` 25/07
 - ✅ `/carreras/licenciatura-en-comercializacion` 25/07
 - ✅ `/carreras/licenciatura-en-comercio-internacional` 25/07
-- ✅ `/carreras/licenciatura-en-criminologia-y-seguridad` 19/07
-- ✅ `/carreras/licenciatura-en-desarrollo-de-negocios-inmobiliarios-ccc` 04/08
+- ✅ ○ `/carreras/licenciatura-en-criminologia-y-seguridad` 19/07
+- ✅ `/carreras/licenciatura-en-desarrollo-de-negocios-inmobiliarios-ccc` 12/08
 - ✅ `/carreras/licenciatura-en-diseno-y-animacion-digital` 27/07
 - ✅ `/carreras/licenciatura-en-educacion-ccc` 05/08
 - ✅ `/carreras/licenciatura-en-educacion-y-nuevas-tecnologias` 28/07
@@ -71,50 +82,50 @@ no hay que pedir nada.
 - ✅ `/carreras/licenciatura-en-gestion-deportiva` 27/07
 - ✅ `/carreras/licenciatura-en-gestion-turistica` 27/07
 - ✅ `/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo` 25/07
-- ✅ `/carreras/licenciatura-en-informatica` 04/06
+- ✅ `/carreras/licenciatura-en-informatica` 10/08
 - ✅ `/carreras/licenciatura-en-inteligencia-artificial-y-robotica` 25/07
 - ✅ `/carreras/licenciatura-en-logistica-global` 25/07
-- ✅ `/carreras/licenciatura-en-matematica` 25/07
-- ✅ `/carreras/licenciatura-en-negocios-digitales` 18/07
+- ✅ `/carreras/licenciatura-en-matematica` 13/08
+- ✅ ○ `/carreras/licenciatura-en-negocios-digitales` 18/07
 - ✅ `/carreras/licenciatura-en-periodismo` 27/07
 - ✅ `/carreras/licenciatura-en-psicopedagogia-ccc` 05/08
-- ✅ `/carreras/licenciatura-en-publicidad` 19/07
+- ✅ ○ `/carreras/licenciatura-en-publicidad` 19/07
 - ✅ `/carreras/licenciatura-en-relaciones-internacionales` 27/07
-- ✅ `/carreras/licenciatura-en-relaciones-publicas-e-institucionales` 27/07
+- ✅ `/carreras/licenciatura-en-relaciones-publicas-e-institucionales` 12/08
 - ✅ `/carreras/licenciatura-en-seguridad-informatica` 25/07
 - ✅ `/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano` 27/07
-- ✅ `/carreras/martillero-corredor-publico-y-corredor-inmobiliario` 28/07
+- ✅ `/carreras/martillero-corredor-publico-y-corredor-inmobiliario` 10/08
 - ✅ `/carreras/procurador` 28/07
-- ✅ `/carreras/profesorado-universitario-para-nivel-secundario-y-superior-ccc` 05/08
+- ✅ `/carreras/profesorado-universitario-para-nivel-secundario-y-superior-ccc` 11/08
 - ✅ `/carreras/tecnicatura-en-administracion-y-gestion-de-politicas-publicas` 28/07
 - ✅ `/carreras/tecnicatura-en-administracion-y-gestion-tributaria` 28/07
 - ✅ `/carreras/tecnicatura-en-direccion-de-equipos-de-venta` 29/07
 - ✅ `/carreras/tecnicatura-en-direccion-de-protocolo-organizacion-de-eventos-y-rrpp` 29/07
 - ✅ `/carreras/tecnicatura-en-diseno-y-animacion-digital` 28/07
-- ❌ `/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos` —
-- ✅ `/carreras/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado` 29/07
+- ❌ `/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos` — nunca rastreada
+- ✅ `/carreras/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado` 13/08
 - ✅ `/carreras/tecnicatura-en-gestion-administrativa-de-servicios-de-salud` 29/07
-- ✅ `/carreras/tecnicatura-en-gestion-contable-e-impositiva` 29/07
+- ✅ `/carreras/tecnicatura-en-gestion-contable-e-impositiva` 09/08
 - ✅ `/carreras/tecnicatura-en-gestion-de-empresas-familiares` 28/07
-- ✅ `/carreras/tecnicatura-en-gestion-de-moda` 29/07
-- ✅ `/carreras/tecnicatura-en-gestion-del-clima-laboral-de-la-organizacion` 18/07
+- ✅ `/carreras/tecnicatura-en-gestion-de-moda` 09/08
+- ✅ ○ `/carreras/tecnicatura-en-gestion-del-clima-laboral-de-la-organizacion` 18/07
 - ✅ `/carreras/tecnicatura-en-gestion-y-auditorias-ambientales` 29/07
 - ✅ `/carreras/tecnicatura-en-hidrocarburos-y-geociencias` 09/08
-- ✅ `/carreras/tecnicatura-en-higiene-y-seguridad-laboral` 19/07
-- ✅ `/carreras/tecnicatura-en-investigacion-de-la-escena-del-crimen` 19/07
+- ✅ ○ `/carreras/tecnicatura-en-higiene-y-seguridad-laboral` 19/07
+- ✅ ○ `/carreras/tecnicatura-en-investigacion-de-la-escena-del-crimen` 19/07
 - ✅ `/carreras/tecnicatura-en-marketing-y-publicidad-digital` 28/07
-- ✅ `/carreras/tecnicatura-en-negocios-agroecologicos` 19/07
-- ✅ `/carreras/tecnicatura-en-promocion-comunitaria-en-ninez-y-adolescencia` 19/07
+- ✅ ○ `/carreras/tecnicatura-en-negocios-agroecologicos` 19/07
+- ✅ ○ `/carreras/tecnicatura-en-promocion-comunitaria-en-ninez-y-adolescencia` 19/07
 - ✅ `/carreras/tecnicatura-en-recursos-turisticos` 29/07
-- ✅ `/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones` 19/07
+- ✅ ○ `/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones` 19/07
 - ✅ `/carreras/tecnicatura-en-relaciones-laborales` 29/07
 - ✅ `/carreras/tecnicatura-superior-en-cloud-administration` 25/07
-- ❌ `/carreras/tecnicatura-superior-en-customer-experience` —
-- ✅ `/carreras/tecnicatura-superior-en-data-science` 01/08
+- ❌ `/carreras/tecnicatura-superior-en-customer-experience` — nunca rastreada
+- ✅ `/carreras/tecnicatura-superior-en-data-science` 10/08
 - ✅ `/carreras/tecnicatura-superior-en-gestion-agraria` 31/07
-- ✅ `/carreras/tecnicatura-superior-en-gestion-contable` 31/07
+- ✅ `/carreras/tecnicatura-superior-en-gestion-contable` 09/08
 - ✅ `/carreras/tecnicatura-superior-en-gestion-hotelera` 31/07
-- ✅ `/carreras/tecnicatura-superior-en-inbound-marketing` 23/07
+- ✅ ○ `/carreras/tecnicatura-superior-en-inbound-marketing` 23/07
 - ✅ `/carreras/tecnicatura-superior-en-marketing-digital` 25/07
 - ✅ `/carreras/tecnicatura-superior-en-periodismo-y-nuevas-tecnologias` 01/08
 - ✅ `/carreras/tecnicatura-superior-en-planificacion-y-organizacion-de-eventos` 31/07
@@ -127,12 +138,12 @@ no hay que pedir nada.
 
 ### Resto
 
-- ✅ `/` 08/08
+- ✅ `/` 14/08
 - ✅ `/calendario-academico` 10/08
-- ✅ `/clases-apoyo` 11/06
+- ✅ `/clases-apoyo` 09/08
 - ✅ `/clases-apoyo/arte` 06/08
-- ✅ `/clases-apoyo/computacion` 18/07
-- ✅ `/clases-apoyo/fisica` 09/08 (indexada como `/clases-apoyo/fisico-quimica`; renombrada el 11/08, la vieja va con 301)
+- ✅ ○ `/clases-apoyo/computacion` 18/07
+- ✅ `/clases-apoyo/fisica` 11/08 (ya indexada con su URL propia; la vieja `/clases-apoyo/fisico-quimica` va con 301)
 - ✅ `/clases-apoyo/lengua` 06/08
 - ✅ `/clases-apoyo/matematica` 06/08
 - ✅ `/contacto` 19/07
@@ -150,3 +161,7 @@ no hay que pedir nada.
 - ✅ `/novedades/articulo/teclab-tecnicaturas-online` 29/07
 - ✅ `/novedades/articulo/tecnicaturas-pregrado-dos-tres-anos` 30/07
 - ✅ `/sobre-nosotros` 21/07
+
+El `○` no aplica a `/`, `/contacto`, `/faq`, `/novedades/*` ni `/sobre-nosotros`: esas
+páginas no emiten BreadcrumbList, así que su `rich_results: null` es lo esperado y no
+dice nada sobre la antigüedad de la copia.
