@@ -297,7 +297,7 @@ function parseHorariosBloqueados(arr: string[]): { global: Set<string>; perDay: 
 
 function formatDay(d: DayInfo) { return `${d.num} de ${d.month}`; }
 
-function SchedulePanel({ modoManana, materiaId, materiaSlug, nombreProfesor, selectedDays, onDone, onReset, onInteract, onLockCalendar, horariosBloqueados }: { modoManana: boolean; materiaId: string; materiaSlug: string; nombreProfesor: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void; onLockCalendar?: (locked: boolean) => void; horariosBloqueados?: string[] }) {
+function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDone, onReset, onInteract, onLockCalendar, horariosBloqueados }: { modoManana: boolean; materiaId: string; materiaSlug: string; selectedDays: DayInfo[]; onDone: () => void; onReset: () => void; onInteract?: () => void; onLockCalendar?: (locked: boolean) => void; horariosBloqueados?: string[] }) {
   const [mode, _setMode] = useState<ScheduleMode>('picking');
   const setMode = (m: ScheduleMode) => {
     _setMode(m);
@@ -432,35 +432,15 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, nombreProfesor, sel
       <div className="flex-1 flex flex-col justify-evenly items-stretch min-h-0 overflow-y-auto ca-schedule-scroll">
 
       {selectedDays.length === 0 ? (
-        /* Media pantalla del widget para una sola frase era mucho: mientras no
-           haya dia elegido, el panel muestra ademas con quien se cursa y que
-           pasa despues de solicitar. */
-        <div className="ca-vacio">
-          <div className="ca-vacio-hint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+        <div className="flex-1 flex items-center justify-center px-3">
+          <div className="flex flex-col items-center justify-center gap-3 w-full py-6 rounded-xl" style={{ border: '2px dashed rgba(0,199,177,0.25)' }}>
+            <svg className="w-6 h-6" style={{ color: 'var(--ca-text-muted)', opacity: 0.5 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span>Elegí uno o varios días en el calendario para ver los horarios libres</span>
+            <span className="text-[0.72rem] font-semibold text-center" style={{ color: 'var(--ca-text-muted)' }}>
+              Seleccioná uno o varios días<br />para empezar
+            </span>
           </div>
-          <dl className="ca-vacio-datos">
-            <div>
-              <dt>Profesor/a</dt>
-              <dd>{nombreProfesor}</dd>
-            </div>
-            <div>
-              <dt>Turnos</dt>
-              <dd>{modoManana ? 'Mañana y tarde' : 'Tarde'}</dd>
-            </div>
-            <div>
-              <dt>Dónde</dt>
-              <dd>Guaminí 4876</dd>
-            </div>
-          </dl>
-          <p className="ca-vacio-nota">
-            <strong>Solicitar no es reservar.</strong> {nombreProfesor} te confirma la
-            disponibilidad por WhatsApp. Los turnos de abajo son los habituales: si necesitás uno
-            más temprano, se puede coordinar.
-          </p>
         </div>
       ) : (
       <>
@@ -888,7 +868,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
                     {/* Row 2: Calendar + Schedule */}
                     <div className="ca-r2">
                       <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} />
-                      <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} nombreProfesor={materia.nombre_profesor} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
+                      <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
                     </div>
                   </>
                 )}
