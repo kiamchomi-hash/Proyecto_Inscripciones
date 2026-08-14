@@ -12,7 +12,7 @@ const nullableText = (value: unknown, max: number) => text(value, max) || null;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[\d\s()+-]{8,30}$/;
 const SLOT = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
-const SEXOS = ['Femenino', 'Masculino', 'X'];
+const SEXOS = ['Femenino', 'Masculino', 'Otro'];
 
 // El DNI y el sexo son opcionales: si vienen mal formados se guardan en null y
 // la consulta entra igual. Rechazar el pedido entero por un DNI con un dígito

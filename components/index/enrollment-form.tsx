@@ -17,9 +17,9 @@ const BORDE_OK = 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60';
 const BORDE_ERROR = 'border-red-400/60 focus:border-red-400';
 
 // Como figura en el DNI argentino.
-const SEXOS = ['Femenino', 'Masculino', 'X'];
+const SEXOS = ['Femenino', 'Masculino', 'Otro'];
 
-function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, inputMode, error = '' }: {
+function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, inputMode, error }: {
   id: string;
   label: string;
   value: string;
@@ -42,7 +42,11 @@ function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, 
         maxLength={maxLength}
         className={`${CAMPO} ${error ? BORDE_ERROR : BORDE_OK}`}
       />
-      {error && <p className="text-[11px] leading-4 text-red-400 mt-0.5">{error}</p>}
+      {/* El hueco del mensaje se reserva aunque no haya error: si apareciera
+          y desapareciera, cada tecla del DNI movería media pantalla. */}
+      {error !== undefined && (
+        <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{error}</p>
+      )}
     </div>
   );
 }
