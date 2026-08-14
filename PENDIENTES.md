@@ -1,6 +1,6 @@
 # Pendientes
 
-Última actualización: 2026-08-10
+Última actualización: 2026-08-14
 
 ## Abierto
 
@@ -75,6 +75,12 @@
   Al pasar a esa máquina, ojo con lo otro: **hay que clonar el repo de nuevo, no hacer `pull`**. La historia se reescribió el 08/08/2026 y un pull mezcla las dos.
 
 - [ ] **La home pesa 961 KB sin comprimir.** Lo midió `npm run smoke` el 09/08/2026 (126 KB en el cable con brotli). La última medición documentada era de 449 KB, así que más que duplicó y nadie anotó cuándo. No es una regresión conocida de nada: hay que ver qué la infló antes de tocar `inlineCss`, que ya se midió A/B y conviene dejar prendido.
+
+- [ ] **Faltan los campos de preinscripción de Teclab y de Identidad.** El 14/08/2026 se unificaron en el corpus de Siglo 21 las dos intenciones que competían —"cómo me inscribo" contestaba una lista de cuatro datos y "quiero preinscribirme" no existía como pregunta de ejemplo, así que caía en *no entiendo* o contestaba el precio—. Quedó una sola respuesta con los **once campos** que pide el sistema de Siglo 21: nombre y apellido completos, DNI, fecha de nacimiento, localidad de nacimiento, nacionalidad, país de residencia, sexo, estado civil, mail, dirección, y barrio con código postal. Sin teléfono a propósito: el lead está escribiendo por WhatsApp.
+
+  **Las otras dos casas tienen su propio corpus y su propia preinscripción**, y ahí la palabra sigue cayendo en cualquier lado. Hay que pedirle a cada instituto qué campos pide su formulario. Ojo con suponer que son los mismos: las dos listas que circulaban de Siglo 21 coincidían en cinco campos de trece.
+
+  Cuando lleguen, el cambio es una intención `inscripcion` en `ventas/corpus/teclab.json` y otra en `ventas/corpus/identidad.json`, con las mismas preguntas de ejemplo que la de Siglo 21 y el listado de esa casa; después se regeneran las dos páginas (`generar-entrenador.mjs` y `generar-buscador.mjs`, siempre las dos).
 
 ## Para tener presente
 
