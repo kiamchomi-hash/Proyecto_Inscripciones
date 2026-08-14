@@ -288,23 +288,6 @@ export default function SobreNosotrosPage() {
             </div>
           ))}
         </div>
-        <div className="flex justify-center mt-5">
-          <a
-            href="https://21.edu.ar/carreras-y-programas"
-            target="_blank"
-            rel="noopener nofollow"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm text-white transition-all hover:brightness-110 hover:scale-[1.02]"
-            style={{ background: 'linear-gradient(135deg, #006c5b 0%, #00c7b1 100%)' }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21" />
-            </svg>
-            Visita la página de la sede central
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-            </svg>
-          </a>
-        </div>
       </section>
 
 
