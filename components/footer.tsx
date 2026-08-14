@@ -93,7 +93,7 @@ export default function SiteFooter() {
             <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm lg:grid-cols-1">
               {ENLACES.map(({ href, label }) => (
                 <li key={href}>
-                  <Link href={href} className="text-[#c0d5d0] hover:text-white lg:hover:translate-x-1 inline-block transition-all duration-200">
+                  <Link href={href} className="text-[#c0d5d0] hover:text-white inline-block transition-colors duration-200">
                     {label}
                   </Link>
                 </li>

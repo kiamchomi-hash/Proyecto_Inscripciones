@@ -17,29 +17,21 @@
 .news-animate--d5 { animation-delay: 0.48s; }
 .news-animate--d6 { animation-delay: 0.58s; }
 
-/* Card hover */
+/* Card hover — sin movimiento: la tarjeta se queda donde esta y lo unico que
+   cambia es el borde, la sombra y el color del titulo. */
 .news-card {
-  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
 }
 .news-card:hover {
   border-color: rgba(0, 199, 177, 0.3);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 199, 177, 0.1);
-  transform: translateY(-3px);
 }
 .news-card:hover .news-card__title {
   color: var(--color-highlight);
 }
-.news-card:hover .news-card__img img {
-  transform: scale(1.05);
-}
 .news-card:hover .news-tag {
   background: rgba(0, 199, 177, 0.15);
   border-color: rgba(0, 199, 177, 0.35);
-}
-
-/* Image zoom transition */
-.news-card__img img {
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Title color transition */
