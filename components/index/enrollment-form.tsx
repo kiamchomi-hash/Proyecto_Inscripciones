@@ -9,6 +9,78 @@ interface Props {
   carreras: CarreraOpcion[];
 }
 
+// Las clases del formulario, en un solo lugar: los campos de datos personales
+// son once y repetirlas en cada uno hacía que una se corrigiera y las otras no.
+const ETIQUETA = 'block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider';
+const CAMPO = 'w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors';
+const BORDE_OK = 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60';
+const BORDE_ERROR = 'border-red-400/60 focus:border-red-400';
+
+// Como figura en el DNI argentino.
+const SEXOS = ['Femenino', 'Masculino', 'X'];
+const ESTADOS_CIVILES = ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Unión convivencial'];
+
+function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, type = 'text', inputMode, error = '' }: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (valor: string) => void;
+  placeholder?: string;
+  maxLength?: number;
+  type?: 'text' | 'date';
+  inputMode?: 'numeric';
+  error?: string;
+}) {
+  return (
+    <div>
+      <label className={ETIQUETA} htmlFor={id}>{label}</label>
+      <input
+        type={type}
+        id={id}
+        inputMode={inputMode}
+        placeholder={placeholder}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        maxLength={maxLength}
+        // El selector nativo de fecha pinta su icono en negro sobre el fondo
+        // oscuro del formulario y queda invisible.
+        style={type === 'date' ? { colorScheme: 'dark' } : undefined}
+        className={`${CAMPO} ${error ? BORDE_ERROR : BORDE_OK}`}
+      />
+      {error && <p className="text-[11px] leading-4 text-red-400 mt-0.5">{error}</p>}
+    </div>
+  );
+}
+
+function CampoSelect({ id, label, value, onChange, opciones }: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (valor: string) => void;
+  opciones: readonly string[];
+}) {
+  return (
+    <div>
+      <label className={ETIQUETA} htmlFor={id}>{label}</label>
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          className={`${CAMPO} ${BORDE_OK} appearance-none cursor-pointer`}
+          style={{ colorScheme: 'dark' }}
+        >
+          <option value="">Sin especificar</option>
+          {opciones.map(opcion => <option key={opcion} value={opcion}>{opcion}</option>)}
+        </select>
+        <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 export default function EnrollmentForm({ carreras }: Props) {
   const [selectedCarrera, setSelectedCarrera] = useState('');
   const [carreraSearch, setCarreraSearch] = useState('');
@@ -21,6 +93,19 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [localidad, setLocalidad] = useState('');
+  // Los que pide el sistema de preinscripción. Van todos opcionales: el
+  // formulario sigue siendo de consulta, y quien ya se decidió los completa
+  // acá en vez de que se los pidamos después uno por uno por WhatsApp.
+  const [dni, setDni] = useState('');
+  const [fechaNacimiento, setFechaNacimiento] = useState('');
+  const [sexo, setSexo] = useState('');
+  const [estadoCivil, setEstadoCivil] = useState('');
+  const [nacionalidad, setNacionalidad] = useState('');
+  const [localidadNacimiento, setLocalidadNacimiento] = useState('');
+  const [paisResidencia, setPaisResidencia] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [barrio, setBarrio] = useState('');
+  const [codigoPostal, setCodigoPostal] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -82,9 +167,29 @@ export default function EnrollmentForm({ carreras }: Props) {
     : '';
   const telefonoInvalid = telefonoError !== '';
 
+  // El DNI es opcional, pero si lo escriben tiene que servir para el legajo:
+  // un número a medias es peor que ninguno, porque hay que volver a pedirlo.
+  const dniDigitos = dni.replace(/\D/g, '');
+  const dniError =
+    dni.trim() === '' ? ''
+    : !/^[\d.\s]+$/.test(dni.trim()) ? 'Solo números.'
+    : dniDigitos.length < 7 || dniDigitos.length > 9 ? 'Tiene que tener entre 7 y 9 números.'
+    : '';
+  const dniInvalid = dniError !== '';
+
+  // Nadie que se anota nació hoy ni en 1900: una fecha así es un dedazo en el
+  // año, y entra silenciosa porque el selector nativo no la marca.
+  const anioNacimiento = Number(fechaNacimiento.slice(0, 4));
+  const fechaNacimientoError =
+    fechaNacimiento === '' ? ''
+    : anioNacimiento < 1920 || anioNacimiento > new Date().getFullYear() - 15
+      ? 'Revisá el año.'
+      : '';
+  const fechaNacimientoInvalid = fechaNacimientoError !== '';
+
   // Form validity: at least email or telefono, and both must be valid
   const contactValid = (email.trim() || telefono.trim()) && !emailInvalid && !telefonoInvalid;
-  const isValid = contactValid && !!turnstileToken;
+  const isValid = contactValid && !dniInvalid && !fechaNacimientoInvalid && !!turnstileToken;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -134,6 +239,16 @@ export default function EnrollmentForm({ carreras }: Props) {
             email,
             telefono,
             localidad,
+            dni,
+            fecha_nacimiento: fechaNacimiento,
+            sexo,
+            estado_civil: estadoCivil,
+            nacionalidad,
+            localidad_nacimiento: localidadNacimiento,
+            pais_residencia: paisResidencia,
+            direccion,
+            barrio,
+            codigo_postal: codigoPostal,
           },
         }),
       });
@@ -186,6 +301,9 @@ export default function EnrollmentForm({ carreras }: Props) {
                     setSelectedCarrera(''); setCarreraSearch(''); setSelectedTipo('');
                     setNombre(''); setApellido(''); setEmail(''); setTelefono('');
                     setLocalidad(''); setEquivalencias(false); setTurnstileToken('');
+                    setDni(''); setFechaNacimiento(''); setSexo(''); setEstadoCivil('');
+                    setNacionalidad(''); setLocalidadNacimiento(''); setPaisResidencia('');
+                    setDireccion(''); setBarrio(''); setCodigoPostal('');
                   }}
                   className="mt-2 text-sm font-bold text-[#00c7b1] hover:text-white transition-colors cursor-pointer underline underline-offset-2"
                   style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 1s forwards' }}
@@ -337,47 +455,76 @@ export default function EnrollmentForm({ carreras }: Props) {
                 </div>
               </div>
 
-              {/* Col 2: Personal data */}
+              {/* Col 2: datos personales, todos opcionales */}
               <div className="px-3 sm:px-4 pt-3 pb-3 space-y-1.5" style={{ borderLeft: '1px solid rgba(0,199,177,0.15)' }}>
-                {/* Nombre + Apellido */}
+                <p className="text-[10px] text-[#7ca19b] leading-snug">
+                  Todo lo de acá abajo es opcional. Si ya te decidiste, completalo y dejamos la preinscripción encaminada.
+                </p>
+
                 <div className="grid grid-cols-2 gap-1.5">
-                  <div>
-                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-nombre">Nombre</label>
-                    <input
-                      type="text"
-                      id="form-nombre"
-                      placeholder="Nombre"
-                      value={nombre}
-                      onChange={e => setNombre(e.target.value)}
-                      maxLength={100}
-                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-apellido">Apellido</label>
-                    <input
-                      type="text"
-                      id="form-apellido"
-                      placeholder="Apellido"
-                      value={apellido}
-                      onChange={e => setApellido(e.target.value)}
-                      maxLength={100}
-                      className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
-                    />
-                  </div>
+                  <CampoTexto id="form-nombre" label="Nombre" placeholder="Nombre" value={nombre} onChange={setNombre} />
+                  <CampoTexto id="form-apellido" label="Apellido" placeholder="Apellido" value={apellido} onChange={setApellido} />
                 </div>
 
-                {/* Contact info box */}
-                <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid #00c7b1' }}>
-                  <p className="text-[12px] text-white leading-snug flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c7b1" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M12 16v-4" />
-                      <path d="M12 8h.01" />
-                    </svg>
-                    Solo necesitamos un dato de contacto para escribirte (el resto es opcional)
-                  </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto
+                    id="form-dni"
+                    label="DNI"
+                    placeholder="Sin puntos"
+                    value={dni}
+                    onChange={setDni}
+                    maxLength={15}
+                    inputMode="numeric"
+                    error={dniError}
+                  />
+                  <CampoTexto
+                    id="form-fecha-nacimiento"
+                    label="Fecha de nacimiento"
+                    type="date"
+                    value={fechaNacimiento}
+                    onChange={setFechaNacimiento}
+                    error={fechaNacimientoError}
+                  />
+                </div>
 
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoSelect id="form-sexo" label="Sexo" value={sexo} onChange={setSexo} opciones={SEXOS} />
+                  <CampoSelect id="form-estado-civil" label="Estado civil" value={estadoCivil} onChange={setEstadoCivil} opciones={ESTADOS_CIVILES} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto id="form-nacionalidad" label="Nacionalidad" placeholder="Ej.: argentina" value={nacionalidad} onChange={setNacionalidad} maxLength={60} />
+                  <CampoTexto id="form-localidad-nacimiento" label="Localidad de nacimiento" placeholder="Dónde naciste" value={localidadNacimiento} onChange={setLocalidadNacimiento} maxLength={120} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto id="form-pais-residencia" label="País donde vivís" placeholder="Ej.: Argentina" value={paisResidencia} onChange={setPaisResidencia} maxLength={60} />
+                  <CampoTexto id="form-localidad" label="Localidad" placeholder="Dónde vivís" value={localidad} onChange={setLocalidad} maxLength={120} />
+                </div>
+
+                <CampoTexto id="form-direccion" label="Dirección" placeholder="Calle y número" value={direccion} onChange={setDireccion} maxLength={160} />
+
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto id="form-barrio" label="Barrio" placeholder="Tu barrio" value={barrio} onChange={setBarrio} maxLength={120} />
+                  <CampoTexto id="form-codigo-postal" label="Código postal" placeholder="Ej.: 1439" value={codigoPostal} onChange={setCodigoPostal} maxLength={12} />
+                </div>
+              </div>
+            </div>
+
+            {/* Cómo te escribimos: es lo único obligatorio, y va último para que
+                el que abandona a mitad del formulario ya lo haya completado. */}
+            <div className="px-3 sm:px-4 pt-3 pb-1" style={{ borderBottom: '1px solid rgba(0,199,177,0.15)' }}>
+              <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid #00c7b1' }}>
+                <p className="text-[12px] text-white leading-snug flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c7b1" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                  </svg>
+                  Con un dato de contacto alcanza: dejanos el mail o el teléfono y te escribimos
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   <div>
                     <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-email">
                       Email {!telefono.trim() && <span className="text-red-400/70">*</span>}
@@ -412,26 +559,11 @@ export default function EnrollmentForm({ carreras }: Props) {
                     <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{telefonoError}</p>
                   </div>
                 </div>
-
-                {/* Localidad */}
-                <div>
-                  <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-localidad">Localidad</label>
-                  <input
-                    type="text"
-                    id="form-localidad"
-                    placeholder="Tu ciudad o barrio"
-                    value={localidad}
-                    onChange={e => setLocalidad(e.target.value)}
-                    maxLength={100}
-                    className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
-                  />
-                </div>
-
-                {/* Error */}
-                {error && (
-                  <p className="text-[11px] text-red-400">{error}</p>
-                )}
               </div>
+
+              {error && (
+                <p className="text-[11px] text-red-400 mt-1.5">{error}</p>
+              )}
             </div>
 
 

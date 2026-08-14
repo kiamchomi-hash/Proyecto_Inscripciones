@@ -36,6 +36,23 @@ function buildConsultaMessage(r: Record<string, unknown>): string {
   const fecha = r.created_at ? formatDate(r.created_at as string) : "—";
   const nombre = `${r.nombre || "—"} ${r.apellido || ""}`.trim();
 
+  // Los datos de preinscripción son opcionales y la mayoría de las consultas
+  // llegan sin ninguno: se listan sólo cuando el lead completó alguno, para que
+  // el aviso no sean diez renglones con un guion.
+  const preinscripcion: Array<[string, unknown]> = [
+    ["🪪 *DNI:*", r.dni],
+    ["🎂 *Nacimiento:*", r.fecha_nacimiento],
+    ["🌎 *Nacionalidad:*", r.nacionalidad],
+    ["🏙️ *Localidad de nacimiento:*", r.localidad_nacimiento],
+    ["🗺️ *País de residencia:*", r.pais_residencia],
+    ["⚧ *Sexo:*", r.sexo],
+    ["💍 *Estado civil:*", r.estado_civil],
+    ["🏠 *Dirección:*", r.direccion],
+    ["🏘️ *Barrio:*", r.barrio],
+    ["📮 *Código postal:*", r.codigo_postal],
+  ];
+  const completados = preinscripcion.filter(([, valor]) => valor).map(([rotulo, valor]) => `${rotulo} ${valor}`);
+
   return [
     `📚 *Nueva consulta de carrera*`,
     ``,
@@ -46,6 +63,7 @@ function buildConsultaMessage(r: Record<string, unknown>): string {
     `📱 *Teléfono:* ${r.telefono || "—"}`,
     `📍 *Localidad:* ${r.localidad || "—"}`,
     `🔄 *Equivalencias:* ${r.equivalencias ? "Sí" : "No"}`,
+    ...(completados.length ? [``, `📝 *Datos para la preinscripción*`, ...completados] : []),
     `🕐 *Fecha:* ${fecha}`,
   ].join("\n");
 }

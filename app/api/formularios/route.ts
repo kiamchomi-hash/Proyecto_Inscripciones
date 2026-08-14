@@ -12,6 +12,30 @@ const nullableText = (value: unknown, max: number) => text(value, max) || null;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[\d\s()+-]{8,30}$/;
 const SLOT = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const SEXOS = ['Femenino', 'Masculino', 'X'];
+const ESTADOS_CIVILES = ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Unión convivencial'];
+
+// Los datos de preinscripción son opcionales: si uno viene mal formado se
+// guarda en null y la consulta entra igual. Rechazar el pedido entero por un
+// DNI con un dígito de menos sería perder el lead por un campo que ni siquiera
+// pedimos.
+const unaOpcionDe = (value: unknown, opciones: string[]) => {
+  const elegida = text(value, 40);
+  return opciones.includes(elegida) ? elegida : null;
+};
+
+const soloDni = (value: unknown) => {
+  const digitos = text(value, 20).replace(/\D/g, '');
+  return digitos.length >= 7 && digitos.length <= 9 ? digitos : null;
+};
+
+const fechaDeNacimiento = (value: unknown) => {
+  const fecha = text(value, 10);
+  if (!ISO_DATE.test(fecha) || Number.isNaN(Date.parse(fecha))) return null;
+  const anio = Number(fecha.slice(0, 4));
+  return anio >= 1920 && anio <= new Date().getFullYear() - 15 ? fecha : null;
+};
 
 function clientIp(request: NextRequest) {
   return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
@@ -48,6 +72,16 @@ async function insertConsulta(payload: JsonRecord) {
     email: email || null,
     telefono: telefono || null,
     localidad: nullableText(payload.localidad, 120),
+    dni: soloDni(payload.dni),
+    fecha_nacimiento: fechaDeNacimiento(payload.fecha_nacimiento),
+    sexo: unaOpcionDe(payload.sexo, SEXOS),
+    estado_civil: unaOpcionDe(payload.estado_civil, ESTADOS_CIVILES),
+    nacionalidad: nullableText(payload.nacionalidad, 60),
+    localidad_nacimiento: nullableText(payload.localidad_nacimiento, 120),
+    pais_residencia: nullableText(payload.pais_residencia, 60),
+    direccion: nullableText(payload.direccion, 160),
+    barrio: nullableText(payload.barrio, 120),
+    codigo_postal: nullableText(payload.codigo_postal, 12),
   });
 }
 
