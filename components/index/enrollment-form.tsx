@@ -18,16 +18,14 @@ const BORDE_ERROR = 'border-red-400/60 focus:border-red-400';
 
 // Como figura en el DNI argentino.
 const SEXOS = ['Femenino', 'Masculino', 'X'];
-const ESTADOS_CIVILES = ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Unión convivencial'];
 
-function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, type = 'text', inputMode, error = '' }: {
+function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, inputMode, error = '' }: {
   id: string;
   label: string;
   value: string;
   onChange: (valor: string) => void;
   placeholder?: string;
   maxLength?: number;
-  type?: 'text' | 'date';
   inputMode?: 'numeric';
   error?: string;
 }) {
@@ -35,16 +33,13 @@ function CampoTexto({ id, label, value, onChange, placeholder, maxLength = 100, 
     <div>
       <label className={ETIQUETA} htmlFor={id}>{label}</label>
       <input
-        type={type}
+        type="text"
         id={id}
         inputMode={inputMode}
         placeholder={placeholder}
         value={value}
         onChange={e => onChange(e.target.value)}
         maxLength={maxLength}
-        // El selector nativo de fecha pinta su icono en negro sobre el fondo
-        // oscuro del formulario y queda invisible.
-        style={type === 'date' ? { colorScheme: 'dark' } : undefined}
         className={`${CAMPO} ${error ? BORDE_ERROR : BORDE_OK}`}
       />
       {error && <p className="text-[11px] leading-4 text-red-400 mt-0.5">{error}</p>}
@@ -93,19 +88,13 @@ export default function EnrollmentForm({ carreras }: Props) {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [localidad, setLocalidad] = useState('');
-  // Los que pide el sistema de preinscripción. Van todos opcionales: el
-  // formulario sigue siendo de consulta, y quien ya se decidió los completa
-  // acá en vez de que se los pidamos después uno por uno por WhatsApp.
+  // Los dos que le adelantan trabajo al legajo sin convertir la consulta en
+  // un trámite. El resto de lo que pide la preinscripción —fecha y localidad
+  // de nacimiento, estado civil, nacionalidad, domicilio— se le pide al lead
+  // después, a mano: las columnas ya existen en `consultas` si algún día
+  // vuelven acá.
   const [dni, setDni] = useState('');
-  const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [sexo, setSexo] = useState('');
-  const [estadoCivil, setEstadoCivil] = useState('');
-  const [nacionalidad, setNacionalidad] = useState('');
-  const [localidadNacimiento, setLocalidadNacimiento] = useState('');
-  const [paisResidencia, setPaisResidencia] = useState('');
-  const [direccion, setDireccion] = useState('');
-  const [barrio, setBarrio] = useState('');
-  const [codigoPostal, setCodigoPostal] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -177,19 +166,9 @@ export default function EnrollmentForm({ carreras }: Props) {
     : '';
   const dniInvalid = dniError !== '';
 
-  // Nadie que se anota nació hoy ni en 1900: una fecha así es un dedazo en el
-  // año, y entra silenciosa porque el selector nativo no la marca.
-  const anioNacimiento = Number(fechaNacimiento.slice(0, 4));
-  const fechaNacimientoError =
-    fechaNacimiento === '' ? ''
-    : anioNacimiento < 1920 || anioNacimiento > new Date().getFullYear() - 15
-      ? 'Revisá el año.'
-      : '';
-  const fechaNacimientoInvalid = fechaNacimientoError !== '';
-
   // Form validity: at least email or telefono, and both must be valid
   const contactValid = (email.trim() || telefono.trim()) && !emailInvalid && !telefonoInvalid;
-  const isValid = contactValid && !dniInvalid && !fechaNacimientoInvalid && !!turnstileToken;
+  const isValid = contactValid && !dniInvalid && !!turnstileToken;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -240,15 +219,7 @@ export default function EnrollmentForm({ carreras }: Props) {
             telefono,
             localidad,
             dni,
-            fecha_nacimiento: fechaNacimiento,
             sexo,
-            estado_civil: estadoCivil,
-            nacionalidad,
-            localidad_nacimiento: localidadNacimiento,
-            pais_residencia: paisResidencia,
-            direccion,
-            barrio,
-            codigo_postal: codigoPostal,
           },
         }),
       });
@@ -301,9 +272,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     setSelectedCarrera(''); setCarreraSearch(''); setSelectedTipo('');
                     setNombre(''); setApellido(''); setEmail(''); setTelefono('');
                     setLocalidad(''); setEquivalencias(false); setTurnstileToken('');
-                    setDni(''); setFechaNacimiento(''); setSexo(''); setEstadoCivil('');
-                    setNacionalidad(''); setLocalidadNacimiento(''); setPaisResidencia('');
-                    setDireccion(''); setBarrio(''); setCodigoPostal('');
+                    setDni(''); setSexo('');
                   }}
                   className="mt-2 text-sm font-bold text-[#00c7b1] hover:text-white transition-colors cursor-pointer underline underline-offset-2"
                   style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 1s forwards' }}
@@ -455,10 +424,11 @@ export default function EnrollmentForm({ carreras }: Props) {
                 </div>
               </div>
 
-              {/* Col 2: datos personales, todos opcionales */}
-              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-1.5" style={{ borderLeft: '1px solid rgba(0,199,177,0.15)' }}>
-                <p className="text-[10px] text-[#7ca19b] leading-snug">
-                  Todo lo de acá abajo es opcional. Si ya te decidiste, completalo y dejamos la preinscripción encaminada.
+              {/* Col 2: los datos del lead. Ninguno es obligatorio: el resto de
+                  lo que pide la preinscripción se le pide después, a mano. */}
+              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(0,199,177,0.15)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#7ca19b]">
+                  Tus datos <span className="normal-case tracking-normal font-normal">— opcionales, agilizan el trámite</span>
                 </p>
 
                 <div className="grid grid-cols-2 gap-1.5">
@@ -477,37 +447,10 @@ export default function EnrollmentForm({ carreras }: Props) {
                     inputMode="numeric"
                     error={dniError}
                   />
-                  <CampoTexto
-                    id="form-fecha-nacimiento"
-                    label="Fecha de nacimiento"
-                    type="date"
-                    value={fechaNacimiento}
-                    onChange={setFechaNacimiento}
-                    error={fechaNacimientoError}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-1.5">
                   <CampoSelect id="form-sexo" label="Sexo" value={sexo} onChange={setSexo} opciones={SEXOS} />
-                  <CampoSelect id="form-estado-civil" label="Estado civil" value={estadoCivil} onChange={setEstadoCivil} opciones={ESTADOS_CIVILES} />
                 </div>
 
-                <div className="grid grid-cols-2 gap-1.5">
-                  <CampoTexto id="form-nacionalidad" label="Nacionalidad" placeholder="Ej.: argentina" value={nacionalidad} onChange={setNacionalidad} maxLength={60} />
-                  <CampoTexto id="form-localidad-nacimiento" label="Localidad de nacimiento" placeholder="Dónde naciste" value={localidadNacimiento} onChange={setLocalidadNacimiento} maxLength={120} />
-                </div>
-
-                <div className="grid grid-cols-2 gap-1.5">
-                  <CampoTexto id="form-pais-residencia" label="País donde vivís" placeholder="Ej.: Argentina" value={paisResidencia} onChange={setPaisResidencia} maxLength={60} />
-                  <CampoTexto id="form-localidad" label="Localidad" placeholder="Dónde vivís" value={localidad} onChange={setLocalidad} maxLength={120} />
-                </div>
-
-                <CampoTexto id="form-direccion" label="Dirección" placeholder="Calle y número" value={direccion} onChange={setDireccion} maxLength={160} />
-
-                <div className="grid grid-cols-2 gap-1.5">
-                  <CampoTexto id="form-barrio" label="Barrio" placeholder="Tu barrio" value={barrio} onChange={setBarrio} maxLength={120} />
-                  <CampoTexto id="form-codigo-postal" label="Código postal" placeholder="Ej.: 1439" value={codigoPostal} onChange={setCodigoPostal} maxLength={12} />
-                </div>
+                <CampoTexto id="form-localidad" label="Localidad" placeholder="Tu ciudad o barrio" value={localidad} onChange={setLocalidad} maxLength={120} />
               </div>
             </div>
 
@@ -521,7 +464,7 @@ export default function EnrollmentForm({ carreras }: Props) {
                     <path d="M12 16v-4" />
                     <path d="M12 8h.01" />
                   </svg>
-                  Con un dato de contacto alcanza: dejanos el mail o el teléfono y te escribimos
+                  <span><strong className="text-[#00c7b1]">Obligatorio:</strong> con uno de los dos alcanza. Dejanos el mail o el teléfono y te escribimos.</span>
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
