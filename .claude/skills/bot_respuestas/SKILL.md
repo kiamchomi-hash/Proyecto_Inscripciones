@@ -55,13 +55,15 @@ a usar (instala en la casa que diga el campo `institucion` del archivo bajado).
 #    se regenera uno, las dos páginas contestan distinto.
 node --test herramientas/ventas/tests/*.test.mjs
 node herramientas/ventas/auditar-instituciones.mjs
-node herramientas/ventas/generar-entrenador.mjs --promocion 5 --descuento-beneficio 10
-node herramientas/ventas/generar-buscador.mjs  --promocion 5 --descuento-beneficio 10
+node herramientas/ventas/generar-entrenador.mjs --descuento-beneficio 10
+node herramientas/ventas/generar-buscador.mjs  --descuento-beneficio 10
 ```
 
 **El buscador también lleva el bot**, leyendo los mismos archivos de `ventas/corpus/` al generarse: una corrección aparece en el buscador recién al regenerarlo. Regenerar sólo uno deja las dos páginas contestando distinto.
 
-`--promocion` es obligatorio y sale de `ventas/precios/promocion-vigente.json`. Para actualizar precios de las tres instituciones y rearmar todo: `Actualizar precios de las tres.bat`.
+**No pasar `--promocion`**: el porcentaje sale solo de la planilla de CASA, que es lo que hace el `.bat` (deja el valor vacío a propósito). Forzarlo rompe la página en silencio: el período 2A cobra matrícula + ticket A + ticket B, o sea que necesita **tres** porcentajes, y con `--promocion 50,20` el generador avisa «Sin período 2A en la página» por stderr y arma la página con 2B solo, sin el selector de períodos. Pasó el 15/08/2026 y estuvo publicado medio día. Si alguna vez hay que forzarlo, van tres valores: `--promocion 50,20,20`.
+
+Para actualizar precios de las tres instituciones y rearmar todo: `Actualizar precios de las tres.bat`. Y el flujo completo del buscador (bajar precios, armar y publicar) es `ventas/3 - Actualizar buscador de carreras.bat`.
 
 **Ojo con `node --test herramientas/ventas/tests/`** (la carpeta): falla. Va con `*.test.mjs`.
 
@@ -71,12 +73,13 @@ Cuando dos se contradicen, manda la de arriba. No elegir en silencio: dejar la c
 
 1. **La Nube 21** — `https://www.lanube.21.edu.ar`, el portal oficial del alumno de Siglo 21, y la fuente de más peso sobre cómo funciona la cursada: modalidades, EFIP, prácticas, equivalencias, becas, titulación, idiomas. Ante una diferencia con cualquier otra, manda ésta y la diferencia se deja anotada. Es Wix: el texto se baja con `curl` y se limpian los tags, **pero las tablas viven en widgets que no viajan en el HTML** (becas y beneficios, organizaciones amigas, el FAQ por modalidad). Esas se leen con Playwright recorriendo los `frames()` de la página, y el filtro del FAQ es un `<select>`, no un botón: va con `selectOption`. Sólo Siglo 21; Teclab e Identidad no tienen equivalente.
 2. **Dashboard Comercial de Teclab** — `informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(01).html`, el panel que Teclab arma para sus asesores de admisión. Es el equivalente de La Nube para Teclab y manda sobre el sitio comercial: trae las 16 tecnicaturas con ficha completa, los 186 convenios con su porcentaje, la tabla de recargos por banco, el manual de objeciones, el calendario y el benchmark contra la competencia. **El HTML es público y el login es de JavaScript**: los datos viajan embebidos, así que se baja con `curl` y se extraen las constantes del script (`DATA`, `BENCHX`, `GUIAS`, `CONV`) balanceando llaves y evaluándolas en un `vm`. Copia en `carreras/teclab/dashboard-comercial.json`, bajada el 15/08/2026.
-3. **Reglamento Institucional** — la norma escrita.
+3. **API pública de Identidad Argentina** — `POST https://nd2rzkufzb.execute-api.us-east-1.amazonaws.com/dev/curso`, su fuente oficial. Es API Gateway con Lambda proxy: se manda el sobre entero (`httpMethod`, `headers`, `queryStringParameters`, `pathParameters`, `isBase64Encoded`) y el `body` como **string** con `{"curso_id":"<id>"}`. Un curso fuera de la oferta contesta 200 con una fila vacía, y así se sabe qué se vende hoy. Devuelve título, subtítulo (Diplomatura o Curso), modalidad y duración en la `bajada`, docente con antecedentes, PDF, precios y el temario por unidades. Copia en `carreras/identidad/api-cursos.json`; se cruza con el KB por `url_pdf`, que es lo único que no cambia cuando renombran una diplomatura.
+4. **Reglamento Institucional** — la norma escrita.
    - Teclab: `portalalumnopre.teclab.edu.ar/5e01120d0cdce5c39761b58700f275b4.pdf` (37 pp.). No se lee por web: bajarlo y extraerlo con PyMuPDF.
    - Siglo 21: `contenidos.21.edu.ar/microsites/reglamento/` — versión **2026**, 14 capítulos, navegable por `index.php?put=<capitulo>-<seccion>-<slug>`.
-4. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
-5. **Fichas del KB** del proyecto (`carreras/siglo21/fichas-sitio-oficial.json`, `carreras/siglo21/datos/`).
-6. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
+5. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
+6. **Fichas del KB** del proyecto (`carreras/siglo21/fichas-sitio-oficial.json`, `carreras/siglo21/datos/`).
+7. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
 
 Casos ya resueltos, para no rediscutirlos:
 
@@ -90,6 +93,10 @@ Casos ya resueltos, para no rediscutirlos:
 - **Garantía de Adaptación y Seguro de Continuidad** son las dos respuestas a "¿y si no me va bien?" y "¿y si me quedo sin trabajo?": la universidad reconoce lo abonado. Estaban sin usar y ahora contestan en `ahora-no-puedo`.
 - **Las fechas de cursado salen del calendario académico oficial de la modalidad** (`contenidos.21.edu.ar/descargas/calendarios-2026/`), no de un dato suelto. En 2026 la modalidad a distancia arrancó 1A el 16/03, 1B el 18/05, 2A el 03/08 y 2B el 05/10, con inscripción a materias hasta dos semanas después de cada inicio.
 - **Mayores de 25 sin secundario: confirmado** (14/08/2026), después de estar meses en "sin confirmar". La fuente oficial lo publica: con más de 25 años y secundario incompleto se puede ser alumno teniendo el ciclo básico completo (los primeros 3 años aprobados) o 9 años de escolaridad desde 1° grado. Se presenta DNI, analítico legalizado, CV con teléfono, certificados de cursos y una **carta a la Rectora** explicando los motivos (hay modelo), por los canales de contacto virtuales y no por Digital Admin. Al lead no se le dice "CBU": es vocabulario cordobés.
+- **La oferta de Identidad son 8 y hay que preguntársela a la API** (15/08/2026): Oratoria, Gestión de Equipos de Alto Desempeño, Mindfulness, Constitución de Sociedades, Integral en RRHH, Fraude financiero y digital, Compliance y Ciberseguridad Aplicada. Los ids son 11, 15, 16, 17, 20, 25, 37986 y 37988. Fuera quedaron Bienestar Integral, Inteligencia Artificial, Marketing para Emprendedores y Management Hotelero: contestan con la fila vacía. Barrí los ids vecinos y no hay ninguna nueva escondida.
+- **Constitución de Sociedades es un CURSO, no una diplomatura**: dura un mes y la API lo clasifica así. Lo veníamos llamando diplomatura. En el texto va el marcador `{programaConArticulo}`, que dice «un curso» o «una diplomatura» según corresponda.
+- **La duración la manda la API, no la ficha**: el proyecto de Identidad la toma de un snapshot viejo y Mindfulness figuraba con 2 meses cuando son 4. El contexto pisa ese campo. Lo que **no** se pisa es la modalidad: la API dice «Híbrido» en Alto Desempeño y eso le hace creer al lead que viaja, cuando cursa en vivo por Innova Virtual desde su casa.
+- **Cada programa de Identidad tiene docente con nombre y antecedentes**, que salen de la API y ahora contesta la intención `docente`. En una diplomatura corta el lead compra a la persona.
 - **Tarjetas de Teclab**: van las 8 (Visa, Mastercard, American Express, Naranja, Cabal, Diners, Argencard, Sucrédito). El FAQ del sitio nombra 4; es la versión corta, no una corrección.
 - **Quién elige la empresa de las prácticas**: la elige el alumno. Lo dice el reglamento 3.5.2, contra lo que sugería el FAQ.
 - **Convenios de Teclab: son 186 y están listados** (15/08/2026), en `ventas/teclab-convenios.md`. El beneficio se llama «Comunidad Teclab» y va sobre el arancel: 15% en 162 casos, 10% en 22 y 20% en uno; 183 activos y 3 pendientes. El sitio dice «más de 200», que es redondeo comercial. Y la lista de policía y municipios, que antes sólo estaba en el documento interno, ahora tiene respaldo: figuran la **Policía de la Ciudad de Buenos Aires** y 20 municipios. Cada convenio tiene página propia en `vinculacion.teclab.edu.ar`.
