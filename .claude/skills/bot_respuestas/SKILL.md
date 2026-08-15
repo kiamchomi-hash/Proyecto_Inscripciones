@@ -69,15 +69,26 @@ node herramientas/ventas/generar-buscador.mjs  --promocion 5 --descuento-benefic
 
 Cuando dos se contradicen, manda la de arriba. No elegir en silencio: dejar la contradicción anotada en la respuesta.
 
-1. **Reglamento Institucional** — el árbitro.
+1. **La Nube 21** — `https://www.lanube.21.edu.ar`, el portal oficial del alumno de Siglo 21, y la fuente de más peso sobre cómo funciona la cursada: modalidades, EFIP, prácticas, equivalencias, becas, titulación, idiomas. Ante una diferencia con cualquier otra, manda ésta y la diferencia se deja anotada. Es Wix: el texto se baja con `curl` y se limpian los tags, **pero las tablas viven en widgets que no viajan en el HTML** (becas y beneficios, organizaciones amigas, el FAQ por modalidad). Esas se leen con Playwright recorriendo los `frames()` de la página, y el filtro del FAQ es un `<select>`, no un botón: va con `selectOption`. Sólo Siglo 21; Teclab e Identidad no tienen equivalente.
+2. **Reglamento Institucional** — la norma escrita.
    - Teclab: `portalalumnopre.teclab.edu.ar/5e01120d0cdce5c39761b58700f275b4.pdf` (37 pp.). No se lee por web: bajarlo y extraerlo con PyMuPDF.
    - Siglo 21: `contenidos.21.edu.ar/microsites/reglamento/` — versión **2026**, 14 capítulos, navegable por `index.php?put=<capitulo>-<seccion>-<slug>`.
-2. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
-3. **Fichas del KB** del proyecto (`carreras/siglo21/fichas-sitio-oficial.json`, `carreras/siglo21/datos/`).
-4. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
+3. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
+4. **Fichas del KB** del proyecto (`carreras/siglo21/fichas-sitio-oficial.json`, `carreras/siglo21/datos/`).
+5. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
 
 Casos ya resueltos, para no rediscutirlos:
 
+- **La cursada de Siglo 21 no es "100% virtual"** y el bot dejó de decirlo (14/08/2026). Lo presencial de la modalidad que vende el CAU (Educación Distribuida Home) son tres cosas: la charla de ingreso (IVU / Despegue 21), obligatoria y por única vez en el CAU; el **EFIP I y el EFIP II** en las carreras de grado, que se rinden en una sede o CAU; y la **Defensa Oral**, que es siempre en el campus de Córdoba. Se dice "virtual" o "desde tu casa" y se nombra lo presencial.
+- **Los "4 encuentros en el CAU" son de ED, no de EDH.** La página de EDH muestra la tarjeta, pero la guía del ingresante dice que en EDH "todo el cursado se realiza desde casa, sin necesidad de asistir al CAU", y sus condiciones de cursado no piden asistencia; las de ED sí (75%) y ahí sí son 4 encuentros por materia cada 15 días. La fuente se contradice a sí misma: no afirmarle los 4 encuentros al lead de EDH.
+- **La constancia de "título en trámite" no cierra el legajo** (14/08/2026): la fuente oficial dice que no es válida para constatar los estudios y que hay que esperar el documento final. Contradice al Reglamento 2026, que la aceptaba un año como documentación provisoria; manda la fuente oficial. Sí se puede ingresar y cursar mientras tanto, porque el legajo tiene plazo: año y medio en grado, un año en pregrado, un semestre en los ciclos de complementación.
+- **Las becas por postulación tienen contraprestación**: 4 horas semanales de apoyo a la universidad con el 30%, 8 con el 50% y 10 con el 70%. Y se confirman antes del 1 de febrero (primer semestre) o del 20 de julio (segundo): sobre un semestre ya empezado no hay beca por postulación.
+- **Las becas de Siglo 21 no se acumulan entre sí** (sí con la promoción vigente) y **se piden antes de abonar el arancel**: pagado el ticket, ya no se aplican.
+- **Pregrado no rinde EFIP ni hace Trabajo Final de Grado**: se recibe al aprobar la última materia. Lo separa el marcador `esPregrado`, que sale del nivel del catálogo local.
+- **El convenio con la empresa existe y está listado**: 2465 organizaciones, en `ventas/organizaciones-amigas.md` (se busca con grep). Descuenta sobre aranceles, casi siempre 10%, se acredita con el recibo de sueldo y alcanza a familiares directos. Están el Gobierno de la Ciudad y el de la Provincia de Buenos Aires, ANSES y el Consejo de la Magistratura, que es la mitad de los leads de la zona. Las 32 becas y beneficios, con requisitos y documentación, están en `ventas/becas-y-beneficios.md`.
+- **Garantía de Adaptación y Seguro de Continuidad** son las dos respuestas a "¿y si no me va bien?" y "¿y si me quedo sin trabajo?": la universidad reconoce lo abonado. Estaban sin usar y ahora contestan en `ahora-no-puedo`.
+- **Las fechas de cursado salen del calendario académico oficial de la modalidad** (`contenidos.21.edu.ar/descargas/calendarios-2026/`), no de un dato suelto. En 2026 la modalidad a distancia arrancó 1A el 16/03, 1B el 18/05, 2A el 03/08 y 2B el 05/10, con inscripción a materias hasta dos semanas después de cada inicio.
+- **Mayores de 25 sin secundario: confirmado** (14/08/2026), después de estar meses en "sin confirmar". La fuente oficial lo publica: con más de 25 años y secundario incompleto se puede ser alumno teniendo el ciclo básico completo (los primeros 3 años aprobados) o 9 años de escolaridad desde 1° grado. Se presenta DNI, analítico legalizado, CV con teléfono, certificados de cursos y una **carta a la Rectora** explicando los motivos (hay modelo), por los canales de contacto virtuales y no por Digital Admin. Al lead no se le dice "CBU": es vocabulario cordobés.
 - **Tarjetas de Teclab**: van las 8 (Visa, Mastercard, American Express, Naranja, Cabal, Diners, Argencard, Sucrédito). El FAQ del sitio nombra 4; es la versión corta, no una corrección.
 - **Quién elige la empresa de las prácticas**: la elige el alumno. Lo dice el reglamento 3.5.2, contra lo que sugería el FAQ.
 - **Convenios de Teclab**: hay "más de 200 empresas y organizaciones" y categoría "Gobiernos & ONGs". La lista de fuerzas armadas, policía y municipios **sólo existe en el documento interno**: no afirmarla.
@@ -130,7 +141,7 @@ Al revisar copias en las otras casas, mirar esto mismo: se escribieron pensando 
 
 ## Sin confirmar
 
-- **Secundario incompleto en Siglo 21.** El reglamento 2026 pide "copia legalizada del certificado de estudios secundario completo" y no contempla excepciones. La vía de mayores de 25 está en la base de conocimiento del CAU y la respuesta la linkea, pero el reglamento no la respalda. **Título en trámite sí tiene respuesta** desde el 08/08/2026: el certificado de estudios en trámite vale un año como documentación provisoria, siempre que conste que no adeuda materias — o sea que adeudar materias sigue sin vía. Todo el detalle, con los plazos del legajo, en `ventas/requisitos.md`.
+- **Adeudar materias del secundario.** Sigue sin vía: ni la de mayores de 25 (que pide secundario incompleto y edad) ni el legajo lo contemplan. Se pregunta y se confirma, no se afirma.
 - **Financiación mensual.** No existe pago mensual: el reglamento compromete el pago por cuatrimestre o bimestre. Las 6 cuotas son financiación de tarjeta. Las consultas de "¿cuánto por mes?" siguen contestándose con el total.
 
 ## Trampas conocidas
