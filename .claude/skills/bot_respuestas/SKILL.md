@@ -70,12 +70,13 @@ node herramientas/ventas/generar-buscador.mjs  --promocion 5 --descuento-benefic
 Cuando dos se contradicen, manda la de arriba. No elegir en silencio: dejar la contradicción anotada en la respuesta.
 
 1. **La Nube 21** — `https://www.lanube.21.edu.ar`, el portal oficial del alumno de Siglo 21, y la fuente de más peso sobre cómo funciona la cursada: modalidades, EFIP, prácticas, equivalencias, becas, titulación, idiomas. Ante una diferencia con cualquier otra, manda ésta y la diferencia se deja anotada. Es Wix: el texto se baja con `curl` y se limpian los tags, **pero las tablas viven en widgets que no viajan en el HTML** (becas y beneficios, organizaciones amigas, el FAQ por modalidad). Esas se leen con Playwright recorriendo los `frames()` de la página, y el filtro del FAQ es un `<select>`, no un botón: va con `selectOption`. Sólo Siglo 21; Teclab e Identidad no tienen equivalente.
-2. **Reglamento Institucional** — la norma escrita.
+2. **Dashboard Comercial de Teclab** — `informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(01).html`, el panel que Teclab arma para sus asesores de admisión. Es el equivalente de La Nube para Teclab y manda sobre el sitio comercial: trae las 16 tecnicaturas con ficha completa, los 186 convenios con su porcentaje, la tabla de recargos por banco, el manual de objeciones, el calendario y el benchmark contra la competencia. **El HTML es público y el login es de JavaScript**: los datos viajan embebidos, así que se baja con `curl` y se extraen las constantes del script (`DATA`, `BENCHX`, `GUIAS`, `CONV`) balanceando llaves y evaluándolas en un `vm`. Copia en `carreras/teclab/dashboard-comercial.json`, bajada el 15/08/2026.
+3. **Reglamento Institucional** — la norma escrita.
    - Teclab: `portalalumnopre.teclab.edu.ar/5e01120d0cdce5c39761b58700f275b4.pdf` (37 pp.). No se lee por web: bajarlo y extraerlo con PyMuPDF.
    - Siglo 21: `contenidos.21.edu.ar/microsites/reglamento/` — versión **2026**, 14 capítulos, navegable por `index.php?put=<capitulo>-<seccion>-<slug>`.
-3. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
-4. **Fichas del KB** del proyecto (`carreras/siglo21/fichas-sitio-oficial.json`, `carreras/siglo21/datos/`).
-5. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
+4. **FAQ y sitio oficiales**: `teclab.edu.ar/faq/`, `teclab.edu.ar/becas/`, `teclab.edu.ar/partnerships/`, `teclab.edu.ar/aspirante/`, `21.edu.ar/programas/preguntas-frecuentes`.
+5. **Fichas del KB** del proyecto (`carreras/siglo21/fichas-sitio-oficial.json`, `carreras/siglo21/datos/`).
+6. **Documentos internos** (`Teclab_Info/conocimiento-hermes/faq_ventas_y_modalidad.md`, guías de WhatsApp). Sirven, pero no alcanzan para afirmarle algo a un lead si una fuente oficial dice otra cosa.
 
 Casos ya resueltos, para no rediscutirlos:
 
@@ -91,9 +92,13 @@ Casos ya resueltos, para no rediscutirlos:
 - **Mayores de 25 sin secundario: confirmado** (14/08/2026), después de estar meses en "sin confirmar". La fuente oficial lo publica: con más de 25 años y secundario incompleto se puede ser alumno teniendo el ciclo básico completo (los primeros 3 años aprobados) o 9 años de escolaridad desde 1° grado. Se presenta DNI, analítico legalizado, CV con teléfono, certificados de cursos y una **carta a la Rectora** explicando los motivos (hay modelo), por los canales de contacto virtuales y no por Digital Admin. Al lead no se le dice "CBU": es vocabulario cordobés.
 - **Tarjetas de Teclab**: van las 8 (Visa, Mastercard, American Express, Naranja, Cabal, Diners, Argencard, Sucrédito). El FAQ del sitio nombra 4; es la versión corta, no una corrección.
 - **Quién elige la empresa de las prácticas**: la elige el alumno. Lo dice el reglamento 3.5.2, contra lo que sugería el FAQ.
-- **Convenios de Teclab**: hay "más de 200 empresas y organizaciones" y categoría "Gobiernos & ONGs". La lista de fuerzas armadas, policía y municipios **sólo existe en el documento interno**: no afirmarla.
+- **Convenios de Teclab: son 186 y están listados** (15/08/2026), en `ventas/teclab-convenios.md`. El beneficio se llama «Comunidad Teclab» y va sobre el arancel: 15% en 162 casos, 10% en 22 y 20% en uno; 183 activos y 3 pendientes. El sitio dice «más de 200», que es redondeo comercial. Y la lista de policía y municipios, que antes sólo estaba en el documento interno, ahora tiene respaldo: figuran la **Policía de la Ciudad de Buenos Aires** y 20 municipios. Cada convenio tiene página propia en `vinculacion.teclab.edu.ar`.
+- **Las cuotas de Teclab tienen recargo, salvo Naranja X**: 3 cuotas al 6,15% en los bancos principales y 7,41% en el resto; 6 cuotas al 12,48% y 12,99%. Sólo Naranja X va sin interés, y aparte está la financiación propia de Teclab (suscripción con gasto administrativo, en cuotas sin interés). Decir «6 cuotas» a secas era prometer de más.
+- **Las clases en vivo de Teclab son a la noche**: una por materia, a las 18:00 o 19:30, y no es obligatorio conectarse porque quedan grabadas. En 4 de las 16 tecnicaturas la segunda materia del bimestre es directamente asincrónica. El día y la hora exactos son del bimestre en curso y viven en el bloque `MATERIAS` del panel: no se escriben en el texto porque vencen.
+- **El curso corto de IA va por ediciones con ventana de venta** y el panel publica las tres del semestre. El marcador `inicioCurso` elige sola la primera cuya venta sigue abierta, así que el bot ya da la fecha en vez de ofrecer confirmarla, y la respuesta se apaga cuando no queda ninguna.
+- **La articulación con Siglo 21 tiene nombre y apellido** en 6 de las 16 tecnicaturas (Programación, Cloud Administration, Data Science, Inbound Marketing, Marketing Digital y Redes Informáticas): la licenciatura concreta está cargada como marcador `articulacionSiglo21`. En las otras 10 se sigue mandando al buscador de equivalencias.
 - **Legislatura porteña y Senado de la Nación**: Teclab **no** tiene convenio con ninguno de los dos; **con ATE sí**. Lo confirmó la dirección el 03/08/2026 ante la consulta de un lead. Es de Teclab: para Siglo 21 no hay dato y ahí sigue contestando la respuesta general ("pasame el nombre del organismo y lo consulto").
-- **Becas de Teclab: por el momento no hay.** Lo confirmó el administrador de Teclab el 04/08/2026. Contradice a `teclab.edu.ar/becas` y al FAQ comercial, que publican la Beca de Inclusión y la de mejor alumno de secundario: manda el administrador, que es más reciente y habla de lo que se puede ofrecer hoy. **Las dos versiones conviven**: en `becas` y en `becas-ayuda`, Teclab tiene primero la del administrador (aprobada, la que se manda) y detrás la oficial con las dos becas (sin revisar), para el día que vuelvan a abrirse o si el lead llega diciendo que las vio publicadas. Las cuatro llevan la contradicción anotada en `fuente`. Lo que sí se ofrece hoy: el descuento ya aplicado, las 6 cuotas y el convenio de la empresa u organismo.
+- **Becas de Teclab: por el momento no hay.** Lo confirmó el administrador de Teclab el 04/08/2026. Contradice a `teclab.edu.ar/becas` y al FAQ comercial, que publican la Beca de Inclusión y la de mejor alumno de secundario: manda el administrador, que es más reciente y habla de lo que se puede ofrecer hoy. **Las dos versiones conviven**: en `becas` y en `becas-ayuda`, Teclab tiene primero la del administrador, que es la que se manda, y detrás la oficial con las dos becas, para el día que vuelvan a abrirse o si el lead llega diciendo que las vio publicadas. Las cuatro llevan la contradicción anotada en `fuente`. Lo que sí se ofrece hoy: el descuento ya aplicado, las 6 cuotas y el convenio de la empresa u organismo.
 
 ## Cómo se cotiza
 
@@ -106,20 +111,20 @@ Casos ya resueltos, para no rediscutirlos:
 ## Reglas del corpus
 
 - **No inventar.** Si el dato no está, la respuesta dice que se confirma. Cada respuesta lleva en `notas` de dónde salió.
-- **Estados**: `aprobada`, `descartada`, `sin revisar`. Los decide una persona. Lo aprobado sale primero; lo descartado no sale nunca. **Si se cambia el texto de una respuesta aprobada, vuelve a `sin revisar`** — la aprobación era sobre el texto anterior. Ahora que se trabaja en la conversación, la aprobación es el "así está bien" del usuario sobre el mensaje que se le mostró: ahí se marca `aprobada`. Lo que se escribe por iniciativa propia queda `sin revisar`.
+- **No hay estados ni aprobación** (desde el 15/08/2026). Toda respuesta que está en el corpus está viva y el bot puede ofrecerla. Se decide en la conversación: el usuario dice qué información es oficial, y lo que no sirve **se borra**, no se apaga. Si una respuesta te parece dudosa, no la dejes marcada de ninguna manera: preguntá o no la escribas. El campo `estado` ya no lo lee nadie; si aparece en un archivo viejo, es ruido.
 - **`institucion`**: la declara el archivo, y cada respuesta la repite. Una respuesta escrita en `teclab.json` es de Teclab, punto; ya no existe la respuesta que sirve para las tres.
 - **`requiere` va en la respuesta, no en la intención.** Un `requiere` a nivel intención apaga la intención entera de esa casa, aunque tenga respuestas que sí podrían salir. Este error ya dejó mudas a `requisitos`, `cuotas`, `horarios` y `doble-titulacion`.
-- Al agregar una respuesta a una intención existente, mirar **el orden**: entre dos sin revisar gana la que está antes en el array.
+- Al agregar una respuesta a una intención existente, mirar **el orden**: manda la posición en el array, así que la variante más específica va primero y la genérica atrás.
 
 ## Cobertura al 09/08/2026
 
 Las tres arrancan con las mismas 47 intenciones: las 12 respuestas que eran universales se copiaron a los tres archivos, así que ninguna casa quedó muda por el corte.
 
-| | Carreras | Intenciones sin respuesta | Aprobadas | Sin revisar |
-|---|---|---|---|---|
-| Universidad Siglo 21 | 65 | **0** | 18 | 53 |
-| Teclab | 18 | **4** | 35 | 20 |
-| Academia Identidad Argentina | 11 | **0** | 18 | 40 |
+| | Carreras | Intenciones sin respuesta | Respuestas vivas |
+|---|---|---|---|
+| Universidad Siglo 21 | 65 | **0** | 95 |
+| Teclab | 16 + 1 curso | **3** | 90 |
+| Academia Identidad Argentina | 11 | **0** | 63 |
 
 Las 4 de Teclab son estructurales, no huecos: `dos-carreras`, `titulo-exterior` y `titulo-terciario` no aplican, y `enviar-ficha` necesita la URL de cada carrera, que no está cargada. `doble-titulacion` dejó de estar en la lista sólo porque heredó la copia universal, que exige `{dobleTitulacion}` y ninguna carrera de Teclab lo trae: en la práctica sigue sin contestarse.
 
@@ -131,13 +136,13 @@ Las 4 de Teclab son estructurales, no huecos: `dos-carreras`, `titulo-exterior` 
 | `horarios-a` | «no tiene horarios fijos de cursada» | `horarios-identidad` / `-sin-cronograma` |
 | `equivalencias-a` | pedía plan de estudios y analítico para elevar | `equivalencias-identidad` |
 | `inscripcion-a` | «te armo el legajo» | `inscripcion-identidad` (preinscripción + link de pago) |
-| `requisitos-a`, `validez-a`, `doble-titulacion-a` | nunca se disparaban (descartadas o con un `requiere` que Identidad no cumple) | la propia de cada una |
+| `requisitos-a`, `validez-a`, `doble-titulacion-a` | nunca se disparaban (borradas, o con un `requiere` que Identidad no cumple) | la propia de cada una |
 
 Las 4 que quedan son las únicas de su intención y funcionan: `pedir-datos-a`, `no-entiendo-a`, `seguimiento-a` y `convenio-organismo-consulta`, más `pide-todo-sin-precio`, que es el respaldo para cuando el precio queda viejo. Dos detalles sin resolver: `seguimiento-a` cierra con «así no se te pasa la fecha de inscripción» y en Identidad se entra con la cursada empezada, y `convenio-organismo-consulta` afirma «convenios hay varios», que está documentado para Teclab y para Identidad no tiene fuente (ofrece chequear antes de confirmar, así que no promete nada falso).
 
 Al revisar copias en las otras casas, mirar esto mismo: se escribieron pensando en Siglo 21, y hay que probarlas **con los contextos reales** — varias parecen rotas y en verdad nunca se disparan porque exigen un marcador que esa casa no tiene.
 
-**Identidad Argentina sigue siendo el trabajo pendiente**: 40 respuestas sin revisar y ninguna fuente oficial procesada. Su sitio bloquea el scraping (robots + SPA); el material está en la carpeta del escritorio.
+**Identidad Argentina sigue siendo el trabajo pendiente**: es la única de las tres sin una fuente oficial procesada. Su sitio bloquea el scraping (robots + SPA); el material está en la carpeta del escritorio.
 
 ## Sin confirmar
 
