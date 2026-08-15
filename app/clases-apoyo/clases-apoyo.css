@@ -614,141 +614,26 @@ a.ca-tile:focus-visible {
   color: #fff;
 }
 
-.ca-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.64rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #9ac5be;
-  margin-bottom: 0.85rem;
-}
-
-.ca-eyebrow-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--ca-teal);
-  box-shadow: 0 0 0 3px rgba(0, 199, 177, 0.16);
-}
-
-/* La etiqueta que encabeza un grupo de baldosas. Chica y pegada al grupo:
-   así rotula, en vez de flotar como un bloque más. */
-.ca-grupo-label {
-  font-size: 0.62rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--ca-teal);
-  /* El `auto` va si o si: en shorthand, `margin: x 0 y z` pisa el
-     `margin-inline: auto` de `.ca-pagina > *` y la etiqueta se sale de la
-     grilla, pegada al borde izquierdo de la pantalla. */
-  margin: 1.4rem auto 0.55rem;
-  padding-left: 0.3rem;
-}
-
-/* ── Banda del encabezado ──
-   Una sola baldosa a lo ancho. Antes eran tres —titular, datos y descuento— y
-   entre las tres se comian media pantalla antes de la primera materia; el
-   titular ademas quedaba con un agujero en el medio, porque los botones se
-   anclaban abajo y el texto no llegaba. */
-.ca-encabezado {
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-@media (min-width: 820px) {
-  .ca-encabezado {
-    flex-direction: row;
-    /* Al pie y no al centro: centrado, el boton quedaba flotando a media altura
-       a la derecha del titular, sin alinearse con nada. */
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 2.5rem;
-  }
-
-  .ca-encabezado .ca-btn {
-    flex-shrink: 0;
-    padding: 1rem 1.75rem;
-    font-size: 0.88rem;
-  }
-}
-
-.ca-encabezado h1 {
+/* ── Titulo de la pagina ──
+   Sin tarjeta de encabezado: la portada abre directo con las materias, que es
+   lo que la persona vino a buscar. Queda el h1 —centrado— porque sin el la
+   ruta se queda sin titulo para Google. */
+.ca-titulo {
+  text-align: center;
   font-weight: 900;
-  font-size: clamp(1.7rem, 4.4vw, 2.9rem);
-  line-height: 1.05;
+  font-size: clamp(1.55rem, 4.2vw, 2.5rem);
+  line-height: 1.1;
   letter-spacing: -0.038em;
   color: #fff;
   text-wrap: balance;
+  margin: 0.75rem auto 1.5rem;
 }
 
-/* Sólo color, sin subrayado. */
-.ca-encabezado h1 span { color: var(--ca-teal); }
-
-.ca-deck {
-  margin-top: 0.75rem;
-  font-size: clamp(0.88rem, 2vw, 1rem);
-  line-height: 1.6;
-  color: var(--ca-text-main);
-  max-width: 62ch;
+@media (min-width: 760px) {
+  .ca-titulo { margin: 1.5rem auto 2rem; }
 }
 
-/* Los datos duros, en una linea. Eran una lista clave/valor en su propia
-   baldosa: la misma informacion ocupaba cuatro veces mas alto. */
-.ca-hechos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  list-style: none;
-  padding: 0;
-  margin-top: 1rem;
-}
-
-.ca-hechos li {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--ca-text-main);
-  background: rgba(0, 199, 177, 0.08);
-  border: 1px solid rgba(0, 199, 177, 0.2);
-  border-radius: 8px;
-  padding: 0.32rem 0.7rem;
-}
-
-.ca-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  padding: 0.8rem 1.3rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 800;
-  text-decoration: none;
-  border: 1px solid transparent;
-  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.ca-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
-
-.ca-btn-wa {
-  background: #25d366;
-  color: #04261a;
-  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.2);
-}
-
-.ca-btn-wa:hover {
-  background: #2ee878;
-  transform: translateY(-2px);
-}
-
-.ca-btn:focus-visible { outline: 2px solid var(--ca-teal); outline-offset: 3px; }
-
-@media (max-width: 759px) {
-}
+.ca-titulo span { color: var(--ca-teal); }
 
 /* Materias: cuatro columnas. Con tres, las siete dejaban una sola baldosa
    colgada en la ultima fila. */
