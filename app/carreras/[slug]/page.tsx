@@ -314,7 +314,16 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   const hermanas = esCursoTeclab(carrera)
     ? carreras.filter(c => esTeclab(c))
     : carreras.filter(c => c.nivel === carrera.nivel && c.id !== carrera.id);
-  const mismoNivel = hermanas.slice(0, 6);
+  // La ventana de seis tambien rota, por el mismo motivo que las cruzadas: con
+  // `slice(0, 6)` todas las fichas de un nivel enlazaban a las mismas seis, asi
+  // que cinco paginas por nivel juntaban 33 enlaces entrantes y 47 de las 88 se
+  // quedaban con tres o menos. Videojuegos, con dos, nunca fue rastreada. Con la
+  // rotacion el reparto va de 3 a 11 y ninguna queda en cero.
+  const inicio = hermanas.length ? (carrera.id * 6) % hermanas.length : 0;
+  const mismoNivel = Array.from(
+    { length: Math.min(6, hermanas.length) },
+    (_, i) => hermanas[(inicio + i) % hermanas.length]
+  );
   const otrosNiveles = carreras.filter(c => c.nivel !== carrera.nivel);
   const desde = otrosNiveles.length ? (carrera.id * 2) % otrosNiveles.length : 0;
   const cruzadas = otrosNiveles.length
