@@ -1,10 +1,23 @@
 # Indexación — siglo21sur.com
 
-**14/08/2026 · 86 de 88 carreras (98%)** · total 108/111.
+**16/08/2026 · 86 de 88 carreras (98%)** · total 108/111.
+
+Lo que falta no se movió desde el 14/08: las mismas tres URLs afuera y `/sobre-nosotros`
+todavía con la copia vieja. La revisión de hoy fue incremental —las tres pendientes, el
+recrawl y un par de testigos—, así que las fechas de la lista que no se nombran acá
+siguen siendo las del 14/08.
 
 La oferta se achicó: cuatro diplomaturas de Identidad salieron (302 a la home) y el
 curso de mindfulness se renombró (301 a la diplomatura homónima, ya indexada). Por eso
 la lista de carreras baja de 93 a 88 filas.
+
+Hoy se deployó `b90ab59`, que le cambia el `<title>` a 25 de las 63 fichas de Siglo 21
+—las de Teclab y las de convenio llevan otros sufijos y no se tocaron—: donde el nombre
+no entra con el sufijo largo, ahora gana " a Distancia | Siglo 21" y se suelta "Villa
+Lugano". Mientras Google no las vuelva a rastrear, el título que muestra en el resultado
+es el viejo. No hay que pedir recrawl por esto: las 25 ya están indexadas y el barrido
+normal las va a levantar. El efecto se mide con `npm run seo` a principios de septiembre,
+comparando el CTR de esas 25 contra las 38 que quedaron igual.
 
 ## Pedir indexación
 
@@ -36,10 +49,13 @@ sin BreadcrumbList— y se rastreó sola el 11/08; Informática (04/06) el 10/08
 `/clases-apoyo` (11/06) el 09/08. Google está barriendo el sitio de más viejo a más
 nuevo y ya se llevó puesta toda la cola de junio.
 
-Quedan 17 páginas cuya copia indexada es anterior al BreadcrumbList (deployado el 24/07);
-se reconocen por rastreo ≤23/07 y `rich_results: null` en la inspección. La más atrasada
-es Administración de Servicios de Salud, del 07/07. Van a caer solas, igual que las tres
-de arriba: no gastar cuota de "Solicitar indexación" en ellas.
+Quedan 16 páginas cuya copia indexada es anterior al BreadcrumbList (deployado el 24/07);
+se reconocen por rastreo ≤23/07 y `rich_results: null` en la inspección. Van a caer solas,
+igual que las tres de arriba: no gastar cuota de "Solicitar indexación" en ellas.
+
+La que era la más atrasada, Administración de Servicios de Salud, se rastreó sola el
+15/08 y ya emite Breadcrumbs; el fondo de la cola pasa a ser el 18/07, con Negocios
+Digitales, Clima Laboral y `/clases-apoyo/computacion` verificadas hoy sin moverse.
 
 ## La lista
 
@@ -62,7 +78,7 @@ de arriba: no gastar cuota de "Solicitar indexación" en ellas.
 - ✅ ○ `/carreras/escribania` 21/07
 - ✅ `/carreras/licenciatura-en-administracion` 11/08
 - ✅ ○ `/carreras/licenciatura-en-administracion-agraria` 21/07
-- ✅ ○ `/carreras/licenciatura-en-administracion-de-servicios-de-salud-ccc` 07/07
+- ✅ `/carreras/licenciatura-en-administracion-de-servicios-de-salud-ccc` 15/08
 - ✅ `/carreras/licenciatura-en-administracion-publica` 08/08
 - ✅ ○ `/carreras/licenciatura-en-bioinformatica` 19/07
 - ✅ `/carreras/licenciatura-en-ciencia-politica-y-gobierno` 27/07
@@ -94,7 +110,7 @@ de arriba: no gastar cuota de "Solicitar indexación" en ellas.
 - ✅ `/carreras/licenciatura-en-relaciones-publicas-e-institucionales` 12/08
 - ✅ `/carreras/licenciatura-en-seguridad-informatica` 25/07
 - ✅ `/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano` 27/07
-- ✅ `/carreras/martillero-corredor-publico-y-corredor-inmobiliario` 10/08
+- ✅ `/carreras/martillero-corredor-publico-y-corredor-inmobiliario` 14/08
 - ✅ `/carreras/procurador` 28/07
 - ✅ `/carreras/profesorado-universitario-para-nivel-secundario-y-superior-ccc` 11/08
 - ✅ `/carreras/tecnicatura-en-administracion-y-gestion-de-politicas-publicas` 28/07
