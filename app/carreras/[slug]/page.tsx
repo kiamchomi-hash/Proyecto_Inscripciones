@@ -88,7 +88,19 @@ function tituloSEO(carrera: Carrera): string {
       // de las dos entra en los nombres largos y les gana a esta, que es la
       // unica que nombra a las dos.
       ? [' | Teclab · Siglo 21 Villa Lugano', ' | Teclab · Siglo 21']
-      : [' a Distancia | Siglo 21 Villa Lugano', ' | Siglo 21 Villa Lugano', ' | Siglo 21'];
+      // "a Distancia" le gana a "Villa Lugano" cuando hay que soltar uno de los
+      // dos. Medido en Search Console a 28 dias: las consultas que dicen "siglo
+      // 21" nos clickean al 0-1% aunque estemos quintos (la persona quiere
+      // 21.edu.ar y nos saltea), y las que dicen la carrera sola o con "a
+      // distancia" al 10-33%. "Villa Lugano" no aparece en ninguna consulta de
+      // carrera: las 500 que se bajaron lo usan solo para buscar el barrio o el
+      // CAU, y esas caen en la home, /sobre-nosotros y /clases-apoyo.
+      : [
+          ' a Distancia | Siglo 21 Villa Lugano',
+          ' a Distancia | Siglo 21',
+          ' | Siglo 21 Villa Lugano',
+          ' | Siglo 21',
+        ];
 
   // Con que quedarse cuando ni el nombre mas corto entra con el sufijo mas
   // corto. Solo ahi vale " | Teclab" pelado: el curso tiene el nombre mas largo
