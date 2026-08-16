@@ -1,6 +1,6 @@
 ﻿-- Texto propio de cada materia en /clases-apoyo/<slug>, más los acentos que
 -- faltaban en las viñetas. Inglés y Apoyo Secundario van sin texto: están en
--- construcción. El porqué está en INDEXACION.md § 1.
+-- construcción. El porqué está en docs/indexacion.md § 1.
 
 -- descripcion es jsonb, así que texto_seo va igual. El drop es por si quedó
 -- creada como text[] en un intento anterior: la columna es nueva y no tiene

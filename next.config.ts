@@ -33,6 +33,10 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com`,
               "font-src 'self'",
+              // Los videos institucionales se sirven desde el bucket publico de
+              // Supabase Storage; sin esta directiva caen en default-src y el
+              // navegador los bloquea.
+              `media-src 'self' https://${supabaseHost}`,
               `connect-src 'self' https://${supabaseHost} https://*.google-analytics.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com`,
               "frame-src https://challenges.cloudflare.com https://www.google.com",
               "worker-src 'self' blob:",
@@ -133,7 +137,7 @@ const nextConfig: NextConfig = {
       // Estas van con `statusCode: 301` y no con `permanent: true`, que emite
       // 308. Para Google los dos son equivalentes, pero el 301 es el que espera
       // el resto de las herramientas de SEO y el que figura en el seguimiento de
-      // INDEXACION.md; que la medición diga lo mismo que el config evita tener
+      // docs/indexacion.md; que la medición diga lo mismo que el config evita tener
       // que explicar la diferencia cada vez.
       //
       // Agroinformática se sacó de la oferta el 03/08/2026 (`activa = false` en

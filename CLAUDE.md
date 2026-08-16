@@ -165,7 +165,7 @@ Las carreras sin slides *y* fuera de convenio caen en `career-modal.tsx`, que ar
 
 ### SEO
 
-Es una prioridad activa del proyecto, no un detalle; `INDEXACION.md` lleva el seguimiento de la campaña de indexación. La medición semanal la hace sola `npm run seo` (ver arriba) y el agente `estratega-seo` la interpreta.
+Es una prioridad activa del proyecto, no un detalle; `docs/indexacion.md` lleva el seguimiento de la campaña de indexación. La medición semanal la hace sola `npm run seo` (ver arriba) y el agente `estratega-seo` la interpreta.
 
 - `app/sitemap.ts` genera todo: home, carreras visibles, materias, páginas de novedades y artículos.
 - JSON-LD: `EducationalOrganization` + `LocalBusiness` con `areaServed` en `app/layout.tsx`; `Course` + `BreadcrumbList` en la página de carrera.
