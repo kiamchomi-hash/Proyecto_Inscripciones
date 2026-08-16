@@ -1,61 +1,23 @@
 # Indexación — siglo21sur.com
 
-**16/08/2026 · 86 de 88 carreras (98%)** · total 108/111.
+**16/08/2026 · 108/111.**
 
-Lo que falta no se movió desde el 14/08: las mismas tres URLs afuera y `/sobre-nosotros`
-todavía con la copia vieja. La revisión de hoy fue incremental —las tres pendientes, el
-recrawl y un par de testigos—, así que las fechas de la lista que no se nombran acá
-siguen siendo las del 14/08.
+## Enviar a GSC
 
-La oferta se achicó: cuatro diplomaturas de Identidad salieron (302 a la home) y el
-curso de mindfulness se renombró (301 a la diplomatura homónima, ya indexada). Por eso
-la lista de carreras baja de 93 a 88 filas.
-
-Hoy se deployó `b90ab59`, que le cambia el `<title>` a 25 de las 63 fichas de Siglo 21
-—las de Teclab y las de convenio llevan otros sufijos y no se tocaron—: donde el nombre
-no entra con el sufijo largo, ahora gana " a Distancia | Siglo 21" y se suelta "Villa
-Lugano". Mientras Google no las vuelva a rastrear, el título que muestra en el resultado
-es el viejo. No hay que pedir recrawl por esto: las 25 ya están indexadas y el barrido
-normal las va a levantar. El efecto se mide con `npm run seo` a principios de septiembre,
-comparando el CTR de esas 25 contra las 38 que quedaron igual.
-
-## Pedir indexación
+Solicitar indexación:
 
 ```
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
 ```
 
-Las dos siguen en "Discovered - currently not indexed" y **nunca fueron rastreadas**.
-No es un problema técnico: responden 200, tienen `<title>` propio, están en el sitemap
-y reciben enlace interno desde una ficha hermana (Diseño y Animación Digital y
-Marketing Digital respectivamente). Google simplemente no llegó.
-
-`/novedades/2` sigue "Crawled, currently not indexed" con copia del 05/04: es paginación
-y Google no le ve valor propio. No insistir.
-
-## Recrawl
-
-`/sobre-nosotros` es el único pedido que vale la pena: se reescribió el 11/08 para
-competir por "CAU en CABA" y lo que Google tiene indexado es del 21/07, o sea el texto
-viejo.
+Recrawl:
 
 ```
 https://www.siglo21sur.com/sobre-nosotros
 ```
 
-Del resto no hace falta pedir nada. Administración era el caso testigo —copia del 26/06,
-sin BreadcrumbList— y se rastreó sola el 11/08; Informática (04/06) el 10/08 y
-`/clases-apoyo` (11/06) el 09/08. Google está barriendo el sitio de más viejo a más
-nuevo y ya se llevó puesta toda la cola de junio.
-
-Quedan 16 páginas cuya copia indexada es anterior al BreadcrumbList (deployado el 24/07);
-se reconocen por rastreo ≤23/07 y `rich_results: null` en la inspección. Van a caer solas,
-igual que las tres de arriba: no gastar cuota de "Solicitar indexación" en ellas.
-
-La que era la más atrasada, Administración de Servicios de Salud, se rastreó sola el
-15/08 y ya emite Breadcrumbs; el fondo de la cola pasa a ser el 18/07, con Negocios
-Digitales, Clima Laboral y `/clases-apoyo/computacion` verificadas hoy sin moverse.
+`/novedades/2` no se pide: es paginación y Google no le ve valor propio.
 
 ## La lista
 
