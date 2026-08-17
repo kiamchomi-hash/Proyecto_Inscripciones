@@ -1,6 +1,6 @@
 # Pendientes
 
-Última actualización: 2026-08-14
+Última actualización: 2026-08-17
 
 ## Abierto
 
@@ -13,6 +13,14 @@
   Quedan **6 carreras más con el mismo patrón** sin tocar (las que no llegaban al umbral de impresiones del informe). Si las 8 muestran mejora, van todas.
 
   **Marketing Digital (#223) no se toca**: su `enfoque` no es prosa sino pares clave-valor (`Modalidad:`, `Título:`, `Cocreación:`) que `parseEnfoqueTeclab()` desarma para el modal de Teclab *y* para la descripción. Reescribirlo como frase rompe las dos cosas. Vale para toda la oferta Teclab.
+
+- [ ] **Evaluar los dos cambios de SEO del 16/08/2026.** Son dos apuestas distintas, con plazos distintos. Las dos se miden contra el informe de ese día, `herramientas/vigilancia-logs/seo-20260816.md` (264 clics, 14.248 impresiones, CTR 1,9%, posición 8,4 en la ventana 17/07 → 13/08), y contra el 108/111 de `docs/indexacion.md`. Se remide con `npm run seo` y lo interpreta el agente `estratega-seo`.
+
+  **Los títulos (`b90ab59`).** Cuando el nombre no entra con el sufijo largo, ahora se suelta "Villa Lugano" antes que "a Distancia". Cambian 25 de las 63 fichas de Siglo 21. La hipótesis salió de Search Console a 28 días: las consultas con "siglo 21" clickean al 0-1% aunque estemos quintos, y las que dicen la carrera sola o con "a distancia" al 10-33%. **Remedir a partir del 07/09/2026**, no antes: Google tiene que rastrear las 25 fichas y después hay que juntar impresiones. Se mira el CTR de esas fichas a posición comparable, no los clics sueltos. Si el CTR no se mueve, se deja; si baja con la posición igual, se revierte, que es un solo bloque de `app/carreras/[slug]/page.tsx`.
+
+  **Los enlaces internos (`aa4a68b`).** Las seis carreras del mismo nivel ahora rotan con el `id` en vez de ser siempre las seis primeras; el reparto de enlaces entrantes pasa de 0-34 a 3-11. **Esto se mira antes, el 30/08/2026, y no por CTR sino por rastreo**: las dos fichas que Google nunca rastreó (Videojuegos y Customer Experience) tenían dos enlaces entrantes cada una y ahora tienen más, así que la prueba es si entran al índice. **No se revierte aunque no se vea nada**: el reparto viejo dejaba 47 de las 88 fichas con tres enlaces o menos, y eso es un defecto por sí mismo.
+
+  Va encimado con la remedición del 24/08 de las 8 `enfoque` reescritas, acá arriba. Son cambios sobre las mismas páginas: si el 07/09 el CTR de carreras mejoró en bloque, no se puede repartir el mérito entre título y descripción, y tampoco hace falta.
 
 - [ ] **Pedirle a la universidad el plan de la Tecnicatura en Estadística Aplicada y Análisis Avanzado** (id 132). Es la única carrera visible sin temario del que agarrarse: al 29/07 no existe ni el PDF de `contenidos.21.edu.ar` ni la página en `21.edu.ar` ni una entrada en su sitemap; lo único público es un posteo del CAU Corrientes (2 años, inicio en octubre). Quedó marcada `proximamente` mientras tanto.
 
@@ -83,6 +91,12 @@
   Cuando lleguen, el cambio es una intención `inscripcion` en `ventas/corpus/teclab.json` y otra en `ventas/corpus/identidad.json`, con las mismas preguntas de ejemplo que la de Siglo 21 y el listado de esa casa; después se regeneran las dos páginas (`generar-entrenador.mjs` y `generar-buscador.mjs`, siempre las dos).
 
 ## Para tener presente
+
+**El reparto de WhatsApp mandó la mitad de las consultas a un número que ya no atiende, del 14 al 17/08/2026.** El commit `85ad379` repartía los clics entre dos asesores y quedó vivo en producción después de que Viviana dejara de atender: el HTML mostraba siempre el número del CAU, pero el JS sorteaba en el clic y a la mitad de los visitantes los mandaba al otro. Peor, el sorteo se guarda en `localStorage` bajo `cau-asesor`, así que el que caía ahí le seguía escribiendo cada vez que volvía. Arreglado y deployado el 17/08 (`3063530`): queda un solo asesor y los índices viejos guardados en el navegador caen fuera de rango y se descartan solos. **Verificar a mano que el volumen de consultas por WhatsApp vuelva a lo de antes del 14/08.**
+
+Al reactivar el reparto —descomentar una línea en `lib/whatsapp.ts`— acordarse de las dos cosas que lo hicieron invisible: el número escrito en el HTML nunca cambia, y el `localStorage` fija al visitante en el asesor que le tocó la primera vez.
+
+**El "test para ver cómo llegan los mensajes" que quedó puesto en Vercel no aparece en la configuración del proyecto.** Buscado el 17/08/2026 contra la API de Vercel, sin encontrar nada: reglas de firewall (son las tres de siempre — formularios, login de admin y clicks), webhooks (uno solo, `firewall.attack` → la Edge Function `alerta-firewall`, del 08/08), log drains (ninguno), integraciones (ninguna), crons (sólo `/api/vigilancia` cada 6 h), Edge Config (vacío), variables de entorno y ajustes del proyecto. Si fue algo de una sola vez —disparar el cron a mano, mirar los Runtime Logs de un envío de prueba— no deja rastro y no hay nada que desarmar. **Falta identificar qué era**; hasta entonces esta nota está para que la pregunta no se pierda, no porque haya trabajo pendiente.
 
 **Las dos actualizaciones que dejó la auditoría del 08/08/2026 están hechas**: Next 16.3.0 (con `eslint-config-next` y `@next/third-parties`) y Tailwind 4.3.3 (con `@tailwindcss/postcss`, `@tailwindcss/cli` y el `lightningcss` nativo que trae). Las dos fueron en su propio deploy y `npm run smoke` quedó en verde el 09/08 — rutas, cabeceras, redirects y las 115 URLs del sitemap. **El override de `postcss` se dejó**: Next pinea 8.5.23 y sacarlo bajaría desde 8.5.26; las dos están parcheadas y conviene la más nueva.
 
