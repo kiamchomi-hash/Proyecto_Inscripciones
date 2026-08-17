@@ -60,6 +60,12 @@ const CHEQUEOS = {
     titulo: 'Produccion (smoke)',
     comando: 'npm run smoke',
     agente: 'verificador-produccion',
+    // El aviso por Telegram de este lo manda el cron de Vercel
+    // (app/api/vigilancia), que corre cada 6 horas y no depende de que esta
+    // maquina este prendida. Duplicarlo aca serian dos mensajes por la misma
+    // caida. El archivo del escritorio si se sigue escribiendo: el smoke local
+    // mide ademas el peso comprimido del HTML, que el cron no mira.
+    avisaVercel: true,
     necesitaRed: true,
   },
   contenido: {
@@ -180,6 +186,82 @@ function escribirAviso(estado) {
   writeFileSync(AVISO, texto, 'utf8');
 }
 
+// Telegram avisa solo en los cambios de estado: cuando un chequeo pasa a fallar
+// y cuando vuelve a dar limpio. Mientras se mantiene igual no manda nada. El
+// archivo del escritorio si se reescribe en cada corrida, porque se mira cuando
+// uno quiere; el mensaje al telefono interrumpe, asi que un chequeo diario que
+// falla una semana tiene que ser un mensaje, no siete.
+//
+// "indeterminado" no dispara nada: no saber si hay un problema no es un problema.
+function transicion(previo, ahora) {
+  if (previo !== 'problema' && ahora === 'problema') return 'cayo';
+  if (previo === 'problema' && ahora === 'ok') return 'recupero';
+  return null;
+}
+
+// Telegram corta los mensajes en 4096 caracteres y el resumen puede ser la cola
+// de un log largo.
+function recortar(texto, tope) {
+  const t = texto ?? '';
+  return t.length <= tope ? t : `${t.slice(0, tope)}\n[...] (ver el log completo)`;
+}
+
+// Nunca cambia el codigo de salida ni corta el chequeo: el veredicto no puede
+// depender de que Telegram conteste. Si falta la credencial no hay aviso y ya
+// esta, el archivo del escritorio sigue siendo la red de abajo.
+async function avisarTelegram(clave, veredicto, cambio) {
+  if (!cambio) return;
+
+  if (CHEQUEOS[clave]?.avisaVercel) {
+    console.log('El aviso por Telegram de este chequeo lo manda el cron de Vercel.');
+    return;
+  }
+
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chat = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chat) {
+    console.log('Sin TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID: el aviso queda solo en el escritorio.');
+    return;
+  }
+
+  const titulo = CHEQUEOS[clave]?.titulo ?? clave;
+  const agente = CHEQUEOS[clave]?.agente ?? clave;
+
+  const texto = cambio === 'cayo'
+    ? [
+        `FALLA: ${titulo}`,
+        `siglo21sur.com`,
+        fechaLegible(),
+        '',
+        recortar(veredicto.resumen, 3000),
+        '',
+        `Para revisarlo: abrir el proyecto en Claude Code y pedir el agente "${agente}".`,
+      ].join('\n')
+    : [
+        `RESUELTO: ${titulo}`,
+        `siglo21sur.com`,
+        fechaLegible(),
+        '',
+        'El chequeo volvio a dar limpio.',
+      ].join('\n');
+
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Sin parse_mode a proposito: el resumen es la cola de un log y trae
+      // guiones bajos, asteriscos y corchetes que romperian el Markdown.
+      body: JSON.stringify({ chat_id: chat, text: texto, disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!r.ok) {
+      console.log(`Telegram respondio ${r.status}. El aviso quedo en el escritorio.`);
+    }
+  } catch (e) {
+    console.log(`No se pudo avisar por Telegram (${e.message}). El aviso quedo en el escritorio.`);
+  }
+}
+
 async function main() {
   const clave = process.argv[2];
   const chequeo = CHEQUEOS[clave];
@@ -232,10 +314,14 @@ async function main() {
   ].join('\n'), 'utf8');
 
   const estado = leerEstado();
+  // El estado anterior se mira antes de pisarlo: de ahi sale si esto es una
+  // novedad o el mismo problema de ayer.
+  const cambio = transicion(estado[clave]?.estado, veredicto.estado);
   estado[clave] = { estado: veredicto.estado, resumen: veredicto.resumen, fecha: fechaLegible(), log };
   writeFileSync(ESTADO, JSON.stringify(estado, null, 2), 'utf8');
 
   escribirAviso(estado);
+  await avisarTelegram(clave, veredicto, cambio);
 
   console.log(`${chequeo.titulo}: ${veredicto.estado}`);
   process.exit(veredicto.estado === 'problema' ? 1 : 0);

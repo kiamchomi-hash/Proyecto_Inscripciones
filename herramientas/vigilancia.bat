@@ -10,5 +10,5 @@ REM   herramientas\vigilancia.bat deps
 REM   herramientas\vigilancia.bat smoke
 REM   herramientas\vigilancia.bat contenido
 
-node herramientas\vigilancia.mjs %1
+node --env-file-if-exists=.env.local herramientas\vigilancia.mjs %1
 exit /b %errorlevel%

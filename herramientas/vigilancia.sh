@@ -11,4 +11,4 @@
 set -u
 cd "$(dirname "$0")/.." || exit 1
 
-exec node herramientas/vigilancia.mjs "${1:-}"
+exec node --env-file-if-exists=.env.local herramientas/vigilancia.mjs "${1:-}"

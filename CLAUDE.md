@@ -40,6 +40,23 @@ npm run seo          # informe semanal de Search Console (mide; no propone)
 
 - **`seo`** (`herramientas/seo-semanal.mjs`) baja Search Console firmando un JWT con la service account de `~/.gsc/service_account.json` (la misma del MCP `gsc`), así que no agrega ninguna dependencia. Deja `herramientas/vigilancia-logs/seo-ultimo.md` con páginas cuyo CTR está por debajo de lo esperable **para su posición**, consultas entre la 4 y la 15 con la página que las recibe, caídas de posición y URLs del sitemap sin indexar. Acepta `--rapido` (saltea la inspección URL por URL), `--dias=` y `--sitio=`. La ventana termina tres días antes de hoy porque GSC consolida con atraso. **Las carreras fuera de la oferta quedan afuera del informe**: redirigen a la home y está bien, pero si no se filtran copan la lista — para saber cuáles son lee la oferta vigente de Supabase. Sale con código 1 sólo ante algo roto (página caída del índice, canónica cambiada por Google, caída fuerte de tráfico), no ante una sugerencia. El criterio de qué hacer con los números lo pone el agente `estratega-seo`, que lo lee cuando se lo invoca a mano.
 
+### Vigilancia de producción: ya existe, son dos y no se duplican
+
+**Antes de proponer cualquier monitoreo, alerta o "que avise si el sitio se cae", leer esto: está hecho.** Hay dos vigilantes, a propósito, y ninguno reemplaza al otro:
+
+| | `app/api/vigilancia` (cron de Vercel) | `herramientas/vigilancia.mjs` (local) |
+|---|---|---|
+| Cuándo | cada 6 horas, declarado en `vercel.json` | cuando lo dispara el Programador de tareas |
+| Dónde | en la nube, con la máquina apagada | en la máquina de casa |
+| Qué mira | rutas, cabeceras, noindex, redirects y el sitemap entero | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
+| Cómo avisa | Telegram | archivo `REVISAR-SITIO.txt` en el escritorio + Telegram |
+
+El de Vercel es el que cubre las caídas de verdad, porque no depende de que la PC esté prendida. Se autentica con `CRON_SECRET` y **con `?prueba=1` manda un aviso de prueba sin correr los chequeos**, que es la forma de confirmar que el canal de Telegram sigue vivo sin esperar a que algo se rompa. No mide el peso comprimido del HTML a propósito: eso necesita leer los bytes del socket sin descomprimir y `fetch` descomprime solo, así que ese chequeo vive únicamente en `smoke.mjs`.
+
+El local avisa por Telegram **sólo en los cambios de estado** (`ok → problema` y `problema → ok`), no en cada corrida: un chequeo diario que falla una semana tiene que ser un mensaje, no siete. Su chequeo `smoke` lleva `avisaVercel: true` y queda fuera del aviso, porque el cron ya manda ese mensaje — sin eso, una caída llegaría dos veces. Necesita `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` en `.env.local`; si faltan, el aviso queda sólo en el escritorio y el chequeo no se rompe.
+
+Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos (`smoke.mjs` lo carga con Node pelado, que strippea los tipos). Rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más: duplicar esa lista deja a uno de los dos viejo sin que nadie se entere.
+
 Para los avisos de formulario (Telegram) está `herramientas/verificar-avisos.sql`: prueba los tres triggers de una sola pasada, con los pasos separados porque `pg_net` recién despacha el pedido cuando la transacción commitea.
 
 También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada novedad dos derivados de 1200×630 desde las fotos de `public/` — la foto limpia (`public/imagenes/novedades/<slug>.jpg`, para `imagen_url`) y la versión con el título compuesto encima (`public/imagenes/og/<slug>.jpg`, para el og:image). Depende de `sharp` (declarado como devDependency).
@@ -183,7 +200,7 @@ El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada
 
 ### Variables de entorno
 
-Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_EXPECTED_HOSTNAME` y `NEXT_PUBLIC_GA_ID`. `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` los consumen las Edge Functions, no Next.
+Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_EXPECTED_HOSTNAME` y `NEXT_PUBLIC_GA_ID`, más `REVALIDATE_SECRET` (`/api/revalidar`) y `CRON_SECRET` (`/api/vigilancia`). `WEBHOOK_SECRET` es la única que consumen sólo las Edge Functions; `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` las usan **las dos partes** — las Edge Functions `notificar`, `alerta-firewall` y `digest-clicks`, y también `/api/vigilancia`, que es Next.
 
 El `.env.local` de esta máquina tiene sólo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_GA_ID`. Alcanza para levantar el sitio y leer de la base, pero **cualquier POST a `/api/formularios` devuelve 503 en local** porque falta la service role, y `vercel env pull` no la trae (está marcada Sensitive). Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
 
