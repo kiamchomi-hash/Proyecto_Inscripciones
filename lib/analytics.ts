@@ -41,3 +41,23 @@ export function trackPreguntaFaq(modo: string) {
 export function trackSolicitudClase(materias: number) {
   track('solicitud-clase', { materias });
 }
+
+/**
+ * Un clic en cualquiera de los botones de WhatsApp que llevan al numero del
+ * CAU. Es la conversion mas transitada del sitio y hasta ahora no se media:
+ * como WhatsApp se abre en otra pestana, la visita terminaba contando como
+ * rebote, sin forma de distinguir al que escribio del que se fue.
+ *
+ * `origen` es el pathname donde ocurrio el clic. En las fichas
+ * (`/carreras/<slug>`) eso ya dice que carrera genero el lead; los botones de
+ * los modales de la home reportan `/`, porque el modal no cambia la URL - para
+ * ese tramo el dato esta en `career_clicks`, que registra que ficha se abrio.
+ *
+ * Quedan afuera a proposito los otros dos tipos de enlace `wa.me` del sitio: el
+ * de clases de apoyo va al numero del profesor y ya tiene su propio evento, y
+ * el de compartir una novedad no lleva numero - no es un lead, y sumarlo
+ * ensuciaria el total.
+ */
+export function trackWhatsapp(origen: string) {
+  track('whatsapp', { origen });
+}

@@ -17,12 +17,21 @@
 export const NUMERO_CAU = '5491166522722';
 
 /**
- * Entre quiénes se reparten las consultas que entran por WhatsApp, mitad y
- * mitad. El primero es el mismo `NUMERO_CAU`: así, si el sorteo no llega a
- * correr —JavaScript apagado, un clic antes de que hidrate—, el enlace lleva a
- * un asesor real igual.
+ * Entre quiénes se reparten las consultas que entran por WhatsApp. El primero
+ * es el mismo `NUMERO_CAU`: así, si el sorteo no llega a correr —JavaScript
+ * apagado, un clic antes de que hidrate—, el enlace lleva a un asesor real
+ * igual.
+ *
+ * **Hoy queda un solo asesor, así que no se reparte nada**: el sorteo siempre
+ * devuelve el número que ya está escrito en el HTML y todas las consultas van a
+ * Matías. Para volver a repartir alcanza con descomentar la línea de abajo (o
+ * agregar otra): el reparto vuelve solo, no hay nada más que tocar.
+ *
+ * Ojo con el `localStorage` al reactivarlo: el sorteo se guarda por visitante
+ * bajo la clave `cau-asesor`, así que quien ya tenga guardado un índice de
+ * cuando eran dos vuelve a caer en el mismo asesor que le tocó entonces.
  */
 export const ASESORES = [
   { nombre: 'Matías', numero: NUMERO_CAU },
-  { nombre: 'Viviana', numero: '5491137863510' },
+  // { nombre: 'Viviana', numero: '5491137863510' },
 ] as const;

@@ -1,16 +1,27 @@
 'use client';
 
 import { useEffect } from 'react';
+import { trackWhatsapp } from '@/lib/analytics';
 import { ASESORES, NUMERO_CAU } from '@/lib/whatsapp';
 
 /**
- * Reparte entre los asesores los clics a WhatsApp, mitad y mitad.
+ * Escucha los clics a WhatsApp: los mide siempre y, si hay más de un asesor,
+ * los reparte entre ellos.
  *
- * No toca el DOM ni reescribe ningún `href`: escucha el clic y, si a ese
- * visitante le tocó el segundo asesor, abre el enlace con el otro número. Los
- * botones se pintan en 21 lugares —varios adentro de modales que se montan y
- * desmontan— y React vuelve a poner el `href` original en cada render, así que
- * reescribirlos era pelear contra el framework en cada cambio de estado.
+ * Las dos cosas se hacen desde un solo listener delegado en `document` porque
+ * los botones se pintan en 21 lugares —varios adentro de modales que se montan
+ * y desmontan— y React vuelve a poner el `href` original en cada render: tocar
+ * el DOM botón por botón era pelear contra el framework en cada cambio de
+ * estado.
+ *
+ * **Medir** es el trabajo que corre siempre. WhatsApp se abre en otra pestaña,
+ * así que sin esto la visita que termina en un lead queda registrada igual que
+ * la que se fue sin hacer nada.
+ *
+ * **Repartir** es condicional: hoy hay un solo asesor (ver `lib/whatsapp.ts`),
+ * el sorteo devuelve el número que ya está escrito en el HTML y no hay nada que
+ * reescribir. El código queda porque volver a repartir es descomentar una línea
+ * allá, no rehacer esto.
  *
  * El sorteo se hace **una vez por visitante**, no por clic, y queda guardado en
  * el navegador: alguien que escribe, cierra y vuelve tiene que caer en el mismo
@@ -39,13 +50,12 @@ function asesorDelVisitante(): number {
 export default function WhatsappReparto() {
   useEffect(() => {
     const asesor = ASESORES[asesorDelVisitante()];
-    if (asesor.numero === NUMERO_CAU) return;
+    const reparte = asesor.numero !== NUMERO_CAU;
 
     const alHacerClic = (evento: MouseEvent) => {
-      // Ctrl/Cmd/rueda abren en otra pestaña por su cuenta: interceptarlos
-      // rompería lo que el visitante pidió.
-      if (evento.defaultPrevented || evento.button !== 0 || evento.metaKey
-        || evento.ctrlKey || evento.shiftKey || evento.altKey) return;
+      // Algo más arriba ya canceló el clic: WhatsApp no se va a abrir, así que
+      // no es un lead ni hay a dónde redirigir.
+      if (evento.defaultPrevented) return;
 
       const enlace = (evento.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
       if (!enlace) return;
@@ -54,6 +64,14 @@ export default function WhatsappReparto() {
       // no lleva número, y el de clases de apoyo lleva el del profesor.
       const href = enlace.getAttribute('href') ?? '';
       if (!href.includes(`wa.me/${NUMERO_CAU}`)) return;
+
+      trackWhatsapp(window.location.pathname);
+
+      // Ctrl/Cmd/rueda abren en otra pestaña por su cuenta: interceptarlos
+      // rompería lo que el visitante pidió. Medirlos sí, que arriba ya pasó:
+      // abrir WhatsApp en otra pestaña es tan lead como abrirlo en ésta.
+      if (!reparte || evento.button !== 0 || evento.metaKey || evento.ctrlKey
+        || evento.shiftKey || evento.altKey) return;
 
       evento.preventDefault();
       const destino = href.replace(`wa.me/${NUMERO_CAU}`, `wa.me/${asesor.numero}`);
@@ -64,11 +82,15 @@ export default function WhatsappReparto() {
       }
     };
 
-    // En burbuja y no en captura, para que los handlers de analítica de cada
-    // botón corran antes: si esto cancelara el evento en captura, el clic
-    // dejaría de medirse.
-    document.addEventListener('click', alHacerClic);
-    return () => document.removeEventListener('click', alHacerClic);
+    // En captura, no en burbuja: es la única fase que ve todos los clics. El
+    // botón de WhatsApp del encabezado de cada pregunta de la FAQ llama a
+    // `stopPropagation()` para no abrir la tarjeta, así que en burbuja su clic
+    // nunca llega a `document` y sería el único lead que no se mide. Cancelar
+    // en captura no le quita el clic a nadie: `preventDefault()` anula la
+    // navegación por defecto, no la propagación, y el reparto vuelve a abrir el
+    // enlace él mismo.
+    document.addEventListener('click', alHacerClic, true);
+    return () => document.removeEventListener('click', alHacerClic, true);
   }, []);
 
   return null;

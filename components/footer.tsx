@@ -122,8 +122,9 @@ export default function SiteFooter() {
             </ul>
 
             {/* Llena el hueco que dejaba la columna y es el canal por el que
-                entra la mayoria de las consultas. El numero lo reparte
-                `WhatsappReparto`, que escucha el clic en cualquier wa.me. */}
+                entra la mayoria de las consultas. El clic lo escucha
+                `WhatsappReparto`, que mide el lead y reparte el numero si hay
+                mas de un asesor (hoy no: ver `lib/whatsapp.ts`). */}
             <div>
             <a
               href={REDES[0].href}
