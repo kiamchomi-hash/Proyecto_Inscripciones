@@ -1,4 +1,4 @@
-// Datos de marca y clasificacion de la Academia Identidad Argentina (convenio).
+// Datos de marca y clasificacion de la Academia Identidad Argentina.
 // Fuente: fichas oficiales de diplomaturas (campo "Escuela") y manual de marca
 // (azul #0090C1 / amarillo #F1CF1C sobre fondo #101820).
 

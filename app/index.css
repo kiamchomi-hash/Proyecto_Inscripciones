@@ -937,8 +937,9 @@ mark {
   color: #101820;
 }
 
-/* Badge "Convenio" del encabezado de seccion */
+/* Aclaracion institucional del encabezado de Identidad Argentina */
 .ia-section-badge {
+  display: inline-flex;
   font-size: 0.6rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -948,6 +949,20 @@ mark {
   color: var(--ia-yellow);
   background: rgba(0, 144, 193, 0.18);
   border: 1px solid rgba(0, 144, 193, 0.45);
+}
+
+.ia-section-context {
+  max-width: 48rem;
+  margin: -0.2rem 0 0.9rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 640px) {
+  .ia-section-context {
+    font-size: 0.9rem;
+  }
 }
 
 .section-divider-ia {

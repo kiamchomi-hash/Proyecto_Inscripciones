@@ -265,7 +265,7 @@ $html$,
   'Identidad Argentina: 11 diplomaturas cortas',
   'De 1 a 6 meses, para sumar una herramienta concreta sin comprometer años: Inteligencia Artificial, RRHH, Compliance, Oratoria y más.',
   $html$
-<p>Por el convenio con <strong>Identidad Argentina</strong>, desde el CAU también se dictan <strong>11 formaciones cortas</strong> que duran entre <strong>1 y 6 meses</strong>. Son otra cosa que una carrera: sirven para sumar una herramienta concreta sin comprometer dos o cuatro años.</p>
+<p>Desde el Centro Educativo Villa Lugano también podés acceder a <strong>11 formaciones cortas de Academia Identidad Argentina</strong>, independientes de Universidad Siglo 21, que duran entre <strong>1 y 6 meses</strong>. Son otra cosa que una carrera: sirven para sumar una herramienta concreta sin comprometer dos o cuatro años.</p>
 
 <h2>Las diplomaturas</h2>
 <ul>

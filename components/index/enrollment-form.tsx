@@ -117,7 +117,7 @@ export default function EnrollmentForm({ carreras }: Props) {
   // The active filter: manual selection always wins, fallback to detected
   const activeFilter = selectedTipo || detectedCategory;
 
-  // Destacadas arriba y el convenio al final, en vez del `orden` crudo de la base
+  // Destacadas arriba e Identidad Argentina al final, en vez del `orden` crudo de la base
   const carrerasOrdenadas = useMemo(() => ordenarParaFormulario(carreras), [carreras]);
 
   // Filtered carrera list for dropdown
