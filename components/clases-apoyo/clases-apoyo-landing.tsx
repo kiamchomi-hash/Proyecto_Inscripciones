@@ -136,6 +136,7 @@ const BARRIOS = [
   'Lugano I y II',
   'Villa Soldati',
   'Mataderos',
+  'Villa Celina',
 ];
 
 export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard[] }) {
@@ -175,9 +176,7 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
         <article className="ca-tile ca-tile-texto">
           <h2>A quién le queda cerca</h2>
           <p>
-            La sede está sobre el límite de Villa Lugano con Villa Riachuelo, a pocas cuadras de
-            Avenida Piedra Buena y de General Paz. Vienen chicos de las escuelas del barrio y de los
-            barrios de al lado, muchos caminando o en una sola parada de colectivo.
+            La sede queda cerca de estos barrios:
           </p>
           <ul className="ca-barrios">
             {BARRIOS.map(b => (
