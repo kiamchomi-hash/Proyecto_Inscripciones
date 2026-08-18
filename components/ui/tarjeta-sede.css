@@ -1,0 +1,231 @@
+/* Tarjeta de perfil. Origen: Uiverse, fragmento provisto por el usuario.
+   Adaptado: perfil institucional del CAU, clases prefijadas, colores de marca,
+   fuentes locales, enlaces semánticos, foco visible y diseño responsive. */
+
+.ui-tarjeta-sede {
+  --ui-sede-tinta: #061716;
+  --ui-sede-borde: rgba(0, 255, 225, 0.72);
+  width: 100%;
+  max-width: 360px;
+  overflow: hidden;
+  color: var(--color-text-normal);
+  background: var(--color-surface);
+  border: 2px solid var(--ui-sede-borde);
+  border-radius: 14px;
+  box-shadow: 8px 8px 0 rgba(0, 199, 177, 0.2);
+}
+
+.ui-tarjeta-sede-portada {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  height: 154px;
+  overflow: hidden;
+  border-bottom: 2px solid var(--ui-sede-borde);
+  background: var(--color-deep-dark-bg);
+}
+
+.ui-tarjeta-sede-portada::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(6, 23, 22, 0.88), rgba(6, 23, 22, 0.04) 68%),
+    repeating-linear-gradient(45deg, transparent 0 8px, rgba(0, 255, 225, 0.08) 8px 10px);
+}
+
+.ui-tarjeta-sede-foto {
+  object-fit: cover;
+  object-position: center 38%;
+  transition: transform 450ms ease;
+}
+
+.ui-tarjeta-sede:hover .ui-tarjeta-sede-foto {
+  transform: scale(1.035);
+}
+
+.ui-tarjeta-sede-numero {
+  position: absolute;
+  right: -5px;
+  bottom: -17px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.16);
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: 78px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
+
+.ui-tarjeta-sede-avatar {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin-left: 18px;
+  padding: 8px;
+  background: var(--ui-sede-tinta);
+  border-top: 2px solid var(--ui-sede-borde);
+  border-right: 2px solid var(--ui-sede-borde);
+}
+
+.ui-tarjeta-sede-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.ui-tarjeta-sede-estado {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  padding: 5px 9px;
+  color: #031c18;
+  background: var(--color-accent);
+  border: 2px solid var(--ui-sede-tinta);
+  border-radius: 5px;
+  box-shadow: 3px 3px 0 var(--ui-sede-tinta);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.ui-tarjeta-sede-cuerpo {
+  padding: 18px 18px 16px;
+}
+
+.ui-tarjeta-sede-handle {
+  margin: 0 0 4px;
+  color: var(--color-highlight);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ui-tarjeta-sede-nombre {
+  margin: 0 0 12px;
+  color: #fff;
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: 21px;
+  font-weight: 750;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.ui-tarjeta-sede-bio {
+  margin: 0;
+  padding-left: 11px;
+  color: #c8dedd;
+  border-left: 4px solid var(--color-highlight);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.ui-tarjeta-sede-accesos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 2px solid var(--ui-sede-borde);
+}
+
+.ui-tarjeta-sede-acceso {
+  min-width: 0;
+  padding: 12px 5px;
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+  border-right: 1px solid rgba(0, 255, 225, 0.34);
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.ui-tarjeta-sede-acceso:last-child {
+  border-right: 0;
+}
+
+.ui-tarjeta-sede-acceso:hover {
+  color: var(--color-accent);
+  background: rgba(0, 199, 177, 0.12);
+}
+
+.ui-tarjeta-sede-valor,
+.ui-tarjeta-sede-etiqueta {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ui-tarjeta-sede-valor {
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.ui-tarjeta-sede-etiqueta {
+  margin-top: 3px;
+  color: var(--color-text-light);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ui-tarjeta-sede-boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  color: var(--ui-sede-tinta);
+  background: var(--color-highlight);
+  border-top: 2px solid var(--ui-sede-borde);
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.ui-tarjeta-sede-boton svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  transition: transform 160ms ease;
+}
+
+.ui-tarjeta-sede-boton:hover {
+  color: #fff;
+  background: var(--cau-brand-green);
+}
+
+.ui-tarjeta-sede-boton:hover svg {
+  transform: translateX(3px);
+}
+
+.ui-tarjeta-sede-acceso:focus-visible,
+.ui-tarjeta-sede-boton:focus-visible {
+  position: relative;
+  z-index: 3;
+  outline: 3px solid #fff;
+  outline-offset: -4px;
+}
+
+@media (max-width: 767px) {
+  .ui-tarjeta-sede {
+    max-width: 440px;
+    margin-inline: auto;
+    box-shadow: 6px 6px 0 rgba(0, 199, 177, 0.18);
+  }
+}

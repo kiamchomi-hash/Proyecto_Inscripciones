@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 import SiteFooter from '@/components/footer';
+import { TarjetaSede } from '@/components/ui/tarjeta-sede';
 import './sobre-nosotros.css';
 
 export const metadata: Metadata = {
@@ -379,67 +379,9 @@ export default function SobreNosotrosPage() {
               </ul>
             </div>
 
-            {/* Right: CTA card */}
-            <div
-              className="flex flex-col items-center text-center p-8 rounded-2xl w-full md:w-[320px] flex-shrink-0"
-              style={{ background: 'rgba(0,199,177,0.08)', border: '1px solid rgba(0,199,177,0.2)', backdropFilter: 'blur(8px)' }}
-            >
-              <Image
-                src="/imagenes/imagenes_cau/logo_cau.png"
-                alt="Logo Centro Educativo Villa Lugano"
-                width={72}
-                height={72}
-                className="rounded-xl mb-4 brightness-0 invert"
-              />
-              <p className="text-lg font-bold text-white mb-2">¿Tenés dudas?</p>
-              <p className="text-sm mb-5" style={{ color: '#c8dedd' }}>
-                Escribinos y te asesoramos sin compromiso sobre la carrera que más se adapte a vos.
-              </p>
-              <div className="flex flex-col gap-2.5 w-full">
-                <a
-                  href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
-                  target="_blank"
-                  rel="noopener nofollow"
-                  className="sn-whatsapp-btn inline-flex items-center gap-3 w-full py-3 px-5 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
-                  style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 0 0 .917.918l4.458-1.495A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.94 9.94 0 0 1-5.39-1.586l-.386-.238-2.65.889.889-2.65-.238-.386A9.94 9.94 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
-                  </svg>
-                  Contactanos
-                </a>
-                <Link
-                  href="/clases-apoyo/arte"
-                  className="inline-flex items-center gap-3 w-full py-2.5 px-5 rounded-full font-bold text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
-                  style={{ color: '#fff', background: 'linear-gradient(135deg, #e65c00 0%, #f9a825 100%)', border: 'none' }}
-                >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
-                  </svg>
-                  Taller de arte
-                </Link>
-                <Link
-                  href="/clases-apoyo/lengua"
-                  className="inline-flex items-center gap-3 w-full py-2.5 px-5 rounded-full font-bold text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
-                  style={{ color: '#fff', background: 'linear-gradient(135deg, #7b1fa2 0%, #ba68c8 100%)', border: 'none' }}
-                >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                  </svg>
-                  Taller de lectura
-                </Link>
-                <Link
-                  href="/clases-apoyo"
-                  className="inline-flex items-center gap-3 w-full py-2.5 px-5 rounded-full font-bold text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
-                  style={{ color: '#fff', background: 'linear-gradient(135deg, #005587 0%, #058c70 100%)', border: 'none' }}
-                >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                  </svg>
-                  Clases de apoyo
-                </Link>
-              </div>
+            {/* Right: perfil institucional adaptado del componente de Uiverse. */}
+            <div className="w-full md:w-[360px] md:self-center flex-shrink-0">
+              <TarjetaSede />
             </div>
           </div>
         </div>
