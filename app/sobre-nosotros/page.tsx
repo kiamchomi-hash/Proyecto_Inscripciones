@@ -201,7 +201,7 @@ export default function SobreNosotrosPage() {
               <p className="text-sm leading-relaxed mt-5" style={{ color: '#c8dedd' }}>
                 En el <strong className="text-white font-semibold">Centro Educativo Villa Lugano</strong>, trabajamos con el compromiso de acercar <strong className="text-white font-semibold">oportunidades reales</strong> a quienes viven en Villa Lugano y alrededores.
                 Somos <strong className="text-white font-semibold">sede oficial de la Universidad Siglo 21</strong> y además ofrecemos <strong className="text-white font-semibold">talleres culturales</strong>, <strong className="text-white font-semibold">clases de apoyo escolar</strong>,
-                <strong className="text-white font-semibold"> capacitaciones laborales</strong> y un espacio de <strong className="text-white font-semibold">coworking para emprendedores</strong>. Creemos en la educación como motor de cambio
+                <strong className="text-white font-semibold"> capacitaciones laborales</strong> y un espacio de <strong className="text-white font-semibold">coworking para emprendedores</strong>. También podés acceder desde nuestro Centro Educativo a las diplomaturas de <strong className="text-white font-semibold">Academia Identidad Argentina</strong>, una propuesta independiente de Universidad Siglo 21. Creemos en la educación como motor de cambio
                 y en brindar herramientas concretas para el <strong className="text-white font-semibold">crecimiento personal y profesional</strong>.
               </p>
             </div>

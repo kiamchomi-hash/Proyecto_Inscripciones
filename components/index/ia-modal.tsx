@@ -1,8 +1,8 @@
 'use client';
 
-// Modal de las diplomaturas de convenio (Academia Identidad Argentina).
+// Modal de las diplomaturas de Academia Identidad Argentina.
 // Mismo formato de slides que los modales de Siglo 21 (carousel-modal), pero con
-// el lenguaje visual de la marca del convenio: fondo tinta #101820 con lavados
+// el lenguaje visual de la Academia: fondo tinta #101820 con lavados
 // ambientales amarillo/azul, trama fina, tipografia pesada en mayusculas y el
 // isotipo de la academia. Referencias: identidadargentina.com.ar y el render de
 // Remotion (Desktop\Academia Identidad Argentina\remotion-diplomaturas).
@@ -142,24 +142,26 @@ function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) 
 }
 
 /**
- * Placa del convenio para el aire que queda en mobile. Las diplomaturas son
+ * Placa institucional para el aire que queda en mobile. Las diplomaturas son
  * cortas -cuatro objetivos y tres datos- y en una pantalla de telefono sobraba
  * media pantalla vacia abajo del contenido. En vez de repartir ese aire en
- * huecos, se ocupa con la marca del convenio, que es informacion real. En
+ * huecos, se ocupa con la marca de la Academia y se aclara su independencia. En
  * desktop no hace falta: ahi sobra poco y esta el isotipo de fondo, y en un
  * telefono chico tampoco aparece porque el contenido ya llena el slide (la
  * regla .ia-placa de modales.css decide cuando se muestra).
  */
-function PlacaConvenio() {
+function PlacaSede() {
   return (
     <div
       className="ia-placa flex-1 min-h-[4.5rem] rounded-lg flex-col items-center justify-center gap-2.5 px-4 text-center"
       style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.025)' }}
     >
       <Isotipo className="w-14 max-h-12 opacity-90" />
-      <p className="text-[0.58rem] font-black uppercase tracking-[0.14em] leading-relaxed text-white/50">
-        Diplomatura de convenio
-        <span className="block">CAU Villa Lugano · Academia Identidad Argentina</span>
+      <p className="text-[0.58rem] font-black uppercase tracking-[0.12em] leading-relaxed text-white/60">
+        También en nuestra sede
+        <span className="block normal-case tracking-normal font-semibold text-white/45">
+          Propuesta independiente de Universidad Siglo 21
+        </span>
       </p>
     </div>
   );
@@ -208,13 +210,13 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
           <ListaAjustada items={objetivos} rotulo="Objetivos" />
         )}
 
-        <PlacaConvenio />
+        <PlacaSede />
 
         {/* Bloques de dato: el principal (escuela) va lleno en amarillo. Van al
             pie -mt-auto- para que el aire sobrante quede en un solo lugar y no
             como un vacio abajo de todo. */}
         <div className="flex-shrink-0 mt-auto pt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <BloqueDato label="Escuela" valor={escuela || 'Convenio'} principal />
+          <BloqueDato label="Escuela" valor={escuela || 'Academia'} principal />
           <BloqueDato label="Duración" valor={carrera.duracion} />
           <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
         </div>
@@ -300,7 +302,7 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
         </div>
       )}
 
-      <PlacaConvenio />
+      <PlacaSede />
 
       {/* Al pie, como en la portada: el aire queda en un solo lugar. En mobile
           van de a dos -son datos de dos palabras- y no cuatro cintas apiladas. */}
@@ -444,7 +446,7 @@ function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; d
 // Mismo armado que el cierre de Teclab: los datos como chips en vez de cuatro
 // cintas rotuladas, todo el contenido en un solo bloque centrado en el alto, y
 // el aire sobrante ocupado por la marca -alla la foto de la ficha, aca el
-// isotipo del convenio, que es lo unico que hay-.
+// isotipo de la Academia, que es lo unico que hay-.
 function SlideCierre({ carrera }: { carrera: Carrera }) {
   const { modalidad, certificacion } = parseEnfoque(carrera.enfoque);
   // La cursada no entra: es una frase, no un dato de dos palabras. Queda en la
@@ -461,7 +463,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
       {/* El isotipo, grande y apagado, ocupando el alto que sobra */}
       <Isotipo className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] sm:w-[34rem] max-w-[135%] opacity-[0.09]" />
 
-      {/* Sin la bajada del convenio: lo dice el encabezado del modal y la placa
+      {/* Sin repetir la bajada institucional: lo dice la placa
           de los slides de adentro, y era el texto mas largo del slide. */}
       <div className="relative flex-shrink-0 flex flex-col gap-2.5">
         {/* Centrado tambien en desktop, como el cierre de Teclab: alineado a la
@@ -486,7 +488,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
           ancho y mas altos: a media pantalla cada uno quedaban chicos.
           Sin el enlace a identidadargentina.com.ar que iba al pie: el contacto
           pasa por WhatsApp o por el formulario del CAU, no por el sitio del
-          convenio. */}
+          Centro Educativo. */}
       <div className="relative flex-shrink-0 flex flex-col gap-2.5">
         <div className="flex flex-col sm:flex-row gap-2">
           <a
@@ -629,7 +631,7 @@ export default function IAModal({ carrera, onClose }: Props) {
           boxShadow: '0 0 50px rgba(0,144,193,0.3)',
         }}
       >
-        {/* Encabezado: la marca del convenio vive aca, no en cada slide */}
+        {/* Encabezado: la marca de la Academia vive aca, no en cada slide */}
         <div className="ia-modal-header flex-shrink-0 px-4 py-2.5 sm:px-6 sm:py-3 border-b" style={{ background: '#0a1219', borderColor: 'rgba(0,144,193,0.35)' }}>
           <div className="relative flex justify-between items-center gap-3">
             <div className="flex items-center gap-2.5 min-w-0">

@@ -119,7 +119,7 @@ export const CATEGORIES: CarreraCategory[] = [
   { id: 'all', label: 'Ver Todo', niveles: [], featured: false },
   { id: 'licenciaturas', label: 'Licenciaturas', sublabel: 'Grado', niveles: ['Grado', 'Grado (CCC)'], featured: true },
   { id: 'tecnicaturas', label: 'Tecnicaturas', sublabel: 'Pregrado', niveles: ['Pregrado'], featured: true },
-  { id: 'identidad_argentina', label: 'Identidad Argentina', sublabel: 'Convenio', niveles: ['Identidad Argentina'], featured: true },
+  { id: 'identidad_argentina', label: 'Identidad Argentina', sublabel: 'También en nuestra sede', niveles: ['Identidad Argentina'], featured: true },
   { id: 'teclab_tecnologia', label: 'Teclab Tecnología', sublabel: 'Tecnicaturas y cursos', niveles: ['Teclab - Tecnología', 'Teclab - Curso'], featured: true },
   { id: 'teclab_gestion', label: 'Teclab Gestión', sublabel: 'Tecnicaturas', niveles: ['Teclab - Gestión'], featured: true },
 ];
@@ -163,7 +163,7 @@ export const DESTACADAS_FORMULARIO: string[] = [
   'Psicopedagogía (CCC)',
 ];
 
-// Despues de las destacadas, por categoria. El convenio va al final: son
+// Despues de las destacadas, por categoria. Identidad Argentina va al final: son
 // diplomaturas cortas y arriba tapaban las carreras largas, que es lo que el
 // visitante viene a buscar.
 const PESO_CATEGORIA: Record<string, number> = {

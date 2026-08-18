@@ -197,7 +197,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  Convenio
+                  Propuesta independiente
                 </span>
               )}
               <button
@@ -216,7 +216,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
           {/* Metadata badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-3 sm:mt-4">
             {metaItems.map(item => {
-              // En el convenio la escuela es el dato principal: bloque amarillo lleno
+              // En Identidad Argentina la escuela es el dato principal: bloque amarillo lleno
               const esPrimario = isIA && item.label === 'Escuela';
               return (
               <div

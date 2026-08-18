@@ -351,7 +351,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
   const sectionLabels: Record<string, { title: string; accent?: string; titleFiltrado?: string; placeholder: string }> = {
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
     tecnicaturas: { title: 'Tecnicaturas', accent: 'Pregrado', placeholder: 'BUSCAR TECNICATURA...' },
-    identidad_argentina: { title: 'Identidad Argentina', accent: 'Convenio', placeholder: 'BUSCAR PROGRAMA...' },
+    identidad_argentina: { title: 'Identidad Argentina', placeholder: 'BUSCAR PROGRAMA...' },
     teclab_tecnologia: { title: 'Teclab', accent: 'Tecnología', titleFiltrado: 'Teclab Tecnología', placeholder: 'BUSCAR TECNICATURA...' },
     teclab_gestion: { title: 'Teclab', accent: 'Gestión', titleFiltrado: 'Teclab Gestión', placeholder: 'BUSCAR TECNICATURA...' },
   };
@@ -717,6 +717,11 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
   return (
     <section id={`section-${sectionId}`} className="mb-10">
       <div className="section-header-container">
+        {isIdentidadArgentina && (
+          <div className="mb-2">
+            <span className="ia-section-badge">También en nuestra sede</span>
+          </div>
+        )}
         <div className="flex items-center gap-2 sm:gap-3 mb-2 min-w-0">
           <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 pr-1">
             {title}
@@ -724,9 +729,6 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
               <> / <span style={{ color: colorAcento }}>{accent}</span></>
             )}
           </h2>
-          {isIdentidadArgentina && (
-            <span className="ia-section-badge shrink-0">Convenio</span>
-          )}
           {familiaTeclab && (
             <span className={`teclab-section-badge teclab-${familiaTeclab} shrink-0`}>
               Instituto Técnico
@@ -743,6 +745,13 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
             </svg>
           </button>
         </div>
+
+        {isIdentidadArgentina && (
+          <p className="ia-section-context">
+            Una propuesta de Academia Identidad Argentina, independiente de Universidad Siglo 21,
+            disponible a través del Centro Educativo Villa Lugano.
+          </p>
+        )}
 
         {showSearch && (
           <div className="flex items-center gap-2 mb-3">

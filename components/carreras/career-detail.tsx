@@ -471,16 +471,16 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             </section>
           )}
 
-          {/* Franja de marca del convenio: la diplomatura la dicta la Academia.
+          {/* Franja institucional: la diplomatura la dicta la Academia.
               Sin enlace a su sitio, igual que la de Teclab: el contacto se hace
               por WhatsApp o por el formulario de esta pagina. */}
           {isIA && (
             <section className="career-oficial career-oficial--ia career-reveal">
               <IsotipoIA className="career-oficial-isotipo" />
               <p>
-                Diplomatura de convenio entre el CAU Villa Lugano y la Academia Identidad
-                Argentina. Se cursa por la plataforma Innova Virtual, con certificación nacional e
-                internacional.
+                Propuesta académica de Academia Identidad Argentina, independiente de Universidad
+                Siglo 21. También disponible a través del Centro Educativo Villa Lugano. Se cursa
+                por la plataforma Innova Virtual, con certificación nacional e internacional.
               </p>
               <a href="#formulario">
                 Solicitar información

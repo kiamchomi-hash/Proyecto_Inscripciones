@@ -71,7 +71,7 @@ const MAX_DESCRIPCION = 165;
 function tituloSEO(carrera: Carrera): string {
   const nombreCompleto = carreraFullName(carrera);
 
-  // Las diplomaturas son de convenio con la Academia Identidad Argentina, no de
+  // Las diplomaturas son de Academia Identidad Argentina y son independientes de
   // la universidad: su titulo no la nombra. Las de Teclab si articulan con la
   // Siglo 21, pero el titulo lo emite el instituto: nombrar solo a la
   // universidad hacia que el resultado de Google se leyera como una carrera de
@@ -243,7 +243,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // "Administracion"): es el termino que la gente busca y da mejor CTR.
   const nombreCompleto = carreraFullName(carrera);
 
-  // Las diplomaturas son de convenio con la Academia Identidad Argentina, no de la
+  // Las diplomaturas son de Academia Identidad Argentina, no de la
   // universidad: ni el titulo, ni la descripcion, ni las keywords la nombran.
   const esIA = carrera.nivel === 'Identidad Argentina';
 
