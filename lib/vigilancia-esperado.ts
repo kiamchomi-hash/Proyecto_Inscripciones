@@ -17,6 +17,7 @@ export const BASE_PROD = 'https://www.siglo21sur.com';
 /** Rutas que siempre tienen que devolver 200. */
 export const RUTAS = [
   '/',
+  '/teclab',
   '/clases-apoyo',
   '/contacto',
   '/faq',

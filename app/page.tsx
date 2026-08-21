@@ -46,7 +46,7 @@ export default async function HomePage() {
       <main className="flex-1">
         <h1 className="sr-only">Universidad Siglo 21 en Villa Lugano: carreras e inscripciones</h1>
         <Hero />
-        <CareersCatalog carreras={carrerasData} />
+        <CareersCatalog carreras={carrerasData} teclabLandingHref="/teclab" />
         <EnrollmentForm carreras={carrerasData} />
         <StatsCounter />
       </main>

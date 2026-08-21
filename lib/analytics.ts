@@ -13,8 +13,8 @@
 
 import { track } from '@vercel/analytics';
 
-/** Desde donde se envio la consulta: el form de la home o el de /contacto. */
-export type OrigenConsulta = 'home' | 'contacto';
+/** Desde dónde se envió la consulta, para distinguir cada superficie de captación. */
+export type OrigenConsulta = 'home' | 'teclab' | 'contacto';
 
 /**
  * La carrera va como propiedad y no como evento aparte para poder agrupar por

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  categoriasPresentes,
   esCarreraVisible,
   getAreaForCarrera,
   getCategoryForCarrera,
@@ -19,6 +20,16 @@ test('el curso de Teclab aparece dentro de Teclab Tecnología', () => {
 
   assert.equal(getCategoryForCarrera(curso), 'teclab_tecnologia');
   assert.equal(esCarreraVisible(curso), true);
+});
+
+test('un formulario alimentado sólo con Teclab no ofrece categorías ajenas', () => {
+  const categorias = categoriasPresentes([
+    { nivel: 'Teclab - Tecnología' },
+    { nivel: 'Teclab - Curso' },
+    { nivel: 'Teclab - Gestión' },
+  ]);
+
+  assert.deepEqual(categorias.map(c => c.id), ['teclab_tecnologia', 'teclab_gestion']);
 });
 
 test('los cursos históricos de otros niveles continúan ocultos', () => {

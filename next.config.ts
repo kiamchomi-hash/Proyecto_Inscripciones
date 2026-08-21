@@ -133,6 +133,18 @@ const nextConfig: NextConfig = {
         destination: '/novedades/articulo/inicio-de-clases',
         statusCode: 301,
       },
+      // El articulo de Teclab (15/07/2026) y la landing /teclab cubrian el mismo
+      // tema y competian por las mismas consultas de marca: teclab, teclab
+      // carreras, teclab tecnicaturas. Se unifico en la landing, que se actualiza
+      // sola desde la base y enlaza todas las fichas; el articulo quedo con
+      // publicada = false en Supabase y su URL va con 301 aca. Toda su huella en
+      // buscadores eran 4 impresiones y 0 clics en 90 dias, asi que no se pierde
+      // nada al unificar.
+      {
+        source: '/novedades/articulo/teclab-tecnicaturas-online',
+        destination: '/teclab',
+        statusCode: 301,
+      },
       // La diplomatura de convenio se llama "Prevención de Fraude Financiero y
       // Digital" — así la nombran la landing y el material de la academia; la
       // API todavía devuelve el título corto. Se corrigió el nombre en la base

@@ -1,0 +1,488 @@
+.teclab-page {
+  --teclab-page-ink: #071822;
+  --teclab-page-ink-soft: #0d2530;
+  min-height: 100vh;
+  overflow: clip;
+  background:
+    radial-gradient(circle at 82% 28%, rgba(142, 44, 242, 0.11), transparent 28rem),
+    var(--teclab-page-ink);
+  color: #fff;
+}
+
+.teclab-hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: clamp(21rem, 52svh, 30rem);
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(115deg, #071822 0%, #0b2532 52%, #071822 100%);
+}
+
+.teclab-hero-trama,
+.teclab-hero-lines {
+  position: absolute;
+  inset: 0;
+}
+
+/* Trama geometrica en vez de una foto de fondo: no pesa nada y deja que las
+   fotos del mosaico sean lo unico que compite por la atencion. */
+.teclab-hero-trama {
+  z-index: -2;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(rgba(46, 231, 215, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 231, 215, 0.075) 1px, transparent 1px);
+  background-size: 3.4rem 3.4rem;
+  mask-image: radial-gradient(ellipse 70% 90% at 22% 50%, #000 5%, transparent 78%);
+}
+
+.teclab-hero-lines {
+  z-index: -1;
+  opacity: 0.45;
+  background:
+    linear-gradient(90deg, var(--teclab-cyan), transparent) 0 100% / min(26vw, 22rem) 2px no-repeat,
+    linear-gradient(90deg, transparent, var(--teclab-purple)) 100% 16% / min(20vw, 17rem) 2px no-repeat;
+  animation: teclabLinesIn 1.2s 0.5s ease both;
+}
+
+.teclab-hero-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: clamp(2.25rem, 4vw, 3.5rem) clamp(1.25rem, 6vw, 5rem);
+}
+
+.teclab-hero-logo {
+  width: clamp(9.5rem, 13vw, 13rem);
+  height: auto;
+  margin-bottom: clamp(1.1rem, 2.4vh, 1.6rem);
+  opacity: 0;
+  animation: teclabRise 0.65s 0.12s ease-out forwards;
+}
+
+.teclab-eyebrow {
+  color: var(--teclab-cyan);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.teclab-hero h1 {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: clamp(1.9rem, 3.5vw, 3.3rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+  text-wrap: balance;
+  opacity: 0;
+  animation: teclabRise 0.72s 0.24s ease-out forwards;
+}
+
+.teclab-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem clamp(1rem, 2vw, 1.75rem);
+  margin-top: clamp(1.4rem, 3vw, 2rem);
+  opacity: 0;
+  animation: teclabRise 0.72s 0.34s ease-out forwards;
+}
+
+.teclab-hero-actions .teclab-text-link {
+  margin-top: 0;
+}
+
+/* Prueba visual: las empresas con las que Teclab cocreo carreras. Reemplaza al
+   parrafo que estaba en el hero. */
+.teclab-hero-partners {
+  margin-top: clamp(1.75rem, 3.5vw, 2.6rem);
+  opacity: 0;
+  animation: teclabRise 0.72s 0.44s ease-out forwards;
+}
+
+.teclab-hero-partners > p {
+  margin: 0 0 0.9rem;
+  color: #7f9aa1;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.teclab-hero-partners ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem clamp(0.9rem, 1.6vw, 1.45rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teclab-hero-partners img {
+  width: auto;
+  height: clamp(0.85rem, 1.15vw, 1.05rem);
+  opacity: 0.6;
+  filter: grayscale(1);
+}
+
+.teclab-hero-mosaico {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.55rem, 1.1vw, 0.95rem);
+  opacity: 0;
+  animation: teclabRise 0.85s 0.2s ease-out forwards;
+}
+
+.teclab-hero-mosaico > div {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.45rem;
+}
+
+.teclab-hero-mosaico > div:nth-child(odd) {
+  transform: translateY(clamp(-1.4rem, -2vw, -0.7rem));
+}
+
+.teclab-hero-mosaico > div:nth-child(1) {
+  border-color: var(--teclab-cyan);
+  box-shadow: 7px 7px 0 rgba(46, 231, 215, 0.16);
+}
+
+.teclab-hero-mosaico > div:nth-child(4) {
+  border-color: var(--teclab-purple);
+  box-shadow: -7px 7px 0 rgba(142, 44, 242, 0.22);
+}
+
+.teclab-hero-mosaico img {
+  object-fit: cover;
+}
+
+.teclab-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1.15rem;
+  border: 2px solid var(--teclab-cyan);
+  border-radius: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.teclab-button--primary {
+  background: var(--teclab-cyan);
+  color: var(--teclab-page-ink);
+  box-shadow: 6px 6px 0 var(--teclab-purple);
+}
+
+.teclab-button--ghost {
+  background: rgba(7, 24, 34, 0.58);
+  color: #fff;
+}
+
+.teclab-button:hover {
+  transform: translateY(-3px);
+}
+
+.teclab-button--primary:hover {
+  box-shadow: 9px 9px 0 var(--teclab-purple);
+}
+
+.teclab-button:focus-visible,
+.teclab-text-link:focus-visible,
+.teclab-final-lead a:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.teclab-proof {
+  border-block: 1px solid rgba(46, 231, 215, 0.28);
+  background: #06131b;
+}
+
+.teclab-proof-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: 1.65rem clamp(1.25rem, 6vw, 5rem);
+}
+
+.teclab-proof-inner > div {
+  display: grid;
+  gap: 0.2rem;
+  justify-items: center;
+  padding-inline: 1rem;
+  text-align: center;
+}
+
+.teclab-proof-inner > div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.teclab-proof strong {
+  color: var(--teclab-cyan);
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: clamp(1.25rem, 2.4vw, 2.1rem);
+  line-height: 1;
+}
+
+.teclab-proof span {
+  color: #a9c1c7;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.teclab-offer {
+  padding-top: clamp(4.5rem, 8vw, 8rem);
+  scroll-margin-top: var(--navbar-height, 60px);
+}
+
+.teclab-section-intro {
+  width: min(100% - 2.5rem, 1050px);
+  margin: 0 auto clamp(2.2rem, 5vw, 4.5rem);
+  text-align: center;
+}
+
+.teclab-section-intro h2,
+.teclab-continuity h2,
+.teclab-final-lead h2 {
+  margin: 0.65rem 0 1rem;
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: clamp(2rem, 4.4vw, 4.7rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.teclab-section-intro > p:last-child {
+  max-width: 48rem;
+  margin-inline: auto;
+  color: #a9c1c7;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.teclab-page [data-testid="careers-catalog"] {
+  padding-bottom: clamp(3rem, 7vw, 7rem);
+}
+
+.teclab-page .sticky-search-wrapper {
+  background: rgba(7, 24, 34, 0.96);
+  border-color: var(--teclab-cyan);
+}
+
+.teclab-continuity {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+  align-items: end;
+  gap: clamp(3rem, 8vw, 9rem);
+  width: min(100% - 2.5rem, 1380px);
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 8rem) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.teclab-continuity-copy > p:not(.teclab-eyebrow) {
+  max-width: 48rem;
+  color: #b7cbd0;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.teclab-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1.4rem;
+  color: var(--teclab-cyan);
+  font-weight: 900;
+  text-underline-offset: 0.35rem;
+}
+
+.teclab-text-link span {
+  transition: transform 180ms ease;
+}
+
+.teclab-text-link:hover span {
+  transform: translateX(0.35rem);
+}
+
+.teclab-continuity-brand {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+  padding-left: clamp(0rem, 3vw, 3rem);
+  border-left: 2px solid var(--teclab-purple);
+}
+
+.teclab-continuity-brand img {
+  width: min(100%, 26rem);
+  height: auto;
+}
+
+.teclab-continuity-brand span {
+  max-width: 26rem;
+  color: #91aab0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.teclab-final-lead {
+  display: grid;
+  justify-items: center;
+  padding: clamp(4rem, 7vw, 7rem) 1.25rem;
+  background:
+    linear-gradient(110deg, rgba(46, 231, 215, 0.13), transparent 42%),
+    linear-gradient(250deg, rgba(142, 44, 242, 0.16), transparent 44%),
+    #0a202a;
+  text-align: center;
+}
+
+.teclab-final-lead h2 {
+  margin-bottom: 0.7rem;
+}
+
+.teclab-final-lead > p:not(.teclab-eyebrow) {
+  color: #b7cbd0;
+  font-size: 1rem;
+}
+
+.teclab-final-lead > a {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  color: var(--teclab-cyan);
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-underline-offset: 0.35rem;
+}
+
+@keyframes teclabRise {
+  from { opacity: 0; transform: translateY(1.4rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes teclabLinesIn {
+  from { opacity: 0; transform: translateX(4rem); }
+  to { opacity: 0.45; transform: translateX(0); }
+}
+
+@media (max-width: 760px) {
+  .teclab-hero {
+    min-height: 0;
+  }
+
+  .teclab-hero-trama {
+    mask-image: radial-gradient(ellipse 120% 60% at 50% 25%, #000 5%, transparent 80%);
+  }
+
+  .teclab-hero-content {
+    grid-template-columns: 1fr;
+    gap: 2.4rem;
+    padding-top: 2.5rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .teclab-hero h1 {
+    max-width: 15ch;
+    font-size: clamp(1.85rem, 7.4vw, 2.7rem);
+  }
+
+  .teclab-hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .teclab-hero-actions .teclab-text-link {
+    justify-content: center;
+  }
+
+  .teclab-button {
+    width: 100%;
+  }
+
+  .teclab-hero-mosaico {
+    gap: 0.5rem;
+  }
+
+  /* Mas bajas y sin escalonar: en una columna el desfasaje solo abre un hueco,
+     y a 4/3 el mosaico empujaba el catalogo una pantalla entera. */
+  .teclab-hero-mosaico > div {
+    aspect-ratio: 16 / 11;
+  }
+
+  .teclab-hero-mosaico > div:nth-child(odd) {
+    transform: none;
+  }
+
+  .teclab-proof-inner {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    padding-block: 1.5rem;
+  }
+
+  .teclab-proof-inner > div {
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    justify-items: start;
+    gap: 0.8rem;
+    padding: 0;
+    text-align: left;
+  }
+
+  .teclab-proof-inner > div + div {
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-left: 0;
+  }
+
+  .teclab-continuity {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .teclab-continuity-brand {
+    padding-top: 2rem;
+    padding-left: 0;
+    border-top: 2px solid var(--teclab-purple);
+    border-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teclab-hero-lines,
+  .teclab-hero-logo,
+  .teclab-hero h1,
+  .teclab-hero-actions,
+  .teclab-hero-partners,
+  .teclab-hero-mosaico {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}

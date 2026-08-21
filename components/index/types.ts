@@ -144,6 +144,12 @@ export function esCarreraVisible(c: Pick<Carrera, 'nivel'>): boolean {
   return getCategoryForCarrera(c) !== '_hidden';
 }
 
+/** Categorías que tienen al menos una opción en el conjunto recibido. */
+export function categoriasPresentes<T extends Pick<Carrera, 'nivel'>>(carreras: T[]): CarreraCategory[] {
+  const presentes = new Set(carreras.map(getCategoryForCarrera));
+  return CATEGORIES.filter(c => c.id !== 'all' && presentes.has(c.id));
+}
+
 // ── Orden del select del formulario ──
 
 // Las que van arriba de la lista, en este orden. Editar aca es todo lo que hace

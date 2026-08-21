@@ -1139,6 +1139,40 @@ mark {
   --section-category-surface: var(--teclab-ink);
 }
 
+/* Los títulos Teclab de la home son la entrada editorial a su landing. El
+   enlace conserva exactamente la jerarquía del encabezado y sólo suma una
+   flecha para no parecer texto decorativo. */
+.teclab-section-title-link {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.35em;
+  color: inherit;
+  text-decoration: none;
+}
+
+.teclab-section-title-link svg {
+  width: 0.82em;
+  height: 0.82em;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.teclab-section-title-link:hover svg {
+  color: var(--teclab-cyan);
+  transform: translateX(0.18em);
+}
+
+.teclab-section-title-link:focus-visible {
+  border-radius: 0.2rem;
+  outline: 3px solid var(--teclab-cyan);
+  outline-offset: 0.25rem;
+}
+
 .section-category-pills--identidad_argentina {
   --section-category-accent: var(--ia-blue);
   --section-category-on-accent: #ffffff;

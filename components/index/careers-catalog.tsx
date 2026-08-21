@@ -97,9 +97,11 @@ function parseCareerName(name: string): { prefix: string; cleanName: string } {
 interface Props {
   carreras: CarreraCatalogo[];
   initialCarreraSlug?: string;
+  /** Enlace opcional para convertir los encabezados Teclab de la home en acceso a su landing. */
+  teclabLandingHref?: string;
 }
 
-export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) {
+export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLandingHref }: Props) {
   // El texto largo de las fichas baja aparte, después del primer pintado.
   const detalle = useDetalleCarreras();
   const [activeCategory, setActiveCategory] = useState('all');
@@ -326,9 +328,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
       marcarUrlDeModal(carreraPath);
       modalOpenRef.current = true;
     } else if (modalOpenRef.current) {
-      document.title = `Universidad Siglo 21 CAU Villa Lugano | Oferta académica ${new Date().getFullYear()}`;
-      if (window.location.pathname !== '/') {
-        window.history.replaceState(null, '', '/');
+      document.title = defaultTitle.current;
+      if (window.location.pathname + window.location.search !== defaultPath.current) {
+        window.history.replaceState(null, '', defaultPath.current);
       }
       marcarUrlDeModal(null);
       modalOpenRef.current = false;
@@ -620,6 +622,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug }: Props) 
                       : sectionId === 'teclab_gestion' ? 'gestion'
                       : undefined
                   }
+                  titleHref={sectionId.startsWith('teclab_') ? teclabLandingHref : undefined}
                 />
               );
             })}
@@ -669,7 +672,7 @@ function getOrdenCategorias(sectionId: string): readonly { id: string; label: st
 }
 
 // Career section component
-function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab }: {
+function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab, titleHref }: {
   sectionId: string;
   title: string;
   accent?: string;
@@ -677,6 +680,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
   onCareerClick: (c: CarreraCatalogo) => void;
   isIdentidadArgentina?: boolean;
   familiaTeclab?: TeclabFamilia;
+  titleHref?: string;
 }) {
   const [sectionSearch, setSectionSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
@@ -724,9 +728,21 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
         )}
         <div className="flex items-center gap-2 sm:gap-3 mb-2 min-w-0">
           <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 pr-1">
-            {title}
-            {accent && (
-              <> / <span style={{ color: colorAcento }}>{accent}</span></>
+            {titleHref ? (
+              <Link href={titleHref} className="teclab-section-title-link" aria-label={`${title}${accent ? ` ${accent}` : ''}: ver toda la oferta Teclab`}>
+                <span>
+                  {title}
+                  {accent && <> / <span style={{ color: colorAcento }}>{accent}</span></>}
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h14M14 7l5 5-5 5" />
+                </svg>
+              </Link>
+            ) : (
+              <>
+                {title}
+                {accent && <> / <span style={{ color: colorAcento }}>{accent}</span></>}
+              </>
             )}
           </h2>
           {familiaTeclab && (

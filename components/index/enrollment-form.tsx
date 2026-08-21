@@ -2,11 +2,12 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
-import { type CarreraOpcion, CATEGORIES, getCategoryForCarrera, ordenarParaFormulario } from './types';
-import { trackConsulta } from '@/lib/analytics';
+import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from './types';
+import { trackConsulta, type OrigenConsulta } from '@/lib/analytics';
 
 interface Props {
   carreras: CarreraOpcion[];
+  origen?: OrigenConsulta;
 }
 
 // Las clases del formulario, en un solo lugar: los campos de datos personales
@@ -73,7 +74,7 @@ function CampoSelect({ id, label, value, onChange, opciones }: {
   );
 }
 
-export default function EnrollmentForm({ carreras }: Props) {
+export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
   const [selectedCarrera, setSelectedCarrera] = useState('');
   const [carreraSearch, setCarreraSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -103,8 +104,10 @@ export default function EnrollmentForm({ carreras }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const tipoDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Display categories (exclude 'all')
-  const formCategories = useMemo(() => CATEGORIES.filter(c => c.id !== 'all'), []);
+  // Mostrar sólo categorías que realmente existen entre las carreras recibidas.
+  // En la home siguen apareciendo todas; en /teclab quedan únicamente sus dos
+  // familias y no se ofrecen filtros que siempre devolverían una lista vacía.
+  const formCategories = useMemo(() => categoriasPresentes(carreras), [carreras]);
 
   // Detect category from selected carrera
   const detectedCategory = useMemo(() => {
@@ -226,7 +229,7 @@ export default function EnrollmentForm({ carreras }: Props) {
       return;
     }
 
-    trackConsulta('home', selectedCarrera || null, tipoElegido);
+    trackConsulta(origen, selectedCarrera || null, tipoElegido);
     setSubmitting(false);
     setSuccess(true);
   };

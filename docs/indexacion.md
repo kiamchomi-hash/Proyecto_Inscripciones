@@ -136,9 +136,14 @@ https://www.siglo21sur.com/sobre-nosotros
 - ✅ `/novedades/articulo/inicio-de-clases` 08/08
 - ✅ `/novedades/articulo/ivu-universitario-21-inicio-cursada` 30/07
 - ✅ `/novedades/articulo/que-es-el-cau-villa-lugano` 30/07
-- ✅ `/novedades/articulo/teclab-tecnicaturas-online` 29/07
+- ↪️ `/novedades/articulo/teclab-tecnicaturas-online` → 301 a `/teclab` (21/08). Estaba
+  indexada desde el 29/07, pero cubría el mismo tema que la landing y competía por
+  sus mismas consultas de marca con 4 impresiones y 0 clics en 90 días.
 - ✅ `/novedades/articulo/tecnicaturas-pregrado-dos-tres-anos` 30/07
 - ✅ `/sobre-nosotros` 21/07
+- ❌ `/teclab` — página nueva, todavía sin deployar. Recibe el 301 del artículo de
+  Teclab: al publicarla hay que enviarla a GSC y revisar que Google tome la
+  landing como canónica de las consultas de marca.
 
 El `○` no aplica a `/`, `/contacto`, `/faq`, `/novedades/*` ni `/sobre-nosotros`: esas
 páginas no emiten BreadcrumbList, así que su `rich_results: null` es lo esperado y no
