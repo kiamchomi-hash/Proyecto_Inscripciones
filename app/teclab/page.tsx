@@ -186,31 +186,7 @@ export default async function TeclabPage() {
           </div>
         </section>
 
-        <section className="teclab-proof" aria-label="Características de la propuesta Teclab">
-          <div className="teclab-proof-inner">
-            <div>
-              <strong>{tecnicaturas}</strong>
-              <span>Tecnicaturas activas</span>
-            </div>
-            <div>
-              <strong>100%</strong>
-              <span>Modalidad online</span>
-            </div>
-            <div>
-              <strong>{cursos > 0 ? `+${cursos}` : 'Online'}</strong>
-              <span>{cursos === 1 ? 'Curso de actualización' : 'Cursos de actualización'}</span>
-            </div>
-          </div>
-        </section>
-
-        <section id="oferta-teclab" className="teclab-offer" aria-labelledby="teclab-offer-title">
-          <div className="teclab-section-intro">
-            <p className="teclab-eyebrow">Oferta académica</p>
-            <h2 id="teclab-offer-title">Elegí el camino que querés empezar.</h2>
-            <p>
-              Explorá tecnología, gestión y negocios. Buscá por área, duración o nombre y abrí cada programa para conocerlo en detalle.
-            </p>
-          </div>
+        <section id="oferta-teclab" className="teclab-offer" aria-label="Oferta académica">
           <CareersCatalog carreras={carreras} />
         </section>
 
@@ -243,6 +219,23 @@ export default async function TeclabPage() {
           <a href={WHATSAPP} target="_blank" rel="noopener noreferrer">
             Consultar por WhatsApp <span aria-hidden="true">↗</span>
           </a>
+        </section>
+
+        <section className="teclab-proof" aria-label="Características de la propuesta Teclab">
+          <div className="teclab-proof-inner">
+            <div>
+              <strong>{tecnicaturas}</strong>
+              <span>Tecnicaturas activas</span>
+            </div>
+            <div>
+              <strong>100%</strong>
+              <span>Modalidad online</span>
+            </div>
+            <div>
+              <strong>{cursos > 0 ? `+${cursos}` : 'Online'}</strong>
+              <span>{cursos === 1 ? 'Curso de actualización' : 'Cursos de actualización'}</span>
+            </div>
+          </div>
         </section>
 
         <EnrollmentForm carreras={carreras} origen="teclab" />

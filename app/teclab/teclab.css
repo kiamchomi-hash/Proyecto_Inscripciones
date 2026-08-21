@@ -13,7 +13,7 @@
   position: relative;
   display: grid;
   align-items: center;
-  min-height: clamp(21rem, 52svh, 30rem);
+  min-height: clamp(17rem, 42svh, 24rem);
   isolation: isolate;
   overflow: hidden;
   background: linear-gradient(115deg, #071822 0%, #0b2532 52%, #071822 100%);
@@ -53,13 +53,13 @@
   gap: clamp(2rem, 5vw, 5rem);
   width: min(100%, 1500px);
   margin: 0 auto;
-  padding: clamp(2.25rem, 4vw, 3.5rem) clamp(1.25rem, 6vw, 5rem);
+  padding: clamp(1.75rem, 2.8vw, 2.5rem) clamp(1.25rem, 6vw, 5rem);
 }
 
 .teclab-hero-logo {
-  width: clamp(9.5rem, 13vw, 13rem);
+  width: clamp(8rem, 10.5vw, 10.5rem);
   height: auto;
-  margin-bottom: clamp(1.1rem, 2.4vh, 1.6rem);
+  margin-bottom: clamp(0.85rem, 1.8vh, 1.15rem);
   opacity: 0;
   animation: teclabRise 0.65s 0.12s ease-out forwards;
 }
@@ -73,13 +73,13 @@
 }
 
 .teclab-hero h1 {
-  max-width: 15ch;
+  max-width: 17ch;
   margin: 0;
-  font-family: var(--font-unbounded), sans-serif;
-  font-size: clamp(1.9rem, 3.5vw, 3.3rem);
-  font-weight: 800;
-  letter-spacing: -0.055em;
-  line-height: 0.98;
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: clamp(1.75rem, 2.9vw, 2.75rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
   text-wrap: balance;
   opacity: 0;
   animation: teclabRise 0.72s 0.24s ease-out forwards;
@@ -90,7 +90,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.8rem clamp(1rem, 2vw, 1.75rem);
-  margin-top: clamp(1.4rem, 3vw, 2rem);
+  margin-top: clamp(1.1rem, 2.2vw, 1.6rem);
   opacity: 0;
   animation: teclabRise 0.72s 0.34s ease-out forwards;
 }
@@ -102,7 +102,7 @@
 /* Prueba visual: las empresas con las que Teclab cocreo carreras. Reemplaza al
    parrafo que estaba en el hero. */
 .teclab-hero-partners {
-  margin-top: clamp(1.75rem, 3.5vw, 2.6rem);
+  margin-top: clamp(1.35rem, 2.6vw, 1.9rem);
   opacity: 0;
   animation: teclabRise 0.72s 0.44s ease-out forwards;
 }
@@ -144,7 +144,7 @@
 .teclab-hero-mosaico > div {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 0.45rem;
 }
@@ -211,7 +211,7 @@
 }
 
 .teclab-proof {
-  border-block: 1px solid rgba(46, 231, 215, 0.28);
+  border-top: 1px solid rgba(46, 231, 215, 0.28);
   background: #06131b;
 }
 
@@ -251,17 +251,10 @@
 }
 
 .teclab-offer {
-  padding-top: clamp(4.5rem, 8vw, 8rem);
+  padding-top: clamp(2.5rem, 5vw, 4.5rem);
   scroll-margin-top: var(--navbar-height, 60px);
 }
 
-.teclab-section-intro {
-  width: min(100% - 2.5rem, 1050px);
-  margin: 0 auto clamp(2.2rem, 5vw, 4.5rem);
-  text-align: center;
-}
-
-.teclab-section-intro h2,
 .teclab-continuity h2,
 .teclab-final-lead h2 {
   margin: 0.65rem 0 1rem;
@@ -271,14 +264,6 @@
   letter-spacing: -0.05em;
   line-height: 1.04;
   text-wrap: balance;
-}
-
-.teclab-section-intro > p:last-child {
-  max-width: 48rem;
-  margin-inline: auto;
-  color: #a9c1c7;
-  font-size: 1.05rem;
-  line-height: 1.7;
 }
 
 .teclab-page [data-testid="careers-catalog"] {
@@ -402,9 +387,9 @@
 
   .teclab-hero-content {
     grid-template-columns: 1fr;
-    gap: 2.4rem;
-    padding-top: 2.5rem;
-    padding-bottom: 2.75rem;
+    gap: 1.7rem;
+    padding-top: 2rem;
+    padding-bottom: 2.25rem;
   }
 
   .teclab-hero h1 {
@@ -433,7 +418,7 @@
   /* Mas bajas y sin escalonar: en una columna el desfasaje solo abre un hueco,
      y a 4/3 el mosaico empujaba el catalogo una pantalla entera. */
   .teclab-hero-mosaico > div {
-    aspect-ratio: 16 / 11;
+    aspect-ratio: 16 / 9;
   }
 
   .teclab-hero-mosaico > div:nth-child(odd) {
