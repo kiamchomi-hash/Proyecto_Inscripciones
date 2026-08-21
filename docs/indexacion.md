@@ -32,7 +32,7 @@ https://www.siglo21sur.com/sobre-nosotros
 - ✅ `/carreras/curso-de-constitucion-de-sociedades-sa-sas-srl` 04/08
 - ✅ `/carreras/diplomatura-en-ciberseguridad-aplicada` 09/08
 - ✅ ○ `/carreras/diplomatura-en-compliance` 19/07
-- ✅ `/carreras/diplomatura-en-fraude-financiero-y-digital` 04/08
+- ✅ `/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital` 04/08 (renombrada el 21/08; la URL vieja va con 301)
 - ✅ `/carreras/diplomatura-en-gestion-de-equipos-de-alto-desempeno` 04/08
 - ✅ `/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos` 12/08
 - ✅ `/carreras/diplomatura-en-oratoria` 05/08

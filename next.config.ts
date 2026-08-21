@@ -133,6 +133,16 @@ const nextConfig: NextConfig = {
         destination: '/novedades/articulo/inicio-de-clases',
         statusCode: 301,
       },
+      // La diplomatura de convenio se llama "Prevención de Fraude Financiero y
+      // Digital" — así la nombran la landing y el material de la academia; la
+      // API todavía devuelve el título corto. Se corrigió el nombre en la base
+      // (21/08/2026) y con él cambió el slug. La URL vieja estaba indexada
+      // desde el 04/08, asi que va con 301 a la nueva: es la misma ficha.
+      {
+        source: '/carreras/diplomatura-en-fraude-financiero-y-digital',
+        destination: '/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital',
+        statusCode: 301,
+      },
       // ── Carreras dadas de baja ──
       // Estas van con `statusCode: 301` y no con `permanent: true`, que emite
       // 308. Para Google los dos son equivalentes, pero el 301 es el que espera
