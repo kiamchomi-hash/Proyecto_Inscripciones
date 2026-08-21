@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 import SiteFooter from '@/components/footer';
+import VideosInstitucionales from '@/components/videos-institucionales';
 import { TarjetaSede } from '@/components/ui/tarjeta-sede';
 import './sobre-nosotros.css';
 
@@ -328,6 +329,20 @@ export default function SobreNosotrosPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ─── VIDEOS ───────────────────────────────────────── */}
+      <section className="mb-10">
+        <p className="text-xs font-semibold tracking-widest uppercase mb-3 text-center" style={{ color: '#00c7b1' }}>
+          En video
+        </p>
+        <h2
+          className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white mb-7"
+          style={{ fontFamily: 'var(--font-unbounded)' }}
+        >
+          Conocé la oferta en un minuto
+        </h2>
+        <VideosInstitucionales />
       </section>
 
       {/* ─── SERVICES: CHECKLIST ─────────────────────────── */}

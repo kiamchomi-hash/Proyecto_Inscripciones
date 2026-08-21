@@ -142,3 +142,80 @@
   opacity: 0.5;
 }
 
+
+/* ── Videos institucionales ───────────────────────────── */
+.vi-card {
+  background: linear-gradient(160deg, rgba(28, 47, 49, 0.8) 0%, rgba(22, 47, 46, 0.5) 100%);
+  border: 1px solid rgba(0, 199, 177, 0.12);
+}
+
+/* El marco reserva el 16:9 antes de que cargue nada, asi el poster no empuja
+   el texto de abajo cuando aparece. */
+.vi-marco {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #061716;
+}
+
+.vi-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.vi-fachada {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+.vi-poster {
+  object-fit: cover;
+}
+
+.vi-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px;
+  height: 68px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #061716;
+  background: #00c7b1;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  padding-left: 4px;
+  transition: filter 0.25s ease;
+}
+
+/* Nada se mueve en hover: solo se aclara el boton. */
+.vi-fachada:hover .vi-play {
+  filter: brightness(1.12);
+}
+
+.vi-fachada:focus-visible {
+  outline: 3px solid #00c7b1;
+  outline-offset: -3px;
+}
+
+.vi-duracion {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(6, 23, 22, 0.78);
+}

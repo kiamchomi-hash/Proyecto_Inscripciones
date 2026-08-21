@@ -1,0 +1,130 @@
+/* Galería de components/ui. Sólo se carga en desarrollo: la página devuelve 404
+   en producción. Ver app/laboratorio/page.tsx. */
+
+.lab-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 5rem;
+}
+
+.lab-encabezado {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 199, 177, 0.18);
+}
+
+.lab-titulo {
+  font-family: var(--font-unbounded), sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.lab-bajada {
+  color: var(--color-text-light);
+  max-width: 70ch;
+  line-height: 1.6;
+}
+
+.lab-bajada--tenue {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.lab-main code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  color: var(--color-accent);
+  background: rgba(0, 199, 177, 0.08);
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+}
+
+.lab-vacio {
+  color: var(--color-text-light);
+  padding: 3rem 0;
+}
+
+.lab-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.lab-ficha {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-card-bg);
+  border: 1px solid rgba(0, 199, 177, 0.22);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+/* El escenario es a cuadros y no liso: sobre un fondo plano no se ve si una
+   pieza tiene fondo propio, es transparente o arrastra un halo. */
+.lab-escenario {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  padding: 2rem 1.25rem;
+  background-color: #0e1918;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+  border-bottom: 1px solid rgba(0, 199, 177, 0.15);
+}
+
+.lab-datos {
+  padding: 1.25rem;
+}
+
+.lab-nombre {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.lab-descripcion {
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin-bottom: 0.9rem;
+}
+
+.lab-import {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-bottom: 0.9rem;
+  padding: 0.5rem 0.65rem;
+}
+
+.lab-meta {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--color-text-light);
+}
+
+.lab-meta > div {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lab-meta dt {
+  flex-shrink: 0;
+  min-width: 4.5rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.lab-meta dd {
+  margin: 0;
+  word-break: break-word;
+}
