@@ -1,23 +1,22 @@
 # Indexación — siglo21sur.com
 
-**16/08/2026 · 108/111.**
+**21/08/2026 · 107/111.**
 
 ## Enviar a GSC
 
 Solicitar indexación:
 
 ```
+https://www.siglo21sur.com/teclab
+https://www.siglo21sur.com/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
 ```
 
-Recrawl:
+Las dos primeras son de los deploys del 21/08 y Google todavía no las conoce. Las dos
+últimas están "descubiertas sin rastrear" desde el principio y no se mueven solas.
 
-```
-https://www.siglo21sur.com/sobre-nosotros
-```
-
-`/novedades/2` no se pide: es paginación y Google no le ve valor propio.
+No hay recrawls pendientes. `/novedades/2` se indexó solo el 17/08, sin pedirlo.
 
 ## La lista
 
@@ -27,12 +26,14 @@ https://www.siglo21sur.com/sobre-nosotros
 
 - ✅ `/carreras/abogacia` 06/08
 - ✅ `/carreras/actuario` 09/08
-- ✅ ○ `/carreras/contador-publico` 19/07
+- ✅ `/carreras/contador-publico` 16/08
 - ✅ `/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial` 03/08
 - ✅ `/carreras/curso-de-constitucion-de-sociedades-sa-sas-srl` 04/08
 - ✅ `/carreras/diplomatura-en-ciberseguridad-aplicada` 09/08
-- ✅ ○ `/carreras/diplomatura-en-compliance` 19/07
-- ✅ `/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital` 04/08 (renombrada el 21/08; la URL vieja va con 301)
+- ✅ `/carreras/diplomatura-en-compliance` 19/08
+- ❌ `/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital` — URL nueva del
+  21/08, todavía desconocida para Google. La vieja (`diplomatura-en-fraude-financiero-y-digital`)
+  estaba indexada desde el 04/08 y va con 301 a esta.
 - ✅ `/carreras/diplomatura-en-gestion-de-equipos-de-alto-desempeno` 04/08
 - ✅ `/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos` 12/08
 - ✅ `/carreras/diplomatura-en-oratoria` 05/08
@@ -80,7 +81,7 @@ https://www.siglo21sur.com/sobre-nosotros
 - ✅ `/carreras/tecnicatura-en-direccion-de-equipos-de-venta` 29/07
 - ✅ `/carreras/tecnicatura-en-direccion-de-protocolo-organizacion-de-eventos-y-rrpp` 29/07
 - ✅ `/carreras/tecnicatura-en-diseno-y-animacion-digital` 28/07
-- ❌ `/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos` — nunca rastreada
+- ❌ `/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos` — descubierta, nunca rastreada
 - ✅ `/carreras/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado` 13/08
 - ✅ `/carreras/tecnicatura-en-gestion-administrativa-de-servicios-de-salud` 29/07
 - ✅ `/carreras/tecnicatura-en-gestion-contable-e-impositiva` 09/08
@@ -89,16 +90,16 @@ https://www.siglo21sur.com/sobre-nosotros
 - ✅ ○ `/carreras/tecnicatura-en-gestion-del-clima-laboral-de-la-organizacion` 18/07
 - ✅ `/carreras/tecnicatura-en-gestion-y-auditorias-ambientales` 29/07
 - ✅ `/carreras/tecnicatura-en-hidrocarburos-y-geociencias` 09/08
-- ✅ ○ `/carreras/tecnicatura-en-higiene-y-seguridad-laboral` 19/07
-- ✅ ○ `/carreras/tecnicatura-en-investigacion-de-la-escena-del-crimen` 19/07
+- ✅ `/carreras/tecnicatura-en-higiene-y-seguridad-laboral` 19/08
+- ✅ `/carreras/tecnicatura-en-investigacion-de-la-escena-del-crimen` 16/08
 - ✅ `/carreras/tecnicatura-en-marketing-y-publicidad-digital` 28/07
-- ✅ ○ `/carreras/tecnicatura-en-negocios-agroecologicos` 19/07
+- ✅ `/carreras/tecnicatura-en-negocios-agroecologicos` 14/08
 - ✅ ○ `/carreras/tecnicatura-en-promocion-comunitaria-en-ninez-y-adolescencia` 19/07
 - ✅ `/carreras/tecnicatura-en-recursos-turisticos` 29/07
-- ✅ ○ `/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones` 19/07
+- ✅ `/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones` 17/08
 - ✅ `/carreras/tecnicatura-en-relaciones-laborales` 29/07
 - ✅ `/carreras/tecnicatura-superior-en-cloud-administration` 25/07
-- ❌ `/carreras/tecnicatura-superior-en-customer-experience` — nunca rastreada
+- ❌ `/carreras/tecnicatura-superior-en-customer-experience` — descubierta, nunca rastreada
 - ✅ `/carreras/tecnicatura-superior-en-data-science` 10/08
 - ✅ `/carreras/tecnicatura-superior-en-gestion-agraria` 31/07
 - ✅ `/carreras/tecnicatura-superior-en-gestion-contable` 09/08
@@ -127,7 +128,7 @@ https://www.siglo21sur.com/sobre-nosotros
 - ✅ `/contacto` 19/07
 - ✅ `/faq` 19/07
 - ✅ `/novedades/1` 19/07
-- ❌ `/novedades/2` 05/04
+- ✅ `/novedades/2` 17/08 (se indexó solo, sin pedirlo)
 - ✅ `/novedades/articulo/carreras-de-grado-a-distancia` 05/08
 - ✅ `/novedades/articulo/clases-de-apoyo-como-reservar-turno` 30/07
 - ✅ `/novedades/articulo/documentacion-legajo-inscripcion` 30/07
@@ -140,10 +141,11 @@ https://www.siglo21sur.com/sobre-nosotros
   indexada desde el 29/07, pero cubría el mismo tema que la landing y competía por
   sus mismas consultas de marca con 4 impresiones y 0 clics en 90 días.
 - ✅ `/novedades/articulo/tecnicaturas-pregrado-dos-tres-anos` 30/07
-- ✅ `/sobre-nosotros` 21/07
-- ❌ `/teclab` — página nueva, todavía sin deployar. Recibe el 301 del artículo de
-  Teclab: al publicarla hay que enviarla a GSC y revisar que Google tome la
-  landing como canónica de las consultas de marca.
+- ✅ `/sobre-nosotros` 21/08
+- ❌ `/teclab` — deployada el 21/08 y ya en el sitemap, todavía desconocida para
+  Google. Recibe el 301 del artículo de Teclab, que sigue figurando indexado con
+  rastreo del 29/07: Google todavía no vio la redirección. Al rastrearla, revisar que
+  tome la landing como canónica de las consultas de marca.
 
 El `○` no aplica a `/`, `/contacto`, `/faq`, `/novedades/*` ni `/sobre-nosotros`: esas
 páginas no emiten BreadcrumbList, así que su `rich_results: null` es lo esperado y no
