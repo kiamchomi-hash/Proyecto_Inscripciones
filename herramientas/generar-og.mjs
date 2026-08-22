@@ -176,6 +176,11 @@ const ARTICULOS = [
   { id: 69, slug: 'donde-queda-el-cau-villa-lugano', tag: 'Institucional',
     titulo: 'Dónde queda el CAU Villa Lugano y cómo llegar',
     foto: 'public/imagenes/imagenes_cau/edificio_siglo21_campus.jpg' },
+  // Va la foto de la propia carrera. Mide 1080x700, asi que la limpia sale a 1200
+  // de ancho en vez de 1800: estirarla mas no agrega detalle.
+  { id: 70, slug: 'que-hace-un-administrador-cloud', tag: 'Académico',
+    titulo: 'Qué hace un administrador cloud y qué se estudia',
+    foto: 'public/imagenes/teclab/carreras/cloud-administration.webp' },
 ];
 
 for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { recursive: true });
