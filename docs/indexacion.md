@@ -1,22 +1,33 @@
 # Indexación — siglo21sur.com
 
-**21/08/2026 · 107/111.**
+**22/08/2026 · 109/112.**
 
 ## Enviar a GSC
 
 Solicitar indexación:
 
 ```
-https://www.siglo21sur.com/teclab
-https://www.siglo21sur.com/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital
+https://www.siglo21sur.com/novedades/articulo/que-hace-un-administrador-cloud
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
+https://www.siglo21sur.com/novedades/articulo/segundo-semestre-2026-inicio-3-de-agosto
 ```
 
-Las dos primeras son de los deploys del 21/08 y Google todavía no las conoce. Las dos
-últimas están "descubiertas sin rastrear" desde el principio y no se mueven solas.
+La primera es la novedad del 22/08. Las dos del medio están "descubiertas sin rastrear"
+desde el principio y no se mueven solas: tienen plan de estudios cargado y entrada desde
+la home, así que no es contenido pobre sino prioridad de rastreo. La última se pide para
+que Google **vea el 301**: sigue indexada con rastreo del 30/07, ya no está en el sitemap
+y es la que carga las consultas de calendario en posición 6,5.
 
-No hay recrawls pendientes. `/novedades/2` se indexó solo el 17/08, sin pedirlo.
+`/teclab` y `/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital`, que el
+21/08 figuraban pendientes, se indexaron el mismo día del deploy.
+
+El sitemap pasó a 112 URLs. Hasta el 22/08 no se rehacía sin deploy: `sitemap.ts` es un
+Route Handler cacheado por defecto y el `revalidatePath('/sitemap.xml')` de
+`/api/revalidar` no tenía ninguna entrada ISR que invalidar, así que **el contenido
+cargado en Supabase no entraba al sitemap hasta el próximo push**. Se arregló
+declarándole `revalidate` (commit `a53999d`); todavía falta confirmarlo con un cambio de
+contenido que no venga con deploy.
 
 ## La lista
 
@@ -31,9 +42,9 @@ No hay recrawls pendientes. `/novedades/2` se indexó solo el 17/08, sin pedirlo
 - ✅ `/carreras/curso-de-constitucion-de-sociedades-sa-sas-srl` 04/08
 - ✅ `/carreras/diplomatura-en-ciberseguridad-aplicada` 09/08
 - ✅ `/carreras/diplomatura-en-compliance` 19/08
-- ❌ `/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital` — URL nueva del
-  21/08, todavía desconocida para Google. La vieja (`diplomatura-en-fraude-financiero-y-digital`)
-  estaba indexada desde el 04/08 y va con 301 a esta.
+- ✅ `/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital` 21/08 — se indexó
+  el mismo día del deploy. La vieja (`diplomatura-en-fraude-financiero-y-digital`) estaba
+  indexada desde el 04/08 y va con 301 a esta.
 - ✅ `/carreras/diplomatura-en-gestion-de-equipos-de-alto-desempeno` 04/08
 - ✅ `/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos` 12/08
 - ✅ `/carreras/diplomatura-en-oratoria` 05/08
@@ -135,17 +146,25 @@ No hay recrawls pendientes. `/novedades/2` se indexó solo el 17/08, sin pedirlo
 - ✅ `/novedades/articulo/donde-queda-el-cau-villa-lugano` 30/07
 - ✅ `/novedades/articulo/identidad-argentina-diplomaturas` 30/07
 - ✅ `/novedades/articulo/inicio-de-clases` 08/08
+- ↪️ `/novedades/articulo/segundo-semestre-2026-inicio-3-de-agosto` → 301 a
+  `inicio-de-clases`. Sigue indexada con rastreo del 30/07: Google no vio la
+  redirección y ya no está en el sitemap. Es la URL que recibe las consultas de
+  calendario en posición 6,5, así que conviene pedirla a mano para forzar el recrawl.
 - ✅ `/novedades/articulo/ivu-universitario-21-inicio-cursada` 30/07
 - ✅ `/novedades/articulo/que-es-el-cau-villa-lugano` 30/07
+- ❌ `/novedades/articulo/que-hace-un-administrador-cloud` — publicada el 22/08, todavía
+  desconocida para Google. Apunta al puesto y no a la carrera para no competirle a la
+  ficha de Cloud Administration, y le da a `customer-experience` su primer enlace
+  editorial.
 - ↪️ `/novedades/articulo/teclab-tecnicaturas-online` → 301 a `/teclab` (21/08). Estaba
   indexada desde el 29/07, pero cubría el mismo tema que la landing y competía por
   sus mismas consultas de marca con 4 impresiones y 0 clics en 90 días.
 - ✅ `/novedades/articulo/tecnicaturas-pregrado-dos-tres-anos` 30/07
 - ✅ `/sobre-nosotros` 21/08
-- ❌ `/teclab` — deployada el 21/08 y ya en el sitemap, todavía desconocida para
-  Google. Recibe el 301 del artículo de Teclab, que sigue figurando indexado con
-  rastreo del 29/07: Google todavía no vio la redirección. Al rastrearla, revisar que
-  tome la landing como canónica de las consultas de marca.
+- ✅ `/teclab` 21/08 — se indexó el mismo día del deploy, con Breadcrumbs. Recibe el 301
+  del artículo de Teclab, que sigue figurando indexado con rastreo del 29/07: Google
+  todavía no vio la redirección. Revisar que termine tomando la landing como canónica de
+  las consultas de marca.
 
 El `○` no aplica a `/`, `/contacto`, `/faq`, `/novedades/*` ni `/sobre-nosotros`: esas
 páginas no emiten BreadcrumbList, así que su `rich_results: null` es lo esperado y no
