@@ -158,7 +158,7 @@ export default async function TeclabPage() {
                   Ver las carreras
                   <span aria-hidden="true">↓</span>
                 </a>
-                <a className="teclab-text-link" href="#formulario">
+                <a className="teclab-text-link" href="#preinscripcion">
                   Quiero asesoramiento <span aria-hidden="true">→</span>
                 </a>
               </div>
@@ -225,7 +225,7 @@ export default async function TeclabPage() {
               </li>
             </ol>
 
-            <a className="teclab-brutal-button" href="#formulario">
+            <a className="teclab-brutal-button" href="#preinscripcion">
               <span className="teclab-brutal-marca" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
               </span>

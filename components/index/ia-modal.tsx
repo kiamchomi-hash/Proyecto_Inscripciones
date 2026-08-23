@@ -743,12 +743,12 @@ export default function IAModal({ carrera, onClose }: Props) {
               WhatsApp
             </a>
             <a
-              href="#preinscripcion"
+              href="#formulario"
               onClick={e => {
                 e.preventDefault();
                 handleClose();
                 setTimeout(() => {
-                  document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' });
                 }, 350);
               }}
               className="w-36 flex items-center justify-center gap-2 py-2 text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"

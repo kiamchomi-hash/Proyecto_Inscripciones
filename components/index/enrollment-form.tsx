@@ -480,8 +480,8 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
 
   return (
     <>
-      {(origen === 'home' || origen === 'teclab') && <ContactForm carreras={carreras} />}
-    <section id={origen === 'home' || origen === 'teclab' ? 'preinscripcion' : 'formulario'} className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
+      {origen === 'teclab' && <ContactForm carreras={carreras} />}
+    <section id={origen === 'teclab' ? 'preinscripcion' : 'formulario'} className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
       <div className="form-layout-grid mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
         <div className="form-content-col">
         <div className="form-card relative" style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}>
@@ -529,9 +529,9 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
             <div className="form-card-header px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)', borderRadius: '1rem 1rem 0 0' }}>
               <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center">
                 <span className="text-white">FORMULARIO DE </span>
-                <span className="text-[var(--catalogo-acento)]">PREINSCRIPCIÓN</span>
+                <span className="text-[var(--catalogo-acento)]">{origen === 'teclab' ? 'PREINSCRIPCIÓN' : 'CONTACTO'}</span>
               </h2>
-              <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">Completá tus datos para adelantar tu preinscripción.</p>
+              <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">{origen === 'teclab' ? 'Completá tus datos para adelantar tu preinscripción.' : 'Dejanos tus datos y un asesor te contacta'}</p>
             </div>
 
             {/* Body: 2 columns on md */}
@@ -799,7 +799,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
-                {submitting ? 'Enviando...' : 'Enviar preinscripción'}
+                {submitting ? 'Enviando...' : origen === 'teclab' ? 'Enviar preinscripción' : 'Enviar consulta'}
               </button>
               <a
                 href="https://wa.me/5491166522722?text=Hola%2C%20quiero%20info%20sobre%20las%20carreras"

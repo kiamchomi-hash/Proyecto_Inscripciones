@@ -429,12 +429,12 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
               WhatsApp
             </a>
             <a
-              href="#preinscripcion"
+              href="#formulario"
               onClick={(e) => {
                 e.preventDefault();
                 handleClose();
                 setTimeout(() => {
-                  const form = document.getElementById('preinscripcion');
+                  const form = document.getElementById('formulario');
                   if (form) form.scrollIntoView({ behavior: 'smooth' });
                 }, 350);
               }}
