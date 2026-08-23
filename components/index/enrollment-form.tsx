@@ -120,6 +120,13 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
   // The active filter: manual selection always wins, fallback to detected
   const activeFilter = selectedTipo || detectedCategory;
 
+  // Teclab no acredita equivalencias, así que el checkbox no va cuando la
+  // consulta es de una de sus carreras. La landing lo apaga entera —toda su
+  // oferta es Teclab— y en la home se apaga en cuanto el lead elige una
+  // carrera o el tipo Teclab.
+  const ofreceEquivalencias =
+    origen !== 'teclab' && activeFilter !== 'teclab_tecnologia' && activeFilter !== 'teclab_gestion';
+
   // Destacadas arriba e Identidad Argentina al final, en vez del `orden` crudo de la base
   const carrerasOrdenadas = useMemo(() => ordenarParaFormulario(carreras), [carreras]);
 
@@ -202,7 +209,10 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
             carrera: selectedCarrera || null,
             tipo: tipoElegido,
             modalidad: 'virtual',
-            equivalencias,
+            // Si el lead lo tildó y después eligió una carrera de Teclab, el
+            // checkbox desaparece pero el estado sigue en true: lo que viaja es
+            // el valor efectivo, no el que quedó colgado.
+            equivalencias: ofreceEquivalencias && equivalencias,
             nombre,
             apellido,
             email,
@@ -395,6 +405,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 </div>
 
                 {/* Equivalencias checkbox */}
+                {ofreceEquivalencias && (
                 <div className="flex items-center gap-2 py-0.5">
                   <div className="relative flex items-center justify-center flex-shrink-0 w-4 h-4">
                     <input
@@ -412,6 +423,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                     Quiero acreditar equivalencias
                   </label>
                 </div>
+                )}
               </div>
 
               {/* Col 2: los datos del lead. Ninguno es obligatorio: el resto de

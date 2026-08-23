@@ -539,131 +539,7 @@
   text-transform: uppercase;
 }
 
-/* ── Banda de WhatsApp ── */
-
-.teclab-whatsapp {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  isolation: isolate;
-  overflow: hidden;
-  padding: clamp(2.75rem, 5vw, 4rem) clamp(1.25rem, 6vw, 5rem);
-  border-block: 1px solid rgba(46, 231, 215, 0.28);
-  background: #06131b;
-}
-
-/* Trama de hexagonos, adaptada de la pieza "perfect-panther-30" de Shubham
-   Kandalgaonkar en UIverse (MIT). Son tres conic-gradient repetidos: no pesan
-   nada y le dan textura a la banda sin una foto de fondo. */
-.teclab-whatsapp-trama {
-  --hex: 34px;
-  --hex-color: #0000, rgba(46, 231, 215, 0.16) 0.5deg 119.5deg, #0000 120deg;
-  --hex-1: conic-gradient(from 60deg at 56.25% calc(425% / 6), var(--hex-color));
-  --hex-2: conic-gradient(from 180deg at 43.75% calc(425% / 6), var(--hex-color));
-  --hex-3: conic-gradient(from -60deg at 50% calc(175% / 12), var(--hex-color));
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background:
-    var(--hex-1), var(--hex-1) var(--hex) calc(1.73 * var(--hex)),
-    var(--hex-2), var(--hex-2) var(--hex) calc(1.73 * var(--hex)),
-    var(--hex-3) var(--hex) 0, var(--hex-3) 0 calc(1.73 * var(--hex));
-  background-size: calc(2 * var(--hex)) calc(3.46 * var(--hex));
-  /* La trama se apaga en el centro y queda a los costados: enmarca la tarjeta
-     en vez de competir con ella. */
-  mask-image: radial-gradient(ellipse 62% 130% at 50% 50%, transparent 18%, #000 78%);
-}
-
-/* El canal ya esta en el navbar, adentro del formulario y en el pie: lo unico
-   que suma aca es el numero a la vista, para el que prefiere agendarlo o
-   llamar en vez de tocar un boton. Por eso la tarjeta muestra el numero y no
-   un titular. */
-.teclab-tarjeta-wpp {
-  display: grid;
-  justify-items: start;
-  gap: 0.45rem;
-  padding: clamp(1.35rem, 2.4vw, 1.9rem) clamp(1.5rem, 2.8vw, 2.25rem);
-  border: 3px solid #fff;
-  background: #04121a;
-  box-shadow: 9px 9px 0 var(--teclab-cyan);
-}
-
-.teclab-tarjeta-wpp-numero {
-  color: #fff;
-  font-family: var(--font-inter), 'Inter', sans-serif;
-  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
-  font-weight: 900;
-  letter-spacing: -0.035em;
-  line-height: 1;
-  text-decoration: none;
-}
-
-.teclab-tarjeta-wpp-numero:hover {
-  color: var(--teclab-cyan);
-}
-
-.teclab-tarjeta-wpp .teclab-neon-button {
-  margin-top: 0.7rem;
-}
-
-.teclab-tarjeta-wpp-numero:focus-visible {
-  outline: 3px solid var(--teclab-cyan);
-  outline-offset: 4px;
-}
-
-/* Boton neon, adaptado de la pieza "ugly-robin-41" de Adam Giebl en UIverse
-   (MIT), pasado al cian de Teclab: el brillo interno y el destello que cruza
-   son de la pieza original. */
-.teclab-neon-button {
-  --neon: var(--teclab-cyan);
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  overflow: hidden;
-  min-height: 3rem;
-  padding: 0.85em 1.6em;
-  border: 2px solid var(--neon);
-  border-radius: 0.6em;
-  background: linear-gradient(to right, rgba(46, 231, 215, 0.1) 1%, transparent 40%, transparent 60%, rgba(46, 231, 215, 0.1) 100%);
-  box-shadow: inset 0 0 10px rgba(46, 231, 215, 0.4), 0 0 9px 3px rgba(46, 231, 215, 0.12);
-  color: var(--neon);
-  font-size: 0.85rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 0.3s, box-shadow 0.3s;
-}
-
-.teclab-neon-button svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  flex-shrink: 0;
-}
-
-.teclab-neon-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -4em;
-  width: 4em;
-  height: 100%;
-  background: linear-gradient(to right, transparent 1%, rgba(46, 231, 215, 0.16) 40%, rgba(46, 231, 215, 0.16) 60%, transparent 100%);
-  transition: transform 0.4s ease-in-out;
-}
-
-.teclab-neon-button:hover {
-  color: #9df7ee;
-  box-shadow: inset 0 0 10px rgba(46, 231, 215, 0.6), 0 0 9px 3px rgba(46, 231, 215, 0.22);
-}
-
-.teclab-neon-button:hover::before {
-  transform: translateX(22em);
-}
-
-.teclab-brutal-button:focus-visible,
-.teclab-neon-button:focus-visible {
+.teclab-brutal-button:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 4px;
 }
@@ -765,19 +641,6 @@
     box-shadow: 5px 5px 0 rgba(142, 44, 242, 0.25);
   }
 
-  .teclab-whatsapp {
-    justify-items: stretch;
-  }
-
-  /* La sombra dura de 9px abre scroll horizontal en una pantalla angosta. */
-  .teclab-tarjeta-wpp {
-    box-shadow: 5px 5px 0 var(--teclab-cyan);
-  }
-
-  .teclab-neon-button {
-    width: 100%;
-    justify-content: center;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -792,11 +655,9 @@
     animation: none;
   }
 
-  /* Los dos botones tomados de UIverse animan un destello en bucle mientras el
-     puntero esta encima: eso es justo lo que este modo pide apagar. */
-  .teclab-brutal-button:hover::before,
-  .teclab-neon-button::before {
+  /* El boton brutalista tomado de UIverse anima un destello en bucle mientras
+     el puntero esta encima: eso es justo lo que este modo pide apagar. */
+  .teclab-brutal-button:hover::before {
     animation: none;
-    transition: none;
   }
 }
