@@ -33,12 +33,17 @@ export default function Navbar() {
   const [overflowing, setOverflowing] = useState<Set<string>>(new Set());
   const measureRefs = useRef<Map<string, HTMLSpanElement>>(new Map());
 
-  // Keep --navbar-height in sync with actual navbar size
+  // Keep --navbar-height in sync with actual navbar size.
+  // getBoundingClientRect y no offsetHeight: offsetHeight redondea al entero, y
+  // el alto real es fraccionario porque la base rem sale de un clamp (42.78,
+  // 59.22, 62.42...). Cuando redondeaba para arriba, la barra de busqueda
+  // pegajosa se paraba un cachito mas abajo del navbar y quedaba una linea de
+  // fondo entre los dos.
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
     const ro = new ResizeObserver(() => {
-      const h = nav.offsetHeight;
+      const h = nav.getBoundingClientRect().height;
       document.documentElement.style.setProperty('--navbar-height', h + 'px');
     });
     ro.observe(nav);

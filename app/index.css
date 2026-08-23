@@ -125,7 +125,10 @@
 /* Sticky search bar */
 .sticky-search-wrapper {
   position: sticky;
-  top: var(--navbar-height, 60px);
+  /* El pixel de menos la mete abajo del navbar, que es opaco y va en z-index
+     2000: sin eso, cualquier resto de subpixel abre una linea de fondo entre
+     los dos. La barra no tiene borde superior, asi que solaparla no se ve. */
+  top: calc(var(--navbar-height, 60px) - 1px);
   z-index: 999;
   background-color: var(--catalogo-barra);
   backdrop-filter: blur(12px);
