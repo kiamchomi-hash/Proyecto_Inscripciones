@@ -38,6 +38,7 @@
   min-height: clamp(17rem, 42svh, 24rem);
   isolation: isolate;
   overflow: hidden;
+  border-bottom: 1px solid rgba(46, 231, 215, 0.42);
   background: linear-gradient(115deg, #071822 0%, #0b2532 52%, #071822 100%);
 }
 
@@ -59,12 +60,19 @@
   mask-image: radial-gradient(ellipse 70% 90% at 22% 50%, #000 5%, transparent 78%);
 }
 
+/* Tres lineas que entran desde la derecha y se meten atras del mosaico. Antes
+   habia dos: esta y una cian que hacia de borde inferior del hero, pero como
+   se iba en degrade a transparente se veia solo en el primer palmo y el resto
+   del ancho quedaba en la nada. El borde de abajo ahora es el border-bottom
+   del hero, parejo de punta a punta, y estas quedan como lo que son: una
+   familia, no una linea suelta. */
 .teclab-hero-lines {
   z-index: -1;
   opacity: 0.45;
   background:
-    linear-gradient(90deg, var(--teclab-cyan), transparent) 0 100% / min(26vw, 22rem) 2px no-repeat,
-    linear-gradient(90deg, transparent, var(--teclab-purple)) 100% 16% / min(20vw, 17rem) 2px no-repeat;
+    linear-gradient(90deg, transparent, var(--teclab-purple)) 100% 16% / min(20vw, 17rem) 2px no-repeat,
+    linear-gradient(90deg, transparent, var(--teclab-cyan)) 100% 47% / min(13vw, 11rem) 2px no-repeat,
+    linear-gradient(90deg, transparent, var(--teclab-purple)) 100% 78% / min(26vw, 22rem) 2px no-repeat;
   animation: teclabLinesIn 1.2s 0.5s ease both;
 }
 
