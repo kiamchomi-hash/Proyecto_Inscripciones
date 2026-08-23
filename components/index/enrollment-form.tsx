@@ -395,8 +395,8 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
 
   return (
     <>
-      {origen === 'home' && <ContactForm />}
-    <section id={origen === 'home' ? 'preinscripcion' : 'formulario'} className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
+      {(origen === 'home' || origen === 'teclab') && <ContactForm />}
+    <section id={origen === 'home' || origen === 'teclab' ? 'preinscripcion' : 'formulario'} className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
       <div className="form-layout-grid mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
         <div className="form-content-col">
         <div className="form-card relative" style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}>
