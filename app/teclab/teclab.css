@@ -543,14 +543,11 @@
 
 .teclab-whatsapp {
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.75rem clamp(2rem, 5vw, 4rem);
+  display: grid;
+  justify-items: center;
   isolation: isolate;
   overflow: hidden;
-  padding: clamp(2.25rem, 4vw, 3.25rem) clamp(1.25rem, 6vw, 5rem);
+  padding: clamp(2.75rem, 5vw, 4rem) clamp(1.25rem, 6vw, 5rem);
   border-block: 1px solid rgba(46, 231, 215, 0.28);
   background: #06131b;
 }
@@ -572,16 +569,46 @@
     var(--hex-2), var(--hex-2) var(--hex) calc(1.73 * var(--hex)),
     var(--hex-3) var(--hex) 0, var(--hex-3) 0 calc(1.73 * var(--hex));
   background-size: calc(2 * var(--hex)) calc(3.46 * var(--hex));
-  mask-image: linear-gradient(100deg, #000 6%, transparent 60%);
+  /* La trama se apaga en el centro y queda a los costados: enmarca la tarjeta
+     en vez de competir con ella. */
+  mask-image: radial-gradient(ellipse 62% 130% at 50% 50%, transparent 18%, #000 78%);
 }
 
-.teclab-whatsapp-copy h2 {
-  margin: 0.45rem 0 0;
+/* El canal ya esta en el navbar, adentro del formulario y en el pie: lo unico
+   que suma aca es el numero a la vista, para el que prefiere agendarlo o
+   llamar en vez de tocar un boton. Por eso la tarjeta muestra el numero y no
+   un titular. */
+.teclab-tarjeta-wpp {
+  display: grid;
+  justify-items: start;
+  gap: 0.45rem;
+  padding: clamp(1.35rem, 2.4vw, 1.9rem) clamp(1.5rem, 2.8vw, 2.25rem);
+  border: 3px solid #fff;
+  background: #04121a;
+  box-shadow: 9px 9px 0 var(--teclab-cyan);
+}
+
+.teclab-tarjeta-wpp-numero {
+  color: #fff;
   font-family: var(--font-inter), 'Inter', sans-serif;
-  font-size: clamp(1.35rem, 2.2vw, 1.95rem);
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
   font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.teclab-tarjeta-wpp-numero:hover {
+  color: var(--teclab-cyan);
+}
+
+.teclab-tarjeta-wpp .teclab-neon-button {
+  margin-top: 0.7rem;
+}
+
+.teclab-tarjeta-wpp-numero:focus-visible {
+  outline: 3px solid var(--teclab-cyan);
+  outline-offset: 4px;
 }
 
 /* Boton neon, adaptado de la pieza "ugly-robin-41" de Adam Giebl en UIverse
@@ -739,8 +766,12 @@
   }
 
   .teclab-whatsapp {
-    justify-content: flex-start;
-    gap: 1.4rem;
+    justify-items: stretch;
+  }
+
+  /* La sombra dura de 9px abre scroll horizontal en una pantalla angosta. */
+  .teclab-tarjeta-wpp {
+    box-shadow: 5px 5px 0 var(--teclab-cyan);
   }
 
   .teclab-neon-button {
