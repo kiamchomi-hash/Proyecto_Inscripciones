@@ -80,6 +80,7 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedTipo, setSelectedTipo] = useState('');
   const [showTipoDropdown, setShowTipoDropdown] = useState(false);
+  const [equivalencias, setEquivalencias] = useState(false);
   const [modalidad, setModalidad] = useState('virtual');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
@@ -148,7 +149,7 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
             carrera: selectedCarrera || null,
             tipo: tipoElegido,
             modalidad,
-            equivalencias: false,
+            equivalencias,
             nombre,
             apellido,
             email,
@@ -180,7 +181,7 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
 
   const reset = () => {
     setSuccess(false);
-    setSelectedCarrera(''); setCarreraSearch(''); setSelectedTipo(''); setModalidad('virtual');
+    setSelectedCarrera(''); setCarreraSearch(''); setSelectedTipo(''); setModalidad('virtual'); setEquivalencias(false);
     setShowDropdown(false); setShowTipoDropdown(false);
     setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad('');
     setTurnstileToken(''); setCaptchaKey((key) => key + 1); setCaptchaExpirado(false);
@@ -212,7 +213,8 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
 
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <div className="space-y-2 border-b border-[rgba(var(--catalogo-acento-rgb),0.15)] px-3 pt-3 pb-3 sm:px-4 lg:border-b-0 lg:border-r">
-                <div ref={dropdownRef}>
+                <div className="flex items-end gap-1.5">
+                <div ref={dropdownRef} className="relative min-w-0 flex-1">
                   <label htmlFor="contacto-carrera" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Carrera</label>
                   <div className="relative">
                     <input id="contacto-carrera" type="text" value={carreraSearch} onChange={e => { setCarreraSearch(e.target.value); setSelectedCarrera(''); setShowDropdown(true); }} onFocus={() => setShowDropdown(true)} placeholder="Buscar carrera..." autoComplete="off" maxLength={100} className={`${inputClass} pr-8`} />
@@ -225,7 +227,7 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
                     )}
                   </div>
                 </div>
-                <div ref={tipoDropdownRef} className="relative">
+                <div ref={tipoDropdownRef} className="relative w-36 shrink-0">
                   <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Tipo</label>
                   <button type="button" onClick={() => setShowTipoDropdown(!showTipoDropdown)} className={`relative w-full ${inputClass} cursor-pointer text-left ${activeFilter ? 'border-[var(--catalogo-acento)]/50 text-[var(--catalogo-acento)]' : ''}`}>
                     {activeFilter ? (formCategories.find(category => category.id === activeFilter)?.label || 'Todos') : 'Todos'}
@@ -236,12 +238,19 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
                     {formCategories.map(category => <button key={category.id} type="button" onClick={() => { setSelectedTipo(category.id); setSelectedCarrera(''); setCarreraSearch(''); setShowTipoDropdown(false); }} className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[var(--catalogo-acento)]/10 border-t border-[var(--catalogo-acento)]/15">{category.label}</button>)}
                   </div>}
                 </div>
+                </div>
                 <div>
                   <label htmlFor="contacto-modalidad" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Modalidad</label>
                   <select id="contacto-modalidad" value={modalidad} onChange={e => setModalidad(e.target.value)} className={`${inputClass} cursor-pointer`} style={{ colorScheme: 'dark' }}>
                     <option value="virtual">Educación Distribuida Home (Virtual)</option>
                   </select>
                 </div>
+                {!showImage && (
+                  <div className="flex items-center gap-2 py-0.5">
+                    <input type="checkbox" id="contacto-equivalencias" checked={equivalencias} onChange={e => setEquivalencias(e.target.checked)} className="h-4 w-4 accent-[var(--catalogo-acento)]" />
+                    <label htmlFor="contacto-equivalencias" className="text-xs text-[var(--catalogo-etiqueta)]">Quiero acreditar equivalencias</label>
+                  </div>
+                )}
               </div>
               <div className="space-y-2 px-3 pt-3 pb-3 sm:px-4">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Datos opcionales</p>
@@ -249,12 +258,19 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
                   <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
                   <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
                 </div>
+                {!showImage && (
+                  <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
+                    <p className="text-[12px] text-white leading-snug"><strong className="text-[var(--catalogo-acento)]">Obligatorio:</strong> mail o teléfono</p>
+                    <input type="email" placeholder="Ejemplo: tu@correo.com" value={email} onChange={e => setEmail(e.target.value)} maxLength={100} className={`${inputClass} ${emailInvalid ? '!border-red-400/60' : ''}`} />
+                    <input type="tel" placeholder="Ejemplo: 11 1234-5678" value={telefono} onChange={e => setTelefono(e.target.value)} maxLength={100} className={`${inputClass} ${telefonoError ? '!border-red-400/60' : ''}`} />
+                  </div>
+                )}
                 <input type="text" placeholder="Localidad (opcional)" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={inputClass} />
               </div>
             </div>
 
             <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
-              <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
+              {showImage && <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
                 <p className="text-[12px] text-white leading-snug flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
                   <span><strong className="text-[var(--catalogo-acento)]">Obligatorio:</strong> mail o teléfono</span>
@@ -271,7 +287,7 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
                     <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{telefonoError}</p>
                   </div>
                 </div>
-              </div>
+              </div>}
               <TurnstileWidget key={captchaKey} onVerify={(token) => { setTurnstileToken(token); setCaptchaExpirado(false); }} onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }} />
               <p className="text-[11px] leading-4 min-h-4 text-amber-300">{captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
               {error && <p className="text-[11px] text-red-400">{error}</p>}
