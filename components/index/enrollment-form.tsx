@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from './types';
 import { trackConsulta, type OrigenConsulta } from '@/lib/analytics';
@@ -103,7 +102,7 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
     : telefonoTrim.length > 30 ? 'Teléfono demasiado largo.'
     : '';
   const isValid = (email.trim() || telefonoTrim) && !emailInvalid && !telefonoError && !!turnstileToken;
-  const inputClass = 'w-full bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg px-3 py-2 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none focus:border-[var(--catalogo-acento)]/60 transition-colors';
+  const inputClass = 'w-full bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none focus:border-[var(--catalogo-acento)]/60 transition-colors';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,7 +160,8 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
 
   return (
     <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
-      <div className="mx-auto max-w-5xl px-4 sm:px-8 xl:px-20 py-8 sm:py-10">
+      <div className="contact-form-layout mx-auto w-full max-w-[2400px] px-4 sm:px-8 xl:px-20 py-4 sm:py-6">
+        <div className="form-content-col">
         <div className="form-card relative overflow-hidden" style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}>
           {success && (
             <div className="form-success-overlay active">
@@ -177,13 +177,13 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
           )}
 
           <form onSubmit={handleSubmit} noValidate className={success ? 'invisible' : undefined} aria-hidden={success}>
-            <div className="px-4 sm:px-6 pt-5 pb-4" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+            <div className="px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center"><span className="text-white">FORMULARIO DE </span><span className="text-[var(--catalogo-acento)]">CONTACTO</span></h2>
               <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">Dejanos tus datos y te contactamos para orientarte.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1fr_1fr_0.65fr]">
-              <div className="space-y-4 border-b border-[rgba(var(--catalogo-acento-rgb),0.15)] px-4 py-5 sm:px-6 lg:border-b-0 lg:border-r">
+            <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+              <div className="space-y-2 border-b border-[rgba(var(--catalogo-acento-rgb),0.15)] px-3 pt-3 pb-3 sm:px-4 lg:border-b-0 lg:border-r">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">¿Qué te interesa?</p>
                   <p className="mt-1 text-sm leading-relaxed text-[var(--catalogo-texto-suave)]">Elegí una opción para que podamos orientarte mejor.</p>
@@ -209,7 +209,7 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
                   </select>
                 </div>
               </div>
-              <div className="space-y-3 px-4 py-5 sm:px-6">
+              <div className="space-y-2 px-3 pt-3 pb-3 sm:px-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Tus datos · opcionales</p>
                   <p className="mt-1 text-sm leading-relaxed text-[var(--catalogo-texto-suave)]">Podés completarlos ahora o después, cuando avances con la preinscripción.</p>
@@ -230,16 +230,14 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
                 <p className="text-[11px] leading-4 text-amber-300">{captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
                 {error && <p className="w-full text-[11px] text-red-400">{error}</p>}
               </div>
-              <button type="submit" disabled={!isValid || submitting} className="w-full py-3 rounded-xl font-black uppercase tracking-[0.14em] text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.22)] transition-all hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40" style={{ background: 'linear-gradient(135deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))' }}>{submitting ? 'Enviando...' : 'Enviar consulta'}</button>
-              </div>
-              <div className="relative hidden min-h-[22rem] overflow-hidden bg-[#101719] xl:block">
-                <Image src="/imagenes/teclab/logo-teclab-siglo21.webp" alt="Teclab y Universidad Siglo 21" fill className="object-contain p-8" sizes="320px" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#101719]/60 via-transparent to-transparent" />
+              <button type="submit" disabled={!isValid || submitting} className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}>{submitting ? 'Enviando...' : 'Enviar consulta'}</button>
               </div>
             </div>
             <p className="px-4 sm:px-6 pb-4 text-[11px] text-[var(--catalogo-texto-suave)]">Podés dejar email o teléfono; el otro dato es opcional.</p>
           </form>
         </div>
+        </div>
+        <div className="contact-form-side-image" aria-hidden="true" />
       </div>
     </section>
   );
