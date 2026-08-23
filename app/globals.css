@@ -98,6 +98,27 @@
   --teclab-purple: #8e2cf2;
   --teclab-amber: #f4aa22;
   --teclab-ink: #071822;
+
+  /* Acento del catalogo de carreras y del formulario de consulta. Son los
+     colores de Siglo 21 por defecto, pero el catalogo se reusa en /teclab, que
+     los repinta con la marca del instituto redefiniendo estas variables sobre
+     .teclab-page. Por eso el catalogo, el buscador y el formulario no llevan
+     mas el hex a mano: el que decide es el contenedor de la pagina. */
+  --catalogo-acento: var(--color-highlight);
+  --catalogo-acento-vivo: var(--color-accent);
+  --catalogo-acento-suave: var(--color-secondary-highlight);
+  --catalogo-acento-oscuro: #009681;
+  --catalogo-acento-tinta: var(--color-deep-dark-bg);
+  --catalogo-acento-rgb: 0, 199, 177;
+  --catalogo-tarjeta: #193636;
+  --catalogo-tarjeta-hover: #062522;
+  --catalogo-barra: rgba(5, 26, 26, 0.97);
+  --catalogo-form-fondo: #162f2e;
+  --catalogo-form-tarjeta: #1c3a38;
+  --catalogo-form-panel: #16403b;
+  --catalogo-form-campo: #0f2825;
+  --catalogo-texto-suave: var(--color-text-light);
+  --catalogo-etiqueta: #9ac5be;
 }
 
 html {

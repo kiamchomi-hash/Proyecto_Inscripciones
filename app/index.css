@@ -9,7 +9,7 @@
   width: 100%;
   overflow: hidden;
   border-radius: 0.75rem;
-  border: 1px solid rgba(0, 199, 177, 0.2);
+  border: 1px solid rgba(var(--catalogo-acento-rgb), 0.2);
 }
 
 .banner-carousel-track {
@@ -35,16 +35,16 @@
 }
 
 .carousel-dot.active {
-  background: #00ffe1;
+  background: var(--catalogo-acento-vivo);
   transform: scale(1.3);
   box-shadow: 0 0 8px rgba(0, 255, 225, 0.4);
 }
 
 /* Career cards */
 .career-card {
-  --card-bg: #193636;
-  --card-hover-bg: #062522;
-  --card-border: rgba(0, 199, 177, 0.22);
+  --card-bg: var(--catalogo-tarjeta);
+  --card-hover-bg: var(--catalogo-tarjeta-hover);
+  --card-border: rgba(var(--catalogo-acento-rgb), 0.22);
   background-color: var(--card-bg);
   color: white;
   text-decoration: none;
@@ -63,9 +63,9 @@
 }
 
 .career-card:hover {
-  border-color: #00c7b1;
+  border-color: var(--catalogo-acento);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
-  background: rgba(0, 199, 177, 0.08);
+  background: rgba(var(--catalogo-acento-rgb), 0.08);
 }
 
 .career-card:hover::after {
@@ -108,13 +108,13 @@
 }
 
 .career-badge--destacada {
-  background: var(--color-highlight);
-  color: #013729;
+  background: var(--catalogo-acento);
+  color: var(--catalogo-acento-tinta);
 }
 
 /* Career prefix */
 .career-prefix {
-  color: #00ffe1;
+  color: var(--catalogo-acento-vivo);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -127,11 +127,11 @@
   position: sticky;
   top: var(--navbar-height, 60px);
   z-index: 999;
-  background-color: rgba(5, 26, 26, 0.97);
+  background-color: var(--catalogo-barra);
   backdrop-filter: blur(12px);
-  border-bottom: 2px solid #00c7b1;
-  border-left: 2px solid #00c7b1;
-  border-right: 2px solid #00c7b1;
+  border-bottom: 2px solid var(--catalogo-acento);
+  border-left: 2px solid var(--catalogo-acento);
+  border-right: 2px solid var(--catalogo-acento);
   border-radius: 0 0 1rem 1rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   margin-bottom: 1.25rem;
@@ -205,16 +205,16 @@
   flex-shrink: 0;
   padding: 0.1rem 0.4rem;
   border-radius: 5px;
-  background: rgba(0, 199, 177, 0.18);
-  color: var(--color-highlight);
+  background: rgba(var(--catalogo-acento-rgb), 0.18);
+  color: var(--catalogo-acento);
   font-size: 0.7rem;
 }
 
 /* Abierto: se marca con el color de acento y la flecha gira */
 .categories-toggle.open {
-  background-color: rgba(0, 199, 177, 0.12);
-  border-color: rgba(0, 199, 177, 0.35);
-  color: var(--color-highlight);
+  background-color: rgba(var(--catalogo-acento-rgb), 0.12);
+  border-color: rgba(var(--catalogo-acento-rgb), 0.35);
+  color: var(--catalogo-acento);
 }
 
 .categories-toggle svg {
@@ -276,13 +276,13 @@
 }
 
 .filter-pill.filter-pill-all {
-  background-color: rgba(0, 199, 177, 0.12);
-  color: #00c7b1;
-  border: 1px solid rgba(0, 199, 177, 0.35);
+  background-color: rgba(var(--catalogo-acento-rgb), 0.12);
+  color: var(--catalogo-acento);
+  border: 1px solid rgba(var(--catalogo-acento-rgb), 0.35);
 }
 
 .filter-pill.filter-pill-all:hover {
-  background-color: rgba(0, 199, 177, 0.18);
+  background-color: rgba(var(--catalogo-acento-rgb), 0.18);
 }
 
 .filter-pill.filter-pill-all.active {
@@ -452,7 +452,7 @@
   width: 8px;
   height: 8px;
   transform: translateY(-50%) rotate(45deg);
-  background: linear-gradient(145deg, #48b3a4 0%, #00c7b1 100%);
+  background: linear-gradient(145deg, var(--catalogo-acento-suave) 0%, var(--catalogo-acento) 100%);
   border-radius: 1px;
 }
 
@@ -461,9 +461,9 @@
   flex-shrink: 0;
   white-space: nowrap;
   display: inline-block;
-  color: #042620;
-  background: #00c7b1;
-  border: 1px solid #00c7b1;
+  color: var(--catalogo-acento-tinta);
+  background: var(--catalogo-acento);
+  border: 1px solid var(--catalogo-acento);
   letter-spacing: 0.03em;
   transition:
     transform 0.2s ease,
@@ -473,8 +473,8 @@
 }
 
 .detail-link:hover {
-  background: #009681;
-  border-color: #009681;
+  background: var(--catalogo-acento-oscuro);
+  border-color: var(--catalogo-acento-oscuro);
   color: #ffffff;
 }
 
@@ -495,20 +495,20 @@
   font-size: 0.78rem;
   font-weight: 700;
   white-space: nowrap;
-  background: rgba(0, 199, 177, 0.12);
-  color: #00c7b1;
-  border: 1.5px solid rgba(0, 199, 177, 0.4);
+  background: rgba(var(--catalogo-acento-rgb), 0.12);
+  color: var(--catalogo-acento);
+  border: 1.5px solid rgba(var(--catalogo-acento-rgb), 0.4);
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
 }
 .filter-toggle-btn:hover {
-  background: rgba(0, 199, 177, 0.2);
-  border-color: #00c7b1;
+  background: rgba(var(--catalogo-acento-rgb), 0.2);
+  border-color: var(--catalogo-acento);
 }
 .filter-toggle-btn.active {
-  background: rgba(0, 199, 177, 0.25);
-  border-color: #00c7b1;
+  background: rgba(var(--catalogo-acento-rgb), 0.25);
+  border-color: var(--catalogo-acento);
   color: #fff;
 }
 /* Filter count badge (circular number) */
@@ -521,15 +521,15 @@
   border-radius: 50%;
   font-size: 0.65rem;
   font-weight: 800;
-  background: rgba(0, 199, 177, 0.25);
-  color: #00c7b1;
-  border: 1px solid rgba(0, 199, 177, 0.4);
+  background: rgba(var(--catalogo-acento-rgb), 0.25);
+  color: var(--catalogo-acento);
+  border: 1px solid rgba(var(--catalogo-acento-rgb), 0.4);
   line-height: 1;
 }
 .filter-toggle-btn.active .filter-count-badge {
-  background: #00c7b1;
-  color: #011f17;
-  border-color: #00c7b1;
+  background: var(--catalogo-acento);
+  color: var(--catalogo-acento-tinta);
+  border-color: var(--catalogo-acento);
 }
 /* Clear filters button - red variant (same shape as filter-toggle-btn) */
 .filter-clear-btn-red-full {
@@ -563,7 +563,7 @@
   width: 280px;
   background: rgba(5, 26, 26, 0.98);
   backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(0, 199, 177, 0.3);
+  border: 1.5px solid rgba(var(--catalogo-acento-rgb), 0.3);
   border-radius: 12px;
   padding: 0.75rem;
   z-index: 1000;
@@ -579,8 +579,8 @@
   justify-content: space-between;
   padding: 7px 10px;
   border-radius: 8px;
-  background: rgba(0, 199, 177, 0.06);
-  border: 1px solid rgba(0, 199, 177, 0.15);
+  background: rgba(var(--catalogo-acento-rgb), 0.06);
+  border: 1px solid rgba(var(--catalogo-acento-rgb), 0.15);
   color: #c5c8ce;
   font-size: 0.75rem;
   font-weight: 700;
@@ -589,12 +589,12 @@
   width: 100%;
 }
 .filter-dropdown-header:hover {
-  background: rgba(0, 199, 177, 0.1);
+  background: rgba(var(--catalogo-acento-rgb), 0.1);
 }
 .filter-dropdown-header.open {
-  background: rgba(0, 199, 177, 0.12);
-  border-color: rgba(0, 199, 177, 0.3);
-  color: #00c7b1;
+  background: rgba(var(--catalogo-acento-rgb), 0.12);
+  border-color: rgba(var(--catalogo-acento-rgb), 0.3);
+  color: var(--catalogo-acento);
 }
 .filter-dropdown-header svg {
   transition: transform 0.2s ease;
@@ -619,14 +619,14 @@
   transition: all 0.15s ease;
 }
 .filter-option:hover {
-  background: rgba(0, 199, 177, 0.12);
-  border-color: rgba(0, 199, 177, 0.3);
+  background: rgba(var(--catalogo-acento-rgb), 0.12);
+  border-color: rgba(var(--catalogo-acento-rgb), 0.3);
   color: white;
 }
 .filter-option.active {
-  background: rgba(0, 199, 177, 0.2);
-  border-color: #00c7b1;
-  color: #00c7b1;
+  background: rgba(var(--catalogo-acento-rgb), 0.2);
+  border-color: var(--catalogo-acento);
+  color: var(--catalogo-acento);
   font-weight: 700;
 }
 /* Red clear button */
@@ -694,8 +694,8 @@
   justify-content: space-between;
   padding: 8px 12px;
   border-radius: 8px;
-  background: rgba(0, 199, 177, 0.06);
-  border: 1px solid rgba(0, 199, 177, 0.15);
+  background: rgba(var(--catalogo-acento-rgb), 0.06);
+  border: 1px solid rgba(var(--catalogo-acento-rgb), 0.15);
   color: #c5c8ce;
   font-size: 0.8rem;
   font-weight: 700;
@@ -703,9 +703,9 @@
   transition: all 0.15s ease;
 }
 .mobile-filter-header.open {
-  background: rgba(0, 199, 177, 0.12);
-  border-color: rgba(0, 199, 177, 0.3);
-  color: #00c7b1;
+  background: rgba(var(--catalogo-acento-rgb), 0.12);
+  border-color: rgba(var(--catalogo-acento-rgb), 0.3);
+  color: var(--catalogo-acento);
 }
 .mobile-filter-header svg {
   transition: transform 0.2s ease;
@@ -720,7 +720,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #00c7b1;
+  background: var(--catalogo-acento);
   display: inline-block;
 }
 
@@ -732,14 +732,14 @@
   border-radius: 9999px;
   font-size: 0.72rem;
   font-weight: 700;
-  background: rgba(0, 199, 177, 0.15);
-  color: #00c7b1;
-  border: 1px solid rgba(0, 199, 177, 0.3);
+  background: rgba(var(--catalogo-acento-rgb), 0.15);
+  color: var(--catalogo-acento);
+  border: 1px solid rgba(var(--catalogo-acento-rgb), 0.3);
 }
 
 /* Search highlight */
 mark {
-  background: rgba(0, 199, 177, 0.3);
+  background: rgba(var(--catalogo-acento-rgb), 0.3);
   color: white;
   border-radius: 2px;
   padding: 0 1px;
@@ -768,7 +768,7 @@ mark {
   font-weight: 600;
   background-color: rgba(28, 47, 49, 0.7);
   color: white;
-  border: 1.5px solid rgba(0, 199, 177, 0.25);
+  border: 1.5px solid rgba(var(--catalogo-acento-rgb), 0.25);
   box-shadow:
     0 2px 10px rgba(0, 0, 0, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
@@ -790,9 +790,9 @@ mark {
 
 .search-input-custom:focus-visible {
   outline: none;
-  border-color: #00c7b1;
+  border-color: var(--catalogo-acento);
   box-shadow:
-    0 0 0 1px rgba(0, 199, 177, 0.12),
+    0 0 0 1px rgba(var(--catalogo-acento-rgb), 0.12),
     0 1px 8px rgba(0, 0, 0, 0.18);
   background-color: rgba(28, 47, 49, 0.9);
 }
@@ -1118,9 +1118,9 @@ mark {
 
 /* ── Categorías internas de cada familia académica ── */
 .section-category-pills {
-  --section-category-accent: var(--color-highlight);
-  --section-category-on-accent: #013729;
-  --section-category-surface: #0f2825;
+  --section-category-accent: var(--catalogo-acento);
+  --section-category-on-accent: var(--catalogo-acento-tinta);
+  --section-category-surface: var(--catalogo-form-campo);
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
@@ -1208,16 +1208,19 @@ mark {
 }
 
 /* ── Pildoras de categoria del filtro principal ── */
-.filter-pill-teclab {
+/* Con un solo `.filter-pill-teclab` la regla perdia contra `.filter-pill.featured`,
+   que es mas especifica y ademas viene despues: las pildoras de Teclab salian
+   con el verde de Siglo 21 en vez de su cian y su violeta. */
+.filter-pill.filter-pill-teclab {
   color: color-mix(in srgb, var(--teclab-accent) 55%, white);
   background-color: color-mix(in srgb, var(--teclab-accent) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--teclab-accent) 45%, transparent);
   font-weight: 900;
 }
-.filter-pill-teclab:hover {
+.filter-pill.filter-pill-teclab:hover {
   background-color: color-mix(in srgb, var(--teclab-accent) 28%, transparent);
 }
-.filter-pill-teclab.active {
+.filter-pill.filter-pill-teclab.active {
   background-color: rgba(255, 255, 255, 0.9) !important;
   color: #1a1a1a !important;
   border-color: rgba(255, 255, 255, 0.6);

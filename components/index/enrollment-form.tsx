@@ -12,9 +12,9 @@ interface Props {
 
 // Las clases del formulario, en un solo lugar: los campos de datos personales
 // son once y repetirlas en cada uno hacía que una se corrigiera y las otras no.
-const ETIQUETA = 'block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider';
-const CAMPO = 'w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors';
-const BORDE_OK = 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60';
+const ETIQUETA = 'block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider';
+const CAMPO = 'w-full bg-[var(--catalogo-form-campo)] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none transition-colors';
+const BORDE_OK = 'border-[var(--catalogo-acento)]/25 focus:border-[var(--catalogo-acento)]/60';
 
 // Como figura en el DNI argentino.
 const SEXOS = ['Femenino', 'Masculino', 'Otro'];
@@ -66,7 +66,7 @@ function CampoSelect({ id, label, value, onChange, opciones }: {
           <option value="">Sin especificar</option>
           {opciones.map(opcion => <option key={opcion} value={opcion}>{opcion}</option>)}
         </select>
-        <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--catalogo-acento)]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
@@ -235,16 +235,16 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
   };
 
   return (
-    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid #00c7b1', background: '#162f2e', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
+    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
       <div className="form-layout-grid mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
         <div className="form-content-col">
-        <div className="form-card relative" style={{ background: '#1c3a38', border: '1px solid rgba(0,199,177,0.3)', borderRadius: '1rem' }}>
+        <div className="form-card relative" style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}>
 
           {/* Success overlay */}
           {success && (
             <div className="form-success-overlay active">
               <div className="flex flex-col items-center gap-3 text-center">
-                <div className="w-16 h-16 rounded-full bg-[#00c7b1] flex items-center justify-center" style={{ animation: 'formSuccessPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both' }}>
+                <div className="w-16 h-16 rounded-full bg-[var(--catalogo-acento)] flex items-center justify-center" style={{ animation: 'formSuccessPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both' }}>
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3} style={{ strokeDasharray: 30, strokeDashoffset: 30, animation: 'formSuccessCheck 0.4s ease 0.6s forwards' }}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
@@ -252,7 +252,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 <p className="text-xl font-black text-white uppercase tracking-tight" style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 0.7s forwards' }}>
                   Consulta enviada
                 </p>
-                <p className="text-sm text-[#7ca19b]" style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 0.85s forwards' }}>
+                <p className="text-sm text-[var(--catalogo-texto-suave)]" style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 0.85s forwards' }}>
                   Nos comunicaremos a la brevedad
                 </p>
                 <button
@@ -264,7 +264,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                     setLocalidad(''); setEquivalencias(false); setTurnstileToken('');
                     setDni(''); setSexo('');
                   }}
-                  className="mt-2 text-sm font-bold text-[#00c7b1] hover:text-white transition-colors cursor-pointer underline underline-offset-2"
+                  className="mt-2 text-sm font-bold text-[var(--catalogo-acento)] hover:text-white transition-colors cursor-pointer underline underline-offset-2"
                   style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 1s forwards' }}
                 >
                   Enviar otra consulta
@@ -276,23 +276,23 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
           <form onSubmit={handleSubmit} noValidate>
 
             {/* Header */}
-            <div className="form-card-header px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(0,199,177,0.15)', borderRadius: '1rem 1rem 0 0' }}>
+            <div className="form-card-header px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)', borderRadius: '1rem 1rem 0 0' }}>
               <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center">
                 <span className="text-white">FORMULARIO DE </span>
-                <span className="text-[#00c7b1]">CONTACTO</span>
+                <span className="text-[var(--catalogo-acento)]">CONTACTO</span>
               </h2>
-              <p className="text-xs text-[#7ca19b] text-center mt-1">Dejanos tus datos y un asesor te contacta</p>
+              <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">Dejanos tus datos y un asesor te contacta</p>
             </div>
 
             {/* Body: 2 columns on md */}
-            <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(0,199,177,0.15)' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
 
               {/* Col 1: Carrera selection */}
-              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderBottom: '1px solid rgba(0,199,177,0.15)' }}>
+              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
 
                 {/* Carrera searchable dropdown + tipo filter */}
                 <div ref={dropdownRef}>
-                  <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">
+                  <label className="block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider">
                     Seleccionar carrera
                   </label>
 
@@ -307,26 +307,26 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                         placeholder="Buscar carrera..."
                         autoComplete="off"
                         maxLength={100}
-                        className="w-full bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 pr-8 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors"
+                        className="w-full bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg px-3 py-1.5 pr-8 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none focus:border-[var(--catalogo-acento)]/60 transition-colors"
                       />
-                      <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--catalogo-acento)]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
 
                       {showDropdown && (
-                        <div className="absolute z-20 w-full mt-1 bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg shadow-xl overflow-hidden" style={{ maxHeight: 160, overflowY: 'auto' }}>
+                        <div className="absolute z-20 w-full mt-1 bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg shadow-xl overflow-hidden" style={{ maxHeight: 160, overflowY: 'auto' }}>
                           {filteredCarreras.map(c => (
                             <button
                               key={c.id}
                               type="button"
                               onClick={() => selectCarrera(c.nombre)}
-                              className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[#00c7b1]/10 transition-colors border-b border-[#00c7b1]/15 last:border-b-0"
+                              className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[var(--catalogo-acento)]/10 transition-colors border-b border-[var(--catalogo-acento)]/15 last:border-b-0"
                             >
                               {c.nombre}
                             </button>
                           ))}
                           {filteredCarreras.length === 0 && (
-                            <div className="px-3 py-2 text-sm text-[#7ca19b]">Sin resultados</div>
+                            <div className="px-3 py-2 text-sm text-[var(--catalogo-texto-suave)]">Sin resultados</div>
                           )}
                         </div>
                       )}
@@ -337,24 +337,24 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                       <button
                         type="button"
                         onClick={() => setShowTipoDropdown(!showTipoDropdown)}
-                        className={`bg-[#0f2825] border rounded-lg pl-2.5 pr-7 py-1.5 text-sm font-bold focus:outline-none transition-colors cursor-pointer h-full text-left ${
+                        className={`bg-[var(--catalogo-form-campo)] border rounded-lg pl-2.5 pr-7 py-1.5 text-sm font-bold focus:outline-none transition-colors cursor-pointer h-full text-left ${
                           activeFilter
-                            ? 'border-[#00c7b1]/50 text-[#00c7b1]'
-                            : 'border-[#00c7b1]/25 text-[#7ca19b]'
+                            ? 'border-[var(--catalogo-acento)]/50 text-[var(--catalogo-acento)]'
+                            : 'border-[var(--catalogo-acento)]/25 text-[var(--catalogo-texto-suave)]'
                         }`}
                       >
                         {activeFilter ? (formCategories.find(c => c.id === activeFilter)?.label || 'Todos') : 'Todos'}
                       </button>
-                      <svg className={`pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60 transition-transform ${showTipoDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <svg className={`pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--catalogo-acento)]/60 transition-transform ${showTipoDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
 
                       {showTipoDropdown && (
-                        <div className="absolute z-20 w-full mt-1 bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg shadow-xl overflow-hidden right-0 min-w-[140px]" style={{ maxHeight: 200, overflowY: 'auto' }}>
+                        <div className="absolute z-20 w-full mt-1 bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg shadow-xl overflow-hidden right-0 min-w-[140px]" style={{ maxHeight: 200, overflowY: 'auto' }}>
                           <button
                             type="button"
                             onClick={() => { setSelectedTipo(''); setSelectedCarrera(''); setCarreraSearch(''); setShowTipoDropdown(false); }}
-                            className={`w-full text-left px-3 py-1.5 text-sm transition-colors border-b border-[#00c7b1]/15 ${!activeFilter ? 'text-[#00c7b1] bg-[#00c7b1]/10' : 'text-white hover:bg-[#00c7b1]/10'}`}
+                            className={`w-full text-left px-3 py-1.5 text-sm transition-colors border-b border-[var(--catalogo-acento)]/15 ${!activeFilter ? 'text-[var(--catalogo-acento)] bg-[var(--catalogo-acento)]/10' : 'text-white hover:bg-[var(--catalogo-acento)]/10'}`}
                           >
                             Todos
                           </button>
@@ -363,7 +363,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                               key={c.id}
                               type="button"
                               onClick={() => { setSelectedTipo(c.id); setSelectedCarrera(''); setCarreraSearch(''); setShowTipoDropdown(false); }}
-                              className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${i < formCategories.length - 1 ? 'border-b border-[#00c7b1]/15' : ''} ${activeFilter === c.id ? 'text-[#00c7b1] bg-[#00c7b1]/10' : 'text-white hover:bg-[#00c7b1]/10'}`}
+                              className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${i < formCategories.length - 1 ? 'border-b border-[var(--catalogo-acento)]/15' : ''} ${activeFilter === c.id ? 'text-[var(--catalogo-acento)] bg-[var(--catalogo-acento)]/10' : 'text-white hover:bg-[var(--catalogo-acento)]/10'}`}
                             >
                               {c.label}
                             </button>
@@ -376,19 +376,19 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
 
                 {/* Modalidad */}
                 <div>
-                  <label htmlFor="form-modalidad" className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider">
+                  <label htmlFor="form-modalidad" className="block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider">
                     Modalidad
                   </label>
                   <div className="relative">
                     <select
                       id="form-modalidad"
-                      className="w-full appearance-none bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#00c7b1]/60 transition-colors cursor-pointer"
+                      className="w-full appearance-none bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[var(--catalogo-acento)]/60 transition-colors cursor-pointer"
                       style={{ colorScheme: 'dark' }}
                       defaultValue="virtual"
                     >
                       <option value="virtual">Educacion Distribuida Home (Virtual)</option>
                     </select>
-                    <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#00c7b1]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--catalogo-acento)]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -402,13 +402,13 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                       id="form-equivalencias"
                       checked={equivalencias}
                       onChange={e => setEquivalencias(e.target.checked)}
-                      className="peer w-full h-full appearance-none bg-[#0f2825] border border-[#00c7b1]/30 rounded checked:bg-[#00c7b1] checked:border-[#00c7b1] focus:outline-none cursor-pointer transition-colors"
+                      className="peer w-full h-full appearance-none bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/30 rounded checked:bg-[var(--catalogo-acento)] checked:border-[var(--catalogo-acento)] focus:outline-none cursor-pointer transition-colors"
                     />
-                    <svg className="pointer-events-none absolute inset-0 m-auto h-2.5 w-2.5 text-[#013729] opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                    <svg className="pointer-events-none absolute inset-0 m-auto h-2.5 w-2.5 text-[var(--catalogo-acento-tinta)] opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <label htmlFor="form-equivalencias" className="text-xs text-[#c8deda] cursor-pointer">
+                  <label htmlFor="form-equivalencias" className="text-xs text-[var(--catalogo-etiqueta)] cursor-pointer">
                     Quiero acreditar equivalencias
                   </label>
                 </div>
@@ -416,8 +416,8 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
 
               {/* Col 2: los datos del lead. Ninguno es obligatorio: el resto de
                   lo que pide la preinscripción se le pide después, a mano. */}
-              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(0,199,177,0.15)' }}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#7ca19b]">Opcional</p>
+              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-texto-suave)]">Opcional</p>
 
                 <div className="grid grid-cols-2 gap-1.5">
                   <CampoTexto id="form-nombre" label="Nombre" placeholder="Nombre" value={nombre} onChange={setNombre} />
@@ -435,20 +435,20 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
 
             {/* Cómo te escribimos: es lo único obligatorio, y va último para que
                 el que abandona a mitad del formulario ya lo haya completado. */}
-            <div className="px-3 sm:px-4 pt-3 pb-1" style={{ borderBottom: '1px solid rgba(0,199,177,0.15)' }}>
-              <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid #00c7b1' }}>
+            <div className="px-3 sm:px-4 pt-3 pb-1" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+              <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
                 <p className="text-[12px] text-white leading-snug flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c7b1" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 16v-4" />
                     <path d="M12 8h.01" />
                   </svg>
-                  <span><strong className="text-[#00c7b1]">Obligatorio:</strong> mail o teléfono</span>
+                  <span><strong className="text-[var(--catalogo-acento)]">Obligatorio:</strong> mail o teléfono</span>
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   <div>
-                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-email">
+                    <label className="block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider" htmlFor="form-email">
                       Email {!telefono.trim() && <span className="text-red-400/70">*</span>}
                     </label>
                     <input
@@ -458,7 +458,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       maxLength={100}
-                      className={`w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors ${emailInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60'}`}
+                      className={`w-full bg-[var(--catalogo-form-campo)] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none transition-colors ${emailInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[var(--catalogo-acento)]/25 focus:border-[var(--catalogo-acento)]/60'}`}
                     />
                     <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">
                       {emailInvalid ? 'El formato del email no es válido.' : ''}
@@ -466,7 +466,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-[#9ac5be] mb-0.5 uppercase tracking-wider" htmlFor="form-telefono">
+                    <label className="block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider" htmlFor="form-telefono">
                       Telefono {!email.trim() && <span className="text-red-400/70">*</span>}
                     </label>
                     <input
@@ -476,7 +476,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                       value={telefono}
                       onChange={e => setTelefono(e.target.value)}
                       maxLength={100}
-                      className={`w-full bg-[#0f2825] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none transition-colors ${telefonoInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[#00c7b1]/25 focus:border-[#00c7b1]/60'}`}
+                      className={`w-full bg-[var(--catalogo-form-campo)] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none transition-colors ${telefonoInvalid ? 'border-red-400/60 focus:border-red-400' : 'border-[var(--catalogo-acento)]/25 focus:border-[var(--catalogo-acento)]/60'}`}
                     />
                     <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{telefonoError}</p>
                   </div>
@@ -503,7 +503,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 type="submit"
                 disabled={!isValid || submitting}
                 className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ background: 'linear-gradient(90deg, #00c7b1, #009681)', color: '#013729', letterSpacing: '0.12em' }}
+                style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
                 {submitting ? 'Enviando...' : 'Enviar consulta'}
               </button>
@@ -511,7 +511,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 href="https://wa.me/5491166522722?text=Hola%2C%20quiero%20info%20sobre%20las%20carreras"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 text-xs text-[#b7d1cd] hover:text-white transition-colors"
+                className="flex items-center justify-center gap-2 text-xs text-[var(--catalogo-etiqueta)] hover:text-white transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>

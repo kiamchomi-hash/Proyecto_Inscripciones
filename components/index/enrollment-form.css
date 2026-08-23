@@ -2,8 +2,8 @@
   min-height: 34rem;
   display: grid;
   place-items: center;
-  border-top: 2px solid #00c7b1;
-  background: #162f2e;
+  border-top: 2px solid var(--catalogo-acento);
+  background: var(--catalogo-form-fondo);
   color: #f4f8f7;
   scroll-margin-top: var(--navbar-height, 60px);
 }
@@ -13,7 +13,7 @@
 }
 
 .deferred-enrollment-placeholder span {
-  color: #00c7b1;
+  color: var(--catalogo-acento);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -22,7 +22,7 @@
 
 .deferred-enrollment-placeholder p {
   margin-top: 0.5rem;
-  color: #b7d1cd;
+  color: var(--catalogo-etiqueta);
   font-size: 0.88rem;
 }
 
@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: center;
   border-radius: inherit;
-  background: #1c3a38;
+  background: var(--catalogo-form-tarjeta);
   transform: translateY(100%);
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -114,13 +114,13 @@
     position: relative;
     display: block;
     overflow: hidden;
-    border: 1px solid rgba(0, 199, 177, 0.3);
+    border: 1px solid rgba(var(--catalogo-acento-rgb), 0.3);
     border-left: none;
     border-radius: 0 1rem 1rem 0;
     /* El logotipo va centrado y a tamaño fijo, no en `cover`: estirarlo al
        ancho del panel agrandaba las letras hasta recortarlas. El panel sigue
        el verde de la tarjeta para que se lea como una sola pieza. */
-    background-color: #16403b;
+    background-color: var(--catalogo-form-panel);
     background-image: url('/imagenes/imagenes_cau/siglo21-marca.svg');
     background-size: 58% auto;
     background-position: center;
@@ -135,7 +135,7 @@
     bottom: 0;
     left: 0;
     width: 1px;
-    background: rgba(0, 199, 177, 0.3);
+    background: rgba(var(--catalogo-acento-rgb), 0.3);
     pointer-events: none;
   }
 }

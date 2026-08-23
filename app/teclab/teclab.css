@@ -1,6 +1,28 @@
 .teclab-page {
   --teclab-page-ink: #071822;
   --teclab-page-ink-soft: #0d2530;
+
+  /* El catalogo, el buscador y el formulario son los mismos componentes que la
+     home, pero aca no es Siglo 21 quien firma: repintarlos es redefinir los
+     tokens --catalogo-* que declara globals.css. Nada de esto toca la home ni
+     el pie, que queda fuera de .teclab-page a proposito porque el pie es del
+     CAU y es igual en todo el sitio. */
+  --catalogo-acento: var(--teclab-cyan);
+  --catalogo-acento-vivo: #7ff6ea;
+  --catalogo-acento-suave: #26b7ab;
+  --catalogo-acento-oscuro: #17bdae;
+  --catalogo-acento-tinta: var(--teclab-page-ink);
+  --catalogo-acento-rgb: 46, 231, 215;
+  --catalogo-tarjeta: #102934;
+  --catalogo-tarjeta-hover: #0a1f29;
+  --catalogo-barra: rgba(6, 20, 28, 0.97);
+  --catalogo-form-fondo: #08202b;
+  --catalogo-form-tarjeta: #0d2734;
+  --catalogo-form-panel: #0d2734;
+  --catalogo-form-campo: #071b24;
+  --catalogo-texto-suave: #7f9aa1;
+  --catalogo-etiqueta: #9fc0c7;
+
   min-height: 100vh;
   overflow: clip;
   background:
@@ -204,8 +226,7 @@
 }
 
 .teclab-button:focus-visible,
-.teclab-text-link:focus-visible,
-.teclab-final-lead a:focus-visible {
+.teclab-text-link:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 4px;
 }
@@ -250,47 +271,56 @@
   text-transform: uppercase;
 }
 
+/* Sin aire arriba: la barra de busqueda no tiene borde superior y las esquinas
+   redondeadas son solo las de abajo, o sea que esta dibujada para colgar de
+   algo. Con padding quedaba flotando en el medio de la nada hasta que el scroll
+   la pegaba al navbar; asi cuelga del hero desde el principio. */
 .teclab-offer {
-  padding-top: clamp(2.5rem, 5vw, 4.5rem);
+  padding-top: 0;
   scroll-margin-top: var(--navbar-height, 60px);
-}
-
-.teclab-continuity h2,
-.teclab-final-lead h2 {
-  margin: 0.65rem 0 1rem;
-  font-family: var(--font-unbounded), sans-serif;
-  font-size: clamp(2rem, 4.4vw, 4.7rem);
-  font-weight: 700;
-  letter-spacing: -0.05em;
-  line-height: 1.04;
-  text-wrap: balance;
 }
 
 .teclab-page [data-testid="careers-catalog"] {
   padding-bottom: clamp(3rem, 7vw, 7rem);
 }
 
-.teclab-page .sticky-search-wrapper {
-  background: rgba(7, 24, 34, 0.96);
-  border-color: var(--teclab-cyan);
+/* El panel que acompaña al formulario a partir de 1600px trae la marca de
+   Siglo 21: aca la firma es la del instituto. */
+.teclab-page .form-side-image {
+  background-image: url('/imagenes/teclab/logo-teclab.webp');
+  background-size: 38% auto;
 }
+
+/* ── Continuidad: de la tecnicatura a la licenciatura ── */
 
 .teclab-continuity {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
-  align-items: end;
-  gap: clamp(3rem, 8vw, 9rem);
+  grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
+  align-items: center;
+  gap: clamp(2.5rem, 6vw, 6rem);
   width: min(100% - 2.5rem, 1380px);
   margin: 0 auto;
-  padding: clamp(4rem, 8vw, 8rem) 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding: clamp(4rem, 8vw, 7rem) 0;
+}
+
+/* Inter y no Unbounded: la Unbounded a 4.7rem se comia el bloque entero y no se
+   parecia en nada al hero, que es el que fija el tono de la pagina. */
+.teclab-continuity h2 {
+  margin: 0.7rem 0 1.1rem;
+  max-width: 20ch;
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: clamp(1.6rem, 2.8vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
 }
 
 .teclab-continuity-copy > p:not(.teclab-eyebrow) {
-  max-width: 48rem;
+  max-width: 44ch;
   color: #b7cbd0;
-  font-size: 1.05rem;
-  line-height: 1.75;
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
 .teclab-text-link {
@@ -311,59 +341,309 @@
   transform: translateX(0.35rem);
 }
 
-.teclab-continuity-brand {
+/* Panel de la ruta. Ficha con borde grueso y sombra dura desplazada: el mismo
+   gesto brutalista que ya usaban el boton del hero y el mosaico. */
+.teclab-ruta {
   display: grid;
-  gap: 1.25rem;
   justify-items: start;
-  padding-left: clamp(0rem, 3vw, 3rem);
-  border-left: 2px solid var(--teclab-purple);
+  gap: 1.25rem;
+  padding: clamp(1.5rem, 2.4vw, 2rem);
+  border: 3px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.6rem;
+  background: #0a1f2a;
+  box-shadow: 10px 10px 0 rgba(142, 44, 242, 0.25);
 }
 
-.teclab-continuity-brand img {
-  width: min(100%, 26rem);
+.teclab-ruta-marca {
+  width: min(100%, 17rem);
   height: auto;
 }
 
-.teclab-continuity-brand span {
-  max-width: 26rem;
+.teclab-ruta-pasos {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teclab-ruta-paso {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--teclab-cyan);
+  border-radius: 0 0.35rem 0.35rem 0;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.teclab-ruta-paso--siglo {
+  border-left-color: var(--teclab-purple);
+}
+
+.teclab-ruta-paso-orden {
+  color: var(--teclab-cyan);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.teclab-ruta-paso--siglo .teclab-ruta-paso-orden {
+  color: #c39bff;
+}
+
+.teclab-ruta-paso strong {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.teclab-ruta-paso-dato {
   color: #91aab0;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
+}
+
+.teclab-ruta-flecha {
+  display: grid;
+  place-items: center;
+  padding-left: 1.1rem;
+}
+
+.teclab-ruta-flecha svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  stroke: rgba(255, 255, 255, 0.34);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.teclab-ruta-pie {
+  margin: 0;
+  color: #7f9aa1;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.11em;
   line-height: 1.6;
   text-transform: uppercase;
 }
 
-.teclab-final-lead {
-  display: grid;
-  justify-items: center;
-  padding: clamp(4rem, 7vw, 7rem) 1.25rem;
-  background:
-    linear-gradient(110deg, rgba(46, 231, 215, 0.13), transparent 42%),
-    linear-gradient(250deg, rgba(142, 44, 242, 0.16), transparent 44%),
-    #0a202a;
-  text-align: center;
-}
-
-.teclab-final-lead h2 {
-  margin-bottom: 0.7rem;
-}
-
-.teclab-final-lead > p:not(.teclab-eyebrow) {
-  color: #b7cbd0;
-  font-size: 1rem;
-}
-
-.teclab-final-lead > a {
+/* Boton brutalista, adaptado de la pieza "fast-cat-82" de 0xnihilism en
+   UIverse (MIT): borde blanco, contorno tinta, sombra dura y un destello que
+   barre el boton al pasar por encima. */
+.teclab-brutal-button {
+  position: relative;
   display: inline-flex;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-  color: var(--teclab-cyan);
+  align-items: center;
+  gap: 0.7rem;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0.7rem 1.1rem;
+  border: 3px solid #fff;
+  outline: 3px solid var(--teclab-page-ink);
+  background-color: #04121a;
+  box-shadow: 6px 6px 0 var(--teclab-cyan);
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, background-color 0.12s ease-out, color 0.12s ease-out;
+}
+
+.teclab-brutal-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+}
+
+.teclab-brutal-button:hover::before {
+  opacity: 1;
+  animation: teclabDestello 2s infinite;
+}
+
+.teclab-brutal-button:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 10px 10px 0 var(--teclab-purple);
+}
+
+.teclab-brutal-button:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--teclab-cyan);
+  border-color: var(--teclab-page-ink);
+  background-color: var(--teclab-cyan);
+  color: var(--teclab-page-ink);
+}
+
+.teclab-brutal-marca {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  background: var(--teclab-cyan);
+  transition: transform 0.2s ease-out;
+}
+
+.teclab-brutal-marca svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  stroke: var(--teclab-page-ink);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.teclab-brutal-button:hover .teclab-brutal-marca {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+.teclab-brutal-button:active .teclab-brutal-marca {
+  background: var(--teclab-page-ink);
+}
+
+.teclab-brutal-button:active .teclab-brutal-marca svg {
+  stroke: var(--teclab-cyan);
+}
+
+.teclab-brutal-texto {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  text-align: left;
+  transition: transform 0.2s ease-out;
+}
+
+.teclab-brutal-button:hover .teclab-brutal-texto {
+  transform: skew(-5deg);
+}
+
+.teclab-brutal-texto span:first-child {
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.teclab-brutal-texto span:last-child {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ── Banda de WhatsApp ── */
+
+.teclab-whatsapp {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.75rem clamp(2rem, 5vw, 4rem);
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(2.25rem, 4vw, 3.25rem) clamp(1.25rem, 6vw, 5rem);
+  border-block: 1px solid rgba(46, 231, 215, 0.28);
+  background: #06131b;
+}
+
+/* Trama de hexagonos, adaptada de la pieza "perfect-panther-30" de Shubham
+   Kandalgaonkar en UIverse (MIT). Son tres conic-gradient repetidos: no pesan
+   nada y le dan textura a la banda sin una foto de fondo. */
+.teclab-whatsapp-trama {
+  --hex: 34px;
+  --hex-color: #0000, rgba(46, 231, 215, 0.16) 0.5deg 119.5deg, #0000 120deg;
+  --hex-1: conic-gradient(from 60deg at 56.25% calc(425% / 6), var(--hex-color));
+  --hex-2: conic-gradient(from 180deg at 43.75% calc(425% / 6), var(--hex-color));
+  --hex-3: conic-gradient(from -60deg at 50% calc(175% / 12), var(--hex-color));
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    var(--hex-1), var(--hex-1) var(--hex) calc(1.73 * var(--hex)),
+    var(--hex-2), var(--hex-2) var(--hex) calc(1.73 * var(--hex)),
+    var(--hex-3) var(--hex) 0, var(--hex-3) 0 calc(1.73 * var(--hex));
+  background-size: calc(2 * var(--hex)) calc(3.46 * var(--hex));
+  mask-image: linear-gradient(100deg, #000 6%, transparent 60%);
+}
+
+.teclab-whatsapp-copy h2 {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.95rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+/* Boton neon, adaptado de la pieza "ugly-robin-41" de Adam Giebl en UIverse
+   (MIT), pasado al cian de Teclab: el brillo interno y el destello que cruza
+   son de la pieza original. */
+.teclab-neon-button {
+  --neon: var(--teclab-cyan);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  min-height: 3rem;
+  padding: 0.85em 1.6em;
+  border: 2px solid var(--neon);
+  border-radius: 0.6em;
+  background: linear-gradient(to right, rgba(46, 231, 215, 0.1) 1%, transparent 40%, transparent 60%, rgba(46, 231, 215, 0.1) 100%);
+  box-shadow: inset 0 0 10px rgba(46, 231, 215, 0.4), 0 0 9px 3px rgba(46, 231, 215, 0.12);
+  color: var(--neon);
   font-size: 0.85rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+  text-decoration: none;
   text-transform: uppercase;
-  text-underline-offset: 0.35rem;
+  transition: color 0.3s, box-shadow 0.3s;
+}
+
+.teclab-neon-button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.teclab-neon-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -4em;
+  width: 4em;
+  height: 100%;
+  background: linear-gradient(to right, transparent 1%, rgba(46, 231, 215, 0.16) 40%, rgba(46, 231, 215, 0.16) 60%, transparent 100%);
+  transition: transform 0.4s ease-in-out;
+}
+
+.teclab-neon-button:hover {
+  color: #9df7ee;
+  box-shadow: inset 0 0 10px rgba(46, 231, 215, 0.6), 0 0 9px 3px rgba(46, 231, 215, 0.22);
+}
+
+.teclab-neon-button:hover::before {
+  transform: translateX(22em);
+}
+
+.teclab-brutal-button:focus-visible,
+.teclab-neon-button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+@keyframes teclabDestello {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
 
 @keyframes teclabRise {
@@ -448,14 +728,24 @@
 
   .teclab-continuity {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2.25rem;
+    padding-block: clamp(2.75rem, 9vw, 4rem);
   }
 
-  .teclab-continuity-brand {
-    padding-top: 2rem;
-    padding-left: 0;
-    border-top: 2px solid var(--teclab-purple);
-    border-left: 0;
+  /* En una columna la sombra dura se sale de la pantalla y abre scroll
+     horizontal: se achica y se apoya sobre el mismo eje del panel. */
+  .teclab-ruta {
+    box-shadow: 5px 5px 0 rgba(142, 44, 242, 0.25);
+  }
+
+  .teclab-whatsapp {
+    justify-content: flex-start;
+    gap: 1.4rem;
+  }
+
+  .teclab-neon-button {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -469,5 +759,13 @@
     opacity: 1;
     transform: none;
     animation: none;
+  }
+
+  /* Los dos botones tomados de UIverse animan un destello en bucle mientras el
+     puntero esta encima: eso es justo lo que este modo pide apagar. */
+  .teclab-brutal-button:hover::before,
+  .teclab-neon-button::before {
+    animation: none;
+    transition: none;
   }
 }

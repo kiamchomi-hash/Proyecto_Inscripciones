@@ -384,7 +384,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                   className="search-input-custom"
                 />
                 <svg
-                  className="absolute right-3 top-1/2 -translate-y-1/2 h-[16px] w-[16px] text-[#7ca19b] pointer-events-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-[16px] w-[16px] text-[var(--catalogo-texto-suave)] pointer-events-none"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
                   strokeLinecap="round" strokeLinejoin="round"
@@ -551,8 +551,8 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
             {searchResults && (
               <div className="mb-12">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-full" style={{ backgroundColor: 'rgba(0, 199, 177, 0.1)', border: '1px solid #00c7b1' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#00c7b1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="p-2 rounded-full" style={{ backgroundColor: 'rgba(var(--catalogo-acento-rgb), 0.1)', border: '1px solid var(--catalogo-acento)' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[var(--catalogo-acento)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
@@ -569,7 +569,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xl text-[#7ca19b] text-center py-12">
+                  <p className="text-xl text-[var(--catalogo-texto-suave)] text-center py-12">
                     No se encontraron resultados para tu busqueda.
                   </p>
                 )}
@@ -579,7 +579,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
             {/* Active filters banner */}
             {hasFilters && !searchResults && (
               <div className="flex flex-wrap items-center gap-2 mb-4 text-sm">
-                <span className="text-[#7ca19b] font-semibold uppercase tracking-wider text-xs">Filtros:</span>
+                <span className="text-[var(--catalogo-texto-suave)] font-semibold uppercase tracking-wider text-xs">Filtros:</span>
                 {activeCategory !== 'all' && (
                   <span className="filter-active-tag">Tipo: {sectionLabels[activeCategory]?.titleFiltrado ?? sectionLabels[activeCategory]?.title}</span>
                 )}
@@ -597,7 +597,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
 
             {/* No results with filters */}
             {hasFilters && !searchResults && sectionsToShow.length === 0 && (
-              <p className="text-lg text-[#7ca19b] text-center py-12">
+              <p className="text-lg text-[var(--catalogo-texto-suave)] text-center py-12">
                 No se encontraron carreras con los filtros seleccionados.
               </p>
             )}
@@ -716,7 +716,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
       ? 'var(--teclab-cyan)'
       : familiaTeclab === 'gestion'
         ? 'var(--teclab-purple)'
-        : 'var(--color-highlight)';
+        : 'var(--catalogo-acento)';
 
   return (
     <section id={`section-${sectionId}`} className="mb-10">
@@ -752,11 +752,11 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           )}
           <button
             onClick={() => setShowSearch(!showSearch)}
-            className={`p-1.5 rounded-lg shadow-sm transition-colors shrink-0 ${showSearch ? 'bg-[#00c7b1] hover:bg-[#00c7b1]/80' : 'bg-white/90 hover:bg-white/60'}`}
+            className={`p-1.5 rounded-lg shadow-sm transition-colors shrink-0 ${showSearch ? 'bg-[var(--catalogo-acento)] hover:bg-[var(--catalogo-acento)]/80' : 'bg-white/90 hover:bg-white/60'}`}
             title={`Buscar en ${title}`}
             aria-label={`Buscar en ${title}`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${showSearch ? 'text-white' : 'text-[#013729]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${showSearch ? 'text-white' : 'text-[var(--catalogo-acento-tinta)]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
@@ -773,7 +773,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           <div className="flex items-center gap-2 mb-3">
             <input
               type="text"
-              className="flex-1 bg-[#0f2825] border border-[#00c7b1]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[#7ca19b]/60 focus:outline-none focus:border-[#00c7b1]/60 transition-colors uppercase font-bold tracking-wider"
+              className="flex-1 bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none focus:border-[var(--catalogo-acento)]/60 transition-colors uppercase font-bold tracking-wider"
               placeholder={`BUSCAR ${title.toUpperCase()}...`}
               value={sectionSearch}
               onChange={e => setSectionSearch(e.target.value)}
@@ -781,7 +781,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
             />
             <button
               onClick={() => { setShowSearch(false); setSectionSearch(''); }}
-              className="text-[#7ca19b] hover:text-white text-xl px-2"
+              className="text-[var(--catalogo-texto-suave)] hover:text-white text-xl px-2"
               aria-label="Cerrar busqueda"
             >
               x
