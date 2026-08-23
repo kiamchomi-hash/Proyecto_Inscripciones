@@ -189,23 +189,6 @@ export default async function TeclabPage() {
           <CareersCatalog carreras={carreras} />
         </section>
 
-        <section className="teclab-proof" aria-label="Características de la propuesta Teclab">
-          <div className="teclab-proof-inner">
-            <div>
-              <strong>{tecnicaturas}</strong>
-              <span>Tecnicaturas activas</span>
-            </div>
-            <div>
-              <strong>100%</strong>
-              <span>Modalidad online</span>
-            </div>
-            <div>
-              <strong>{cursos > 0 ? `+${cursos}` : 'Online'}</strong>
-              <span>{cursos === 1 ? 'Curso de actualización' : 'Cursos de actualización'}</span>
-            </div>
-          </div>
-        </section>
-
         <section className="teclab-continuity" aria-labelledby="teclab-continuity-title">
           <div className="teclab-continuity-copy">
             <p className="teclab-eyebrow">Tu recorrido puede continuar</p>
@@ -257,6 +240,23 @@ export default async function TeclabPage() {
         </section>
 
         <EnrollmentForm carreras={carreras} origen="teclab" />
+
+        <section className="teclab-proof" aria-label="Características de la propuesta Teclab">
+          <div className="teclab-proof-inner">
+            <div>
+              <strong>{tecnicaturas}</strong>
+              <span>Tecnicaturas activas</span>
+            </div>
+            <div>
+              <strong>100%</strong>
+              <span>Modalidad online</span>
+            </div>
+            <div>
+              <strong>{cursos > 0 ? `+${cursos}` : 'Online'}</strong>
+              <span>{cursos === 1 ? 'Curso de actualización' : 'Cursos de actualización'}</span>
+            </div>
+          </div>
+        </section>
       </main>
       <SiteFooter />
     </>
