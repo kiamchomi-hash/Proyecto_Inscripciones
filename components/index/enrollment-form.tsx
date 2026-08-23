@@ -74,7 +74,7 @@ function CampoSelect({ id, label, value, onChange, opciones }: {
   );
 }
 
-function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
+function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]; showImage?: boolean }) {
   const [selectedCarrera, setSelectedCarrera] = useState('');
   const [carreraSearch, setCarreraSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -188,7 +188,7 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
 
   return (
     <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
-      <div className="contact-form-layout mx-auto w-full max-w-[2400px] px-4 sm:px-8 xl:px-20 py-4 sm:py-6">
+      <div className={`${showImage ? 'contact-form-layout' : ''} mx-auto w-full max-w-[2400px] px-4 sm:px-8 xl:px-20 py-4 sm:py-6`}>
         <div className="form-content-col">
         <div className="form-card relative overflow-hidden" style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}>
           {success && (
@@ -280,7 +280,7 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
           </form>
         </div>
         </div>
-        <div className="contact-form-side-image" aria-hidden="true" />
+        {showImage && <div className="contact-form-side-image" aria-hidden="true" />}
       </div>
     </section>
   );
@@ -477,6 +477,10 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
     setSubmitting(false);
     setSuccess(true);
   };
+
+  if (origen !== 'teclab') {
+    return <ContactForm carreras={carreras} showImage={false} />;
+  }
 
   return (
     <>
