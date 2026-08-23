@@ -86,11 +86,20 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [localidad, setLocalidad] = useState('');
-  // Los dos que le adelantan trabajo al legajo sin convertir la consulta en
-  // un trámite. El resto de lo que pide la preinscripción —fecha y localidad
-  // de nacimiento, estado civil, nacionalidad, domicilio— se le pide al lead
-  // después, a mano: las columnas ya existen en `consultas` si algún día
-  // vuelven acá.
+  const [fechaNacimiento, setFechaNacimiento] = useState('');
+  const [lugarNacimiento, setLugarNacimiento] = useState('');
+  const [nacionalidad, setNacionalidad] = useState('');
+  const [estadoCivil, setEstadoCivil] = useState('');
+  const [domicilio, setDomicilio] = useState('');
+  const [domicilioNumero, setDomicilioNumero] = useState('');
+  const [domicilioPiso, setDomicilioPiso] = useState('');
+  const [domicilioDepartamento, setDomicilioDepartamento] = useState('');
+  const [codigoPostal, setCodigoPostal] = useState('');
+  const [nivelEstudios, setNivelEstudios] = useState('');
+  const [colegio, setColegio] = useState('');
+  const [colegioLocalidad, setColegioLocalidad] = useState('');
+  const [medioPago, setMedioPago] = useState('');
+  // Todos los datos de preinscripción son opcionales en este formulario.
   const [dni, setDni] = useState('');
   const [sexo, setSexo] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
@@ -220,6 +229,19 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
             localidad,
             dni,
             sexo,
+            fechaNacimiento,
+            lugarNacimiento,
+            nacionalidad,
+            estadoCivil,
+            domicilio,
+            domicilioNumero,
+            domicilioPiso,
+            domicilioDepartamento,
+            codigoPostal,
+            nivelEstudios,
+            colegio,
+            colegioLocalidad,
+            medioPago,
           },
         }),
       });
@@ -273,6 +295,10 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                     setNombre(''); setApellido(''); setEmail(''); setTelefono('');
                     setLocalidad(''); setEquivalencias(false); setTurnstileToken('');
                     setDni(''); setSexo('');
+                    setFechaNacimiento(''); setLugarNacimiento(''); setNacionalidad(''); setEstadoCivil('');
+                    setDomicilio(''); setDomicilioNumero(''); setDomicilioPiso(''); setDomicilioDepartamento('');
+                    setCodigoPostal(''); setNivelEstudios(''); setColegio(''); setColegioLocalidad('');
+                    setMedioPago('');
                   }}
                   className="mt-2 text-sm font-bold text-[var(--catalogo-acento)] hover:text-white transition-colors cursor-pointer underline underline-offset-2"
                   style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 1s forwards' }}
@@ -429,7 +455,10 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
               {/* Col 2: los datos del lead. Ninguno es obligatorio: el resto de
                   lo que pide la preinscripción se le pide después, a mano. */}
               <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-texto-suave)]">Opcional</p>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Datos para preinscripciÃ³n</p>
+                  <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">Son opcionales para enviar la consulta. PodÃ©s completarlos ahora para adelantar la carga en el portal.</p>
+                </div>
 
                 <div className="grid grid-cols-2 gap-1.5">
                   <CampoTexto id="form-nombre" label="Nombre" placeholder="Nombre" value={nombre} onChange={setNombre} />
@@ -441,7 +470,42 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                   <CampoSelect id="form-sexo" label="Sexo" value={sexo} onChange={setSexo} opciones={SEXOS} />
                 </div>
 
-                <CampoTexto id="form-localidad" label="Localidad" placeholder="Tu ciudad o barrio" value={localidad} onChange={setLocalidad} maxLength={120} />
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto id="form-fecha-nacimiento" label="Fecha de nacimiento" placeholder="DD/MM/AAAA" value={fechaNacimiento} onChange={setFechaNacimiento} maxLength={10} />
+                  <CampoTexto id="form-lugar-nacimiento" label="Lugar de nacimiento" placeholder="Ciudad y provincia" value={lugarNacimiento} onChange={setLugarNacimiento} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto id="form-nacionalidad" label="Nacionalidad" placeholder="Argentina" value={nacionalidad} onChange={setNacionalidad} />
+                  <CampoSelect id="form-estado-civil" label="Estado civil" value={estadoCivil} onChange={setEstadoCivil} opciones={['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro']} />
+                </div>
+
+                <div className="grid grid-cols-[minmax(0,1fr)_5rem_4rem_5rem] gap-1.5">
+                  <CampoTexto id="form-domicilio" label="Domicilio" placeholder="Calle" value={domicilio} onChange={setDomicilio} />
+                  <CampoTexto id="form-domicilio-numero" label="NÃºmero" placeholder="NÂ°" value={domicilioNumero} onChange={setDomicilioNumero} maxLength={10} inputMode="numeric" />
+                  <CampoTexto id="form-domicilio-piso" label="Piso" placeholder="Piso" value={domicilioPiso} onChange={setDomicilioPiso} maxLength={6} />
+                  <CampoTexto id="form-domicilio-depto" label="Depto." placeholder="Depto." value={domicilioDepartamento} onChange={setDomicilioDepartamento} maxLength={8} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto id="form-codigo-postal" label="CÃ³digo postal" placeholder="CÃ³digo postal" value={codigoPostal} onChange={setCodigoPostal} maxLength={12} />
+                  <CampoTexto id="form-localidad" label="Localidad" placeholder="Ciudad o localidad" value={localidad} onChange={setLocalidad} maxLength={120} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-1.5">
+                  <CampoTexto id="form-nivel-estudios" label="Nivel de estudios" placeholder="Secundario completo" value={nivelEstudios} onChange={setNivelEstudios} />
+                  <CampoTexto id="form-colegio" label="Colegio" placeholder="Nombre del colegio" value={colegio} onChange={setColegio} />
+                </div>
+
+                <CampoTexto id="form-colegio-localidad" label="Localidad del colegio" placeholder="Ciudad o localidad" value={colegioLocalidad} onChange={setColegioLocalidad} />
+
+                <CampoTexto
+                  id="form-medio-pago"
+                  label="Medio de pago"
+                  placeholder="Según opción del portal"
+                  value={medioPago}
+                  onChange={setMedioPago}
+                />
               </div>
             </div>
 
@@ -539,7 +603,6 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
         {/* Ilustración lateral (visible >= 1600px). Es decorativa y va como
             background en el CSS: siendo SVG no gana nada pasando por next/image,
             que ademas exige habilitar dangerouslyAllowSVG. */}
-        <div className="form-side-image" aria-hidden="true" />
       </div>
     </section>
   );

@@ -68,6 +68,19 @@ async function insertConsulta(payload: JsonRecord) {
     localidad: nullableText(payload.localidad, 120),
     dni: soloDni(payload.dni),
     sexo: unaOpcionDe(payload.sexo, SEXOS),
+    fecha_nacimiento: nullableText(payload.fechaNacimiento, 20),
+    lugar_nacimiento: nullableText(payload.lugarNacimiento, 120),
+    nacionalidad: nullableText(payload.nacionalidad, 80),
+    estado_civil: nullableText(payload.estadoCivil, 40),
+    domicilio: nullableText(payload.domicilio, 160),
+    domicilio_numero: nullableText(payload.domicilioNumero, 20),
+    domicilio_piso: nullableText(payload.domicilioPiso, 20),
+    domicilio_departamento: nullableText(payload.domicilioDepartamento, 20),
+    codigo_postal: nullableText(payload.codigoPostal, 20),
+    nivel_estudios: nullableText(payload.nivelEstudios, 80),
+    colegio: nullableText(payload.colegio, 160),
+    colegio_localidad: nullableText(payload.colegioLocalidad, 120),
+    medio_pago: nullableText(payload.medioPago, 60),
   });
 }
 

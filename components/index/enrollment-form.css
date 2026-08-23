@@ -76,6 +76,23 @@
   display: none;
 }
 
+/* El formulario ocupa todo el ancho: la imagen lateral se retirÃ³ para dejar
+   lugar a los datos de preinscripciÃ³n de Teclab. */
+@media (min-width: 1600px) {
+  .form-layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card {
+    border-right: 1px solid rgba(var(--catalogo-acento-rgb), 0.3) !important;
+    border-radius: 1rem !important;
+  }
+
+  .form-card-header {
+    border-radius: 1rem 1rem 0 0 !important;
+  }
+}
+
 @media (min-width: 1600px) {
   .form-layout-grid {
     grid-template-columns: 5fr 4fr;
@@ -137,5 +154,25 @@
     width: 1px;
     background: rgba(var(--catalogo-acento-rgb), 0.3);
     pointer-events: none;
+  }
+}
+
+/* Override legacy two-column rules now that the decorative side image is gone. */
+@media (min-width: 1600px) {
+  .form-layout-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-card {
+    border-right: 1px solid rgba(var(--catalogo-acento-rgb), 0.3) !important;
+    border-radius: 1rem !important;
+  }
+
+  .form-card-header {
+    border-radius: 1rem 1rem 0 0 !important;
+  }
+
+  .form-side-image {
+    display: none !important;
   }
 }
