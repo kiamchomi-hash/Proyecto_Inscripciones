@@ -129,7 +129,7 @@
     min-height: 100%;
     overflow: hidden;
     border: 1px solid rgba(var(--catalogo-acento-rgb), 0.3);
-    border-left: none;
+    border-left: 1px solid rgba(var(--catalogo-acento-rgb), 0.3);
     border-radius: 0 1rem 1rem 0;
     background-color: var(--catalogo-form-panel);
     background-image: url('/imagenes/teclab/logo-teclab-siglo21.webp');

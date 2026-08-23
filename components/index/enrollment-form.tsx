@@ -76,7 +76,10 @@ function CampoSelect({ id, label, value, onChange, opciones }: {
 
 function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
   const [selectedCarrera, setSelectedCarrera] = useState('');
+  const [carreraSearch, setCarreraSearch] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const [selectedTipo, setSelectedTipo] = useState('');
+  const [showTipoDropdown, setShowTipoDropdown] = useState(false);
   const [modalidad, setModalidad] = useState('virtual');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
@@ -89,9 +92,33 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const tipoDropdownRef = useRef<HTMLDivElement>(null);
 
-  const formCategories = categoriasPresentes(carreras);
-  const tipoElegido = formCategories.find(category => category.id === selectedTipo)?.label || null;
+  const formCategories = useMemo(() => categoriasPresentes(carreras), [carreras]);
+  const detectedCategory = useMemo(() => {
+    const carrera = carreras.find(option => option.nombre === selectedCarrera);
+    return carrera ? getCategoryForCarrera(carrera) : '';
+  }, [carreras, selectedCarrera]);
+  const activeFilter = selectedTipo || detectedCategory;
+  const tipoElegido = formCategories.find(category => category.id === activeFilter)?.label || null;
+  const filteredCarreras = useMemo(() => {
+    const query = carreraSearch.trim().toLowerCase();
+    return carreras.filter(carrera => {
+      const matchesType = !activeFilter || getCategoryForCarrera(carrera) === activeFilter;
+      const matchesSearch = !query || carrera.nombre.toLowerCase().includes(query);
+      return matchesType && matchesSearch;
+    });
+  }, [activeFilter, carreraSearch, carreras]);
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) setShowDropdown(false);
+      if (tipoDropdownRef.current && !tipoDropdownRef.current.contains(event.target as Node)) setShowTipoDropdown(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const emailInvalid = email.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const telefonoTrim = telefono.trim();
@@ -153,7 +180,8 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
 
   const reset = () => {
     setSuccess(false);
-    setSelectedCarrera(''); setSelectedTipo(''); setModalidad('virtual');
+    setSelectedCarrera(''); setCarreraSearch(''); setSelectedTipo(''); setModalidad('virtual');
+    setShowDropdown(false); setShowTipoDropdown(false);
     setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad('');
     setTurnstileToken(''); setCaptchaKey((key) => key + 1); setCaptchaExpirado(false);
   };
@@ -184,23 +212,29 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <div className="space-y-2 border-b border-[rgba(var(--catalogo-acento-rgb),0.15)] px-3 pt-3 pb-3 sm:px-4 lg:border-b-0 lg:border-r">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">¿Qué te interesa?</p>
-                  <p className="mt-1 text-sm leading-relaxed text-[var(--catalogo-texto-suave)]">Elegí una opción para que podamos orientarte mejor.</p>
-                </div>
-                <div>
+                <div ref={dropdownRef}>
                   <label htmlFor="contacto-carrera" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Carrera</label>
-                  <select id="contacto-carrera" value={selectedCarrera} onChange={e => setSelectedCarrera(e.target.value)} className={`${inputClass} cursor-pointer`} style={{ colorScheme: 'dark' }}>
-                    <option value="">Seleccioná una carrera</option>
-                    {carreras.map(carrera => <option key={carrera.id} value={carrera.nombre}>{carrera.nombre}</option>)}
-                  </select>
+                  <div className="relative">
+                    <input id="contacto-carrera" type="text" value={carreraSearch} onChange={e => { setCarreraSearch(e.target.value); setSelectedCarrera(''); setShowDropdown(true); }} onFocus={() => setShowDropdown(true)} placeholder="Buscar carrera..." autoComplete="off" maxLength={100} className={`${inputClass} pr-8`} />
+                    <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--catalogo-acento)]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    {showDropdown && (
+                      <div className="absolute z-20 w-full mt-1 bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg shadow-xl overflow-hidden" style={{ maxHeight: 160, overflowY: 'auto' }}>
+                        {filteredCarreras.map(carrera => <button key={carrera.id} type="button" onClick={() => { setSelectedCarrera(carrera.nombre); setCarreraSearch(carrera.nombre); setShowDropdown(false); }} className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[var(--catalogo-acento)]/10 transition-colors border-b border-[var(--catalogo-acento)]/15 last:border-b-0">{carrera.nombre}</button>)}
+                        {filteredCarreras.length === 0 && <div className="px-3 py-2 text-sm text-[var(--catalogo-texto-suave)]">Sin resultados</div>}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="contacto-tipo" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Tipo</label>
-                  <select id="contacto-tipo" value={selectedTipo} onChange={e => setSelectedTipo(e.target.value)} className={`${inputClass} cursor-pointer`} style={{ colorScheme: 'dark' }}>
-                    <option value="">Seleccioná un tipo</option>
-                    {formCategories.map(category => <option key={category.id} value={category.id}>{category.label}</option>)}
-                  </select>
+                <div ref={tipoDropdownRef} className="relative">
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Tipo</label>
+                  <button type="button" onClick={() => setShowTipoDropdown(!showTipoDropdown)} className={`relative w-full ${inputClass} cursor-pointer text-left ${activeFilter ? 'border-[var(--catalogo-acento)]/50 text-[var(--catalogo-acento)]' : ''}`}>
+                    {activeFilter ? (formCategories.find(category => category.id === activeFilter)?.label || 'Todos') : 'Todos'}
+                    <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--catalogo-acento)]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+                  {showTipoDropdown && <div className="absolute z-20 w-full mt-1 bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg shadow-xl overflow-hidden">
+                    <button type="button" onClick={() => { setSelectedTipo(''); setSelectedCarrera(''); setCarreraSearch(''); setShowTipoDropdown(false); }} className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[var(--catalogo-acento)]/10">Todos</button>
+                    {formCategories.map(category => <button key={category.id} type="button" onClick={() => { setSelectedTipo(category.id); setSelectedCarrera(''); setCarreraSearch(''); setShowTipoDropdown(false); }} className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-[var(--catalogo-acento)]/10 border-t border-[var(--catalogo-acento)]/15">{category.label}</button>)}
+                  </div>}
                 </div>
                 <div>
                   <label htmlFor="contacto-modalidad" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Modalidad</label>
@@ -210,30 +244,39 @@ function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
                 </div>
               </div>
               <div className="space-y-2 px-3 pt-3 pb-3 sm:px-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Tus datos · opcionales</p>
-                  <p className="mt-1 text-sm leading-relaxed text-[var(--catalogo-texto-suave)]">Podés completarlos ahora o después, cuando avances con la preinscripción.</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Datos opcionales</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
+                  <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
                 </div>
-              <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
-              <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
-              <div>
-                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} maxLength={100} className={`${inputClass} ${emailInvalid ? '!border-red-400/60' : ''}`} />
-                <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{emailInvalid ? 'El formato del email no es válido.' : ''}</p>
-              </div>
-              <div>
-                <input type="tel" placeholder="Teléfono" value={telefono} onChange={e => setTelefono(e.target.value)} maxLength={100} className={`${inputClass} ${telefonoError ? '!border-red-400/60' : ''}`} />
-                <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{telefonoError}</p>
-              </div>
-              <input type="text" placeholder="Localidad (opcional)" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={`${inputClass} sm:col-span-2 lg:col-span-1`} />
-              <div className="sm:col-span-2 lg:col-span-3 flex flex-wrap items-center gap-3">
-                <TurnstileWidget key={captchaKey} onVerify={(token) => { setTurnstileToken(token); setCaptchaExpirado(false); }} onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }} />
-                <p className="text-[11px] leading-4 text-amber-300">{captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
-                {error && <p className="w-full text-[11px] text-red-400">{error}</p>}
-              </div>
-              <button type="submit" disabled={!isValid || submitting} className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}>{submitting ? 'Enviando...' : 'Enviar consulta'}</button>
+                <input type="text" placeholder="Localidad (opcional)" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={inputClass} />
               </div>
             </div>
-            <p className="px-4 sm:px-6 pb-4 text-[11px] text-[var(--catalogo-texto-suave)]">Podés dejar email o teléfono; el otro dato es opcional.</p>
+
+            <div className="px-3 sm:px-4 py-2.5 sm:py-3 space-y-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+              <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
+                <p className="text-[12px] text-white leading-snug flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                  <span><strong className="text-[var(--catalogo-acento)]">Obligatorio:</strong> mail o teléfono</span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  <div>
+                    <label htmlFor="contacto-email" className="block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider">Email {!telefono.trim() && <span className="text-red-400/70">*</span>}</label>
+                    <input id="contacto-email" type="email" placeholder="Ejemplo: tu@correo.com" value={email} onChange={e => setEmail(e.target.value)} maxLength={100} className={`${inputClass} ${emailInvalid ? '!border-red-400/60' : ''}`} />
+                    <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{emailInvalid ? 'El formato del email no es válido.' : ''}</p>
+                  </div>
+                  <div>
+                    <label htmlFor="contacto-telefono" className="block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider">Telefono {!email.trim() && <span className="text-red-400/70">*</span>}</label>
+                    <input id="contacto-telefono" type="tel" placeholder="Ejemplo: 11 1234-5678" value={telefono} onChange={e => setTelefono(e.target.value)} maxLength={100} className={`${inputClass} ${telefonoError ? '!border-red-400/60' : ''}`} />
+                    <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{telefonoError}</p>
+                  </div>
+                </div>
+              </div>
+              <TurnstileWidget key={captchaKey} onVerify={(token) => { setTurnstileToken(token); setCaptchaExpirado(false); }} onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }} />
+              <p className="text-[11px] leading-4 min-h-4 text-amber-300">{captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
+              {error && <p className="text-[11px] text-red-400">{error}</p>}
+              <button type="submit" disabled={!isValid || submitting} className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}>{submitting ? 'Enviando...' : 'Enviar consulta'}</button>
+            </div>
           </form>
         </div>
         </div>
