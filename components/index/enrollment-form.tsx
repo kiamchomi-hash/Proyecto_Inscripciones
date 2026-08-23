@@ -74,6 +74,133 @@ function CampoSelect({ id, label, value, onChange, opciones }: {
   );
 }
 
+function ContactForm() {
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [localidad, setLocalidad] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const [captchaExpirado, setCaptchaExpirado] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  const emailInvalid = email.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const telefonoTrim = telefono.trim();
+  const telefonoError =
+    telefonoTrim === '' ? ''
+    : !/^[\d\s()+-]+$/.test(telefonoTrim) ? 'Solo números, espacios y + - ( ).'
+    : telefonoTrim.replace(/\D/g, '').length < 8 ? 'Ingresá al menos 8 dígitos.'
+    : telefonoTrim.length > 30 ? 'Teléfono demasiado largo.'
+    : '';
+  const isValid = (email.trim() || telefonoTrim) && !emailInvalid && !telefonoError && !!turnstileToken;
+  const inputClass = 'w-full bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg px-3 py-2 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none focus:border-[var(--catalogo-acento)]/60 transition-colors';
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid || submitting) return;
+    setSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/formularios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kind: 'consulta',
+          token: turnstileToken,
+          payload: {
+            carrera: null,
+            tipo: null,
+            modalidad: null,
+            equivalencias: false,
+            nombre,
+            apellido,
+            email,
+            telefono,
+            localidad,
+          },
+        }),
+      });
+      if (!response.ok) {
+        const detalle = await response.json().catch(() => null) as { error?: string } | null;
+        throw new Error(detalle?.error || 'submit_failed');
+      }
+    } catch (err) {
+      const motivo = err instanceof Error ? err.message : '';
+      setError(motivo === 'Demasiadas solicitudes'
+        ? 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'
+        : 'Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
+      setSubmitting(false);
+      setTurnstileToken('');
+      setCaptchaKey((key) => key + 1);
+      setCaptchaExpirado(false);
+      return;
+    }
+
+    trackConsulta('contacto', null, null);
+    setSubmitting(false);
+    setSuccess(true);
+  };
+
+  const reset = () => {
+    setSuccess(false);
+    setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad('');
+    setTurnstileToken(''); setCaptchaKey((key) => key + 1); setCaptchaExpirado(false);
+  };
+
+  return (
+    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
+      <div className="mx-auto max-w-5xl px-4 sm:px-8 xl:px-20 py-8 sm:py-10">
+        <div className="form-card relative overflow-hidden" style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}>
+          {success && (
+            <div className="form-success-overlay active">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <div className="w-14 h-14 rounded-full bg-[var(--catalogo-acento)] flex items-center justify-center">
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <p className="text-lg font-black text-white uppercase tracking-tight">Consulta enviada</p>
+                <p className="text-sm text-[var(--catalogo-texto-suave)]">Nos comunicaremos a la brevedad</p>
+                <button type="button" onClick={reset} className="mt-1 text-sm font-bold text-[var(--catalogo-acento)] hover:text-white underline underline-offset-2">Enviar otra consulta</button>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} noValidate className={success ? 'invisible' : undefined} aria-hidden={success}>
+            <div className="px-4 sm:px-6 pt-5 pb-4" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+              <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center"><span className="text-white">FORMULARIO DE </span><span className="text-[var(--catalogo-acento)]">CONTACTO</span></h2>
+              <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">Dejanos tus datos y te contactamos para orientarte.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 px-4 sm:px-6 py-5">
+              <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
+              <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
+              <div>
+                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} maxLength={100} className={`${inputClass} ${emailInvalid ? '!border-red-400/60' : ''}`} />
+                <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{emailInvalid ? 'El formato del email no es válido.' : ''}</p>
+              </div>
+              <div>
+                <input type="tel" placeholder="Teléfono" value={telefono} onChange={e => setTelefono(e.target.value)} maxLength={100} className={`${inputClass} ${telefonoError ? '!border-red-400/60' : ''}`} />
+                <p className="text-[11px] leading-4 min-h-4 text-red-400 mt-0.5">{telefonoError}</p>
+              </div>
+              <input type="text" placeholder="Localidad (opcional)" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={`${inputClass} sm:col-span-2 lg:col-span-1`} />
+              <div className="sm:col-span-2 lg:col-span-3 flex flex-wrap items-center gap-3">
+                <TurnstileWidget key={captchaKey} onVerify={(token) => { setTurnstileToken(token); setCaptchaExpirado(false); }} onExpire={() => { setTurnstileToken(''); setCaptchaExpirado(true); }} />
+                <p className="text-[11px] leading-4 text-amber-300">{captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
+                {error && <p className="w-full text-[11px] text-red-400">{error}</p>}
+              </div>
+              <button type="submit" disabled={!isValid || submitting} className="w-full py-2.5 rounded-lg font-black uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)' }}>{submitting ? 'Enviando...' : 'Enviar consulta'}</button>
+            </div>
+            <p className="px-4 sm:px-6 pb-4 text-[11px] text-[var(--catalogo-texto-suave)]">Podés dejar email o teléfono; el otro dato es opcional.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
   const [selectedCarrera, setSelectedCarrera] = useState('');
   const [carreraSearch, setCarreraSearch] = useState('');
@@ -267,7 +394,9 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
   };
 
   return (
-    <section id="formulario" className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
+    <>
+      {origen === 'home' && <ContactForm />}
+    <section id={origen === 'home' ? 'preinscripcion' : 'formulario'} className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
       <div className="form-layout-grid mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
         <div className="form-content-col">
         <div className="form-card relative" style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}>
@@ -315,9 +444,9 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
             <div className="form-card-header px-3 sm:px-4 pt-4 pb-3" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)', borderRadius: '1rem 1rem 0 0' }}>
               <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter leading-none text-center">
                 <span className="text-white">FORMULARIO DE </span>
-                <span className="text-[var(--catalogo-acento)]">CONTACTO</span>
+                <span className="text-[var(--catalogo-acento)]">PREINSCRIPCIÓN</span>
               </h2>
-              <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">Dejanos tus datos y un asesor te contacta</p>
+              <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">Completá tus datos para adelantar tu preinscripción.</p>
             </div>
 
             {/* Body: 2 columns on md */}
@@ -585,7 +714,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 className="w-full py-2 font-black rounded-lg uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
-                {submitting ? 'Enviando...' : 'Enviar consulta'}
+                {submitting ? 'Enviando...' : 'Enviar preinscripción'}
               </button>
               <a
                 href="https://wa.me/5491166522722?text=Hola%2C%20quiero%20info%20sobre%20las%20carreras"
@@ -609,5 +738,6 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
             que ademas exige habilitar dangerouslyAllowSVG. */}
       </div>
     </section>
+    </>
   );
 }
