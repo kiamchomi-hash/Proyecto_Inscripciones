@@ -450,14 +450,9 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                   </label>
                 </div>
                 )}
-              </div>
-
-              {/* Col 2: los datos del lead. Ninguno es obligatorio: el resto de
-                  lo que pide la preinscripción se le pide después, a mano. */}
-              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Datos para preinscripciÃ³n</p>
-                  <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">Son opcionales para enviar la consulta. PodÃ©s completarlos ahora para adelantar la carga en el portal.</p>
+                <div className="pt-1">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Datos personales</p>
+                  <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">Opcionales para adelantar tu preinscripción.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-1.5">
@@ -478,6 +473,15 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 <div className="grid grid-cols-2 gap-1.5">
                   <CampoTexto id="form-nacionalidad" label="Nacionalidad" placeholder="Argentina" value={nacionalidad} onChange={setNacionalidad} />
                   <CampoSelect id="form-estado-civil" label="Estado civil" value={estadoCivil} onChange={setEstadoCivil} opciones={['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro']} />
+                </div>
+              </div>
+
+              {/* Col 2: los datos del lead. Ninguno es obligatorio: el resto de
+                  lo que pide la preinscripción se le pide después, a mano. */}
+              <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Domicilio y estudios</p>
+                  <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">También podés completarlos más adelante en el portal.</p>
                 </div>
 
                 <div className="grid grid-cols-[minmax(0,1fr)_5rem_4rem_5rem] gap-1.5">
