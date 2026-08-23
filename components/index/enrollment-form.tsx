@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from './types';
 import { trackConsulta, type OrigenConsulta } from '@/lib/analytics';
@@ -74,7 +75,10 @@ function CampoSelect({ id, label, value, onChange, opciones }: {
   );
 }
 
-function ContactForm() {
+function ContactForm({ carreras }: { carreras: CarreraOpcion[] }) {
+  const [selectedCarrera, setSelectedCarrera] = useState('');
+  const [selectedTipo, setSelectedTipo] = useState('');
+  const [modalidad, setModalidad] = useState('virtual');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
@@ -86,6 +90,9 @@ function ContactForm() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  const formCategories = categoriasPresentes(carreras);
+  const tipoElegido = formCategories.find(category => category.id === selectedTipo)?.label || null;
 
   const emailInvalid = email.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const telefonoTrim = telefono.trim();
@@ -112,9 +119,9 @@ function ContactForm() {
           kind: 'consulta',
           token: turnstileToken,
           payload: {
-            carrera: null,
-            tipo: null,
-            modalidad: null,
+            carrera: selectedCarrera || null,
+            tipo: tipoElegido,
+            modalidad,
             equivalencias: false,
             nombre,
             apellido,
@@ -140,13 +147,14 @@ function ContactForm() {
       return;
     }
 
-    trackConsulta('contacto', null, null);
+    trackConsulta('contacto', selectedCarrera || null, tipoElegido);
     setSubmitting(false);
     setSuccess(true);
   };
 
   const reset = () => {
     setSuccess(false);
+    setSelectedCarrera(''); setSelectedTipo(''); setModalidad('virtual');
     setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad('');
     setTurnstileToken(''); setCaptchaKey((key) => key + 1); setCaptchaExpirado(false);
   };
@@ -174,7 +182,38 @@ function ContactForm() {
               <p className="text-xs text-[var(--catalogo-texto-suave)] text-center mt-1">Dejanos tus datos y te contactamos para orientarte.</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 px-4 sm:px-6 py-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1fr_1fr_0.65fr]">
+              <div className="space-y-4 border-b border-[rgba(var(--catalogo-acento-rgb),0.15)] px-4 py-5 sm:px-6 lg:border-b-0 lg:border-r">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">¿Qué te interesa?</p>
+                  <p className="mt-1 text-sm leading-relaxed text-[var(--catalogo-texto-suave)]">Elegí una opción para que podamos orientarte mejor.</p>
+                </div>
+                <div>
+                  <label htmlFor="contacto-carrera" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Carrera</label>
+                  <select id="contacto-carrera" value={selectedCarrera} onChange={e => setSelectedCarrera(e.target.value)} className={`${inputClass} cursor-pointer`} style={{ colorScheme: 'dark' }}>
+                    <option value="">Seleccioná una carrera</option>
+                    {carreras.map(carrera => <option key={carrera.id} value={carrera.nombre}>{carrera.nombre}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="contacto-tipo" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Tipo</label>
+                  <select id="contacto-tipo" value={selectedTipo} onChange={e => setSelectedTipo(e.target.value)} className={`${inputClass} cursor-pointer`} style={{ colorScheme: 'dark' }}>
+                    <option value="">Seleccioná un tipo</option>
+                    {formCategories.map(category => <option key={category.id} value={category.id}>{category.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="contacto-modalidad" className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Modalidad</label>
+                  <select id="contacto-modalidad" value={modalidad} onChange={e => setModalidad(e.target.value)} className={`${inputClass} cursor-pointer`} style={{ colorScheme: 'dark' }}>
+                    <option value="virtual">Educación Distribuida Home (Virtual)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="space-y-3 px-4 py-5 sm:px-6">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Tus datos · opcionales</p>
+                  <p className="mt-1 text-sm leading-relaxed text-[var(--catalogo-texto-suave)]">Podés completarlos ahora o después, cuando avances con la preinscripción.</p>
+                </div>
               <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
               <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
               <div>
@@ -191,7 +230,12 @@ function ContactForm() {
                 <p className="text-[11px] leading-4 text-amber-300">{captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
                 {error && <p className="w-full text-[11px] text-red-400">{error}</p>}
               </div>
-              <button type="submit" disabled={!isValid || submitting} className="w-full py-2.5 rounded-lg font-black uppercase tracking-widest text-sm transition-all active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)' }}>{submitting ? 'Enviando...' : 'Enviar consulta'}</button>
+              <button type="submit" disabled={!isValid || submitting} className="w-full py-3 rounded-xl font-black uppercase tracking-[0.14em] text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.22)] transition-all hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40" style={{ background: 'linear-gradient(135deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))' }}>{submitting ? 'Enviando...' : 'Enviar consulta'}</button>
+              </div>
+              <div className="relative hidden min-h-[22rem] overflow-hidden bg-[#101719] xl:block">
+                <Image src="/imagenes/teclab/logo-teclab-siglo21.webp" alt="Teclab y Universidad Siglo 21" fill className="object-contain p-8" sizes="320px" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#101719]/60 via-transparent to-transparent" />
+              </div>
             </div>
             <p className="px-4 sm:px-6 pb-4 text-[11px] text-[var(--catalogo-texto-suave)]">Podés dejar email o teléfono; el otro dato es opcional.</p>
           </form>
@@ -395,7 +439,7 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
 
   return (
     <>
-      {(origen === 'home' || origen === 'teclab') && <ContactForm />}
+      {(origen === 'home' || origen === 'teclab') && <ContactForm carreras={carreras} />}
     <section id={origen === 'home' || origen === 'teclab' ? 'preinscripcion' : 'formulario'} className="relative overflow-hidden" style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}>
       <div className="form-layout-grid mx-auto w-full px-4 sm:px-8 xl:px-20 py-4 sm:py-6 relative z-[1]">
         <div className="form-content-col">
