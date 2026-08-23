@@ -451,8 +451,8 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                 </div>
                 )}
                 <div className="pt-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Datos personales</p>
-                  <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">Opcionales para adelantar tu preinscripción.</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Datos personales · opcionales</p>
+                  <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">No son necesarios para enviar la consulta.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-1.5">
@@ -480,19 +480,19 @@ export default function EnrollmentForm({ carreras, origen = 'home' }: Props) {
                   lo que pide la preinscripción se le pide después, a mano. */}
               <div className="px-3 sm:px-4 pt-3 pb-3 space-y-2" style={{ borderLeft: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Domicilio y estudios</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">Domicilio y estudios · opcionales</p>
                   <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">También podés completarlos más adelante en el portal.</p>
                 </div>
 
                 <div className="grid grid-cols-[minmax(0,1fr)_5rem_4rem_5rem] gap-1.5">
                   <CampoTexto id="form-domicilio" label="Domicilio" placeholder="Calle" value={domicilio} onChange={setDomicilio} />
-                  <CampoTexto id="form-domicilio-numero" label="NÃºmero" placeholder="NÂ°" value={domicilioNumero} onChange={setDomicilioNumero} maxLength={10} inputMode="numeric" />
+                  <CampoTexto id="form-domicilio-numero" label="Número" placeholder="N°" value={domicilioNumero} onChange={setDomicilioNumero} maxLength={10} inputMode="numeric" />
                   <CampoTexto id="form-domicilio-piso" label="Piso" placeholder="Piso" value={domicilioPiso} onChange={setDomicilioPiso} maxLength={6} />
                   <CampoTexto id="form-domicilio-depto" label="Depto." placeholder="Depto." value={domicilioDepartamento} onChange={setDomicilioDepartamento} maxLength={8} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-1.5">
-                  <CampoTexto id="form-codigo-postal" label="CÃ³digo postal" placeholder="CÃ³digo postal" value={codigoPostal} onChange={setCodigoPostal} maxLength={12} />
+                  <CampoTexto id="form-codigo-postal" label="Código postal" placeholder="Código postal" value={codigoPostal} onChange={setCodigoPostal} maxLength={12} />
                   <CampoTexto id="form-localidad" label="Localidad" placeholder="Ciudad o localidad" value={localidad} onChange={setLocalidad} maxLength={120} />
                 </div>
 
