@@ -83,7 +83,14 @@ function errorDeTelefono(valor: string) {
   return '';
 }
 
-function Campo({ id, valor, onChange, obligatorio, error }: {
+function Campo({ prefijo, id, valor, onChange, obligatorio, error }: {
+  /**
+   * Distingue los `id` de un formulario de los del otro. La home monta dos
+   * —contacto y preinscripción— y sin esto los dos usarían `form-carrera`:
+   * el `htmlFor` de la etiqueta engancha con el primero del documento, así que
+   * tocar "Carrera" en la preinscripción te llevaba al campo del contacto.
+   */
+  prefijo: string;
   id: CampoId;
   valor: string | boolean | undefined;
   onChange: (valor: string | boolean) => void;
@@ -91,7 +98,7 @@ function Campo({ id, valor, onChange, obligatorio, error }: {
   error?: string;
 }) {
   const campo = CAMPOS[id];
-  const htmlId = `form-${id}`;
+  const htmlId = `${prefijo}-${id}`;
   const marca = obligatorio ? <span className="text-red-400/70"> *</span> : null;
 
   if (campo.tipo === 'checkbox') {
@@ -183,6 +190,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const tiposRef = useRef<HTMLDivElement>(null);
 
   const esPreinscripcion = modo === 'preinscripcion';
+  const prefijo = modo;
 
   const carrera = useMemo(
     () => carreras.find(opcion => opcion.nombre === carreraElegida) || null,
@@ -381,10 +389,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                         siempre: es lo que define la casa y por eso encabeza. */}
                 <div className="flex items-end gap-1.5">
                   <div ref={listaRef} className="relative min-w-0 flex-1">
-                    <label className={ETIQUETA} htmlFor="form-carrera">Carrera</label>
+                    <label className={ETIQUETA} htmlFor={`${prefijo}-carrera`}>Carrera</label>
                     <div className="relative">
                       <input
-                        id="form-carrera"
+                        id={`${prefijo}-carrera`}
                         type="text"
                         value={busqueda}
                         onChange={event => { setBusqueda(event.target.value); setCarreraElegida(''); setVerLista(true); }}
@@ -473,6 +481,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                               aria-hidden={!pide(id)}
                             >
                               <Campo
+                                prefijo={prefijo}
                                 id={id}
                                 valor={valores[id]}
                                 onChange={valor => poner(id, valor)}
@@ -502,6 +511,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   {enPantalla.filter(id => CAMPOS[id].grupo === 'contacto').map(id => (
                     <Campo
                       key={id}
+                      prefijo={prefijo}
                       id={id}
                       valor={valores[id]}
                       onChange={valor => poner(id, valor)}
@@ -515,27 +525,23 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
             {/* El widget va antes del botón y no después: el botón está
                 apagado hasta que el captcha se resuelve, así que el control que
-                lo enciende no puede quedar debajo. Para que no lo empuje lejos
-                van lado a lado desde `sm`, y los tres avisos del pie comparten
-                un solo renglón. */}
+                lo enciende no puede quedar debajo. Mientras carga, su lugar lo
+                ocupa el marcador de `turnstile-widget.tsx` — si no, ese hueco
+                se lee como un vacío y aleja al botón de los datos. */}
             <div className="space-y-2 px-3 py-2.5 sm:px-4 sm:py-3">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <div className="min-w-0 sm:flex-1">
-                  <TurnstileWidget
-                    key={captchaKey}
-                    onVerify={nuevo => { setToken(nuevo); setCaptchaVencido(false); }}
-                    onExpire={() => { setToken(''); setCaptchaVencido(true); }}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={!valido || enviando}
-                  className="w-full rounded-lg py-3 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:min-w-[15rem] sm:px-8"
-                  style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
-                >
-                  {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
-                </button>
-              </div>
+              <TurnstileWidget
+                key={captchaKey}
+                onVerify={nuevo => { setToken(nuevo); setCaptchaVencido(false); }}
+                onExpire={() => { setToken(''); setCaptchaVencido(true); }}
+              />
+              <button
+                type="submit"
+                disabled={!valido || enviando}
+                className="w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
+              >
+                {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
+              </button>
 
               {/* Un solo renglón para los tres avisos: el error del envío pisa
                   al del captcha vencido, y ése al recuento de obligatorios.
