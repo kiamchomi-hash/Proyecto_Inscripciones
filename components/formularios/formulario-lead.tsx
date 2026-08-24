@@ -45,7 +45,7 @@ const SPAN: Record<NonNullable<CampoDef['ancho']>, string> = {
  * abren un tramo largo del formulario y dejan el botón lejos. En el resto el
  * movimiento es ruido, así que no se mueve nada.
  */
-const ACERCAN_EL_BOTON: CampoId[] = ['dni', 'tipoDomicilio', 'domicilio'];
+const ACERCAN_EL_BOTON: CampoId[] = ['dni', 'domicilio'];
 
 /** Lo que tapa la barra fija de arriba. Nada puede quedar debajo de eso. */
 const altoNavbar = () => Number.parseInt(
