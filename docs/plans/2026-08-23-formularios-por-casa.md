@@ -16,15 +16,34 @@
 
 ## Estado
 
-Tareas **1, 2 y 3 hechas** (`3cdc040`, `69118b7`, `81dce94`), 13 tests propios en
-verde. Corrección sobre lo planeado: los tres módulos van en **un solo archivo**,
-`components/formularios/casas.ts`. Node strippea los tipos y corre los `.ts` en
-los tests, pero **no resuelve imports de valor entre `.ts` sin extensión**, y el
-`tsconfig` usa `moduleResolution: bundler` sin `allowImportingTsExtensions`:
-separarlos en tres dejaba la lógica sin poder testearse. Es además el idioma del
-repo — `types.ts` y `teclab.ts` son módulos autocontenidos.
+**Las nueve tareas hechas y deployadas** el 23/08/2026 (`3cdc040` … `21c2d7e`,
+pusheadas en `d600a16..21c2d7e`). La Edge Function `notificar` se desplegó con
+`npx supabase functions deploy notificar --project-ref yuwfkdehaowkselkhtck`
+—el proyecto no está linkeado y no conviene linkearlo, porque `supabase link`
+deja un `config.toml` que terminaría en el repo público—.
 
-Siguiente: tarea 4.
+Correcciones sobre lo planeado, todas verificadas:
+
+- Los tres módulos van en **un solo archivo**, `components/formularios/casas.ts`.
+  Node strippea los tipos y corre los `.ts` en los tests, pero **no resuelve
+  imports de valor entre `.ts` sin extensión**, y el `tsconfig` usa
+  `moduleResolution: bundler` sin `allowImportingTsExtensions`.
+- La preinscripción de Siglo 21 **no es la de Teclab más tres campos**: es la
+  ficha del portal, que no pide nivel de estudios, colegio, medio de pago ni
+  equivalencias, y sí pide tipo de documento, tipo de domicilio y torre.
+- Los avisos de Telegram arman el legajo **recorriendo la fila**, no con una
+  lista fija: la Edge Function corre en Deno y no puede importar `casas.ts`.
+  Los textos se mudaron a `mensajes.ts` para poder testearlos con Node.
+
+Falta sólo la verificación de punta a punta contra producción, que necesita
+resolver un captcha a mano: está en `herramientas/verificar-formularios.sql`.
+
+Pendiente de definición del CAU:
+
+- Las opciones de **tipo de documento** y **tipo de domicilio** están
+  inventadas y marcadas con `OJO:` en `casas.ts`.
+- Los **obligatorios de Teclab** están vacíos: su preinscripción no exige nada
+  hasta tener su ficha oficial.
 
 ---
 
