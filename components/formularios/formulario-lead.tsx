@@ -616,12 +616,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   // que guardarle una fila vacía es un hueco que no paga nada.
   const enPantalla = esPreinscripcion || casa ? campos : camposPosibles(modo);
   const pide = (id: CampoId) => campos.includes(id);
-  // En el contacto, el mail y el teléfono van aparte, en su caja: ahí son "cómo
-  // te contestamos" y la regla de uno u otro necesita explicarse. En una
-  // preinscripción no: son dos datos del legajo como el DNI o el domicilio, y
-  // sacarlos de la grilla los hacía parecer otra cosa.
+  // El mail y el teléfono van juntos en su propia caja, en los dos modos: es
+  // por dónde se contesta, y ponerlo aparte lo saca de la lista de datos donde
+  // se pierde. Lo que cambia es la exigencia — en el contacto alcanza con uno,
+  // en una preinscripción hacen falta los dos— y eso lo dice la caja.
   const columnas = repartirColumnas(
-    esPreinscripcion ? enPantalla : enPantalla.filter(id => CAMPOS[id].grupo !== 'contacto'),
+    enPantalla.filter(id => CAMPOS[id].grupo !== 'contacto'),
     esPreinscripcion,
   );
 
@@ -988,7 +988,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                             onChange={valor => poner(id, valor)}
                             opcional={esOpcional(id)}
                             invalido={intentado && (faltanObligatorios.includes(id) || malEscritos.includes(id))}
-                            error={id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : undefined}
                           />
                         </div>
                       ))}
@@ -999,9 +998,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
             </div>
 
             {!esperandoCarrera && (<>
-            {/* Cómo te contestamos: sólo en el contacto, y va último para que
-                el que abandona a mitad ya lo haya dado. */}
-            {!esPreinscripcion && (
+            {/* Por dónde te contestamos. Va último para que el que abandona a
+                mitad ya lo haya dado. */}
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
                 <p className="flex items-center gap-2 text-[12px] leading-snug text-white">
@@ -1010,7 +1008,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   </svg>
                   <span>
                     <strong className="text-[var(--catalogo-acento)]">Cómo te contestamos:</strong>{' '}
-                    con el mail o el teléfono alcanza
+                    {esPreinscripcion
+                      ? 'hacen falta el mail y el teléfono'
+                      : 'con el mail o el teléfono alcanza'}
                   </span>
                 </p>
                 <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
@@ -1029,7 +1029,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 </div>
               </div>
             </div>
-            )}
 
             {/* El widget va antes del botón y no después: el botón está
                 apagado hasta que el captcha se resuelve, así que el control que
