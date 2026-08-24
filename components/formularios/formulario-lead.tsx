@@ -150,6 +150,10 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
   const [abierto, setAbierto] = useState(false);
   // `null` mientras no se está tipeando: ahí la lista se muestra entera.
   const [busqueda, setBusqueda] = useState<string | null>(null);
+  // El rojo aparece al dar Enter con algo que no es una opción, no en cada
+  // tecla: mientras se escribe "Uruguaya" todos los estados intermedios son
+  // inválidos, y marcarlos hacía parpadear el campo letra por letra.
+  const [marcado, setMarcado] = useState(false);
   const cajaRef = useRef<HTMLDivElement>(null);
 
   const filtradas = useMemo(() => {
@@ -198,9 +202,30 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
         autoComplete="off"
         value={busqueda ?? valor}
         placeholder="Sin especificar"
-        onChange={evento => { setBusqueda(evento.target.value); onChange(evento.target.value); setAbierto(true); }}
+        onChange={evento => {
+          setBusqueda(evento.target.value);
+          onChange(evento.target.value);
+          setMarcado(false);
+          setAbierto(true);
+        }}
         onFocus={() => { setBusqueda(null); setAbierto(true); }}
-        className={`${CAMPO} ${invalido ? BORDE_MAL : BORDE_OK} cursor-text pr-8`}
+        onKeyDown={evento => {
+          if (evento.key !== 'Enter') return;
+          evento.preventDefault();
+          const texto = (busqueda ?? valor).trim();
+          const posibles = opciones.filter(opcion => opcion.toLowerCase().includes(texto.toLowerCase()));
+          // Enter con una sola candidata la elige; con cualquier otra cosa,
+          // rojo. Es el momento en que el lead dice "ya está, esto puse".
+          if (texto && posibles.length === 1) {
+            onChange(posibles[0]);
+            setBusqueda(null);
+            setAbierto(false);
+            setMarcado(false);
+          } else {
+            setMarcado(Boolean(texto) && !opciones.includes(texto));
+          }
+        }}
+        className={`${CAMPO} ${invalido || marcado ? BORDE_MAL : BORDE_OK} cursor-text pr-8`}
       />
       <svg
         onClick={() => { setAbierto(!abierto); setBusqueda(null); }}
@@ -333,13 +358,20 @@ function CampoFecha({ id, valor, onChange, invalido }: {
               id={`${id}-mes`}
               valor={MESES[vista.mes - 1]}
               opciones={MESES}
-              onChange={nombre => setVista(v => ({ ...v, mes: MESES.indexOf(nombre as typeof MESES[number]) + 1 }))}
+              // Sólo se mueve con un mes de la lista: con lo tipeado a medias,
+              // `indexOf` da -1 y el calendario quedaba en el mes 0.
+              onChange={nombre => {
+                const indice = MESES.indexOf(nombre as typeof MESES[number]);
+                if (indice >= 0) setVista(v => ({ ...v, mes: indice + 1 }));
+              }}
             />
             <Desplegable
               id={`${id}-anio`}
               valor={String(vista.anio)}
               opciones={ANIOS}
-              onChange={a => setVista(v => ({ ...v, anio: Number(a) }))}
+              // Y sólo con un año de la lista: `Number('1j999')` es NaN, y de
+              // ahí salían los "NaN" en la grilla.
+              onChange={a => { if (ANIOS.includes(a)) setVista(v => ({ ...v, anio: Number(a) })); }}
             />
           </div>
 
@@ -613,8 +645,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
   /**
    * Lo escrito en un campo de lista que no es ninguna de sus opciones —"1j999"
-   * en Nacionalidad—. Se marca al instante, sin esperar al intento de envío:
-   * acá no hace falta adivinar la intención, ya está mal escrito.
+   * en Nacionalidad—. Frena el envío. El rojo lo pone el propio desplegable al
+   * dar Enter, o acá al intentar enviar: marcarlo en cada tecla hacía parpadear
+   * el campo mientras se escribía.
    *
    * El endpoint además lo descarta por su cuenta (`unaOpcionDe`), así que aunque
    * algo se colara nunca entraría una nacionalidad inventada a la base.
@@ -845,6 +878,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                         value={busqueda}
                         onChange={event => { setBusqueda(event.target.value); setCarreraElegida(''); setVerLista(true); }}
                         onFocus={() => setVerLista(true)}
+                        onKeyDown={evento => {
+                          if (evento.key !== 'Enter') return;
+                          // Enter en un buscador no puede mandar el formulario:
+                          // acá elige la carrera, que es lo que uno espera.
+                          evento.preventDefault();
+                          const primera = filtradas[0];
+                          if (primera) { setCarreraElegida(primera.nombre); setBusqueda(primera.nombre); setVerLista(false); }
+                        }}
                         placeholder="Buscar carrera..."
                         autoComplete="off"
                         maxLength={100}
@@ -920,7 +961,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                             valor={valores[id]}
                             onChange={valor => poner(id, valor)}
                             opcional={esOpcional(id)}
-                            invalido={malEscritos.includes(id) || (intentado && faltanObligatorios.includes(id))}
+                            invalido={intentado && (faltanObligatorios.includes(id) || malEscritos.includes(id))}
                           />
                         </div>
                       ))}
@@ -955,7 +996,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                       valor={valores[id]}
                       onChange={valor => poner(id, valor)}
                       opcional={esOpcional(id)}
-                      invalido={malEscritos.includes(id) || (intentado && (faltanObligatorios.includes(id) || !hayContacto))}
+                      invalido={intentado && (faltanObligatorios.includes(id) || malEscritos.includes(id) || !hayContacto)}
                       error={id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : ''}
                     />
                   ))}
