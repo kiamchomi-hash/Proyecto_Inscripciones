@@ -42,6 +42,13 @@ const SCRIPT_ID = 'cloudflare-turnstile-script';
 const SCRIPT_SRC =
   'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
+/**
+ * Tope para sacar el marcador si el `load` del iframe nunca llega. Es largo a
+ * propósito: es preferible que el marcador se quede de más antes que dejar el
+ * hueco vacío que se ve cuando se lo saca antes de tiempo.
+ */
+const ESPERA_MAXIMA_MS = 10000;
+
 export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -69,6 +76,33 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
     const turnstileWindow = window as Window & { turnstile?: TurnstileApi };
     let widgetId: string | undefined;
     let cancelled = false;
+    let observer: MutationObserver | undefined;
+    let tope: ReturnType<typeof setTimeout> | undefined;
+
+    const listo = () => {
+      if (cancelled) return;
+      setMontado(true);
+    };
+
+    // `render()` vuelve antes de que el iframe tenga contenido: sacar el
+    // marcador ahí deja el hueco vacío justo el rato que tarda en pintarse.
+    // Se espera al `load` del iframe, que Cloudflare crea dentro del contenedor
+    // un momento después.
+    const engancharIframe = () => {
+      const iframe = container.querySelector('iframe');
+      if (!iframe) return false;
+      iframe.addEventListener('load', listo, { once: true });
+      return true;
+    };
+
+    const esperarAlIframe = () => {
+      if (engancharIframe()) return;
+      observer = new MutationObserver(() => {
+        if (engancharIframe()) observer?.disconnect();
+      });
+      observer.observe(container, { childList: true, subtree: true });
+      tope = setTimeout(listo, ESPERA_MAXIMA_MS);
+    };
 
     const renderWidget = () => {
       if (cancelled || widgetId || !turnstileWindow.turnstile) return;
@@ -80,7 +114,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
         theme: 'dark',
         size: 'flexible',
       });
-      setMontado(true);
+      esperarAlIframe();
     };
 
     let script = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
@@ -101,6 +135,8 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
 
     return () => {
       cancelled = true;
+      observer?.disconnect();
+      if (tope) clearTimeout(tope);
       script?.removeEventListener('load', renderWidget);
       if (widgetId && turnstileWindow.turnstile) {
         turnstileWindow.turnstile.remove(widgetId);
@@ -117,7 +153,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
       {!montado && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center gap-3 rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center gap-3 rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
         >
           <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
