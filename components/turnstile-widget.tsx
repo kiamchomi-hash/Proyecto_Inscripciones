@@ -153,7 +153,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
       {!montado && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 flex items-center justify-center gap-3 rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center gap-3 border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
         >
           <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
