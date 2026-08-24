@@ -8,26 +8,30 @@ import {
   type ComponentType,
 } from 'react';
 import type { CarreraOpcion } from '@/components/index/types';
+import type { Modo } from '@/components/formularios/casas';
 
 interface Props {
   carreras: CarreraOpcion[];
 }
 
-let enrollmentFormPromise:
-  | Promise<{ default: ComponentType<Props> }>
-  | undefined;
+// El formulario no fija casa: la ficha ofrece toda la oferta en su buscador, así
+// que la casa la decide la carrera que el lead termine eligiendo, igual que en
+// la home.
+type FormProps = Props & { modo: Modo };
 
-function importEnrollmentForm() {
-  enrollmentFormPromise ??= import('@/components/index/enrollment-form');
-  return enrollmentFormPromise;
+let formPromise: Promise<{ default: ComponentType<FormProps> }> | undefined;
+
+function importarFormulario() {
+  formPromise ??= import('@/components/formularios/formulario-lead');
+  return formPromise;
 }
 
 export default function DeferredEnrollmentForm({ carreras }: Props) {
   const placeholderRef = useRef<HTMLElement>(null);
-  const [Form, setForm] = useState<ComponentType<Props> | null>(null);
+  const [Form, setForm] = useState<ComponentType<FormProps> | null>(null);
 
   const loadForm = useCallback(() => {
-    void importEnrollmentForm().then((module) => {
+    void importarFormulario().then((module) => {
       setForm(() => module.default);
     });
   }, []);
@@ -55,7 +59,7 @@ export default function DeferredEnrollmentForm({ carreras }: Props) {
   }, [Form, loadForm]);
 
   if (Form) {
-    return <Form carreras={carreras} />;
+    return <Form carreras={carreras} modo="contacto" />;
   }
 
   return (

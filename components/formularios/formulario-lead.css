@@ -1,3 +1,34 @@
+/* Hueco que ocupa el formulario mientras la ficha de carrera espera al
+   IntersectionObserver para bajarlo. Reserva el alto para que su llegada no
+   empuje el resto de la página. */
+.deferred-enrollment-placeholder {
+  min-height: 34rem;
+  display: grid;
+  place-items: center;
+  border-top: 2px solid var(--catalogo-acento);
+  background: var(--catalogo-form-fondo);
+  color: #f4f8f7;
+  scroll-margin-top: var(--navbar-height, 60px);
+}
+
+.deferred-enrollment-placeholder > div {
+  text-align: center;
+}
+
+.deferred-enrollment-placeholder span {
+  color: var(--catalogo-acento);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.deferred-enrollment-placeholder p {
+  margin-top: 0.5rem;
+  color: var(--catalogo-etiqueta);
+  font-size: 0.88rem;
+}
+
 /* El overlay de éxito tapa la tarjeta entera deslizándose desde abajo. Vive en
    CSS y no en Tailwind porque necesita `inset: 0` sobre el contenedor relativo
    y una transición propia. */

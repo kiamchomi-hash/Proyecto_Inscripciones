@@ -89,6 +89,10 @@ function ContactForm() {
           kind: 'consulta',
           token: turnstileToken,
           payload: {
+            // Sin carrera elegida no hay casa que deducir: va en null y el
+            // endpoint la guarda así. El tipo de formulario sí se sabe.
+            casa: null,
+            tipoFormulario: 'contacto',
             carrera: null,
             tipo: null,
             modalidad: null,

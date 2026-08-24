@@ -10,7 +10,7 @@ import {
 } from '@/components/index/types';
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
 import CareersCatalog from '@/components/index/careers-catalog';
-import EnrollmentForm from '@/components/index/enrollment-form';
+import FormularioLead from '@/components/formularios/formulario-lead';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import '../index.css';
@@ -239,7 +239,10 @@ export default async function TeclabPage() {
           </div>
         </section>
 
-        <EnrollmentForm carreras={carreras} origen="teclab" />
+        {/* Toda la oferta de esta página es de una casa, así que acá la casa
+            va fija y no hay nada dinámico: los campos son siempre los de Teclab. */}
+        <FormularioLead carreras={carreras} modo="contacto" casa="teclab" origen="teclab" />
+        <FormularioLead carreras={carreras} modo="preinscripcion" casa="teclab" origen="teclab" />
 
         <section className="teclab-proof" aria-label="Características de la propuesta Teclab">
           <div className="teclab-proof-inner">

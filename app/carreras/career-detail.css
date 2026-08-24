@@ -1125,4 +1125,4 @@
 }
 /* El boton "Ver info" abre el mismo modal que el catalogo de la home */
 @import "../../components/index/modales.css";
-@import "../../components/index/enrollment-form.css";
+@import "../../components/formularios/formulario-lead.css";
