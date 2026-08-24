@@ -52,10 +52,27 @@ export interface Campo {
    * demás es obligatorio.
    */
   siempreOpcional?: boolean;
-  tipo?: 'texto' | 'select' | 'checkbox';
+  tipo?: 'texto' | 'select' | 'checkbox' | 'fecha';
   opciones?: readonly string[];
   numerico?: boolean;
 }
+
+/**
+ * Argentina primero porque es la respuesta de casi todos; después el resto en
+ * orden alfabético. "Otra" al final: es preferible a que alguien no encuentre
+ * la suya y abandone el formulario.
+ */
+const NACIONALIDADES = [
+  'Argentina',
+  'Alemana', 'Boliviana', 'Brasileña', 'Canadiense', 'Chilena', 'China',
+  'Colombiana', 'Coreana', 'Costarricense', 'Cubana', 'Dominicana',
+  'Ecuatoriana', 'Española', 'Estadounidense', 'Filipina', 'Francesa',
+  'Guatemalteca', 'Haitiana', 'Hondureña', 'India', 'Inglesa', 'Israelí',
+  'Italiana', 'Japonesa', 'Libanesa', 'Mexicana', 'Nicaragüense', 'Panameña',
+  'Paraguaya', 'Peruana', 'Polaca', 'Portuguesa', 'Rusa', 'Salvadoreña',
+  'Senegalesa', 'Siria', 'Sudafricana', 'Ucraniana', 'Uruguaya', 'Venezolana',
+  'Otra',
+] as const;
 
 export const CAMPOS: Record<CampoId, Campo> = {
   nombre:   { columna: 'nombre', grupo: 'personales',   label: 'Nombre',   placeholder: 'Nombre',   max: 100 },
@@ -67,10 +84,17 @@ export const CAMPOS: Record<CampoId, Campo> = {
   dni:      { columna: 'dni', grupo: 'personales',      label: 'Número de documento', placeholder: 'Sin puntos', max: 12, numerico: true },
   sexo:     { columna: 'sexo', grupo: 'personales',     label: 'Sexo',     max: 40, tipo: 'select', opciones: ['Femenino', 'Masculino', 'Otro'] },
 
-  fechaNacimiento: { columna: 'fecha_nacimiento', grupo: 'personales', label: 'Fecha de nacimiento', placeholder: 'DD/MM/AAAA', max: 20 },
+  // Va como fecha nativa: el selector del sistema evita el DD/MM/AAAA mal
+  // tipeado, y su valor es `AAAA-MM-DD` en texto. Nunca se construye un `Date`
+  // con eso — `new Date('1990-04-12')` se parsea como UTC y en Argentina
+  // devuelve el día anterior.
+  fechaNacimiento: { columna: 'fecha_nacimiento', grupo: 'personales', label: 'Fecha de nacimiento', max: 20, tipo: 'fecha' },
   // La tabla la llama `localidad_nacimiento`, no `lugar_nacimiento`.
   lugarNacimiento: { columna: 'localidad_nacimiento', grupo: 'personales', label: 'Lugar de nacimiento', placeholder: 'Ciudad y provincia', max: 120 },
-  nacionalidad:   { columna: 'nacionalidad', grupo: 'personales',    label: 'Nacionalidad',      placeholder: 'Argentina', max: 80 },
+  // OJO: la lista cubre los orígenes reales de la zona y las corrientes
+  // migratorias del país, pero no está copiada del portal de Siglo 21.
+  // Confirmar contra el portal antes de darla por buena.
+  nacionalidad: { columna: 'nacionalidad', grupo: 'personales', label: 'Nacionalidad', max: 80, tipo: 'select', opciones: NACIONALIDADES },
   estadoCivil:    { columna: 'estado_civil', grupo: 'personales',    label: 'Estado civil',      max: 40, tipo: 'select', opciones: ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro'] },
   paisResidencia: { columna: 'pais_residencia', grupo: 'personales', label: 'País de residencia', placeholder: 'Argentina', max: 80 },
 

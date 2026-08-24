@@ -75,6 +75,16 @@ function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoI
   return [izquierda, derecha];
 }
 
+/**
+ * Hoy, para que nadie pueda haber nacido mañana.
+ *
+ * Sale de `toLocaleDateString('en-CA')`, que da `AAAA-MM-DD` en hora local. Con
+ * `toISOString()` daría la fecha UTC: en Argentina, después de las 21, un día
+ * más que el de acá. Ese es el bug de fechas de verdad, y no tiene nada que ver
+ * con el punto flotante.
+ */
+const HOY = new Date().toLocaleDateString('en-CA');
+
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
@@ -159,6 +169,26 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
+      </div>
+    );
+  }
+
+  if (campo.tipo === 'fecha') {
+    return (
+      <div>
+        <label className={ETIQUETA} htmlFor={htmlId}>{campo.label}{marca}</label>
+        <input
+          type="date"
+          id={htmlId}
+          value={typeof valor === 'string' ? valor : ''}
+          onChange={event => onChange(event.target.value)}
+          max={HOY}
+          min="1900-01-01"
+          // `colorScheme: dark` pinta el calendario del sistema en oscuro; sin
+          // eso sale blanco y desentona con todo lo demás.
+          style={{ colorScheme: 'dark' }}
+          className={`${CAMPO} ${error || invalido ? BORDE_MAL : BORDE_OK} campo-fecha`}
+        />
       </div>
     );
   }

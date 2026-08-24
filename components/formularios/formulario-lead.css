@@ -170,3 +170,16 @@
     border-radius: 0 0 0 1rem;
   }
 }
+
+/* El ícono del calendario nativo viene negro y sobre el fondo oscuro del campo
+   no se ve. `color-scheme: dark` arregla el panel desplegable, pero el ícono
+   del input hay que invertirlo aparte. */
+.campo-fecha::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.campo-fecha::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
