@@ -210,3 +210,17 @@ test('el codigo postal es obligatorio en Siglo 21', () => {
     assert.ok(!obl.includes(suelto), `${suelto} no puede ser obligatorio`);
   }
 });
+
+test('piso, depto y torre son opcionales por lo que son, no por la casa', () => {
+  // Un domicilio tiene piso o no lo tiene: no depende de la institucion. Sin
+  // esto, en Teclab -que aun no declaro obligatorios- se leian como exigidos.
+  for (const id of ['domicilioPiso', 'domicilioDepartamento', 'torre']) {
+    assert.equal(CAMPOS[id].siempreOpcional, true, `${id} deberia ser siempre opcional`);
+  }
+  // Y ninguna casa puede exigirlos.
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    for (const id of obligatoriosDe(casa, 'preinscripcion')) {
+      assert.ok(!CAMPOS[id].siempreOpcional, `${casa} exige ${id}, que es siempre opcional`);
+    }
+  }
+});

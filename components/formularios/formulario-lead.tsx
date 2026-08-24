@@ -253,9 +253,13 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
    * contacto pide un campo más, entra marcado solo.
    */
   const esOpcional = (id: CampoId) =>
-    esPreinscripcion
+    // Piso, depto y torre lo son siempre: dependen de cómo sea el domicilio, no
+    // de lo que pida la casa. Sin esto, en Teclab —que todavía no declaró sus
+    // obligatorios— se leían como obligatorios.
+    CAMPOS[id].siempreOpcional
+    || (esPreinscripcion
       ? hayObligatorios && !obligatorios.includes(id)
-      : CAMPOS[id].grupo !== 'contacto';
+      : CAMPOS[id].grupo !== 'contacto');
 
   // El contacto pinta siempre la unión de las tres casas y oculta lo que la
   // casa elegida no pide, para que elegir una carrera no lo agrande y lo

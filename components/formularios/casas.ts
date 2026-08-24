@@ -45,6 +45,12 @@ export interface Campo {
   placeholder?: string;
   /** Tope de caracteres, espejado por el endpoint. `0` en los booleanos. */
   max: number;
+  /**
+   * Opcional por lo que es el dato, no por lo que pida la casa: un domicilio
+   * tiene piso o no lo tiene. Se marca siempre, aunque la casa no haya
+   * declarado sus obligatorios — que es el caso de Teclab hoy.
+   */
+  siempreOpcional?: boolean;
   tipo?: 'texto' | 'select' | 'checkbox';
   opciones?: readonly string[];
   numerico?: boolean;
@@ -72,9 +78,9 @@ export const CAMPOS: Record<CampoId, Campo> = {
   // La tabla la llama `direccion`, no `domicilio`.
   domicilio:             { columna: 'direccion', grupo: 'domicilio',              label: 'Calle',     placeholder: 'Calle',  max: 160 },
   domicilioNumero:       { columna: 'direccion_numero', grupo: 'domicilio', ancho: 'tercio',       label: 'Número',    placeholder: 'N°',     max: 20, numerico: true },
-  domicilioPiso:         { columna: 'direccion_piso', grupo: 'domicilio', ancho: 'tercio',         label: 'Piso',      placeholder: 'Piso',   max: 20 },
-  domicilioDepartamento: { columna: 'direccion_departamento', grupo: 'domicilio', ancho: 'tercio', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
-  torre:        { columna: 'torre', grupo: 'domicilio', ancho: 'tercio',         label: 'Torre',         placeholder: 'Torre', max: 20 },
+  domicilioPiso:         { columna: 'direccion_piso', grupo: 'domicilio', siempreOpcional: true, ancho: 'tercio',         label: 'Piso',      placeholder: 'Piso',   max: 20 },
+  domicilioDepartamento: { columna: 'direccion_departamento', grupo: 'domicilio', siempreOpcional: true, ancho: 'tercio', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
+  torre:        { columna: 'torre', grupo: 'domicilio', siempreOpcional: true, ancho: 'tercio',         label: 'Torre',         placeholder: 'Torre', max: 20 },
   barrio:       { columna: 'barrio', grupo: 'domicilio', ancho: 'tercio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
   codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', ancho: 'tercio', label: 'Código postal', placeholder: 'Código postal', max: 20 },
   localidad:    { columna: 'localidad', grupo: 'domicilio', ancho: 'completo',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
