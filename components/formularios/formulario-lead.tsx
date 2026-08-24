@@ -672,15 +672,13 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
     const boton = botonRef.current;
     if (!boton || !(campo instanceof HTMLElement)) return;
 
-    // Sólo de Localidad para abajo. Más arriba el lead recién empieza y correr
-    // la página no le gana nada: el botón está lejos igual. Se compara la
-    // posición real en el documento y no un índice, para que valga en cualquier
-    // casa y en cualquier orden de campos.
-    const referencia = document.getElementById(`${prefijo}-localidad`);
-    if (referencia && campo !== referencia
-      && !(referencia.compareDocumentPosition(campo) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-      return;
-    }
+    // Sólo al escribir, nunca al abrir algo. En un campo de texto acercar el
+    // botón ayuda; en un desplegable la página se mueve justo cuando aparece la
+    // lista, y eso desorienta más de lo que suma.
+    const abreAlgo = campo.getAttribute('role') === 'combobox'
+      || campo.getAttribute('aria-haspopup') === 'dialog'
+      || campo.id === `${prefijo}-carrera`;
+    if (abreAlgo) return;
 
     const margen = 12;
     const navbar = Number.parseInt(
