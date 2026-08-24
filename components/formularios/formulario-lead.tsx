@@ -235,6 +235,28 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   // obligatorio y decírselo campo por campo sería ruido en veinte etiquetas.
   const hayObligatorios = obligatorios.length > 0;
 
+  /**
+   * Qué campos llevan el "(opcional)" al lado de la etiqueta.
+   *
+   * En preinscripción es lo de siempre: los que la casa no exige, y sólo si
+   * exige alguno.
+   *
+   * En contacto la regla es otra y va al revés. Ninguna casa declara
+   * obligatorios en este modo —a propósito: una consulta que rebota es un lead
+   * perdido—, así que la condición de arriba daba falso en todos y el
+   * formulario no decía en ningún lado que se puede mandar con el nombre en
+   * blanco. Acá lo único que hace falta es una forma de contestar, así que se
+   * marcan todos menos el par mail/teléfono, que ya tiene su propio aviso
+   * arriba del bloque.
+   *
+   * Sale del grupo del campo y no de una lista escrita a mano: si mañana el
+   * contacto pide un campo más, entra marcado solo.
+   */
+  const esOpcional = (id: CampoId) =>
+    esPreinscripcion
+      ? hayObligatorios && !obligatorios.includes(id)
+      : CAMPOS[id].grupo !== 'contacto';
+
   // El contacto pinta siempre la unión de las tres casas y oculta lo que la
   // casa elegida no pide, para que elegir una carrera no lo agrande y lo
   // achique. En preinscripción no: la unión son más de treinta campos y
@@ -395,13 +417,17 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   return (
     <section
       id={esPreinscripcion ? 'preinscripcion' : 'formulario'}
-      className="relative overflow-hidden"
+      className="relative"
       style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}
     >
       <div className={`${esPreinscripcion ? '' : 'contact-form-layout'} mx-auto w-full max-w-[2400px] px-4 py-4 sm:px-8 sm:py-6 xl:px-20`}>
         <div className="form-content-col">
         <div
-          className="form-card relative overflow-hidden"
+          // Sin `overflow-hidden`: recortaba la lista del buscador de carrera
+          // cuando la tarjeta es más baja que el desplegable. El overlay de
+          // éxito, que era lo que lo justificaba, se monta sólo cuando hay que
+          // mostrarlo, así que no necesita que lo tapen.
+          className="form-card relative"
           style={{ background: 'var(--catalogo-form-tarjeta)', border: '1px solid rgba(var(--catalogo-acento-rgb), 0.3)', borderRadius: '1rem' }}
         >
           {listo && (
@@ -561,7 +587,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                             id={id}
                             valor={valores[id]}
                             onChange={valor => poner(id, valor)}
-                            opcional={hayObligatorios && !obligatorios.includes(id)}
+                            opcional={esOpcional(id)}
                             invalido={intentado && faltanObligatorios.includes(id)}
                           />
                         </div>
@@ -591,7 +617,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                       id={id}
                       valor={valores[id]}
                       onChange={valor => poner(id, valor)}
-                      opcional={hayObligatorios && !obligatorios.includes(id)}
+                      opcional={esOpcional(id)}
                       invalido={intentado && (faltanObligatorios.includes(id) || !hayContacto)}
                       error={id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : ''}
                     />
