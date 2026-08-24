@@ -61,3 +61,98 @@
     transition: none;
   }
 }
+
+/* ── El panel lateral del contacto ──
+   El contacto son seis campos: a todo el ancho de la página queda una tira
+   larguísima y vacía. El panel con la marca lo recorta a una proporción
+   legible y cierra la tarjeta. La preinscripción no lo lleva: son veinte
+   campos y ahí el ancho completo se usa de verdad. */
+.contact-form-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-inline: auto;
+}
+
+.contact-form-side-image {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .contact-form-layout {
+    grid-template-columns: 5fr 4fr;
+    align-items: stretch;
+  }
+
+  .contact-form-layout .form-content-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* La tarjeta pierde el borde y el redondeo de la derecha para que el panel
+     se lea como su continuación y no como una segunda caja. */
+  .contact-form-layout .form-card {
+    flex: 1;
+    border-right: none !important;
+    border-radius: 1rem 0 0 1rem !important;
+  }
+
+  .contact-form-layout .form-card-header {
+    border-radius: 1rem 0 0 0 !important;
+  }
+
+  .contact-form-side-image {
+    display: block;
+    min-height: 100%;
+    overflow: hidden;
+    border: 1px solid rgba(var(--catalogo-acento-rgb), 0.3);
+    border-left: none;
+    border-radius: 0 1rem 1rem 0;
+    /* El logotipo va centrado y a tamaño fijo, no en `cover`: estirarlo al
+       ancho del panel agranda las letras hasta recortarlas. */
+    background-color: var(--catalogo-form-panel);
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Una línea propia en el borde: sin esto, al sacarle el borde derecho a la
+     tarjeta las dos piezas se funden sin junta. */
+  .contact-form-side-image::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    background: rgba(var(--catalogo-acento-rgb), 0.3);
+    pointer-events: none;
+  }
+}
+
+/* La marca la pone la casa. Identidad no tiene logo bajado —su sitio bloquea
+   el scrapeo— así que cae en la del CAU, que es la sede que la dicta. */
+.contact-form-side-image[data-casa="teclab"] {
+  background-image: url('/imagenes/teclab/logo-teclab-siglo21.webp');
+  background-size: 70% auto;
+}
+
+.contact-form-side-image[data-casa="siglo21"],
+.contact-form-side-image[data-casa="identidad"] {
+  background-image: url('/imagenes/imagenes_cau/siglo21-marca.svg');
+  background-size: 58% auto;
+}
+
+/* La llegada del check: el círculo entra, el trazo se dibuja y recién ahí
+   aparece el texto. Las tres corren con retardos escalonados desde el TSX. */
+@keyframes formSuccessPop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@keyframes formSuccessCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes formSuccessFade {
+  to { opacity: 1; }
+}

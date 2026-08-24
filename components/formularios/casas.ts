@@ -31,6 +31,12 @@ export interface Campo {
   columna: string;
   /** Bloque del formulario donde se pinta. Ordena la pantalla sola. */
   grupo: Grupo;
+  /**
+   * Cuánto ocupa en la grilla de seis de su columna. Sin esto todos los campos
+   * miden lo mismo y "Piso" queda tan ancho como "Lugar de nacimiento".
+   * Por defecto `medio` (media fila).
+   */
+  ancho?: 'completo' | 'medio' | 'tercio';
   label: string;
   placeholder?: string;
   /** Tope de caracteres, espejado por el endpoint. `0` en los booleanos. */
@@ -61,21 +67,21 @@ export const CAMPOS: Record<CampoId, Campo> = {
   tipoDomicilio: { columna: 'tipo_domicilio', grupo: 'domicilio', label: 'Tipo de domicilio', max: 40, tipo: 'select', opciones: ['Particular', 'Laboral'] },
   // La tabla la llama `direccion`, no `domicilio`.
   domicilio:             { columna: 'direccion', grupo: 'domicilio',              label: 'Calle',     placeholder: 'Calle',  max: 160 },
-  domicilioNumero:       { columna: 'direccion_numero', grupo: 'domicilio',       label: 'Número',    placeholder: 'N°',     max: 20, numerico: true },
-  domicilioPiso:         { columna: 'direccion_piso', grupo: 'domicilio',         label: 'Piso',      placeholder: 'Piso',   max: 20 },
-  domicilioDepartamento: { columna: 'direccion_departamento', grupo: 'domicilio', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
-  torre:        { columna: 'torre', grupo: 'domicilio',         label: 'Torre',         placeholder: 'Torre', max: 20 },
-  barrio:       { columna: 'barrio', grupo: 'domicilio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
-  codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', label: 'Código postal', placeholder: 'Código postal', max: 20 },
-  localidad:    { columna: 'localidad', grupo: 'domicilio',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
+  domicilioNumero:       { columna: 'direccion_numero', grupo: 'domicilio', ancho: 'tercio',       label: 'Número',    placeholder: 'N°',     max: 20, numerico: true },
+  domicilioPiso:         { columna: 'direccion_piso', grupo: 'domicilio', ancho: 'tercio',         label: 'Piso',      placeholder: 'Piso',   max: 20 },
+  domicilioDepartamento: { columna: 'direccion_departamento', grupo: 'domicilio', ancho: 'tercio', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
+  torre:        { columna: 'torre', grupo: 'domicilio', ancho: 'tercio',         label: 'Torre',         placeholder: 'Torre', max: 20 },
+  barrio:       { columna: 'barrio', grupo: 'domicilio', ancho: 'tercio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
+  codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', ancho: 'tercio', label: 'Código postal', placeholder: 'Código postal', max: 20 },
+  localidad:    { columna: 'localidad', grupo: 'domicilio', ancho: 'completo',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
 
   nivelEstudios:    { columna: 'nivel_estudios', grupo: 'estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
   colegio:          { columna: 'colegio', grupo: 'estudios',           label: 'Colegio',               placeholder: 'Nombre del colegio', max: 160 },
   colegioLocalidad: { columna: 'colegio_localidad', grupo: 'estudios', label: 'Localidad del colegio', placeholder: 'Ciudad o localidad', max: 120 },
   medioPago:        { columna: 'medio_pago', grupo: 'estudios',        label: 'Medio de pago',         placeholder: 'Según opción del portal', max: 60 },
 
-  modalidad:     { columna: 'modalidad', grupo: 'consulta',     label: 'Modalidad', max: 40, tipo: 'select' },
-  equivalencias: { columna: 'equivalencias', grupo: 'consulta', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
+  modalidad:     { columna: 'modalidad', grupo: 'consulta', ancho: 'completo',     label: 'Modalidad', max: 40, tipo: 'select' },
+  equivalencias: { columna: 'equivalencias', grupo: 'consulta', ancho: 'completo', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
   email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254 },
   telefono:      { columna: 'telefono', grupo: 'contacto',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30 },
 };
