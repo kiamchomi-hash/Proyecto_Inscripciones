@@ -14,6 +14,20 @@
 
 ---
 
+## Estado
+
+Tareas **1, 2 y 3 hechas** (`3cdc040`, `69118b7`, `81dce94`), 13 tests propios en
+verde. Corrección sobre lo planeado: los tres módulos van en **un solo archivo**,
+`components/formularios/casas.ts`. Node strippea los tipos y corre los `.ts` en
+los tests, pero **no resuelve imports de valor entre `.ts` sin extensión**, y el
+`tsconfig` usa `moduleResolution: bundler` sin `allowImportingTsExtensions`:
+separarlos en tres dejaba la lógica sin poder testearse. Es además el idioma del
+repo — `types.ts` y `teclab.ts` son módulos autocontenidos.
+
+Siguiente: tarea 4.
+
+---
+
 ## Por qué este orden
 
 Las tres primeras tareas son módulos puros con tests de verdad. Cuando terminan, la regla que rompió producción el 23/08 —escribir una columna que no existe— es imposible de repetir, porque ya no quedan nombres de columna sueltos en el endpoint. Recién después se toca la interfaz.
