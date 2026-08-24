@@ -235,7 +235,9 @@ export default async function TeclabPage() {
               </span>
             </a>
 
-            <p className="teclab-ruta-pie">Asesoramiento e inscripción en el CAU Villa Lugano</p>
+            {/* Sin la sede: esta pagina vende una oferta 100% online y nombrar
+                una direccion le suma una barrera al lead que esta lejos. */}
+            <p className="teclab-ruta-pie">Te asesoramos y hacemos la inscripción con vos, 100% online</p>
           </div>
         </section>
 
@@ -261,7 +263,7 @@ export default async function TeclabPage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
+      <SiteFooter casa="teclab" />
     </>
   );
 }

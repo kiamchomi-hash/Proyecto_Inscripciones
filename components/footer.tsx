@@ -49,7 +49,15 @@ const REDES = [
 /** Clases del bloque de cada columna: seccion amplia en mobile, columna en desktop. */
 const COLUMNA = 'py-7 border-t border-[rgba(0,199,177,0.12)] lg:py-0 lg:border-t-0 lg:border-l lg:border-[rgba(0,199,177,0.12)] lg:pl-8';
 
-export default function SiteFooter() {
+/**
+ * `casa` cambia la identidad del pie. En /teclab la oferta es 100% online y se
+ * vende a cualquier punto del pais: ahi no va ni la marca del CAU ni la sede,
+ * porque una direccion se lee como un requisito de asistencia y frena al lead
+ * que vive lejos. Los canales de contacto (telefono y WhatsApp) son los mismos.
+ */
+export default function SiteFooter({ casa = 'cau' }: { casa?: 'cau' | 'teclab' } = {}) {
+  const teclab = casa === 'teclab';
+
   return (
     <footer
       className="relative overflow-hidden"
@@ -66,23 +74,35 @@ export default function SiteFooter() {
 
           {/* Marca */}
           <div className="pb-8 lg:pb-0 lg:pr-8">
-            <div className="flex items-center justify-center gap-3.5 lg:justify-start lg:gap-3">
+            {teclab ? (
               <Image
-                src="/imagenes/imagenes_cau/logo_cau.png"
-                alt=""
-                width={48}
-                height={48}
-                className="w-12 h-12 object-contain brightness-0 invert opacity-90 shrink-0 lg:w-11 lg:h-11"
+                src="/imagenes/teclab/logo-teclab-siglo21.webp"
+                alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
+                width={380}
+                height={69}
+                className="mx-auto h-10 w-auto opacity-90 lg:mx-0"
                 loading="lazy"
               />
-              <div className="text-left">
-                <p className="text-[17px] font-black text-white uppercase tracking-tight leading-none lg:text-base">CAU Villa Lugano</p>
-                <p className="text-[13px] text-[#48b3a4] mt-1.5 lg:text-xs">Universidad Siglo 21</p>
+            ) : (
+              <div className="flex items-center justify-center gap-3.5 lg:justify-start lg:gap-3">
+                <Image
+                  src="/imagenes/imagenes_cau/logo_cau.png"
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 object-contain brightness-0 invert opacity-90 shrink-0 lg:w-11 lg:h-11"
+                  loading="lazy"
+                />
+                <div className="text-left">
+                  <p className="text-[17px] font-black text-white uppercase tracking-tight leading-none lg:text-base">CAU Villa Lugano</p>
+                  <p className="text-[13px] text-[#48b3a4] mt-1.5 lg:text-xs">Universidad Siglo 21</p>
+                </div>
               </div>
-            </div>
+            )}
             <p className="mx-auto mt-5 max-w-md text-[15px] leading-7 text-[#c0d5d0] lg:mx-0 lg:mt-4 lg:max-w-sm lg:text-sm lg:leading-relaxed">
-              Centro de Aprendizaje Universitario. Formación universitaria con modalidad
-              virtual y acompañamiento presencial en Villa Lugano.
+              {teclab
+                ? 'Tecnicaturas y cursos del Instituto Técnico Superior Teclab, 100% online y con articulación a Universidad Siglo 21. Te acompañamos de la inscripción al título.'
+                : 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual y acompañamiento presencial en Villa Lugano.'}
             </p>
           </div>
 
@@ -103,7 +123,8 @@ export default function SiteFooter() {
           {/* Contacto */}
           <div className={COLUMNA}>
             <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:-ml-8 lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Contacto</h2>
-            <ul className="mx-auto grid w-full max-w-[340px] grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start text-left text-[13px] lg:mx-0 lg:block lg:w-auto lg:max-w-none lg:space-y-4 lg:text-sm">
+            <ul className={`mx-auto grid w-full max-w-[340px] items-start text-left text-[13px] lg:mx-0 lg:block lg:w-auto lg:max-w-none lg:space-y-4 lg:text-sm ${teclab ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
+              {!teclab && (
               <li className="grid min-w-0 place-items-center border-r border-[rgba(0,199,177,0.12)] px-3 lg:block lg:justify-items-start lg:border-r-0 lg:px-0">
                 <div className="grid w-full max-w-[150px] min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-2 lg:flex lg:w-fit lg:max-w-none lg:gap-3">
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 lg:w-8 lg:h-8 lg:rounded-lg" style={{ background: 'rgba(0, 199, 177, 0.1)', border: '1px solid rgba(0, 199, 177, 0.2)' }}>
@@ -114,6 +135,7 @@ export default function SiteFooter() {
                 </a>
                 </div>
               </li>
+              )}
               <li className="grid min-w-0 place-items-center px-3 lg:block lg:justify-items-start lg:px-0">
                 <div className="grid w-full max-w-[150px] min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 lg:flex lg:w-fit lg:max-w-none lg:gap-3">
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 lg:w-8 lg:h-8 lg:rounded-lg" style={{ background: 'rgba(0, 199, 177, 0.1)', border: '1px solid rgba(0, 199, 177, 0.2)' }}>
@@ -160,7 +182,9 @@ export default function SiteFooter() {
               <svg className="w-5 h-5 text-[#48b3a4] shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A8.966 8.966 0 013 12c0-1.264.26-2.467.732-3.558" /></svg>
               <div>
                 <p className="text-[13px] font-semibold text-white lg:text-xs">Modalidad Virtual</p>
-                <p className="mt-1 text-[13px] leading-5 text-[#c0d5d0] lg:mt-0.5 lg:text-xs lg:leading-normal">Cursá online, exámenes desde casa o en el CAU</p>
+                <p className="mt-1 text-[13px] leading-5 text-[#c0d5d0] lg:mt-0.5 lg:text-xs lg:leading-normal">
+                  {teclab ? 'Cursás y rendís 100% online, desde donde estés' : 'Cursá online, exámenes desde casa o en el CAU'}
+                </p>
               </div>
             </div>
           </div>
@@ -172,7 +196,7 @@ export default function SiteFooter() {
           style={{ borderTop: '1px solid rgba(0, 199, 177, 0.12)' }}
         >
           <p className="max-w-sm text-center text-xs leading-5 text-[#7ca19b]/80 sm:text-left sm:text-[11px] sm:leading-normal sm:text-[#7ca19b]/70">
-            &copy; {new Date().getFullYear()} CAU Villa Lugano &mdash; Universidad Siglo 21. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} {teclab ? 'Teclab' : 'CAU Villa Lugano'} &mdash; Universidad Siglo 21. Todos los derechos reservados.
           </p>
 
           <div className="flex items-center gap-3 sm:gap-2.5">
