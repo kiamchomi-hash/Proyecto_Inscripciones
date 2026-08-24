@@ -203,6 +203,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const [enviando, setEnviando] = useState(false);
   const [listo, setListo] = useState(false);
   const [error, setError] = useState('');
+  const botonRef = useRef<HTMLButtonElement>(null);
   const listaRef = useRef<HTMLDivElement>(null);
   const tiposRef = useRef<HTMLDivElement>(null);
 
@@ -277,6 +278,42 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
   const hayContacto = Boolean(email || telefono);
   const valido = hayContacto && !errorEmail && !errorTelefono && !faltanObligatorios.length && Boolean(token);
+
+  /**
+   * Al entrar en un campo, acerca el botón de enviar a la pantalla — pero sólo
+   * lo que se pueda sin perder de vista el campo que se acaba de tocar.
+   *
+   * Todo scroll mueve el campo: es lo que scroll significa. Lo que se puede
+   * garantizar es que no se vaya de la pantalla ni quede tapado por la barra,
+   * y eso es lo que hace el tope. Si para mostrar el botón habría que empujarlo
+   * más allá de eso, no se mueve nada: ver el botón no vale perder de vista lo
+   * que se está escribiendo.
+   */
+  const acercarElBoton = (evento: React.FocusEvent<HTMLFormElement>) => {
+    const campo = evento.target;
+    const boton = botonRef.current;
+    if (!boton || !(campo instanceof HTMLElement)) return;
+
+    const margen = 12;
+    const navbar = Number.parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue('--navbar-height'),
+      10,
+    ) || 60;
+
+    // Cuánto falta para que el botón entre en pantalla.
+    const falta = boton.getBoundingClientRect().bottom + margen - window.innerHeight;
+    if (falta <= 0) return;
+
+    // Cuánto se puede subir sin meter el campo debajo de la barra.
+    const tope = campo.getBoundingClientRect().top - navbar - margen;
+    const desplazamiento = Math.min(falta, tope);
+    if (desplazamiento <= 0) return;
+
+    window.scrollBy({
+      top: desplazamiento,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+  };
 
   const limpiar = () => {
     setListo(false);
@@ -379,7 +416,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
             </div>
           )}
 
-          <form onSubmit={enviar} noValidate className={listo ? 'invisible' : undefined} aria-hidden={listo}>
+          <form onSubmit={enviar} onFocusCapture={acercarElBoton} noValidate className={listo ? 'invisible' : undefined} aria-hidden={listo}>
             <div className="form-card-header px-3 pb-3 pt-4 sm:px-4" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <h2 className="text-center text-xl font-black uppercase leading-none tracking-tighter sm:text-2xl">
                 <span className="text-white">FORMULARIO DE </span>
@@ -553,6 +590,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 onExpire={() => { setToken(''); setCaptchaVencido(true); }}
               />
               <button
+                ref={botonRef}
                 type="submit"
                 disabled={!valido || enviando}
                 className="w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"

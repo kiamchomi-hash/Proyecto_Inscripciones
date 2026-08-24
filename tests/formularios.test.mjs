@@ -201,3 +201,12 @@ test('el contacto reserva el lugar de todo lo que alguna casa pide', () => {
   // Y sigue sin viajar cuando la casa no lo pide.
   assert.equal('equivalencias' in armarPayload('teclab', 'contacto', { equivalencias: true }), false);
 });
+
+test('el codigo postal es obligatorio en Siglo 21', () => {
+  const obl = obligatoriosDe('siglo21', 'preinscripcion');
+  assert.ok(obl.includes('codigoPostal'));
+  // Los que dependen de como sea el domicilio siguen sin exigirse.
+  for (const suelto of ['domicilioPiso', 'domicilioDepartamento', 'torre', 'telefono']) {
+    assert.ok(!obl.includes(suelto), `${suelto} no puede ser obligatorio`);
+  }
+});

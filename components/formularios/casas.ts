@@ -131,12 +131,13 @@ export const CASAS: Record<CasaId, Casa> = {
     ],
     obligatorios: {
       contacto: [],
-      // Los que el portal marca Obligatorio. Piso, depto, torre, CP y teléfono
-      // quedan afuera a propósito: el portal tampoco los exige.
+      // Piso, depto, torre y teléfono quedan afuera a propósito: se completan
+      // sólo si el domicilio los tiene.
       preinscripcion: [
         'tipoDocumento', 'dni', 'apellido', 'nombre', 'email', 'fechaNacimiento',
         'nacionalidad', 'paisResidencia', 'sexo', 'estadoCivil', 'lugarNacimiento',
-        'tipoDomicilio', 'domicilio', 'domicilioNumero', 'barrio', 'localidad',
+        'tipoDomicilio', 'domicilio', 'domicilioNumero', 'barrio', 'codigoPostal',
+        'localidad',
       ],
     },
   },
