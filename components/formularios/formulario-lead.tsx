@@ -5,7 +5,7 @@ import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
 import { trackConsulta, type OrigenConsulta } from '@/lib/analytics';
 import {
-  CAMPOS, GRUPOS, armarPayload, camposComunes, camposDe, casaDeCarrera, obligatoriosDe,
+  CAMPOS, GRUPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
   type Campo as CampoDef, type CampoId, type CasaId, type Grupo, type Modo,
 } from './casas';
 
@@ -176,6 +176,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const listaRef = useRef<HTMLDivElement>(null);
   const tiposRef = useRef<HTMLDivElement>(null);
 
+  const esPreinscripcion = modo === 'preinscripcion';
+
   const carrera = useMemo(
     () => carreras.find(opcion => opcion.nombre === carreraElegida) || null,
     [carreras, carreraElegida],
@@ -185,6 +187,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const casaActiva = casa ?? casaDeCarrera(carrera);
   const campos = casaActiva ? camposDe(casaActiva, modo) : camposComunes(modo);
   const obligatorios = casaActiva ? obligatoriosDe(casaActiva, modo) : [];
+
+  // El contacto pinta siempre la unión de las tres casas y oculta lo que la
+  // casa elegida no pide, para que elegir una carrera no lo agrande y lo
+  // achique. En preinscripción no: la unión son más de treinta campos y
+  // reservarles el lugar dejaría media tarjeta en blanco, así que ahí el alto
+  // cambia y está bien — el formulario es visiblemente otro.
+  const enPantalla = esPreinscripcion ? campos : camposPosibles(modo);
+  const pide = (id: CampoId) => campos.includes(id);
 
   const categorias = useMemo(() => categoriasPresentes(carreras), [carreras]);
   const categoriaDetectada = carrera ? getCategoryForCarrera(carrera) : '';
@@ -228,8 +238,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
   const hayContacto = Boolean(email || telefono);
   const valido = hayContacto && !errorEmail && !errorTelefono && !faltanObligatorios.length && Boolean(token);
-
-  const esPreinscripcion = modo === 'preinscripcion';
 
   const limpiar = () => {
     setListo(false);
@@ -348,7 +356,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               {([1, 2] as const).map(columna => {
                 const grupos = GRUPOS.filter(grupo =>
-                  COLUMNA[modo][grupo] === columna && campos.some(id => CAMPOS[id].grupo === grupo));
+                  COLUMNA[modo][grupo] === columna && enPantalla.some(id => CAMPOS[id].grupo === grupo));
                 // La columna 1 se pinta siempre: aunque la casa no pidiera
                 // nada de sus grupos, ahí vive el buscador de carrera.
                 if (!grupos.length && columna !== 1) return null;
@@ -446,8 +454,15 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                           <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">{TITULO_GRUPO[grupo]}</p>
                         )}
                         <div className="grid grid-cols-6 gap-1.5">
-                          {campos.filter(id => CAMPOS[id].grupo === grupo).map(id => (
-                            <div key={id} className={SPAN[CAMPOS[id].ancho ?? 'medio']}>
+                          {enPantalla.filter(id => CAMPOS[id].grupo === grupo).map(id => (
+                            <div
+                              key={id}
+                              className={SPAN[CAMPOS[id].ancho ?? 'medio']}
+                              // `visibility: hidden` y no `display: none`: ocupa
+                              // su lugar, no se ve y no recibe foco ni lectores.
+                              style={pide(id) ? undefined : { visibility: 'hidden' }}
+                              aria-hidden={!pide(id)}
+                            >
                               <Campo
                                 id={id}
                                 valor={valores[id]}
@@ -475,7 +490,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   <span><strong className="text-[var(--catalogo-acento)]">Obligatorio:</strong> mail o teléfono</span>
                 </p>
                 <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-                  {campos.filter(id => CAMPOS[id].grupo === 'contacto').map(id => (
+                  {enPantalla.filter(id => CAMPOS[id].grupo === 'contacto').map(id => (
                     <Campo
                       key={id}
                       id={id}

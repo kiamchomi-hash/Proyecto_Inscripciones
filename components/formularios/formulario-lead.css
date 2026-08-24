@@ -49,15 +49,8 @@
   transform: translateY(0);
 }
 
-/* Al cambiar de casa el formulario gana o pierde bloques enteros, y sin esto
-   el salto de alto deja al lead mirando otra parte de la página. */
-.form-card {
-  transition: min-height 0.25s ease;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .form-success-overlay,
-  .form-card {
+  .form-success-overlay {
     transition: none;
   }
 }

@@ -203,6 +203,23 @@ export function camposComunes(modo: Modo): CampoId[] {
   return listas[0].filter(campo => listas.every(lista => lista.includes(campo)));
 }
 
+/**
+ * Todos los campos que ese modo puede llegar a mostrar en alguna casa.
+ *
+ * El formulario de contacto los pinta siempre: los que la casa elegida no pide
+ * quedan ocultos pero ocupando su lugar, así elegir una carrera no lo agranda y
+ * lo achica. Entre las tres casas el contacto sólo difiere en el checkbox de
+ * equivalencias, así que lo reservado es una fila y no se nota.
+ *
+ * Lo oculto no viaja igual: de eso se ocupa `armarPayload`.
+ */
+export function camposPosibles(modo: Modo): CampoId[] {
+  const vistos = new Set<CampoId>();
+  return (Object.keys(CASAS) as CasaId[])
+    .flatMap(id => camposDe(id, modo))
+    .filter(campo => !vistos.has(campo) && vistos.add(campo));
+}
+
 /** Los campos que bloquean el envío en esa casa y ese modo. */
 export const obligatoriosDe = (casa: CasaId, modo: Modo): CampoId[] =>
   CASAS[casa].obligatorios[modo];

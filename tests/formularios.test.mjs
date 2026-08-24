@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { CAMPOS, CASAS, armarPayload, camposComunes, camposDe, casaDeCarrera, columnaDe, obligatoriosDe } from '../components/formularios/casas.ts';
+import { CAMPOS, CASAS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, columnaDe, obligatoriosDe } from '../components/formularios/casas.ts';
 import { esCarreraVisible } from '../components/index/types.ts';
 
 // La oferta que el sitio publica hoy, segun getCategoryForCarrera().
@@ -178,4 +178,18 @@ test('equivalencias no se ofrecen hasta saber que la casa es Siglo 21', () => {
       assert.ok(!camposDe(casa, modo).includes('equivalencias'), `${casa} no acredita equivalencias`);
     }
   }
+});
+
+test('el contacto reserva el lugar de todo lo que alguna casa pide', () => {
+  // Sin esto el formulario se agranda y se achica al cambiar de carrera: es el
+  // checkbox de equivalencias, que solo tiene Siglo 21.
+  const posibles = camposPosibles('contacto');
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    for (const campo of camposDe(casa, 'contacto')) {
+      assert.ok(posibles.includes(campo), `${casa} pide ${campo} y no esta reservado`);
+    }
+  }
+  assert.ok(posibles.includes('equivalencias'));
+  // Y sigue sin viajar cuando la casa no lo pide.
+  assert.equal('equivalencias' in armarPayload('teclab', 'contacto', { equivalencias: true }), false);
 });
