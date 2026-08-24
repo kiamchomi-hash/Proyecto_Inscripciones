@@ -652,10 +652,17 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
               </button>
 
-              {/* Un solo renglón para los tres avisos: el error del envío pisa
-                  al del captcha vencido, y ése al recuento de obligatorios.
-                  Reservado siempre, para que aparecer no mueva nada. */}
-              <p className="min-h-4 text-[11px] leading-4">
+            </div>
+
+            {/* El pie cierra la tarjeta como el encabezado la abre: misma tinta
+                y su propia línea. Ahí viven los tres avisos —error del envío,
+                captcha vencido, captcha sin tildar— en un renglón de alto fijo,
+                así aparecer no mueve nada. */}
+            <div
+              className="form-card-footer px-3 py-2 sm:px-4"
+              style={{ background: 'rgba(0,0,0,0.35)', borderTop: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}
+            >
+              <p className="min-h-4 text-center text-[11px] leading-4">
                 {error
                   ? <span className="text-red-400">{error}</span>
                   : captchaVencido

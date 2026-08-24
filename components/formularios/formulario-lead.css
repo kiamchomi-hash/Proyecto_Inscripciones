@@ -149,3 +149,18 @@
 @keyframes formSuccessFade {
   to { opacity: 1; }
 }
+
+/* El pie redondea las esquinas de abajo por su cuenta: la tarjeta ya no lleva
+   `overflow-hidden` —recortaba el desplegable del buscador—, así que sin esto
+   su fondo pisaría el redondeo de la tarjeta. */
+.form-card-footer {
+  border-radius: 0 0 1rem 1rem;
+}
+
+/* Con el panel lateral, la tarjeta pierde el redondeo de la derecha y el pie
+   tiene que acompañarla. */
+@media (min-width: 1280px) {
+  .contact-form-layout .form-card-footer {
+    border-radius: 0 0 0 1rem;
+  }
+}
