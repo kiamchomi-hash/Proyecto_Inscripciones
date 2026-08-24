@@ -89,3 +89,23 @@ test('ningún bloque de datos estructurados se serializa sin escapar', async () 
   }
   assert.deepEqual(crudos, []);
 });
+
+test('el endpoint no escribe nombres de columna a mano', async () => {
+  const source = await readFile(path.join(root, 'app/api/formularios/route.ts'), 'utf8');
+  const insert = source.slice(source.indexOf('function insertConsulta'), source.indexOf('function insertFaq'));
+
+  // Las columnas salen de components/formularios/casas.ts. Que el endpoint
+  // vuelva a nombrarlas a mano es exactamente lo que tumbó el sitio el 23/08:
+  // nueve de ellas no existían y PostgREST rechaza la fila entera (PGRST204).
+  assert.doesNotMatch(
+    insert,
+    /\b(localidad_nacimiento|direccion|direccion_numero|nivel_estudios|colegio_localidad|medio_pago|tipo_documento|pais_residencia)\s*:/,
+  );
+  assert.match(insert, /columnaDe/);
+});
+
+test('la consulta guarda de que casa y de que formulario vino', async () => {
+  const source = await readFile(path.join(root, 'app/api/formularios/route.ts'), 'utf8');
+  assert.match(source, /casa:/);
+  assert.match(source, /tipo_formulario:/);
+});

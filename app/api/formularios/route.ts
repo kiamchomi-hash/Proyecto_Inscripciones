@@ -2,6 +2,10 @@ import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
 import { verifyTurnstile } from '@/lib/turnstile';
+import {
+  CAMPOS, CASAS, camposDe, columnaDe,
+  type CampoId, type CasaId, type Modo,
+} from '@/components/formularios/casas';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -12,12 +16,11 @@ const nullableText = (value: unknown, max: number) => text(value, max) || null;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[\d\s()+-]{8,30}$/;
 const SLOT = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
-const SEXOS = ['Femenino', 'Masculino', 'Otro'];
 
-// El DNI y el sexo son opcionales: si vienen mal formados se guardan en null y
-// la consulta entra igual. Rechazar el pedido entero por un DNI con un dígito
-// de menos sería perder el lead por un campo que ni siquiera pedimos.
-const unaOpcionDe = (value: unknown, opciones: string[]) => {
+// El DNI y las opciones son tolerantes: si vienen mal formados se guardan en
+// null y la consulta entra igual. Rechazar el pedido entero por un DNI con un
+// dígito de menos sería perder el lead por un campo que ni siquiera pedimos.
+const unaOpcionDe = (value: unknown, opciones: readonly string[]) => {
   const elegida = text(value, 40);
   return opciones.includes(elegida) ? elegida : null;
 };
@@ -45,6 +48,36 @@ async function checkRateLimit(kind: string, ip: string) {
   return data === true;
 }
 
+const MODOS: Modo[] = ['contacto', 'preinscripcion'];
+
+const esCasa = (value: unknown): value is CasaId =>
+  typeof value === 'string' && value in CASAS;
+
+const esModo = (value: unknown): value is Modo =>
+  MODOS.includes(value as Modo);
+
+/**
+ * Qué campos se aceptan para este envío. Con casa y modo conocidos, los que esa
+ * casa declara. Sin ellos —un cliente viejo que todavía manda el sobre plano—,
+ * la unión de todo lo declarado: se sigue escribiendo sólo en columnas que
+ * existen, que es lo que importa.
+ */
+function camposAceptados(casa: CasaId | null, modo: Modo | null): CampoId[] {
+  if (casa && modo) return camposDe(casa, modo);
+  const todos = (Object.keys(CASAS) as CasaId[])
+    .flatMap(id => [...CASAS[id].contacto, ...CASAS[id].preinscripcion]);
+  return [...new Set(todos)];
+}
+
+/** El valor que va a la columna, según cómo esté declarado el campo. */
+function valorDe(campo: CampoId, payload: JsonRecord) {
+  const definicion = CAMPOS[campo];
+  if (definicion.tipo === 'checkbox') return payload[campo] === true;
+  if (definicion.opciones) return unaOpcionDe(payload[campo], definicion.opciones);
+  if (campo === 'dni') return soloDni(payload[campo]);
+  return nullableText(payload[campo], definicion.max);
+}
+
 async function insertConsulta(payload: JsonRecord) {
   const email = text(payload.email, 254);
   const telefono = text(payload.telefono, 30);
@@ -52,35 +85,36 @@ async function insertConsulta(payload: JsonRecord) {
     throw new TypeError('Datos de contacto inválidos');
   }
 
-  return createSupabaseAdmin().from('consultas').insert({
+  // Un discriminador mal formado no rebota el envío: se guarda en null y la
+  // consulta entra igual. Perder un lead por no saber de qué casa vino sería
+  // peor que no saberlo.
+  const casa = esCasa(payload.casa) ? payload.casa : null;
+  const modo = esModo(payload.tipoFormulario) ? payload.tipoFormulario : null;
+
+  // La fila se arma desde la declaración de casas.ts: acá no hay ni un nombre
+  // de columna escrito a mano. Es la regla que faltaba el 23/08, cuando el
+  // INSERT apuntó a nueve columnas inexistentes y tumbó todos los formularios.
+  const fila: JsonRecord = {
     carrera: nullableText(payload.carrera, 160),
     tipo: nullableText(payload.tipo, 80),
-    modalidad: nullableText(payload.modalidad, 40),
-    equivalencias: payload.equivalencias === true,
-    nombre: nullableText(payload.nombre, 100),
-    apellido: nullableText(payload.apellido, 100),
-    email: email || null,
-    telefono: telefono || null,
-    localidad: nullableText(payload.localidad, 120),
-    dni: soloDni(payload.dni),
-    sexo: unaOpcionDe(payload.sexo, SEXOS),
-    fecha_nacimiento: nullableText(payload.fechaNacimiento, 20),
-    // La tabla las llama `localidad_nacimiento` y `direccion`, no
-    // `lugar_nacimiento` ni `domicilio`: una columna inexistente hace fallar el
-    // INSERT entero (PGRST204) y tumba todos los formularios de consulta.
-    localidad_nacimiento: nullableText(payload.lugarNacimiento, 120),
-    nacionalidad: nullableText(payload.nacionalidad, 80),
-    estado_civil: nullableText(payload.estadoCivil, 40),
-    direccion: nullableText(payload.domicilio, 160),
-    direccion_numero: nullableText(payload.domicilioNumero, 20),
-    direccion_piso: nullableText(payload.domicilioPiso, 20),
-    direccion_departamento: nullableText(payload.domicilioDepartamento, 20),
-    codigo_postal: nullableText(payload.codigoPostal, 20),
-    nivel_estudios: nullableText(payload.nivelEstudios, 80),
-    colegio: nullableText(payload.colegio, 160),
-    colegio_localidad: nullableText(payload.colegioLocalidad, 120),
-    medio_pago: nullableText(payload.medioPago, 60),
-  });
+    casa,
+    tipo_formulario: modo,
+  };
+  const aceptados = camposAceptados(casa, modo);
+  for (const campo of aceptados) {
+    fila[columnaDe(campo)] = valorDe(campo, payload);
+  }
+
+  // Los booleanos van siempre, valgan o no para esta casa: si la columna es
+  // NOT NULL, omitirla rompe el INSERT entero. Un `false` es además lo que
+  // corresponde — Teclab no acredita equivalencias, así que no las pidió.
+  for (const campo of Object.keys(CAMPOS) as CampoId[]) {
+    if (CAMPOS[campo].tipo === 'checkbox' && !aceptados.includes(campo)) {
+      fila[columnaDe(campo)] = false;
+    }
+  }
+
+  return createSupabaseAdmin().from('consultas').insert(fila);
 }
 
 async function insertFaq(payload: JsonRecord) {
