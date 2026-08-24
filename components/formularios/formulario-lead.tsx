@@ -262,7 +262,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   // achique. En preinscripción no: la unión son más de treinta campos y
   // reservarles el lugar dejaría media tarjeta en blanco, así que ahí el alto
   // cambia y está bien — el formulario es visiblemente otro.
-  const enPantalla = esPreinscripcion ? campos : camposPosibles(modo);
+  // Reservar el lugar de lo que la casa no pide sólo tiene sentido donde la
+  // casa puede cambiar: en la home, al elegir carrera. Con la casa fija por
+  // props (`/teclab`) el checkbox de equivalencias no va a aparecer nunca, así
+  // que guardarle una fila vacía es un hueco que no paga nada.
+  const enPantalla = esPreinscripcion || casa ? campos : camposPosibles(modo);
   const pide = (id: CampoId) => campos.includes(id);
   // El bloque de contacto va aparte, a lo ancho y abajo de las dos columnas.
   const columnas = repartirColumnas(
@@ -631,7 +635,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 lo enciende no puede quedar debajo. Mientras carga, su lugar lo
                 ocupa el marcador de `turnstile-widget.tsx` — si no, ese hueco
                 se lee como un vacío y aleja al botón de los datos. */}
-            <div className="space-y-2 px-3 py-2.5 sm:px-4 sm:py-3">
+            <div className="space-y-1.5 px-3 pb-2 pt-2.5 sm:px-4 sm:pt-3">
               <TurnstileWidget
                 key={captchaKey}
                 marca={casaActiva ?? 'siglo21'}
