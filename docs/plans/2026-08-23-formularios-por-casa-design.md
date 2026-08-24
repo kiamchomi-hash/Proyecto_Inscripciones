@@ -8,23 +8,25 @@ El sitio tiene dos casas con oferta propia —Siglo 21 y Teclab— y hoy sólo
 Teclab tiene sus dos formularios. La home ofrece un contacto general y ninguna
 preinscripción.
 
-Identidad Argentina queda afuera de este diseño: esa oferta se migra a otro
-sitio web. Hasta que la migración ocurra, sus diplomaturas siguen apareciendo
-en el catálogo de la home y en el buscador del formulario de contacto, pero no
-tienen formulario de preinscripción ni página propia.
+Identidad Argentina no tiene página propia ni la va a tener: esa oferta se
+migra a otro sitio web. Hasta que la migración ocurra sus diplomaturas siguen
+en el catálogo de la home y se pueden consultar y preinscribir desde ahí, con
+su propio juego de campos.
 
 El detonante inmediato fue otro: el 23/08 el endpoint empezó a escribir columnas
 que no existían y dejaron de entrar **todas** las consultas del sitio. La causa
 de fondo es que cada formulario nuevo se escribió copiando el anterior, sin un
 lugar único que declarara qué campos existen. Este diseño ataca las dos cosas.
 
-## Las dos casas
+## Las casas
 
-| | Siglo 21 | Teclab |
-|---|---|---|
-| Dónde | `/` (home) | `/teclab` |
-| Oferta | Grado, Grado (CCC), Pregrado | Teclab Tecnología / Gestión / Curso |
-| Marca | verde `--color-highlight` | cian `#2ee7d7` / violeta `#8e2cf2` |
+| | Siglo 21 | Teclab | Identidad |
+|---|---|---|---|
+| Página propia | la home | `/teclab` | ninguna (se migra) |
+| Oferta | Grado, Grado (CCC), Pregrado | Teclab Tecnología / Gestión / Curso | Identidad Argentina |
+| Marca | verde `--color-highlight` | cian `#2ee7d7` / violeta `#8e2cf2` | azul `#0090C1` / amarillo `#F1CF1C` |
+
+La home ofrece las tres; `/teclab`, sólo la suya.
 
 ## Los dos formularios
 
@@ -53,13 +55,34 @@ consultarse.
 `barrio` y `equivalencias`. Es el legajo más pesado —el ingreso pide DNI,
 solicitud firmada, fotos y ficha médica— así que no recorta nada.
 
-La preinscripción de la home ofrece **sólo carreras de Siglo 21**. Quien quiera
-preinscribirse a Teclab va a `/teclab`; para una diplomatura de Identidad, el
-camino sigue siendo el contacto.
+**Identidad** recorta fuerte, porque el proceso es otro: no hay requisitos de
+ingreso —ni secundario, ni título previo, ni examen— y cierra con un link de
+pago, no con un legajo. Quedan diplomatura, nombre, apellido, DNI, mail,
+teléfono y provincia/localidad. Sin columnas nuevas: la provincia entra en
+`localidad`.
+
+### La preinscripción de la home es dinámica
+
+La home acepta las tres casas y **la casa la define la carrera elegida, no la
+página**: elegís carrera, se deduce la casa, se arma su juego de campos. Tres
+reglas:
+
+- **Lo cargado no se pierde.** Al cambiar de carrera los campos comunes
+  (nombre, apellido, DNI, mail, teléfono, localidad) se conservan. Los que la
+  casa nueva no pide se ocultan pero no se borran, y no viajan en el envío. Es
+  el mismo criterio que ya rige para `equivalencias`: viaja el valor efectivo,
+  no el que quedó colgado en el estado.
+- **Antes de elegir carrera** se muestra sólo el juego común. El resto aparece
+  cuando hay carrera.
+- **El color no cambia.** En la home el formulario mantiene la marca del sitio;
+  el cian de Teclab queda para `/teclab`. Un formulario que cambia de color
+  mientras se completa se lee como que cambiaste de sitio.
+
+En `/teclab` no hay nada dinámico: toda su oferta es de una sola casa.
 
 ## Arquitectura
 
-Un solo componente parametrizado, no cuatro copias.
+Un solo componente parametrizado, no una copia por formulario.
 
 - `components/formularios/casas.ts` — la fuente de verdad. Por casa: marca,
   niveles de su oferta, y la lista de campos de cada modo. Agregar una casa o
@@ -92,6 +115,15 @@ son `localidad_nacimiento` (no `lugar_nacimiento`) y `direccion` (no
 Con `casa` y `tipo_formulario` cargados, la Edge Function `notificar` encabeza
 el aviso de Telegram con "PREINSCRIPCIÓN — Teclab" o "Consulta — Siglo 21", y
 el panel puede filtrar.
+
+## No se hace una `/siglo21`
+
+La home ya es la página de Siglo 21: su `<title>` es "Universidad Siglo 21 CAU
+Villa Lugano | Oferta académica", su canónica es la raíz y su catálogo es la
+oferta completa. Una `/siglo21` con esa misma oferta competiría con la home por
+las mismas búsquedas y le partiría el tráfico a la página más fuerte del sitio,
+en plena campaña de indexación. `/teclab` se justifica porque es otra marca con
+otra oferta que la home no destaca; Siglo 21 no es otra casa, es el sitio.
 
 ## Fuera de alcance
 
