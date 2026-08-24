@@ -87,7 +87,7 @@ export default function SiteFooter() {
           </div>
 
           {/* Navegación */}
-          <nav className={`${COLUMNA} lg:text-center`} aria-label="Enlaces del sitio">
+          <nav className={`${COLUMNA} lg:!pl-0 lg:text-center`} aria-label="Enlaces del sitio">
             <h2 className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:mb-4 lg:text-xs lg:tracking-widest">Navegación</h2>
             <ul className="grid grid-cols-2 gap-x-4 text-[15px] lg:grid-cols-1 lg:text-sm">
               {ENLACES.map(({ href, label }) => (
