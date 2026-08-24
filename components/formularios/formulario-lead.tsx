@@ -62,7 +62,7 @@ function errorDeTelefono(valor: string) {
   return '';
 }
 
-function Campo({ prefijo, id, valor, onChange, obligatorio, error }: {
+function Campo({ prefijo, id, valor, onChange, opcional, error }: {
   /**
    * Distingue los `id` de un formulario de los del otro. La home monta dos
    * —contacto y preinscripción— y sin esto los dos usarían `form-carrera`:
@@ -73,12 +73,20 @@ function Campo({ prefijo, id, valor, onChange, obligatorio, error }: {
   id: CampoId;
   valor: string | boolean | undefined;
   onChange: (valor: string | boolean) => void;
-  obligatorio: boolean;
+  /**
+   * Marca el campo como "se puede dejar vacío". Va al revés que el asterisco
+   * que había antes: ese señalaba los obligatorios y no lo explicaba en ningún
+   * lado, así que Piso, Depto y Torre se leían como obligatorios igual. Además
+   * son menos los opcionales que los obligatorios, así que ensucia menos.
+   */
+  opcional: boolean;
   error?: string;
 }) {
   const campo = CAMPOS[id];
   const htmlId = `${prefijo}-${id}`;
-  const marca = obligatorio ? <span className="text-red-400/70"> *</span> : null;
+  const marca = opcional
+    ? <span className="ml-1 font-normal normal-case tracking-normal text-[var(--catalogo-texto-suave)]/70">(opcional)</span>
+    : null;
 
   if (campo.tipo === 'checkbox') {
     return (
@@ -180,6 +188,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const casaActiva = casa ?? casaDeCarrera(carrera);
   const campos = casaActiva ? camposDe(casaActiva, modo) : camposComunes(modo);
   const obligatorios = casaActiva ? obligatoriosDe(casaActiva, modo) : [];
+  // Si la casa no declara ninguno, no hay distinción que marcar: nada es
+  // obligatorio y decírselo campo por campo sería ruido en veinte etiquetas.
+  const hayObligatorios = obligatorios.length > 0;
 
   // El contacto pinta siempre la unión de las tres casas y oculta lo que la
   // casa elegida no pide, para que elegir una carrera no lo agrande y lo
@@ -462,7 +473,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                                 id={id}
                                 valor={valores[id]}
                                 onChange={valor => poner(id, valor)}
-                                obligatorio={obligatorios.includes(id)}
+                                opcional={hayObligatorios && !obligatorios.includes(id)}
                               />
                             </div>
                           ))}
@@ -492,7 +503,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                       id={id}
                       valor={valores[id]}
                       onChange={valor => poner(id, valor)}
-                      obligatorio={obligatorios.includes(id)}
+                      opcional={hayObligatorios && !obligatorios.includes(id)}
                       error={id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : ''}
                     />
                   ))}
@@ -531,7 +542,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                     ? <span className="text-amber-300">El captcha venció. Volvé a tildarlo.</span>
                     : Boolean(faltanObligatorios.length) && (
                       <span className="text-[var(--catalogo-texto-suave)]">
-                        Faltan {faltanObligatorios.length} {faltanObligatorios.length === 1 ? 'dato' : 'datos'} marcados con <span className="text-red-400/70">*</span>.
+                        {faltanObligatorios.length === 1
+                          ? 'Falta un dato para enviar la preinscripción.'
+                          : `Faltan ${faltanObligatorios.length} datos para enviar la preinscripción.`}
                       </span>
                     )}
               </p>
