@@ -128,12 +128,17 @@ function errorDeTelefono(valor: string) {
 
 
 /**
- * Un desplegable propio, con el mismo aspecto que el resto de los campos.
+ * Un desplegable propio que además se puede escribir.
  *
- * No es un `<select>` nativo por dos razones que se ven: el navegador decide
- * solo hacia qué lado abre la lista —con cuarenta opciones se iba para arriba— y
- * no deja darle al panel la tinta del formulario. Acá abre hacia abajo salvo
- * que no entre, y entonces sube.
+ * No es un `<select>` nativo por tres razones que se ven: el navegador decide
+ * solo hacia qué lado abre la lista —con cuarenta opciones se iba para arriba—,
+ * no deja darle al panel la tinta del formulario, y no se puede tipear para
+ * llegar rápido a una opción.
+ *
+ * Escribir filtra la lista. Lo que quede escrito se guarda tal cual: si no es
+ * una de las opciones, el campo se pinta en rojo y el envío no pasa. Al salir
+ * del campo, si lo tipeado deja una sola opción posible, se completa sola — así
+ * "arg" termina en "Argentina" sin obligar a elegirla del listado.
  */
 function Desplegable({ id, valor, onChange, opciones, invalido }: {
   id: string;
@@ -143,67 +148,84 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
   invalido?: boolean;
 }) {
   const [abierto, setAbierto] = useState(false);
-  const [haciaArriba, setHaciaArriba] = useState(false);
+  // `null` mientras no se está tipeando: ahí la lista se muestra entera.
+  const [busqueda, setBusqueda] = useState<string | null>(null);
   const cajaRef = useRef<HTMLDivElement>(null);
+
+  const filtradas = useMemo(() => {
+    const texto = (busqueda ?? '').trim().toLowerCase();
+    if (!texto) return opciones;
+    return opciones.filter(opcion => opcion.toLowerCase().includes(texto));
+  }, [opciones, busqueda]);
+
+  const cerrar = useCallback(() => {
+    setAbierto(false);
+    setBusqueda(previa => {
+      // Si lo tipeado deja una sola opción, se adopta. Si no, queda como está
+      // y el borde rojo se encarga de avisar.
+      if (previa !== null && previa.trim()) {
+        const texto = previa.trim().toLowerCase();
+        const posibles = opciones.filter(opcion => opcion.toLowerCase().includes(texto));
+        if (posibles.length === 1) onChange(posibles[0]);
+      }
+      return null;
+    });
+  }, [onChange, opciones]);
 
   useEffect(() => {
     if (!abierto) return;
     const afuera = (evento: MouseEvent) => {
-      if (cajaRef.current && !cajaRef.current.contains(evento.target as Node)) setAbierto(false);
+      if (cajaRef.current && !cajaRef.current.contains(evento.target as Node)) cerrar();
     };
-    const escape = (evento: KeyboardEvent) => { if (evento.key === 'Escape') setAbierto(false); };
+    const escape = (evento: KeyboardEvent) => { if (evento.key === 'Escape') cerrar(); };
     document.addEventListener('mousedown', afuera);
     document.addEventListener('keydown', escape);
     return () => {
       document.removeEventListener('mousedown', afuera);
       document.removeEventListener('keydown', escape);
     };
-  }, [abierto]);
-
-  const alternar = () => {
-    if (!abierto && cajaRef.current) {
-      const caja = cajaRef.current.getBoundingClientRect();
-      const abajo = window.innerHeight - caja.bottom;
-      // Sube sólo si abajo no entra y arriba sí: en la duda, hacia abajo.
-      setHaciaArriba(abajo < ALTO_LISTA && caja.top > abajo);
-    }
-    setAbierto(!abierto);
-  };
-
-  const elegir = (opcion: string) => { onChange(opcion); setAbierto(false); };
+  }, [abierto, cerrar]);
 
   return (
     <div className="relative" ref={cajaRef}>
-      <button
-        type="button"
+      <input
+        type="text"
         id={id}
-        onClick={alternar}
-        aria-haspopup="listbox"
+        role="combobox"
         aria-expanded={abierto}
-        className={`${CAMPO} ${invalido ? BORDE_MAL : BORDE_OK} cursor-pointer pr-8 text-left ${valor ? 'text-white' : 'text-[var(--catalogo-texto-suave)]/60'}`}
+        aria-controls={`${id}-lista`}
+        aria-autocomplete="list"
+        autoComplete="off"
+        value={busqueda ?? valor}
+        placeholder="Sin especificar"
+        onChange={evento => { setBusqueda(evento.target.value); onChange(evento.target.value); setAbierto(true); }}
+        onFocus={() => { setBusqueda(null); setAbierto(true); }}
+        className={`${CAMPO} ${invalido ? BORDE_MAL : BORDE_OK} cursor-text pr-8`}
+      />
+      <svg
+        onClick={() => { setAbierto(!abierto); setBusqueda(null); }}
+        className={`absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 cursor-pointer text-[var(--catalogo-acento)]/60 transition-transform ${abierto ? 'rotate-180' : ''}`}
+        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
       >
-        {valor || 'Sin especificar'}
-        <svg
-          className={`pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--catalogo-acento)]/60 transition-transform ${abierto ? 'rotate-180' : ''}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
 
-      {abierto && (
+      {/* Siempre hacia abajo: que se abriera para arriba desconcertaba más de lo
+          que resolvía. */}
+      {abierto && Boolean(filtradas.length) && (
         <div
+          id={`${id}-lista`}
           role="listbox"
-          className={`absolute z-30 w-full overflow-auto rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] shadow-xl ${haciaArriba ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+          className="absolute top-full z-30 mt-1 w-full overflow-auto rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] shadow-xl"
           style={{ maxHeight: ALTO_LISTA }}
         >
-          {opciones.map(opcion => (
+          {filtradas.map(opcion => (
             <button
               key={opcion}
               type="button"
               role="option"
               aria-selected={opcion === valor}
-              onClick={() => elegir(opcion)}
+              onClick={() => { onChange(opcion); setBusqueda(null); setAbierto(false); }}
               className={`w-full border-b border-[var(--catalogo-acento)]/15 px-3 py-1.5 text-left text-sm transition-colors last:border-b-0 hover:bg-[var(--catalogo-acento)]/10 ${opcion === valor ? 'text-[var(--catalogo-acento)]' : 'text-white'}`}
             >
               {opcion}
@@ -589,8 +611,24 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
     return typeof valor === 'boolean' ? false : !String(valor ?? '').trim();
   });
 
+  /**
+   * Lo escrito en un campo de lista que no es ninguna de sus opciones —"1j999"
+   * en Nacionalidad—. Se marca al instante, sin esperar al intento de envío:
+   * acá no hace falta adivinar la intención, ya está mal escrito.
+   *
+   * El endpoint además lo descarta por su cuenta (`unaOpcionDe`), así que aunque
+   * algo se colara nunca entraría una nacionalidad inventada a la base.
+   */
+  const malEscritos = campos.filter(id => {
+    const opciones = CAMPOS[id].opciones;
+    const puesto = valores[id];
+    return Boolean(opciones) && typeof puesto === 'string' && puesto.trim() !== ''
+      && !opciones!.includes(puesto);
+  });
+
   const hayContacto = Boolean(email || telefono);
-  const valido = hayContacto && !errorEmail && !errorTelefono && !faltanObligatorios.length && Boolean(token);
+  const valido = hayContacto && !errorEmail && !errorTelefono
+    && !faltanObligatorios.length && !malEscritos.length && Boolean(token);
 
   /**
    * Al entrar en un campo, acerca el botón de enviar a la pantalla — pero sólo
@@ -660,7 +698,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
       setEnFrio(true);
       if (frioRef.current) clearTimeout(frioRef.current);
       frioRef.current = setTimeout(() => setEnFrio(false), 5000);
-      const primero = faltanObligatorios[0] ?? (!hayContacto ? 'email' : null);
+      const primero = malEscritos[0] ?? faltanObligatorios[0] ?? (!hayContacto ? 'email' : null);
       if (primero) document.getElementById(`${prefijo}-${primero}`)?.focus();
       return;
     }
@@ -882,7 +920,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                             valor={valores[id]}
                             onChange={valor => poner(id, valor)}
                             opcional={esOpcional(id)}
-                            invalido={intentado && faltanObligatorios.includes(id)}
+                            invalido={malEscritos.includes(id) || (intentado && faltanObligatorios.includes(id))}
                           />
                         </div>
                       ))}
@@ -917,7 +955,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                       valor={valores[id]}
                       onChange={valor => poner(id, valor)}
                       opcional={esOpcional(id)}
-                      invalido={intentado && (faltanObligatorios.includes(id) || !hayContacto)}
+                      invalido={malEscritos.includes(id) || (intentado && (faltanObligatorios.includes(id) || !hayContacto))}
                       error={id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : ''}
                     />
                   ))}
