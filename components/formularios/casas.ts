@@ -14,10 +14,11 @@
 // ── Los campos ──
 
 export type CampoId =
-  | 'nombre' | 'apellido' | 'dni' | 'sexo'
+  | 'nombre' | 'apellido' | 'tipoDocumento' | 'dni' | 'sexo'
   | 'fechaNacimiento' | 'lugarNacimiento' | 'nacionalidad' | 'estadoCivil'
-  | 'paisResidencia' | 'domicilio' | 'domicilioNumero' | 'domicilioPiso'
-  | 'domicilioDepartamento' | 'barrio' | 'codigoPostal' | 'localidad'
+  | 'paisResidencia' | 'tipoDomicilio' | 'domicilio' | 'domicilioNumero'
+  | 'domicilioPiso' | 'domicilioDepartamento' | 'torre' | 'barrio'
+  | 'codigoPostal' | 'localidad'
   | 'nivelEstudios' | 'colegio' | 'colegioLocalidad' | 'medioPago'
   | 'modalidad' | 'equivalencias' | 'email' | 'telefono';
 
@@ -36,7 +37,11 @@ export interface Campo {
 export const CAMPOS: Record<CampoId, Campo> = {
   nombre:   { columna: 'nombre',   label: 'Nombre',   placeholder: 'Nombre',   max: 100 },
   apellido: { columna: 'apellido', label: 'Apellido', placeholder: 'Apellido', max: 100 },
-  dni:      { columna: 'dni',      label: 'DNI',      placeholder: 'Tu DNI',   max: 12, numerico: true },
+  // El portal de Siglo 21 pide tipo y número por separado; `dni` es el número.
+  // OJO: las opciones son las usuales del padrón argentino, no una lista
+  // copiada del portal. Confirmar contra el portal antes de darlas por buenas.
+  tipoDocumento: { columna: 'tipo_documento', label: 'Tipo de documento', max: 40, tipo: 'select', opciones: ['DNI', 'Libreta Cívica', 'Libreta de Enrolamiento', 'Pasaporte'] },
+  dni:      { columna: 'dni',      label: 'Número de documento', placeholder: 'Sin puntos', max: 12, numerico: true },
   sexo:     { columna: 'sexo',     label: 'Sexo',     max: 40, tipo: 'select', opciones: ['Femenino', 'Masculino', 'Otro'] },
 
   fechaNacimiento: { columna: 'fecha_nacimiento', label: 'Fecha de nacimiento', placeholder: 'DD/MM/AAAA', max: 20 },
@@ -46,11 +51,14 @@ export const CAMPOS: Record<CampoId, Campo> = {
   estadoCivil:    { columna: 'estado_civil',    label: 'Estado civil',      max: 40, tipo: 'select', opciones: ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro'] },
   paisResidencia: { columna: 'pais_residencia', label: 'País de residencia', placeholder: 'Argentina', max: 80 },
 
+  // OJO: opciones inventadas, igual que las de tipoDocumento. Confirmar.
+  tipoDomicilio: { columna: 'tipo_domicilio', label: 'Tipo de domicilio', max: 40, tipo: 'select', opciones: ['Particular', 'Laboral'] },
   // La tabla la llama `direccion`, no `domicilio`.
-  domicilio:             { columna: 'direccion',              label: 'Domicilio', placeholder: 'Calle',  max: 160 },
+  domicilio:             { columna: 'direccion',              label: 'Calle',     placeholder: 'Calle',  max: 160 },
   domicilioNumero:       { columna: 'direccion_numero',       label: 'Número',    placeholder: 'N°',     max: 20, numerico: true },
   domicilioPiso:         { columna: 'direccion_piso',         label: 'Piso',      placeholder: 'Piso',   max: 20 },
   domicilioDepartamento: { columna: 'direccion_departamento', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
+  torre:        { columna: 'torre',         label: 'Torre',         placeholder: 'Torre', max: 20 },
   barrio:       { columna: 'barrio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
   codigoPostal: { columna: 'codigo_postal', label: 'Código postal', placeholder: 'Código postal', max: 20 },
   localidad:    { columna: 'localidad',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
@@ -84,6 +92,13 @@ export interface Casa {
   modalidades: string[];
   contacto: CampoId[];
   preinscripcion: CampoId[];
+  /**
+   * Los que bloquean el envío, por modo. El contacto va siempre vacío: un
+   * formulario de consulta que rebota pierde el lead, y para eso ya está la
+   * regla de "mail o teléfono". El legajo sí puede exigir — uno a medias no
+   * sirve para preinscribir a nadie.
+   */
+  obligatorios: { contacto: CampoId[]; preinscripcion: CampoId[] };
 }
 
 export const CASAS: Record<CasaId, Casa> = {
@@ -92,16 +107,29 @@ export const CASAS: Record<CasaId, Casa> = {
     niveles: ['Grado', 'Grado (CCC)', 'Pregrado'],
     modalidades: ['Educación Distribuida Home (Virtual)'],
     contacto: ['modalidad', 'nombre', 'apellido', 'localidad', 'equivalencias', 'email', 'telefono'],
-    // PROVISORIO: el juego de Teclab más los tres que suma el legajo de Siglo
-    // 21 (país de residencia, barrio y equivalencias). Falta la lista real.
+    // La ficha del portal de Siglo 21, en su orden. No pide nivel de estudios,
+    // colegio, medio de pago ni equivalencias: eso es de Teclab, no de acá.
+    //
+    // El portal parte el teléfono en código de país, código de área y móvil.
+    // Acá va en un campo solo: partirlo es fricción que nadie espera en un
+    // formulario web, y el área sale sola de un número bien escrito.
     preinscripcion: [
-      'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
-      'nacionalidad', 'estadoCivil', 'paisResidencia',
-      'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento',
-      'barrio', 'codigoPostal', 'localidad',
-      'nivelEstudios', 'colegio', 'colegioLocalidad', 'medioPago',
-      'equivalencias', 'email', 'telefono',
+      'tipoDocumento', 'dni', 'apellido', 'nombre', 'email', 'fechaNacimiento',
+      'nacionalidad', 'paisResidencia', 'sexo', 'estadoCivil', 'lugarNacimiento',
+      'tipoDomicilio', 'domicilio', 'domicilioNumero', 'domicilioPiso',
+      'domicilioDepartamento', 'torre', 'barrio', 'codigoPostal', 'localidad',
+      'telefono',
     ],
+    obligatorios: {
+      contacto: [],
+      // Los que el portal marca Obligatorio. Piso, depto, torre, CP y teléfono
+      // quedan afuera a propósito: el portal tampoco los exige.
+      preinscripcion: [
+        'tipoDocumento', 'dni', 'apellido', 'nombre', 'email', 'fechaNacimiento',
+        'nacionalidad', 'paisResidencia', 'sexo', 'estadoCivil', 'lugarNacimiento',
+        'tipoDomicilio', 'domicilio', 'domicilioNumero', 'barrio', 'localidad',
+      ],
+    },
   },
   teclab: {
     nombre: 'Teclab',
@@ -118,6 +146,8 @@ export const CASAS: Record<CasaId, Casa> = {
       'nivelEstudios', 'colegio', 'colegioLocalidad', 'medioPago',
       'email', 'telefono',
     ],
+    // Sin la ficha oficial de Teclab a la vista, no se exige nada todavía.
+    obligatorios: { contacto: [], preinscripcion: [] },
   },
   identidad: {
     nombre: 'Academia Identidad Argentina',
@@ -128,6 +158,9 @@ export const CASAS: Record<CasaId, Casa> = {
     // título previo, ni examen— y cierran con un link de pago, no con un
     // legajo: pedir domicilio y colegio sería fricción sin destino.
     preinscripcion: ['nombre', 'apellido', 'dni', 'localidad', 'email', 'telefono'],
+    // La preinscripción de Identidad se carga con estos cinco datos; el resto
+    // lo resuelve el link de pago.
+    obligatorios: { contacto: [], preinscripcion: ['nombre', 'apellido', 'dni', 'email'] },
   },
 };
 
@@ -144,6 +177,10 @@ export const casaDeCarrera = (carrera: { nivel: string } | null | undefined): Ca
   (carrera && CASA_POR_NIVEL.get(carrera.nivel)) || null;
 
 export const camposDe = (casa: CasaId, modo: Modo): CampoId[] => CASAS[casa][modo];
+
+/** Los campos que bloquean el envío en esa casa y ese modo. */
+export const obligatoriosDe = (casa: CasaId, modo: Modo): CampoId[] =>
+  CASAS[casa].obligatorios[modo];
 
 // ── Qué viaja en el envío ──
 

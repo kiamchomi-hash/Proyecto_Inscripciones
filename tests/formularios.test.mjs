@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { CAMPOS, CASAS, armarPayload, camposDe, casaDeCarrera, columnaDe } from '../components/formularios/casas.ts';
+import { CAMPOS, CASAS, armarPayload, camposDe, casaDeCarrera, columnaDe, obligatoriosDe } from '../components/formularios/casas.ts';
 import { esCarreraVisible } from '../components/index/types.ts';
 
 // La oferta que el sitio publica hoy, segun getCategoryForCarrera().
@@ -112,4 +112,36 @@ test('un campo vacio viaja igual: borrar un dato tiene que poder guardarse', () 
   const payload = armarPayload('identidad', 'preinscripcion', { nombre: '', dni: '30111222' });
   assert.equal('nombre' in payload, true);
   assert.equal(payload.nombre, '');
+});
+
+test('la preinscripcion de Siglo 21 es la del portal', () => {
+  const campos = camposDe('siglo21', 'preinscripcion');
+
+  // Los que suma respecto de Teclab.
+  for (const propio of ['tipoDocumento', 'paisResidencia', 'tipoDomicilio', 'torre', 'barrio']) {
+    assert.ok(campos.includes(propio), `Siglo 21 pide ${propio}`);
+  }
+  // Los que el portal NO pide, aunque Teclab si.
+  for (const ajeno of ['nivelEstudios', 'colegio', 'colegioLocalidad', 'medioPago', 'equivalencias']) {
+    assert.ok(!campos.includes(ajeno), `el portal de Siglo 21 no pide ${ajeno}`);
+  }
+});
+
+test('los obligatorios de una casa son campos que esa casa pide', () => {
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    for (const modo of ['contacto', 'preinscripcion']) {
+      const campos = camposDe(casa, modo);
+      for (const campo of obligatoriosDe(casa, modo)) {
+        assert.ok(campos.includes(campo), `${casa}.${modo} exige ${campo} sin pedirlo`);
+      }
+    }
+  }
+});
+
+test('el contacto no exige nada: la regla es mail o telefono', () => {
+  // Un contacto que bloquea pierde el lead. El legajo si puede exigir.
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    assert.deepEqual(obligatoriosDe(casa, 'contacto'), []);
+  }
+  assert.ok(obligatoriosDe('siglo21', 'preinscripcion').length > 0);
 });
