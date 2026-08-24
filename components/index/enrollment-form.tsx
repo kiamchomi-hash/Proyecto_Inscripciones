@@ -258,7 +258,7 @@ function ContactForm({ carreras, showImage = true }: { carreras: CarreraOpcion[]
                   <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
                   <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
                 </div>
-                <input type="text" placeholder="Localidad (opcional)" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={inputClass} />
+                <input type="text" placeholder="Localidad (opcional)" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={`${inputClass} md:translate-y-1.5`} />
                 {!showImage && (
                   <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
                     <p className="text-[12px] text-white leading-snug"><strong className="text-[var(--catalogo-acento)]">Obligatorio:</strong> mail o teléfono</p>
