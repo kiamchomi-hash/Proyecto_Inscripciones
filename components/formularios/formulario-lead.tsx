@@ -41,11 +41,37 @@ const SPAN: Record<NonNullable<CampoDef['ancho']>, string> = {
 };
 
 /**
- * Los únicos campos donde acercar el botón de enviar suma algo: son los que
- * abren un tramo largo del formulario y dejan el botón lejos. En el resto el
- * movimiento es ruido, así que no se mueve nada.
+ * Los campos de la mitad de arriba, donde el formulario recién empieza: el
+ * botón está a media pantalla de distancia y acercarlo es un salto largo que no
+ * muestra nada nuevo. Los desplegables de esa zona no hace falta nombrarlos —
+ * ya quedan afuera por abrir un panel.
  */
-const ACERCAN_EL_BOTON: CampoId[] = ['dni', 'domicilio'];
+const ARRIBA_DE_TODO: CampoId[] = ['lugarNacimiento'];
+
+/** En una sola columna acercan sólo estos dos, que abren cada tramo largo. */
+const ACERCAN_EN_MOVIL: CampoId[] = ['dni', 'domicilio'];
+
+/** Desde `md` el formulario se pinta en dos columnas. */
+const enDosColumnas = () => window.matchMedia('(min-width: 768px)').matches;
+
+/**
+ * Si al recibir el foco ese campo acerca el botón de enviar.
+ *
+ * En dos columnas lo hacen todos los de escribir: son los que abren el tramo
+ * largo y dejan el botón lejos. Los que despliegan un panel propio —los select
+ * y la fecha— no, porque el scroll corre la pantalla debajo del menú recién
+ * abierto y lo descoloca. Es una regla y no una lista porque el tipo ya lo
+ * declara `casas.ts`: un campo nuevo entra solo, y un select nunca por error.
+ *
+ * En una columna la cuenta es otra —el teclado virtual se come media pantalla y
+ * `innerHeight` deja de medir lo que se ve—, así que ahí no se amplía nada.
+ */
+const acercaElBoton = (id: string): boolean => {
+  const campo = CAMPOS[id as CampoId];
+  if (!campo) return false;
+  if (!enDosColumnas()) return ACERCAN_EN_MOVIL.includes(id as CampoId);
+  return (campo.tipo ?? 'texto') === 'texto' && !ARRIBA_DE_TODO.includes(id as CampoId);
+};
 
 /** Lo que tapa la barra fija de arriba. Nada puede quedar debajo de eso. */
 const altoNavbar = () => Number.parseInt(
@@ -750,12 +776,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     const boton = botonRef.current;
     if (saltandoRef.current || !boton || !(campo instanceof HTMLElement)) return;
 
-    // En la mayoría de los campos el movimiento no gana nada y desorienta: se
-    // mueve la página en cada tabulación. Sólo estos tres lo aprovechan.
     const id = campo.id.startsWith(`${prefijo}-`)
       ? campo.id.slice(prefijo.length + 1)
       : '';
-    if (!ACERCAN_EL_BOTON.includes(id as CampoId)) return;
+    if (!acercaElBoton(id)) return;
 
     const margen = 12;
 
