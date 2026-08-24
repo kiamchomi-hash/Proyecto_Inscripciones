@@ -1006,11 +1006,19 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                   </svg>
+                  {/* En la preinscripción es un bloque más del legajo y se
+                      rotula como tal; los dos son obligatorios como todo lo
+                      demás y no hace falta aclararlo. En el contacto sí, porque
+                      ahí la regla es otra: con uno de los dos alcanza. */}
                   <span>
-                    <strong className="text-[var(--catalogo-acento)]">Cómo te contestamos:</strong>{' '}
-                    {esPreinscripcion
-                      ? 'hacen falta el mail y el teléfono'
-                      : 'con el mail o el teléfono alcanza'}
+                    {esPreinscripcion ? (
+                      <strong className="text-[var(--catalogo-acento)]">Datos de contacto</strong>
+                    ) : (
+                      <>
+                        <strong className="text-[var(--catalogo-acento)]">Cómo te contestamos:</strong>{' '}
+                        con el mail o el teléfono alcanza
+                      </>
+                    )}
                   </span>
                 </p>
                 <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
