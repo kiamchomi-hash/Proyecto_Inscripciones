@@ -12,6 +12,10 @@
 // extensión; separarlo en tres dejaría la lógica sin poder testearse.
 
 // ── Los campos ──
+//
+// No hay campo `modalidad`: toda la oferta de las tres casas es virtual, así
+// que preguntarla era una fila que siempre tenía una sola respuesta. La columna
+// sigue en la tabla con lo que cargaron las consultas anteriores.
 
 /** Los bloques del formulario, en el orden en que se pintan. */
 export const GRUPOS = ['consulta', 'personales', 'domicilio', 'estudios', 'contacto'] as const;
@@ -24,7 +28,7 @@ export type CampoId =
   | 'domicilioPiso' | 'domicilioDepartamento' | 'torre' | 'barrio'
   | 'codigoPostal' | 'localidad'
   | 'nivelEstudios' | 'colegio' | 'colegioLocalidad' | 'medioPago'
-  | 'modalidad' | 'equivalencias' | 'email' | 'telefono';
+  | 'equivalencias' | 'email' | 'telefono';
 
 export interface Campo {
   /** Columna de `consultas` donde se guarda. */
@@ -80,7 +84,6 @@ export const CAMPOS: Record<CampoId, Campo> = {
   colegioLocalidad: { columna: 'colegio_localidad', grupo: 'estudios', label: 'Localidad del colegio', placeholder: 'Ciudad o localidad', max: 120 },
   medioPago:        { columna: 'medio_pago', grupo: 'estudios',        label: 'Medio de pago',         placeholder: 'Según opción del portal', max: 60 },
 
-  modalidad:     { columna: 'modalidad', grupo: 'consulta', ancho: 'completo',     label: 'Modalidad', max: 40, tipo: 'select' },
   equivalencias: { columna: 'equivalencias', grupo: 'consulta', ancho: 'completo', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
   email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254 },
   telefono:      { columna: 'telefono', grupo: 'contacto',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30 },
@@ -97,7 +100,6 @@ export interface Casa {
   nombre: string;
   /** Niveles de `carreras` que pertenecen a esta casa. */
   niveles: string[];
-  modalidades: string[];
   contacto: CampoId[];
   preinscripcion: CampoId[];
   /**
@@ -113,8 +115,7 @@ export const CASAS: Record<CasaId, Casa> = {
   siglo21: {
     nombre: 'Universidad Siglo 21',
     niveles: ['Grado', 'Grado (CCC)', 'Pregrado'],
-    modalidades: ['Educación Distribuida Home (Virtual)'],
-    contacto: ['modalidad', 'nombre', 'apellido', 'localidad', 'equivalencias', 'email', 'telefono'],
+    contacto: ['nombre', 'apellido', 'localidad', 'equivalencias', 'email', 'telefono'],
     // La ficha del portal de Siglo 21, en su orden. No pide nivel de estudios,
     // colegio, medio de pago ni equivalencias: eso es de Teclab, no de acá.
     //
@@ -142,9 +143,8 @@ export const CASAS: Record<CasaId, Casa> = {
   teclab: {
     nombre: 'Teclab',
     niveles: ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'],
-    modalidades: ['100% online'],
     // Teclab no acredita equivalencias.
-    contacto: ['modalidad', 'nombre', 'apellido', 'localidad', 'email', 'telefono'],
+    contacto: ['nombre', 'apellido', 'localidad', 'email', 'telefono'],
     // Tal cual está hoy en producción. No se toca.
     preinscripcion: [
       'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
@@ -160,8 +160,7 @@ export const CASAS: Record<CasaId, Casa> = {
   identidad: {
     nombre: 'Academia Identidad Argentina',
     niveles: ['Identidad Argentina'],
-    modalidades: ['Virtual en vivo (Innova Virtual)'],
-    contacto: ['modalidad', 'nombre', 'apellido', 'localidad', 'email', 'telefono'],
+    contacto: ['nombre', 'apellido', 'localidad', 'email', 'telefono'],
     // Las diplomaturas no tienen requisitos de ingreso —ni secundario, ni
     // título previo, ni examen— y cierran con un link de pago, no con un
     // legajo: pedir domicilio y colegio sería fricción sin destino.

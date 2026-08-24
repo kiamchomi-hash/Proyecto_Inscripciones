@@ -171,22 +171,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const esPreinscripcion = modo === 'preinscripcion';
   const prefijo = modo;
 
-  /**
-   * El encabezado de cada columna. Existe para alinear: sin él la derecha
-   * arrancaba con un rótulo y la izquierda con el buscador pelado, y los campos
-   * de una y otra empezaban a alturas distintas.
-   *
-   * Es el único rótulo que se pinta. Los de grupo quedaron afuera porque el
-   * único que llegaba a verse —"Estudios y pago", en Teclab— agregaba una línea
-   * en la columna derecha que la izquierda no tenía, y volvía a desalinear todo
-   * lo que venía abajo. Cuando esa columna trae los dos bloques, lo dice acá.
-   */
-  const tituloColumna = (columna: 1 | 2, grupos: Grupo[]) => {
-    if (columna === 1) return esPreinscripcion ? 'Carrera y datos personales' : 'Qué querés consultar';
-    if (!esPreinscripcion) return 'Tus datos';
-    return grupos.includes('estudios') ? 'Domicilio y estudios' : 'Domicilio';
-  };
-
   const carrera = useMemo(
     () => carreras.find(opcion => opcion.nombre === carreraElegida) || null,
     [carreras, carreraElegida],
@@ -361,7 +345,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
             {/* Los bloques salen de la declaración de la casa: si no pide
                 nada de un grupo, ese bloque no se pinta. La maqueta es la de
-                siempre — dos columnas y la línea divisoria en el medio. */}
+                siempre — dos columnas y la línea divisoria en el medio.
+                
+                Sin rótulos: las dos columnas arrancan con una etiqueta y su
+                campo, así que alinean solas. Los que había existían sólo para
+                emparejarlas cuando la derecha encabezaba con un nombre de grupo
+                y la izquierda no. */}
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               {([1, 2] as const).map(columna => {
                 const grupos = GRUPOS.filter(grupo =>
@@ -376,14 +365,13 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                     className="space-y-2 px-3 pb-3 pt-3 sm:px-4"
                     style={columna === 2 ? { borderLeft: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' } : undefined}
                   >
-                    <p className="text-center text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">
-                      {tituloColumna(columna, grupos)}
-                    </p>
                     {columna === 1 && (<>
                     {/* El buscador vive dentro de la primera columna, como
                         siempre: es lo que define la casa y por eso encabeza. */}
-                <div className="flex items-end gap-1.5">
-                  <div ref={listaRef} className="relative min-w-0 flex-1">
+                {/* Uno arriba del otro: el buscador es lo primero que se toca
+                    y el filtro sólo acota su lista. */}
+                <div className="space-y-2">
+                  <div ref={listaRef} className="relative">
                     <label className={ETIQUETA} htmlFor={`${prefijo}-carrera`}>Carrera</label>
                     <div className="relative">
                       <input
@@ -418,12 +406,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                     </div>
                   </div>
 
-                  <div ref={tiposRef} className="relative shrink-0">
+                  <div ref={tiposRef} className="relative">
                     <label className={ETIQUETA}>Tipo</label>
                     <button
                       type="button"
                       onClick={() => setVerTipos(!verTipos)}
-                      className={`relative h-full cursor-pointer rounded-lg border bg-[var(--catalogo-form-campo)] py-1.5 pl-2.5 pr-7 text-left text-sm font-bold transition-colors focus:outline-none ${filtro ? 'border-[var(--catalogo-acento)]/50 text-[var(--catalogo-acento)]' : 'border-[var(--catalogo-acento)]/25 text-[var(--catalogo-texto-suave)]'}`}
+                      className={`relative w-full cursor-pointer rounded-lg border bg-[var(--catalogo-form-campo)] py-1.5 pl-3 pr-7 text-left text-sm font-bold transition-colors focus:outline-none ${filtro ? 'border-[var(--catalogo-acento)]/50 text-[var(--catalogo-acento)]' : 'border-[var(--catalogo-acento)]/25 text-[var(--catalogo-texto-suave)]'}`}
                     >
                       {filtro ? (categorias.find(categoria => categoria.id === filtro)?.label || 'Todos') : 'Todos'}
                       <svg className={`pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--catalogo-acento)]/60 transition-transform ${verTipos ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -431,7 +419,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                       </svg>
                     </button>
                     {verTipos && (
-                      <div className="absolute right-0 z-20 mt-1 min-w-[140px] overflow-hidden rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] shadow-xl">
+                      <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] shadow-xl">
                         <button type="button" onClick={() => { setTipoElegido(''); setCarreraElegida(''); setBusqueda(''); setVerTipos(false); }} className="w-full px-3 py-1.5 text-left text-sm text-white hover:bg-[var(--catalogo-acento)]/10">Todos</button>
                         {categorias.map(categoria => (
                           <button

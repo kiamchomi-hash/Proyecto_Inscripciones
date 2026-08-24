@@ -146,10 +146,18 @@ test('el contacto no exige nada: la regla es mail o telefono', () => {
   assert.ok(obligatoriosDe('siglo21', 'preinscripcion').length > 0);
 });
 
+test('no se pregunta la modalidad: toda la oferta es virtual', () => {
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    for (const modo of ['contacto', 'preinscripcion']) {
+      assert.ok(!camposDe(casa, modo).includes('modalidad'), `${casa}.${modo} sigue pidiendo modalidad`);
+    }
+  }
+});
+
 test('sin carrera elegida se piden los campos que toda casa comparte', () => {
   // La home antes de que el lead elija: no se puede saber la casa todavia.
   const contacto = camposComunes('contacto');
-  assert.deepEqual(contacto, ['modalidad', 'nombre', 'apellido', 'localidad', 'email', 'telefono']);
+  assert.deepEqual(contacto, ['nombre', 'apellido', 'localidad', 'email', 'telefono']);
   // Nada exclusivo de una casa puede colarse ahi.
   assert.ok(!contacto.includes('equivalencias'));
 
