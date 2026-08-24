@@ -170,14 +170,14 @@ export default function SiteFooter({ casa = 'cau' }: { casa?: 'cau' | 'teclab' }
           {/* Horarios y modalidad */}
           <div className={COLUMNA}>
             <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:-ml-8 lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Horarios</h2>
-            <div className="w-full rounded-xl px-4 py-4 space-y-3.5 text-left lg:max-w-xs lg:py-3.5" style={{ background: 'rgba(0, 199, 177, 0.05)', border: '1px solid rgba(0, 199, 177, 0.12)' }}>
-              <div className="flex items-baseline justify-between gap-3 text-[15px] lg:text-sm">
+            <div className="grid w-full grid-cols-[auto_auto] items-baseline justify-center gap-x-4 gap-y-3.5 rounded-xl px-4 py-4 text-left lg:block lg:max-w-xs lg:space-y-3.5 lg:py-3.5" style={{ background: 'rgba(0, 199, 177, 0.05)', border: '1px solid rgba(0, 199, 177, 0.12)' }}>
+              <div className="contents text-[15px] lg:flex lg:items-baseline lg:justify-between lg:gap-3 lg:text-sm">
                 <span className="text-[#c0d5d0]">Lunes a Viernes</span>
-                <span className="text-white font-semibold text-xs px-2 py-0.5 rounded-md whitespace-nowrap" style={{ background: 'rgba(0, 199, 177, 0.15)' }}>9 a 20 hs</span>
+                <span className="min-w-[84px] text-center text-white font-semibold text-xs px-2 py-0.5 rounded-md whitespace-nowrap lg:min-w-0" style={{ background: 'rgba(0, 199, 177, 0.15)' }}>9 a 20 hs</span>
               </div>
-              <div className="flex items-baseline justify-between gap-3 text-[15px] lg:text-sm">
+              <div className="contents text-[15px] lg:flex lg:items-baseline lg:justify-between lg:gap-3 lg:text-sm">
                 <span className="text-[#7ca19b]">Sáb. y Dom.</span>
-                <span className="text-[#c9a0a0] text-xs font-semibold px-2 py-0.5 rounded-md whitespace-nowrap" style={{ background: 'rgba(180, 80, 80, 0.12)' }}>Cerrado</span>
+                <span className="min-w-[84px] text-center text-[#c9a0a0] text-xs font-semibold px-2 py-0.5 rounded-md whitespace-nowrap lg:min-w-0" style={{ background: 'rgba(180, 80, 80, 0.12)' }}>Cerrado</span>
               </div>
             </div>
 
