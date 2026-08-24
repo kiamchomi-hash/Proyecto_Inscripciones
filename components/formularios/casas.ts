@@ -67,3 +67,80 @@ export const CAMPOS: Record<CampoId, Campo> = {
 };
 
 export const columnaDe = (id: CampoId): string => CAMPOS[id].columna;
+
+// ── Las casas ──
+
+export type CasaId = 'siglo21' | 'teclab' | 'identidad';
+export type Modo = 'contacto' | 'preinscripcion';
+
+// Los que toda casa pide. En la home son los únicos que se muestran antes de
+// que el lead elija carrera, y los que se conservan cuando cambia de casa.
+export const COMUNES: CampoId[] = ['nombre', 'apellido', 'dni', 'email', 'telefono', 'localidad'];
+
+export interface Casa {
+  nombre: string;
+  /** Niveles de `carreras` que pertenecen a esta casa. */
+  niveles: string[];
+  modalidades: string[];
+  contacto: CampoId[];
+  preinscripcion: CampoId[];
+}
+
+export const CASAS: Record<CasaId, Casa> = {
+  siglo21: {
+    nombre: 'Universidad Siglo 21',
+    niveles: ['Grado', 'Grado (CCC)', 'Pregrado'],
+    modalidades: ['Educación Distribuida Home (Virtual)'],
+    contacto: ['modalidad', 'nombre', 'apellido', 'localidad', 'equivalencias', 'email', 'telefono'],
+    // PROVISORIO: el juego de Teclab más los tres que suma el legajo de Siglo
+    // 21 (país de residencia, barrio y equivalencias). Falta la lista real.
+    preinscripcion: [
+      'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
+      'nacionalidad', 'estadoCivil', 'paisResidencia',
+      'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento',
+      'barrio', 'codigoPostal', 'localidad',
+      'nivelEstudios', 'colegio', 'colegioLocalidad', 'medioPago',
+      'equivalencias', 'email', 'telefono',
+    ],
+  },
+  teclab: {
+    nombre: 'Teclab',
+    niveles: ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'],
+    modalidades: ['100% online'],
+    // Teclab no acredita equivalencias.
+    contacto: ['modalidad', 'nombre', 'apellido', 'localidad', 'email', 'telefono'],
+    // Tal cual está hoy en producción. No se toca.
+    preinscripcion: [
+      'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
+      'nacionalidad', 'estadoCivil',
+      'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento',
+      'codigoPostal', 'localidad',
+      'nivelEstudios', 'colegio', 'colegioLocalidad', 'medioPago',
+      'email', 'telefono',
+    ],
+  },
+  identidad: {
+    nombre: 'Academia Identidad Argentina',
+    niveles: ['Identidad Argentina'],
+    modalidades: ['Virtual en vivo (Innova Virtual)'],
+    contacto: ['modalidad', 'nombre', 'apellido', 'localidad', 'email', 'telefono'],
+    // Las diplomaturas no tienen requisitos de ingreso —ni secundario, ni
+    // título previo, ni examen— y cierran con un link de pago, no con un
+    // legajo: pedir domicilio y colegio sería fricción sin destino.
+    preinscripcion: ['nombre', 'apellido', 'dni', 'localidad', 'email', 'telefono'],
+  },
+};
+
+const CASA_POR_NIVEL = new Map<string, CasaId>(
+  (Object.entries(CASAS) as [CasaId, Casa][])
+    .flatMap(([id, casa]) => casa.niveles.map(nivel => [nivel, id] as [string, CasaId])),
+);
+
+/**
+ * La casa a la que pertenece una carrera, o `null` si su nivel está fuera de la
+ * oferta (Posgrado, Certificación y demás, que `esCarreraVisible` ya filtra).
+ */
+export const casaDeCarrera = (carrera: { nivel: string } | null | undefined): CasaId | null =>
+  (carrera && CASA_POR_NIVEL.get(carrera.nivel)) || null;
+
+export const camposDe = (casa: CasaId, modo: Modo): CampoId[] => CASAS[casa][modo];
