@@ -107,11 +107,11 @@ export default function SiteFooter({ casa = 'cau' }: { casa?: 'cau' | 'teclab' }
           </div>
 
           {/* Navegación */}
-          <nav className={`${COLUMNA} lg:!pl-0 lg:text-center`} aria-label="Enlaces del sitio">
+          <nav className={`${COLUMNA} pb-3 lg:pb-0 lg:!pl-0 lg:text-center`} aria-label="Enlaces del sitio">
             <h2 className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:mb-4 lg:text-xs lg:tracking-widest">Navegación</h2>
             <ul className="grid grid-cols-2 gap-x-4 text-[15px] lg:grid-cols-1 lg:text-sm">
               {ENLACES.map(({ href, label }) => (
-                <li key={href} className="border-b border-[rgba(0,199,177,0.1)] lg:relative lg:border-b-0 lg:after:absolute lg:after:inset-x-4 lg:after:bottom-0 lg:after:h-px lg:after:bg-[rgba(0,199,177,0.1)] lg:last:after:hidden">
+                <li key={href} className="border-b border-[rgba(0,199,177,0.1)] [&:nth-last-child(-n+2)]:border-b-0 lg:relative lg:border-b-0 lg:after:absolute lg:after:inset-x-4 lg:after:bottom-0 lg:after:h-px lg:after:bg-[rgba(0,199,177,0.1)] lg:last:after:hidden">
                   <Link href={href} className="block min-h-11 px-1 py-3 text-[#c0d5d0] transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:text-white lg:min-h-0 lg:px-0 lg:py-2.5">
                     {label}
                   </Link>
@@ -120,28 +120,31 @@ export default function SiteFooter({ casa = 'cau' }: { casa?: 'cau' | 'teclab' }
             </ul>
           </nav>
 
-          {/* Contacto */}
+          {/* Contacto. En mobile la lista ocupa todo el ancho y cada dato se
+              centra dentro de su mitad: con un `max-w` sobre el <ul> las dos
+              columnas quedaban pegadas al centro de la pantalla en vez de una
+              en cada mitad. */}
           <div className={COLUMNA}>
             <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:-ml-8 lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Contacto</h2>
-            <ul className={`mx-auto grid w-full max-w-[340px] items-start text-left text-[13px] lg:mx-0 lg:block lg:w-auto lg:max-w-none lg:space-y-4 lg:text-sm ${teclab ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
+            <ul className={`grid w-full items-center text-left text-[13px] lg:block lg:w-auto lg:space-y-4 lg:text-sm ${teclab ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
               {!teclab && (
-              <li className="grid min-w-0 place-items-center border-r border-[rgba(0,199,177,0.12)] px-3 lg:block lg:justify-items-start lg:border-r-0 lg:px-0">
-                <div className="grid w-full max-w-[150px] min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-2 lg:flex lg:w-fit lg:max-w-none lg:gap-3">
+              <li className="grid min-w-0 place-items-center border-r border-[rgba(0,199,177,0.12)] px-2 lg:block lg:justify-items-start lg:border-r-0 lg:px-0">
+                <div className="flex w-full min-w-0 flex-col items-center gap-2 text-center lg:w-fit lg:flex-row lg:items-start lg:gap-3 lg:text-left">
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 lg:w-8 lg:h-8 lg:rounded-lg" style={{ background: 'rgba(0, 199, 177, 0.1)', border: '1px solid rgba(0, 199, 177, 0.2)' }}>
                   <svg className="w-3.5 h-3.5 text-[#00c7b1]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 </span>
-                <a href={MAPS_URL} target="_blank" rel="noopener" className="min-w-0 min-h-10 py-0.5 text-[12px] leading-5 text-[#c0d5d0] transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white min-[420px]:text-[13px] lg:min-h-0 lg:py-0 lg:text-sm lg:leading-normal">
+                <a href={MAPS_URL} target="_blank" rel="noopener" className="min-w-0 py-0.5 text-[13px] leading-5 text-[#c0d5d0] transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white lg:py-0 lg:text-sm lg:leading-normal">
                   Guaminí 4876, Piso 1<br />Villa Lugano, CABA
                 </a>
                 </div>
               </li>
               )}
-              <li className="grid min-w-0 place-items-center px-3 lg:block lg:justify-items-start lg:px-0">
-                <div className="grid w-full max-w-[150px] min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 lg:flex lg:w-fit lg:max-w-none lg:gap-3">
+              <li className="grid min-w-0 place-items-center px-2 lg:block lg:justify-items-start lg:px-0">
+                <div className={`flex min-w-0 items-center gap-2 lg:w-fit lg:flex-row lg:items-center lg:gap-3 lg:text-left ${teclab ? 'w-fit' : 'w-full flex-col text-center'}`}>
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 lg:w-8 lg:h-8 lg:rounded-lg" style={{ background: 'rgba(0, 199, 177, 0.1)', border: '1px solid rgba(0, 199, 177, 0.2)' }}>
                   <svg className="w-3.5 h-3.5 text-[#00c7b1]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                 </span>
-                <a href="tel:+5491166522722" className="flex min-h-9 items-center whitespace-nowrap text-[#c0d5d0] transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white lg:min-h-0">11 6652-2722</a>
+                <a href="tel:+5491166522722" className="flex min-h-9 items-center justify-center whitespace-nowrap text-[13px] text-[#c0d5d0] transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white lg:min-h-0 lg:justify-start lg:text-sm">11 6652-2722</a>
                 </div>
               </li>
             </ul>
