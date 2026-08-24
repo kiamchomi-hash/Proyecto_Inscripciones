@@ -463,9 +463,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                           {enPantalla.filter(id => CAMPOS[id].grupo === grupo).map(id => (
                             <div
                               key={id}
-                              className={SPAN[CAMPOS[id].ancho ?? 'medio']}
-                              // `visibility: hidden` y no `display: none`: ocupa
-                              // su lugar, no se ve y no recibe foco ni lectores.
+                              // Reservar el lugar es de desktop, donde la
+                              // tarjeta es un bloque fijo y verla crecer y
+                              // encogerse molesta. En mobile las columnas se
+                              // apilan y el hueco quedaría a la vista, peor que
+                              // el salto: ahí el campo simplemente no está.
+                              className={`${SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'}`}
                               style={pide(id) ? undefined : { visibility: 'hidden' }}
                               aria-hidden={!pide(id)}
                             >
@@ -510,33 +513,44 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
               </div>
             </div>
 
+            {/* El widget va antes del botón y no después: el botón está
+                apagado hasta que el captcha se resuelve, así que el control que
+                lo enciende no puede quedar debajo. Para que no lo empuje lejos
+                van lado a lado desde `sm`, y los tres avisos del pie comparten
+                un solo renglón. */}
             <div className="space-y-2 px-3 py-2.5 sm:px-4 sm:py-3">
-              <TurnstileWidget
-                key={captchaKey}
-                onVerify={nuevo => { setToken(nuevo); setCaptchaVencido(false); }}
-                onExpire={() => { setToken(''); setCaptchaVencido(true); }}
-              />
-              <p className="min-h-4 text-[11px] leading-4 text-amber-300">{captchaVencido ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
-              {/* Un solo renglón reservado para los dos avisos del pie: el
-                  error del envío pisa al recuento de obligatorios, y cuando no
-                  hay ninguno el hueco queda vacío en vez de desaparecer. */}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <div className="min-w-0 sm:flex-1">
+                  <TurnstileWidget
+                    key={captchaKey}
+                    onVerify={nuevo => { setToken(nuevo); setCaptchaVencido(false); }}
+                    onExpire={() => { setToken(''); setCaptchaVencido(true); }}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={!valido || enviando}
+                  className="w-full rounded-lg py-3 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:min-w-[15rem] sm:px-8"
+                  style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
+                >
+                  {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
+                </button>
+              </div>
+
+              {/* Un solo renglón para los tres avisos: el error del envío pisa
+                  al del captcha vencido, y ése al recuento de obligatorios.
+                  Reservado siempre, para que aparecer no mueva nada. */}
               <p className="min-h-4 text-[11px] leading-4">
                 {error
                   ? <span className="text-red-400">{error}</span>
-                  : Boolean(faltanObligatorios.length) && (
-                    <span className="text-[var(--catalogo-texto-suave)]">
-                      Faltan {faltanObligatorios.length} {faltanObligatorios.length === 1 ? 'dato' : 'datos'} marcados con <span className="text-red-400/70">*</span>.
-                    </span>
-                  )}
+                  : captchaVencido
+                    ? <span className="text-amber-300">El captcha venció. Volvé a tildarlo.</span>
+                    : Boolean(faltanObligatorios.length) && (
+                      <span className="text-[var(--catalogo-texto-suave)]">
+                        Faltan {faltanObligatorios.length} {faltanObligatorios.length === 1 ? 'dato' : 'datos'} marcados con <span className="text-red-400/70">*</span>.
+                      </span>
+                    )}
               </p>
-              <button
-                type="submit"
-                disabled={!valido || enviando}
-                className="w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
-              >
-                {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
-              </button>
             </div>
           </form>
         </div>
