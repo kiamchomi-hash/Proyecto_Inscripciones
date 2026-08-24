@@ -26,6 +26,22 @@ function importarFormulario() {
   return formPromise;
 }
 
+/**
+ * Hueco con el `id` del formulario que todavía no bajó. Existe desde el primer
+ * HTML a propósito: los botones de la ficha son anclas, y sin el `id` puesto un
+ * clic antes de la carga no salta a ningún lado.
+ */
+function Hueco({ id, titulo }: { id: string; titulo: string }) {
+  return (
+    <div id={id} className="deferred-enrollment-placeholder" aria-label={titulo}>
+      <div>
+        <span>{titulo}</span>
+        <p>Preparando el formulario…</p>
+      </div>
+    </div>
+  );
+}
+
 export default function DeferredEnrollmentForm({ carreras }: Props) {
   const placeholderRef = useRef<HTMLElement>(null);
   const [Form, setForm] = useState<ComponentType<FormProps> | null>(null);
@@ -58,21 +74,23 @@ export default function DeferredEnrollmentForm({ carreras }: Props) {
     return () => observer.disconnect();
   }, [Form, loadForm]);
 
+  // Los dos, igual que en la home: el contacto es la puerta general y la
+  // preinscripción arma el legajo. "Quiero inscribirme" baja a la segunda.
   if (Form) {
-    return <Form carreras={carreras} modo="contacto" />;
+    return (
+      <>
+        <Form carreras={carreras} modo="contacto" />
+        <Form carreras={carreras} modo="preinscripcion" />
+      </>
+    );
   }
 
+  // Un solo observador para los dos huecos: están pegados y el margen de 1200px
+  // los alcanza a los dos.
   return (
-    <section
-      ref={placeholderRef}
-      id="formulario"
-      className="deferred-enrollment-placeholder"
-      aria-label="Formulario de contacto"
-    >
-      <div>
-        <span>Formulario de contacto</span>
-        <p>Preparando el formulario…</p>
-      </div>
+    <section ref={placeholderRef} aria-label="Formularios de contacto y preinscripción">
+      <Hueco id="formulario" titulo="Formulario de contacto" />
+      <Hueco id="preinscripcion" titulo="Preinscripción" />
     </section>
   );
 }

@@ -316,7 +316,13 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               </p>
             )}
             <div className="career-hero-actions">
-              <a href="#formulario" className="career-button career-button--primary">
+              {/* Quien viene a inscribirse baja a la preinscripcion, que arma el
+                  legajo. La carrera que todavia no abrio no tiene legajo que
+                  armar: ese boton pide un aviso y va al formulario de contacto. */}
+              <a
+                href={carrera.proximamente ? '#formulario' : '#preinscripcion'}
+                className="career-button career-button--primary"
+              >
                 {carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
               <a
