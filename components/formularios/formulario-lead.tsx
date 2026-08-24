@@ -75,15 +75,39 @@ function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoI
   return [izquierda, derecha];
 }
 
+/** Altos aproximados de lo que se despliega. Deciden si abre para arriba. */
+const ALTO_LISTA = 224;
+const ALTO_CALENDARIO = 320;
+
+const MESES = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+] as const;
+
 /**
- * Hoy, para que nadie pueda haber nacido mañana.
+ * Los años posibles de nacimiento, del más probable al menos: un lead nuevo
+ * suele estar terminando el secundario, no cumpliendo noventa.
  *
- * Sale de `toLocaleDateString('en-CA')`, que da `AAAA-MM-DD` en hora local. Con
- * `toISOString()` daría la fecha UTC: en Argentina, después de las 21, un día
- * más que el de acá. Ese es el bug de fechas de verdad, y no tiene nada que ver
- * con el punto flotante.
+ * El año de hoy sale de `getFullYear()`, que es el local. Con `toISOString()`
+ * saldría el de UTC, que en Argentina el 31 de diciembre a la noche ya es el
+ * año siguiente.
  */
-const HOY = new Date().toLocaleDateString('en-CA');
+const ANIOS = Array.from(
+  { length: 76 },
+  (_, i) => String(new Date().getFullYear() - 15 - i),
+);
+
+/**
+ * Cuántos días tiene ese mes. Todo entero: no hay coma flotante a la vista, que
+ * es de donde salen los redondeos raros.
+ */
+function diasDelMes(anio: number, mes: number) {
+  if (mes === 2) {
+    const bisiesto = (anio % 4 === 0 && anio % 100 !== 0) || anio % 400 === 0;
+    return bisiesto ? 29 : 28;
+  }
+  return [4, 6, 9, 11].includes(mes) ? 30 : 31;
+}
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -100,6 +124,228 @@ function errorDeTelefono(valor: string) {
   if (limpio.replace(/\D/g, '').length < 8) return 'Ingresá al menos 8 dígitos.';
   if (limpio.length > 30) return 'Teléfono demasiado largo.';
   return '';
+}
+
+
+/**
+ * Un desplegable propio, con el mismo aspecto que el resto de los campos.
+ *
+ * No es un `<select>` nativo por dos razones que se ven: el navegador decide
+ * solo hacia qué lado abre la lista —con cuarenta opciones se iba para arriba— y
+ * no deja darle al panel la tinta del formulario. Acá abre hacia abajo salvo
+ * que no entre, y entonces sube.
+ */
+function Desplegable({ id, valor, onChange, opciones, invalido }: {
+  id: string;
+  valor: string;
+  onChange: (valor: string) => void;
+  opciones: readonly string[];
+  invalido?: boolean;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const [haciaArriba, setHaciaArriba] = useState(false);
+  const cajaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!abierto) return;
+    const afuera = (evento: MouseEvent) => {
+      if (cajaRef.current && !cajaRef.current.contains(evento.target as Node)) setAbierto(false);
+    };
+    const escape = (evento: KeyboardEvent) => { if (evento.key === 'Escape') setAbierto(false); };
+    document.addEventListener('mousedown', afuera);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('mousedown', afuera);
+      document.removeEventListener('keydown', escape);
+    };
+  }, [abierto]);
+
+  const alternar = () => {
+    if (!abierto && cajaRef.current) {
+      const caja = cajaRef.current.getBoundingClientRect();
+      const abajo = window.innerHeight - caja.bottom;
+      // Sube sólo si abajo no entra y arriba sí: en la duda, hacia abajo.
+      setHaciaArriba(abajo < ALTO_LISTA && caja.top > abajo);
+    }
+    setAbierto(!abierto);
+  };
+
+  const elegir = (opcion: string) => { onChange(opcion); setAbierto(false); };
+
+  return (
+    <div className="relative" ref={cajaRef}>
+      <button
+        type="button"
+        id={id}
+        onClick={alternar}
+        aria-haspopup="listbox"
+        aria-expanded={abierto}
+        className={`${CAMPO} ${invalido ? BORDE_MAL : BORDE_OK} cursor-pointer pr-8 text-left ${valor ? 'text-white' : 'text-[var(--catalogo-texto-suave)]/60'}`}
+      >
+        {valor || 'Sin especificar'}
+        <svg
+          className={`pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--catalogo-acento)]/60 transition-transform ${abierto ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {abierto && (
+        <div
+          role="listbox"
+          className={`absolute z-30 w-full overflow-auto rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] shadow-xl ${haciaArriba ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+          style={{ maxHeight: ALTO_LISTA }}
+        >
+          {opciones.map(opcion => (
+            <button
+              key={opcion}
+              type="button"
+              role="option"
+              aria-selected={opcion === valor}
+              onClick={() => elegir(opcion)}
+              className={`w-full border-b border-[var(--catalogo-acento)]/15 px-3 py-1.5 text-left text-sm transition-colors last:border-b-0 hover:bg-[var(--catalogo-acento)]/10 ${opcion === valor ? 'text-[var(--catalogo-acento)]' : 'text-white'}`}
+            >
+              {opcion}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * La fecha de nacimiento: un campo solo, con calendario propio.
+ *
+ * No es el `<input type="date">` nativo porque su calendario es el del
+ * navegador y no se puede vestir; ni tres desplegables, que resuelven el dato
+ * pero se leen como un formulario dentro del formulario. Este es un calendario
+ * de verdad, con la tinta del sitio.
+ *
+ * El mes y el año van en listas y no en flechitas: para una fecha de nacimiento
+ * nadie llega a 1990 pasando meses de a uno.
+ *
+ * El valor sigue siendo el texto `AAAA-MM-DD`. Se parte y se arma con strings;
+ * el único `Date` que aparece es `new Date(a, m - 1, 1)` para saber en qué día
+ * de la semana cae el primero — ese constructor toma números y es hora local,
+ * así que no arrastra el corrimiento de `new Date('1990-04-12')`, que se lee
+ * como UTC y en Argentina devuelve el día anterior.
+ */
+function CampoFecha({ id, valor, onChange, invalido }: {
+  id: string;
+  valor: string;
+  onChange: (valor: string) => void;
+  invalido?: boolean;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const [haciaArriba, setHaciaArriba] = useState(false);
+  const cajaRef = useRef<HTMLDivElement>(null);
+
+  const [anio = '', mes = '', dia = ''] = valor ? valor.split('-') : [];
+  const [vista, setVista] = useState(() => ({
+    anio: Number(anio) || Number(ANIOS[3]),
+    mes: Number(mes) || 1,
+  }));
+
+  useEffect(() => {
+    if (!abierto) return;
+    const afuera = (evento: MouseEvent) => {
+      if (cajaRef.current && !cajaRef.current.contains(evento.target as Node)) setAbierto(false);
+    };
+    const escape = (evento: KeyboardEvent) => { if (evento.key === 'Escape') setAbierto(false); };
+    document.addEventListener('mousedown', afuera);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('mousedown', afuera);
+      document.removeEventListener('keydown', escape);
+    };
+  }, [abierto]);
+
+  const alternar = () => {
+    if (!abierto && cajaRef.current) {
+      const caja = cajaRef.current.getBoundingClientRect();
+      const abajo = window.innerHeight - caja.bottom;
+      setHaciaArriba(abajo < ALTO_CALENDARIO && caja.top > abajo);
+      if (anio && mes) setVista({ anio: Number(anio), mes: Number(mes) });
+    }
+    setAbierto(!abierto);
+  };
+
+  const elegir = (numero: number) => {
+    onChange(`${vista.anio}-${String(vista.mes).padStart(2, '0')}-${String(numero).padStart(2, '0')}`);
+    setAbierto(false);
+  };
+
+  const total = diasDelMes(vista.anio, vista.mes);
+  // getDay() da 0 para domingo; acá la semana empieza el lunes.
+  const arranque = (new Date(vista.anio, vista.mes - 1, 1).getDay() + 6) % 7;
+
+  return (
+    <div className="relative" ref={cajaRef}>
+      <button
+        type="button"
+        id={id}
+        onClick={alternar}
+        aria-haspopup="dialog"
+        aria-expanded={abierto}
+        className={`${CAMPO} ${invalido ? BORDE_MAL : BORDE_OK} cursor-pointer pr-11 text-left ${valor ? 'text-white' : 'text-[var(--catalogo-texto-suave)]/60'}`}
+      >
+        {valor ? `${dia}/${mes}/${anio}` : 'DD/MM/AAAA'}
+        {/* El ícono va en su propio recuadro, pegado al borde del campo. */}
+        <span className="pointer-events-none absolute right-1 top-1/2 flex h-7 w-8 -translate-y-1/2 items-center justify-center rounded-md border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-acento)]/10">
+          <svg className="h-3.5 w-3.5 text-[var(--catalogo-acento)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path strokeLinecap="round" d="M3 10h18M8 3v4M16 3v4" />
+          </svg>
+        </span>
+      </button>
+
+      {abierto && (
+        <div
+          role="dialog"
+          className={`absolute z-30 w-full min-w-[17rem] rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] p-2 shadow-xl ${haciaArriba ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+        >
+          <div className="mb-2 grid grid-cols-2 gap-1.5">
+            <Desplegable
+              id={`${id}-mes`}
+              valor={MESES[vista.mes - 1]}
+              opciones={MESES}
+              onChange={nombre => setVista(v => ({ ...v, mes: MESES.indexOf(nombre as typeof MESES[number]) + 1 }))}
+            />
+            <Desplegable
+              id={`${id}-anio`}
+              valor={String(vista.anio)}
+              opciones={ANIOS}
+              onChange={a => setVista(v => ({ ...v, anio: Number(a) }))}
+            />
+          </div>
+
+          <div className="grid grid-cols-7 gap-0.5 text-center">
+            {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((letra, i) => (
+              <span key={i} className="py-1 text-[10px] font-bold uppercase text-[var(--catalogo-etiqueta)]">{letra}</span>
+            ))}
+            {Array.from({ length: arranque }, (_, i) => <span key={`hueco-${i}`} />)}
+            {Array.from({ length: total }, (_, i) => i + 1).map(numero => {
+              const elegido = Number(dia) === numero && Number(mes) === vista.mes && Number(anio) === vista.anio;
+              return (
+                <button
+                  key={numero}
+                  type="button"
+                  onClick={() => elegir(numero)}
+                  className={`rounded py-1 text-sm transition-colors ${elegido
+                    ? 'bg-[var(--catalogo-acento)] font-bold text-[var(--catalogo-acento-tinta)]'
+                    : 'text-white hover:bg-[var(--catalogo-acento)]/20'}`}
+                >
+                  {numero}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
@@ -154,21 +400,13 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
     return (
       <div>
         <label className={ETIQUETA} htmlFor={htmlId}>{campo.label}{marca}</label>
-        <div className="relative">
-          <select
-            id={htmlId}
-            value={typeof valor === 'string' ? valor : ''}
-            onChange={event => onChange(event.target.value)}
-            className={`${CAMPO} ${error || invalido ? BORDE_MAL : BORDE_OK} cursor-pointer appearance-none`}
-            style={{ colorScheme: 'dark' }}
-          >
-            <option value="">Sin especificar</option>
-            {(campo.opciones ?? []).map(opcion => <option key={opcion} value={opcion}>{opcion}</option>)}
-          </select>
-          <svg className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--catalogo-acento)]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+        <Desplegable
+          id={htmlId}
+          valor={typeof valor === 'string' ? valor : ''}
+          onChange={onChange}
+          opciones={campo.opciones ?? []}
+          invalido={invalido}
+        />
       </div>
     );
   }
@@ -177,17 +415,11 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
     return (
       <div>
         <label className={ETIQUETA} htmlFor={htmlId}>{campo.label}{marca}</label>
-        <input
-          type="date"
+        <CampoFecha
           id={htmlId}
-          value={typeof valor === 'string' ? valor : ''}
-          onChange={event => onChange(event.target.value)}
-          max={HOY}
-          min="1900-01-01"
-          // `colorScheme: dark` pinta el calendario del sistema en oscuro; sin
-          // eso sale blanco y desentona con todo lo demás.
-          style={{ colorScheme: 'dark' }}
-          className={`${CAMPO} ${error || invalido ? BORDE_MAL : BORDE_OK} campo-fecha`}
+          valor={typeof valor === 'string' ? valor : ''}
+          onChange={onChange}
+          invalido={invalido}
         />
       </div>
     );
@@ -374,6 +606,16 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
     const campo = evento.target;
     const boton = botonRef.current;
     if (!boton || !(campo instanceof HTMLElement)) return;
+
+    // Sólo de Localidad para abajo. Más arriba el lead recién empieza y correr
+    // la página no le gana nada: el botón está lejos igual. Se compara la
+    // posición real en el documento y no un índice, para que valga en cualquier
+    // casa y en cualquier orden de campos.
+    const referencia = document.getElementById(`${prefijo}-localidad`);
+    if (referencia && campo !== referencia
+      && !(referencia.compareDocumentPosition(campo) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+      return;
+    }
 
     const margen = 12;
     const navbar = Number.parseInt(
