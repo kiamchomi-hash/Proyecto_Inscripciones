@@ -38,6 +38,30 @@ const PESO = { completo: 6, medio: 3, tercio: 2 } as const;
 const pesoDe = (id: CampoId) => PESO[CAMPOS[id].ancho ?? 'medio'];
 
 /**
+ * El ancho real de cada campo de una columna, en sextos.
+ *
+ * Es el declarado, salvo cuando dejaría un hueco: si el que sigue no entra en
+ * lo que queda de la fila, el actual estira y la cierra. Sin esto, un campo de
+ * fila entera después de uno de media —"Localidad" detrás de "Provincia"—
+ * empujaba y dejaba medio renglón vacío colgando.
+ */
+function anchosDeColumna(campos: CampoId[]): number[] {
+  const anchos = campos.map(pesoDe);
+  let usado = 0;
+  for (let i = 0; i < anchos.length; i++) {
+    const libre = 6 - usado;
+    if (i > 0 && anchos[i] > libre) {
+      anchos[i - 1] += libre;
+      usado = anchos[i] % 6;
+    } else {
+      usado = (usado + anchos[i]) % 6;
+    }
+  }
+  if (usado !== 0) anchos[anchos.length - 1] += 6 - usado;
+  return anchos;
+}
+
+/**
  * Reparte los campos entre las dos columnas.
  *
  * En **contacto** manda el agrupamiento: son seis campos y separar "lo que
@@ -60,18 +84,22 @@ function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoI
     ];
   }
 
-  const total = campos.reduce((suma, id) => suma + pesoDe(id), 0) + 12;
-  const izquierda: CampoId[] = [];
-  const derecha: CampoId[] = [];
-  let acumulado = 12;
-  for (const id of campos) {
-    if (acumulado < total / 2) {
-      izquierda.push(id);
-      acumulado += pesoDe(id);
-    } else {
-      derecha.push(id);
-    }
+  const pesos = campos.map(pesoDe);
+  const total = pesos.reduce((suma, peso) => suma + peso, 0) + 12;
+
+  // Se prueban todos los cortes y gana el más parejo. Que la última fila de
+  // cada columna quede completa no se resuelve acá —con cantidades impares no
+  // siempre se puede— sino estirando el último campo al pintarlo.
+  let mejor = 0;
+  let mejorPuntaje = Infinity;
+  for (let corte = 0; corte <= campos.length; corte++) {
+    const izq = pesos.slice(0, corte).reduce((suma, peso) => suma + peso, 12);
+    const puntaje = Math.abs(izq - (total - izq));
+    if (puntaje < mejorPuntaje) { mejorPuntaje = puntaje; mejor = corte; }
   }
+
+  const izquierda = campos.slice(0, mejor);
+  const derecha = campos.slice(mejor);
   return [izquierda, derecha];
 }
 
@@ -936,15 +964,18 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
                     </>)}
                     <div className="grid grid-cols-6 gap-1.5">
-                      {suyos.map(id => (
+                      {suyos.map((id, indice, todos) => (
                         <div
                           key={id}
                           // Reservar el lugar es de desktop, donde la tarjeta es
                           // un bloque fijo y verla crecer y encogerse molesta.
                           // En mobile las columnas se apilan y el hueco quedaría
                           // a la vista, peor que el salto: ahí no está.
-                          className={`${SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'}`}
-                          style={pide(id) ? undefined : { visibility: 'hidden' }}
+                          className={`${SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'} celda-ancho`}
+                          style={{
+                            ...(pide(id) ? null : { visibility: 'hidden' as const }),
+                            ['--ancho' as string]: anchosDeColumna(todos)[indice],
+                          }}
                           aria-hidden={!pide(id)}
                         >
                           <Campo

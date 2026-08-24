@@ -37,13 +37,16 @@ test('una carrera fuera de la oferta no tiene casa', () => {
   assert.equal(casaDeCarrera(null), null);
 });
 
-test('Identidad no pide legajo: no hay requisitos de ingreso', () => {
+test('el legajo de Identidad es corto: quien es y donde vive', () => {
   const campos = camposDe('identidad', 'preinscripcion');
-  for (const ausente of ['colegio', 'nivelEstudios', 'estadoCivil', 'domicilio', 'medioPago']) {
+  // No hay requisitos de ingreso, asi que nada del secundario ni del legajo
+  // largo de Siglo 21.
+  for (const ausente of ['colegio', 'nivelEstudios', 'estadoCivil', 'tipoDocumento', 'codigoPostal']) {
     assert.ok(!campos.includes(ausente), `identidad no deberia pedir ${ausente}`);
   }
-  assert.ok(campos.includes('dni'));
-  assert.ok(campos.includes('localidad'));
+  for (const pide of ['email', 'nombre', 'apellido', 'telefono', 'dni', 'nacionalidad', 'provincia', 'localidad', 'domicilio']) {
+    assert.ok(campos.includes(pide), `identidad deberia pedir ${pide}`);
+  }
 });
 
 test('las equivalencias son solo de Siglo 21', () => {

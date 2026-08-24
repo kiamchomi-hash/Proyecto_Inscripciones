@@ -27,7 +27,7 @@ export type CampoId =
   | 'fechaNacimiento' | 'lugarNacimiento' | 'nacionalidad' | 'estadoCivil'
   | 'paisResidencia' | 'tipoDomicilio' | 'domicilio' | 'domicilioNumero'
   | 'domicilioPiso' | 'domicilioDepartamento' | 'torre' | 'barrio'
-  | 'codigoPostal' | 'localidad'
+  | 'codigoPostal' | 'provincia' | 'localidad'
   | 'nivelEstudios' | 'colegio' | 'colegioLocalidad'
   | 'equivalencias' | 'email' | 'telefono';
 
@@ -108,6 +108,7 @@ export const CAMPOS: Record<CampoId, Campo> = {
   torre:        { columna: 'torre', grupo: 'domicilio', siempreOpcional: true, ancho: 'tercio',         label: 'Torre',         placeholder: 'Torre', max: 20 },
   barrio:       { columna: 'barrio', grupo: 'domicilio', ancho: 'tercio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
   codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', ancho: 'tercio', label: 'Código postal', placeholder: 'Código postal', max: 20 },
+  provincia:    { columna: 'provincia', grupo: 'domicilio', label: 'Provincia', placeholder: 'Provincia', max: 80 },
   localidad:    { columna: 'localidad', grupo: 'domicilio', ancho: 'completo',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
 
   nivelEstudios:    { columna: 'nivel_estudios', grupo: 'estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
@@ -172,9 +173,12 @@ export const CASAS: Record<CasaId, Casa> = {
     niveles: ['Identidad Argentina'],
     contacto: ['nombre', 'apellido', 'localidad', 'email', 'telefono'],
     // Las diplomaturas no tienen requisitos de ingreso —ni secundario, ni
-    // título previo, ni examen— y cierran con un link de pago, no con un
-    // legajo: pedir domicilio y colegio sería fricción sin destino.
-    preinscripcion: ['nombre', 'apellido', 'dni', 'localidad', 'email', 'telefono'],
+    // título previo, ni examen—, así que el legajo es corto: alcanza con saber
+    // quién es y dónde vive.
+    preinscripcion: [
+      'email', 'nombre', 'apellido', 'telefono', 'dni', 'nacionalidad',
+      'provincia', 'localidad', 'domicilio',
+    ],
   },
 };
 

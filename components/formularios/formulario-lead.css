@@ -122,17 +122,22 @@
   }
 }
 
-/* La marca la pone la casa. Identidad no tiene logo bajado —su sitio bloquea
-   el scrapeo— así que cae en la del CAU, que es la sede que la dicta. */
+/* La marca la pone la casa: elegir una diplomatura no puede seguir mostrando
+   Universidad Siglo 21. El isotipo de Identidad sale del mismo trazado que
+   `components/index/ia-isotipo.tsx`, que ya lo usan el modal y la ficha. */
 .contact-form-side-image[data-casa="teclab"] {
   background-image: url('/imagenes/teclab/logo-teclab-siglo21.webp');
   background-size: 70% auto;
 }
 
-.contact-form-side-image[data-casa="siglo21"],
-.contact-form-side-image[data-casa="identidad"] {
+.contact-form-side-image[data-casa="siglo21"] {
   background-image: url('/imagenes/imagenes_cau/siglo21-marca.svg');
   background-size: 58% auto;
+}
+
+.contact-form-side-image[data-casa="identidad"] {
+  background-image: url('/imagenes/identidad-isotipo.svg');
+  background-size: 34% auto;
 }
 
 /* La llegada del check: el círculo entra, el trazo se dibuja y recién ahí
@@ -168,5 +173,15 @@
 @media (min-width: 1280px) {
   .contact-form-layout .form-card-footer {
     border-radius: 0 0 0 1rem;
+  }
+}
+
+/* El ancho de cada campo lo calcula el componente, para que no queden huecos a
+   mitad de fila. Va en CSS y no en el estilo del elemento porque sólo vale de
+   `sm` para arriba: en mobile las columnas se apilan y cada campo ya ocupa el
+   ancho entero. */
+@media (min-width: 640px) {
+  .celda-ancho {
+    grid-column: span var(--ancho) / span var(--ancho);
   }
 }
