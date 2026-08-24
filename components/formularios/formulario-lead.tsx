@@ -75,9 +75,8 @@ function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoI
   return [izquierda, derecha];
 }
 
-/** Altos aproximados de lo que se despliega. Deciden si abre para arriba. */
+/** Alto de la lista desplegada, en píxeles. */
 const ALTO_LISTA = 224;
-const ALTO_CALENDARIO = 320;
 
 const MESES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -286,7 +285,6 @@ function CampoFecha({ id, valor, onChange, invalido }: {
   invalido?: boolean;
 }) {
   const [abierto, setAbierto] = useState(false);
-  const [haciaArriba, setHaciaArriba] = useState(false);
   const cajaRef = useRef<HTMLDivElement>(null);
 
   const [anio = '', mes = '', dia = ''] = valor ? valor.split('-') : [];
@@ -310,12 +308,7 @@ function CampoFecha({ id, valor, onChange, invalido }: {
   }, [abierto]);
 
   const alternar = () => {
-    if (!abierto && cajaRef.current) {
-      const caja = cajaRef.current.getBoundingClientRect();
-      const abajo = window.innerHeight - caja.bottom;
-      setHaciaArriba(abajo < ALTO_CALENDARIO && caja.top > abajo);
-      if (anio && mes) setVista({ anio: Number(anio), mes: Number(mes) });
-    }
+    if (!abierto && anio && mes) setVista({ anio: Number(anio), mes: Number(mes) });
     setAbierto(!abierto);
   };
 
@@ -351,7 +344,8 @@ function CampoFecha({ id, valor, onChange, invalido }: {
       {abierto && (
         <div
           role="dialog"
-          className={`absolute z-30 w-full min-w-[17rem] rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] p-2 shadow-xl ${haciaArriba ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+          // Siempre hacia abajo, como el resto de los desplegables.
+          className="absolute top-full z-30 mt-1 w-full min-w-[17rem] rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] p-2 shadow-xl"
         >
           <div className="mb-2 grid grid-cols-2 gap-1.5">
             <Desplegable
