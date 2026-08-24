@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { CAMPOS, CASAS, armarPayload, camposDe, casaDeCarrera, columnaDe, obligatoriosDe } from '../components/formularios/casas.ts';
+import { CAMPOS, CASAS, armarPayload, camposComunes, camposDe, casaDeCarrera, columnaDe, obligatoriosDe } from '../components/formularios/casas.ts';
 import { esCarreraVisible } from '../components/index/types.ts';
 
 // La oferta que el sitio publica hoy, segun getCategoryForCarrera().
@@ -144,4 +144,26 @@ test('el contacto no exige nada: la regla es mail o telefono', () => {
     assert.deepEqual(obligatoriosDe(casa, 'contacto'), []);
   }
   assert.ok(obligatoriosDe('siglo21', 'preinscripcion').length > 0);
+});
+
+test('sin carrera elegida se piden los campos que toda casa comparte', () => {
+  // La home antes de que el lead elija: no se puede saber la casa todavia.
+  const contacto = camposComunes('contacto');
+  assert.deepEqual(contacto, ['modalidad', 'nombre', 'apellido', 'localidad', 'email', 'telefono']);
+  // Nada exclusivo de una casa puede colarse ahi.
+  assert.ok(!contacto.includes('equivalencias'));
+
+  const pre = camposComunes('preinscripcion');
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    for (const campo of pre) {
+      assert.ok(camposDe(casa, 'preinscripcion').includes(campo), `${casa} no pide ${campo}`);
+    }
+  }
+});
+
+test('cada campo cae en un grupo conocido', () => {
+  const grupos = ['consulta', 'personales', 'domicilio', 'estudios', 'contacto'];
+  for (const [id, campo] of Object.entries(CAMPOS)) {
+    assert.ok(grupos.includes(campo.grupo), `${id} tiene un grupo raro: ${campo.grupo}`);
+  }
 });

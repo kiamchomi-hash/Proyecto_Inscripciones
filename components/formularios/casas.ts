@@ -13,6 +13,10 @@
 
 // ── Los campos ──
 
+/** Los bloques del formulario, en el orden en que se pintan. */
+export const GRUPOS = ['consulta', 'personales', 'domicilio', 'estudios', 'contacto'] as const;
+export type Grupo = (typeof GRUPOS)[number];
+
 export type CampoId =
   | 'nombre' | 'apellido' | 'tipoDocumento' | 'dni' | 'sexo'
   | 'fechaNacimiento' | 'lugarNacimiento' | 'nacionalidad' | 'estadoCivil'
@@ -25,6 +29,8 @@ export type CampoId =
 export interface Campo {
   /** Columna de `consultas` donde se guarda. */
   columna: string;
+  /** Bloque del formulario donde se pinta. Ordena la pantalla sola. */
+  grupo: Grupo;
   label: string;
   placeholder?: string;
   /** Tope de caracteres, espejado por el endpoint. `0` en los booleanos. */
@@ -35,43 +41,43 @@ export interface Campo {
 }
 
 export const CAMPOS: Record<CampoId, Campo> = {
-  nombre:   { columna: 'nombre',   label: 'Nombre',   placeholder: 'Nombre',   max: 100 },
-  apellido: { columna: 'apellido', label: 'Apellido', placeholder: 'Apellido', max: 100 },
+  nombre:   { columna: 'nombre', grupo: 'personales',   label: 'Nombre',   placeholder: 'Nombre',   max: 100 },
+  apellido: { columna: 'apellido', grupo: 'personales', label: 'Apellido', placeholder: 'Apellido', max: 100 },
   // El portal de Siglo 21 pide tipo y número por separado; `dni` es el número.
   // OJO: las opciones son las usuales del padrón argentino, no una lista
   // copiada del portal. Confirmar contra el portal antes de darlas por buenas.
-  tipoDocumento: { columna: 'tipo_documento', label: 'Tipo de documento', max: 40, tipo: 'select', opciones: ['DNI', 'Libreta Cívica', 'Libreta de Enrolamiento', 'Pasaporte'] },
-  dni:      { columna: 'dni',      label: 'Número de documento', placeholder: 'Sin puntos', max: 12, numerico: true },
-  sexo:     { columna: 'sexo',     label: 'Sexo',     max: 40, tipo: 'select', opciones: ['Femenino', 'Masculino', 'Otro'] },
+  tipoDocumento: { columna: 'tipo_documento', grupo: 'personales', label: 'Tipo de documento', max: 40, tipo: 'select', opciones: ['DNI', 'Libreta Cívica', 'Libreta de Enrolamiento', 'Pasaporte'] },
+  dni:      { columna: 'dni', grupo: 'personales',      label: 'Número de documento', placeholder: 'Sin puntos', max: 12, numerico: true },
+  sexo:     { columna: 'sexo', grupo: 'personales',     label: 'Sexo',     max: 40, tipo: 'select', opciones: ['Femenino', 'Masculino', 'Otro'] },
 
-  fechaNacimiento: { columna: 'fecha_nacimiento', label: 'Fecha de nacimiento', placeholder: 'DD/MM/AAAA', max: 20 },
+  fechaNacimiento: { columna: 'fecha_nacimiento', grupo: 'personales', label: 'Fecha de nacimiento', placeholder: 'DD/MM/AAAA', max: 20 },
   // La tabla la llama `localidad_nacimiento`, no `lugar_nacimiento`.
-  lugarNacimiento: { columna: 'localidad_nacimiento', label: 'Lugar de nacimiento', placeholder: 'Ciudad y provincia', max: 120 },
-  nacionalidad:   { columna: 'nacionalidad',    label: 'Nacionalidad',      placeholder: 'Argentina', max: 80 },
-  estadoCivil:    { columna: 'estado_civil',    label: 'Estado civil',      max: 40, tipo: 'select', opciones: ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro'] },
-  paisResidencia: { columna: 'pais_residencia', label: 'País de residencia', placeholder: 'Argentina', max: 80 },
+  lugarNacimiento: { columna: 'localidad_nacimiento', grupo: 'personales', label: 'Lugar de nacimiento', placeholder: 'Ciudad y provincia', max: 120 },
+  nacionalidad:   { columna: 'nacionalidad', grupo: 'personales',    label: 'Nacionalidad',      placeholder: 'Argentina', max: 80 },
+  estadoCivil:    { columna: 'estado_civil', grupo: 'personales',    label: 'Estado civil',      max: 40, tipo: 'select', opciones: ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro'] },
+  paisResidencia: { columna: 'pais_residencia', grupo: 'personales', label: 'País de residencia', placeholder: 'Argentina', max: 80 },
 
   // OJO: opciones inventadas, igual que las de tipoDocumento. Confirmar.
-  tipoDomicilio: { columna: 'tipo_domicilio', label: 'Tipo de domicilio', max: 40, tipo: 'select', opciones: ['Particular', 'Laboral'] },
+  tipoDomicilio: { columna: 'tipo_domicilio', grupo: 'domicilio', label: 'Tipo de domicilio', max: 40, tipo: 'select', opciones: ['Particular', 'Laboral'] },
   // La tabla la llama `direccion`, no `domicilio`.
-  domicilio:             { columna: 'direccion',              label: 'Calle',     placeholder: 'Calle',  max: 160 },
-  domicilioNumero:       { columna: 'direccion_numero',       label: 'Número',    placeholder: 'N°',     max: 20, numerico: true },
-  domicilioPiso:         { columna: 'direccion_piso',         label: 'Piso',      placeholder: 'Piso',   max: 20 },
-  domicilioDepartamento: { columna: 'direccion_departamento', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
-  torre:        { columna: 'torre',         label: 'Torre',         placeholder: 'Torre', max: 20 },
-  barrio:       { columna: 'barrio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
-  codigoPostal: { columna: 'codigo_postal', label: 'Código postal', placeholder: 'Código postal', max: 20 },
-  localidad:    { columna: 'localidad',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
+  domicilio:             { columna: 'direccion', grupo: 'domicilio',              label: 'Calle',     placeholder: 'Calle',  max: 160 },
+  domicilioNumero:       { columna: 'direccion_numero', grupo: 'domicilio',       label: 'Número',    placeholder: 'N°',     max: 20, numerico: true },
+  domicilioPiso:         { columna: 'direccion_piso', grupo: 'domicilio',         label: 'Piso',      placeholder: 'Piso',   max: 20 },
+  domicilioDepartamento: { columna: 'direccion_departamento', grupo: 'domicilio', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
+  torre:        { columna: 'torre', grupo: 'domicilio',         label: 'Torre',         placeholder: 'Torre', max: 20 },
+  barrio:       { columna: 'barrio', grupo: 'domicilio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
+  codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', label: 'Código postal', placeholder: 'Código postal', max: 20 },
+  localidad:    { columna: 'localidad', grupo: 'domicilio',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
 
-  nivelEstudios:    { columna: 'nivel_estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
-  colegio:          { columna: 'colegio',           label: 'Colegio',               placeholder: 'Nombre del colegio', max: 160 },
-  colegioLocalidad: { columna: 'colegio_localidad', label: 'Localidad del colegio', placeholder: 'Ciudad o localidad', max: 120 },
-  medioPago:        { columna: 'medio_pago',        label: 'Medio de pago',         placeholder: 'Según opción del portal', max: 60 },
+  nivelEstudios:    { columna: 'nivel_estudios', grupo: 'estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
+  colegio:          { columna: 'colegio', grupo: 'estudios',           label: 'Colegio',               placeholder: 'Nombre del colegio', max: 160 },
+  colegioLocalidad: { columna: 'colegio_localidad', grupo: 'estudios', label: 'Localidad del colegio', placeholder: 'Ciudad o localidad', max: 120 },
+  medioPago:        { columna: 'medio_pago', grupo: 'estudios',        label: 'Medio de pago',         placeholder: 'Según opción del portal', max: 60 },
 
-  modalidad:     { columna: 'modalidad',     label: 'Modalidad', max: 40, tipo: 'select' },
-  equivalencias: { columna: 'equivalencias', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
-  email:         { columna: 'email',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254 },
-  telefono:      { columna: 'telefono',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30 },
+  modalidad:     { columna: 'modalidad', grupo: 'consulta',     label: 'Modalidad', max: 40, tipo: 'select' },
+  equivalencias: { columna: 'equivalencias', grupo: 'consulta', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
+  email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254 },
+  telefono:      { columna: 'telefono', grupo: 'contacto',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30 },
 };
 
 export const columnaDe = (id: CampoId): string => CAMPOS[id].columna;
@@ -80,10 +86,6 @@ export const columnaDe = (id: CampoId): string => CAMPOS[id].columna;
 
 export type CasaId = 'siglo21' | 'teclab' | 'identidad';
 export type Modo = 'contacto' | 'preinscripcion';
-
-// Los que toda casa pide. En la home son los únicos que se muestran antes de
-// que el lead elija carrera, y los que se conservan cuando cambia de casa.
-export const COMUNES: CampoId[] = ['nombre', 'apellido', 'dni', 'email', 'telefono', 'localidad'];
 
 export interface Casa {
   nombre: string;
@@ -177,6 +179,19 @@ export const casaDeCarrera = (carrera: { nivel: string } | null | undefined): Ca
   (carrera && CASA_POR_NIVEL.get(carrera.nivel)) || null;
 
 export const camposDe = (casa: CasaId, modo: Modo): CampoId[] => CASAS[casa][modo];
+
+/**
+ * Los campos que toda casa pide en ese modo. Es lo que se muestra en la home
+ * mientras el lead no eligió carrera: sin carrera no hay casa, y pedir algo que
+ * después desaparece se lee como un error del sitio.
+ *
+ * Se calcula, no se escribe: si una casa deja de pedir un campo, sale solo de
+ * acá y no queda una lista paralela envejeciendo.
+ */
+export function camposComunes(modo: Modo): CampoId[] {
+  const listas = (Object.keys(CASAS) as CasaId[]).map(id => camposDe(id, modo));
+  return listas[0].filter(campo => listas.every(lista => lista.includes(campo)));
+}
 
 /** Los campos que bloquean el envío en esa casa y ese modo. */
 export const obligatoriosDe = (casa: CasaId, modo: Modo): CampoId[] =>

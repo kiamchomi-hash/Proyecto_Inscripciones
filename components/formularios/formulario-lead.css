@@ -1,0 +1,32 @@
+/* El overlay de éxito tapa la tarjeta entera deslizándose desde abajo. Vive en
+   CSS y no en Tailwind porque necesita `inset: 0` sobre el contenedor relativo
+   y una transición propia. */
+.form-success-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  background: var(--catalogo-form-tarjeta);
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.form-success-overlay.active {
+  transform: translateY(0);
+}
+
+/* Al cambiar de casa el formulario gana o pierde bloques enteros, y sin esto
+   el salto de alto deja al lead mirando otra parte de la página. */
+.form-card {
+  transition: min-height 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-success-overlay,
+  .form-card {
+    transition: none;
+  }
+}
