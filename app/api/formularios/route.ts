@@ -17,10 +17,6 @@ const SEXOS = ['Femenino', 'Masculino', 'Otro'];
 // El DNI y el sexo son opcionales: si vienen mal formados se guardan en null y
 // la consulta entra igual. Rechazar el pedido entero por un DNI con un dígito
 // de menos sería perder el lead por un campo que ni siquiera pedimos.
-//
-// La tabla tiene además las columnas del resto de la preinscripción (fecha y
-// localidad de nacimiento, estado civil, nacionalidad, domicilio). Hoy no las
-// escribe nadie: esos datos se le piden al lead a mano.
 const unaOpcionDe = (value: unknown, opciones: string[]) => {
   const elegida = text(value, 40);
   return opciones.includes(elegida) ? elegida : null;
@@ -69,13 +65,16 @@ async function insertConsulta(payload: JsonRecord) {
     dni: soloDni(payload.dni),
     sexo: unaOpcionDe(payload.sexo, SEXOS),
     fecha_nacimiento: nullableText(payload.fechaNacimiento, 20),
-    lugar_nacimiento: nullableText(payload.lugarNacimiento, 120),
+    // La tabla las llama `localidad_nacimiento` y `direccion`, no
+    // `lugar_nacimiento` ni `domicilio`: una columna inexistente hace fallar el
+    // INSERT entero (PGRST204) y tumba todos los formularios de consulta.
+    localidad_nacimiento: nullableText(payload.lugarNacimiento, 120),
     nacionalidad: nullableText(payload.nacionalidad, 80),
     estado_civil: nullableText(payload.estadoCivil, 40),
-    domicilio: nullableText(payload.domicilio, 160),
-    domicilio_numero: nullableText(payload.domicilioNumero, 20),
-    domicilio_piso: nullableText(payload.domicilioPiso, 20),
-    domicilio_departamento: nullableText(payload.domicilioDepartamento, 20),
+    direccion: nullableText(payload.domicilio, 160),
+    direccion_numero: nullableText(payload.domicilioNumero, 20),
+    direccion_piso: nullableText(payload.domicilioPiso, 20),
+    direccion_departamento: nullableText(payload.domicilioDepartamento, 20),
     codigo_postal: nullableText(payload.codigoPostal, 20),
     nivel_estudios: nullableText(payload.nivelEstudios, 80),
     colegio: nullableText(payload.colegio, 160),
