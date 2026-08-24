@@ -205,6 +205,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   // Se enciende al primer intento de envío. Antes de eso nada se pinta en rojo:
   // un formulario que te reta por lo que todavía no llenaste es hostil.
   const [intentado, setIntentado] = useState(false);
+  // Tras un intento fallido el botón queda apagado unos segundos. No es por
+  // seguridad —de eso se ocupan el captcha y el rate limit— sino para que el
+  // rojo se note: sin la pausa, quien insiste a los golpes ve el formulario
+  // parpadear y no llega a leer qué le falta.
+  const [enFrio, setEnFrio] = useState(false);
+  const frioRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [listo, setListo] = useState(false);
   const [error, setError] = useState('');
@@ -291,6 +297,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
     });
   }, [ordenadas, busqueda, filtro]);
 
+  // El timeout no puede quedar vivo si el formulario se desmonta antes.
+  useEffect(() => () => { if (frioRef.current) clearTimeout(frioRef.current); }, []);
+
   useEffect(() => {
     const alClickear = (evento: MouseEvent) => {
       if (listaRef.current && !listaRef.current.contains(evento.target as Node)) setVerLista(false);
@@ -360,6 +369,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const limpiar = () => {
     setListo(false);
     setIntentado(false);
+    setEnFrio(false);
+    if (frioRef.current) clearTimeout(frioRef.current);
     setValores({});
     setCarreraElegida(''); setBusqueda(''); setTipoElegido('');
     setVerLista(false); setVerTipos(false);
@@ -374,6 +385,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
     // primer intento enciende los bordes rojos y lleva el foco a lo que falta.
     if (!valido) {
       setIntentado(true);
+      setEnFrio(true);
+      if (frioRef.current) clearTimeout(frioRef.current);
+      frioRef.current = setTimeout(() => setEnFrio(false), 5000);
       const primero = faltanObligatorios[0] ?? (!hayContacto ? 'email' : null);
       if (primero) document.getElementById(`${prefijo}-${primero}`)?.focus();
       return;
@@ -654,7 +668,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
               <button
                 ref={botonRef}
                 type="submit"
-                disabled={enviando}
+                disabled={enviando || enFrio}
                 className="w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
