@@ -1,4 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// Los textos viven aparte para que corran bajo Node en tests/avisos.test.mjs:
+// aca adentro no se puede, porque el modulo lee Deno.env al cargarse.
+import {
+  buildConsultaMessage,
+  buildFaqMessage,
+  buildSolicitudClaseMessage,
+} from "./mensajes.ts";
 
 // Avisos de los tres formularios publicos. Telegram es el unico canal desde el
 // 01/08/2026: el mail salia del dominio compartido de pruebas de Resend, caia en
@@ -16,11 +23,6 @@ interface WebhookPayload {
   schema: string;
 }
 
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleString("es-AR", { timeZone: "America/Argentina/Buenos_Aires", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
-}
-
 function secureEqual(a: string, b: string): boolean {
   const encoder = new TextEncoder();
   const left = encoder.encode(a);
@@ -29,69 +31,6 @@ function secureEqual(a: string, b: string): boolean {
   let diff = 0;
   for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i];
   return diff === 0;
-}
-
-/* ── Message builders ── */
-function buildConsultaMessage(r: Record<string, unknown>): string {
-  const fecha = r.created_at ? formatDate(r.created_at as string) : "—";
-  const nombre = `${r.nombre || "—"} ${r.apellido || ""}`.trim();
-
-  // El DNI y el sexo son opcionales y la mayoría de las consultas llegan sin
-  // ellos: se listan sólo cuando el lead los completó, para que el aviso no
-  // sean dos renglones con un guion. El resto de los datos de la
-  // preinscripción no salen del formulario, se le piden al lead a mano.
-  const preinscripcion: Array<[string, unknown]> = [
-    ["🪪 *DNI:*", r.dni],
-    ["⚧ *Sexo:*", r.sexo],
-  ];
-  const completados = preinscripcion.filter(([, valor]) => valor).map(([rotulo, valor]) => `${rotulo} ${valor}`);
-
-  return [
-    `📚 *Nueva consulta de carrera*`,
-    ``,
-    `👤 *Nombre:* ${nombre}`,
-    `🎓 *Carrera:* ${r.carrera || "No especificada"}`,
-    `📋 *Tipo:* ${r.tipo || "—"}`,
-    `📧 *Email:* ${r.email || "—"}`,
-    `📱 *Teléfono:* ${r.telefono || "—"}`,
-    `📍 *Localidad:* ${r.localidad || "—"}`,
-    `🔄 *Equivalencias:* ${r.equivalencias ? "Sí" : "No"}`,
-    ...(completados.length ? [``, `📝 *Datos para la preinscripción*`, ...completados] : []),
-    `🕐 *Fecha:* ${fecha}`,
-  ].join("\n");
-}
-
-function buildSolicitudClaseMessage(r: Record<string, unknown>): string {
-  const fecha = r.created_at ? formatDate(r.created_at as string) : "—";
-  const dias = Array.isArray(r.dias) ? (r.dias as string[]).join(", ") : "—";
-  const horarios = Array.isArray(r.horarios) ? (r.horarios as string[]).join(", ") : "—";
-  const bloqueo = r.bloqueo_semanal ? "✅ Sí — Reserva semanal fija" : "❌ No";
-
-  return [
-    `📖 *Nueva solicitud de clase de apoyo*`,
-    ``,
-    `👤 *Nombre:* ${r.nombre || "—"}`,
-    `📱 *Teléfono:* ${r.telefono || "—"}`,
-    `📅 *Días:* ${dias}`,
-    `⏰ *Horarios:* ${horarios}`,
-    `🔁 *Reserva semanal:* ${bloqueo}`,
-    `🕐 *Fecha:* ${fecha}`,
-  ].join("\n");
-}
-
-function buildFaqMessage(r: Record<string, unknown>): string {
-  const fecha = r.created_at ? formatDate(r.created_at as string) : "—";
-
-  return [
-    `❓ *Nueva pregunta en FAQ*`,
-    ``,
-    `📝 *Título:* ${r.titulo || "—"}`,
-    `💬 *Descripción:* ${r.descripcion || "—"}`,
-    `🔒 *Modo:* ${r.modo || "—"}`,
-    `📧 *Contacto:* ${r.contacto || "—"}`,
-    r.nombre_contacto ? `👤 *Nombre:* ${r.nombre_contacto}` : null,
-    `🕐 *Fecha:* ${fecha}`,
-  ].filter(Boolean).join("\n");
 }
 
 /* ── Sender ── */
