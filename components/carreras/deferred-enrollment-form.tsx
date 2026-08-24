@@ -12,6 +12,11 @@ import type { Modo } from '@/components/formularios/casas';
 
 interface Props {
   carreras: CarreraOpcion[];
+  /**
+   * La carrera de esta ficha. Los dos formularios arrancan con ella elegida:
+   * quien baja desde "Quiero inscribirme" ya dijo a qué se quiere anotar.
+   */
+  carreraInicial?: number;
 }
 
 // El formulario no fija casa: la ficha ofrece toda la oferta en su buscador, así
@@ -42,7 +47,7 @@ function Hueco({ id, titulo }: { id: string; titulo: string }) {
   );
 }
 
-export default function DeferredEnrollmentForm({ carreras }: Props) {
+export default function DeferredEnrollmentForm({ carreras, carreraInicial }: Props) {
   const placeholderRef = useRef<HTMLElement>(null);
   const [Form, setForm] = useState<ComponentType<FormProps> | null>(null);
 
@@ -79,8 +84,8 @@ export default function DeferredEnrollmentForm({ carreras }: Props) {
   if (Form) {
     return (
       <>
-        <Form carreras={carreras} modo="contacto" />
-        <Form carreras={carreras} modo="preinscripcion" />
+        <Form carreras={carreras} modo="contacto" carreraInicial={carreraInicial} />
+        <Form carreras={carreras} modo="preinscripcion" carreraInicial={carreraInicial} />
       </>
     );
   }

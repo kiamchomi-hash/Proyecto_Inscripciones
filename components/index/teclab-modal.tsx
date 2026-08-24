@@ -17,6 +17,7 @@ import { type Carrera, carreraToSlug } from './types';
 import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
+import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import {
   destacarCompetencias,
   esCursoTeclab,
@@ -1146,6 +1147,9 @@ export default function TeclabModal({ carrera, onClose }: Props) {
               href="#preinscripcion"
               onClick={e => {
                 e.preventDefault();
+                // La carrera viaja con el clic: abajo el formulario la elige
+                // sola, en vez de dejar al lead buscando lo que ya eligio.
+                pedirCarreraEnFormulario(carrera.id);
                 handleClose();
                 setTimeout(() => {
                   document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });

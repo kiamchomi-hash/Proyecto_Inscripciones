@@ -428,7 +428,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
       />
       <main className="flex-1">
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
-        <DeferredEnrollmentForm carreras={opcionesFormulario} />
+        <DeferredEnrollmentForm carreras={opcionesFormulario} carreraInicial={carrera.id} />
       </main>
       <SiteFooter />
     </>

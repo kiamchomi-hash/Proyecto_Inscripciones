@@ -6,6 +6,7 @@ import { getEscuelaIA } from './identidad-argentina';
 import { esCursoTeclab } from './teclab';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
+import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import {
   getCareerPrefix,
   parseIAMeta,
@@ -432,6 +433,9 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
               href="#preinscripcion"
               onClick={(e) => {
                 e.preventDefault();
+                // La carrera viaja con el clic: abajo el formulario la elige
+                // sola, en vez de dejar al lead buscando lo que ya eligio.
+                pedirCarreraEnFormulario(carrera.id);
                 handleClose();
                 setTimeout(() => {
                   const form = document.getElementById('preinscripcion');

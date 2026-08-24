@@ -8,6 +8,7 @@ import {
   CAMPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
 } from './casas';
+import { EVENTO_ELEGIR_CARRERA, type DetalleElegirCarrera } from './elegir-carrera';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -18,6 +19,12 @@ interface Props {
    */
   casa?: CasaId;
   origen?: OrigenConsulta;
+  /**
+   * `id` de la carrera que el formulario arranca con elegida. Lo usa
+   * `/carreras/[slug]`, donde la página ya sabe de qué carrera se habla: quien
+   * baja desde "Quiero inscribirme" no tiene por qué volver a buscarla.
+   */
+  carreraInicial?: number;
 }
 
 type Valores = Partial<Record<CampoId, string | boolean>>;
@@ -541,13 +548,18 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
   );
 }
 
-export default function FormularioLead({ carreras, modo, casa, origen = 'home' }: Props) {
+export default function FormularioLead({ carreras, modo, casa, origen = 'home', carreraInicial }: Props) {
+  // La carrera con la que arranca, si la página la fijó. Es el valor inicial de
+  // dos estados y nada más: después manda el estado, porque el lead la cambia.
+  const nombreInicial = () => (carreraInicial != null
+    ? carreras.find(opcion => opcion.id === carreraInicial)?.nombre ?? ''
+    : '');
   // Un solo objeto, no un useState por campo: es lo que permite que al cambiar
   // de carrera lo ya cargado siga ahí. Los campos que la casa nueva no pide se
   // dejan de pintar, pero no se borran ni viajan — de eso se ocupa armarPayload.
   const [valores, setValores] = useState<Valores>({});
-  const [carreraElegida, setCarreraElegida] = useState('');
-  const [busqueda, setBusqueda] = useState('');
+  const [carreraElegida, setCarreraElegida] = useState(nombreInicial);
+  const [busqueda, setBusqueda] = useState(nombreInicial);
   const [verLista, setVerLista] = useState(false);
   const [tipoElegido, setTipoElegido] = useState('');
   const [verTipos, setVerTipos] = useState(false);
@@ -667,6 +679,23 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
     document.addEventListener('mousedown', alClickear);
     return () => document.removeEventListener('mousedown', alClickear);
   }, []);
+
+  // "Inscribite ya" de un modal del catálogo: el clic llega como evento porque
+  // el modal no puede pasarle props a un formulario que no monta él. Sin esto,
+  // el lead cae en el buscador vacío después de haber elegido la carrera.
+  // El filtro de tipo no se toca: sigue solo a la carrera elegida.
+  useEffect(() => {
+    const alElegir = (evento: Event) => {
+      const { id } = (evento as CustomEvent<DetalleElegirCarrera>).detail ?? {};
+      const opcion = carreras.find(candidata => candidata.id === id);
+      if (!opcion) return;
+      setCarreraElegida(opcion.nombre);
+      setBusqueda(opcion.nombre);
+      setVerLista(false);
+    };
+    window.addEventListener(EVENTO_ELEGIR_CARRERA, alElegir);
+    return () => window.removeEventListener(EVENTO_ELEGIR_CARRERA, alElegir);
+  }, [carreras]);
 
   const poner = useCallback((id: CampoId, valor: string | boolean) => {
     setValores(previos => ({ ...previos, [id]: valor }));
