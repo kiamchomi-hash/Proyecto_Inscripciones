@@ -1230,4 +1230,5 @@ mark {
 }
 
 @import "../components/index/modales.css";
+@import "../components/formularios/formulario-lead.css";
 @import "../components/index/enrollment-form.css";

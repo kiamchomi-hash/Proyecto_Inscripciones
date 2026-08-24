@@ -185,6 +185,10 @@ export const camposDe = (casa: CasaId, modo: Modo): CampoId[] => CASAS[casa][mod
  * mientras el lead no eligió carrera: sin carrera no hay casa, y pedir algo que
  * después desaparece se lee como un error del sitio.
  *
+ * Por eso el checkbox de equivalencias no aparece hasta que hay una carrera de
+ * Siglo 21 elegida: es la única casa que las acredita, y ofrecerlas "por las
+ * dudas" promete algo que Teclab e Identidad no pueden cumplir.
+ *
  * Se calcula, no se escribe: si una casa deja de pedir un campo, sale solo de
  * acá y no queda una lista paralela envejeciendo.
  */

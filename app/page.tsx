@@ -9,7 +9,7 @@ import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
 
 // Dynamic imports for components below the fold
-const EnrollmentForm = dynamic(() => import('@/components/index/enrollment-form'));
+const FormularioLead = dynamic(() => import('@/components/formularios/formulario-lead'));
 const SiteFooter = dynamic(() => import('@/components/footer'));
 import './index.css';
 
@@ -47,7 +47,11 @@ export default async function HomePage() {
         <h1 className="sr-only">Universidad Siglo 21 en Villa Lugano: carreras e inscripciones</h1>
         <Hero />
         <CareersCatalog carreras={carrerasData} teclabLandingHref="/teclab" />
-        <EnrollmentForm carreras={carrerasData} />
+        {/* Dos formularios y no uno: el contacto es la puerta general y ofrece
+            toda la oferta; la preinscripción arma el legajo y sus campos los
+            define la casa de la carrera que el lead elija. */}
+        <FormularioLead carreras={carrerasData} modo="contacto" origen="home" />
+        <FormularioLead carreras={carrerasData} modo="preinscripcion" origen="home" />
         <StatsCounter />
       </main>
       <SiteFooter />

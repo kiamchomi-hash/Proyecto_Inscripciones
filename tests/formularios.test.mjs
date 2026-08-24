@@ -167,3 +167,15 @@ test('cada campo cae en un grupo conocido', () => {
     assert.ok(grupos.includes(campo.grupo), `${id} tiene un grupo raro: ${campo.grupo}`);
   }
 });
+
+test('equivalencias no se ofrecen hasta saber que la casa es Siglo 21', () => {
+  // Solo Siglo 21 las acredita. Mostrarlas "por las dudas" en la home promete
+  // algo que Teclab e Identidad no pueden cumplir.
+  assert.ok(!camposComunes('contacto').includes('equivalencias'));
+  assert.ok(camposDe('siglo21', 'contacto').includes('equivalencias'));
+  for (const casa of ['teclab', 'identidad']) {
+    for (const modo of ['contacto', 'preinscripcion']) {
+      assert.ok(!camposDe(casa, modo).includes('equivalencias'), `${casa} no acredita equivalencias`);
+    }
+  }
+});
