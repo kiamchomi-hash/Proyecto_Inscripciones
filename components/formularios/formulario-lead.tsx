@@ -531,6 +531,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
             <div className="space-y-2 px-3 py-2.5 sm:px-4 sm:py-3">
               <TurnstileWidget
                 key={captchaKey}
+                marca={casaActiva ?? 'siglo21'}
                 onVerify={nuevo => { setToken(nuevo); setCaptchaVencido(false); }}
                 onExpire={() => { setToken(''); setCaptchaVencido(true); }}
               />

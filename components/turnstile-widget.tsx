@@ -1,11 +1,28 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import IsotipoIA from '@/components/index/ia-isotipo';
 
 type TurnstileWidgetProps = {
   onVerify: (token: string) => void;
   onExpire?: () => void;
+  /**
+   * Qué marca lleva el marcador mientras el widget carga. Se declara acá y no
+   * se importa de `casas.ts` para que el widget siga sirviendo a la FAQ y a
+   * clases de apoyo, que no tienen casa.
+   */
+  marca?: 'siglo21' | 'teclab' | 'identidad';
 };
+
+/** La marca de la casa, para el marcador. Identidad va en su isotipo propio. */
+function Marca({ marca }: { marca: 'siglo21' | 'teclab' | 'identidad' }) {
+  if (marca === 'identidad') return <IsotipoIA className="h-6 w-auto opacity-70" />;
+  const src = marca === 'teclab'
+    ? '/imagenes/teclab/logo-teclab.webp'
+    : '/imagenes/imagenes_cau/siglo21-marca.svg';
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt="" className="h-6 w-auto opacity-40" />;
+}
 
 type TurnstileApi = {
   render: (
@@ -25,7 +42,7 @@ const SCRIPT_ID = 'cloudflare-turnstile-script';
 const SCRIPT_SRC =
   'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
-export default function TurnstileWidget({ onVerify, onExpire }: TurnstileWidgetProps) {
+export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerRef = useRef<HTMLDivElement>(null);
   // Mientras Cloudflare no pintó el iframe, su lugar reservado es un hueco
@@ -100,7 +117,7 @@ export default function TurnstileWidget({ onVerify, onExpire }: TurnstileWidgetP
       {!montado && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-between gap-3 rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
+          className="absolute inset-0 flex items-center justify-center gap-3 rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
         >
           <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -108,12 +125,7 @@ export default function TurnstileWidget({ onVerify, onExpire }: TurnstileWidgetP
             </svg>
             Verificación de seguridad
           </span>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/imagenes/imagenes_cau/siglo21-marca.svg"
-            alt=""
-            className="h-6 w-auto opacity-40"
-          />
+          <Marca marca={marca} />
         </div>
       )}
       <div ref={containerRef} />
