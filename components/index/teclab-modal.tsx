@@ -851,27 +851,17 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
       <div className="flex-shrink-0 flex flex-col gap-2.5">
         {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} solido />}
 
-        <div className="flex flex-col sm:flex-row gap-2">
-          <a
-            href={waHref}
-            target="_blank"
-            rel="noopener nofollow"
-            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
-          >
-            Consultar precios
-          </a>
-          <a
-            href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg text-white font-bold text-[0.95rem] sm:text-sm transition-all"
-            // Relleno opaco, no translucido: el boton va sobre la foto de fondo
-            // y con el blanco al 8% la imagen se veia por debajo del texto.
-            style={{ background: 'color-mix(in srgb, #fff 9%, var(--teclab-ink))', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
-          >
-            Guaminí 4876
-          </a>
-        </div>
+        {/* Un solo boton. Al lado habia otro con la direccion de la sede, que
+            abria Google Maps: la carrera se cursa 100% online y a un lead que
+            vive lejos una direccion le lee como un requisito de asistencia. */}
+        <a
+          href={waHref}
+          target="_blank"
+          rel="noopener nofollow"
+          className="flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
+        >
+          Consultar precios
+        </a>
 
         {/* Lockup oficial: la carrera es de Teclab y articula con la Siglo 21 */}
         <Image
