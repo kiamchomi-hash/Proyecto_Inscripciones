@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { CAMPOS, CASAS, camposDe, casaDeCarrera, columnaDe } from '../components/formularios/casas.ts';
+import { CAMPOS, CASAS, armarPayload, camposDe, casaDeCarrera, columnaDe } from '../components/formularios/casas.ts';
 import { esCarreraVisible } from '../components/index/types.ts';
 
 // La oferta que el sitio publica hoy, segun getCategoryForCarrera().
@@ -78,4 +78,38 @@ test('las casas cubren toda la oferta visible, y nada mas', () => {
   for (const nivel of NIVELES_DE_LA_OFERTA) {
     assert.ok(declarados.includes(nivel), `ninguna casa reclama el nivel ${nivel}`);
   }
+});
+
+test('lo que la casa no pide no viaja, aunque este cargado', () => {
+  // El lead completo medio legajo de Siglo 21 y despues eligio una diplomatura.
+  const estado = {
+    nombre: 'Ana', apellido: 'Diaz', dni: '30111222',
+    colegio: 'Normal 5', medioPago: 'Tarjeta', estadoCivil: 'Soltero/a',
+  };
+  const payload = armarPayload('identidad', 'preinscripcion', estado);
+
+  assert.equal(payload.nombre, 'Ana');
+  assert.equal(payload.dni, '30111222');
+  for (const ausente of ['colegio', 'medioPago', 'estadoCivil']) {
+    assert.equal(ausente in payload, false, `${ausente} no deberia viajar a identidad`);
+  }
+});
+
+test('el sobre lleva la casa y el modo', () => {
+  const payload = armarPayload('teclab', 'preinscripcion', {});
+  assert.equal(payload.casa, 'teclab');
+  assert.equal(payload.tipoFormulario, 'preinscripcion');
+});
+
+test('las equivalencias no se cuelan en una casa que no las ofrece', () => {
+  // El caso real: lo tildo con una licenciatura elegida y despues paso a Teclab.
+  const payload = armarPayload('teclab', 'contacto', { equivalencias: true, nombre: 'Ana' });
+  assert.equal('equivalencias' in payload, false);
+  assert.equal(payload.nombre, 'Ana');
+});
+
+test('un campo vacio viaja igual: borrar un dato tiene que poder guardarse', () => {
+  const payload = armarPayload('identidad', 'preinscripcion', { nombre: '', dni: '30111222' });
+  assert.equal('nombre' in payload, true);
+  assert.equal(payload.nombre, '');
 });

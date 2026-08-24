@@ -144,3 +144,30 @@ export const casaDeCarrera = (carrera: { nivel: string } | null | undefined): Ca
   (carrera && CASA_POR_NIVEL.get(carrera.nivel)) || null;
 
 export const camposDe = (casa: CasaId, modo: Modo): CampoId[] => CASAS[casa][modo];
+
+// ── Qué viaja en el envío ──
+
+/**
+ * Arma el `payload` de `POST /api/formularios` a partir del estado del
+ * formulario, quedándose sólo con lo que la casa elegida pide en ese modo.
+ *
+ * Los campos que la casa no pide siguen en el estado del componente a
+ * propósito: si el lead vuelve a una carrera que sí los pide, los encuentra
+ * como los dejó. Lo que no puede pasar es que viajen igual — el caso testigo
+ * son las equivalencias tildadas con una licenciatura elegida y después
+ * cambiadas por una carrera de Teclab, que no las acredita.
+ *
+ * Un campo declarado viaja aunque esté vacío: mandar `''` es cómo se guarda
+ * que el lead borró un dato.
+ */
+export function armarPayload(
+  casa: CasaId,
+  modo: Modo,
+  estado: Partial<Record<CampoId, string | boolean>>,
+): Record<string, unknown> {
+  const payload: Record<string, unknown> = { casa, tipoFormulario: modo };
+  for (const campo of camposDe(casa, modo)) {
+    if (campo in estado) payload[campo] = estado[campo];
+  }
+  return payload;
+}
