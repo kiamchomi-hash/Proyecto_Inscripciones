@@ -611,11 +611,16 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 va último, para que el que abandona a mitad ya lo haya dado. */}
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
+                {/* En preinscripción los dos son obligatorios, así que la regla
+                    de "uno u otro" sólo vale para el contacto. */}
                 <p className="flex items-center gap-2 text-[12px] leading-snug text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                   </svg>
-                  <span><strong className="text-[var(--catalogo-acento)]">Obligatorio:</strong> mail o teléfono</span>
+                  <span>
+                    <strong className="text-[var(--catalogo-acento)]">Cómo te escribimos:</strong>{' '}
+                    {esPreinscripcion ? 'mail y teléfono' : 'con el mail o el teléfono alcanza'}
+                  </span>
                 </p>
                 <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                   {enPantalla.filter(id => CAMPOS[id].grupo === 'contacto').map(id => (

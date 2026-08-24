@@ -202,12 +202,31 @@ test('el contacto reserva el lugar de todo lo que alguna casa pide', () => {
   assert.equal('equivalencias' in armarPayload('teclab', 'contacto', { equivalencias: true }), false);
 });
 
-test('el codigo postal es obligatorio en Siglo 21', () => {
-  const obl = obligatoriosDe('siglo21', 'preinscripcion');
-  assert.ok(obl.includes('codigoPostal'));
-  // Los que dependen de como sea el domicilio siguen sin exigirse.
-  for (const suelto of ['domicilioPiso', 'domicilioDepartamento', 'torre', 'telefono']) {
-    assert.ok(!obl.includes(suelto), `${suelto} no puede ser obligatorio`);
+test('en una preinscripcion se pide todo, salvo lo que depende del domicilio', () => {
+  // Es un legajo: el que no quiere darlos tiene el formulario de contacto.
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    const campos = camposDe(casa, 'preinscripcion');
+    const obl = obligatoriosDe(casa, 'preinscripcion');
+    for (const id of campos) {
+      if (CAMPOS[id].siempreOpcional) {
+        assert.ok(!obl.includes(id), `${casa}: ${id} no puede exigirse`);
+      } else {
+        assert.ok(obl.includes(id), `${casa}: falta exigir ${id}`);
+      }
+    }
+  }
+  // Teclab ya no queda sin exigir nada por no tener su ficha cargada.
+  assert.ok(obligatoriosDe('teclab', 'preinscripcion').length > 10);
+  assert.ok(obligatoriosDe('siglo21', 'preinscripcion').includes('telefono'));
+  assert.ok(obligatoriosDe('siglo21', 'preinscripcion').includes('codigoPostal'));
+});
+
+test('el medio de pago no se pregunta: se habla con el lead', () => {
+  assert.equal('medioPago' in CAMPOS, false);
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    for (const modo of ['contacto', 'preinscripcion']) {
+      assert.ok(!camposDe(casa, modo).includes('medioPago'), `${casa}.${modo} sigue pidiendolo`);
+    }
   }
 });
 

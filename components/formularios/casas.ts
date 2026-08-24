@@ -13,9 +13,10 @@
 
 // ── Los campos ──
 //
-// No hay campo `modalidad`: toda la oferta de las tres casas es virtual, así
-// que preguntarla era una fila que siempre tenía una sola respuesta. La columna
-// sigue en la tabla con lo que cargaron las consultas anteriores.
+// Dos campos que estuvieron y se fueron, con sus columnas todavía en la tabla:
+// `modalidad`, porque toda la oferta de las tres casas es virtual y preguntarla
+// era una fila con una sola respuesta posible; y `medio_pago`, porque eso se
+// habla con el lead, no se completa en un formulario.
 
 /** Los bloques del formulario, en el orden en que se pintan. */
 export const GRUPOS = ['consulta', 'personales', 'domicilio', 'estudios', 'contacto'] as const;
@@ -27,7 +28,7 @@ export type CampoId =
   | 'paisResidencia' | 'tipoDomicilio' | 'domicilio' | 'domicilioNumero'
   | 'domicilioPiso' | 'domicilioDepartamento' | 'torre' | 'barrio'
   | 'codigoPostal' | 'localidad'
-  | 'nivelEstudios' | 'colegio' | 'colegioLocalidad' | 'medioPago'
+  | 'nivelEstudios' | 'colegio' | 'colegioLocalidad'
   | 'equivalencias' | 'email' | 'telefono';
 
 export interface Campo {
@@ -46,9 +47,9 @@ export interface Campo {
   /** Tope de caracteres, espejado por el endpoint. `0` en los booleanos. */
   max: number;
   /**
-   * Opcional por lo que es el dato, no por lo que pida la casa: un domicilio
-   * tiene piso o no lo tiene. Se marca siempre, aunque la casa no haya
-   * declarado sus obligatorios — que es el caso de Teclab hoy.
+   * Opcional por lo que es el dato: un domicilio tiene piso o no lo tiene. Son
+   * los únicos que no bloquean el envío de una preinscripción, donde todo lo
+   * demás es obligatorio.
    */
   siempreOpcional?: boolean;
   tipo?: 'texto' | 'select' | 'checkbox';
@@ -88,7 +89,6 @@ export const CAMPOS: Record<CampoId, Campo> = {
   nivelEstudios:    { columna: 'nivel_estudios', grupo: 'estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
   colegio:          { columna: 'colegio', grupo: 'estudios',           label: 'Colegio',               placeholder: 'Nombre del colegio', max: 160 },
   colegioLocalidad: { columna: 'colegio_localidad', grupo: 'estudios', label: 'Localidad del colegio', placeholder: 'Ciudad o localidad', max: 120 },
-  medioPago:        { columna: 'medio_pago', grupo: 'estudios',        label: 'Medio de pago',         placeholder: 'Según opción del portal', max: 60 },
 
   equivalencias: { columna: 'equivalencias', grupo: 'consulta', ancho: 'completo', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
   email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254 },
@@ -108,13 +108,6 @@ export interface Casa {
   niveles: string[];
   contacto: CampoId[];
   preinscripcion: CampoId[];
-  /**
-   * Los que bloquean el envío, por modo. El contacto va siempre vacío: un
-   * formulario de consulta que rebota pierde el lead, y para eso ya está la
-   * regla de "mail o teléfono". El legajo sí puede exigir — uno a medias no
-   * sirve para preinscribir a nadie.
-   */
-  obligatorios: { contacto: CampoId[]; preinscripcion: CampoId[] };
 }
 
 export const CASAS: Record<CasaId, Casa> = {
@@ -122,8 +115,8 @@ export const CASAS: Record<CasaId, Casa> = {
     nombre: 'Universidad Siglo 21',
     niveles: ['Grado', 'Grado (CCC)', 'Pregrado'],
     contacto: ['nombre', 'apellido', 'localidad', 'equivalencias', 'email', 'telefono'],
-    // La ficha del portal de Siglo 21, en su orden. No pide nivel de estudios,
-    // colegio, medio de pago ni equivalencias: eso es de Teclab, no de acá.
+    // La ficha del portal de Siglo 21, en su orden. No pide nivel de estudios
+    // ni colegio: eso es de Teclab, no de acá.
     //
     // El portal parte el teléfono en código de país, código de área y móvil.
     // Acá va en un campo solo: partirlo es fricción que nadie espera en un
@@ -135,34 +128,20 @@ export const CASAS: Record<CasaId, Casa> = {
       'domicilioDepartamento', 'torre', 'barrio', 'codigoPostal', 'localidad',
       'telefono',
     ],
-    obligatorios: {
-      contacto: [],
-      // Piso, depto, torre y teléfono quedan afuera a propósito: se completan
-      // sólo si el domicilio los tiene.
-      preinscripcion: [
-        'tipoDocumento', 'dni', 'apellido', 'nombre', 'email', 'fechaNacimiento',
-        'nacionalidad', 'paisResidencia', 'sexo', 'estadoCivil', 'lugarNacimiento',
-        'tipoDomicilio', 'domicilio', 'domicilioNumero', 'barrio', 'codigoPostal',
-        'localidad',
-      ],
-    },
   },
   teclab: {
     nombre: 'Teclab',
     niveles: ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'],
     // Teclab no acredita equivalencias.
     contacto: ['nombre', 'apellido', 'localidad', 'email', 'telefono'],
-    // Tal cual está hoy en producción. No se toca.
     preinscripcion: [
       'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
       'nacionalidad', 'estadoCivil',
       'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento',
       'codigoPostal', 'localidad',
-      'nivelEstudios', 'colegio', 'colegioLocalidad', 'medioPago',
+      'nivelEstudios', 'colegio', 'colegioLocalidad',
       'email', 'telefono',
     ],
-    // Sin la ficha oficial de Teclab a la vista, no se exige nada todavía.
-    obligatorios: { contacto: [], preinscripcion: [] },
   },
   identidad: {
     nombre: 'Academia Identidad Argentina',
@@ -172,9 +151,6 @@ export const CASAS: Record<CasaId, Casa> = {
     // título previo, ni examen— y cierran con un link de pago, no con un
     // legajo: pedir domicilio y colegio sería fricción sin destino.
     preinscripcion: ['nombre', 'apellido', 'dni', 'localidad', 'email', 'telefono'],
-    // La preinscripción de Identidad se carga con estos cinco datos; el resto
-    // lo resuelve el link de pago.
-    obligatorios: { contacto: [], preinscripcion: ['nombre', 'apellido', 'dni', 'email'] },
   },
 };
 
@@ -226,9 +202,22 @@ export function camposPosibles(modo: Modo): CampoId[] {
     .filter(campo => !vistos.has(campo) && vistos.add(campo));
 }
 
-/** Los campos que bloquean el envío en esa casa y ese modo. */
+/**
+ * Los campos que bloquean el envío.
+ *
+ * En **preinscripción son todos**, menos los que son opcionales por lo que son
+ * (piso, depto, torre). Es un legajo: si el lead no quiere darlos, lo que le
+ * corresponde es el formulario de contacto, no una preinscripción a medias que
+ * después hay que completar a mano.
+ *
+ * En **contacto no bloquea ninguno**: una consulta que rebota es un lead
+ * perdido, y para eso alcanza con la regla de mail o teléfono.
+ *
+ * Se deduce, no se escribe casa por casa: así una casa nueva —o una que todavía
+ * no tiene su ficha oficial cargada, como Teclab— no queda sin exigir nada.
+ */
 export const obligatoriosDe = (casa: CasaId, modo: Modo): CampoId[] =>
-  CASAS[casa].obligatorios[modo];
+  modo === 'contacto' ? [] : camposDe(casa, modo).filter(id => !CAMPOS[id].siempreOpcional);
 
 // ── Qué viaja en el envío ──
 
