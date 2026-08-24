@@ -5,8 +5,8 @@ import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
 import { trackConsulta, type OrigenConsulta } from '@/lib/analytics';
 import {
-  CAMPOS, GRUPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
-  type Campo as CampoDef, type CampoId, type CasaId, type Grupo, type Modo,
+  CAMPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
+  type Campo as CampoDef, type CampoId, type CasaId, type Modo,
 } from './casas';
 
 interface Props {
@@ -33,17 +33,47 @@ const SPAN: Record<NonNullable<CampoDef['ancho']>, string> = {
   tercio: 'col-span-2',
 };
 
+/** Cuánto ocupa cada campo en la grilla de seis de su columna. */
+const PESO = { completo: 6, medio: 3, tercio: 2 } as const;
+const pesoDe = (id: CampoId) => PESO[CAMPOS[id].ancho ?? 'medio'];
+
 /**
- * Qué columna ocupa cada bloque. En contacto la izquierda es sólo la carrera y
- * la modalidad, y los datos del lead van a la derecha; en preinscripción los
- * personales suben a la izquierda y el domicilio ocupa la derecha entera. En
- * los dos casos el bloque de contacto va abajo, a todo el ancho: es lo único
- * obligatorio y va último para que el que abandona a mitad ya lo haya dado.
+ * Reparte los campos entre las dos columnas.
+ *
+ * En **contacto** manda el agrupamiento: son seis campos y separar "lo que
+ * consultás" de "tus datos" se lee bien.
+ *
+ * En **preinscripción** manda el equilibrio. Con el agrupamiento, Siglo 21
+ * dejaba diez datos personales a la izquierda y sólo el domicilio a la derecha,
+ * que ocupa la mitad de alto: la tarjeta quedaba coja. Como los rótulos de
+ * columna ya no existen, las columnas no prometen un tema y repartir por peso
+ * no engaña a nadie.
+ *
+ * El `12` del arranque es el buscador de carrera y su filtro, dos filas que
+ * cuelgan siempre de la primera columna.
  */
-const COLUMNA: Record<Modo, Record<Grupo, 1 | 2 | 0>> = {
-  contacto:       { consulta: 1, personales: 2, domicilio: 2, estudios: 2, contacto: 0 },
-  preinscripcion: { consulta: 1, personales: 1, domicilio: 2, estudios: 2, contacto: 0 },
-};
+function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoId[], CampoId[]] {
+  if (!esPreinscripcion) {
+    return [
+      campos.filter(id => CAMPOS[id].grupo === 'consulta'),
+      campos.filter(id => CAMPOS[id].grupo !== 'consulta'),
+    ];
+  }
+
+  const total = campos.reduce((suma, id) => suma + pesoDe(id), 0) + 12;
+  const izquierda: CampoId[] = [];
+  const derecha: CampoId[] = [];
+  let acumulado = 12;
+  for (const id of campos) {
+    if (acumulado < total / 2) {
+      izquierda.push(id);
+      acumulado += pesoDe(id);
+    } else {
+      derecha.push(id);
+    }
+  }
+  return [izquierda, derecha];
+}
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -199,6 +229,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   // cambia y está bien — el formulario es visiblemente otro.
   const enPantalla = esPreinscripcion ? campos : camposPosibles(modo);
   const pide = (id: CampoId) => campos.includes(id);
+  // El bloque de contacto va aparte, a lo ancho y abajo de las dos columnas.
+  const columnas = repartirColumnas(
+    enPantalla.filter(id => CAMPOS[id].grupo !== 'contacto'),
+    esPreinscripcion,
+  );
 
   const categorias = useMemo(() => categoriasPresentes(carreras), [carreras]);
   const categoriaDetectada = carrera ? getCategoryForCarrera(carrera) : '';
@@ -364,11 +399,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 y la izquierda no. */}
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               {([1, 2] as const).map(columna => {
-                const grupos = GRUPOS.filter(grupo =>
-                  COLUMNA[modo][grupo] === columna && enPantalla.some(id => CAMPOS[id].grupo === grupo));
-                // La columna 1 se pinta siempre: aunque la casa no pidiera
-                // nada de sus grupos, ahí vive el buscador de carrera.
-                if (!grupos.length && columna !== 1) return null;
+                const suyos = columnas[columna - 1];
+                // La columna 1 se pinta siempre: aunque no le tocara ningún
+                // campo, ahí vive el buscador de carrera.
+                if (!suyos.length && columna !== 1) return null;
 
                 return (
                   <div
@@ -453,33 +487,28 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   </p>
                 )}
                     </>)}
-                    {grupos.map(grupo => (
-                      <div key={grupo} className="space-y-2">
-                        <div className="grid grid-cols-6 gap-1.5">
-                          {enPantalla.filter(id => CAMPOS[id].grupo === grupo).map(id => (
-                            <div
-                              key={id}
-                              // Reservar el lugar es de desktop, donde la
-                              // tarjeta es un bloque fijo y verla crecer y
-                              // encogerse molesta. En mobile las columnas se
-                              // apilan y el hueco quedaría a la vista, peor que
-                              // el salto: ahí el campo simplemente no está.
-                              className={`${SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'}`}
-                              style={pide(id) ? undefined : { visibility: 'hidden' }}
-                              aria-hidden={!pide(id)}
-                            >
-                              <Campo
-                                prefijo={prefijo}
-                                id={id}
-                                valor={valores[id]}
-                                onChange={valor => poner(id, valor)}
-                                opcional={hayObligatorios && !obligatorios.includes(id)}
-                              />
-                            </div>
-                          ))}
+                    <div className="grid grid-cols-6 gap-1.5">
+                      {suyos.map(id => (
+                        <div
+                          key={id}
+                          // Reservar el lugar es de desktop, donde la tarjeta es
+                          // un bloque fijo y verla crecer y encogerse molesta.
+                          // En mobile las columnas se apilan y el hueco quedaría
+                          // a la vista, peor que el salto: ahí no está.
+                          className={`${SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'}`}
+                          style={pide(id) ? undefined : { visibility: 'hidden' }}
+                          aria-hidden={!pide(id)}
+                        >
+                          <Campo
+                            prefijo={prefijo}
+                            id={id}
+                            valor={valores[id]}
+                            onChange={valor => poner(id, valor)}
+                            opcional={hayObligatorios && !obligatorios.includes(id)}
+                          />
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 );
               })}
