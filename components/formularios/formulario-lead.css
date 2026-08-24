@@ -150,6 +150,12 @@
   to { opacity: 1; }
 }
 
+/* El encabezado redondea las de arriba, por lo mismo: su fondo oscuro se salía
+   por las esquinas de la tarjeta. */
+.form-card-header {
+  border-radius: 1rem 1rem 0 0;
+}
+
 /* El pie redondea las esquinas de abajo por su cuenta: la tarjeta ya no lleva
    `overflow-hidden` —recortaba el desplegable del buscador—, así que sin esto
    su fondo pisaría el redondeo de la tarjeta. */
