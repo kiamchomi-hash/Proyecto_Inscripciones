@@ -92,7 +92,7 @@ function errorDeTelefono(valor: string) {
   return '';
 }
 
-function Campo({ prefijo, id, valor, onChange, opcional, error }: {
+function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
   /**
    * Distingue los `id` de un formulario de los del otro. La home monta dos
    * —contacto y preinscripción— y sin esto los dos usarían `form-carrera`:
@@ -110,6 +110,8 @@ function Campo({ prefijo, id, valor, onChange, opcional, error }: {
    * son menos los opcionales que los obligatorios, así que ensucia menos.
    */
   opcional: boolean;
+  /** Pinta el borde en rojo: es obligatorio y está vacío al intentar enviar. */
+  invalido?: boolean;
   error?: string;
 }) {
   const campo = CAMPOS[id];
@@ -147,7 +149,7 @@ function Campo({ prefijo, id, valor, onChange, opcional, error }: {
             id={htmlId}
             value={typeof valor === 'string' ? valor : ''}
             onChange={event => onChange(event.target.value)}
-            className={`${CAMPO} ${error ? BORDE_MAL : BORDE_OK} cursor-pointer appearance-none`}
+            className={`${CAMPO} ${error || invalido ? BORDE_MAL : BORDE_OK} cursor-pointer appearance-none`}
             style={{ colorScheme: 'dark' }}
           >
             <option value="">Sin especificar</option>
@@ -172,7 +174,7 @@ function Campo({ prefijo, id, valor, onChange, opcional, error }: {
         value={typeof valor === 'string' ? valor : ''}
         onChange={event => onChange(event.target.value)}
         maxLength={campo.max}
-        className={`${CAMPO} ${error ? BORDE_MAL : BORDE_OK}`}
+        className={`${CAMPO} ${error || invalido ? BORDE_MAL : BORDE_OK}`}
       />
       {/* El hueco existe siempre en los campos que reportan error —`error`
           llega definido, aunque sea vacío—, así el mensaje aparece y
@@ -200,6 +202,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const [captchaKey, setCaptchaKey] = useState(0);
   // El token vence a los 300 s; sin avisar, el botón se apaga sin motivo visible.
   const [captchaVencido, setCaptchaVencido] = useState(false);
+  // Se enciende al primer intento de envío. Antes de eso nada se pinta en rojo:
+  // un formulario que te reta por lo que todavía no llenaste es hostil.
+  const [intentado, setIntentado] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [listo, setListo] = useState(false);
   const [error, setError] = useState('');
@@ -217,7 +222,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
   // La casa que manda: la fija de la página, o la que trae la carrera elegida.
   const casaActiva = casa ?? casaDeCarrera(carrera);
-  const campos = casaActiva ? camposDe(casaActiva, modo) : camposComunes(modo);
+  // Una preinscripción sin carrera elegida no tiene sentido: no se sabe a qué
+  // se preinscribe nadie, ni qué datos hacen falta. Hasta que haya carrera se
+  // muestra sólo el buscador. El contacto sí puede empezar en blanco: es una
+  // consulta, y bien puede ser sobre nada en particular.
+  const esperandoCarrera = esPreinscripcion && !casaActiva;
+  const campos = casaActiva
+    ? camposDe(casaActiva, modo)
+    : esPreinscripcion ? [] : camposComunes(modo);
   const obligatorios = casaActiva ? obligatoriosDe(casaActiva, modo) : [];
   // Si la casa no declara ninguno, no hay distinción que marcar: nada es
   // obligatorio y decírselo campo por campo sería ruido en veinte etiquetas.
@@ -317,6 +329,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
   const limpiar = () => {
     setListo(false);
+    setIntentado(false);
     setValores({});
     setCarreraElegida(''); setBusqueda(''); setTipoElegido('');
     setVerLista(false); setVerTipos(false);
@@ -325,7 +338,16 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
   const enviar = async (evento: React.FormEvent) => {
     evento.preventDefault();
-    if (!valido || enviando) return;
+    if (enviando) return;
+
+    // El botón no se apaga: apagado no explica nada. Se deja pulsar, y el
+    // primer intento enciende los bordes rojos y lleva el foco a lo que falta.
+    if (!valido) {
+      setIntentado(true);
+      const primero = faltanObligatorios[0] ?? (!hayContacto ? 'email' : null);
+      if (primero) document.getElementById(`${prefijo}-${primero}`)?.focus();
+      return;
+    }
     setEnviando(true);
     setError('');
 
@@ -434,7 +456,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 campo, así que alinean solas. Los que había existían sólo para
                 emparejarlas cuando la derecha encabezaba con un nombre de grupo
                 y la izquierda no. */}
-            <div className="grid grid-cols-1 md:grid-cols-2" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
+            <div
+              className={`grid grid-cols-1 ${esperandoCarrera ? '' : 'md:grid-cols-2'}`}
+              style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}
+            >
               {([1, 2] as const).map(columna => {
                 const suyos = columnas[columna - 1];
                 // La columna 1 se pinta siempre: aunque no le tocara ningún
@@ -518,11 +543,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   </div>
                 </div>
 
-                {esPreinscripcion && !casaActiva && (
-                  <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">
-                    Elegí la carrera y te pedimos sólo los datos que hacen falta para esa preinscripción.
-                  </p>
-                )}
                     </>)}
                     <div className="grid grid-cols-6 gap-1.5">
                       {suyos.map(id => (
@@ -542,6 +562,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                             valor={valores[id]}
                             onChange={valor => poner(id, valor)}
                             opcional={hayObligatorios && !obligatorios.includes(id)}
+                            invalido={intentado && faltanObligatorios.includes(id)}
                           />
                         </div>
                       ))}
@@ -551,6 +572,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
               })}
             </div>
 
+            {!esperandoCarrera && (<>
             {/* Cómo te escribimos. Es lo único obligatorio en los dos modos y
                 va último, para que el que abandona a mitad ya lo haya dado. */}
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
@@ -570,6 +592,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                       valor={valores[id]}
                       onChange={valor => poner(id, valor)}
                       opcional={hayObligatorios && !obligatorios.includes(id)}
+                      invalido={intentado && (faltanObligatorios.includes(id) || !hayContacto)}
                       error={id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : ''}
                     />
                   ))}
@@ -592,7 +615,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
               <button
                 ref={botonRef}
                 type="submit"
-                disabled={!valido || enviando}
+                disabled={enviando}
                 className="w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
@@ -607,15 +630,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   ? <span className="text-red-400">{error}</span>
                   : captchaVencido
                     ? <span className="text-amber-300">El captcha venció. Volvé a tildarlo.</span>
-                    : Boolean(faltanObligatorios.length) && (
-                      <span className="text-[var(--catalogo-texto-suave)]">
-                        {faltanObligatorios.length === 1
-                          ? 'Falta un dato para enviar la preinscripción.'
-                          : `Faltan ${faltanObligatorios.length} datos para enviar la preinscripción.`}
-                      </span>
-                    )}
+                    : intentado && !token
+                      ? <span className="text-amber-300">Falta tildar la verificación de seguridad.</span>
+                      : null}
               </p>
             </div>
+            </>)}
           </form>
         </div>
         </div>
