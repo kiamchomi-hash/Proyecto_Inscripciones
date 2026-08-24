@@ -45,27 +45,6 @@ const COLUMNA: Record<Modo, Record<Grupo, 1 | 2 | 0>> = {
   preinscripcion: { consulta: 1, personales: 1, domicilio: 2, estudios: 2, contacto: 0 },
 };
 
-/**
- * El encabezado de cada columna. Existe para alinear: sin él, la derecha
- * arranca con un rótulo de grupo y la izquierda con el buscador pelado, así que
- * los campos de una y otra empiezan a alturas distintas. Con los dos títulos en
- * la misma fila, las dos columnas bajan parejas.
- *
- * El primer grupo de cada columna no repite su rótulo adentro: ya lo dice éste.
- */
-const TITULO_COLUMNA: Record<Modo, Record<1 | 2, string>> = {
-  contacto:       { 1: 'Qué querés consultar', 2: 'Tus datos' },
-  preinscripcion: { 1: 'Carrera y datos personales', 2: 'Domicilio' },
-};
-
-const TITULO_GRUPO: Record<Grupo, string> = {
-  consulta: '',
-  personales: 'Datos personales',
-  domicilio: 'Domicilio',
-  estudios: 'Estudios y pago',
-  contacto: '',
-};
-
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
@@ -191,6 +170,22 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
 
   const esPreinscripcion = modo === 'preinscripcion';
   const prefijo = modo;
+
+  /**
+   * El encabezado de cada columna. Existe para alinear: sin él la derecha
+   * arrancaba con un rótulo y la izquierda con el buscador pelado, y los campos
+   * de una y otra empezaban a alturas distintas.
+   *
+   * Es el único rótulo que se pinta. Los de grupo quedaron afuera porque el
+   * único que llegaba a verse —"Estudios y pago", en Teclab— agregaba una línea
+   * en la columna derecha que la izquierda no tenía, y volvía a desalinear todo
+   * lo que venía abajo. Cuando esa columna trae los dos bloques, lo dice acá.
+   */
+  const tituloColumna = (columna: 1 | 2, grupos: Grupo[]) => {
+    if (columna === 1) return esPreinscripcion ? 'Carrera y datos personales' : 'Qué querés consultar';
+    if (!esPreinscripcion) return 'Tus datos';
+    return grupos.includes('estudios') ? 'Domicilio y estudios' : 'Domicilio';
+  };
 
   const carrera = useMemo(
     () => carreras.find(opcion => opcion.nombre === carreraElegida) || null,
@@ -381,8 +376,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                     className="space-y-2 px-3 pb-3 pt-3 sm:px-4"
                     style={columna === 2 ? { borderLeft: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' } : undefined}
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">
-                      {TITULO_COLUMNA[modo][columna]}
+                    <p className="text-center text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">
+                      {tituloColumna(columna, grupos)}
                     </p>
                     {columna === 1 && (<>
                     {/* El buscador vive dentro de la primera columna, como
@@ -459,14 +454,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                   </p>
                 )}
                     </>)}
-                    {grupos.map((grupo, indice) => (
+                    {grupos.map(grupo => (
                       <div key={grupo} className="space-y-2">
-                        {/* Los rótulos de grupo son sólo del legajo: el
-                            contacto son seis campos y subdividirlo en
-                            "Domicilio" para una Localidad suelta es ruido. */}
-                        {esPreinscripcion && indice > 0 && TITULO_GRUPO[grupo] && (
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--catalogo-acento)]">{TITULO_GRUPO[grupo]}</p>
-                        )}
                         <div className="grid grid-cols-6 gap-1.5">
                           {enPantalla.filter(id => CAMPOS[id].grupo === grupo).map(id => (
                             <div
