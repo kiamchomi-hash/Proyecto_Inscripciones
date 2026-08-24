@@ -33,6 +33,22 @@ const SPAN: Record<NonNullable<CampoDef['ancho']>, string> = {
   tercio: 'col-span-2',
 };
 
+/**
+ * Los únicos campos donde acercar el botón de enviar suma algo: son los que
+ * abren un tramo largo del formulario y dejan el botón lejos. En el resto el
+ * movimiento es ruido, así que no se mueve nada.
+ */
+const ACERCAN_EL_BOTON: CampoId[] = ['dni', 'tipoDomicilio', 'domicilio'];
+
+/** Lo que tapa la barra fija de arriba. Nada puede quedar debajo de eso. */
+const altoNavbar = () => Number.parseInt(
+  getComputedStyle(document.documentElement).getPropertyValue('--navbar-height'),
+  10,
+) || 60;
+
+const suave = (): ScrollBehavior =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
 /** Cuánto ocupa cada campo en la grilla de seis de su columna. */
 const PESO = { completo: 6, medio: 3, tercio: 2 } as const;
 const pesoDe = (id: CampoId) => PESO[CAMPOS[id].ancho ?? 'medio'];
@@ -553,6 +569,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const [listo, setListo] = useState(false);
   const [error, setError] = useState('');
   const botonRef = useRef<HTMLButtonElement>(null);
+  // Mientras se salta al primer error, el acercamiento del botón no interviene.
+  const saltandoRef = useRef(false);
   const listaRef = useRef<HTMLDivElement>(null);
   const tiposRef = useRef<HTMLDivElement>(null);
 
@@ -701,35 +719,61 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
   const acercarElBoton = (evento: React.FocusEvent<HTMLFormElement>) => {
     const campo = evento.target;
     const boton = botonRef.current;
-    if (!boton || !(campo instanceof HTMLElement)) return;
+    if (saltandoRef.current || !boton || !(campo instanceof HTMLElement)) return;
 
-    // Sólo al escribir, nunca al abrir algo. En un campo de texto acercar el
-    // botón ayuda; en un desplegable la página se mueve justo cuando aparece la
-    // lista, y eso desorienta más de lo que suma.
-    const abreAlgo = campo.getAttribute('role') === 'combobox'
-      || campo.getAttribute('aria-haspopup') === 'dialog'
-      || campo.id === `${prefijo}-carrera`;
-    if (abreAlgo) return;
+    // En la mayoría de los campos el movimiento no gana nada y desorienta: se
+    // mueve la página en cada tabulación. Sólo estos tres lo aprovechan.
+    const id = campo.id.startsWith(`${prefijo}-`)
+      ? campo.id.slice(prefijo.length + 1)
+      : '';
+    if (!ACERCAN_EL_BOTON.includes(id as CampoId)) return;
 
     const margen = 12;
-    const navbar = Number.parseInt(
-      getComputedStyle(document.documentElement).getPropertyValue('--navbar-height'),
-      10,
-    ) || 60;
 
     // Cuánto falta para que el botón entre en pantalla.
     const falta = boton.getBoundingClientRect().bottom + margen - window.innerHeight;
     if (falta <= 0) return;
 
     // Cuánto se puede subir sin meter el campo debajo de la barra.
-    const tope = campo.getBoundingClientRect().top - navbar - margen;
+    const tope = campo.getBoundingClientRect().top - altoNavbar() - margen;
     const desplazamiento = Math.min(falta, tope);
     if (desplazamiento <= 0) return;
 
-    window.scrollBy({
-      top: desplazamiento,
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-    });
+    window.scrollBy({ top: desplazamiento, behavior: suave() });
+  };
+
+  /**
+   * Al intentar enviar con algo mal, lleva la pantalla al primer problema
+   * **de arriba hacia abajo**, que es el orden en que se lee el formulario y no
+   * el orden en que se calculan los errores. Se compara la posición real en
+   * pantalla porque los campos se reparten en columnas: el que viene antes en
+   * la lista de la casa puede estar pintado más abajo.
+   */
+  const irAlPrimerProblema = (ids: CampoId[]) => {
+    let objetivo: HTMLElement | null = null;
+    let mejor = { fila: Infinity, columna: Infinity };
+
+    for (const id of ids) {
+      const campo = document.getElementById(`${prefijo}-${id}`);
+      if (!campo) continue;
+      const caja = campo.getBoundingClientRect();
+      // Dos campos de una misma fila no comparten el `top` al pixel; con la
+      // fila redondeada, lo que desempata es la columna.
+      const fila = Math.round(caja.top / 8);
+      if (fila < mejor.fila || (fila === mejor.fila && caja.left < mejor.columna)) {
+        mejor = { fila, columna: caja.left };
+        objetivo = campo;
+      }
+    }
+    if (!objetivo) return;
+
+    const destino = window.scrollY + objetivo.getBoundingClientRect().top - altoNavbar() - 16;
+    window.scrollTo({ top: Math.max(0, destino), behavior: suave() });
+    // El foco no vuelve a mover la pantalla: el scroll de arriba ya la dejó
+    // donde corresponde, y `acercarElBoton` se saltea mientras dura el salto.
+    saltandoRef.current = true;
+    objetivo.focus({ preventScroll: true });
+    saltandoRef.current = false;
   };
 
   const limpiar = () => {
@@ -754,8 +798,13 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
       setEnFrio(true);
       if (frioRef.current) clearTimeout(frioRef.current);
       frioRef.current = setTimeout(() => setEnFrio(false), 5000);
-      const primero = malEscritos[0] ?? faltanObligatorios[0] ?? (!hayContacto ? 'email' : null);
-      if (primero) document.getElementById(`${prefijo}-${primero}`)?.focus();
+      // Todo lo que frena el envío, junto: lo que falta, lo que no es una
+      // opción de su lista, y el mail o el teléfono mal escritos —que no
+      // entran en ninguna de las dos y quedaban sin señalar—.
+      const problemas: CampoId[] = [...faltanObligatorios, ...malEscritos];
+      if (errorEmail || !hayContacto) problemas.push('email');
+      if (errorTelefono || !hayContacto) problemas.push('telefono');
+      irAlPrimerProblema(problemas);
       return;
     }
     setEnviando(true);
