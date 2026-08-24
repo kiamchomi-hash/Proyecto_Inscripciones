@@ -150,7 +150,13 @@ function Campo({ id, valor, onChange, obligatorio, error }: {
         maxLength={campo.max}
         className={`${CAMPO} ${error ? BORDE_MAL : BORDE_OK}`}
       />
-      {error && <p className="mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{error}</p>}
+      {/* El hueco existe siempre en los campos que reportan error —`error`
+          llega definido, aunque sea vacío—, así el mensaje aparece y
+          desaparece sin mover el resto del formulario. Por eso los textos van
+          cortos: tienen que entrar en una línea. */}
+      {error !== undefined && (
+        <p className="mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{error}</p>
+      )}
     </div>
   );
 }
@@ -511,12 +517,18 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home' }
                 onExpire={() => { setToken(''); setCaptchaVencido(true); }}
               />
               <p className="min-h-4 text-[11px] leading-4 text-amber-300">{captchaVencido ? 'El captcha venció. Volvé a tildarlo.' : ''}</p>
-              {Boolean(faltanObligatorios.length) && (
-                <p className="text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">
-                  Faltan {faltanObligatorios.length} {faltanObligatorios.length === 1 ? 'dato' : 'datos'} marcados con <span className="text-red-400/70">*</span>.
-                </p>
-              )}
-              {error && <p className="text-[11px] text-red-400">{error}</p>}
+              {/* Un solo renglón reservado para los dos avisos del pie: el
+                  error del envío pisa al recuento de obligatorios, y cuando no
+                  hay ninguno el hueco queda vacío en vez de desaparecer. */}
+              <p className="min-h-4 text-[11px] leading-4">
+                {error
+                  ? <span className="text-red-400">{error}</span>
+                  : Boolean(faltanObligatorios.length) && (
+                    <span className="text-[var(--catalogo-texto-suave)]">
+                      Faltan {faltanObligatorios.length} {faltanObligatorios.length === 1 ? 'dato' : 'datos'} marcados con <span className="text-red-400/70">*</span>.
+                    </span>
+                  )}
+              </p>
               <button
                 type="submit"
                 disabled={!valido || enviando}
