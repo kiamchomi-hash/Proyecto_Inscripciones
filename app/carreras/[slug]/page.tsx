@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import { notFound, permanentRedirect } from 'next/navigation';
 import type { Carrera } from '@/components/index/types';
-import { carreraToSlug, carreraFullName, esCarreraVisible } from '@/components/index/types';
+import { carreraToSlug, carreraFullName, esCarreraVisible, getAreaForCarrera } from '@/components/index/types';
 import { esCursoTeclab, getFamiliaTeclab, esTeclab, getFichaTeclab, parseEnfoqueTeclab } from '@/components/index/teclab';
 import { parseIAMeta, tienePlanDeEstudios } from '@/components/carreras/career-content';
 import CareerDetail from '@/components/carreras/career-detail';
@@ -319,18 +319,65 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // que cinco paginas por nivel juntaban 33 enlaces entrantes y 47 de las 88 se
   // quedaban con tres o menos. Videojuegos, con dos, nunca fue rastreada. Con la
   // rotacion el reparto va de 3 a 11 y ninguna queda en cero.
-  const inicio = hermanas.length ? (carrera.id * 6) % hermanas.length : 0;
-  const mismoNivel = Array.from(
-    { length: Math.min(6, hermanas.length) },
-    (_, i) => hermanas[(inicio + i) % hermanas.length]
+  //
+  // Dentro de esa rotacion, primero entra lo que tiene que ver con la carrera.
+  // Procurador enlazaba a videojuegos, redes y programacion: ocho enlaces y
+  // ninguno de derecho. Eso no le dice nada a Google sobre de que trata la
+  // pagina y no le sirve a nadie que este mirando Procurador. Con el area
+  // adelante, Procurador enlaza primero a Escribania, Criminologia y Martillero,
+  // y la cruzada de otro nivel es Abogacia, que es la continuacion natural y la
+  // pregunta que trae a la gente a esa ficha.
+  //
+  // Son solo las tres primeras de las seis, no las seis: el area sale de
+  // palabras clave sobre el nombre y hay carreras que no caen en ninguna. Si el
+  // bloque entero se armara por area, esas quedarian sin enlaces entrantes, que
+  // es el problema que la rotacion vino a arreglar. Las otras tres siguen
+  // saliendo de la rotacion de nivel, que pasa por todas.
+  const area = getAreaForCarrera(carrera);
+
+  // Rota una lista con el id, como el resto, y devuelve las primeras `cuantas`.
+  const rotar = <T,>(lista: T[], paso: number, cuantas: number): T[] => {
+    if (!lista.length) return [];
+    const desde = (carrera.id * paso) % lista.length;
+    return Array.from(
+      { length: Math.min(cuantas, lista.length) },
+      (_, i) => lista[(desde + i) % lista.length]
+    );
+  };
+
+  const delArea = area ? hermanas.filter(c => getAreaForCarrera(c) === area) : [];
+  const porArea = rotar(delArea, 3, 3);
+
+  const porNivel = rotar(hermanas, 6, hermanas.length).filter(
+    c => !porArea.some(a => a.id === c.id)
   );
+
+  const mismoNivel = [...porArea, ...porNivel].slice(0, 6);
+
+  // La primera cruzada tambien busca el area antes que el turno: es el unico
+  // enlace que sale del silo del nivel, asi que gastarlo en algo relacionado
+  // vale mas que gastarlo en el que tocaba. La segunda se deja en la rotacion
+  // ciega para que los niveles chicos sigan recibiendo enlaces de todos lados.
+  //
+  // Ojo con el paso de esa rotacion ciega: era 2 porque se llevaba dos lugares
+  // seguidos, y dos lugares seguidos a paso 2 recorren la lista entera. Ahora se
+  // lleva uno solo —el otro se lo queda el area—, y a paso 2 ese unico lugar
+  // cae siempre en un indice par: la mitad de las carreras dejaba de recibir
+  // cruzadas. Se comio entero al curso de Teclab, que es el unico de su nivel y
+  // por lo tanto solo puede recibir enlaces por esta via: se quedaba en cero.
+  // Con paso 1 vuelve a recorrer todo. Simulado sobre las 88 fichas: minimo 2
+  // enlaces entrantes, maximo 12, ninguna en cero, y 41% de los enlaces caen
+  // dentro de la misma area contra 17% antes.
   const otrosNiveles = carreras.filter(c => c.nivel !== carrera.nivel);
-  const desde = otrosNiveles.length ? (carrera.id * 2) % otrosNiveles.length : 0;
-  const cruzadas = otrosNiveles.length
-    ? [otrosNiveles[desde], otrosNiveles[(desde + 1) % otrosNiveles.length]].filter(
-        (c, i, arr) => c && arr.indexOf(c) === i
-      )
+  const cruzadaArea = area
+    ? rotar(otrosNiveles.filter(c => getAreaForCarrera(c) === area), 2, 1)
     : [];
+  const cruzadaTurno = rotar(otrosNiveles, 1, 2).filter(
+    c => !cruzadaArea.some(a => a.id === c.id)
+  );
+  const cruzadas = [...cruzadaArea, ...cruzadaTurno]
+    .slice(0, 2)
+    .filter((c, i, arr) => c && arr.findIndex(o => o.id === c.id) === i);
 
   // Solo se manda lo que se pinta; la fila entera arrastra todos los slides.
   // Sin el filtro por id, en el curso -cuyas hermanas salen de otro nivel- una
