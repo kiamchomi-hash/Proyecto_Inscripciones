@@ -212,6 +212,57 @@ function ctrEsperado(pos) {
   return 0.006;
 }
 
+// ── Intencion de la consulta: marca o generica ──────────────────────────────
+
+// La curva de arriba vale para una busqueda informativa, donde los diez
+// resultados compiten de igual a igual. Una consulta de marca no es eso: quien
+// escribe "martillero publico siglo 21" quiere 21.edu.ar, ve el dominio oficial
+// en los primeros lugares y nos saltea aunque estemos quintos. Medido sobre 28
+// dias, la marca se lleva ~78% de las impresiones nombradas y clickea a un
+// tercio de lo que la curva predice.
+//
+// Sin separar las dos cosas, el informe entero se llena de paginas de marca
+// —martillero, calendario, finanzas, todas entre 77% y 96% de consultas con
+// "siglo 21" adentro— prometiendo clics que no estan ahi, y tapa a las pocas
+// paginas genericas que si tienen margen.
+const MARCA = /siglo\s*(21|xxi|veintiuno)|21\.edu|teclab|identidad\s+argentina|universidad\s+(de\s+)?lugano|cau|siglo21sur/i;
+
+const esDeMarca = (consulta) => MARCA.test(consulta);
+
+/**
+ * Cuanto se despega la realidad de la curva, por intencion.
+ *
+ * En vez de inventar una segunda curva para marca, se mide el desvio contra la
+ * que ya hay: para cada fila se calculan los clics que la curva predeciria y se
+ * compara con los que hubo. El cociente es el factor. Se recalcula en cada
+ * corrida, asi que sigue solo los cambios de la SERP y del sitio, y no hay
+ * ningun numero magico que envejezca en el codigo.
+ *
+ * Los limites son para que un periodo flaco no de un factor absurdo: con pocos
+ * clics el cociente salta mucho. Fuera de rango se cae al valor de referencia
+ * medido el 25/08/2026 (marca 0.28, generica 0.45).
+ */
+function factoresPorIntencion(filas) {
+  const acumular = (predicado, porDefecto) => {
+    let clics = 0;
+    let esperados = 0;
+    for (const f of filas) {
+      if (!predicado(f.keys[0])) continue;
+      clics += f.clicks;
+      esperados += ctrEsperado(f.position) * f.impressions;
+    }
+    // Menos de 300 impresiones esperadas no alcanza para calibrar nada.
+    if (esperados < 300 * 0.02) return porDefecto;
+    const factor = clics / esperados;
+    return factor >= 0.1 && factor <= 2 ? factor : porDefecto;
+  };
+
+  return {
+    marca: acumular(esDeMarca, 0.28),
+    generica: acumular((q) => !esDeMarca(q), 0.45),
+  };
+}
+
 const rutaDe = (url) => { try { return new URL(url).pathname; } catch { return url; } };
 const slugCarrera = (ruta) => ruta.startsWith('/carreras/') ? ruta.slice('/carreras/'.length) : null;
 const pct = (n) => `${(n * 100).toFixed(1)}%`;
@@ -287,19 +338,88 @@ async function main() {
     );
   }
 
+  // ── Intencion: cuanto de cada pagina es marca ─────────────────────────────
+
+  // Se piden con la pagina al lado, no sueltas: saber que consulta cae en que
+  // pagina es lo que hace accionable el dato, permite descartar las que caen en
+  // carreras dadas de baja, y es lo unico con lo que se puede separar marca de
+  // generica pagina por pagina.
+  //
+  // El tope es 5000 y no 500 porque con 500 filas la cola larga queda afuera y
+  // los factores salen inflados (0.50 y 0.80 en vez de 0.28 y 0.45). Aun asi
+  // Search Console anonimiza las consultas raras: estas filas cubren ~27% de las
+  // impresiones del periodo. Como lo anonimizado es cola larga, y la cola larga
+  // es mas generica que de marca, el share de marca que sale de aca es un techo.
+  const consultas = await consultar({ ...PERIODO_ACTUAL, dimensions: ['query', 'page'], rowLimit: 5000 });
+
+  const factores = factoresPorIntencion(consultas);
+
+  const intencionPorRuta = new Map();
+  let imprMarca = 0;
+  let imprGenerica = 0;
+  let clicsMarca = 0;
+  let clicsGenerica = 0;
+
+  for (const fila of consultas) {
+    const ruta = rutaDe(fila.keys[1]);
+    const acum = intencionPorRuta.get(ruta) ?? { marca: 0, generica: 0 };
+    if (esDeMarca(fila.keys[0])) {
+      acum.marca += fila.impressions;
+      imprMarca += fila.impressions;
+      clicsMarca += fila.clicks;
+    } else {
+      acum.generica += fila.impressions;
+      imprGenerica += fila.impressions;
+      clicsGenerica += fila.clicks;
+    }
+    intencionPorRuta.set(ruta, acum);
+  }
+
+  const nombradas = imprMarca + imprGenerica;
+  const shareMarcaSitio = nombradas ? imprMarca / nombradas : 0;
+
+  if (nombradas) {
+    contexto.push(
+      `Intencion, sobre las ${nombradas} impresiones que Search Console nombra (el resto las anonimiza): ` +
+      `marca ${imprMarca} impresiones y ${clicsMarca} clics (${pct(clicsMarca / imprMarca)}), ` +
+      `genericas ${imprGenerica} y ${clicsGenerica} (${pct(clicsGenerica / (imprGenerica || 1))}). ` +
+      `La marca clickea a ${factores.marca.toFixed(2)}x lo que predice la curva y las genericas a ${factores.generica.toFixed(2)}x; ` +
+      `el CTR esperado de cada pagina se corrige con esa mezcla.`,
+    );
+  }
+
+  // Share de marca de una pagina. Sin consultas nombradas no se puede saber, y
+  // se asume la mezcla del sitio antes que tratarla como si fuera generica: dar
+  // por generica una pagina que no lo es es justamente el error que se corrige.
+  const shareMarcaDe = (ruta) => {
+    const acum = intencionPorRuta.get(ruta);
+    if (!acum || acum.marca + acum.generica === 0) return shareMarcaSitio;
+    return acum.marca / (acum.marca + acum.generica);
+  };
+
+  // Lo que esta pagina puede aspirar a sacar en su posicion, dado quien la
+  // busca. Una ficha que vive de "<carrera> siglo 21" tiene un techo mucho mas
+  // bajo que una que vive de "<carrera> a distancia", aunque esten las dos
+  // septimas.
+  const ctrEsperadoDe = (ruta, pos) => {
+    const share = shareMarcaDe(ruta);
+    return ctrEsperado(pos) * (share * factores.marca + (1 - share) * factores.generica);
+  };
+
   // Rinde por debajo de lo que su posicion permitiria: son las que ya estan
   // arriba y no se hacen clic, o sea titulo y descripcion, no contenido.
   const flojas = vigentes
-    .filter(f => f.impressions >= 150 && f.ctr < ctrEsperado(f.position) * 0.5)
-    .sort((a, b) => (ctrEsperado(b.position) - b.ctr) * b.impressions - (ctrEsperado(a.position) - a.ctr) * a.impressions)
+    .map(f => ({ ...f, esperado: ctrEsperadoDe(f.ruta, f.position), share: shareMarcaDe(f.ruta) }))
+    .filter(f => f.impressions >= 150 && f.ctr < f.esperado * 0.5)
+    .sort((a, b) => (b.esperado - b.ctr) * b.impressions - (a.esperado - a.ctr) * a.impressions)
     .slice(0, 10);
 
   for (const f of flojas) {
-    const perdidos = Math.round((ctrEsperado(f.position) - f.ctr) * f.impressions);
+    const perdidos = Math.round((f.esperado - f.ctr) * f.impressions);
     sugerencia(
       'CTR por debajo de lo esperado para su posicion (titulo y descripcion)',
       `\`${f.ruta}\` — ${f.impressions} impresiones, ${f.clicks} clics (${pct(f.ctr)}) en posicion ${f.position.toFixed(1)}; ` +
-      `lo esperable seria ~${pct(ctrEsperado(f.position))}, o sea unos ${perdidos} clics mas.`,
+      `con ${pct(f.share)} de consultas de marca lo esperable seria ~${pct(f.esperado)}, o sea unos ${perdidos} clics mas.`,
     );
   }
 
@@ -321,27 +441,73 @@ async function main() {
 
   // ── Consultas al borde ────────────────────────────────────────────────────
 
-  // Se piden con la pagina al lado, no sueltas: saber que consulta cae en que
-  // pagina es lo que hace accionable el dato, y ademas permite descartar las
-  // que caen en carreras dadas de baja.
-  const consultas = await consultar({ ...PERIODO_ACTUAL, dimensions: ['query', 'page'], rowLimit: 500 });
+  const deLaOferta = consultas
+    .map(q => ({ ...q, consulta: q.keys[0], ruta: rutaDe(q.keys[1]), marca: esDeMarca(q.keys[0]) }))
+    .filter(q => {
+      const slug = slugCarrera(q.ruta);
+      return !(oferta && slug !== null && !oferta.has(slug));
+    });
 
   // Entre la 4 y la 15 esta lo unico que se mueve con trabajo de pagina: mas
   // arriba ya se gano y mas abajo hace falta otra cosa (enlaces, tiempo).
-  const alBorde = consultas
-    .map(q => ({ ...q, consulta: q.keys[0], ruta: rutaDe(q.keys[1]) }))
-    .filter(q => {
-      const slug = slugCarrera(q.ruta);
-      if (oferta && slug !== null && !oferta.has(slug)) return false;
-      return q.position >= 4 && q.position <= 15 && q.impressions >= 25;
-    })
+  //
+  // El umbral de impresiones es distinto por intencion a proposito. Con 25 para
+  // las dos, la lista salia entera de marca: las consultas genericas del sitio
+  // son muchas y chicas (la mas grande del 25/08 tenia 35 impresiones) y son
+  // justo las que rinden, porque ahi no compite el dominio oficial. Ocho
+  // impresiones en cuatro semanas ya alcanza para saber que la consulta existe.
+  const genericasAlBorde = deLaOferta
+    .filter(q => !q.marca && q.position >= 4 && q.position <= 20 && q.impressions >= 8)
     .sort((a, b) => b.impressions - a.impressions)
     .slice(0, 15);
 
-  for (const q of alBorde) {
+  for (const q of genericasAlBorde) {
     sugerencia(
-      'Consultas cerca de los primeros lugares',
+      'Consultas genericas cerca de los primeros lugares (aca esta el margen)',
       `"${q.consulta}" — posicion ${q.position.toFixed(1)}, ${q.impressions} impresiones, ${q.clicks} clics → \`${q.ruta}\``,
+    );
+  }
+
+  // Las de marca van aparte y en una lista corta. No se sacan del informe
+  // —sirven para ver si el dominio oficial nos esta comiendo terreno— pero
+  // dejan de ocupar los quince renglones que antes copaban.
+  const marcaAlBorde = deLaOferta
+    .filter(q => q.marca && q.position >= 4 && q.position <= 15 && q.impressions >= 25)
+    .sort((a, b) => b.impressions - a.impressions)
+    .slice(0, 5);
+
+  for (const q of marcaAlBorde) {
+    sugerencia(
+      'Consultas de marca cerca de los primeros lugares (techo bajo: buscan 21.edu.ar)',
+      `"${q.consulta}" — posicion ${q.position.toFixed(1)}, ${q.impressions} impresiones, ${q.clicks} clics → \`${q.ruta}\``,
+    );
+  }
+
+  // Racimos: varias consultas genericas distintas cayendo en la misma pagina,
+  // todas fuera del top 10. Es la senal de que hay demanda con nombre propio y
+  // la pagina no llega — el trabajo ahi es de contenido y enlaces, no de titulo,
+  // y rinde por racimo entero y no por consulta suelta.
+  const racimos = new Map();
+  for (const q of deLaOferta) {
+    if (q.marca || q.position <= 10 || q.position > 30 || q.impressions < 5) continue;
+    const acum = racimos.get(q.ruta) ?? { consultas: [], impresiones: 0 };
+    acum.consultas.push(q);
+    acum.impresiones += q.impressions;
+    racimos.set(q.ruta, acum);
+  }
+
+  const racimosOrdenados = [...racimos.entries()]
+    .filter(([, a]) => a.consultas.length >= 2)
+    .sort((a, b) => b[1].impresiones - a[1].impresiones)
+    .slice(0, 5);
+
+  for (const [ruta, acum] of racimosOrdenados) {
+    const top = acum.consultas.sort((a, b) => b.impressions - a.impressions).slice(0, 4);
+    sugerencia(
+      'Racimos genericos fuera del top 10 (contenido y enlaces, no titulo)',
+      `\`${ruta}\` — ${acum.consultas.length} consultas, ${acum.impresiones} impresiones: ` +
+      top.map(q => `"${q.consulta}" (${q.impressions}, pos ${q.position.toFixed(1)})`).join(', ') +
+      (acum.consultas.length > top.length ? ', ...' : ''),
     );
   }
 
