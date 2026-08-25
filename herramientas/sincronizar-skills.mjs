@@ -13,7 +13,7 @@ import { readFileSync, readdirSync, mkdirSync, copyFileSync, rmSync, existsSync,
 import path from 'node:path';
 import os from 'node:os';
 
-// Las de dominio nada mas. Las generales (next-best-practices, copywriting y
+// Las de dominio nada mas (remotion incluida: el video institucional es del CAU). Las generales (next-best-practices, copywriting y
 // companía) las trae Codex por su lado o no le hacen falta.
 const SKILLS = [
   'bot_respuestas',
@@ -21,6 +21,7 @@ const SKILLS = [
   'cau_brand',
   'cau_design_patterns',
   'piezas-para-el-publico',
+  'remotion',
 ];
 
 const RAIZ = path.resolve(import.meta.dirname, '..');

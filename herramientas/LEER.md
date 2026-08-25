@@ -232,17 +232,18 @@ carpeta real (`Desktop`, `Escritorio` o lo que declare XDG), no la hardcodea.
 
 El proyecto se trabaja también desde Codex, que lee sus skills de
 `~/.codex/skills` y no del repo. Para que no conteste distinto que Claude Code,
-las cinco de dominio se copian con:
+las seis de dominio se copian con:
 
 ```bash
 node herramientas/sincronizar-skills.mjs            # copia
 node herramientas/sincronizar-skills.mjs --listar   # sólo muestra a dónde iría
 ```
 
-Son `bot_respuestas`, `cargar_carrera`, `cau_brand`, `cau_design_patterns` y
-`piezas-para-el-publico`. Las generales (Next, React, copywriting) no se copian:
-Codex trae las suyas. **Hay que volver a correrlo cada vez que se toca una de
-esas cinco**, o Codex sigue con la versión vieja.
+Son `bot_respuestas`, `cargar_carrera`, `cau_brand`, `cau_design_patterns`,
+`piezas-para-el-publico` y `remotion` (el video institucional es trabajo del
+CAU, aunque el proyecto de Remotion viva fuera del repo). Las generales (Next,
+React, copywriting) no se copian: Codex trae las suyas. **Hay que volver a correrlo cada vez que se toca una de
+esas seis**, o Codex sigue con la versión vieja.
 
 La carpeta destino se llama como el `name` del frontmatter, no como la carpeta
 de origen (`bot_respuestas` → `bot-respuestas`): Codex espera que coincidan, y
