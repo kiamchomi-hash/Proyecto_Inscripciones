@@ -1,33 +1,61 @@
 # Indexación — siglo21sur.com
 
-**22/08/2026 · 109/112.**
+**25/08/2026 · 110/112.**
 
 ## Enviar a GSC
 
 Solicitar indexación:
 
 ```
-https://www.siglo21sur.com/novedades/articulo/que-hace-un-administrador-cloud
 https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos
 https://www.siglo21sur.com/carreras/tecnicatura-superior-en-customer-experience
 https://www.siglo21sur.com/novedades/articulo/segundo-semestre-2026-inicio-3-de-agosto
+https://www.siglo21sur.com/novedades/articulo/teclab-tecnicaturas-online
 ```
 
-La primera es la novedad del 22/08. Las dos del medio están "descubiertas sin rastrear"
-desde el principio y no se mueven solas: tienen plan de estudios cargado y entrada desde
-la home, así que no es contenido pobre sino prioridad de rastreo. La última se pide para
-que Google **vea el 301**: sigue indexada con rastreo del 30/07, ya no está en el sitemap
-y es la que carga las consultas de calendario en posición 6,5.
+Las dos primeras siguen "descubiertas sin rastrear", igual que el 22/08. **La causa no es
+el enlazado interno**: se contaron los `<a href>` de las 88 fichas y videojuegos recibe 9
+enlaces y customer-experience 7, por arriba del piso de 6 que da el bloque de carreras
+relacionadas; las dos están además en la home y en el sitemap. Con contenido cargado,
+enlaces y sitemap en orden, lo que queda es prioridad de rastreo del dominio: se piden a
+mano y se espera.
 
-`/teclab` y `/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital`, que el
-21/08 figuraban pendientes, se indexaron el mismo día del deploy.
+Las dos últimas son los 301 que Google todavía no vio (último rastreo 30/07 y 29/07). El
+del segundo semestre importa porque sigue recibiendo las consultas de calendario en
+posición 6,5 con 727 impresiones.
 
-El sitemap pasó a 112 URLs. Hasta el 22/08 no se rehacía sin deploy: `sitemap.ts` es un
-Route Handler cacheado por defecto y el `revalidatePath('/sitemap.xml')` de
-`/api/revalidar` no tenía ninguna entrada ISR que invalidar, así que **el contenido
-cargado en Supabase no entraba al sitemap hasta el próximo push**. Se arregló
-declarándole `revalidate` (commit `a53999d`); todavía falta confirmarlo con un cambio de
-contenido que no venga con deploy.
+`que-hace-un-administrador-cloud`, publicada el 22/08, **se indexó el mismo día**: es la
+tercera vez seguida que una URL nueva entra el día del deploy, así que la revalidación
+del sitemap sin deploy quedó confirmada en la práctica.
+
+## El apex redirigía con 307 (corregido el 25/08/2026)
+
+Buscando por qué esas dos fichas no se rastrean se descartó todo lo demás —canónica,
+`X-Robots-Tag`, estado HTTP, datos estructurados, `lastmod`, enlaces internos— y quedó
+una sola cosa en pie: **`siglo21sur.com` redirigía a `www` con 307 Temporary**, aunque
+`next.config.ts` declara ese redirect con `permanent: true`.
+
+La regla del repo nunca se ejecutaba: Vercel tiene su propio redirect a nivel de dominio,
+corre en el borde antes que la app y traía `redirectStatusCode: 307` de fábrica. El código
+decía una cosa y producción hacía otra, sin que ningún diff lo mostrara.
+
+Que importe no es teórico: la API de inspección devuelve, para las tres fichas que se
+consultaron, una sola URL de referencia y es `https://siglo21sur.com/sitemap.xml` —**apex,
+sin www**—. Google entraba por ahí, se comía un salto en cada pedido y, como el 307 dice
+"temporal", nunca consolidaba ni dejaba de reintentarlo. En un dominio con poco
+presupuesto de rastreo, eso se lo come la cola.
+
+Se corrigió en el dominio, que es donde se decide, no en el código. El código esperado
+quedó fijado en `lib/vigilancia-esperado.ts` con el 308 explícito, así que si alguien lo
+mueve desde el panel los dos vigilantes avisan.
+
+**No es una palanca, es sacar un desperdicio.** Puede que no alcance para que las dos
+fichas se rastreen.
+
+Ojo con `npm run seo`: el 25/08 informó "Google no reconoce esta URL" para videojuegos y
+la inspección directa devolvió "Descubierta: actualmente sin indexar" un minuto después.
+Es un rebote de la API, no una caída del índice; ante un cambio de estado raro, confirmar
+con una segunda inspección antes de anotarlo.
 
 ## La lista
 
@@ -92,7 +120,7 @@ contenido que no venga con deploy.
 - ✅ `/carreras/tecnicatura-en-direccion-de-equipos-de-venta` 29/07
 - ✅ `/carreras/tecnicatura-en-direccion-de-protocolo-organizacion-de-eventos-y-rrpp` 29/07
 - ✅ `/carreras/tecnicatura-en-diseno-y-animacion-digital` 28/07
-- ❌ `/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos` — descubierta, nunca rastreada
+- ❌ `/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos` — descubierta, nunca rastreada (9 enlaces internos)
 - ✅ `/carreras/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado` 13/08
 - ✅ `/carreras/tecnicatura-en-gestion-administrativa-de-servicios-de-salud` 29/07
 - ✅ `/carreras/tecnicatura-en-gestion-contable-e-impositiva` 09/08
@@ -110,7 +138,7 @@ contenido que no venga con deploy.
 - ✅ `/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones` 17/08
 - ✅ `/carreras/tecnicatura-en-relaciones-laborales` 29/07
 - ✅ `/carreras/tecnicatura-superior-en-cloud-administration` 25/07
-- ❌ `/carreras/tecnicatura-superior-en-customer-experience` — descubierta, nunca rastreada
+- ❌ `/carreras/tecnicatura-superior-en-customer-experience` — descubierta, nunca rastreada (7 enlaces internos)
 - ✅ `/carreras/tecnicatura-superior-en-data-science` 10/08
 - ✅ `/carreras/tecnicatura-superior-en-gestion-agraria` 31/07
 - ✅ `/carreras/tecnicatura-superior-en-gestion-contable` 09/08
@@ -152,8 +180,8 @@ contenido que no venga con deploy.
   calendario en posición 6,5, así que conviene pedirla a mano para forzar el recrawl.
 - ✅ `/novedades/articulo/ivu-universitario-21-inicio-cursada` 30/07
 - ✅ `/novedades/articulo/que-es-el-cau-villa-lugano` 30/07
-- ❌ `/novedades/articulo/que-hace-un-administrador-cloud` — publicada el 22/08, todavía
-  desconocida para Google. Apunta al puesto y no a la carrera para no competirle a la
+- ✅ `/novedades/articulo/que-hace-un-administrador-cloud` 22/08 — se indexó el mismo día
+  que se publicó. Apunta al puesto y no a la carrera para no competirle a la
   ficha de Cloud Administration, y le da a `customer-experience` su primer enlace
   editorial.
 - ↪️ `/novedades/articulo/teclab-tecnicaturas-online` → 301 a `/teclab` (21/08). Estaba
