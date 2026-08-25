@@ -1,3 +1,8 @@
+---
+name: cau-design-patterns
+description: Patrones de diseño del sitio del CAU Villa Lugano: variables CSS, tarjetas, secciones, badges y animaciones ya usados en producción. Usar al escribir o modificar componentes y estilos del sitio, para que lo nuevo se parezca a lo que ya hay en vez de inventar un estilo aparte.
+---
+
 # CAU Villa Lugano - Design Patterns
 
 Patrones de diseño extraídos de index.html, novedades.html y faq.html del sitio CAU Villa Lugano (Universidad Siglo 21).

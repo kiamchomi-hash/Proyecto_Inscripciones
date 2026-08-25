@@ -228,6 +228,30 @@ resultado de `dirname $(which node)` incluido.
 El aviso sale al escritorio en los dos sistemas: `vigilancia.mjs` resuelve la
 carpeta real (`Desktop`, `Escritorio` o lo que declare XDG), no la hardcodea.
 
+## Codex: las mismas skills
+
+El proyecto se trabaja también desde Codex, que lee sus skills de
+`~/.codex/skills` y no del repo. Para que no conteste distinto que Claude Code,
+las cinco de dominio se copian con:
+
+```bash
+node herramientas/sincronizar-skills.mjs            # copia
+node herramientas/sincronizar-skills.mjs --listar   # sólo muestra a dónde iría
+```
+
+Son `bot_respuestas`, `cargar_carrera`, `cau_brand`, `cau_design_patterns` y
+`piezas-para-el-publico`. Las generales (Next, React, copywriting) no se copian:
+Codex trae las suyas. **Hay que volver a correrlo cada vez que se toca una de
+esas cinco**, o Codex sigue con la versión vieja.
+
+La carpeta destino se llama como el `name` del frontmatter, no como la carpeta
+de origen (`bot_respuestas` → `bot-respuestas`): Codex espera que coincidan, y
+el script falla avisando si a una skill le falta `name` o `description`.
+
+Lo otro que Codex necesita a mano es Search Console: su `~/.codex/config.toml`
+apunta a una service account propia, y la que ve `siglo21sur.com` es la de
+`~/.gsc/service_account.json`. Ese archivo es por máquina y no se versiona.
+
 ## Mudarse a otra máquina
 
 `git clone` trae el código, `CLAUDE.md`, los agentes de `.claude/agents/` y las
@@ -256,6 +280,9 @@ de Windows no le sirve a Linux; el script la recalcula.
 Lo que no se puede empaquetar porque es un login, lo lista al terminar:
 `vercel login`, `supabase login`, `gh auth login` y el alta del MCP de Search
 Console.
+
+Tampoco viajan las skills de Codex: en la máquina nueva se reponen con
+`node herramientas/sincronizar-skills.mjs`.
 
 Lo que **tampoco** viaja, y hoy no tiene solución automática, es el material
 comercial: `carreras/`, `ventas/` y `herramientas/ventas/`. Están gitignoradas

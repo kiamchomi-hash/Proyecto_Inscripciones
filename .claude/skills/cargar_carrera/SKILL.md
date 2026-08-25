@@ -1,3 +1,8 @@
+---
+name: cargar-carrera
+description: Cargar o actualizar una carrera en la tabla carreras de Supabase: armar los tres slides (portada, plan de estudios, cierre), buscar la imagen local y ajustar su encuadre. Usar cuando se pida dar de alta una carrera, completarle el plan de estudios o corregirle la ficha a partir de una URL de 21.edu.ar.
+---
+
 # Skill: Cargar Carrera en Supabase
 
 Workflow para cargar los slides JSON de una carrera en la tabla `carreras` de Supabase.

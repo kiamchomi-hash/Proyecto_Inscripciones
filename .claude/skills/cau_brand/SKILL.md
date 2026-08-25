@@ -1,3 +1,8 @@
+---
+name: cau-brand
+description: Marca del CAU Villa Lugano: paleta de colores, tipografías, estética y los datos de la sede (dirección, Maps, coordenadas). Usar al diseñar o ajustar cualquier pieza visual del sitio, un folleto, una placa o un video, y cuando haga falta la dirección o el enlace de Maps de la sede.
+---
+
 CAU Educational Platform - Recursos Visuales
 Colores (Sugeridos para inspiración)
 Principales: #00c7b1, #013729, #008c7d, #009681, #006c5b
