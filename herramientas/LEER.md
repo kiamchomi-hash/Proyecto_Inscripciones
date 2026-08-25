@@ -248,9 +248,24 @@ La carpeta destino se llama como el `name` del frontmatter, no como la carpeta
 de origen (`bot_respuestas` → `bot-respuestas`): Codex espera que coincidan, y
 el script falla avisando si a una skill le falta `name` o `description`.
 
-Lo otro que Codex necesita a mano es Search Console: su `~/.codex/config.toml`
-apunta a una service account propia, y la que ve `siglo21sur.com` es la de
-`~/.gsc/service_account.json`. Ese archivo es por máquina y no se versiona.
+## Los MCP: los de Claude tienen que estar en Codex
+
+Van en `~/.claude.json` (Claude, scope user) y en `~/.codex/config.toml`
+(Codex), los dos fuera del repo y por máquina. Claude usa dos, **`gsc`** y
+**`playwright`**, y los dos tienen que existir del lado de Codex; Codex además
+trae los suyos (github, render, cloudflare, chrome-devtools, brave-search), que
+no molestan.
+
+Dos cosas que ya costaron un rato:
+
+- **La credencial de Search Console es `~/.gsc/service_account.json`**, la del
+  CAU. Es la única que ve `sc-domain:siglo21sur.com` (como Owner, que es lo que
+  pide la URL Inspection API); de paso también ve `topykly.com`. Codex apuntaba
+  a la service account de topykly, que no ve el sitio.
+- **`searchconsole-mcp` no reemplaza a `gsc`.** El primero tiene 5 tools; el
+  segundo ~25, entre ellas `batch_url_inspection` y `check_indexing_issues`, que
+  son las que usa la campaña de indexación. Conviven porque los nombres de las
+  tools no chocan.
 
 ## Mudarse a otra máquina
 
