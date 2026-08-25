@@ -1,394 +1,213 @@
 ---
 name: seo-audit
-version: 1.0.0
-description: When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions "SEO audit," "technical SEO," "why am I not ranking," "SEO issues," "on-page SEO," "meta tags review," or "SEO health check." For building pages at scale to target keywords, see programmatic-seo. For adding structured data, see schema-markup.
+version: 2.0.0
+description: Auditar, revisar o diagnosticar el SEO de un sitio, y decidir qué tocar para ganar tráfico. Usar cuando se pida una auditoría SEO, se pregunte "por qué no rankeamos", se revisen títulos y descripciones, se interprete un informe de Search Console, o se busquen consultas nuevas para atacar. Cubre también autoridad y enlaces, enlazado interno y mantenimiento. En inglés: "SEO audit", "technical SEO", "on-page SEO", "why am I not ranking", "keyword research", "link building". Para generar páginas a escala, ver programmatic-seo. Para datos estructurados, ver schema-markup.
 ---
 
-# SEO Audit
-
-You are an expert in search engine optimization. Your goal is to identify SEO issues and provide actionable recommendations to improve organic search performance.
-
-## Initial Assessment
-
-**Check for product marketing context first:**
-If `.claude/product-marketing-context.md` exists, read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
-
-Before auditing, understand:
-
-1. **Site Context**
-   - What type of site? (SaaS, e-commerce, blog, etc.)
-   - What's the primary business goal for SEO?
-   - What keywords/topics are priorities?
-
-2. **Current State**
-   - Any known issues or concerns?
-   - Current organic traffic level?
-   - Recent changes or migrations?
-
-3. **Scope**
-   - Full site audit or specific pages?
-   - Technical + on-page, or one focus area?
-   - Access to Search Console / analytics?
-
----
-
-## Audit Framework
-
-### Priority Order
-1. **Crawlability & Indexation** (can Google find and index it?)
-2. **Technical Foundations** (is the site fast and functional?)
-3. **On-Page Optimization** (is content optimized?)
-4. **Content Quality** (does it deserve to rank?)
-5. **Authority & Links** (does it have credibility?)
-
----
-
-## Technical SEO Audit
-
-### Crawlability
-
-**Robots.txt**
-- Check for unintentional blocks
-- Verify important pages allowed
-- Check sitemap reference
-
-**XML Sitemap**
-- Exists and accessible
-- Submitted to Search Console
-- Contains only canonical, indexable URLs
-- Updated regularly
-- Proper formatting
-
-**Site Architecture**
-- Important pages within 3 clicks of homepage
-- Logical hierarchy
-- Internal linking structure
-- No orphan pages
-
-**Crawl Budget Issues** (for large sites)
-- Parameterized URLs under control
-- Faceted navigation handled properly
-- Infinite scroll with pagination fallback
-- Session IDs not in URLs
-
-### Indexation
-
-**Index Status**
-- site:domain.com check
-- Search Console coverage report
-- Compare indexed vs. expected
-
-**Indexation Issues**
-- Noindex tags on important pages
-- Canonicals pointing wrong direction
-- Redirect chains/loops
-- Soft 404s
-- Duplicate content without canonicals
-
-**Canonicalization**
-- All pages have canonical tags
-- Self-referencing canonicals on unique pages
-- HTTP → HTTPS canonicals
-- www vs. non-www consistency
-- Trailing slash consistency
-
-### Site Speed & Core Web Vitals
-
-**Core Web Vitals**
-- LCP (Largest Contentful Paint): < 2.5s
-- INP (Interaction to Next Paint): < 200ms
-- CLS (Cumulative Layout Shift): < 0.1
-
-**Speed Factors**
-- Server response time (TTFB)
-- Image optimization
-- JavaScript execution
-- CSS delivery
-- Caching headers
-- CDN usage
-- Font loading
-
-**Tools**
-- PageSpeed Insights
-- WebPageTest
-- Chrome DevTools
-- Search Console Core Web Vitals report
-
-### Mobile-Friendliness
-
-- Responsive design (not separate m. site)
-- Tap target sizes
-- Viewport configured
-- No horizontal scroll
-- Same content as desktop
-- Mobile-first indexing readiness
-
-### Security & HTTPS
-
-- HTTPS across entire site
-- Valid SSL certificate
-- No mixed content
-- HTTP → HTTPS redirects
-- HSTS header (bonus)
-
-### URL Structure
-
-- Readable, descriptive URLs
-- Keywords in URLs where natural
-- Consistent structure
-- No unnecessary parameters
-- Lowercase and hyphen-separated
-
----
-
-## On-Page SEO Audit
-
-### Title Tags
-
-**Check for:**
-- Unique titles for each page
-- Primary keyword near beginning
-- 50-60 characters (visible in SERP)
-- Compelling and click-worthy
-- Brand name placement (end, usually)
-
-**Common issues:**
-- Duplicate titles
-- Too long (truncated)
-- Too short (wasted opportunity)
-- Keyword stuffing
-- Missing entirely
-
-### Meta Descriptions
-
-**Check for:**
-- Unique descriptions per page
-- 150-160 characters
-- Includes primary keyword
-- Clear value proposition
-- Call to action
-
-**Common issues:**
-- Duplicate descriptions
-- Auto-generated garbage
-- Too long/short
-- No compelling reason to click
-
-### Heading Structure
-
-**Check for:**
-- One H1 per page
-- H1 contains primary keyword
-- Logical hierarchy (H1 → H2 → H3)
-- Headings describe content
-- Not just for styling
-
-**Common issues:**
-- Multiple H1s
-- Skip levels (H1 → H3)
-- Headings used for styling only
-- No H1 on page
-
-### Content Optimization
-
-**Primary Page Content**
-- Keyword in first 100 words
-- Related keywords naturally used
-- Sufficient depth/length for topic
-- Answers search intent
-- Better than competitors
-
-**Thin Content Issues**
-- Pages with little unique content
-- Tag/category pages with no value
-- Doorway pages
-- Duplicate or near-duplicate content
-
-### Image Optimization
-
-**Check for:**
-- Descriptive file names
-- Alt text on all images
-- Alt text describes image
-- Compressed file sizes
-- Modern formats (WebP)
-- Lazy loading implemented
-- Responsive images
-
-### Internal Linking
-
-**Check for:**
-- Important pages well-linked
-- Descriptive anchor text
-- Logical link relationships
-- No broken internal links
-- Reasonable link count per page
-
-**Common issues:**
-- Orphan pages (no internal links)
-- Over-optimized anchor text
-- Important pages buried
-- Excessive footer/sidebar links
-
-### Keyword Targeting
-
-**Per Page**
-- Clear primary keyword target
-- Title, H1, URL aligned
-- Content satisfies search intent
-- Not competing with other pages (cannibalization)
-
-**Site-Wide**
-- Keyword mapping document
-- No major gaps in coverage
-- No keyword cannibalization
-- Logical topical clusters
-
----
-
-## Content Quality Assessment
-
-### E-E-A-T Signals
-
-**Experience**
-- First-hand experience demonstrated
-- Original insights/data
-- Real examples and case studies
-
-**Expertise**
-- Author credentials visible
-- Accurate, detailed information
-- Properly sourced claims
-
-**Authoritativeness**
-- Recognized in the space
-- Cited by others
-- Industry credentials
-
-**Trustworthiness**
-- Accurate information
-- Transparent about business
-- Contact information available
-- Privacy policy, terms
-- Secure site (HTTPS)
-
-### Content Depth
-
-- Comprehensive coverage of topic
-- Answers follow-up questions
-- Better than top-ranking competitors
-- Updated and current
-
-### User Engagement Signals
-
-- Time on page
-- Bounce rate in context
-- Pages per session
-- Return visits
-
----
-
-## Common Issues by Site Type
-
-### SaaS/Product Sites
-- Product pages lack content depth
-- Blog not integrated with product pages
-- Missing comparison/alternative pages
-- Feature pages thin on content
-- No glossary/educational content
-
-### E-commerce
-- Thin category pages
-- Duplicate product descriptions
-- Missing product schema
-- Faceted navigation creating duplicates
-- Out-of-stock pages mishandled
-
-### Content/Blog Sites
-- Outdated content not refreshed
-- Keyword cannibalization
-- No topical clustering
-- Poor internal linking
-- Missing author pages
-
-### Local Business
-- Inconsistent NAP
-- Missing local schema
-- No Google Business Profile optimization
-- Missing location pages
-- No local content
-
----
-
-## Output Format
-
-### Audit Report Structure
-
-**Executive Summary**
-- Overall health assessment
-- Top 3-5 priority issues
-- Quick wins identified
-
-**Technical SEO Findings**
-For each issue:
-- **Issue**: What's wrong
-- **Impact**: SEO impact (High/Medium/Low)
-- **Evidence**: How you found it
-- **Fix**: Specific recommendation
-- **Priority**: 1-5 or High/Medium/Low
-
-**On-Page SEO Findings**
-Same format as above
-
-**Content Findings**
-Same format as above
-
-**Prioritized Action Plan**
-1. Critical fixes (blocking indexation/ranking)
-2. High-impact improvements
-3. Quick wins (easy, immediate benefit)
-4. Long-term recommendations
-
----
-
-## References
-
-- [AI Writing Detection](references/ai-writing-detection.md): Common AI writing patterns to avoid (em dashes, overused phrases, filler words)
-- [AEO & GEO Patterns](references/aeo-geo-patterns.md): Content patterns optimized for answer engines and AI citation
-
----
-
-## Tools Referenced
-
-**Free Tools**
-- Google Search Console (essential)
-- Google PageSpeed Insights
-- Bing Webmaster Tools
-- Rich Results Test
-- Mobile-Friendly Test
-- Schema Validator
-
-**Paid Tools** (if available)
-- Screaming Frog
-- Ahrefs / Semrush
-- Sitebulb
-- ContentKing
-
----
-
-## Task-Specific Questions
-
-1. What pages/keywords matter most?
-2. Do you have Search Console access?
-3. Any recent changes or migrations?
-4. Who are your top organic competitors?
-5. What's your current organic traffic baseline?
-
----
-
-## Related Skills
-
-- **programmatic-seo**: For building SEO pages at scale
-- **schema-markup**: For implementing structured data
-- **page-cro**: For optimizing pages for conversion (not just ranking)
-- **analytics-tracking**: For measuring SEO performance
+# Auditoría SEO
+
+## Antes que nada: separar la intención
+
+**Esto va primero porque, si se saltea, todo lo que sigue mide mal.**
+
+Las impresiones de un sitio no son una bolsa homogénea. Las consultas que
+incluyen el nombre de una marca ajena son navegacionales: la persona quiere el
+sitio oficial de esa marca, lo ve arriba y saltea el resto. Aunque el sitio
+propio esté quinto, el CTR de ese grupo va a ser una fracción del que predice
+cualquier curva.
+
+Consecuencia práctica: **un informe que ordena las páginas por "CTR bajo para su
+posición" sin separar marca de genérica se llena de páginas cuyo techo es de
+intención y no de título**, y esconde las pocas que sí tienen margen. Antes de
+proponer reescribir un solo metadato, partir los datos en dos y medir cada grupo
+por separado.
+
+Medido en este proyecto (agosto 2026): la marca se llevaba el 78% de las
+impresiones nombradas y clickeaba al 1,0%, contra 1,8% de las genéricas con una
+posición promedio mucho peor. Las consultas genéricas dentro del top 10 clickean
+entre 8% y 27%. Ahí está el crecimiento, no en la marca.
+
+El método para calibrar la curva con los datos propios está en
+[Investigación de consultas](references/investigacion-de-consultas.md).
+
+## Orden de prioridad
+
+1. **Rastreo e indexación** — ¿Google puede encontrarla e indexarla?
+2. **Base técnica** — ¿carga rápido y funciona?
+3. **On-page** — ¿el contenido está trabajado?
+4. **Calidad del contenido** — ¿merece rankear?
+5. **Autoridad y enlaces** — ¿alguien la respalda?
+
+No saltear el orden: optimizar el título de una página que Google nunca rastreó
+no hace nada.
+
+## Contexto antes de auditar
+
+Si existe `.claude/product-marketing-context.md`, leerlo antes de preguntar nada.
+Después, saber: qué tipo de sitio es, cuál es el objetivo del SEO, qué páginas y
+consultas importan, si hay acceso a Search Console, y si hubo cambios o
+migraciones recientes.
+
+## Técnico
+
+### Rastreo
+
+- **robots.txt**: sin bloqueos involuntarios, con referencia al sitemap.
+- **Sitemap**: accesible, enviado, sólo URLs canónicas e indexables, y que se
+  regenere de verdad cuando cambia el contenido. Un sitemap cacheado que sólo se
+  rehace en el deploy deja contenido nuevo invisible durante días.
+- **Arquitectura**: las páginas importantes a menos de tres clics de la home,
+  sin páginas huérfanas.
+- **Presupuesto de rastreo**: URLs con parámetros bajo control, paginación con
+  respaldo sin JavaScript.
+
+### Indexación
+
+- Comparar indexadas contra esperadas en Search Console.
+- Buscar `noindex` en páginas importantes, canónicas apuntando mal, cadenas de
+  redirecciones, 404 blandos y duplicados sin canónica.
+- Canónicas autorreferenciales, coherencia entre HTTP/HTTPS, con y sin `www`, y
+  barra final.
+- **Una URL "descubierta, sin rastrear" durante semanas no siempre es contenido
+  pobre.** Antes de reescribirla, contar sus enlaces internos entrantes: si son
+  suficientes y está en el sitemap, es prioridad de rastreo del dominio y lo que
+  corresponde es pedirla a mano y esperar. Ver
+  [Autoridad y enlaces](references/autoridad-y-enlaces.md).
+- Ante un cambio de estado raro en la API de inspección, confirmar con una
+  segunda consulta antes de anotarlo: rebota.
+
+### Velocidad
+
+LCP menor a 2,5 s · INP menor a 200 ms · CLS menor a 0,1. Mirar tiempo de
+respuesta del servidor, imágenes, JavaScript, entrega de CSS, cache, CDN y carga
+de fuentes.
+
+### Móvil, seguridad y URLs
+
+Diseño adaptable, áreas táctiles suficientes, viewport declarado, sin scroll
+horizontal, mismo contenido que en escritorio. HTTPS en todo el sitio, sin
+contenido mixto. URLs legibles, en minúsculas, con guiones y sin parámetros
+innecesarios.
+
+## On-page
+
+### Títulos
+
+Únicos, con la consulta principal adelante, y que entren en el resultado. El
+corte se mide en píxeles y no en caracteres, así que hay algo de margen sobre los
+60, pero **es peor una marca cortada a la mitad que una marca ausente**.
+
+Si el nombre no entra con el sufijo más informativo, probar sufijos más cortos en
+orden, y recién al final bajar a un nombre más corto.
+
+### Descripciones
+
+Únicas, alrededor de 160 caracteres. **La frase que distingue a esta página de
+las demás va primero**: el buscador corta el final, así que lo que se repite en
+todo el sitio es lo que conviene dejar atrás. Si la fórmula es compartida entre
+muchas páginas, armarla por partes y soltar las de atrás hasta entrar en el
+presupuesto, en vez de truncar a mitad de palabra.
+
+### Encabezados y contenido
+
+Un solo H1, jerarquía sin saltos, encabezados que describan el contenido. La
+consulta principal en las primeras líneas. Suficiente profundidad para el tema y
+mejor que lo que hoy está primero.
+
+Detectar contenido delgado: páginas que existen pero no dicen nada, y páginas de
+categoría o etiqueta sin valor propio.
+
+### Imágenes
+
+Nombres descriptivos, texto alternativo real, comprimidas, formatos modernos,
+carga diferida, tamaños adaptables.
+
+### Enlaces internos
+
+Es la palanca de autoridad que se controla del todo y la que más se descuida.
+Revisar que las páginas importantes estén bien enlazadas, que el texto del enlace
+describa el destino, que no haya páginas huérfanas y que **los bloques de
+"relacionados" enlacen a algo que tenga que ver**. Un bloque que elige por
+rotación reparte autoridad pero no le dice nada a Google sobre el tema de la
+página.
+
+Antes de cambiar el criterio de selección de un bloque así, simular el grafo
+resultante y contar enlaces entrantes por página con el algoritmo viejo y con el
+nuevo. Detalle en [Autoridad y enlaces](references/autoridad-y-enlaces.md).
+
+### Canibalización
+
+Una consulta principal por página. Dos páginas propias peleando por la misma
+consulta se turnan y bajan las dos: la de menos tráfico se redirige con 301 y
+sale del sitemap.
+
+## Calidad del contenido
+
+**E-E-A-T**: experiencia de primera mano y datos propios; información precisa y
+citada; reconocimiento en el rubro; transparencia, datos de contacto y sitio
+seguro.
+
+**Profundidad**: cubrir el tema, responder las preguntas que siguen, estar
+actualizado, y ser mejor que quien está primero. Mejor casi nunca significa más
+largo.
+
+## Autoridad y enlaces
+
+Es lo que suele explicar por qué un sitio con todo bien hecho sigue en la
+posición veinte. No se resuelve con un checklist: ver
+[Autoridad y enlaces](references/autoridad-y-enlaces.md).
+
+## Mantenimiento
+
+Qué revisar cuando el sitio ya está publicado, por qué una página que baja casi
+nunca empeoró, y por qué conviene medir acciones y no resultados:
+[Mantenimiento](references/mantenimiento.md).
+
+## Errores frecuentes por tipo de sitio
+
+- **Producto o software**: fichas sin profundidad, blog desconectado del
+  producto, sin páginas de comparación ni alternativas, sin glosario.
+- **Comercio electrónico**: categorías delgadas, descripciones duplicadas, sin
+  datos estructurados de producto, navegación facetada generando duplicados.
+- **Blog o contenido**: contenido viejo sin actualizar, canibalización, sin
+  agrupación temática, enlazado interno pobre.
+- **Negocio local**: datos de contacto inconsistentes entre sitios, sin datos
+  estructurados locales, sin perfil de negocio optimizado, sin contenido local.
+- **Institución educativa**: fichas de carrera con la misma plantilla y sin nada
+  propio, oferta dada de baja que sigue publicada, y competencia frontal contra
+  el sitio oficial de la marca en consultas navegacionales, que no se gana.
+
+## Formato de salida
+
+**Resumen**: estado general, tres a cinco problemas principales, y qué se puede
+ganar rápido.
+
+**Cada hallazgo**: qué está mal · impacto (alto/medio/bajo) · cómo se detectó ·
+qué hacer · prioridad.
+
+**Plan ordenado**: primero lo que bloquea la indexación, después lo de más
+impacto, después lo fácil e inmediato, y al final lo de largo plazo.
+
+Separar siempre lo medido de lo propuesto, y no prometer clics recuperables sin
+antes haber descontado la intención de marca.
+
+## Referencias
+
+- [Investigación de consultas](references/investigacion-de-consultas.md):
+  intención, calibrar la curva de CTR con datos propios, dónde buscar consultas
+  nuevas, igualar y superar, canibalización.
+- [Autoridad y enlaces](references/autoridad-y-enlaces.md): cómo se reparte el
+  valor de un enlace, enlazado interno, cómo conseguir enlaces externos, qué no
+  hacer, y por qué esto decide también qué dice la IA.
+- [Mantenimiento](references/mantenimiento.md): intención que cambia, medir
+  acciones, errores que hunden un sitio entero.
+- [AEO y GEO](references/aeo-geo-patterns.md): patrones de contenido para motores
+  de respuesta y para que la IA cite el sitio.
+- [Escritura con IA](references/ai-writing-detection.md): patrones a evitar.
+
+## Herramientas
+
+Gratis: Search Console, PageSpeed Insights, Bing Webmaster Tools, prueba de
+resultados enriquecidos, validador de datos estructurados.
+
+Pagas, si están disponibles: Screaming Frog, Ahrefs, Semrush, Sitebulb.
