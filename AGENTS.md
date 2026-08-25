@@ -6,6 +6,8 @@ Sitio de **Universidad Siglo 21 — CAU Villa Lugano**. Next.js 16 (App Router) 
 
 Todo el texto de interfaz, los comentarios y la documentación van en **español (es-AR)**.
 
+[`docs/criterios.md`](docs/criterios.md) es el otro que hay que leer: las decisiones ya tomadas que no hay que volver a proponer y cómo espera el usuario que se trabaje.
+
 ## Antes de commitear
 
 ```bash
