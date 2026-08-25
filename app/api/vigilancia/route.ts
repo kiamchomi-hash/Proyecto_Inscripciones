@@ -98,14 +98,15 @@ async function correrChequeos(base: string) {
   });
 
   // 4. Redirects declarados.
-  await enTandas(redirectsEsperados(base), async ([desde, hasta]) => {
+  await enTandas(redirectsEsperados(base), async ([desde, hasta, codigo]) => {
     try {
       const r = await pedir(desde);
       const location = r.headers.get('location');
       const destino = location ? new URL(location, desde).href.replace(/\/$/, '') : null;
       const esperado = hasta.replace(/\/$/, '');
-      if (r.status < 300 || r.status >= 400 || destino !== esperado) {
-        falla(desde, `HTTP ${r.status}${destino ? ` → ${destino}` : ''}, esperaba 3xx → ${hasta}`);
+      const codigoOk = codigo ? r.status === codigo : r.status >= 300 && r.status < 400;
+      if (!codigoOk || destino !== esperado) {
+        falla(desde, `HTTP ${r.status}${destino ? ` → ${destino}` : ''}, esperaba ${codigo ?? '3xx'} → ${hasta}`);
       }
     } catch (e) {
       falla(desde, motivo(e));

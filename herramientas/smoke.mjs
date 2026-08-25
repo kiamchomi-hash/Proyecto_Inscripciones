@@ -150,15 +150,16 @@ for (const [ruta, esperado] of NOINDEX) {
 
 if (esProd) {
   console.log('\nRedirects');
-  for (const [desde, hasta] of redirectsEsperados(BASE)) {
+  for (const [desde, hasta, codigo] of redirectsEsperados(BASE)) {
     try {
       const r = await pedir(desde);
       const destino = r.headers.location
         ? new URL(r.headers.location, desde).href.replace(/\/$/, '')
         : null;
       const esperado = hasta.replace(/\/$/, '');
-      if (r.status >= 300 && r.status < 400 && destino === esperado) ok(`${desde} → ${r.status} ${hasta}`);
-      else fallo(desde, `HTTP ${r.status}${destino ? ` → ${destino}` : ''}, esperaba 3xx → ${hasta}`);
+      const codigoOk = codigo ? r.status === codigo : r.status >= 300 && r.status < 400;
+      if (codigoOk && destino === esperado) ok(`${desde} → ${r.status} ${hasta}`);
+      else fallo(desde, `HTTP ${r.status}${destino ? ` → ${destino}` : ''}, esperaba ${codigo ?? '3xx'} → ${hasta}`);
     } catch (e) {
       fallo(desde, e.message);
     }

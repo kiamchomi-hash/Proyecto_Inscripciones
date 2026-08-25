@@ -246,7 +246,24 @@ const nextConfig: NextConfig = {
         destination: '/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos',
         statusCode: 301,
       },
-      // Redirect non-www to www
+      // Apex a www. **Ojo: en produccion esta regla no se ejecuta.** Vercel tiene
+      // su propio redirect a nivel de dominio (Project → Domains), corre en el
+      // borde antes que la app y gana siempre. Se nota en la respuesta: no trae
+      // ninguna cabecera de Next.
+      //
+      // Hasta el 25/08/2026 ese redirect del dominio venia con
+      // `redirectStatusCode: 307`, el valor de fabrica, mientras este bloque
+      // decia `permanent: true`. O sea que el codigo declaraba 308 y produccion
+      // servia 307 desde marzo, sin que ningun diff lo mostrara. Un 307 dice
+      // "mudanza temporal", asi que Google nunca consolidaba el apex en www:
+      // seguia entrando por ahi y gastando un pedido en cada URL sin www que
+      // tenia anotada, con dos fichas esperando turno de rastreo. Se corrigio
+      // en el dominio (a 308), que es donde se decide.
+      //
+      // La regla se deja igual: es la red de abajo si alguien saca el redirect
+      // del panel, y en ese caso el que vale es este. **Tocarla aca no cambia
+      // nada mientras el del dominio exista.** El codigo esperado esta fijado en
+      // `lib/vigilancia-esperado.ts` y los dos vigilantes avisan si se mueve.
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'siglo21sur.com' }],

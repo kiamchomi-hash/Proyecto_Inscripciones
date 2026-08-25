@@ -47,10 +47,27 @@ export const NOINDEX: Array<[string, RegExp]> = [
 /**
  * Redirects declarados en next.config.ts. Solo se prueban contra el dominio
  * propio: contra localhost o un preview no existen.
+ *
+ * El tercer elemento, cuando esta, fija el codigo exacto y no solo "algun 3xx".
+ * Se usa donde el codigo lo decide algo que no vive en este repo y por lo tanto
+ * puede cambiar sin que nadie lo note en un diff: hoy, el apex.
+ *
+ * El caso testigo es de agosto de 2026. `next.config.ts` declara el apex con
+ * `permanent: true`, o sea 308, pero produccion devolvia **307**: el redirect no
+ * lo hacia Next sino Vercel a nivel de dominio, que corre en el borde antes que
+ * la app y traia `redirectStatusCode: 307` de fabrica. La regla del repo nunca
+ * se ejecutaba. Un 307 le dice a Google que la mudanza es temporal, asi que
+ * nunca consolidaba el apex en www y seguia gastando un pedido por cada URL sin
+ * www que tenia anotada — la inspeccion de URLs mostraba `referringUrls:
+ * ["https://siglo21sur.com/sitemap.xml"]`, apex, en fichas que nunca llego a
+ * rastrear. Se corrigio en el dominio, no en el codigo.
+ *
+ * Por eso queda fijado aca: si alguien lo vuelve a mover desde el panel de
+ * Vercel, los dos vigilantes lo cantan.
  */
-export function redirectsEsperados(base: string): Array<[string, string]> {
+export function redirectsEsperados(base: string): Array<[string, string, number?]> {
   return [
-    ['https://siglo21sur.com/', 'https://www.siglo21sur.com/'],
+    ['https://siglo21sur.com/', 'https://www.siglo21sur.com/', 308],
     ['https://proyecto-inscripciones.vercel.app/', 'https://www.siglo21sur.com/'],
     [`${base}/contactos`, `${base}/contacto`],
     [`${base}/carreras`, `${base}/`],
