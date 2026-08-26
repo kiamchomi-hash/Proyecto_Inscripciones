@@ -142,3 +142,133 @@
   opacity: 0.5;
 }
 
+/* ── Videos institucionales ───────────────────────────── */
+.vi-seccion > h2 {
+  margin-bottom: 1.75rem;
+}
+
+.vi-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.75rem;
+}
+
+.vi-item {
+  min-width: 0;
+  margin: 0;
+}
+
+.vi-marco {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgba(0, 199, 177, 0.2);
+  border-radius: 1rem;
+  background: #061716;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.28);
+}
+
+.vi-iframe,
+.vi-fachada {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.vi-fachada {
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  background: #061716;
+}
+
+.vi-poster {
+  object-fit: cover;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
+}
+
+.vi-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 23, 22, 0.02), rgba(6, 23, 22, 0.28));
+  transition: background-color 0.25s ease;
+}
+
+.vi-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 4.25rem;
+  height: 4.25rem;
+  place-items: center;
+  color: #042620;
+  border-radius: 999px;
+  background: #00c7b1;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -50%);
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.vi-play svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-left: 0.2rem;
+}
+
+.vi-fachada:hover .vi-poster {
+  filter: brightness(1.06);
+  transform: scale(1.025);
+}
+
+.vi-fachada:hover .vi-play {
+  filter: brightness(1.12);
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+.vi-fachada:focus-visible {
+  outline: 3px solid #00ffe1;
+  outline-offset: -4px;
+}
+
+.vi-caption {
+  padding: 1rem 0 0;
+  border-bottom: 1px solid rgba(0, 199, 177, 0.14);
+}
+
+.vi-caption h3 {
+  margin: 0 0 0.35rem;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.vi-caption p {
+  max-width: 37rem;
+  margin: 0 0 1rem;
+  color: #c8dedd;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .vi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vi-poster,
+  .vi-play {
+    transition: none;
+  }
+
+  .vi-fachada:hover .vi-poster,
+  .vi-fachada:hover .vi-play {
+    transform: none;
+  }
+}
+

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 import SiteFooter from '@/components/footer';
+import VideosInstitucionales from '@/components/videos-institucionales';
 import './sobre-nosotros.css';
 
 export const metadata: Metadata = {
@@ -328,6 +329,21 @@ export default function SobreNosotrosPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ─── VIDEOS INSTITUCIONALES ─────────────────────── */}
+      <section className="vi-seccion mb-10" aria-labelledby="videos-institucionales-titulo">
+        <p className="text-xs font-semibold tracking-widest uppercase mb-3 text-center" style={{ color: '#00c7b1' }}>
+          Nuestra oferta
+        </p>
+        <h2
+          id="videos-institucionales-titulo"
+          className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white"
+          style={{ fontFamily: 'var(--font-unbounded)' }}
+        >
+          Conocé las propuestas en video
+        </h2>
+        <VideosInstitucionales />
       </section>
 
       {/* ─── SERVICES: CHECKLIST ─────────────────────────── */}

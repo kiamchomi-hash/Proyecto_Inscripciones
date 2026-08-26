@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: supabaseHost },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
     ],
   },
   async headers() {
@@ -38,7 +39,7 @@ const nextConfig: NextConfig = {
               // navegador los bloquea.
               `media-src 'self' https://${supabaseHost}`,
               `connect-src 'self' https://${supabaseHost} https://*.google-analytics.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com`,
-              "frame-src https://challenges.cloudflare.com https://www.google.com",
+              "frame-src https://challenges.cloudflare.com https://www.google.com https://www.youtube-nocookie.com",
               "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
