@@ -339,7 +339,6 @@ export default function SobreNosotrosPage() {
         <h2
           id="videos-institucionales-titulo"
           className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white"
-          style={{ fontFamily: 'var(--font-unbounded)' }}
         >
           Conocé las propuestas en video
         </h2>

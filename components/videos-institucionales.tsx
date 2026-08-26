@@ -31,7 +31,7 @@ function Reproductor({ video }: { video: VideoInstitucional }) {
         {activo ? (
           <iframe
             className="vi-iframe"
-            src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`}
+            src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&controls=0&iv_load_policy=3&playsinline=1&rel=0`}
             title={`Video: ${video.titulo}`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
