@@ -265,9 +265,12 @@
     transition: none;
   }
 
-  .vi-fachada:hover .vi-poster,
-  .vi-fachada:hover .vi-play {
+  .vi-fachada:hover .vi-poster {
     transform: none;
+  }
+
+  .vi-fachada:hover .vi-play {
+    transform: translate(-50%, -50%);
   }
 }
 
