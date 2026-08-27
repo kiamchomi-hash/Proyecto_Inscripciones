@@ -101,10 +101,10 @@ interface Props {
   teclabLandingHref?: string;
 }
 
-// En la home Identidad sigue dentro del catálogo general, pero no ocupa una
-// píldora propia. El curso conserva su lugar en Teclab Tecnología y suma este
-// acceso directo al final de los filtros.
-const FILTROS_HOME = [
+// Identidad sigue dentro del catálogo general, pero no ocupa una píldora propia.
+// El curso conserva su lugar en Teclab Tecnología y suma este acceso directo al
+// final de los filtros, tanto en la home como en la landing de Teclab.
+const FILTROS_CATALOGO = [
   ...CATEGORIES.filter(cat => cat.id !== 'identidad_argentina'),
   { id: 'curso_ia', label: 'Curso de IA', niveles: ['Teclab - Curso'], featured: true },
 ];
@@ -195,7 +195,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
     return groups;
   }, [carreras]);
 
-  const categoriasFiltro = teclabLandingHref ? FILTROS_HOME : CATEGORIES;
+  const categoriasFiltro = FILTROS_CATALOGO;
 
   // Visible categories (categories that have at least one career)
   const visibleCategories = useMemo(() => {
