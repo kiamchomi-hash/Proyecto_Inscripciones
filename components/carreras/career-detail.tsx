@@ -4,6 +4,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
+import { WhatsAppIcon } from '@/components/icons';
 import type { Carrera, CarreraEnlace } from '@/components/index/types';
 import { carreraToSlug, carreraFullName } from '@/components/index/types';
 import { getEscuelaIA } from '@/components/index/identidad-argentina';
@@ -563,8 +564,14 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               {hasPlan && <a href="#plan">Plan de estudios</a>}
             </nav>
             <div className="career-aside-cta">
-              <span>¿Querés dar el próximo paso?</span>
-              <strong>Te acompañamos desde Villa Lugano.</strong>
+              <span>{carrera.proximamente ? 'Próxima apertura' : '¿Ya elegiste?'}</span>
+              <strong>
+                {carrera.proximamente ? (
+                  <>Te avisamos <em>cuando abra.</em></>
+                ) : (
+                  <>Empezá <em>ahora.</em></>
+                )}
+              </strong>
               <a href={carrera.proximamente ? '#formulario' : '#preinscripcion'}>
                 {carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
@@ -574,7 +581,8 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 target="_blank"
                 rel="noopener nofollow"
               >
-                Escribir por WhatsApp
+                <WhatsAppIcon className="career-aside-whatsapp-icon" />
+                <span>Consultar por WhatsApp</span>
               </a>
             </div>
           </div>

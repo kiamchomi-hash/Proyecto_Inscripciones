@@ -781,72 +781,116 @@
 }
 
 .career-aside-cta {
-  padding: 1.5rem;
-  background: var(--career-accent);
-  color: var(--career-ink);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 1.65rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--career-ink) 78%, #1c4943), var(--career-ink) 68%) padding-box,
+    linear-gradient(135deg, var(--career-accent-bright), rgba(255,255,255,.32) 42%, rgba(255,255,255,.12) 66%, var(--career-accent)) border-box;
+  color: #fff;
+  box-shadow:
+    0 20px 46px rgba(0,0,0,.42),
+    0 0 34px color-mix(in srgb, var(--career-accent) 20%, transparent);
 }
 
-.career-page--ia .career-aside-cta { color: #fff; }
+/* Marco con halo adaptado de UIverse, por Aryan-81:
+   https://uiverse.io/Aryan-81/rare-rattlesnake-22 */
+.career-aside-cta::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -5rem;
+  right: -4rem;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  background: var(--career-accent);
+  filter: blur(38px);
+  opacity: .34;
+}
 
 .career-aside-cta > span {
-  display: block;
-  margin-bottom: .5rem;
-  font-size: .67rem;
-  font-weight: 800;
-  letter-spacing: .08em;
+  display: inline-flex;
+  margin-bottom: 1.15rem;
+  padding: .38rem .66rem;
+  border: 1px solid color-mix(in srgb, var(--career-accent) 48%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--career-accent) 12%, transparent);
+  color: var(--career-accent-bright);
+  font-size: .63rem;
+  font-weight: 850;
+  letter-spacing: .14em;
   text-transform: uppercase;
 }
 
 .career-aside-cta strong {
   display: block;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.7rem;
+  color: #f6fbfa;
   font-family: var(--font-unbounded), sans-serif;
-  font-size: 1.05rem;
-  line-height: 1.35;
+  font-size: clamp(1.65rem, 2vw, 2rem);
+  line-height: 1.02;
+  letter-spacing: -.05em;
+  text-wrap: balance;
+}
+
+.career-aside-cta strong em {
+  display: block;
+  color: var(--career-accent-bright);
+  font-style: normal;
 }
 
 .career-aside-cta a {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: .5rem;
-  min-height: 2.75rem;
-  padding: .7rem .85rem;
-  border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
-  font-size: .78rem;
-  font-weight: 750;
-  transition: background .2s ease, border-color .2s ease;
+  justify-content: center;
+  gap: .55rem;
+  min-height: 3rem;
+  padding: .72rem .9rem;
+  border: 1px solid transparent;
+  border-radius: .65rem;
+  font-size: .76rem;
+  font-weight: 800;
+  transition: color .2s ease, background .2s ease, border-color .2s ease,
+    box-shadow .2s ease, transform .2s ease;
 }
 
 .career-aside-cta a + a {
   margin-top: .65rem;
 }
 
-.career-aside-cta a:hover {
-  border-color: currentColor;
-  background: color-mix(in srgb, currentColor 10%, transparent);
-}
-
 .career-aside-cta > a:first-of-type {
-  border-color: var(--career-ink);
-  background: var(--career-ink);
-  color: var(--career-accent-bright);
+  background: #f6fbfa;
+  color: var(--career-ink);
+  box-shadow: 0 5px 0 var(--career-accent);
 }
 
 .career-aside-cta > a:first-of-type:hover {
-  border-color: color-mix(in srgb, var(--career-ink) 78%, white);
-  background: color-mix(in srgb, var(--career-ink) 82%, white);
+  background: #fff;
+  box-shadow: 0 7px 0 var(--career-accent-bright);
+  transform: translateY(-2px);
 }
 
 .career-aside-cta .career-aside-whatsapp {
-  border: 2px solid #073b1c;
-  background: #25d366;
-  color: #073b1c;
+  background: linear-gradient(135deg, #2ee678, #20c962);
+  color: #06391d;
+  box-shadow: 0 8px 22px rgba(37,211,102,.2);
+  white-space: nowrap;
 }
 
 .career-aside-cta .career-aside-whatsapp:hover {
-  border-color: #031f0e;
-  background: #1fbc59;
+  background: linear-gradient(135deg, #43ed89, #26d56b);
+  box-shadow: 0 11px 26px rgba(37,211,102,.3);
+  transform: translateY(-2px);
+}
+
+.career-aside-whatsapp-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 1.15rem;
 }
 
 .career-related {

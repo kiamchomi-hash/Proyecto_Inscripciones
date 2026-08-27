@@ -1,0 +1,2 @@
+- https://uiverse.io/Aryan-81/rare-rattlesnake-22 — se adaptaron el marco luminoso y el halo de profundidad; se descartaron la rotación, el arcoíris y la animación continua del original.
+- https://uiverse.io/0xnihilism/fast-cat-82 — descartado después de la primera prueba: la franja superior, la forma rígida y el tratamiento de WhatsApp no resolvían la jerarquía buscada.
