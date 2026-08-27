@@ -19,22 +19,20 @@ import './teclab.css';
 const URL = 'https://www.siglo21sur.com/teclab';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Tecnicaturas Teclab Online | CAU Villa Lugano' },
-  description: 'Tecnicaturas y cursos Teclab 100% online en tecnología, gestión y negocios. Conocé la oferta y consultá en el CAU Villa Lugano.',
+  title: { absolute: 'Tecnicaturas Teclab Online | Carreras de 2 años' },
+  description: 'Tecnicaturas y cursos Teclab 100% online en tecnología, gestión y negocios. Conocé la oferta y recibí asesoramiento personalizado.',
   keywords: [
     'teclab',
     'tecnicaturas online',
     'carreras cortas',
     'instituto técnico superior teclab',
     'universidad siglo 21',
-    'villa lugano',
-    'CABA',
   ],
   alternates: { canonical: URL },
   openGraph: {
     type: 'website',
     title: 'Tecnicaturas Teclab Online',
-    description: 'Tecnología, gestión y negocios. Explorá la oferta Teclab y recibí asesoramiento del CAU Villa Lugano.',
+    description: 'Tecnología, gestión y negocios. Explorá la oferta Teclab y recibí asesoramiento personalizado.',
     url: URL,
     images: [{
       url: '/imagenes/teclab/carreras/marketing-digital.webp',
@@ -46,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Tecnicaturas Teclab Online',
-    description: 'Explorá la oferta Teclab y recibí asesoramiento del CAU Villa Lugano.',
+    description: 'Explorá la oferta Teclab y recibí asesoramiento personalizado.',
     images: ['/imagenes/teclab/carreras/marketing-digital.webp'],
   },
 };
@@ -110,7 +108,7 @@ export default async function TeclabPage() {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: 'Tecnicaturas y cursos Teclab',
-      description: 'Oferta Teclab disponible con asesoramiento del CAU Villa Lugano.',
+      description: 'Tecnicaturas y cursos Teclab 100% online con asesoramiento personalizado.',
       url: URL,
       mainEntity: {
         '@type': 'ItemList',

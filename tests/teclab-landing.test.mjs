@@ -15,6 +15,8 @@ test('la landing Teclab tiene canonical, contenido indexable y oferta acotada', 
   assert.match(page, /Teclab - Gestión/);
   assert.match(page, /Teclab - Curso/);
   assert.match(page, /<CareersCatalog carreras=\{carreras\}/);
+  assert.match(page, /Tecnicaturas Teclab Online \| Carreras de 2 años/);
+  assert.doesNotMatch(page, /Villa Lugano|CABA/);
   // Los dos formularios de la landing van con la casa fija: toda su oferta es
   // de Teclab, asi que no hay nada que deducir de la carrera elegida.
   assert.match(page, /<FormularioLead carreras=\{carreras\} modo="contacto" casa="teclab" origen="teclab"/);
