@@ -19,6 +19,7 @@ import {
   partirDescripcionTeclab,
 } from '@/components/index/teclab';
 import CareerInfoButton from './career-info-button';
+import StickyEnrollmentCta from './sticky-enrollment-cta';
 import {
   getCareerPrefix,
   parseIAMeta,
@@ -322,6 +323,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               <a
                 href={carrera.proximamente ? '#formulario' : '#preinscripcion'}
                 className="career-button career-button--primary"
+                data-career-primary-cta
               >
                 {carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
@@ -338,6 +340,11 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           </div>
         </div>
       </header>
+
+      <StickyEnrollmentCta
+        destino={carrera.proximamente ? '#formulario' : '#preinscripcion'}
+        texto={carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'}
+      />
 
       <dl className="career-facts" aria-label={`Información principal ${isTeclabCourse ? 'del curso' : 'de la carrera'}`}>
         {metaItems.map((item) => (
@@ -558,7 +565,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             <div className="career-aside-cta">
               <span>¿Querés dar el próximo paso?</span>
               <strong>Te acompañamos desde Villa Lugano.</strong>
-              <a href="#formulario">Solicitar información <ArrowIcon /></a>
+              <a href={carrera.proximamente ? '#formulario' : '#preinscripcion'}>
+                {carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'} <ArrowIcon />
+              </a>
               <a
                 className="career-aside-whatsapp"
                 href={waHref}

@@ -304,6 +304,12 @@
   color: var(--career-ink);
 }
 
+/* En movil aparece cuando el CTA equivalente del hero ya quedo atras. Vive
+   fuera del flujo para seguir al alcance, pero se retira antes del formulario. */
+.career-mobile-cta {
+  display: none;
+}
+
 .career-page--ia .career-button--primary {
   color: white;
 }
@@ -821,6 +827,17 @@
   background: color-mix(in srgb, currentColor 10%, transparent);
 }
 
+.career-aside-cta > a:first-of-type {
+  border-color: var(--career-ink);
+  background: var(--career-ink);
+  color: var(--career-accent-bright);
+}
+
+.career-aside-cta > a:first-of-type:hover {
+  border-color: color-mix(in srgb, var(--career-ink) 78%, white);
+  background: color-mix(in srgb, var(--career-ink) 82%, white);
+}
+
 .career-aside-cta .career-aside-whatsapp {
   border: 2px solid #073b1c;
   background: #25d366;
@@ -965,6 +982,65 @@
 }
 
 @media (max-width: 900px) {
+  .career-mobile-cta {
+    position: fixed;
+    z-index: 1500;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    padding: .7rem 1.25rem calc(.7rem + env(safe-area-inset-bottom));
+    border-top: 1px solid color-mix(in srgb, var(--career-accent) 48%, transparent);
+    background: color-mix(in srgb, var(--career-ink) 92%, transparent);
+    box-shadow: 0 -12px 36px rgba(0,0,0,.32);
+    backdrop-filter: blur(14px);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100%);
+    transition: opacity .25s ease, transform .3s cubic-bezier(.22,1,.36,1);
+  }
+
+  .career-mobile-cta--visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .career-mobile-cta a {
+    width: min(100%, 34rem);
+    min-height: 3.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    padding: .85rem 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--career-accent) 80%, white);
+    border-radius: .4rem;
+    background: var(--career-accent);
+    color: var(--career-ink);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--career-accent) 24%, transparent);
+    font-size: .9rem;
+    font-weight: 850;
+  }
+
+  .career-page--ia .career-mobile-cta a {
+    color: white;
+  }
+
+  .career-mobile-cta svg {
+    width: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+  }
+
+  body:has(.career-mobile-cta--visible) .scroll-to-top-button {
+    bottom: calc(5.6rem + env(safe-area-inset-bottom));
+  }
+
   .career-hero {
     display: block;
     height: auto;
