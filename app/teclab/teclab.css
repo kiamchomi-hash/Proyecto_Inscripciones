@@ -618,7 +618,9 @@
   }
 
   .teclab-hero-mosaico {
-    gap: 0.5rem;
+    /* Las sombras duras avanzan 7 px: con el gap anterior de 8 px parecía que
+       los marcos se tocaban. Este aire conserva el mosaico 2x2 en mobile. */
+    gap: 1rem;
   }
 
   /* Mas bajas y sin escalonar: en una columna el desfasaje solo abre un hueco,
