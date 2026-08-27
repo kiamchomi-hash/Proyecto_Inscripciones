@@ -154,15 +154,42 @@
 }
 
 .vi-item {
+  --vi-acento: #00c7b1;
+  --vi-borde: rgba(0, 199, 177, 0.2);
+  --vi-borde-activo: rgba(0, 199, 177, 0.48);
+  --vi-boton-inicio: #005587;
+  --vi-boton-fin: #058c70;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--vi-borde);
+  border-radius: 1.25rem;
+  background: linear-gradient(160deg, rgba(28, 58, 56, 0.94), rgba(8, 31, 29, 0.9));
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.24);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vi-item--teclab {
+  --vi-acento: #6c9cff;
+  --vi-borde: rgba(108, 156, 255, 0.24);
+  --vi-borde-activo: rgba(108, 156, 255, 0.52);
+  --vi-boton-inicio: #245fc4;
+  --vi-boton-fin: #087f83;
+  background: linear-gradient(160deg, rgba(14, 39, 71, 0.94), rgba(5, 24, 40, 0.92));
+}
+
+.vi-item:hover {
+  border-color: var(--vi-borde-activo);
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.3);
 }
 
 .vi-marco {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border: 1px solid rgba(0, 199, 177, 0.2);
+  border: 1px solid var(--vi-borde);
   border-radius: 1rem;
   background: #061716;
   box-shadow: 0 14px 38px rgba(0, 0, 0, 0.28);
@@ -233,8 +260,11 @@
 }
 
 .vi-caption {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding: 1rem 0 0;
-  border-bottom: 1px solid rgba(0, 199, 177, 0.14);
+  border-bottom: 1px solid var(--vi-borde);
 }
 
 .vi-caption h3 {
@@ -245,11 +275,109 @@
 }
 
 .vi-caption p {
+  flex: 1;
   max-width: 37rem;
   margin: 0 0 1rem;
   color: #c8dedd;
   font-size: 0.875rem;
   line-height: 1.6;
+}
+
+.vi-folleto {
+  display: block;
+  margin-top: 1rem;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid var(--vi-borde);
+  border-radius: 0.8rem;
+  background: rgba(6, 23, 22, 0.7);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.vi-folleto:hover {
+  border-color: var(--vi-borde-activo);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.3);
+}
+
+.vi-folleto:focus-visible {
+  outline: 3px solid #00ffe1;
+  outline-offset: 3px;
+}
+
+.vi-folleto-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--vi-borde);
+}
+
+.vi-folleto-cabecera strong {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.vi-folleto-cabecera > span {
+  color: #9ac5be;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.vi-folleto-imagen {
+  display: block;
+  overflow: hidden;
+  background: #00201a;
+}
+
+.vi-folleto-imagen img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.vi-destino {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  min-height: 3.1rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.65rem;
+  background: linear-gradient(135deg, var(--vi-boton-inicio), var(--vi-boton-fin));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vi-destino svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.vi-destino:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.vi-destino:focus-visible {
+  outline: 3px solid #00ffe1;
+  outline-offset: 3px;
 }
 
 @media (min-width: 768px) {
@@ -261,7 +389,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .vi-poster,
-  .vi-play {
+  .vi-play,
+  .vi-item,
+  .vi-destino {
     transition: none;
   }
 
