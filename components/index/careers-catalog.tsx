@@ -101,6 +101,14 @@ interface Props {
   teclabLandingHref?: string;
 }
 
+// En la home Identidad sigue dentro del catálogo general, pero no ocupa una
+// píldora propia. El curso conserva su lugar en Teclab Tecnología y suma este
+// acceso directo al final de los filtros.
+const FILTROS_HOME = [
+  ...CATEGORIES.filter(cat => cat.id !== 'identidad_argentina'),
+  { id: 'curso_ia', label: 'Curso de IA', niveles: ['Teclab - Curso'], featured: true },
+];
+
 export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLandingHref }: Props) {
   // El texto largo de las fichas baja aparte, después del primer pintado.
   const detalle = useDetalleCarreras();
@@ -187,13 +195,15 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
     return groups;
   }, [carreras]);
 
+  const categoriasFiltro = teclabLandingHref ? FILTROS_HOME : CATEGORIES;
+
   // Visible categories (categories that have at least one career)
   const visibleCategories = useMemo(() => {
-    return CATEGORIES.filter(cat => {
+    return categoriasFiltro.filter(cat => {
       if (cat.id === 'all') return true;
-      return grouped[cat.id] && grouped[cat.id].length > 0;
+      return carreras.some(c => cat.niveles.includes(c.nivel));
     });
-  }, [grouped]);
+  }, [carreras, categoriasFiltro]);
 
   // Desktop filter dropdown sub-sections
   const [desktopFilterSection, setDesktopFilterSection] = useState<'area' | 'duracion' | null>(null);
@@ -201,9 +211,11 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
   // Apply area/duration filters to grouped data
   const filteredGrouped = useMemo(() => {
     if (!hasFilters) return grouped;
+    const nivelesActivos = categoriasFiltro.find(cat => cat.id === activeCategory)?.niveles;
     const result: Record<string, CarreraCatalogo[]> = {};
     for (const [key, items] of Object.entries(grouped)) {
       const filtered = items.filter(c => {
+        if (activeCategory !== 'all' && nivelesActivos && !nivelesActivos.includes(c.nivel)) return false;
         if (filterArea && getAreaForCarrera(c) !== filterArea) return false;
         if (filterDuration && getDurationGroup(c.duracion) !== filterDuration) return false;
         return true;
@@ -211,16 +223,18 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
       if (filtered.length > 0) result[key] = filtered;
     }
     return result;
-  }, [grouped, filterArea, filterDuration, hasFilters]);
+  }, [grouped, filterArea, filterDuration, activeCategory, categoriasFiltro, hasFilters]);
 
   // Search results
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return null;
     let results = carreras.filter(c => fuzzyMatch(c.nombre, searchQuery.trim()));
+    const nivelesActivos = categoriasFiltro.find(cat => cat.id === activeCategory)?.niveles;
+    if (activeCategory !== 'all' && nivelesActivos) results = results.filter(c => nivelesActivos.includes(c.nivel));
     if (filterArea) results = results.filter(c => getAreaForCarrera(c) === filterArea);
     if (filterDuration) results = results.filter(c => getDurationGroup(c.duracion) === filterDuration);
     return results;
-  }, [carreras, searchQuery, filterArea, filterDuration]);
+  }, [carreras, searchQuery, filterArea, filterDuration, activeCategory, categoriasFiltro]);
 
   // Sections to display (filtered by category)
   const sectionsToShow = useMemo(() => {
@@ -232,9 +246,8 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
       'teclab_gestion',
       'identidad_argentina',
     ];
-    if (activeCategory === 'all') return displayOrder.filter(id => filteredGrouped[id]?.length);
-    return [activeCategory].filter(id => filteredGrouped[id]?.length);
-  }, [activeCategory, filteredGrouped, searchResults]);
+    return displayOrder.filter(id => filteredGrouped[id]?.length);
+  }, [filteredGrouped, searchResults]);
 
   const handleCategoryClick = useCallback((catId: string) => {
     setActiveCategory(catId);
@@ -247,8 +260,8 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
   const contarCategoria = useCallback((catId: string) => (
     catId === 'all'
       ? carreras.filter(c => getCategoryForCarrera(c) !== '_hidden').length
-      : (grouped[catId]?.length ?? 0)
-  ), [carreras, grouped]);
+      : carreras.filter(c => categoriasFiltro.find(cat => cat.id === catId)?.niveles.includes(c.nivel)).length
+  ), [carreras, categoriasFiltro]);
 
   const handleCareerClick = useCallback((carrera: CarreraCatalogo) => {
     // El modal abre ya: si el detalle todavía no bajó —sólo pasa si alguien hace
@@ -354,8 +367,8 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
     licenciaturas: { title: 'Licenciaturas', accent: 'Grado', placeholder: 'BUSCAR LICENCIATURA...' },
     tecnicaturas: { title: 'Tecnicaturas', accent: 'Pregrado', placeholder: 'BUSCAR TECNICATURA...' },
     identidad_argentina: { title: 'Identidad Argentina', placeholder: 'BUSCAR PROGRAMA...' },
-    teclab_tecnologia: { title: 'Teclab', accent: 'Tecnología', titleFiltrado: 'Teclab Tecnología', placeholder: 'BUSCAR TECNICATURA...' },
-    teclab_gestion: { title: 'Teclab', accent: 'Gestión', titleFiltrado: 'Teclab Gestión', placeholder: 'BUSCAR TECNICATURA...' },
+    teclab_tecnologia: { title: 'Teclab', accent: 'Tecnología', titleFiltrado: 'Teclab Tecnología', placeholder: '' },
+    teclab_gestion: { title: 'Teclab', accent: 'Gestión', titleFiltrado: 'Teclab Gestión', placeholder: '' },
   };
 
   return (
@@ -525,6 +538,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                     className={`filter-pill ${cat.id === 'all' ? 'filter-pill-all' : ''} ${activeCategory === cat.id ? 'active' : ''} ${cat.featured ? 'featured' : ''} ${cat.id === 'identidad_argentina' ? 'filter-pill-ia' : ''} ${
                       cat.id === 'teclab_tecnologia' ? 'filter-pill-teclab teclab-tecnologia'
                         : cat.id === 'teclab_gestion' ? 'filter-pill-teclab teclab-gestion'
+                        : cat.id === 'curso_ia' ? 'filter-pill-teclab teclab-curso'
                         : ''
                     }`}
                     aria-pressed={activeCategory === cat.id}
@@ -622,6 +636,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                       : sectionId === 'teclab_gestion' ? 'gestion'
                       : undefined
                   }
+                  searchPlaceholder={section.placeholder}
                   titleHref={sectionId.startsWith('teclab_') ? teclabLandingHref : undefined}
                 />
               );
@@ -672,7 +687,7 @@ function getOrdenCategorias(sectionId: string): readonly { id: string; label: st
 }
 
 // Career section component
-function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab, titleHref }: {
+function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab, searchPlaceholder, titleHref }: {
   sectionId: string;
   title: string;
   accent?: string;
@@ -680,6 +695,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
   onCareerClick: (c: CarreraCatalogo) => void;
   isIdentidadArgentina?: boolean;
   familiaTeclab?: TeclabFamilia;
+  searchPlaceholder: string;
   titleHref?: string;
 }) {
   const [sectionSearch, setSectionSearch] = useState('');
@@ -774,7 +790,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
             <input
               type="text"
               className="flex-1 bg-[var(--catalogo-form-campo)] border border-[var(--catalogo-acento)]/25 rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none focus:border-[var(--catalogo-acento)]/60 transition-colors uppercase font-bold tracking-wider"
-              placeholder={`BUSCAR ${title.toUpperCase()}...`}
+              placeholder={searchPlaceholder}
               value={sectionSearch}
               onChange={e => setSectionSearch(e.target.value)}
               aria-label={`Buscar ${title.toLowerCase()}`}
