@@ -232,25 +232,25 @@
 /* Identidad Argentina pill */
 .filter-pill-ia {
   background-color: rgba(0, 144, 193, 0.22);
-  color: #8fd0e8;
+  color: #fff;
   border: 1px solid rgba(0, 144, 193, 0.5);
   font-weight: 900;
 }
 .filter-pill-ia:hover {
   background-color: rgba(0, 144, 193, 0.32);
-  color: var(--ia-yellow);
+  color: #fff;
   border-color: rgba(241, 207, 28, 0.5);
 }
 .filter-pill-ia.active {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  color: #1a1a1a !important;
-  border-color: rgba(255, 255, 255, 0.6);
+  background-color: #006f96 !important;
+  color: #fff !important;
+  border-color: #0090c1;
 }
 
 /* Filter pills — base */
 .filter-pill {
   background-color: rgba(200, 200, 210, 0.12);
-  color: #c5c8ce;
+  color: #fff;
   border: 1px solid rgba(200, 200, 210, 0.25);
   padding: 7px 4px;
   min-height: 42px;
@@ -280,7 +280,7 @@
 
 .filter-pill.filter-pill-all {
   background-color: rgba(var(--catalogo-acento-rgb), 0.12);
-  color: var(--catalogo-acento);
+  color: #fff;
   border: 1px solid rgba(var(--catalogo-acento-rgb), 0.35);
 }
 
@@ -289,9 +289,9 @@
 }
 
 .filter-pill.filter-pill-all.active {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  color: #1a1a1a !important;
-  border-color: rgba(255, 255, 255, 0.6);
+  background-color: #046b56 !important;
+  color: #fff !important;
+  border-color: #058c70;
   box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1);
   transform: none;
 }
@@ -310,9 +310,9 @@
 }
 
 .filter-pill.active {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  color: #1a1a1a !important;
-  border-color: rgba(255, 255, 255, 0.6);
+  background-color: #046b56 !important;
+  color: #fff !important;
+  border-color: #058c70;
   font-weight: 800;
   box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1);
   transform: none;
@@ -1215,7 +1215,7 @@ mark {
    que es mas especifica y ademas viene despues: las pildoras de Teclab salian
    con el verde de Siglo 21 en vez de su cian y su violeta. */
 .filter-pill.filter-pill-teclab {
-  color: color-mix(in srgb, var(--teclab-accent) 55%, white);
+  color: #fff;
   background-color: color-mix(in srgb, var(--teclab-accent) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--teclab-accent) 45%, transparent);
   font-weight: 900;
@@ -1224,9 +1224,9 @@ mark {
   background-color: color-mix(in srgb, var(--teclab-accent) 28%, transparent);
 }
 .filter-pill.filter-pill-teclab.active {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  color: #1a1a1a !important;
-  border-color: rgba(255, 255, 255, 0.6);
+  background-color: color-mix(in srgb, var(--teclab-accent) 42%, #061713) !important;
+  color: #fff !important;
+  border-color: color-mix(in srgb, var(--teclab-accent) 70%, white);
 }
 
 @import "../components/index/modales.css";
