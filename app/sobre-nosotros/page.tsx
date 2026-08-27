@@ -340,7 +340,7 @@ export default function SobreNosotrosPage() {
           id="videos-institucionales-titulo"
           className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white"
         >
-          Conocé las propuestas en video
+          Conocé nuestra oferta educativa
         </h2>
         <VideosInstitucionales />
       </section>
