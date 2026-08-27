@@ -109,8 +109,12 @@ function Reproductor({ video }: { video: VideoInstitucional }) {
         aria-label={`Abrir el folleto de ${video.titulo} en tamaño completo`}
       >
         <span className="vi-folleto-cabecera">
-          <strong>Folleto de {video.titulo}</strong>
-          <span>Abrir en tamaño completo</span>
+          <strong>{video.titulo}</strong>
+          <span className="vi-folleto-ampliar" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" />
+            </svg>
+          </span>
         </span>
         <span className="vi-folleto-imagen">
           <Image
