@@ -152,7 +152,9 @@ Hay **tres** triggers de Postgres, uno por tabla de formulario, y todos llaman a
 
 Como `net.http_post` encola sin bloquear, **el `INSERT` responde 201 aunque la notificación se caiga**. Pasó del 20 al 27/07/2026: se le agregó validación de secreto a la función y el trigger nunca se actualizó.
 
-Cada vez que se toque `WEBHOOK_SECRET`, la función `notificar` o el trigger, hay que verificar a mano — el procedimiento SQL está en `PENDIENTES.md` y en `sql/2026-07-27_webhook_notificar.sql`. Un `401` en `net._http_response` significa que los secretos no coinciden.
+Cada vez que se toque `WEBHOOK_SECRET`, la función `notificar` o el trigger, hay que verificar a mano — el procedimiento SQL está en `PENDIENTES.md` y en `sql/2026-08-28_rotar_secretos.sql`. Un `401` en `net._http_response` significa que los secretos no coinciden. **Verificar ahí y no por lo que responde el formulario**, que da 201 igual.
+
+**El secreto ya no vive en el cuerpo del trigger sino en el Vault** (`sql/2026-08-28_secretos_al_vault.sql`, 28/08/2026): las dos funciones lo leen de `vault.decrypted_secrets` y por eso las dos son `SECURITY DEFINER`. `WEBHOOK_SECRET` lo validan **dos** Edge Functions, `notificar` y `digest-clicks`; rotarlo obliga a probar las dos. `alerta-firewall` no entra: usa `VERCEL_WEBHOOK_SECRET`, que es otro secreto.
 
 ### Revalidación on-demand
 
@@ -169,7 +171,7 @@ Hay una **segunda familia de triggers**, que no tiene nada que ver con los aviso
 
 El endpoint no recibe la fila entera sino los campos con los que arma las rutas (`slug`, `nombre`, `prefix`, `nivel` y los anteriores, para cubrir el renombre). El mapeo tabla → rutas vive en `rutasA()`; **una tabla nueva sin mapear devuelve 400 a propósito**, para que el trigger no dispare contra la nada en silencio. `tabla: 'todo'` rehace el sitio entero, sin deploy.
 
-Se autentica con `REVALIDATE_SECRET` (Vercel), que tiene que coincidir con el literal del cuerpo del trigger. Igual que con los avisos, `net.http_post` encola: si esto falla el `UPDATE` responde ok lo mismo y la página queda vieja. Se diagnostica en `net._http_response` — 401 secretos distintos, 503 falta la variable en Vercel, 400 tabla sin mapear.
+Se autentica con `REVALIDATE_SECRET` (Vercel), que tiene que coincidir con el que guarda el Vault de Supabase — hasta el 28/08/2026 estaba escrito como literal en el cuerpo del trigger, que es donde cualquier rol con conexión podía leerlo. Igual que con los avisos, `net.http_post` encola: si esto falla el `UPDATE` responde ok lo mismo y la página queda vieja. Se diagnostica en `net._http_response` — 401 secretos distintos, 503 falta la variable en Vercel, 400 tabla sin mapear.
 
 ### Panel admin
 

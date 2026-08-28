@@ -4,6 +4,26 @@
 
 ## Abierto
 
+- [ ] **Cuatro archivos de `sql/` reponen el literal del secreto si se vuelven a correr.** El paso al Vault del 28/08/2026 reescribió las dos funciones y el job, pero **los archivos que las definían antes siguen ahí con el literal adentro**, y la convención del proyecto es correr `sql/` a mano en orden de fecha. O sea que un setup desde cero, o cualquiera que reaplique uno de estos, deshace el arreglo sin enterarse:
+
+  | Archivo | Qué pasa si se reaplica |
+  |---|---|
+  | `sql/2026-08-07_revalidar_on_demand.sql` | reescribe `notify_revalidar` con `Bearer <REVALIDATE_SECRET>` pegado |
+  | `sql/2026-07-27_webhook_notificar.sql` | reescribe `notify_edge_function` con el literal **y sin `SECURITY DEFINER`**, así que además le saca el acceso al Vault |
+  | `sql/2026-07-22_clicks_carreras.sql` | su bloque de cron pide pegar `<WEBHOOK_SECRET>` a mano |
+  | `sql/2026-07-27_cron_digest_clicks.sql` | saca el secreto de `pg_proc` con un `regexp_match`, que ahora no encuentra nada |
+
+  El último es el menos grave porque **falla fuerte**: el `DO` block tiene un `RAISE EXCEPTION` si no encuentra el valor, así que aborta en vez de programar un job roto. Pero su bloque de verificación del final no está protegido: arma el header con el mismo `regexp_match`, que devuelve `NULL`, y manda un `Bearer ` vacío que da 401 — o sea, parece que el digest está roto cuando lo que está roto es la consulta.
+
+  Lo barato es un aviso arriba de cada uno apuntando a `sql/2026-08-28_secretos_al_vault.sql`; lo prolijo es reescribirles el cuerpo para que lean del Vault, y que reaplicarlos sea inocuo. `sql/2026-07-27_webhook_notificar.sql` además queda citado desde `CLAUDE.md` como *el* procedimiento de verificación, cita que ya se corrigió, pero el archivo sigue describiendo un mundo que no existe.
+
+  **Ojo con el orden si alguna vez se rehace la base de cero**: los de julio y agosto tienen que correr *antes* del `2026-08-28_secretos_al_vault.sql`, que es el que los deja bien. Correrlos después lo pisa.
+
+- [ ] **Dos cabos sueltos de la rotación del 28/08/2026.** Ninguno rompe nada, los dos confunden al próximo que mire:
+
+  1. **`.env.local` de la máquina de Windows tiene el `REVALIDATE_SECRET` viejo**, el de antes de rotar. No lo lee nada en local —el trigger vive en la base—, pero es un valor muerto que en el próximo diagnóstico se va a leer como si fuera el vigente. Conviene borrar la línea. De paso, `CLAUDE.md` dice que ese archivo tiene sólo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_GA_ID`, y no es cierto.
+  2. **`consultas` tiene una fila de prueba vieja, id 56**, `PRUEBA PRUEBA` del 07/08/2026. Se borra desde local con `npm run db "DELETE FROM consultas WHERE id = 56"`. Las dos de la rotación ya se borraron.
+
 - [ ] **Actualizar los datos locales desde el nuevo Dashboard Comercial de Teclab.** Desde el 26/08/2026 la fuente oficial es `https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(Agentes).html` y reemplaza al archivo `(01).html`. El acceso visual usa las credenciales entregadas por Teclab; no versionarlas. El HTML sigue trayendo los datos embebidos y se puede bajar sin iniciar sesión.
 
   Cuando se haga la actualización, regenerar `carreras/teclab/dashboard-comercial.json`, `carreras/teclab/calendario-teclab.json`, `ventas/teclab-convenios.md` y cualquier respuesta del corpus afectada. Después correr los tests de ventas, la auditoría de instituciones y los dos generadores. Hasta entonces esos archivos conservan correctamente la referencia a la fuente anterior porque describen el snapshot del 15/08/2026.
