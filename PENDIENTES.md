@@ -4,11 +4,6 @@
 
 ## Abierto
 
-- [ ] **Dos cabos sueltos de la rotación del 28/08/2026.** Ninguno rompe nada, los dos confunden al próximo que mire:
-
-  1. **`.env.local` de la máquina de Windows tiene el `REVALIDATE_SECRET` viejo**, el de antes de rotar. No lo lee nada en local —el trigger vive en la base—, pero es un valor muerto que en el próximo diagnóstico se va a leer como si fuera el vigente. Conviene borrar la línea. De paso, `CLAUDE.md` dice que ese archivo tiene sólo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_GA_ID`, y no es cierto.
-  2. **`consultas` tiene una fila de prueba vieja, id 56**, `PRUEBA PRUEBA` del 07/08/2026. Se borra desde local con `npm run db "DELETE FROM consultas WHERE id = 56"`. Las dos de la rotación ya se borraron.
-
 - [ ] **Actualizar los datos locales desde el nuevo Dashboard Comercial de Teclab.** Desde el 26/08/2026 la fuente oficial es `https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(Agentes).html` y reemplaza al archivo `(01).html`. El acceso visual usa las credenciales entregadas por Teclab; no versionarlas. El HTML sigue trayendo los datos embebidos y se puede bajar sin iniciar sesión.
 
   Cuando se haga la actualización, regenerar `carreras/teclab/dashboard-comercial.json`, `carreras/teclab/calendario-teclab.json`, `ventas/teclab-convenios.md` y cualquier respuesta del corpus afectada. Después correr los tests de ventas, la auditoría de instituciones y los dos generadores. Hasta entonces esos archivos conservan correctamente la referencia a la fuente anterior porque describen el snapshot del 15/08/2026.
