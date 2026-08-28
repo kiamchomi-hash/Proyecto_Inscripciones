@@ -4,7 +4,11 @@
 
 ## Abierto
 
-- [ ] **La hoja de estilos viaja tres veces en el HTML de la home, y la documentación de Next promete dos.** Medido el 28/08/2026 sobre producción, con Next **16.3.0**. Los 621,4 KB sin comprimir se reparten así:
+- [ ] **La hoja de estilos viaja tres veces en el HTML de la home, y la documentación de Next promete dos.** Medido el 28/08/2026 sobre producción, con Next **16.3.0**.
+
+  **Esta entrada absorbe la que preguntaba "qué infló la home".** Esa decía que el 09/08/2026 `npm run smoke` había medido **961 KB sin comprimir (126 KB en el cable)** contra los 449 KB de la medición del A/B de `inlineCss`, que había "más que duplicado" y que había que averiguar la causa antes de tocar nada. La trayectoria completa es **449 KB (A/B de inlineCss) → 961 KB (09/08) → 620 KB (28/08)**: bajó un 35% desde el pico sin que nadie fuera a buscarlo, y en el cable pasó de 126 a 62 KB, la mitad. Así que la alarma de agosto ya no aplica y la causa está identificada — es la que sigue.
+
+  Los 621,4 KB sin comprimir se reparten así:
 
   | Parte | Peso |
   |---|---|
@@ -28,7 +32,7 @@
 
   Y para el peso por parte, contar el tamaño de cada `<style>` y de cada `<script>` según contenga o no `@layer base`. Ojo con dos trampas en las que ya caí: medir sobre el HTML escapado da números que no cierran (hay que desescapar el payload con `JSON.parse` de cada `self.__next_f.push`), y un regex con cuantificador grande se come miles de caracteres y reparte mal el peso.
 
-  **Lo que cuesta hoy es chico y por eso no urge**: tres copias idénticas comprimen casi como una. Sacando las dos del payload y comprimiendo con la misma calidad, 52,5 KB → 43,8 KB, unos **8,6 KB sobre los 62 KB** que mide `npm run smoke` contra prod. Lo que sí importa es el efecto multiplicador: **cada KB que se agregue a la hoja de estilos cuesta 3 KB de HTML**, y eso explica el crecimiento de los 449 KB que se anotaron al medir `inlineCss` a los 621 KB de hoy.
+  **Lo que cuesta hoy es chico y por eso no urge**: tres copias idénticas comprimen casi como una. Sacando las dos del payload y comprimiendo con la misma calidad, 52,5 KB → 43,8 KB, unos **8,6 KB sobre los 62 KB** que mide `npm run smoke` contra prod. Lo que sí importa es el efecto multiplicador: **cada KB que se agregue a la hoja de estilos cuesta 3 KB de HTML**, y eso es lo que hace que el peso de la página se mueva tanto — en los dos sentidos. Explica el salto a los 961 KB del 09/08 y también la baja a 620 sin que nadie tocara nada a propósito: con la hoja pesando el 66% de la página y triplicada, cualquier cambio en el CSS mueve el total tres veces más de lo que uno espera.
 
   Ojo: `npm run smoke` imprime el peso pero **no lo puede reprobar** — no hay umbral en `herramientas/smoke.mjs`, así que un "todo verde" no dice nada sobre esto.
 
@@ -113,8 +117,6 @@
 - [ ] **Limpiar la API key muerta de TestSprite del `~/.claude.json` de la máquina de Linux.** La cuenta se configuró allá (`/home/coco/Escritorio/Pagina_Siglo21`), así que la entrada del MCP con la key vieja quedó en ese archivo; en Windows no hay rastro. **Es higiene, no seguridad**: la key se borró en testsprite.com el 08/08/2026 y ya no sirve para nada. Se busca `testsprite` en `~/.claude.json` y se saca la entrada entera, que el servidor tampoco se usa más.
 
   Al pasar a esa máquina, ojo con lo otro: **hay que clonar el repo de nuevo, no hacer `pull`**. La historia se reescribió el 08/08/2026 y un pull mezcla las dos.
-
-- [ ] **La home pesa 961 KB sin comprimir.** Lo midió `npm run smoke` el 09/08/2026 (126 KB en el cable con brotli). La última medición documentada era de 449 KB, así que más que duplicó y nadie anotó cuándo. No es una regresión conocida de nada: hay que ver qué la infló antes de tocar `inlineCss`, que ya se midió A/B y conviene dejar prendido.
 
 - [ ] **Faltan los campos de preinscripción de Teclab y de Identidad.** El 14/08/2026 se unificaron en el corpus de Siglo 21 las dos intenciones que competían —"cómo me inscribo" contestaba una lista de cuatro datos y "quiero preinscribirme" no existía como pregunta de ejemplo, así que caía en *no entiendo* o contestaba el precio—. Quedó una sola respuesta con los **once campos** que pide el sistema de Siglo 21: nombre y apellido completos, DNI, fecha de nacimiento, localidad de nacimiento, nacionalidad, país de residencia, sexo, estado civil, mail, dirección, y barrio con código postal. Sin teléfono a propósito: el lead está escribiendo por WhatsApp.
 
