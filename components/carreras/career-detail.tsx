@@ -4,7 +4,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
-import { WhatsAppIcon } from '@/components/icons';
 import type { Carrera, CarreraEnlace } from '@/components/index/types';
 import { carreraToSlug, carreraFullName } from '@/components/index/types';
 import { getEscuelaIA } from '@/components/index/identidad-argentina';
@@ -116,6 +115,15 @@ function CheckIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
       <path d="m5 12 4 4L19 6" />
+    </svg>
+  );
+}
+
+function WhatsAppCtaIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.3L3 20.5l1.6-4.9A8.4 8.4 0 1 1 20.5 11.6Z" />
+      <path d="M8.1 7.8c.4 3.9 2.8 6.3 6.7 6.7l1.3-1.5-2.3-1.1-.8.8a6.1 6.1 0 0 1-2.2-2.2l.8-.8-1.1-2.3-1.5 1.3" />
     </svg>
   );
 }
@@ -564,7 +572,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               {hasPlan && <a href="#plan">Plan de estudios</a>}
             </nav>
             <div className="career-aside-cta">
-              <span>{carrera.proximamente ? 'Próxima apertura' : '¿Ya elegiste?'}</span>
+              {carrera.proximamente && <span>Próxima apertura</span>}
               <strong>
                 {carrera.proximamente ? (
                   <>Te avisamos <em>cuando abra.</em></>
@@ -581,7 +589,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 target="_blank"
                 rel="noopener nofollow"
               >
-                <WhatsAppIcon className="career-aside-whatsapp-icon" />
+                <WhatsAppCtaIcon />
                 <span>Consultar por WhatsApp</span>
               </a>
             </div>

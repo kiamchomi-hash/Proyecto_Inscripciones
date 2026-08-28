@@ -72,6 +72,13 @@ marca, numeral índice, reglas— del mismo lenguaje óptico que ya usa la pieza
 montados **una vez para todo el bloque**, no dentro de cada ficha (si entran en
 cada corte, parpadean). Que aporten algo que la escena no dice, no adorno suelto.
 
+### Unbounded no se usa y los botones no se desplazan
+
+La tipografía `Unbounded` está descartada para todo el sitio, incluidos marca,
+títulos y llamados a la acción. Va `Inter`; `DM Sans` queda como alternativa
+puntual. Los botones pueden cambiar color, brillo, borde o sombra en hover, pero
+no hacen `translate`, no escalan y no se mueven.
+
 ### Cada trabajo deja sus enlaces
 
 Al terminar, un archivo con **los links que se usaron** (`referencias/AAAA-MM-DD-<tema>.md`).

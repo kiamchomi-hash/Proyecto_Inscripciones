@@ -830,10 +830,11 @@
   display: block;
   margin-bottom: 1.7rem;
   color: #f6fbfa;
-  font-family: var(--font-unbounded), sans-serif;
-  font-size: clamp(1.65rem, 2vw, 2rem);
-  line-height: 1.02;
-  letter-spacing: -.05em;
+  font-family: var(--font-inter), sans-serif;
+  font-size: clamp(1.9rem, 2.25vw, 2.3rem);
+  font-weight: 900;
+  line-height: .96;
+  letter-spacing: -.055em;
   text-wrap: balance;
 }
 
@@ -855,7 +856,7 @@
   font-size: .76rem;
   font-weight: 800;
   transition: color .2s ease, background .2s ease, border-color .2s ease,
-    box-shadow .2s ease, transform .2s ease;
+    filter .2s ease;
 }
 
 .career-aside-cta a + a {
@@ -870,8 +871,7 @@
 
 .career-aside-cta > a:first-of-type:hover {
   background: #fff;
-  box-shadow: 0 7px 0 var(--career-accent-bright);
-  transform: translateY(-2px);
+  filter: brightness(1.04);
 }
 
 .career-aside-cta .career-aside-whatsapp {
@@ -883,14 +883,18 @@
 
 .career-aside-cta .career-aside-whatsapp:hover {
   background: linear-gradient(135deg, #43ed89, #26d56b);
-  box-shadow: 0 11px 26px rgba(37,211,102,.3);
-  transform: translateY(-2px);
+  filter: brightness(1.04);
 }
 
-.career-aside-whatsapp-icon {
-  width: 1.15rem;
-  height: 1.15rem;
-  flex: 0 0 1.15rem;
+.career-aside-whatsapp svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 
 .career-related {
