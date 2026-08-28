@@ -528,7 +528,7 @@
   position: relative;
   isolation: isolate;
   display: flex;
-  min-height: clamp(380px, 56svh, 600px);
+  min-height: clamp(340px, 42svh, 440px);
   align-items: center;
   overflow: hidden;
   border-bottom: 1px solid rgba(0, 199, 177, 0.24);
@@ -571,7 +571,7 @@
   max-width: 700px;
   margin: 0 0 2rem;
   color: #fff;
-  font-size: clamp(2.65rem, 6vw, 5.8rem);
+  font-size: clamp(2.5rem, 4.8vw, 4.6rem);
   font-weight: 900;
   line-height: 0.92;
   letter-spacing: -0.065em;
@@ -889,12 +889,12 @@ a.ca-materia:hover .ca-materia-ico {
 }
 
 @media (max-width: 640px) {
-  .ca-hero { min-height: 470px; align-items: flex-end; }
+  .ca-hero { min-height: 390px; align-items: flex-end; }
   .ca-hero-imagen { object-position: 66% center; }
   .ca-hero-velo { background: linear-gradient(0deg, rgba(2, 16, 15, 0.97) 0%, rgba(2, 16, 15, 0.72) 46%, rgba(2, 16, 15, 0.18) 100%); }
   .ca-hero::after { bottom: 1.4rem; width: 28vw; }
-  .ca-hero-contenido { padding-bottom: 3.7rem; }
-  .ca-hero h1 { max-width: 360px; margin-bottom: 1.5rem; font-size: clamp(2.55rem, 12vw, 3.5rem); }
+  .ca-hero-contenido { padding-bottom: 2.7rem; }
+  .ca-hero h1 { max-width: 340px; margin-bottom: 1.25rem; font-size: clamp(2.25rem, 10.5vw, 3rem); }
   .ca-hero-marca { top: 1.2rem; right: 1rem; }
   .ca-seccion { padding-block: 4.5rem; }
   .ca-encabezado { margin-bottom: 2.4rem; }
