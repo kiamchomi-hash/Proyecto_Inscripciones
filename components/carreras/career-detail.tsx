@@ -119,15 +119,6 @@ function CheckIcon() {
   );
 }
 
-function WhatsAppCtaIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.3L3 20.5l1.6-4.9A8.4 8.4 0 1 1 20.5 11.6Z" />
-      <path d="M8.1 7.8c.4 3.9 2.8 6.3 6.7 6.7l1.3-1.5-2.3-1.1-.8.8a6.1 6.1 0 0 1-2.2-2.2l.8-.8-1.1-2.3-1.5 1.3" />
-    </svg>
-  );
-}
-
 export default function CareerDetail({ carrera, relacionadas }: Props) {
   const isIA = carrera.nivel === 'Identidad Argentina';
   const isTeclabCourse = esCursoTeclab(carrera);
@@ -589,7 +580,6 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 target="_blank"
                 rel="noopener nofollow"
               >
-                <WhatsAppCtaIcon />
                 <span>Consultar por WhatsApp</span>
               </a>
             </div>

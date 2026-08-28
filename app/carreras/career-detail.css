@@ -294,9 +294,12 @@
 }
 
 .career-button:hover svg,
-.career-related a:hover svg,
-.career-aside-cta a:hover svg {
+.career-related a:hover svg {
   transform: translateX(4px);
+}
+
+.career-aside-cta svg {
+  transition: none;
 }
 
 .career-button--primary {
@@ -855,8 +858,7 @@
   border-radius: .65rem;
   font-size: .76rem;
   font-weight: 800;
-  transition: color .2s ease, background .2s ease, border-color .2s ease,
-    filter .2s ease;
+  transition: none;
 }
 
 .career-aside-cta a + a {
@@ -869,32 +871,11 @@
   box-shadow: 0 5px 0 var(--career-accent);
 }
 
-.career-aside-cta > a:first-of-type:hover {
-  background: #fff;
-  filter: brightness(1.04);
-}
-
 .career-aside-cta .career-aside-whatsapp {
   background: linear-gradient(135deg, #2ee678, #20c962);
   color: #06391d;
   box-shadow: 0 8px 22px rgba(37,211,102,.2);
   white-space: nowrap;
-}
-
-.career-aside-cta .career-aside-whatsapp:hover {
-  background: linear-gradient(135deg, #43ed89, #26d56b);
-  filter: brightness(1.04);
-}
-
-.career-aside-whatsapp svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex: 0 0 1.25rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
 }
 
 .career-related {
