@@ -205,12 +205,28 @@
   0% { opacity: 0; transform: translateY(8px) scale(0.95); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-.ct-chat-msg-1 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 1s forwards; }
-.ct-chat-msg-2 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 2.2s forwards; }
-.ct-chat-msg-3 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 4s forwards; }
-.ct-chat-msg-4 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 5.5s forwards; }
-.ct-chat-msg-5 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 7.5s forwards; }
-.ct-chat-msg-6 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 9s forwards; }
+/* Los seis globos entran escalonados, con la pausa mas larga antes de cada
+   respuesta del CAU: es lo que hace que se lea como alguien escribiendo y no
+   como una lista que aparece sola.
+
+   La secuencia cierra a los 6,15s y no a los 9,35s que tenia antes. El ultimo
+   globo es el que invita a la inscripcion, asi que es el que no se puede
+   permitir que el visitante se pierda por irse de la seccion. */
+.ct-chat-msg-1 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards; }
+.ct-chat-msg-2 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards; }
+.ct-chat-msg-3 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 2.6s forwards; }
+.ct-chat-msg-4 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 3.6s forwards; }
+.ct-chat-msg-5 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 4.8s forwards; }
+.ct-chat-msg-6 { animation: ct-chat-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) 5.8s forwards; }
+
+/* La regla global de app/globals.css pisa animation-duration pero no
+   animation-delay, asi que sin esto quien pide menos movimiento igual espera
+   toda la secuencia para leer el final: se queda sin la animacion y con la
+   demora, que es el peor de los dos mundos. Aca la conversacion entera esta
+   desde el primer momento. */
+@media (prefers-reduced-motion: reduce) {
+  .ct-chat-msg { animation-delay: 0s !important; }
+}
 
 /* ── Post cards ────────────────────────────────────────── */
 .ct-post-card {
