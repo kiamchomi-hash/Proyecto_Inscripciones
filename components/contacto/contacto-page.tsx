@@ -315,7 +315,7 @@ export default function ContactoPageContent() {
                   {/* User message 2 */}
                   <div className="ct-chat-msg ct-chat-msg-3 flex justify-end opacity-0">
                     <div className="rounded-lg px-2.5 py-1.5 max-w-[80%]" style={{ background: '#1f3834' }}>
-                      <p className="text-[10px] text-white/90">No puedo entrar a la plataforma, ¿me ayudás?</p>
+                      <p className="text-[10px] text-white/90">Quiero estudiar una tecnicatura pero no sé por dónde empezar</p>
                       <p className="text-[7px] text-right mt-0.5" style={{ color: '#7ca19b' }}>14:03</p>
                     </div>
                   </div>
@@ -323,14 +323,14 @@ export default function ContactoPageContent() {
                   <div className="ct-chat-msg ct-chat-msg-4 flex justify-start opacity-0">
                     <div className="rounded-lg px-2.5 py-1.5 max-w-[80%]" style={{ background: '#143330' }}>
                       <p className="text-[10px] font-semibold" style={{ color: '#25D366' }}>CAU Villa Lugano</p>
-                      <p className="text-[10px] text-white/90">Dale, ya te ayudo a ingresar 💪</p>
+                      <p className="text-[10px] text-white/90">Te ayudo a elegir. ¿Buscás algo corto o seguir después con una licenciatura?</p>
                       <p className="text-[7px] text-right mt-0.5" style={{ color: '#7ca19b' }}>14:03</p>
                     </div>
                   </div>
                   {/* User message 3 */}
                   <div className="ct-chat-msg ct-chat-msg-5 flex justify-end opacity-0">
                     <div className="rounded-lg px-2.5 py-1.5 max-w-[75%]" style={{ background: '#1f3834' }}>
-                      <p className="text-[10px] text-white/90">Gracias por la ayuda! 🙌</p>
+                      <p className="text-[10px] text-white/90">Algo corto, para empezar a trabajar pronto</p>
                       <p className="text-[7px] text-right mt-0.5" style={{ color: '#7ca19b' }}>14:05</p>
                     </div>
                   </div>
@@ -338,7 +338,7 @@ export default function ContactoPageContent() {
                   <div className="ct-chat-msg ct-chat-msg-6 flex justify-start opacity-0">
                     <div className="rounded-lg px-2.5 py-1.5 max-w-[80%]" style={{ background: '#143330' }}>
                       <p className="text-[10px] font-semibold" style={{ color: '#25D366' }}>CAU Villa Lugano</p>
-                      <p className="text-[10px] text-white/90">No es nada! Cualquier consulta estoy a tu disposición 😊</p>
+                      <p className="text-[10px] text-white/90">Dale! Te paso las opciones y vemos juntos la inscripción 😊</p>
                       <p className="text-[7px] text-right mt-0.5" style={{ color: '#7ca19b' }}>14:05</p>
                     </div>
                   </div>
