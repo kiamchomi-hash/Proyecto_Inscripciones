@@ -59,8 +59,14 @@ const FAQ_ITEMS: FaqItem[] = [
             contenido indexable de la página, y ésta es la pregunta de intención
             local, que es la que mejor convierte para un centro de barrio. Antes
             decía "contactanos para confirmar dirección", con el mapa abajo y la
-            dirección en el pie de todas las páginas. */}
-        <p>Estamos en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Guaminí 4876, Piso 1</strong>, en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Mataderos, Liniers y Villa Celina</strong>.</p>
+            dirección en el pie de todas las páginas.
+
+            El horario es el de la SEDE, 9 a 20, el mismo que muestra
+            `components/footer.tsx`. No confundirlo con el "Lun a Vie, 8 a 20 hs"
+            de `components/contacto/contacto-page.tsx`, que es el del WhatsApp y
+            arranca una hora antes: son dos cosas distintas, no una diferencia
+            para emparejar. */}
+        <p>Estamos en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Guaminí 4876, Piso 1</strong>, en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Mataderos, Liniers y Villa Celina</strong>. Atendemos de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>lunes a viernes de 9 a 20 hs</strong>.</p>
         <p style={{ fontSize: '0.78rem', color: '#5a8a80', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>cerca de</p>
         <div className="grid grid-cols-3 gap-2">
           <ZonaCard name="Villa Lugano" />
