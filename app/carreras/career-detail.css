@@ -1187,6 +1187,23 @@
     width: min(100% - 2.5rem, 1280px);
   }
 
+  /* El boton "Ver todas las carreras" sale en telefono. Lleva a `/#carreras`,
+     que es exactamente adonde lleva el enlace "Carreras" de las migas que tiene
+     al lado: eran dos vueltas al mismo lugar, pegadas, comiendose una fila
+     entera arriba del titulo. Y ahi el boton ademas envolvia a dos lineas,
+     porque al repartir el ancho le tocan unos 140px.
+     De 641px para arriba entran los dos en una linea y se quedan. */
+  .career-all-careers {
+    display: none;
+  }
+
+  /* Solas en la fila, las migas vuelven a la izquierda. El centrado del bloque
+     de 900px era para repartir el ancho con el boton; sin el, centradas no
+     coinciden con el titulo, que arranca pegado al margen. */
+  .career-breadcrumb {
+    justify-content: flex-start;
+  }
+
   .career-hero h1 {
     font-size: clamp(3rem, 14vw, 4.5rem);
     font-weight: 700;
