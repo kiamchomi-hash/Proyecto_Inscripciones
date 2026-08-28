@@ -120,6 +120,32 @@
   letter-spacing: 0.05em;
   font-weight: 700;
   opacity: 0.7;
+  /* Sin unidad, asi escala con el font-size de cada variante: las tarjetas de
+     Teclab bajan el rotulo a 0.66rem mas abajo en este archivo. */
+  line-height: 1.2;
+  /* "GRADO / LICENCIATURA EN" no entra en una linea en la grilla de escritorio
+     y se partia dejando el "EN" solo. `balance` reparte como "GRADO /" +
+     "LICENCIATURA EN". Donde no esta soportado se envuelve como antes. */
+  text-wrap: balance;
+}
+
+/* Dos lineas reservadas para el rotulo, asi los titulos de una misma fila
+   arrancan a la misma altura: con rotulos de una y de dos lineas conviviendo,
+   "Abogacia" quedaba ~20px mas arriba que "Finanzas".
+
+   Va de 768px para arriba, que es donde la grilla pasa a dos columnas
+   (`md:grid-cols-2`). Abajo de eso va una tarjeta por fila, no hay nada que
+   alinear, y reservar la segunda linea le sumaria ~0,9rem a cada una de las 88
+   tarjetas de una pagina que ya mide 32.691px de alto.
+
+   `2lh` y no una medida en rem: se resuelve contra el line-height propio de
+   cada tarjeta, asi las de Teclab reservan sus dos lineas y no las de otro.
+   El rem de arriba es el respaldo para los navegadores sin `lh`. */
+@media (min-width: 768px) {
+  .career-prefix {
+    min-height: 1.8rem;
+    min-height: 2lh;
+  }
 }
 
 /* Sticky search bar */
