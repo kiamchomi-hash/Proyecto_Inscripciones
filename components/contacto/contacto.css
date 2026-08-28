@@ -223,7 +223,13 @@
    animation-delay, asi que sin esto quien pide menos movimiento igual espera
    toda la secuencia para leer el final: se queda sin la animacion y con la
    demora, que es el peor de los dos mundos. Aca la conversacion entera esta
-   desde el primer momento. */
+   desde el primer momento.
+
+   Ojo: aca va el delay en cero y NO `animation: none`, al reves que en
+   app/teclab/teclab.css, app/novedades/novedades.css y
+   app/carreras/career-detail.css. La diferencia es que estos globos arrancan
+   con la clase `opacity-0` puesta en el markup y es la animacion la que los
+   hace visibles: apagarla los dejaria invisibles para siempre. */
 @media (prefers-reduced-motion: reduce) {
   .ct-chat-msg { animation-delay: 0s !important; }
 }

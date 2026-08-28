@@ -1228,6 +1228,36 @@
   .career-related-heading { align-items: start; flex-direction: column; }
 
 }
+/* ── Movimiento reducido ──────────────────────────────────
+   Estas entradas usan fill-mode `both`, que aplica el fotograma inicial
+   DURANTE el delay: el elemento esta invisible hasta que la animacion arranca,
+   aunque no tenga ningun `opacity: 0` escrito. La regla global de
+   app/globals.css pisa animation-duration pero no animation-delay, asi que sin
+   esto quien pide menos movimiento se queda sin la animacion y con la espera
+   igual, que es el peor de los dos mundos.
+
+   Se apaga la animacion entera en vez de poner el delay en cero, que es como
+   lo resuelve app/teclab/teclab.css y deja al elemento en su estado natural.
+
+   `.career-reveal` entra tambien: es scroll-driven y solo mueve `transform`,
+   asi que nunca esconde nada, pero es movimiento atado al scroll y es
+   justamente lo que este modo pide apagar. */
+@media (prefers-reduced-motion: reduce) {
+  .career-hero-media,
+  .career-breadcrumb,
+  .career-all-careers,
+  .career-hero-marca,
+  .career-kicker,
+  .career-hero h1,
+  .career-hero-intro,
+  .career-hero-actions,
+  .career-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* El boton "Ver info" abre el mismo modal que el catalogo de la home */
 @import "../../components/index/modales.css";
 @import "../../components/formularios/formulario-lead.css";

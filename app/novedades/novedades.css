@@ -101,3 +101,20 @@
     display: none;
   }
 }
+
+/* ── Movimiento reducido ──────────────────────────────────
+   `.news-animate` arranca con `opacity: 0` y solo se ve cuando corre la
+   animacion. La regla global de app/globals.css pisa animation-duration pero
+   no animation-delay, asi que sin esto las tarjetas quedan invisibles hasta
+   0,58s y despues aparecen de golpe: quien pide menos movimiento se queda sin
+   la animacion y con la espera igual.
+
+   Se apaga la animacion entera, como en app/teclab/teclab.css, en vez de poner
+   el delay en cero. */
+@media (prefers-reduced-motion: reduce) {
+  .news-animate {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
