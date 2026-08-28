@@ -4,6 +4,18 @@
 
 ## Abierto
 
+- [ ] **El chat de ejemplo de `/contacto` le habla a un alumno, no a un aspirante.** Visto el 28/08/2026 al revisar las capturas. La tarjeta promete, en `components/contacto/contacto-page.tsx:267`, *"Consultas sobre **inscripciones, aranceles y carreras**. Atención humana."*, y la conversación de abajo, en el mismo archivo (líneas 303 a 333), es esta:
+
+  > — Hola! 👋
+  > — Hola! ¿Cómo estás? ¿En qué puedo ayudarte?
+  > — **No puedo entrar a la plataforma, ¿me ayudás?**
+  > — Dale, ya te ayudo a ingresar 💪
+  > — Gracias por la ayuda! 🙌
+
+  O sea soporte a alguien que ya cursa. **La página capta leads**: quien la mira está evaluando anotarse, y el único ejemplo de cómo se lo atiende muestra un problema que todavía no tiene. Peor, sugiere que el canal es para trámites de alumno, que es justo el uso que no queremos incentivar por ahí.
+
+  El cambio son cuatro strings en ese archivo, sin tocar nada más. Sirve cualquiera de las tres cosas que la tarjeta promete: cuánto sale una carrera, qué hace falta para inscribirse, o si se puede empezar ahora. Ojo con dos cosas al escribirlo: **nada de precios ni fechas concretas** en un texto que queda fijo en el código y se vence solo, y **el cierre no ofrece "reservar el lugar"** (ver `docs/criterios.md`). Un ejemplo que cumple las dos es preguntar por requisitos y que la respuesta invite a completar la inscripción.
+
 - [ ] **La hoja de estilos viaja tres veces en el HTML de la home, y la documentación de Next promete dos.** Medido el 28/08/2026 sobre producción, con Next **16.3.0**. Los 621,4 KB sin comprimir se reparten así:
 
   | Parte | Peso |
