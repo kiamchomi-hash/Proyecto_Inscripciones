@@ -1,8 +1,18 @@
 # Pendientes
 
-Última actualización: 2026-08-17
+Última actualización: 2026-08-26
 
 ## Abierto
+
+- [ ] **Sacar los secretos de webhook del cuerpo de los triggers y llevarlos al Vault de Supabase.** `notify_revalidar` y `notify_edge_function` llevan el token escrito como literal dentro del `jsonb_build_object` del header (`'Authorization', 'Bearer <secreto>'`). `pg_proc.prosrc` lo lee cualquier rol que pueda conectarse a la base, así que `REVALIDATE_SECRET` (32 caracteres) y `WEBHOOK_SECRET` (64) quedan a la vista de cualquier credencial de conexión, incluida `cau_editor`, que fue creada justamente para no tener alcance de más. Detectado el 28/08/2026 al buscar `REVALIDATE_SECRET` para `.env.local`.
+
+  No expone datos de leads: `anon` y `authenticated` no tienen `LOGIN`, así que desde el navegador no se llega. Lo que habilita es forzar revalidaciones (gasta ISR Writes) y falsificar avisos de Telegram.
+
+  El arreglo es guardarlos en `vault.create_secret()` y leerlos en el trigger con `vault.decrypted_secrets`, que sólo alcanza el dueño de la función. Al hacerlo hay que **rotar los dos**, porque los actuales ya estuvieron legibles. Verificar después con el procedimiento de `sql/2026-07-27_webhook_notificar.sql`: si los secretos no coinciden, `net._http_response` devuelve 401 y el `INSERT` responde 201 igual.
+
+- [ ] **Actualizar los datos locales desde el nuevo Dashboard Comercial de Teclab.** Desde el 26/08/2026 la fuente oficial es `https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(Agentes).html` y reemplaza al archivo `(01).html`. El acceso visual usa las credenciales entregadas por Teclab; no versionarlas. El HTML sigue trayendo los datos embebidos y se puede bajar sin iniciar sesión.
+
+  Cuando se haga la actualización, regenerar `carreras/teclab/dashboard-comercial.json`, `carreras/teclab/calendario-teclab.json`, `ventas/teclab-convenios.md` y cualquier respuesta del corpus afectada. Después correr los tests de ventas, la auditoría de instituciones y los dos generadores. Hasta entonces esos archivos conservan correctamente la referencia a la fuente anterior porque describen el snapshot del 15/08/2026.
 
 - [ ] **Remedir el CTR de las 8 fichas reescritas el 10/08/2026.** Se cambió la columna `enfoque` de 8 carreras, que es de donde `descripcionSEO()` saca la primera frase de la meta descripción. Venían escritas como listado de temas ("Prevención de Riesgos, Normativas OHSAS y Ergonomía") en vez de decir qué consigue quien estudia; el informe de `npm run seo` las marcaba con CTR por debajo de lo esperable para su posición. Son los ids **86, 21, 6** (primer pase) y **76, 87, 8, 19, 65** (segundo). Verificadas en producción el mismo día: las 8 meta descriptions salieron bien.
 
@@ -56,7 +66,7 @@
 
 - [ ] **Cuatro datos institucionales sin confirmar**, que hoy el bot responde con un "lo confirmo y te aviso" en vez de inventar:
 
-  1. La **fecha exacta de inicio del 2B** — sólo se sabe que es en octubre. El 2A arranca el 3 de agosto y ese sí está cargado. Ojo: `periodoPorDefecto()` pasa a 2B el 4 de agosto, así que a partir de ahí el bot ofrece un período cuya fecha de inicio no sabe.
+  1. La **fecha exacta de inicio del próximo período** — el 2A ya no se comercializa y del siguiente sólo se sabe que es en octubre. Ojo: `periodoPorDefecto()` pasa al siguiente período el 4 de agosto, así que a partir de ahí el bot ofrece una apertura cuya fecha comercial exacta no está confirmada.
   2. Si hay **becas reales** más allá del descuento por beneficio. Se mencionan programas para situaciones vulnerables y por rendimiento, sin confirmar.
   3. Las condiciones para **cursar dos carreras a la vez** (hay requisitos de avance académico).
   4. ~~El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse.~~ Escrito el 08/08/2026 contra el reglamento en vivo. Lo que quedó sin fuente está listado adentro: qué es la IVU en la práctica, qué materias son Universitario 21, dónde se certifica la firma y cómo se legaliza el analítico.
@@ -89,6 +99,12 @@
   **Las otras dos casas tienen su propio corpus y su propia preinscripción**, y ahí la palabra sigue cayendo en cualquier lado. Hay que pedirle a cada instituto qué campos pide su formulario. Ojo con suponer que son los mismos: las dos listas que circulaban de Siglo 21 coincidían en cinco campos de trece.
 
   Cuando lleguen, el cambio es una intención `inscripcion` en `ventas/corpus/teclab.json` y otra en `ventas/corpus/identidad.json`, con las mismas preguntas de ejemplo que la de Siglo 21 y el listado de esa casa; después se regeneran las dos páginas (`generar-entrenador.mjs` y `generar-buscador.mjs`, siempre las dos).
+
+- [ ] **El video institucional no se puede publicar mientras muestre Academia Identidad Argentina.** La oferta de la academia todavía no está en `main`: el sitio publicado no la tiene, así que el video mandaría a buscar en siglo21sur.com algo que ahí no existe.
+
+  El video vive **fuera de este repo**, en `~/Escritorio/remotion-cau-villa-lugano` (Remotion, 158,5 s, 1920×1080; el render terminado es `out/cau-institucional.mp4`). La academia aparece en dos de las doce partes, que `npm run partes` lista: **`P02-oferta`**, donde es uno de los tres sellos, y **`P07-identidad`** entera, que son 23,5 s del video propio de la casa más la grilla de las 8 diplomaturas.
+
+  **Cuando las diplomaturas entren al sitio no hay nada que hacer**: el video ya las tiene y se publica como está. Si hubiera que sacarlo antes, son dos cortes: el tercer objeto de `casas` en `src/data.js` (P02 queda con Siglo 21 y Teclab) y el bloque `P07-identidad` del array `bloques` de `src/guion.jsx` (el bloque de al lado se queda con su transición, no hay que reajustar tiempos). El institucional baja a 135 s.
 
 ## Para tener presente
 
