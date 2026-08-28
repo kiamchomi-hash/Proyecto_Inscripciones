@@ -67,6 +67,8 @@ Para los avisos de formulario (Telegram) está `herramientas/verificar-avisos.sq
 
 También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada novedad dos derivados de 1200×630 desde las fotos de `public/` — la foto limpia (`public/imagenes/novedades/<slug>.jpg`, para `imagen_url`) y la versión con el título compuesto encima (`public/imagenes/og/<slug>.jpg`, para el og:image). Depende de `sharp` (declarado como devDependency).
 
+`generar-secretos.mjs`, sin script npm, genera los valores nuevos para rotar `REVALIDATE_SECRET` y `WEBHOOK_SECRET` y deja el SQL de `sql/2026-08-28_rotar_secretos.sql` en el portapapeles con los valores ya puestos. No los escribe en ningún archivo: el repo es público. **El orden de aplicación está en ese SQL y no es simétrico** — Vercel primero, porque un cambio de env var necesita redeploy, y el `UPDATE` del Vault inmediatamente después; al revés, o con `WEBHOOK_SECRET` fuera de orden, quedan formularios guardándose sin aviso de Telegram.
+
 `generar-favicon.mjs`, también sin script npm, rehace `public/favicon.ico` (16/32/48) y `public/icon.png` recortando el isologo del vector `public/imagenes/imagenes_cau/siglo21-marca.svg` — el panel del "21" es un cuadrado exacto de 268 unidades ahí adentro, y el favicon es ese cuadrado con los colores invertidos. **No copiar a mano el favicon de 21.edu.ar**: el que publican es un JPEG de 48×48 con el "1" cortado y no hay versión más grande (`?width=` de HubSpot no agranda, y no tienen `apple-touch-icon` ni manifest).
 
 ### Deploy
