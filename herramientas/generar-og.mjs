@@ -140,16 +140,16 @@ const ARTICULOS = [
   // cuerpo del articulo y esta portada no hay que regenerarla cada vez.
   { id: 60, slug: 'inicio-de-clases', tag: 'Institucional',
     titulo: 'Cuándo empiezan las clases en el CAU Villa Lugano',
-    foto: 'public/imagenes/Modales/Tecnicatura en Marketing y Publicidad Digital/Foto hero Tecnicatura en Marketing.webp' },
+    foto: 'public/imagenes/novedades/fuentes/inicio-de-clases.webp', sinVelo: true },
   { id: 61, slug: 'documentacion-legajo-inscripcion', tag: 'Académico',
     titulo: 'Qué papeles pide el legajo de inscripción',
-    foto: 'public/imagenes/Modales/Escribanía/Hero-escribania.jpg' },
+    foto: 'public/imagenes/novedades/fuentes/documentacion-legajo-inscripcion.webp', sinVelo: true },
   { id: 62, slug: 'que-es-el-cau-villa-lugano', tag: 'Institucional',
     titulo: 'Qué es el CAU Villa Lugano y cómo funciona',
     foto: 'public/imagenes/imagenes_cau/edificio_siglo21_campus2.webp' },
   { id: 63, slug: 'clases-de-apoyo-como-reservar-turno', tag: 'Académico',
     titulo: 'Clases de apoyo: cómo reservar un turno',
-    foto: 'public/imagenes/Modales/Licenciatura en Educación y Nuevas Tecnologías/Foto-hero-educacion-y-nuevas-tecnologias.webp' },
+    foto: 'public/imagenes/novedades/fuentes/clases-de-apoyo-como-reservar-turno.webp', sinVelo: true },
   // La foto del campus paso a la #69, que habla del lugar. Aca va una de estudio a
   // distancia, que es de lo que trata la nota.
   { id: 64, slug: 'carreras-de-grado-a-distancia', tag: 'Académico',
@@ -157,7 +157,7 @@ const ARTICULOS = [
     foto: 'public/imagenes/Modales/Tecnicatura en Relaciones Laborales/Licenciatura en Gestión de Recursos Humanos.webp' },
   { id: 65, slug: 'tecnicaturas-pregrado-dos-tres-anos', tag: 'Académico',
     titulo: 'Tecnicaturas: un título universitario en 2 o 3 años',
-    foto: 'public/imagenes/Modales/Tecnicatura en Gestión Contable e impositiva/Foto-hero-gestion-contable-e-impositiva.webp' },
+    foto: 'public/imagenes/novedades/fuentes/tecnicaturas-pregrado-dos-tres-anos.webp', sinVelo: true },
   { id: 66, slug: 'teclab-tecnicaturas-online', tag: 'Académico',
     titulo: 'Teclab: 17 tecnicaturas de dos años en tecnología y gestión',
     foto: 'public/imagenes/teclab/carreras/programacion.webp' },
@@ -169,7 +169,7 @@ const ARTICULOS = [
   // Siglo21IMG_2555.jpg mide 640x427 y estirada quedaba blanda.
   { id: 68, slug: 'ivu-universitario-21-inicio-cursada', tag: 'Académico',
     titulo: 'Antes de la primera materia: IVU y Universitario 21',
-    foto: 'public/imagenes/Modales/Licenciatura en Gestión Turística/Foto-hero-licenciatura-gestion-turistica.webp' },
+    foto: 'public/imagenes/novedades/fuentes/ivu-universitario-21-inicio-cursada.webp', sinVelo: true },
   // La entrada real del local (entrada_estetica.png) es la foto mas correcta para el
   // tema, pero mide 475x598: estirarla a 1800x945 la dejaba irreconocible. Va el campus,
   // que es la unica foto propia con resolucion de sobra.
@@ -311,9 +311,11 @@ for (const a of ARTICULOS) {
   const base = () => sharp(a.foto).resize(W, H, { fit: 'cover', position: 'attention', kernel: 'lanczos3' });
 
   const { w: wL, h: hL } = await medidasLimpia(a.foto);
-  const limpia = await sharp(a.foto)
-    .resize(wL, hL, { fit: 'cover', position: 'attention', kernel: 'lanczos3' })
-    .composite([{ input: Buffer.from(velo(wL, hL)), top: 0, left: 0 }])
+  const baseLimpia = sharp(a.foto)
+    .resize(wL, hL, { fit: 'cover', position: 'attention', kernel: 'lanczos3' });
+  const limpia = await (a.sinVelo
+    ? baseLimpia
+    : baseLimpia.composite([{ input: Buffer.from(velo(wL, hL)), top: 0, left: 0 }]))
     .jpeg({ quality: 88, mozjpeg: true })
     .toBuffer();
 
