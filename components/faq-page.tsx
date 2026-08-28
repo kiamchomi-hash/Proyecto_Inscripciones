@@ -55,7 +55,12 @@ const FAQ_ITEMS: FaqItem[] = [
     keywords: 'dónde queda cau villa lugano ubicacion direccion donde esta localizado cerca zona sur oeste caba mataderos liniers villa celina villa soldati comuna 8 presencial sede',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
-        <p>Nuestro CAU está ubicado en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Mataderos, Liniers y Villa Celina</strong>. Contactanos para confirmar dirección y horarios de atención.</p>
+        {/* La dirección va en texto y no sólo en el mapa: el iframe no es
+            contenido indexable de la página, y ésta es la pregunta de intención
+            local, que es la que mejor convierte para un centro de barrio. Antes
+            decía "contactanos para confirmar dirección", con el mapa abajo y la
+            dirección en el pie de todas las páginas. */}
+        <p>Estamos en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Guaminí 4876, Piso 1</strong>, en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Mataderos, Liniers y Villa Celina</strong>.</p>
         <p style={{ fontSize: '0.78rem', color: '#5a8a80', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>cerca de</p>
         <div className="grid grid-cols-3 gap-2">
           <ZonaCard name="Villa Lugano" />
@@ -767,8 +772,16 @@ interface UserQuestion {
 export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: UserQuestion[] }) {
   const [openItems, setOpenItems] = useState<Set<number>>(new Set());
 
-  // Open first item on first visit (client-only to avoid hydration mismatch)
+  // Open first item on first visit (client-only to avoid hydration mismatch).
+  //
+  // Sólo de 1024px para arriba, que es donde el `<aside>` se vuelve una columna
+  // sticky al costado (`lg:w-80 lg:sticky`) y el listado de preguntas se ve
+  // igual con la primera abierta. Abajo de eso el aside se apila y no
+  // acompaña: la respuesta de la dirección lleva el mapa embebido y ocupa la
+  // pantalla entera, así que en el teléfono el visitante veía una sola
+  // pregunta y ninguna pista de que hubiera más. Un FAQ sirve por la lista.
   useEffect(() => {
+    if (!window.matchMedia('(min-width: 1024px)').matches) return;
     if (!localStorage.getItem('faq-visited')) {
       localStorage.setItem('faq-visited', '1');
       setOpenItems(new Set([0]));
