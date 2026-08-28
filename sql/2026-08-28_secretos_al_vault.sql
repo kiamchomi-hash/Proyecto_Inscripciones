@@ -34,6 +34,21 @@
 -- mandando un 'Bearer ' vacio.
 --
 -- Correr entero en el SQL Editor del dashboard. Es idempotente.
+--
+-- ORDEN EN UNA BASE NUEVA
+-- Los archivos de sql/ se corren a mano en orden de fecha, y los cuatro que
+-- definian estos triggers antes (2026-07-22_clicks_carreras,
+-- 2026-07-27_webhook_notificar, 2026-07-27_cron_digest_clicks y
+-- 2026-08-07_revalidar_on_demand) ahora leen del Vault igual que este, asi que
+-- reaplicar cualquiera de ellos es inocuo. Lo que si cambia es que **el Vault
+-- tiene que estar cargado antes que todos**: en una base recien hecha no hay
+-- ningun literal del que sacar el valor, y los cuatro abortan pidiendolo. El
+-- primer paso ahi no es este archivo sino
+--
+--   SELECT vault.create_secret('<valor de Vercel>',              'REVALIDATE_SECRET');
+--   SELECT vault.create_secret('<valor de Edge Functions>',      'WEBHOOK_SECRET');
+--
+-- y despues ya corre todo en orden de fecha sin tocar nada mas.
 
 CREATE EXTENSION IF NOT EXISTS supabase_vault WITH SCHEMA vault;
 

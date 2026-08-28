@@ -4,21 +4,6 @@
 
 ## Abierto
 
-- [ ] **Cuatro archivos de `sql/` reponen el literal del secreto si se vuelven a correr.** El paso al Vault del 28/08/2026 reescribió las dos funciones y el job, pero **los archivos que las definían antes siguen ahí con el literal adentro**, y la convención del proyecto es correr `sql/` a mano en orden de fecha. O sea que un setup desde cero, o cualquiera que reaplique uno de estos, deshace el arreglo sin enterarse:
-
-  | Archivo | Qué pasa si se reaplica |
-  |---|---|
-  | `sql/2026-08-07_revalidar_on_demand.sql` | reescribe `notify_revalidar` con `Bearer <REVALIDATE_SECRET>` pegado |
-  | `sql/2026-07-27_webhook_notificar.sql` | reescribe `notify_edge_function` con el literal **y sin `SECURITY DEFINER`**, así que además le saca el acceso al Vault |
-  | `sql/2026-07-22_clicks_carreras.sql` | su bloque de cron pide pegar `<WEBHOOK_SECRET>` a mano |
-  | `sql/2026-07-27_cron_digest_clicks.sql` | saca el secreto de `pg_proc` con un `regexp_match`, que ahora no encuentra nada |
-
-  El último es el menos grave porque **falla fuerte**: el `DO` block tiene un `RAISE EXCEPTION` si no encuentra el valor, así que aborta en vez de programar un job roto. Pero su bloque de verificación del final no está protegido: arma el header con el mismo `regexp_match`, que devuelve `NULL`, y manda un `Bearer ` vacío que da 401 — o sea, parece que el digest está roto cuando lo que está roto es la consulta.
-
-  Lo barato es un aviso arriba de cada uno apuntando a `sql/2026-08-28_secretos_al_vault.sql`; lo prolijo es reescribirles el cuerpo para que lean del Vault, y que reaplicarlos sea inocuo. `sql/2026-07-27_webhook_notificar.sql` además queda citado desde `CLAUDE.md` como *el* procedimiento de verificación, cita que ya se corrigió, pero el archivo sigue describiendo un mundo que no existe.
-
-  **Ojo con el orden si alguna vez se rehace la base de cero**: los de julio y agosto tienen que correr *antes* del `2026-08-28_secretos_al_vault.sql`, que es el que los deja bien. Correrlos después lo pisa.
-
 - [ ] **Dos cabos sueltos de la rotación del 28/08/2026.** Ninguno rompe nada, los dos confunden al próximo que mire:
 
   1. **`.env.local` de la máquina de Windows tiene el `REVALIDATE_SECRET` viejo**, el de antes de rotar. No lo lee nada en local —el trigger vive en la base—, pero es un valor muerto que en el próximo diagnóstico se va a leer como si fuera el vigente. Conviene borrar la línea. De paso, `CLAUDE.md` dice que ese archivo tiene sólo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_GA_ID`, y no es cierto.
@@ -123,6 +108,10 @@
 ## Para tener presente
 
 **Los secretos de webhook viven en el Vault desde el 28/08/2026, y los dos se rotaron ese día.** Antes estaban escritos como literales en el cuerpo de `notify_revalidar` y `notify_edge_function`, que `pg_proc` deja leer a cualquier rol que pueda conectarse a la base — `cau_editor` incluido, que se creó justamente para no tener alcance de más. De `WEBHOOK_SECRET` había **tres** copias: los dos triggers y el `command` del job `digest-clicks-diario`, que se lo comió pegado del `format()` que lo programó. Ahora los tres lo leen de `vault.decrypted_secrets`, lo que obligó a que `notify_edge_function` pase a `SECURITY DEFINER` (el rol que hace el `INSERT` no llega al Vault), con su `REVOKE EXECUTE` al lado. El procedimiento quedó en `sql/2026-08-28_secretos_al_vault.sql` y `sql/2026-08-28_rotar_secretos.sql`, y los valores nuevos los genera `herramientas/generar-secretos.mjs`.
+
+**Los cuatro archivos de `sql/` que definían estos triggers antes ya no reponen el literal** (28/08/2026). Era la trampa que dejaba el cambio: la convención es correr `sql/` a mano en orden de fecha, así que reaplicar cualquiera de ellos deshacía el arreglo — y `2026-07-27_webhook_notificar.sql` además le sacaba a `notify_edge_function` el `SECURITY DEFINER` que le da acceso al Vault, o sea que rompía dos cosas de un saque. Ahora los cuatro leen de `vault.decrypted_secrets`, y cada uno abre con un `DO` que **aborta con un `RAISE EXCEPTION`** si el secreto no está cargado, en vez de seguir y dejar un `Bearer ` vacío que da 401 sin que nadie se entere. El bloque de cron de `2026-07-22_clicks_carreras.sql` quedó comentado entero: nunca se ejecutó, y además programaba a las 23:00 UTC cuando el horario bueno es 12:00.
+
+**En una base nueva el Vault se carga primero, antes que cualquier archivo de `sql/`.** Es el efecto de lo de arriba: no hay literal del que sacar el valor, así que los cuatro abortan pidiéndolo. Los dos `vault.create_secret()` que hay que correr están al principio de `sql/2026-08-28_secretos_al_vault.sql`.
 
 **Rotar un secreto de estos tiene una ventana en la que los avisos se caen sin hacer ruido, y se vio en vivo.** El header lo manda la base y lo valida el consumidor: mientras uno tenga el valor nuevo y el otro el viejo, ese camino devuelve 401. En la rotación de `WEBHOOK_SECRET` el SQL se corrió veinte segundos antes de subir el secret, y en esos veinte segundos el `INSERT` de prueba **respondió 201 igual**, con los dos consumidores en `401 Unauthorized`. Es exactamente el modo de fallar que dejó los avisos rotos del 20 al 27/07/2026. De ahí el orden de los dos archivos: el que necesita redeploy va primero y el `UPDATE` del Vault inmediatamente después, y se verifica siempre en `net._http_response`, nunca por el código de respuesta del formulario. Conviene además hacerlo con poco tráfico: el lead se guarda igual, pero nadie se entera hasta mirar la tabla.
 

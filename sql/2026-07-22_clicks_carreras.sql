@@ -33,27 +33,40 @@ GRANT EXECUTE ON FUNCTION public.registrar_click_carrera(text) TO service_role;
 COMMIT;
 
 -- ─────────────────────────────────────────────────────────────
--- Cron del digest: 23:00 UTC = 20:00 en Buenos Aires.
--- Reemplazá <WEBHOOK_SECRET> por el mismo valor que está en
--- Edge Functions → Secrets antes de ejecutar este bloque.
+-- Cron del digest: NO correr este bloque. Quedó acá como historia.
 -- ─────────────────────────────────────────────────────────────
-CREATE EXTENSION IF NOT EXISTS pg_cron;
-CREATE EXTENSION IF NOT EXISTS pg_net;
-
-SELECT cron.unschedule('digest-clicks-diario')
-WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'digest-clicks-diario');
-
-SELECT cron.schedule(
-  'digest-clicks-diario',
-  '0 23 * * *',
-  $cron$
-    SELECT net.http_post(
-      url     := 'https://yuwfkdehaowkselkhtck.supabase.co/functions/v1/digest-clicks',
-      headers := jsonb_build_object(
-                   'Content-Type',  'application/json',
-                   'Authorization', 'Bearer <WEBHOOK_SECRET>'
-                 ),
-      body    := '{}'::jsonb
-    );
-  $cron$
-);
+--
+-- Este bloque nunca se ejecutó: pedía pegar <WEBHOOK_SECRET> a mano y nadie lo
+-- hizo, así que `cron.job` quedó vacío y la Edge Function `digest-clicks` no se
+-- invocó nunca. Eso lo arregló `sql/2026-07-27_cron_digest_clicks.sql`, que es
+-- el que programa el job de verdad y **el único que hay que correr**.
+--
+-- Se deja comentado, y no se borra, porque correrlo hoy rompe dos cosas:
+--
+--   1. Repone el secreto como literal adentro del `command` del job, que es
+--      justo lo que se sacó el 28/08/2026 (ver el archivo de esa fecha). El
+--      job vigente lo lee del Vault en cada corrida.
+--   2. Programa a las 23:00 UTC. El horario bueno es 12:00 UTC = 09:00 en
+--      Buenos Aires: el digest resume el día anterior, así que tiene que salir
+--      a la mañana, no a las 20:00.
+--
+-- CREATE EXTENSION IF NOT EXISTS pg_cron;
+-- CREATE EXTENSION IF NOT EXISTS pg_net;
+--
+-- SELECT cron.unschedule('digest-clicks-diario')
+-- WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'digest-clicks-diario');
+--
+-- SELECT cron.schedule(
+--   'digest-clicks-diario',
+--   '0 23 * * *',
+--   $cron$
+--     SELECT net.http_post(
+--       url     := 'https://yuwfkdehaowkselkhtck.supabase.co/functions/v1/digest-clicks',
+--       headers := jsonb_build_object(
+--                    'Content-Type',  'application/json',
+--                    'Authorization', 'Bearer <WEBHOOK_SECRET>'
+--                  ),
+--       body    := '{}'::jsonb
+--     );
+--   $cron$
+-- );

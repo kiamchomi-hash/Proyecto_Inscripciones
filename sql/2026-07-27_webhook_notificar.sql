@@ -24,18 +24,44 @@
 --   faq_preguntas      -> on_faq_pregunta_insert
 -- Los tres llaman a notify_edge_function(). Duplicarlos duplica los avisos.
 --
--- Si necesitás reaplicar esto, reemplazá <WEBHOOK_SECRET> por el valor de
--- Edge Functions → Secrets. Si ahí no podés verlo, el valor vigente está
--- guardado en el cuerpo de la función:
+-- ACTUALIZADO EL 28/08/2026: el secreto ya no va escrito acá.
+--
+-- Este archivo decía, hasta esa fecha, que si no podías ver el valor en Edge
+-- Functions → Secrets lo sacaras del cuerpo de la función con
 --
 --     SELECT prosrc FROM pg_proc WHERE proname = 'notify_edge_function';
+--
+-- Que eso funcionara era el problema: `pg_proc` lo lee cualquier rol que pueda
+-- conectarse a la base, sin ningún privilegio especial. Ahora el valor vive en
+-- el Vault y la función lo lee de `vault.decrypted_secrets`, que sólo alcanza
+-- el dueño de la función — de ahí el `SECURITY DEFINER`, que antes no tenía, y
+-- el `REVOKE` que va abajo para que nadie la llame por fuera de los triggers.
+-- El detalle completo está en `sql/2026-08-28_secretos_al_vault.sql`.
+--
+-- Reaplicar este archivo es inocuo. Si el secreto todavía no está en el Vault
+-- —una base recién hecha, donde esto corre antes que el del 28/08— el bloque
+-- de abajo aborta con el mensaje que dice qué cargar. Falla fuerte a propósito:
+-- lo contrario deja la función mandando un `Bearer ` vacío, que da 401 sin que
+-- el INSERT que lo disparó se entere, que es exactamente el bug que este
+-- archivo vino a arreglar.
+
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM vault.secrets WHERE name = 'WEBHOOK_SECRET') THEN
+    RAISE EXCEPTION 'Falta WEBHOOK_SECRET en el Vault. Cargarlo primero con el valor de Edge Functions -> Secrets: SELECT vault.create_secret(''<valor>'', ''WEBHOOK_SECRET'');';
+  END IF;
+END
+$guard$;
 
 CREATE OR REPLACE FUNCTION public.notify_edge_function()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
 AS $fn$
 DECLARE
   payload jsonb;
+  secreto text;
 BEGIN
   payload := jsonb_build_object(
     'type',   TG_OP,
@@ -44,13 +70,21 @@ BEGIN
     'record', row_to_json(NEW)::jsonb
   );
 
+  SELECT decrypted_secret INTO secreto
+  FROM vault.decrypted_secrets
+  WHERE name = 'WEBHOOK_SECRET';
+
+  IF secreto IS NULL THEN
+    RAISE WARNING 'notify_edge_function: WEBHOOK_SECRET no esta en el Vault, el aviso va a dar 401';
+  END IF;
+
   -- net.http_post encola el pedido: no bloquea el INSERT ni lo hace fallar
   -- si la Edge Function está caída. Por eso un 401 acá pasa desapercibido.
   PERFORM net.http_post(
     url     := 'https://yuwfkdehaowkselkhtck.supabase.co/functions/v1/notificar',
     headers := jsonb_build_object(
                  'Content-Type',  'application/json',
-                 'Authorization', 'Bearer <WEBHOOK_SECRET>'
+                 'Authorization', 'Bearer ' || coalesce(secreto, '')
                ),
     body    := payload
   );
@@ -58,6 +92,8 @@ BEGIN
   RETURN NEW;
 END;
 $fn$;
+
+REVOKE EXECUTE ON FUNCTION public.notify_edge_function() FROM public;
 
 -- ─────────────────────────────────────────────────────────────
 -- Verificación. Como los avisos fallan sin hacer ruido, este es el único

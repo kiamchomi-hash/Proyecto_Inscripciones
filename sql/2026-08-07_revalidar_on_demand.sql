@@ -17,10 +17,26 @@
 -- `authenticated`, que no necesariamente puede usar el schema net. Sin esto, un
 -- profesor bloqueando un horario se comeria un error y el UPDATE fallaria.
 --
--- Antes de correrlo, reemplazar <REVALIDATE_SECRET> por el valor que este
--- cargado en Vercel (Settings -> Environment Variables). Si no coincide, el
--- endpoint responde 401 y la revalidacion no ocurre; se ve en la verificacion
--- del final.
+-- El secreto NO se pega aca. Desde el 28/08/2026 vive en el Vault y la funcion
+-- lo lee de vault.decrypted_secrets: tenerlo escrito en el cuerpo lo dejaba a
+-- la vista de cualquier rol que pudiera conectarse, porque pg_proc es legible
+-- sin ningun privilegio especial. El detalle esta en
+-- sql/2026-08-28_secretos_al_vault.sql.
+--
+-- Por eso este archivo se puede reaplicar sin deshacer nada. Si el secreto
+-- todavia no esta en el Vault -- una base recien hecha, donde este archivo
+-- corre antes que el del 28/08 --, el bloque de abajo aborta con el mensaje
+-- que dice que cargarlo primero. Falla fuerte a proposito: la alternativa era
+-- dejar el trigger mandando un 'Bearer ' vacio, que da 401 sin que el UPDATE
+-- que lo disparo se entere de nada.
+
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM vault.secrets WHERE name = 'REVALIDATE_SECRET') THEN
+    RAISE EXCEPTION 'Falta REVALIDATE_SECRET en el Vault. Cargarlo primero con el valor que esta en Vercel (Settings -> Environment Variables): SELECT vault.create_secret(''<valor>'', ''REVALIDATE_SECRET'');';
+  END IF;
+END
+$guard$;
 
 CREATE OR REPLACE FUNCTION public.notify_revalidar()
 RETURNS trigger
@@ -29,8 +45,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $fn$
 DECLARE
-  fila  jsonb;
-  antes jsonb;
+  fila    jsonb;
+  antes   jsonb;
+  secreto text;
 BEGIN
   IF TG_OP = 'DELETE' THEN
     fila := to_jsonb(OLD);
@@ -42,13 +59,23 @@ BEGIN
     antes := to_jsonb(OLD);
   END IF;
 
+  SELECT decrypted_secret INTO secreto
+  FROM vault.decrypted_secrets
+  WHERE name = 'REVALIDATE_SECRET';
+
+  -- WARNING y no EXCEPTION: que falte el secreto tiene que dejar la pagina
+  -- vieja, no voltear el UPDATE que la publica.
+  IF secreto IS NULL THEN
+    RAISE WARNING 'notify_revalidar: REVALIDATE_SECRET no esta en el Vault, la revalidacion va a dar 401';
+  END IF;
+
   -- Solo los campos con los que /api/revalidar arma las rutas. Mandar la fila
   -- entera haria viajar los slides de cada carrera por HTTP al pedo.
   PERFORM net.http_post(
     url     := 'https://www.siglo21sur.com/api/revalidar',
     headers := jsonb_build_object(
                  'Content-Type',  'application/json',
-                 'Authorization', 'Bearer <REVALIDATE_SECRET>'
+                 'Authorization', 'Bearer ' || coalesce(secreto, '')
                ),
     body    := jsonb_build_object(
                  'tabla',    TG_TABLE_NAME,
