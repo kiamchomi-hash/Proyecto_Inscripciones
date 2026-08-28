@@ -4,6 +4,34 @@
 
 ## Abierto
 
+- [ ] **La hoja de estilos viaja tres veces en el HTML de la home, y la documentación de Next promete dos.** Medido el 28/08/2026 sobre producción, con Next **16.3.0**. Los 621,4 KB sin comprimir se reparten así:
+
+  | Parte | Peso |
+  |---|---|
+  | `<style>` inline | 144,6 KB |
+  | dos `<script>` del payload RSC que llevan CSS adentro | 264,4 KB |
+  | resto del payload RSC (datos, manifiestos) | 86,3 KB |
+  | markup | 126,0 KB |
+
+  O sea que **el 66% de la home es CSS**. Los datos de las 88 carreras, que es lo primero que uno sospecha, son apenas ~29 KB.
+
+  Dos copias son esperadas y están documentadas: `node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/inlineCss.md` dice *"Styles are duplicated during initial page load — once within `<style>` tags for SSR and once in the RSC payload"*. La tercera no está documentada. Se verificó contando el arranque propio de la hoja, `:root{--cau-brand-teal`, que aparece **tres** veces en el HTML, igual que `@layer base`, `@layer theme` y `@layer utilities` — o sea tres copias completas, no una partida entre dos `push`.
+
+  **No es para apagar `inlineCss`.** Eso ya se midió A/B y gana encendido (ver `docs/criterios.md`); el problema es la copia de más, no el inlining. Lo que corresponde es **volver a medir cuando se actualice Next** y ver si la tercera copia desapareció.
+
+  **Cómo medirlo de nuevo**, para que el número sea comparable:
+
+  ```bash
+  curl -s -H "Accept-Encoding: identity" https://www.siglo21sur.com/ -o home.html
+  grep -o ':root{--cau-brand-teal' home.html | wc -l    # cuántas copias hay
+  ```
+
+  Y para el peso por parte, contar el tamaño de cada `<style>` y de cada `<script>` según contenga o no `@layer base`. Ojo con dos trampas en las que ya caí: medir sobre el HTML escapado da números que no cierran (hay que desescapar el payload con `JSON.parse` de cada `self.__next_f.push`), y un regex con cuantificador grande se come miles de caracteres y reparte mal el peso.
+
+  **Lo que cuesta hoy es chico y por eso no urge**: tres copias idénticas comprimen casi como una. Sacando las dos del payload y comprimiendo con la misma calidad, 52,5 KB → 43,8 KB, unos **8,6 KB sobre los 62 KB** que mide `npm run smoke` contra prod. Lo que sí importa es el efecto multiplicador: **cada KB que se agregue a la hoja de estilos cuesta 3 KB de HTML**, y eso explica el crecimiento de los 449 KB que se anotaron al medir `inlineCss` a los 621 KB de hoy.
+
+  Ojo: `npm run smoke` imprime el peso pero **no lo puede reprobar** — no hay umbral en `herramientas/smoke.mjs`, así que un "todo verde" no dice nada sobre esto.
+
 - [ ] **Actualizar los datos locales desde el nuevo Dashboard Comercial de Teclab.** Desde el 26/08/2026 la fuente oficial es `https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(Agentes).html` y reemplaza al archivo `(01).html`. El acceso visual usa las credenciales entregadas por Teclab; no versionarlas. El HTML sigue trayendo los datos embebidos y se puede bajar sin iniciar sesión.
 
   Cuando se haga la actualización, regenerar `carreras/teclab/dashboard-comercial.json`, `carreras/teclab/calendario-teclab.json`, `ventas/teclab-convenios.md` y cualquier respuesta del corpus afectada. Después correr los tests de ventas, la auditoría de instituciones y los dos generadores. Hasta entonces esos archivos conservan correctamente la referencia a la fuente anterior porque describen el snapshot del 15/08/2026.
