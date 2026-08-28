@@ -644,6 +644,7 @@
 
 .ca-materias-seccion {
   scroll-margin-top: calc(var(--navbar-height, 60px) + 1rem);
+  padding-top: clamp(3rem, 4vw, 4rem);
 }
 
 .ca-encabezado {
@@ -889,11 +890,11 @@ a.ca-materia:hover .ca-materia-ico {
 }
 
 @media (max-width: 640px) {
-  .ca-hero { min-height: 390px; align-items: flex-end; }
+  .ca-hero { min-height: 340px; align-items: center; }
   .ca-hero-imagen { object-position: 66% center; }
   .ca-hero-velo { background: linear-gradient(0deg, rgba(2, 16, 15, 0.97) 0%, rgba(2, 16, 15, 0.72) 46%, rgba(2, 16, 15, 0.18) 100%); }
   .ca-hero::after { bottom: 1.4rem; width: 28vw; }
-  .ca-hero-contenido { padding-bottom: 2.7rem; }
+  .ca-hero-contenido { padding-block: 2rem; }
   .ca-hero h1 { max-width: 340px; margin-bottom: 1.25rem; font-size: clamp(2.25rem, 10.5vw, 3rem); }
   .ca-hero-marca { top: 1.2rem; right: 1rem; }
   .ca-seccion { padding-block: 4.5rem; }
