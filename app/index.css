@@ -136,7 +136,12 @@
    Va de 768px para arriba, que es donde la grilla pasa a dos columnas
    (`md:grid-cols-2`). Abajo de eso va una tarjeta por fila, no hay nada que
    alinear, y reservar la segunda linea le sumaria ~0,9rem a cada una de las 88
-   tarjetas de una pagina que ya mide 32.691px de alto.
+   tarjetas, en una pagina que en movil ya mide ~10.600px de alto.
+
+   Ojo al medir esto: el perfil movil de `npm run capturas` es un iPhone 13, con
+   DPR 3, asi que el PNG sale a 31.900px y la pagina son 10.600 CSS. Dividir por
+   3 antes de sacar conclusiones. Para el alto real conviene leer
+   `document.documentElement.scrollHeight`, no las dimensiones del archivo.
 
    `2lh` y no una medida en rem: se resuelve contra el line-height propio de
    cada tarjeta, asi las de Teclab reservan sus dos lineas y no las de otro.
