@@ -10,7 +10,7 @@ const NAV_LINKS = [
   { href: '/clases-apoyo', label: 'Clases de Apoyo' },
   { href: '/novedades/1', label: 'Novedades' },
   { href: '/sobre-nosotros', label: 'Sobre Nosotros' },
-  { href: '/faq', label: 'Preguntas Frecuentes', shortLabel: 'FAQ' },
+  { href: '/faq', label: 'FAQ' },
   { href: '/contacto', label: 'Contacto' },
 ];
 
@@ -29,10 +29,6 @@ export default function Navbar() {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  // Track which links are overflowing to swap to short labels
-  const [overflowing, setOverflowing] = useState<Set<string>>(new Set());
-  const measureRefs = useRef<Map<string, HTMLSpanElement>>(new Map());
-
   // Keep --navbar-height in sync with actual navbar size.
   // getBoundingClientRect y no offsetHeight: offsetHeight redondea al entero, y
   // el alto real es fraccionario porque la base rem sale de un clamp (42.78,
@@ -47,54 +43,6 @@ export default function Navbar() {
       document.documentElement.style.setProperty('--navbar-height', h + 'px');
     });
     ro.observe(nav);
-    return () => ro.disconnect();
-  }, []);
-
-  // Detect text overflow using hidden measurement spans (always contain the full label)
-  useEffect(() => {
-    const els = Array.from(measureRefs.current.entries());
-    if (els.length === 0) return;
-
-    const check = () => {
-      // Skip measurement on mobile (links are vertical or hidden)
-      if (window.innerWidth < 1024) {
-        if (overflowing.size > 0) setOverflowing(new Set());
-        return;
-      }
-
-      requestAnimationFrame(() => {
-        const next = new Set<string>();
-        let paddingX = 0;
-        let paddingMeasured = false;
-
-        for (const [href, span] of els) {
-          const link = span.parentElement;
-          if (!link) continue;
-
-          // Measure padding once per check cycle instead of inside the loop
-          if (!paddingMeasured) {
-            const style = getComputedStyle(link);
-            paddingX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-            paddingMeasured = true;
-          }
-
-          const available = link.clientWidth - paddingX;
-          if (span.offsetWidth > available) next.add(href);
-        }
-
-        setOverflowing(prev => {
-          if (prev.size === next.size && [...prev].every(h => next.has(h))) return prev;
-          return next;
-        });
-      });
-    };
-
-    // Observe the parent links for size changes
-    const ro = new ResizeObserver(check);
-    for (const [, span] of els) {
-      if (span.parentElement) ro.observe(span.parentElement);
-    }
-    check();
     return () => ro.disconnect();
   }, []);
 
@@ -199,7 +147,7 @@ export default function Navbar() {
             </button>
           </div>
 
-          {NAV_LINKS.map(({ href, label, shortLabel }) => (
+          {NAV_LINKS.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
@@ -210,19 +158,7 @@ export default function Navbar() {
               className={`navbar-link${isActive(href) ? ' active' : ''}`}
               onClick={closeMenu}
             >
-              {shortLabel && overflowing.has(href) ? shortLabel : label}
-              {shortLabel && (
-                <span
-                  ref={(el: HTMLSpanElement | null) => {
-                    if (el) measureRefs.current.set(href, el);
-                    else measureRefs.current.delete(href);
-                  }}
-                  aria-hidden
-                  style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', pointerEvents: 'none' }}
-                >
-                  {label}
-                </span>
-              )}
+              {label}
             </Link>
           ))}
 
