@@ -14,6 +14,16 @@ interface FaqItem {
   content: React.ReactNode;
   /** Item #2 has a special header with social icons */
   headerSocials?: boolean;
+  /**
+   * Texto para la lista de atajos de la columna lateral. Sólo lo llevan las
+   * pocas que aparecen ahí, y por eso es el campo el que decide cuáles son: la
+   * lista se arma filtrando FAQ_ITEMS, no enumerando índices a mano.
+   *
+   * Va aparte de `question` porque la columna es angosta y ahí entra una
+   * versión corta ("¿Cómo contactarlos?" en vez de "¿Cómo me puedo contactar
+   * con ustedes?"), y porque dos preguntas del acordeón son de dos renglones.
+   */
+  shortLabel?: string;
 }
 
 const PIN_SVG = (
@@ -52,6 +62,7 @@ function SocialLink({ href, label, color, bgColor, borderColor, icon, children }
 const FAQ_ITEMS: FaqItem[] = [
   {
     question: '¿Dónde queda el CAU Villa Lugano?',
+    shortLabel: '¿Dónde queda el CAU Villa Lugano?',
     keywords: 'dónde queda cau villa lugano ubicacion direccion donde esta localizado cerca zona sur oeste caba mataderos liniers villa celina villa soldati comuna 8 presencial sede',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
@@ -105,6 +116,7 @@ const FAQ_ITEMS: FaqItem[] = [
   },
   {
     question: '¿Cómo me puedo contactar con ustedes?',
+    shortLabel: '¿Cómo contactarlos?',
     keywords: 'contacto contactarnos comunicarse hablar whatsapp telefono redes sociales facebook instagram llamar escribir mensaje',
     headerSocials: true,
     content: (
@@ -138,6 +150,7 @@ const FAQ_ITEMS: FaqItem[] = [
   },
   {
     question: '¿Cuáles son los requisitos de inscripción?\n¿Cómo me inscribo?',
+    shortLabel: '¿Cómo me inscribo?',
     keywords: 'requisitos inscripcion como inscribirse anotarse inicio empezar comenzar ingresar carrera secundario titulo anoto registro',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed" style={{ color: '#c8dedd' }}>
@@ -147,6 +160,7 @@ const FAQ_ITEMS: FaqItem[] = [
   },
   {
     question: '¿Qué formas de pago tiene la Universidad?',
+    shortLabel: '¿Qué formas de pago hay?',
     keywords: 'formas pago aranceles cuotas precio costo cuanto sale vale bimestral cuatrimestre tarjeta credito matricula financiacion mensual',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
@@ -907,12 +921,17 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
                 </div>
                 <div style={{ background: 'rgba(0,40,80,0.55)' }}>
                   <ul>
-                    {[
-                      { idx: 0, label: '¿Dónde queda el CAU Villa Lugano?' },
-                      { idx: 1, label: '¿Cómo contactarlos?' },
-                      { idx: 2, label: '¿Cómo me inscribo?' },
-                      { idx: 3, label: '¿Qué formas de pago hay?' },
-                    ].map(({ idx, label }, i, arr) => (
+                    {/* Los atajos salen de FAQ_ITEMS, no de una lista aparte.
+                        Antes eran cuatro pares {idx, label} escritos a mano:
+                        daban lo mismo que esto, pero el indice era posicional,
+                        asi que insertar o reordenar una pregunta mandaba el
+                        atajo a otra respuesta sin que nada fallara. Que una
+                        pregunta aparezca aca lo decide su `shortLabel`, que
+                        vive al lado de la pregunta y se ve al editarla. */}
+                    {FAQ_ITEMS
+                      .map((item, idx) => ({ idx, label: item.shortLabel }))
+                      .filter((a): a is { idx: number; label: string } => Boolean(a.label))
+                      .map(({ idx, label }, i, arr) => (
                       <li key={idx} style={i < arr.length - 1 ? { borderBottom: '1px solid rgba(0,199,177,0.12)' } : undefined}>
                         <button className="flex items-start gap-2 w-full text-left px-2.5 py-2.5 text-sm leading-snug border-none bg-transparent cursor-pointer transition-colors hover:bg-[rgba(0,199,177,0.1)] hover:text-white" style={{ color: '#b8d4d0', fontFamily: 'inherit' }} onClick={() => scrollToItem(idx)}>{label}</button>
                       </li>
