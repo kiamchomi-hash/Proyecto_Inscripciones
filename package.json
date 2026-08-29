@@ -14,6 +14,7 @@
     "smoke": "node herramientas/smoke.mjs",
     "capturas": "node herramientas/capturas.mjs",
     "seo": "node --env-file-if-exists=.env.local herramientas/seo-semanal.mjs",
+    "leads": "node --env-file-if-exists=.env.local herramientas/leads.mjs",
     "db": "node --env-file-if-exists=.env.local herramientas/db.mjs"
   },
   "repository": {

@@ -25,7 +25,7 @@ Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --
 
 ### Verificaciones que no cubre `npm run check`
 
-`check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.bat` y un `.sh` de doble clic al lado de cada `.mjs`: `npm run auditar` (contenido faltante en Supabase), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas` y `npm run seo` (informe de Search Console). Las tres primeras salen con código 1 si encuentran algo.
+`check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.bat` y un `.sh` de doble clic al lado de cada `.mjs`: `npm run auditar` (contenido faltante en Supabase), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.
 
 **La vigilancia de producción ya existe, son dos y no se duplican**: el cron de Vercel cada 6 horas (`app/api/vigilancia`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
 

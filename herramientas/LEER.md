@@ -20,10 +20,11 @@ se toca una sola vez.
 | `4 - Verificar avisos (SQL).bat` | Copia el SQL y abre el editor de Supabase | Al tocar `WEBHOOK_SECRET`, la función `notificar` o el trigger |
 | `5 - Subir cambios (deploy).bat` | Commit + push a main, o sea **deploy** | Cuando el cambio está listo |
 | `6 - Informe SEO.bat` | Baja Search Console y deja el informe de la semana | Una vez por semana (ya corre solo los lunes) |
+| `8 - De donde vienen los leads.bat` | Clics a WhatsApp, consultas y tráfico, juntos | Cuando parece que no está entrando nada |
 
 Las tres primeras salen con código 1 si encontraron algo, así que también sirven
 desde una terminal: `npm run auditar`, `npm run smoke`, `npm run capturas`. La
-sexta va por `npm run seo`.
+sexta va por `npm run seo` y la octava por `npm run leads`.
 
 ## Detalles de cada una
 
@@ -161,9 +162,55 @@ El informe **no propone nada**: sólo mide. Las sugerencias las arma el agente
 `estratega-seo` de Claude Code, que lo lee cuando se lo invoca. Es la misma
 separación de siempre — bajar y contar sale gratis, interpretar es lo que cuesta.
 
+### 8 — De dónde vienen los leads
+
+Contesta una sola pregunta, la que aparece cuando el teléfono está callado: **¿no
+está entrando nadie, o está entrando y se pierde en el camino?** Junta en una
+pantalla las tres cosas que hoy viven en tres paneles distintos:
+
+- **clics a WhatsApp** día por día, con el desglose por dispositivo y desde qué
+  páginas se toca (Vercel Analytics, en vivo);
+- **las consultas que entraron de verdad** al formulario (Supabase, en vivo);
+- **el tráfico que llega desde Google**, contra el período anterior (Search
+  Console).
+
+Y abajo el embudo: cuántas personas entraron, cuántas tocaron WhatsApp, cuántas
+de ésas desde el móvil y cuántas dejaron el formulario.
+
+**El número que se parece a un lead es el del móvil, no el total.** En una
+computadora `wa.me` abre WhatsApp Web y quien no tenga la sesión iniciada se
+queda en la pantalla de descarga: la mitad de los clics son de escritorio y de
+ahí llegan pocos mensajes. Por eso el desglose por dispositivo está arriba y no
+como un detalle al final.
+
+Dos cosas que el informe avisa solo:
+
+- **Los clics a WhatsApp se miden desde el 17/08/2026**, que es cuando se deployó
+  la medición. Si la ventana empieza antes, los días anteriores figuran en cero
+  y eso es ausencia de medición, no ausencia de gente.
+- **Compara los envíos medidos contra las filas de la tabla.** El evento se
+  dispara sólo cuando el POST respondió ok, así que si sobran eventos hubo
+  envíos que el visitante dio por buenos y no se guardaron — que es lo que pasó
+  el 23/08/2026 con las nueve columnas inexistentes. Antes de asustarse: una
+  fila de prueba borrada a mano y un envío justo en el borde de la ventana dan
+  la misma diferencia, y el aviso lo dice.
+
+Las tres fuentes usan credenciales que ya están en la máquina: el token de la
+CLI de Vercel (`npx vercel login`), `EDITOR_DATABASE_URL` y la service account
+de Search Console. **Si falta alguna, esa sección sale como no disponible y el
+resto se muestra igual**; sólo sale con código 1 si no se pudo leer ninguna.
+
+```
+npm run leads              # últimos 14 días
+npm run leads -- --dias=30
+```
+
+El tope son 62 días: es el máximo que la API de Vercel Analytics acepta con
+granularidad diaria.
+
 ## Vigilancia automática (sin doble clic)
 
-Los cinco numerados son para usar a mano: abren una ventana y esperan una tecla
+Los numerados son para usar a mano: abren una ventana y esperan una tecla
 al terminar. Aparte de esos está `vigilancia.bat` (y su `vigilancia.sh`), que es
 lo contrario — corre solo, sin ventana, y devuelve el código de salida de verdad.
 Es el que usan las tareas programadas de Windows:

@@ -15,16 +15,14 @@
 // usa el MCP gsc) firmando un JWT a mano. La API de Search Console es REST
 // plana, asi que no hace falta el SDK de Google ni ninguna dependencia nueva.
 
-import { createSign } from 'node:crypto';
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
+import { acceso, consultar as consultarGsc } from './gsc.mjs';
 
 const RAIZ = path.resolve(import.meta.dirname, '..');
 const LOGS = path.join(RAIZ, 'herramientas', 'vigilancia-logs');
 const ESTADO = path.join(LOGS, 'seo-estado.json');
 const ULTIMO = path.join(LOGS, 'seo-ultimo.md');
-const CREDENCIAL = path.join(os.homedir(), '.gsc', 'service_account.json');
 
 const args = process.argv.slice(2);
 const opcion = (nombre, porDefecto) => {
@@ -67,63 +65,23 @@ const PERIODO_PREVIO = { startDate: iso(inicioPrevio), endDate: iso(finPrevio) }
 
 // ── Autenticacion ───────────────────────────────────────────────────────────
 
+// Sin Search Console este informe no tiene nada que decir, asi que la falta de
+// credencial corta el proceso. El modulo lanza en vez de salir porque el otro
+// que lo usa -el tablero de leads- sigue adelante con las demas fuentes.
 async function token() {
-  if (!existsSync(CREDENCIAL)) {
-    console.error(`No esta la credencial de Search Console: ${CREDENCIAL}`);
-    console.error('Traerla con: node herramientas/entorno.mjs importar --desde=<paquete>');
+  try {
+    return await acceso();
+  } catch (error) {
+    console.error(error.message);
     process.exit(2);
   }
-
-  const cred = JSON.parse(readFileSync(CREDENCIAL, 'utf8'));
-  const ahora = Math.floor(Date.now() / 1000);
-  const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
-
-  const sinFirmar = [
-    b64({ alg: 'RS256', typ: 'JWT' }),
-    b64({
-      iss: cred.client_email,
-      scope: 'https://www.googleapis.com/auth/webmasters.readonly',
-      aud: 'https://oauth2.googleapis.com/token',
-      iat: ahora,
-      exp: ahora + 3600,
-    }),
-  ].join('.');
-
-  const firma = createSign('RSA-SHA256').update(sinFirmar).sign(cred.private_key, 'base64url');
-
-  const r = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: `${sinFirmar}.${firma}`,
-    }),
-  });
-
-  if (!r.ok) {
-    console.error(`No se pudo autenticar contra Google (${r.status}): ${await r.text()}`);
-    process.exit(2);
-  }
-  return (await r.json()).access_token;
 }
 
 // ── API de Search Console ───────────────────────────────────────────────────
 
 let ACCESO = null;
 
-async function consultar(cuerpo) {
-  const sitio = encodeURIComponent(SITIO);
-  const r = await fetch(
-    `https://searchconsole.googleapis.com/webmasters/v3/sites/${sitio}/searchAnalytics/query`,
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${ACCESO}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...cuerpo, dataState: 'final' }),
-    },
-  );
-  if (!r.ok) throw new Error(`searchAnalytics ${r.status}: ${await r.text()}`);
-  return (await r.json()).rows ?? [];
-}
+const consultar = (cuerpo) => consultarGsc(ACCESO, SITIO, cuerpo);
 
 async function inspeccionar(url) {
   const r = await fetch('https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', {
