@@ -117,7 +117,8 @@
   --catalogo-form-tarjeta: #1c3a38;
   --catalogo-form-panel: #16403b;
   --catalogo-form-campo: #0f2825;
-  --catalogo-texto-suave: var(--color-text-light);
+  /* Texto secundario sobre --catalogo-form-tarjeta: 4,72:1 (WCAG AA). */
+  --catalogo-texto-suave: #82a8a2;
   --catalogo-etiqueta: #9ac5be;
 }
 

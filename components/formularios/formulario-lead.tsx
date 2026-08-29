@@ -498,7 +498,7 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
   const campo = CAMPOS[id];
   const htmlId = `${prefijo}-${id}`;
   const marca = opcional
-    ? <span className="ml-1 font-normal normal-case tracking-normal text-[var(--catalogo-texto-suave)]/70">(opcional)</span>
+    ? <span className="ml-1 font-normal normal-case tracking-normal text-[var(--catalogo-etiqueta)]">(opcional)</span>
     : null;
 
   if (campo.tipo === 'checkbox') {
