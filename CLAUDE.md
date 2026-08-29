@@ -25,51 +25,11 @@ Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --
 
 ### Verificaciones que no cubre `npm run check`
 
-`check` sólo mira el código. En `herramientas/` están las que miran los datos y el sitio publicado, cada una con un `.bat` (Windows) y un `.sh` (Linux) de doble clic al lado (`LEER.md` explica cada una). Los envoltorios son dos, el `.mjs` que hace el trabajo es uno solo: la lógica se toca ahí. Nada de esa carpeta entra al bundle de Next. Las tres primeras salen con código 1 si encuentran algo:
+`check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.bat` y un `.sh` de doble clic al lado de cada `.mjs`: `npm run auditar` (contenido faltante en Supabase), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas` y `npm run seo` (informe de Search Console). Las tres primeras salen con código 1 si encuentran algo.
 
-```bash
-npm run auditar      # contenido faltante en Supabase (lee con la anon key, corre local)
-npm run smoke        # producción: rutas, cabeceras, redirects, sitemap y peso real del HTML
-npm run capturas     # PNG desktop + mobile a screenshots/<AAAAMMDD-HHMM>/
-npm run seo          # informe semanal de Search Console (mide; no propone)
-```
+**La vigilancia de producción ya existe, son dos y no se duplican**: el cron de Vercel cada 6 horas (`app/api/vigilancia`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
 
-- **`auditar`** (`herramientas/auditar-contenido.mjs`) busca el desfasaje entre la base y las fuentes reales: carreras visibles sin plan de estudios (ni en la columna ni en un slide `plan_estudios`, mismo criterio que el `hasPlan` de `career-detail.tsx`), carreras sin slides —que abren una ficha vacía—, slugs duplicados, niveles desconocidos y novedades publicadas sin `imagen_url` (og:image vacío al compartir). Las carreras `proximamente` bajan a aviso: todavía no tienen temario publicado. Importa `esCarreraVisible()` del módulo real (Node 24 strippea los tipos), así que sigue sola los cambios de taxonomía.
-- **`smoke`** (`herramientas/smoke.mjs`) acepta `--base=http://localhost:3000` y `--rapido` (saltea el barrido de las ~119 URLs del sitemap). Los redirects sólo se prueban contra el dominio propio. Mide el peso pidiendo a prod, no comprimiendo local: Vercel comprime el HTML al vuelo con otra calidad.
-- **`capturas`** (`herramientas/capturas.mjs`) acepta `--base=`, `--rutas=/faq,/contacto`, `--solo=mobile|desktop` y `--viewport` (sólo la primera pantalla). Usa `devices['iPhone 13']` de Playwright: `chrome --headless --window-size` **no** da un viewport CSS del ancho pedido e inventa recortes falsos en móvil. Navega con `waitUntil: 'load'` porque `networkidle` nunca llega en las páginas con formulario (Turnstile deja tráfico abierto). Desde Git Bash las rutas con `/` inicial se mangean: usar PowerShell o `--rutas=faq,contacto`.
-
-- **`seo`** (`herramientas/seo-semanal.mjs`) baja Search Console firmando un JWT con la service account de `~/.gsc/service_account.json` (la misma del MCP `gsc`), así que no agrega ninguna dependencia. Deja `herramientas/vigilancia-logs/seo-ultimo.md` con páginas cuyo CTR está por debajo de lo esperable **para su posición y para su mezcla de intención**, consultas cerca de los primeros lugares con la página que las recibe, racimos de consultas genéricas fuera del top 10, caídas de posición y URLs del sitemap sin indexar.
-
-**Separa consultas de marca de consultas genéricas, y eso cambia todo el informe.** Quien escribe "martillero publico siglo 21" quiere 21.edu.ar: nos ve quinto y nos saltea. Medido en agosto de 2026, la marca se lleva el 78% de las impresiones nombradas y clickea a un tercio de lo que predice la curva de CTR. Sin separarlas, el informe encabezaba cada semana con nueve páginas de marca (77% a 96% de sus consultas con "siglo 21" adentro) prometiendo ~190 clics inalcanzables, y tapaba las pocas genéricas con margen. Ahora los dos factores se **miden en cada corrida** contra la curva —no hay ningún número fijo en el código— y el CTR esperado de cada página se corrige por su propia mezcla. Ojo con la muestra: Search Console anonimiza la cola larga, así que las filas nombradas cubren ~27% de las impresiones y el share de marca que sale de ahí es un techo.
-
-Acepta `--rapido` (saltea la inspección URL por URL), `--dias=` y `--sitio=`. La ventana termina tres días antes de hoy porque GSC consolida con atraso. **Las carreras fuera de la oferta quedan afuera del informe**: redirigen a la home y está bien, pero si no se filtran copan la lista — para saber cuáles son lee la oferta vigente de Supabase. Sale con código 1 sólo ante algo roto (página caída del índice, canónica cambiada por Google, caída fuerte de tráfico), no ante una sugerencia. El criterio de qué hacer con los números lo pone el agente `estratega-seo`, que lo lee cuando se lo invoca a mano.
-
-### Vigilancia de producción: ya existe, son dos y no se duplican
-
-**Antes de proponer cualquier monitoreo, alerta o "que avise si el sitio se cae", leer esto: está hecho.** Hay dos vigilantes, a propósito, y ninguno reemplaza al otro:
-
-| | `app/api/vigilancia` (cron de Vercel) | `herramientas/vigilancia.mjs` (local) |
-|---|---|---|
-| Cuándo | cada 6 horas, declarado en `vercel.json` | cuando lo dispara el Programador de tareas |
-| Dónde | en la nube, con la máquina apagada | en la máquina de casa |
-| Qué mira | rutas, cabeceras, noindex, redirects y el sitemap entero | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
-| Cómo avisa | Telegram | archivo `REVISAR-SITIO.txt` en el escritorio + Telegram |
-
-El de Vercel es el que cubre las caídas de verdad, porque no depende de que la PC esté prendida. Se autentica con `CRON_SECRET` y **con `?prueba=1` manda un aviso de prueba sin correr los chequeos**, que es la forma de confirmar que el canal de Telegram sigue vivo sin esperar a que algo se rompa. No mide el peso comprimido del HTML a propósito: eso necesita leer los bytes del socket sin descomprimir y `fetch` descomprime solo, así que ese chequeo vive únicamente en `smoke.mjs`.
-
-El local avisa por Telegram **sólo en los cambios de estado** (`ok → problema` y `problema → ok`), no en cada corrida: un chequeo diario que falla una semana tiene que ser un mensaje, no siete. Su chequeo `smoke` lleva `avisaVercel: true` y queda fuera del aviso, porque el cron ya manda ese mensaje — sin eso, una caída llegaría dos veces. Necesita `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` en `.env.local`; si faltan, el aviso queda sólo en el escritorio y el chequeo no se rompe.
-
-Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos (`smoke.mjs` lo carga con Node pelado, que strippea los tipos). Rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más: duplicar esa lista deja a uno de los dos viejo sin que nadie se entere.
-
-Los redirects llevan un tercer campo opcional con el **código exacto**, en vez de aceptar cualquier 3xx. Se usa donde el código lo decide algo que no vive en el repo. Hoy es el apex: `next.config.ts` lo declara con `permanent: true`, pero esa regla **no se ejecuta en producción** porque Vercel tiene su propio redirect a nivel de dominio que corre en el borde antes que la app. Venía con 307 de fábrica, así que el código decía 308 y producción servía 307 desde marzo sin que ningún diff lo mostrara; se corrigió el 25/08/2026 en el panel de Vercel y quedó fijado acá para que no vuelva a pasar en silencio. **Tocarlo en `next.config.ts` no cambia nada mientras el del dominio exista.**
-
-Para los avisos de formulario (Telegram) está `herramientas/verificar-avisos.sql`: prueba los tres triggers de una sola pasada, con los pasos separados porque `pg_net` recién despacha el pedido cuando la transacción commitea.
-
-También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada novedad dos derivados de 1200×630 desde las fotos de `public/` — la foto limpia (`public/imagenes/novedades/<slug>.jpg`, para `imagen_url`) y la versión con el título compuesto encima (`public/imagenes/og/<slug>.jpg`, para el og:image). Depende de `sharp` (declarado como devDependency).
-
-`generar-secretos.mjs`, sin script npm, genera los valores nuevos para rotar `REVALIDATE_SECRET` y `WEBHOOK_SECRET` y deja el SQL de `sql/2026-08-28_rotar_secretos.sql` en el portapapeles con los valores ya puestos. No los escribe en ningún archivo: el repo es público. **El orden de aplicación está en ese SQL y no es simétrico** — Vercel primero, porque un cambio de env var necesita redeploy, y el `UPDATE` del Vault inmediatamente después; al revés, o con `WEBHOOK_SECRET` fuera de orden, quedan formularios guardándose sin aviso de Telegram.
-
-`generar-favicon.mjs`, también sin script npm, rehace `public/favicon.ico` (16/32/48) y `public/icon.png` recortando el isologo del vector `public/imagenes/imagenes_cau/siglo21-marca.svg` — el panel del "21" es un cuadrado exacto de 268 unidades ahí adentro, y el favicon es ese cuadrado con los colores invertidos. **No copiar a mano el favicon de 21.edu.ar**: el que publican es un JPEG de 48×48 con el "1" cortado y no hay versión más grande (`?width=` de HubSpot no agranda, y no tienen `apple-touch-icon` ni manifest).
+**El detalle de cada script, las banderas que aceptan, los dos vigilantes y los generadores sin script npm (`generar-og`, `generar-secretos`, `generar-favicon`) están en `docs/herramientas.md`.** Leerlo antes de correr o tocar cualquiera de ellos.
 
 ### Deploy
 
@@ -122,22 +82,9 @@ Todo lo que envía el público pasa por `POST /api/formularios`, que discrimina 
 
 ### Un solo lugar declara los campos: `components/formularios/casas.ts`
 
-El sitio tiene **dos formularios por casa** —contacto y preinscripción— y un único componente que los pinta, `components/formularios/formulario-lead.tsx`. Lo que cambia entre uno y otro no está en el componente sino en `casas.ts`, que declara tres cosas:
+El sitio tiene dos formularios por casa (contacto y preinscripción) y un único componente que los pinta. Lo que cambia entre uno y otro no está en el componente sino en `casas.ts`, que declara los campos con **la columna de `consultas` donde se guarda cada uno**: `insertConsulta` arma la fila con `columnaDe()` y no tiene ni un nombre de columna escrito a mano. El 23/08/2026 el endpoint apuntó a nueve columnas inexistentes y **dejaron de entrar todas las consultas del sitio**, porque PostgREST rechaza la fila entera cuando una no existe. Un test de `security.test.mjs` falla si vuelve a aparecer un literal de columna en el endpoint.
 
-- **`CAMPOS`**: los campos que existen y, al lado de cada uno, **la columna de `consultas` donde se guarda**. Ahí está el punto: `insertConsulta` arma la fila con `columnaDe()` y no tiene ni un nombre de columna escrito a mano. El 23/08/2026 el endpoint apuntó a nueve columnas inexistentes y, como PostgREST rechaza la fila entera cuando una no existe (PGRST204), **dejaron de entrar todas las consultas del sitio** —home, `/contacto` y los dos de `/teclab`— porque los tres mandan `kind: 'consulta'`. Un test de `security.test.mjs` falla si vuelve a aparecer un literal de columna en el endpoint.
-- **`CASAS`**: qué pide cada casa (`siglo21`, `teclab`, `identidad`) en cada modo, y cuáles bloquean el envío. Los obligatorios bloquean **sólo en preinscripción**: un legajo a medias no sirve, una consulta que rebota es un lead perdido. Ojo con las diferencias reales — Siglo 21 pide tipo de documento, tipo de domicilio, torre y barrio, y **no** pide nivel de estudios, colegio ni medio de pago, que son de Teclab.
-- **`armarPayload()`**: qué viaja. Los campos que la casa no pide siguen en el estado del componente —si el lead vuelve a esa carrera los encuentra como los dejó— pero no se mandan.
-
-En la home la casa **la define la carrera elegida** y el formulario cambia solo; en `/teclab` va fija por props. `casa` y `tipo_formulario` se guardan en la fila, y con eso el aviso de Telegram encabeza "PREINSCRIPCIÓN — Teclab" o "Consulta — Siglo 21".
-
-Va todo en un archivo a propósito: Node strippea los tipos y corre los `.ts` en los tests, pero **no resuelve imports de valor entre `.ts` sin extensión**, y el `tsconfig` usa `moduleResolution: bundler` sin `allowImportingTsExtensions`. Separarlo deja la lógica sin poder testearse.
-
-Antes de agregar un campo, **verificar que la columna exista de verdad**: desde local se puede con la anon key, `GET /rest/v1/consultas?select=<columna>&limit=1` — un `42703` en la respuesta es la columna que falta. Y después, mandar una consulta real: el incidente pasó porque el `INSERT` nunca se ejecutó contra la tabla.
-
-Rate limit: RPC `check_form_rate_limit(p_key, p_max_requests, p_window_seconds)` con la IP hasheada en SHA-256. La clave incluye el `kind` (`consulta:<hash>`), así que el tope es **5 pedidos por cada tipo** por 10 min — una misma IP puede mandar 15 en total entre los tres. `/api/track-click` usa 60 (navegar 20 tarjetas es uso normal).
-
-Turnstile se verifica en `lib/turnstile.ts`, que además compara el `hostname` que devuelve Cloudflare contra `TURNSTILE_EXPECTED_HOSTNAME` (normaliza `www.`). Si `TURNSTILE_SECRET_KEY` no está seteada, el endpoint acepta el token literal `rate-limit-only`. **Ese atajo solo, sin embargo, no alcanza para probar formularios en local**: el rate limit se consulta igual y usa la service role, así que sin `SUPABASE_SERVICE_ROLE_KEY` el endpoint devuelve 503.
-
+**Antes de agregar o mover un campo, leer `docs/formularios-por-casa.md`**: qué pide cada casa, cuáles bloquean el envío, cómo viaja el payload y cómo verificar que la columna exista de verdad.
 ### Avisos de formulario: fallan en silencio
 
 Hay **tres** triggers de Postgres, uno por tabla de formulario, y todos llaman a la misma función `notify_edge_function()`, que vía `net.http_post` invoca la Edge Function `supabase/functions/notificar/` (Telegram, único canal desde el 01/08/2026):
@@ -226,10 +173,9 @@ El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada
 
 ### Variables de entorno
 
-Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_EXPECTED_HOSTNAME` y `NEXT_PUBLIC_GA_ID`, más `REVALIDATE_SECRET` (`/api/revalidar`) y `CRON_SECRET` (`/api/vigilancia`). `WEBHOOK_SECRET` es la única que consumen sólo las Edge Functions; `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` las usan **las dos partes** — las Edge Functions `notificar`, `alerta-firewall` y `digest-clicks`, y también `/api/vigilancia`, que es Next.
+La plantilla completa está en `.env.example` y el reparto de cuál usa Next, cuál las Edge Functions y cuál las herramientas, en `docs/variables-de-entorno.md`.
 
-El `.env.local` de esta máquina tiene, de las que usa Next, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_GA_ID` y las tres de Turnstile; el resto de sus ~20 líneas son de las herramientas (`EDITOR_DATABASE_URL`, `TELEGRAM_*`, y las credenciales de los scripts de ventas). **La que no está es `SUPABASE_SERVICE_ROLE_KEY`.** Alcanza para levantar el sitio y leer de la base, pero **cualquier POST a `/api/formularios` devuelve 503 en local** porque falta la service role, y `vercel env pull` no la trae (está marcada Sensitive). Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
-
+Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tiene `SUPABASE_SERVICE_ROLE_KEY`** (está marcada Sensitive y `vercel env pull` no la trae). Alcanza para levantar el sitio y leer de la base, pero **cualquier POST a `/api/formularios` devuelve 503 en local**. Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
 ## Base de datos
 
 Tablas de contenido y formularios: `carreras`, `materias`, `solicitudes_clase`, `consultas`, `faq_preguntas`, `novedades`, `profesores`.
@@ -240,31 +186,11 @@ Tablas de infraestructura, sin acceso desde `anon` ni `authenticated` (sólo ser
 
 ### Escribir contenido desde local: el rol `cau_editor`
 
-`npm run db "<sql>"` (o `npm run db -- --archivo x.sql`) corre SQL contra la base con un rol de Postgres acotado, definido en `sql/2026-08-28_rol_editor_contenido.sql`. Es lo que evita copiar cada `UPDATE` al SQL Editor.
+`npm run db "<sql>"` (o `npm run db -- --archivo x.sql`) corre SQL contra la base con un rol de Postgres acotado, que **sólo tiene privilegios sobre las tablas de contenido** (`carreras`, `novedades`, `materias`, y `faq_preguntas` por columna). Contra las tablas de formularios responde `permission denied`, y eso es el rol funcionando: esa consulta va al SQL Editor del dashboard. `herramientas/db.mjs` además frena los `UPDATE` y `DELETE` sin `WHERE`.
 
-No es la service role con buenos modales: es un rol distinto, con su propia contraseña, que **sólo tiene privilegios sobre las tablas de contenido**.
+**El alcance tabla por tabla, la cadena de conexión, el certificado de Supabase y qué hacer si la máquina no tiene IPv6 están en `docs/rol-editor.md`.**
 
-| Tabla | Qué puede |
-|---|---|
-| `carreras`, `novedades`, `materias` | `SELECT`, `INSERT`, `UPDATE` |
-| `faq_preguntas` | `SELECT`/`UPDATE` **por columna**, sin `contacto` ni `nombre_contacto` |
-| `consultas` | `SELECT`, `DELETE` — **no** `INSERT`/`UPDATE` (`sql/2026-08-28_editor_consultas.sql`) |
-| `solicitudes_clase`, `profesores`, `form_rate_limits`, `career_clicks` | nada |
-
-`DELETE` no está en ninguna de las de contenido: una carrera sale de la oferta cambiando `nivel`/`activa`, una novedad se despublica. Sobre `consultas` es al revés — lee y borra, pero no escribe: se agregó el 28/08/2026 para poder limpiar la fila que deja probar el formulario contra producción, y las consultas siguen entrando sólo por `/api/formularios`. Contra el resto de las tablas de formularios la respuesta es `permission denied for table solicitudes_clase`, y eso es el rol funcionando, no un bug — esa consulta va al dashboard.
-
-Se conecta por Postgres directo con `EDITOR_DATABASE_URL` (`postgresql://cau_editor:<clave>@db.<ref>.supabase.co:5432/postgres`), no por PostgREST: no hay que tocar el JWT ni el `authenticator`. Se descartó firmar un JWT con el secreto del proyecto justamente porque ese secreto también emite tokens `service_role` — habría sido una credencial más poderosa que la que se quería evitar.
-
-**Ese host se publica sólo por IPv6**, y la máquina de Windows lo alcanza. Si la de Linux no tiene IPv6, ahí hay que pasar al pooler: mismo string con el host `aws-<n>-<región>.pooler.supabase.com`, puerto 6543 y el usuario `cau_editor.<ref>` (el sufijo del proyecto es obligatorio en el pooler).
-
-El certificado del servidor lo firma la PKI propia de Supabase (`Supabase Root 2021 CA`), que no está en el almacén de Node: verificar la cadena falla con `SELF_SIGNED_CERT_IN_CHAIN`. `db.mjs` pincha ese root si encuentra `herramientas/supabase-ca.crt` (se baja del dashboard, *Connect → SSL certificate*) y, si no está, avisa y sigue sin verificar — la contraseña viaja cifrada igual, pero sin protección contra alguien en el medio.
-
-`herramientas/db.mjs` **frena los `UPDATE` y `DELETE` sin `WHERE`** antes de mandarlos (`--sin-red` los deja pasar). El rol cubre escribir en la tabla equivocada; esto cubre escribir en la correcta sin acotar la fila.
-
-Los permisos concedidos se verifican con la consulta del final del archivo SQL: si ahí aparece una tabla de formularios, se concedió de más.
-
-Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano en el SQL Editor de Supabase, en orden de fecha. `sql/instrucciones.md` documenta el setup inicial de clases de apoyo. Hay jobs de `pg_cron` (limpieza de clases pasadas, digest diario de clicks) que se programan desde ahí.
-
+Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano en el SQL Editor de Supabase, en orden de fecha. Hay jobs de `pg_cron` (limpieza de clases pasadas, digest diario de clicks) que se programan desde ahí.
 ## Convenciones
 
 - Alias `@/*` → raíz del proyecto.
@@ -277,26 +203,7 @@ Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano 
 - `scripts/` son utilitarios de carga de datos de una sola vez (parseo e insert de carreras, descarga de assets de Teclab); no participan del build ni de `check`.
 - `.claude/skills/` es una biblioteca local de skills para Claude Code: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), SEO, y guías generales de Next/React. Antes vivía en `shared_skills/` con un symlink al lado, que sólo funcionaba en Linux; ahora es un directorio real y carga en los dos sistemas.
 - `docs/plans/` son planes de implementación históricos, no estado actual; además es donde escriben las skills `brainstorming` y `writing-plans`. `docs/resumen-proyecto.md` es un resumen para reutilizar patrones en otros proyectos — ante una contradicción, manda este archivo y el código.
-
-### El material comercial: `carreras/`, `ventas/` y `herramientas/ventas/`
-
-Nada de esto lo usa el sitio: es la base de conocimiento con la que se atiende a los leads (precios, corpus del bot de WhatsApp, fichas de carreras). Hasta el 08/08/2026 vivía todo junto en `herramientas/conocimiento-hermes/`, que era un repo git aparte metido adentro de este. Se disolvió y el contenido quedó repartido por tipo:
-
-| Carpeta | Qué hay |
-|---|---|
-| `carreras/` | **una carpeta por casa**: `siglo21/` (fichas `.md`, un JSON por carrera en `datos/`, y los JSON de manifiesto, alias, planes y resoluciones), `teclab/` (PDFs y videos por carrera, planes, contenidos y calendario) e `identidad/` |
-| `ventas/` | **los `.bat` numerados del 1 al 7**, que son el menú de doble clic; precios vigentes y planillas en `precios/`, corpus del bot por institución en `corpus/`, tips de venta, y `buscador-carreras.html` y `entrenar-bot.html` (se generan) |
-| `herramientas/ventas/` | los ~30 scripts `.mjs`, sus tests, `temp/` (archivos de trabajo descartables, antes `.hermes-temp/`) y `perfil-navegador/` (el perfil de Brave con las sesiones de CASA y Teclab) |
-
-Los `.bat` viven con lo que producen y no con la lógica a propósito: se va a `ventas/` a abrir el buscador, así que el lanzador tiene que estar ahí. Cada uno hace `cd /d "%~dp0.."` para pararse en la raíz del proyecto y desde ahí llama a su `.mjs`.
-
-Tres reglas para no romperlo:
-
-- **Ningún script arma rutas a mano**: el mapa entero está en `herramientas/ventas/rutas.mjs` y todos importan de ahí. Si algo se muda, se toca ese archivo y nada más.
-- **Las tres carpetas están gitignoradas y ancladas con `/`** (`/carreras/`, no `carreras/`). Sin la barra el patrón matchea a cualquier nivel y se comería `app/carreras/` y `components/carreras/`, que sí son código del sitio. Van gitignoradas porque el repo es público y ahí hay precios.
-- **Ya no son un repo aparte, así que no viajan solas entre máquinas.** Son ~600 MB y hay que copiarlas a mano; `entorno.mjs` no las empaqueta. La historia git vieja quedó archivada en `~/Desktop/historico-repo-ventas.git`.
-
-Ojo con `Teclab_Info/conocimiento-hermes/` en el Escritorio: es otra carpeta, de Teclab, y algunos scripts la leen. No tiene nada que ver con la que se disolvió.
+- `carreras/`, `ventas/` y `herramientas/ventas/` son la base de conocimiento comercial (precios, corpus del bot de WhatsApp, fichas), **no las usa el sitio**. Las tres están gitignoradas y ancladas con `/` porque el repo es público, así que Grep no las ve. Ningún script arma rutas a mano: el mapa está en `herramientas/ventas/rutas.mjs`. Detalle en `docs/material-comercial.md`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
