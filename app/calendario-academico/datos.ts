@@ -106,3 +106,68 @@ export function formatearCorto(iso: string): string {
   const [, mes, dia] = iso.split('-').map(Number);
   return `${dia}/${mes}`;
 }
+
+/**
+ * Las preguntas que la pagina ya contesta, escritas como preguntas.
+ *
+ * No es relleno de SEO: son las consultas con las que la gente llega
+ * ("cuando empiezan las clases", "hasta cuando me puedo anotar") y hasta el
+ * 29/08/2026 la pagina las respondia solo a traves de tarjetas de fechas, que
+ * un motor de respuestas no sabe leer como respuesta.
+ *
+ * Las fechas salen de PERIODOS y de CUATRIMESTRALES, no escritas a mano: dos
+ * copias de la misma fecha se desincronizan el dia que cambia el calendario, y
+ * la que quedaria vieja es justamente la que Google levanta como respuesta.
+ */
+export const PREGUNTAS: { pregunta: string; respuesta: string }[] = (() => {
+  const inicios = PERIODOS.map(p => formatearFecha(p.inicio));
+  const cierres = PERIODOS.map(p => formatearFecha(p.inscripcion));
+  const enumerar = (xs: string[]) => `${xs.slice(0, -1).join(', ')} y ${xs[xs.length - 1]}`;
+  // El calendario tiene cuatro tramos desde siempre, pero la palabra tambien
+  // sale del dato: si algun ano son tres, el texto no puede seguir diciendo
+  // "cuatro" mientras las tarjetas de arriba muestran tres.
+  const NUMEROS = ['cero', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis'];
+  const cuantos = NUMEROS[PERIODOS.length] ?? String(PERIODOS.length);
+
+  return [
+    {
+      pregunta: '¿Cuándo empiezan las clases en Universidad Siglo 21 en 2026?',
+      respuesta:
+        `En 2026 hay ${cuantos} fechas de inicio: ${enumerar(inicios)}. La modalidad a ` +
+        `distancia divide el año en ${cuantos} tramos de nueve semanas y cada uno abre su ` +
+        'propia inscripción, así que no hace falta esperar a marzo para empezar.',
+    },
+    {
+      pregunta: '¿Hasta cuándo me puedo inscribir a materias?',
+      respuesta:
+        'Cada tramo cierra la inscripción a materias dos semanas después de arrancar la ' +
+        `cursada: ${enumerar(cierres)} de 2026. Pasada esa fecha ya no se puede sumar ` +
+        'materias a ese tramo y hay que esperar al siguiente.',
+    },
+    {
+      pregunta: '¿Cuántas veces al año se puede empezar a cursar a distancia?',
+      respuesta:
+        `${cuantos[0].toUpperCase()}${cuantos.slice(1)} veces. El año se divide en ` +
+        `${cuantos} tramos de nueve semanas, dos por semestre, y cada uno abre su propia ` +
+        'inscripción a materias. Aparte están las materias cuatrimestrales, que arrancan ' +
+        'junto con el primer tramo de cada semestre y se cursan a lo largo de todo el ' +
+        'semestre.',
+    },
+    {
+      pregunta: '¿Cuánto dura cada tramo de cursada?',
+      respuesta:
+        'Nueve semanas. Las primeras ocho son de cursada y la novena es siempre la de ' +
+        'recuperatorio e integrador. Las materias cuatrimestrales son la excepción: duran ' +
+        `${CUATRIMESTRALES[0].semanas} semanas en el primer semestre y ` +
+        `${CUATRIMESTRALES[1].semanas} en el segundo.`,
+    },
+    {
+      pregunta: '¿Teclab y la Academia Identidad Argentina usan este mismo calendario?',
+      respuesta:
+        'No. Estas fechas son las de Universidad Siglo 21 en modalidad a distancia (ED y ' +
+        'EDH). Teclab Instituto Técnico Superior y la Academia Identidad Argentina manejan ' +
+        'calendarios propios, con sus propias fechas de inicio y de inscripción. Si la ' +
+        'carrera que te interesa es de alguna de las dos, escribinos y te pasamos las suyas.',
+    },
+  ];
+})();

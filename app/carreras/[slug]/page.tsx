@@ -10,6 +10,7 @@ import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-fo
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
+import { duracionISO } from '@/lib/duracion-iso';
 import '../career-detail.css';
 
 // 24 h, no 1 h: son ~96 paginas y cada regeneracion es un ISR Write de Vercel.
@@ -419,6 +420,8 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         "url": "https://21.edu.ar",
       };
 
+  const duracion = duracionISO(carrera.duracion);
+
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
@@ -435,9 +438,12 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     ),
     provider,
     "educationalLevel": esCursoTeclabActual ? 'Curso' : carrera.nivel,
-    // "Consultar" es el relleno de una ficha sin datos confirmados: declararlo
-    // como dato estructurado seria afirmarle a Google algo que no sabemos.
-    ...(carrera.duracion && carrera.duracion !== 'Consultar' ? { "timeToComplete": carrera.duracion } : {}),
+    // schema.org tipa timeToComplete como Duration, o sea ISO 8601: el "2 años"
+    // crudo de la base no lo lee nadie. duracionISO() devuelve null para lo que
+    // no es una duracion -"Consultar", el relleno de una ficha sin datos
+    // confirmados- y entonces la propiedad no se emite: un dato estructurado es
+    // una afirmacion, y no decir nada es mejor que afirmar cualquier cosa.
+    ...(duracion ? { "timeToComplete": duracion } : {}),
     ...(carrera.titulo && carrera.titulo !== 'Consultar' ? { "educationalCredentialAwarded": carrera.titulo } : {}),
     "inLanguage": "es",
     // El curso se dicta entero por videollamada; las carreras combinan la

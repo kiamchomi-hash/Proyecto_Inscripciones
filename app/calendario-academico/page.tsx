@@ -7,6 +7,7 @@ import {
   PERIODOS,
   CUATRIMESTRALES,
   FERIADOS,
+  PREGUNTAS,
   PDF_OFICIAL,
   formatearFecha,
   formatearCorto,
@@ -63,6 +64,20 @@ const BREADCRUMB = {
   ],
 };
 
+// Las mismas preguntas que se pintan mas abajo. El schema no puede declarar
+// respuestas que la pagina no muestre: Google lo pide explicitamente y, mas
+// alla de la regla, una respuesta que solo existe en el JSON-LD es una promesa
+// que la visita no cumple.
+const FAQ = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: PREGUNTAS.map(p => ({
+    '@type': 'Question',
+    name: p.pregunta,
+    acceptedAnswer: { '@type': 'Answer', text: p.respuesta },
+  })),
+};
+
 export default function CalendarioAcademicoPage() {
   const primerSemestre = PERIODOS.filter(p => p.semestre === 'Primer semestre');
   const segundoSemestre = PERIODOS.filter(p => p.semestre === 'Segundo semestre');
@@ -76,6 +91,10 @@ export default function CalendarioAcademicoPage() {
         // helper igual: es la regla del proyecto para todo bloque de datos
         // estructurados, y el test la exige.
         dangerouslySetInnerHTML={{ __html: jsonLdScript(BREADCRUMB) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(FAQ) }}
       />
 
       {/* ─── HERO ─────────────────────────────────────────── */}
@@ -185,6 +204,23 @@ export default function CalendarioAcademicoPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* ─── PREGUNTAS ────────────────────────────────────── */}
+      <section className="mb-10">
+        <h2 className="ca-h2">Preguntas frecuentes</h2>
+        <div className="grid grid-cols-1 gap-4">
+          {PREGUNTAS.map(p => (
+            <article key={p.pregunta} className="ca-card rounded-2xl p-5 sm:p-6">
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight mb-2">
+                {p.pregunta}
+              </h3>
+              <p className="text-sm leading-relaxed" style={{ color: '#c8dedd' }}>
+                {p.respuesta}
+              </p>
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* ─── FUENTE + CTA ─────────────────────────────────── */}

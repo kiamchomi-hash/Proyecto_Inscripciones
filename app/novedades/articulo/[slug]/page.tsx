@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { sanitizeContent } from '@/lib/sanitize-content';
+import { jsonLdScript } from '@/lib/json-ld';
 import CopyLinkButton from '@/components/novedades/copy-link-button';
 import SiteFooter from '@/components/footer';
 import '../../articulo.css';
@@ -20,6 +21,7 @@ interface Novedad {
   tag: string;
   imagen_url: string | null;
   slug: string;
+  updated_at: string | null;
 }
 
 export async function generateStaticParams() {
@@ -74,7 +76,7 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
 
   const { data } = await supabase
     .from('novedades')
-    .select('id, titulo, contenido, extracto, fecha, tag, imagen_url, slug')
+    .select('id, titulo, contenido, extracto, fecha, tag, imagen_url, slug, updated_at')
     .eq('slug', slug)
     .eq('publicada', true)
     .single();
@@ -86,8 +88,71 @@ export default async function ArticuloPage({ params }: { params: Promise<{ slug:
   const shareText = encodeURIComponent(novedad.titulo);
   const shareUrlEncoded = encodeURIComponent(shareUrl);
 
+  // Hasta el 29/08/2026 estas paginas no emitian ningun dato estructurado
+  // propio: heredaban del layout la organizacion y nada mas. Son justo las que
+  // aspiran a que las cite una IA -explican un puesto, un tramite, una
+  // modalidad- y eran las que menos senales daban sobre quien las escribe y
+  // cuando. BlogPosting es el subtipo de Article que le corresponde a una nota
+  // de un sitio institucional; NewsArticle seria para prensa.
+  //
+  // El autor es la organizacion y no una persona: aca no hay firmas, y poner un
+  // nombre inventado seria peor que no declarar autoria.
+  const editor = {
+    "@type": "EducationalOrganization",
+    "name": "CAU Villa Lugano - Universidad Siglo 21",
+    "url": "https://www.siglo21sur.com",
+  };
+
+  const articuloSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": novedad.titulo,
+    "mainEntityOfPage": { "@type": "WebPage", "@id": shareUrl },
+    "url": shareUrl,
+    ...(novedad.extracto ? { "description": novedad.extracto } : {}),
+    // La foto limpia, no la og compuesta: la og lleva el titulo estampado
+    // encima. Mismo criterio que el sitemap.
+    ...(novedad.imagen_url
+      ? { "image": new URL(novedad.imagen_url, 'https://www.siglo21sur.com').href }
+      : {}),
+    "datePublished": novedad.fecha,
+    // Sin updated_at cae en la fecha de publicacion, que es lo unico que
+    // sabemos: un dateModified inventado no ayuda a nadie.
+    "dateModified": novedad.updated_at ?? novedad.fecha,
+    "author": editor,
+    "publisher": {
+      ...editor,
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.siglo21sur.com/imagenes/imagenes_cau/logo_cau.png",
+      },
+    },
+    ...(novedad.tag ? { "articleSection": novedad.tag } : {}),
+    "inLanguage": "es",
+  };
+
+  // El resto del sitio ya emite migas; novedades era el unico rincon sin
+  // ninguna, y por eso sus URLs figuraban con rich_results en null.
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.siglo21sur.com" },
+      { "@type": "ListItem", "position": 2, "name": "Novedades", "item": "https://www.siglo21sur.com/novedades/1" },
+      { "@type": "ListItem", "position": 3, "name": novedad.titulo, "item": shareUrl },
+    ],
+  };
+
   return (
     <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: jsonLdScript(articuloSchema) }}
+    />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbSchema) }}
+    />
     {/* El pie va afuera de este <main>: adentro heredaba el max-w-3xl y salia
         como una cajita de 845 px flotando en el medio de la pantalla. */}
     <main className="max-w-3xl mx-auto px-5 sm:px-8 pt-6 pb-28 sm:pb-16">
