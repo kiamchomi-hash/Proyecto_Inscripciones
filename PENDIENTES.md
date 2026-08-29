@@ -1,6 +1,6 @@
 # Pendientes
 
-Última actualización: 2026-08-28
+Última actualización: 2026-08-29
 
 ## Abierto
 
@@ -56,6 +56,8 @@
 
   **Los enlaces internos (`aa4a68b`).** Las seis carreras del mismo nivel ahora rotan con el `id` en vez de ser siempre las seis primeras; el reparto de enlaces entrantes pasa de 0-34 a 3-11. **Esto se mira antes, el 30/08/2026, y no por CTR sino por rastreo**: las dos fichas que Google nunca rastreó (Videojuegos y Customer Experience) tenían dos enlaces entrantes cada una y ahora tienen más, así que la prueba es si entran al índice. **No se revierte aunque no se vea nada**: el reparto viejo dejaba 47 de las 88 fichas con tres enlaces o menos, y eso es un defecto por sí mismo.
 
+  **Medido el 29/08, un día antes: dio negativo y ya no hace falta esperar al 30.** Las dos fichas pasaron a **10 enlaces entrantes cada una** (contados sobre las 111 URLs de producción, sólo anclas reales), por encima de Quality Assurance que tiene 9 y está indexada, y **siguen sin rastrear**. El enlazado interno queda descartado como causa. Se deja igual, por la razón de arriba.
+
   Va encimado con la remedición del 24/08 de las 8 `enfoque` reescritas, acá arriba. Son cambios sobre las mismas páginas: si el 07/09 el CTR de carreras mejoró en bloque, no se puede repartir el mérito entre título y descripción, y tampoco hace falta.
 
 - [ ] **Pedirle a la universidad el plan de la Tecnicatura en Estadística Aplicada y Análisis Avanzado** (id 132). Es la única carrera visible sin temario del que agarrarse: al 29/07 no existe ni el PDF de `contenidos.21.edu.ar` ni la página en `21.edu.ar` ni una entrada en su sitemap; lo único público es un posteo del CAU Corrientes (2 años, inicio en octubre). Quedó marcada `proximamente` mientras tanto.
@@ -97,7 +99,22 @@
   3. Las condiciones para **cursar dos carreras a la vez** (hay requisitos de avance académico).
   4. ~~El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse.~~ Escrito el 08/08/2026 contra el reglamento en vivo. Lo que quedó sin fuente está listado adentro: qué es la IVU en la práctica, qué materias son Universitario 21, dónde se certifica la firma y cómo se legaliza el analítico.
 
-- [ ] **Confirmar que el sitemap ya se rehace on-demand.** El 08/08/2026 se arregló `revalidatePath('/sitemap.xml')` —iba con el tipo `'page'` y no hacía nada, así que el sitemap sólo se actualizaba en el deploy—. El fix está deployado pero sin verificar de punta a punta.
+- [ ] **El sitemap NO se rehace on-demand. Verificado el 29/08/2026 y sigue roto.** El 08/08/2026 se arregló `revalidatePath('/sitemap.xml')` —iba con el tipo `'page'` y no hacía nada— y el 22/08 se le agregó el `export const revalidate` a `app/sitemap.ts`. Se dio por arreglado las dos veces. **No lo está.**
+
+  Reproducido dos veces el 29/08/2026, la segunda sin ningún deploy de por medio:
+
+  1. `UPDATE carreras SET descripcion = ... WHERE id = 109` (Videojuegos). La ficha mostró el texto nuevo en producción en segundos. El `lastmod` del sitemap siguió en `2026-07-19` hasta que hubo un deploy, que sí lo movió.
+  2. `UPDATE carreras SET descripcion = ..., enfoque = ... WHERE id = 225` (Customer Experience), sin deploy. Idéntico: la ficha al instante, el `lastmod` clavado en `2026-07-22`.
+
+  O sea que **la revalidación funciona para las páginas y no para el sitemap, en la misma llamada del mismo trigger**. `rutasA()` sí incluye `['/sitemap.xml']` sin tipo, que es lo correcto para una metadata route.
+
+  Lo que se descartó: en `.next/prerender-manifest.json` la entrada `/sitemap.xml` tiene `routeType: "route"`, `initialRevalidateSeconds: 86400` y entre sus `x-next-cache-tags` está `_N_T_/sitemap.xml`, que es justo la etiqueta que emite `revalidatePath` sin tipo. La etiqueta está bien.
+
+  La pista que queda: las cabeceras del sitemap en producción traen `X-Vercel-Cache: HIT` con el `Age` subiendo y el mismo `Etag`, **pero no traen `X-Nextjs-Prerender: 1`, que una ficha de carrera sí trae**. Da HIT incluso pidiéndolo con query string única.
+
+  **Por qué importa más de lo que parece**: `docs/indexacion.md` da por confirmado que el sitemap se rehace sin deploy, y la estrategia de indexación se apoya en eso (mover `updated_at` para que el `lastmod` le diga a Google que vuelva a mirar una URL). La "confirmación" del 22/08 fue que una URL nueva se indexó el mismo día, pero eso también se explica por el enlace desde `/novedades/1`: el sitemap nunca se midió directo. Corregir esa afirmación y el comentario de `app/sitemap.ts` según lo que resulte.
+
+  Falta también una verificación que lo detecte solo: `npm run smoke` mira el sitemap pero no que su contenido esté al día.
 
   **No hace falta esperar a un alta real.** Alcanza con tocar una carrera sin cambiarle nada y mirar si la respuesta del sitemap se rehizo, que es lo único que el fix promete:
 
@@ -109,6 +126,35 @@
   Esperado en la base: `200` con `{"ok":true,"rutas":["/","/sitemap.xml","/carreras/abogacia"]}`. Y del lado del sitio, `curl -sI https://www.siglo21sur.com/sitemap.xml`: el `Age` tiene que volver a cero y el `Last-Modified` tiene que ser el del momento. La medición del 09/08 antes de tocar nada, para comparar: `Age: 6434`, `Last-Modified: Sun, 09 Aug 2026 16:42:32 GMT`, `X-Vercel-Cache: HIT`, `Etag: "97924cf3a319dcb7287a025a06dbdc8e"` (el Etag no tiene por qué cambiar: el contenido es el mismo, lo que se verifica es que se volvió a generar).
 
   El secreto no se puede probar desde acá: `REVALIDATE_SECRET` está marcada Sensitive en Vercel, así que un POST directo a `/api/revalidar` no es opción y el disparo tiene que salir de la base.
+
+- [ ] **Renombrar las dos fichas que Google nunca rastreó, para que entren como URL nueva.** Videojuegos (id 109) y Customer Experience (id 225) siguen en `Discovered - currently not indexed` con `last_crawled: null`: Google **nunca las bajó**, desde que las descubrió el 19 y el 22/07/2026.
+
+  El 29/08/2026 se buscó qué las diferencia de sus 86 hermanas indexadas y **dieron negativo las siete cosas que se probaron**: enlaces internos (10 entrantes cada una contando sólo anclas reales, no el payload de RSC, contra 9 de Quality Assurance que sí está indexada), cantidad de contenido (375 y 604 palabras, cuando las 12 fichas más cortas del sitio van de 274 a 363 y están todas indexadas), texto propio contra plantilla (48,6% y 59,2%, puestos 24 y 72 de 88, con la peor del sitio en 26% e indexada), `lastmod`, imágenes del sitemap, canónicas y cabeceras, y peso y velocidad (56 KB con brotli, 0,26 s de TTFB, cache HIT). **Son indistinguibles de las que sí están.**
+
+  Lo que sí se entendió es que son tres colas distintas: las páginas ya indexadas se re-rastrean solas y seguido (Quality Assurance el 28/08, Diseño y Animación Digital el 23/08, las dos de julio), las URLs recién descubiertas tienen un empujón fuerte y por eso todo lo publicado en agosto entró el mismo día, y las **descubiertas pero nunca rastreadas caen en un pozo aparte** que ni el refresco ni el empujón tocan. Estas dos gastaron su empujón en julio.
+
+  **La jugada es devolverlas a la cola de las nuevas cambiándoles la URL.** Acá sale casi gratis, que es lo raro: la URL vieja no acumuló nada que perder —cero rastreos, cero impresiones, cero enlaces externos— y el slug viejo redirige solo con 301, porque la página compara el pedido contra el canónico.
+
+  **El slug no se puede tocar por `prefix`**: no hay columna `slug`, se deriva, y `carreraFullName()` colapsa cualquier prefijo que contenga "tecnicatura" a exactamente `Tecnicatura en`. Simulado: cambiar `prefix` a "Pregrado / Tecnicatura Universitaria en" devuelve el mismo slug de siempre. Hay que tocar `nombre`.
+
+  Las dos tienen un nombre más correcto que el cargado, así que el renombre es una corrección y no una maniobra:
+
+  | id | `nombre` nuevo | slug que sale | fuente |
+  |---|---|---|---|
+  | 109 | `Tecnicatura Universitaria en Diseño y Desarrollo de Videojuegos` | `tecnicatura-universitaria-en-diseno-y-desarrollo-de-videojuegos` | ficha interna de la universidad (`kb-cau.21.edu.ar`, 19/05/2026) |
+  | 225 | `Tecnicatura Superior en Experiencia del Cliente` | `tecnicatura-superior-en-experiencia-del-cliente` | plan de estudios oficial 2022 de Teclab: "Técnico Superior en Experiencia del Cliente (Customer Experience)", en `carreras/teclab/contenidos-minimos.json` |
+
+  **No cambia nada visible.** `getCareerPrefix()` saca el `<h1>` de `nombre_corto` y la volanta de `prefix`, y ninguno de los dos se toca: los títulos siguen diciendo "Diseño y Desarrollo de Videojuegos" y "Customer Experience". Lo único que se mueve es el `<title>`, el `name` del `Course` y la URL. En la 225 conviene mirar que el `<h1>` en inglés y el `<title>` en español no queden peleados.
+
+  **Descartado: `video-juegos`.** Se evaluó como forma de forzar la URL nueva. No va: parte en dos el término exacto que la gente busca, que es una sola palabra, y encima está mal escrito.
+
+  **Orden.** Primero el pedido manual en Search Console, que es gratis y responde lo mismo más rápido. El renombre es el remedio de **uno** de los tres desenlaces posibles:
+
+  - queda `Rastreada: actualmente sin indexar` → Google la leyó y decidió que no aporta. El problema es de contenido, no de URL, y el renombre no sirve.
+  - queda **indexada** → era turno nomás, y aprendimos que este pozo hay que destrabarlo a mano cada vez.
+  - sigue en `Descubierta` sin rastrear → Google descartó la URL antes de mirarla. **Ahí sí va el renombre.**
+
+  De paso, `titulo` de la 109 dice `Técnico Superior` y el badge de su propia portada dice "Técnico/a Universitario/a en Diseño y Desarrollo de Videojuegos", igual que la ficha oficial. Se contradicen en la misma página y ese campo es el `educationalCredentialAwarded` del JSON-LD. Corregirlo junto con el nombre.
 
 - [ ] **El sitio no tiene manifest ni íconos de PWA.** Falta `public/manifest.json` con los íconos de 192×192 y 512×512, y el `<link rel="manifest">` en `app/layout.tsx`. Está frenado por lo de siempre: no hay un ícono del CAU en PNG cuadrado en esos tamaños. Prioridad baja — sin manifest el sitio se ve y se indexa igual, lo único que se pierde es el "agregar a la pantalla de inicio" con nombre e ícono propios. El service worker para cache offline es aparte y opcional.
 
