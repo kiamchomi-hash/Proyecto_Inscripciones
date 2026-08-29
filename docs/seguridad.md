@@ -51,6 +51,7 @@ Cinco pasos, ninguno tarda. Los resultados van a la bitácora de abajo.
 3. `npm run smoke`, que verifica contra producción las cabeceras declaradas en `lib/vigilancia-esperado.ts`, y una mirada a la CSP servida por si algún servicio nuevo quedó sin declarar.
 4. `npx vercel firewall overview`, más el ruleset de OWASP en el dashboard (los `active: true` de los grupos no evalúan nada si el ruleset está apagado).
 5. Barrido de credenciales: buscar valores en el repo, que es público; revisar los PAT de Supabase en `supabase.com/dashboard/account/tokens`, que no vencen nunca y alcanzan todos los proyectos de la cuenta; y borrar las claves de servicios que se dejaron de usar.
+6. **Los avisos públicos de los proveedores, que es el paso que `npm audit` no cubre.** Next.js publica security releases mensuales en `nextjs.org/blog` (desde julio de 2026 con preanuncio), Vercel abre un bulletin en `vercel.com/kb/bulletin/` cuando le pasa algo a la plataforma, y Supabase avisa por el dashboard. Se comprobó el 29/08/2026 que `npm audit` daba **cero** con dos RCE críticos publicados cuatro días antes contra la versión que teníamos: el registry no siempre tiene el advisory cargado, así que la versión de Next se compara a mano contra el último release.
 
 Lo que no se puede probar automatizado: **el captcha** (Cloudflare no emite token para un navegador manejado por Playwright; lo que sí se chequea es que el checkbox se desmarque solo a los 300 s) y **la cadena completa de avisos**, que se verifica con `herramientas/verificar-avisos.sql` leyendo `net._http_response`.
 
@@ -67,7 +68,22 @@ Todo verde. Lo medido:
 - Repo: ningún secreto versionado. Las coincidencias de la búsqueda son todas menciones en documentación o `GRANT ... TO service_role` en los SQL. `.env.local` está ignorado.
 - Firewall de Vercel: habilitado, 4 reglas activas, 0 IP bloqueadas, 0 bypasses, mitigaciones de sistema activas, Attack Mode apagado (que es lo correcto fuera de un ataque).
 
+**Los dos incidentes públicos que nos tocan, revisados el mismo día.**
+
+*La brecha de Vercel del 19/04/2026* (`vercel.com/kb/bulletin/vercel-april-2026-security-incident`). Un empleado de Vercel tenía conectada una herramienta de IA de terceros, Context.ai, que fue comprometida con un infostealer; con esas credenciales el atacante entró a su Google Workspace saltando el MFA, de ahí a su cuenta de Vercel y de ahí a sistemas internos, donde **enumeró y descifró las variables de entorno no sensibles** de un subconjunto de clientes. Vercel notificó a los afectados y recomendó rotar todo lo que no estuviera marcado como Sensitive.
+
+**A nosotros no nos alcanza, y la razón es que las que valen están todas marcadas Sensitive.** Verificado con `npx vercel env ls`: las diecisiete entradas con valor secreto (`SUPABASE_SERVICE_ROLE_KEY`, `TURNSTILE_SECRET_KEY`, `CRON_SECRET`, `REVALIDATE_SECRET`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `BUSCADOR_SECRET`, `TURNSTILE_EXPECTED_HOSTNAME`) figuran como tipo `Secret`, que es lo que el atacante no pudo descifrar. En texto plano quedan sólo `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, que viajan en el bundle del navegador y son públicas por diseño, y `VENTAS_STORAGE_BUCKET`, que es el nombre de un bucket (`lib/ventas-snapshot.ts`), no una credencial. Como efecto secundario: la molestia de que `vercel env pull` no traiga la service role a la máquina local es la misma marca que dejó la credencial afuera de la brecha.
+
+*El security release de Next.js del 25/08/2026* (`nextjs.org/blog/august-2026-security-release`). Dos RCE críticos, y el lock tenía **16.3.0** contra un fix en **16.3.3**:
+
+- **GHSA-2xp9-vwfh-vxw4**, RCE sin autenticar en la API de optimización de imágenes al procesar un AVIF malicioso, por un agujero en `libheif` debajo de `sharp`. El parche desactiva la optimización de AVIF hasta que llegue el arreglo de upstream.
+- **CVE-2026-75604**, RCE sin autenticar cuando el servidor de Next corre sobre un filesystem de Windows y la app usa Pages Router y App Router a la vez, sin Cache Components. Linux y macOS no están afectados y no hay workaround.
+
+**Producción no estuvo expuesta a ninguno de los dos.** El de Windows no aplica dos veces: el runtime de Next en Vercel es Linux y acá no hay Pages Router (no existe `pages/`). Y del de AVIF, Vercel desactivó la optimización de AVIF en su servicio administrado apenas se identificó, así que sirve los AVIF sin procesarlos (`vercel.com/changelog/nextjs-august-2026-security-release`). Los avisos de julio de 2026 ya venían incluidos en 16.3.0 estable, así que ese release no dejó nada suelto. Actualizar a 16.3.3 igual, por higiene y porque el `next dev` local no tiene la mitigación de infraestructura.
+
 Queda abierto, nada urgente:
+
+- **Subir Next de 16.3.0 a 16.3.3**, por lo de arriba. Va en su propio deploy, con `npm run smoke` detrás.
 
 - **Los PAT de Supabase no vencen y alcanzan todos los proyectos de la cuenta.** Al 27/07 quedaban vivos `codex-release` (en uso) y `mercadolibrebot`. Confirmar si el segundo sigue haciendo falta.
 - **Restos de Resend.** La clave `Onboarding` y la variable `RESEND_API_KEY` de Vercel quedaron sin uso cuando el mail salió del proyecto. No tocar `topykly-dev`, que es del otro proyecto que comparte la cuenta.
