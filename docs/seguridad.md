@@ -81,9 +81,9 @@ Todo verde. Lo medido:
 
 **Producción no estuvo expuesta a ninguno de los dos.** El de Windows no aplica dos veces: el runtime de Next en Vercel es Linux y acá no hay Pages Router (no existe `pages/`). Y del de AVIF, Vercel desactivó la optimización de AVIF en su servicio administrado apenas se identificó, así que sirve los AVIF sin procesarlos (`vercel.com/changelog/nextjs-august-2026-security-release`). Los avisos de julio de 2026 ya venían incluidos en 16.3.0 estable, así que ese release no dejó nada suelto. Actualizar a 16.3.3 igual, por higiene y porque el `next dev` local no tiene la mitigación de infraestructura.
 
-Queda abierto, nada urgente:
+**Hecho el mismo día: Next 16.3.3**, con `@next/third-parties` y `eslint-config-next` a la par. `npm run check` en verde (49 tests) y build de producción completo. `sharp` se dejó en 0.35.3: la 0.35.4 sube libvips pero no declara el arreglo de libheif, y acá `sharp` es devDependency de `generar-og.mjs`, que procesa fotos propias del disco, así que no hay entrada de un atacante por ese lado.
 
-- **Subir Next de 16.3.0 a 16.3.3**, por lo de arriba. Va en su propio deploy, con `npm run smoke` detrás.
+Queda abierto, nada urgente:
 
 - **Los PAT de Supabase no vencen y alcanzan todos los proyectos de la cuenta.** Al 27/07 quedaban vivos `codex-release` (en uso) y `mercadolibrebot`. Confirmar si el segundo sigue haciendo falta.
 - **Restos de Resend.** La clave `Onboarding` y la variable `RESEND_API_KEY` de Vercel quedaron sin uso cuando el mail salió del proyecto. No tocar `topykly-dev`, que es del otro proyecto que comparte la cuenta.
