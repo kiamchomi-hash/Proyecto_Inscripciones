@@ -85,7 +85,11 @@ Todo verde. Lo medido:
 
 Queda abierto, nada urgente:
 
-- **Los PAT de Supabase no vencen y alcanzan todos los proyectos de la cuenta.** Al 27/07 quedaban vivos `codex-release` (en uso) y `mercadolibrebot`. Confirmar si el segundo sigue haciendo falta.
+- **Los PAT y las credenciales OAuth de Supabase, revisado el 29/08/2026.** En el Credential Manager de Windows hay tres entradas: el PAT del CLI (`sbp_56f8…`, escrito el 29/07/2026, en uso) y dos blobs `Codex MCP Credentials` de abril de 2026, con el access token de OAuth ya vencido pero el refresh token presente. **Las dos de Codex son huérfanas**: ni `~/.codex/config.toml` ni `~/.claude.json` tienen hoy un MCP de Supabase configurado. Una apunta a `project_ref=drzrskozqoeoxamftico`, que **no es un proyecto de esta cuenta** (`npx supabase projects list` devuelve uno solo, `yuwfkdehaowkselkhtck`), así que es de otra cuenta de Supabase. Y el PAT del CLI **no coincide con ninguno de los dos que anotaba el inventario de julio** (`codex-release` y `mercadolibrebot`), así que hay al menos un tercero o alguno se recreó.
+
+  Un PAT alcanza la Management API entera, incluido ejecutar SQL arbitrario, y no vence nunca: es al menos tan potente como la service role. La lista real vive sólo en `supabase.com/dashboard/account/tokens`; el que está en uso se reconoce por su *last used*.
+
+  **Al inspeccionarlas, un error de parseo de PowerShell volcó los dos tokens de OAuth y sus refresh tokens en texto plano en la terminal.** No salieron de la máquina, pero quedaron en el scrollback y en el transcript de la sesión, así que se revocan por eso además de por estar huérfanas. Lección para la próxima: leer una credencial para clasificarla, aunque sea sólo el prefijo, arriesga volcarla entera si el comando falla — conviene mirar metadatos (nombre, fecha, tamaño) y no el blob.
 - **Restos de Resend.** La clave `Onboarding` y la variable `RESEND_API_KEY` de Vercel quedaron sin uso cuando el mail salió del proyecto. No tocar `topykly-dev`, que es del otro proyecto que comparte la cuenta.
 - **El ruleset de OWASP CRS en Vercel.** Verificar en el dashboard si sigue apagado y decidir si se enciende; el CLI no lo muestra.
 - **La API key muerta de TestSprite** en el `~/.claude.json` de la máquina de Linux. Es higiene: la key se borró en el servicio el 08/08/2026.
