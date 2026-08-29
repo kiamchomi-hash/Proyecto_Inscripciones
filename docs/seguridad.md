@@ -81,7 +81,7 @@ Todo verde. Lo medido:
 
 **Producción no estuvo expuesta a ninguno de los dos.** El de Windows no aplica dos veces: el runtime de Next en Vercel es Linux y acá no hay Pages Router (no existe `pages/`). Y del de AVIF, Vercel desactivó la optimización de AVIF en su servicio administrado apenas se identificó, así que sirve los AVIF sin procesarlos (`vercel.com/changelog/nextjs-august-2026-security-release`). Los avisos de julio de 2026 ya venían incluidos en 16.3.0 estable, así que ese release no dejó nada suelto. Actualizar a 16.3.3 igual, por higiene y porque el `next dev` local no tiene la mitigación de infraestructura.
 
-**Hecho el mismo día: Next 16.3.3**, con `@next/third-parties` y `eslint-config-next` a la par. `npm run check` en verde (49 tests) y build de producción completo. `sharp` se dejó en 0.35.3: la 0.35.4 sube libvips pero no declara el arreglo de libheif, y acá `sharp` es devDependency de `generar-og.mjs`, que procesa fotos propias del disco, así que no hay entrada de un atacante por ese lado.
+**Hecho el mismo día: Next 16.3.3**, con `@next/third-parties` y `eslint-config-next` a la par. `npm run check` en verde (49 tests), build de producción completo, y deployado y verificado con `npm run smoke`: rutas, cabeceras, noindex, los cinco redirects, las 111 URLs del sitemap y 62,2 KB en el cable. `sharp` se dejó en 0.35.3: la 0.35.4 sube libvips pero no declara el arreglo de libheif, y acá `sharp` es devDependency de `generar-og.mjs`, que procesa fotos propias del disco, así que no hay entrada de un atacante por ese lado.
 
 Queda abierto, nada urgente:
 
