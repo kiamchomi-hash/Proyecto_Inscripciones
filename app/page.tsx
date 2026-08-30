@@ -14,8 +14,8 @@ const SiteFooter = dynamic(() => import('@/components/footer'));
 import './index.css';
 
 export const metadata: Metadata = {
-  title: `Universidad Siglo 21 CAU Villa Lugano | Oferta académica ${new Date().getFullYear()}`,
-  description: 'Oferta académica Universidad Siglo 21 en Villa Lugano. Ideal para Zona Sur y Oeste: Celina, Madero, Tapiales, Soldati, Mataderos, Riachuelo, Budge.',
+  title: { absolute: `Universidad Siglo 21 | CAU Online | Oferta académica ${new Date().getFullYear()}` },
+  description: 'Oferta académica online de Universidad Siglo 21, con acompañamiento para estudiantes de CABA, GBA y otras zonas. Consultá carreras e inscripciones.',
   alternates: {
     canonical: 'https://www.siglo21sur.com',
   },
@@ -44,7 +44,7 @@ export default async function HomePage() {
   return (
     <>
       <main className="flex-1">
-        <h1 className="sr-only">Universidad Siglo 21 en Villa Lugano: carreras e inscripciones</h1>
+        <h1 className="sr-only">Universidad Siglo 21 online: carreras e inscripciones</h1>
         <Hero />
         <CareersCatalog carreras={carrerasData} teclabLandingHref="/teclab" />
         {/* Dos formularios y no uno: el contacto es la puerta general y ofrece

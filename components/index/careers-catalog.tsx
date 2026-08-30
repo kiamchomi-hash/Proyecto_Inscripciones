@@ -327,7 +327,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
   }, []);
   useEffect(() => {
     if (selectedCarrera) {
-      document.title = `${carreraFullName(selectedCarrera)} | Universidad Siglo 21 CAU Villa Lugano`;
+      document.title = `${carreraFullName(selectedCarrera)} | Universidad Siglo 21 | CAU Online`;
       const carreraPath = `/carreras/${carreraToSlug(selectedCarrera)}`;
       if (window.location.pathname !== carreraPath) {
         if (!modalOpenRef.current) {

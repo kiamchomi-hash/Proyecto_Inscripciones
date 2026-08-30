@@ -1241,23 +1241,24 @@ mark {
   box-shadow: 3px 3px 0 var(--section-category-surface);
 }
 
-/* ── Pildoras de categoria del filtro principal ── */
-/* Con un solo `.filter-pill-teclab` la regla perdia contra `.filter-pill.featured`,
-   que es mas especifica y ademas viene despues: las pildoras de Teclab salian
-   con el verde de Siglo 21 en vez de su cian y su violeta. */
+/* ── Píldoras de categoría del filtro principal ── */
+/* Las tres entradas de Teclab comparten un solo azul. Las variantes cian,
+   violeta y ámbar siguen identificando familias en tarjetas, secciones y
+   modales, pero en este filtro competían entre sí y parecían tres marcas. */
 .filter-pill.filter-pill-teclab {
   color: #fff;
-  background-color: color-mix(in srgb, var(--teclab-accent) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--teclab-accent) 45%, transparent);
+  background-color: #005587;
+  border: 1px solid #003f66;
   font-weight: 900;
+  box-shadow: 0 1px 6px rgba(0, 85, 135, 0.24);
 }
 .filter-pill.filter-pill-teclab:hover {
-  background-color: color-mix(in srgb, var(--teclab-accent) 28%, transparent);
+  background-color: #004b78;
 }
 .filter-pill.filter-pill-teclab.active {
-  background-color: color-mix(in srgb, var(--teclab-accent) 42%, #061713) !important;
+  background-color: #005587 !important;
   color: #fff !important;
-  border-color: color-mix(in srgb, var(--teclab-accent) 70%, white);
+  border-color: #0877ad;
 }
 
 @import "../components/index/modales.css";

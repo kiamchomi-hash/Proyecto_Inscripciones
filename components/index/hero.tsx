@@ -6,10 +6,10 @@ export default function Hero() {
   return (
     <header className="w-full mb-0 shadow-2xl overflow-hidden texture-petroleum grain-overlay"
       style={{ borderBottom: '3px solid var(--color-highlight)' }}>
-      <div className="mx-auto w-full max-w-[2400px] p-4 sm:p-6 xl:px-20 flex flex-col xl:flex-row items-center justify-start xl:justify-center gap-6 xl:gap-8">
+      <div className="mx-auto w-full max-w-[2400px] p-4 sm:p-6 xl:px-20 flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-8">
 
         {/* Banner carousel */}
-        <div className="flex-1 w-full xl:max-w-4xl order-2 xl:order-1 flex flex-col items-center min-w-0 overflow-hidden">
+        <div className="flex-1 w-full xl:max-w-4xl flex flex-col items-center min-w-0 overflow-hidden">
           <HeroCarousel>
             {/* Slide 1: Inscripciones 2026 (Texto 3D sutil) */}
             <div className="banner-slide">
@@ -183,40 +183,19 @@ export default function Hero() {
           </HeroCarousel>
         </div>
 
-        {/* Separator (desktop) */}
-        <div className="hidden xl:block xl:order-2 w-px bg-white opacity-10 h-32 self-center mx-3" />
+        <div className="hidden xl:block w-px bg-white opacity-10 h-32 self-center mx-3" />
 
-        {/* Branding block (desktop) */}
-        <div className="hidden xl:flex items-center justify-center gap-8 order-1 xl:order-3 shrink-0">
+        {/* Marca institucional sin datos de la sede: la ubicación queda en
+            Sobre nosotros y en el footer. */}
+        <div className="hidden xl:flex items-center justify-center shrink-0 w-[280px]">
           <Image
-            src="/imagenes/imagenes_cau/logo_cau.png"
-            alt="Logo CAU Villa Lugano - Universidad Siglo 21"
-            width={96}
-            height={96}
-            className="w-24 h-24 object-contain brightness-0 invert"
-            loading="lazy"
+            src="/imagenes/imagenes_cau/siglo21-marca.svg"
+            alt="Universidad Siglo 21"
+            width={280}
+            height={102}
+            className="w-[280px] h-[102px] object-contain"
+            loading="eager"
           />
-          <div className="flex flex-col h-auto justify-center gap-1 py-1 min-w-[200px]">
-            <h1 className="font-black text-white leading-tight uppercase tracking-tighter whitespace-nowrap">
-              <span className="text-xl md:text-2xl">CAU - VILLA LUGANO</span>
-              <span className="block text-[0.65rem] md:text-xs font-semibold tracking-wide text-white/70 mt-0.5">Centro de Aprendizaje Universitario</span>
-            </h1>
-            <p className="text-lg md:text-xl font-black text-[#00c7b1] uppercase tracking-wider leading-none">
-              SIGLO 21
-            </p>
-            <span className="text-lg md:text-xl font-bold text-white uppercase leading-none tracking-tight">
-              30 años de experiencia
-            </span>
-            <span className="flex items-center gap-1.5 text-sm text-white font-semibold leading-none mt-1">
-              <span className="w-4 h-4 flex items-center justify-center text-[#00c7b1] shrink-0">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </span>
-              Guaminí 4876
-            </span>
-          </div>
         </div>
 
       </div>

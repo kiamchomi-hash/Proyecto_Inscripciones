@@ -17,27 +17,27 @@ const unbounded = Unbounded({ subsets: ['latin'], variable: '--font-unbounded', 
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.siglo21sur.com'),
-  title: { default: 'Universidad Siglo 21 | CAU Villa Lugano', template: '%s | Siglo 21' },
-  description: 'Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21. Inscribite hoy en la red de educación más grande de Argentina.',
-  keywords: ['universidad', 'siglo 21', 'villa lugano', 'carreras a distancia', 'educación superior', 'estudiar online', 'CAU', 'CABA', 'zona sur'],
+  title: { default: 'Universidad Siglo 21 | CAU Online', template: '%s | Siglo 21' },
+  description: 'Carreras universitarias online de Universidad Siglo 21, con acompañamiento del CAU para estudiantes de CABA y GBA. Inscribite hoy.',
+  keywords: ['universidad', 'siglo 21', 'villa lugano', 'carreras a distancia', 'educación superior', 'estudiar online', 'CAU', 'CABA', 'GBA', 'zona sur'],
   authors: [{ name: 'CAU Villa Lugano' }],
   creator: 'Universidad Siglo 21',
   openGraph: {
     type: 'website',
     locale: 'es_AR',
     url: 'https://www.siglo21sur.com',
-    siteName: 'Universidad Siglo 21 | CAU Villa Lugano',
-    title: 'Universidad Siglo 21 | CAU Villa Lugano',
-    description: 'Carreras universitarias a distancia en Villa Lugano. ¡Inscribite hoy!',
+    siteName: 'Universidad Siglo 21 | CAU Online',
+    title: 'Universidad Siglo 21 | CAU Online',
+    description: 'Carreras universitarias online con acompañamiento para estudiantes de CABA y GBA. ¡Inscribite hoy!',
     // Miniatura por defecto de todo el sitio: sin esto, home y fichas de carrera se
     // comparten sin imagen. Cada pagina que defina su propio openGraph.images la pisa.
     // La genera `node herramientas/generar-og.mjs`.
-    images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'CAU Villa Lugano — Universidad Siglo 21 a distancia' }],
+    images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'Universidad Siglo 21 — CAU Online' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Universidad Siglo 21 | CAU Villa Lugano',
-    description: 'Carreras universitarias a distancia en Villa Lugano. ¡Inscribite hoy!',
+    title: 'Universidad Siglo 21 | CAU Online',
+    description: 'Carreras universitarias online con acompañamiento para estudiantes de CABA y GBA. ¡Inscribite hoy!',
     images: ['/imagenes/og/default.jpg'],
   },
   verification: {
@@ -61,7 +61,7 @@ const jsonLd = jsonLdScript([
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Universidad Siglo 21 | CAU Villa Lugano",
+    "name": "Universidad Siglo 21 | CAU Online",
     "url": "https://www.siglo21sur.com/"
   },
   {
