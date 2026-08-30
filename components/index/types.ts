@@ -228,7 +228,7 @@ const AREA_KEYWORDS: Record<AreaId, string[]> = {
   tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad'],
   exactas: ['estadística'],
   gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
-  negocios: ['administración', 'finanzas', 'negocios digitales', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'customer experience', 'seguros', 'logística', 'marketing para emprendedores', 'compliance', 'management hotelero'],
+  negocios: ['administración', 'finanzas', 'negocios digitales', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'customer experience', 'experiencia del cliente', 'seguros', 'logística', 'marketing para emprendedores', 'compliance', 'management hotelero'],
   salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas', 'mindfulness', 'bienestar integral', 'bioinformática'],
   educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia', 'matemática'],
   comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos', 'comercialización', 'videojuegos', 'marketing digital', 'inbound marketing'],
@@ -331,6 +331,12 @@ export function carreraFullName(carrera: Pick<Carrera, 'nombre' | 'prefix'>): st
 // Slug-friendly name for share URLs: remove accents, lowercase, spaces → -
 export function carreraToSlug(carrera: Pick<Carrera, 'nombre' | 'prefix'> | string): string {
   const fullName = typeof carrera === 'string' ? carrera : carreraFullName(carrera);
+  // Esta ficha estuvo descubierta pero nunca rastreada durante más de un mes.
+  // Se le da una URL nueva y corta sin cambiar el nombre académico que ve la
+  // persona en la ficha.
+  if (fullName === 'Tecnicatura en Diseño y Desarrollo de Videojuegos') {
+    return 'tecnicatura-en-videojuegos';
+  }
   return fullName
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()

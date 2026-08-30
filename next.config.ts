@@ -156,6 +156,20 @@ const nextConfig: NextConfig = {
         destination: '/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital',
         statusCode: 301,
       },
+      // Estas dos fichas quedaron descubiertas pero nunca rastreadas desde
+      // julio. Se publican con URL nueva; las anteriores no pueden depender del
+      // buscador por slug de la página porque, al cambiar el canónico, ya no
+      // encuentra la fila y devolvería 404 antes de poder redirigir.
+      {
+        source: '/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos',
+        destination: '/carreras/tecnicatura-en-videojuegos',
+        statusCode: 301,
+      },
+      {
+        source: '/carreras/tecnicatura-superior-en-customer-experience',
+        destination: '/carreras/tecnicatura-superior-en-experiencia-del-cliente',
+        statusCode: 301,
+      },
       // ── Carreras dadas de baja ──
       // Estas van con `statusCode: 301` y no con `permanent: true`, que emite
       // 308. Para Google los dos son equivalentes, pero el 301 es el que espera

@@ -69,11 +69,11 @@ const TIPOS: { match: string; tipo: string }[] = [
 /** Orden en que se muestran las pildoras de tipo dentro de la seccion de gestion. */
 export const TIPOS_GESTION = ['Negocios', 'Gestión', 'Servicios', 'Marketing', 'Comunicación'] as const;
 
-export function getTipoTeclab(carrera: Pick<Carrera, 'nombre' | 'nivel'>): string | null {
+export function getTipoTeclab(carrera: Pick<Carrera, 'nombre' | 'nivel'> & Partial<Pick<Carrera, 'nombre_corto'>>): string | null {
   const familia = getFamiliaTeclab(carrera);
   if (familia === null) return null;
   if (familia === 'tecnologia') return 'Tecnología';
-  const nombre = carrera.nombre.toLowerCase();
+  const nombre = `${carrera.nombre} ${carrera.nombre_corto ?? ''}`.toLowerCase();
   return TIPOS.find(t => nombre.includes(t.match))?.tipo ?? null;
 }
 
@@ -292,8 +292,10 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
   },
 ];
 
-export function getFichaTeclab(carrera: Pick<Carrera, 'nombre'>): TeclabFicha | null {
-  const nombre = carrera.nombre.toLowerCase();
+export function getFichaTeclab(carrera: Pick<Carrera, 'nombre'> & Partial<Pick<Carrera, 'nombre_corto'>>): TeclabFicha | null {
+  // Algunas fichas conservan la marca comercial en `nombre_corto`, aunque el
+  // nombre académico de `nombre` esté traducido al español.
+  const nombre = `${carrera.nombre} ${carrera.nombre_corto ?? ''}`.toLowerCase();
   return FICHAS.find(f => nombre.includes(f.match))?.ficha ?? null;
 }
 

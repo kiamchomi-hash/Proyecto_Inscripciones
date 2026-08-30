@@ -72,5 +72,15 @@ export function redirectsEsperados(base: string): Array<[string, string, number?
     [`${base}/contactos`, `${base}/contacto`],
     [`${base}/carreras`, `${base}/`],
     [`${base}/novedades`, `${base}/novedades/1`],
+    [
+      `${base}/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos`,
+      `${base}/carreras/tecnicatura-en-videojuegos`,
+      301,
+    ],
+    [
+      `${base}/carreras/tecnicatura-superior-en-customer-experience`,
+      `${base}/carreras/tecnicatura-superior-en-experiencia-del-cliente`,
+      301,
+    ],
   ];
 }

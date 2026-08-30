@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  carreraToSlug,
   categoriasPresentes,
   esCarreraVisible,
   getAreaForCarrera,
@@ -13,6 +14,7 @@ import {
   getCategoriaTeclabTecnologia,
   getFichaTeclab,
   getMarcoTeclab,
+  getTipoTeclab,
 } from '../components/index/teclab.ts';
 
 test('el curso de Teclab aparece dentro de Teclab Tecnología', () => {
@@ -68,6 +70,28 @@ test('el curso muestra toda su lista de contenidos, la tecnicatura sólo tres', 
     destacarCompetencias(cuatro, { nombre: 'Tecnicatura Superior en Programación', nivel: 'Teclab - Tecnología' }).length,
     3,
   );
+});
+
+test('Videojuegos usa la URL corta acordada sin cambiar su nombre', () => {
+  assert.equal(
+    carreraToSlug({
+      nombre: 'Diseño y Desarrollo de Videojuegos',
+      prefix: 'Pregrado / Tecnicatura en',
+    }),
+    'tecnicatura-en-videojuegos',
+  );
+});
+
+test('Experiencia del Cliente conserva la clasificación y la ficha comercial de Customer Experience', () => {
+  const carrera = {
+    nombre: 'Tecnicatura Superior en Experiencia del Cliente',
+    nombre_corto: 'Customer Experience',
+    nivel: 'Teclab - Gestión',
+  };
+
+  assert.equal(getTipoTeclab(carrera), 'Negocios');
+  assert.equal(getAreaForCarrera(carrera), 'negocios');
+  assert.equal(getFichaTeclab(carrera)?.imagen, '/imagenes/teclab/carreras/customer-experience.webp');
 });
 
 test('los filtros académicos reconocen Siglo 21 e Identidad Argentina', () => {
