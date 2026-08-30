@@ -1247,18 +1247,18 @@ mark {
    modales, pero en este filtro competían entre sí y parecían tres marcas. */
 .filter-pill.filter-pill-teclab {
   color: #fff;
-  background-color: #005587;
-  border: 1px solid #003f66;
+  background-color: #06466b;
+  border: 1px solid #03344f;
   font-weight: 900;
-  box-shadow: 0 1px 6px rgba(0, 85, 135, 0.24);
+  box-shadow: 0 1px 6px rgba(6, 70, 107, 0.26);
 }
 .filter-pill.filter-pill-teclab:hover {
-  background-color: #004b78;
+  background-color: #053e5e;
 }
 .filter-pill.filter-pill-teclab.active {
-  background-color: #005587 !important;
+  background-color: #06466b !important;
   color: #fff !important;
-  border-color: #0877ad;
+  border-color: #0a678f;
 }
 
 @import "../components/index/modales.css";
