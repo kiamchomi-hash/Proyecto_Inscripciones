@@ -127,35 +127,6 @@
 
   El secreto no se puede probar desde acá: `REVALIDATE_SECRET` está marcada Sensitive en Vercel, así que un POST directo a `/api/revalidar` no es opción y el disparo tiene que salir de la base.
 
-- [ ] **Renombrar las dos fichas que Google nunca rastreó, para que entren como URL nueva.** Videojuegos (id 109) y Customer Experience (id 225) siguen en `Discovered - currently not indexed` con `last_crawled: null`: Google **nunca las bajó**, desde que las descubrió el 19 y el 22/07/2026.
-
-  El 29/08/2026 se buscó qué las diferencia de sus 86 hermanas indexadas y **dieron negativo las siete cosas que se probaron**: enlaces internos (10 entrantes cada una contando sólo anclas reales, no el payload de RSC, contra 9 de Quality Assurance que sí está indexada), cantidad de contenido (375 y 604 palabras, cuando las 12 fichas más cortas del sitio van de 274 a 363 y están todas indexadas), texto propio contra plantilla (48,6% y 59,2%, puestos 24 y 72 de 88, con la peor del sitio en 26% e indexada), `lastmod`, imágenes del sitemap, canónicas y cabeceras, y peso y velocidad (56 KB con brotli, 0,26 s de TTFB, cache HIT). **Son indistinguibles de las que sí están.**
-
-  Lo que sí se entendió es que son tres colas distintas: las páginas ya indexadas se re-rastrean solas y seguido (Quality Assurance el 28/08, Diseño y Animación Digital el 23/08, las dos de julio), las URLs recién descubiertas tienen un empujón fuerte y por eso todo lo publicado en agosto entró el mismo día, y las **descubiertas pero nunca rastreadas caen en un pozo aparte** que ni el refresco ni el empujón tocan. Estas dos gastaron su empujón en julio.
-
-  **La jugada es devolverlas a la cola de las nuevas cambiándoles la URL.** Acá sale casi gratis, que es lo raro: la URL vieja no acumuló nada que perder —cero rastreos, cero impresiones, cero enlaces externos— y el slug viejo redirige solo con 301, porque la página compara el pedido contra el canónico.
-
-  **El slug no se puede tocar por `prefix`**: no hay columna `slug`, se deriva, y `carreraFullName()` colapsa cualquier prefijo que contenga "tecnicatura" a exactamente `Tecnicatura en`. Simulado: cambiar `prefix` a "Pregrado / Tecnicatura Universitaria en" devuelve el mismo slug de siempre. Hay que tocar `nombre`.
-
-  Las dos tienen un nombre más correcto que el cargado, así que el renombre es una corrección y no una maniobra:
-
-  | id | `nombre` nuevo | slug que sale | fuente |
-  |---|---|---|---|
-  | 109 | `Tecnicatura Universitaria en Diseño y Desarrollo de Videojuegos` | `tecnicatura-universitaria-en-diseno-y-desarrollo-de-videojuegos` | ficha interna de la universidad (`kb-cau.21.edu.ar`, 19/05/2026) |
-  | 225 | `Tecnicatura Superior en Experiencia del Cliente` | `tecnicatura-superior-en-experiencia-del-cliente` | plan de estudios oficial 2022 de Teclab: "Técnico Superior en Experiencia del Cliente (Customer Experience)", en `carreras/teclab/contenidos-minimos.json` |
-
-  **No cambia nada visible.** `getCareerPrefix()` saca el `<h1>` de `nombre_corto` y la volanta de `prefix`, y ninguno de los dos se toca: los títulos siguen diciendo "Diseño y Desarrollo de Videojuegos" y "Customer Experience". Lo único que se mueve es el `<title>`, el `name` del `Course` y la URL. En la 225 conviene mirar que el `<h1>` en inglés y el `<title>` en español no queden peleados.
-
-  **Descartado: `video-juegos`.** Se evaluó como forma de forzar la URL nueva. No va: parte en dos el término exacto que la gente busca, que es una sola palabra, y encima está mal escrito.
-
-  **Orden.** Primero el pedido manual en Search Console, que es gratis y responde lo mismo más rápido. El renombre es el remedio de **uno** de los tres desenlaces posibles:
-
-  - queda `Rastreada: actualmente sin indexar` → Google la leyó y decidió que no aporta. El problema es de contenido, no de URL, y el renombre no sirve.
-  - queda **indexada** → era turno nomás, y aprendimos que este pozo hay que destrabarlo a mano cada vez.
-  - sigue en `Descubierta` sin rastrear → Google descartó la URL antes de mirarla. **Ahí sí va el renombre.**
-
-  De paso, `titulo` de la 109 dice `Técnico Superior` y el badge de su propia portada dice "Técnico/a Universitario/a en Diseño y Desarrollo de Videojuegos", igual que la ficha oficial. Se contradicen en la misma página y ese campo es el `educationalCredentialAwarded` del JSON-LD. Corregirlo junto con el nombre.
-
 - [ ] **El sitio no tiene manifest ni íconos de PWA.** Falta `public/manifest.json` con los íconos de 192×192 y 512×512, y el `<link rel="manifest">` en `app/layout.tsx`. Está frenado por lo de siempre: no hay un ícono del CAU en PNG cuadrado en esos tamaños. Prioridad baja — sin manifest el sitio se ve y se indexa igual, lo único que se pierde es el "agregar a la pantalla de inicio" con nombre e ícono propios. El service worker para cache offline es aparte y opcional.
 
   Venía anotado en `migracion_pendiente/pendientes-presencia-digital.md`, que se disolvió el 08/08/2026. Es lo único que quedaba de esa lista: Schema.org, las Twitter cards, los og:image y el sitemap de imágenes ya están hechos.

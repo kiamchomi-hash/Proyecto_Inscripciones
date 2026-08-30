@@ -120,7 +120,7 @@ con una segunda inspección antes de anotarlo.
 - ✅ `/carreras/tecnicatura-en-direccion-de-equipos-de-venta` 29/07
 - ✅ `/carreras/tecnicatura-en-direccion-de-protocolo-organizacion-de-eventos-y-rrpp` 29/07
 - ✅ `/carreras/tecnicatura-en-diseno-y-animacion-digital` 28/07
-- ❌ `/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos` — descubierta, nunca rastreada (9 enlaces internos)
+- ❌ `/carreras/tecnicatura-en-videojuegos` — URL nueva publicada el 30/08; reemplaza con 301 a la que Google nunca rastreó
 - ✅ `/carreras/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado` 13/08
 - ✅ `/carreras/tecnicatura-en-gestion-administrativa-de-servicios-de-salud` 29/07
 - ✅ `/carreras/tecnicatura-en-gestion-contable-e-impositiva` 09/08
@@ -138,7 +138,7 @@ con una segunda inspección antes de anotarlo.
 - ✅ `/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones` 17/08
 - ✅ `/carreras/tecnicatura-en-relaciones-laborales` 29/07
 - ✅ `/carreras/tecnicatura-superior-en-cloud-administration` 25/07
-- ❌ `/carreras/tecnicatura-superior-en-customer-experience` — descubierta, nunca rastreada (7 enlaces internos)
+- ❌ `/carreras/tecnicatura-superior-en-experiencia-del-cliente` — URL nueva publicada el 30/08; reemplaza con 301 a la que Google nunca rastreó
 - ✅ `/carreras/tecnicatura-superior-en-data-science` 10/08
 - ✅ `/carreras/tecnicatura-superior-en-gestion-agraria` 31/07
 - ✅ `/carreras/tecnicatura-superior-en-gestion-contable` 09/08
