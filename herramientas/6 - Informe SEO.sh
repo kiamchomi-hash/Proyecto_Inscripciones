@@ -17,6 +17,10 @@ node --env-file-if-exists=.env.local herramientas/seo-semanal.mjs
 salida=$?
 
 echo
+echo "  Publicando al repo privado (si esta configurado)..."
+node --env-file-if-exists=.env.local herramientas/publicar-informe.mjs
+
+echo
 echo "  ------------------------------------------------------------"
 read -rsn1 -p "  Terminado. Toca una tecla para cerrar." _ || true
 echo

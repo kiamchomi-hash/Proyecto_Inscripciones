@@ -21,6 +21,7 @@ se toca una sola vez.
 | `5 - Subir cambios (deploy).bat` | Commit + push a main, o sea **deploy** | Cuando el cambio está listo |
 | `6 - Informe SEO.bat` | Baja Search Console y deja el informe de la semana | Una vez por semana (ya corre solo los lunes) |
 | `8 - De donde vienen los leads.bat` | Clics a WhatsApp, consultas y tráfico, juntos | Cuando parece que no está entrando nada |
+| `publicar-informe.mjs` | Sube el informe a un repo privado, para leerlo desde el celular | Lo llama solo el informe SEO |
 
 Las tres primeras salen con código 1 si encontraron algo, así que también sirven
 desde una terminal: `npm run auditar`, `npm run smoke`, `npm run capturas`. La

@@ -14,6 +14,10 @@ echo.
 node --env-file-if-exists=.env.local herramientas\seo-semanal.mjs
 
 echo.
+echo   Publicando al repo privado (si esta configurado)...
+node --env-file-if-exists=.env.local herramientas\publicar-informe.mjs
+
+echo.
 echo   ------------------------------------------------------------
 echo   Terminado. Cerra la ventana cuando quieras.
 pause >nul
