@@ -162,12 +162,12 @@ export const PREGUNTAS: { pregunta: string; respuesta: string }[] = (() => {
         `${CUATRIMESTRALES[1].semanas} en el segundo.`,
     },
     {
-      pregunta: '¿Teclab y la Academia Identidad Argentina usan este mismo calendario?',
+      pregunta: '¿Teclab usa este mismo calendario?',
       respuesta:
         'No. Estas fechas son las de Universidad Siglo 21 en modalidad a distancia (ED y ' +
-        'EDH). Teclab Instituto Técnico Superior y la Academia Identidad Argentina manejan ' +
-        'calendarios propios, con sus propias fechas de inicio y de inscripción. Si la ' +
-        'carrera que te interesa es de alguna de las dos, escribinos y te pasamos las suyas.',
+        'EDH). Teclab Instituto Técnico Superior maneja un calendario propio, con sus ' +
+        'propias fechas de inicio y de inscripción. Si la carrera que te interesa es de ' +
+        'Teclab, escribinos y te pasamos las suyas.',
     },
   ];
 })();

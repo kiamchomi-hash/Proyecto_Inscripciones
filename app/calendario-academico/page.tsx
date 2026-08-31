@@ -256,7 +256,7 @@ export default function CalendarioAcademicoPage() {
           <a href={PDF_OFICIAL} target="_blank" rel="noopener nofollow" className="ca-link">
             Ver el PDF de la universidad
           </a>
-          . Teclab y la Academia Identidad Argentina manejan calendarios propios.
+          . Teclab maneja un calendario propio.
         </p>
       </section>
     </main>
