@@ -1,19 +1,16 @@
 import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
-import { buildAperturaDirectaMessage } from '@/lib/apertura-directa';
 
 export const dynamic = 'force-dynamic';
 
 const MAX_CARRERA = 200;
-const MAX_URL = 500;
 
 export async function POST(request: NextRequest) {
   try {
-    const { carrera, url } = await request.json() as { carrera?: unknown; url?: unknown };
+    const { carrera } = await request.json() as { carrera?: unknown };
     if (
-      typeof carrera !== 'string' || !carrera.trim() || carrera.length > MAX_CARRERA ||
-      typeof url !== 'string' || !url.startsWith('/carreras/') || url.length > MAX_URL
+      typeof carrera !== 'string' || !carrera.trim() || carrera.length > MAX_CARRERA
     ) {
       return NextResponse.json({ error: 'Apertura inválida' }, { status: 400 });
     }
@@ -31,18 +28,11 @@ export async function POST(request: NextRequest) {
     if (rateError) throw rateError;
     if (!allowed) return NextResponse.json({ ok: true, skipped: true });
 
-    const token = process.env.TELEGRAM_BOT_TOKEN;
-    const chat = process.env.TELEGRAM_CHAT_ID;
-    if (!token || !chat) throw new Error('Telegram no configurado');
-
-    const texto = buildAperturaDirectaMessage({ carrera: carrera.trim(), url });
-    const telegram = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chat, text: texto, parse_mode: 'Markdown', disable_web_page_preview: true }),
-      signal: AbortSignal.timeout(8_000),
+    const { error } = await supabase.rpc('registrar_click_carrera', {
+      p_carrera: carrera.trim().slice(0, MAX_CARRERA),
+      p_origen: 'directa',
     });
-    if (!telegram.ok) throw new Error(`Telegram HTTP ${telegram.status}`);
+    if (error) throw error;
 
     return NextResponse.json({ ok: true });
   } catch (error) {

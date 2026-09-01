@@ -52,9 +52,9 @@ interface ClickRow {
   clicks: number;
 }
 
-async function fetchClicks(fecha: string): Promise<ClickRow[]> {
+async function fetchClicks(fecha: string, origen: "modal" | "directa" = "modal"): Promise<ClickRow[]> {
   const url = `${SUPABASE_URL}/rest/v1/career_clicks` +
-    `?select=carrera,clicks&fecha=eq.${fecha}&order=clicks.desc`;
+    `?select=carrera,clicks&fecha=eq.${fecha}&origen=eq.${origen}&order=clicks.desc`;
   const res = await fetch(url, {
     headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
     signal: AbortSignal.timeout(8_000),
@@ -79,6 +79,14 @@ function buildDigest(fecha: string, rows: ClickRow[]): string {
 
   const resto = rows.length > TOP_N ? `\n\n_y ${rows.length - TOP_N} carreras más_` : "";
   return `${encabezado}\n\n👆 *${total}* aperturas sobre *${rows.length}* carreras\n\n${top}${resto}`;
+}
+
+function buildDirectDigest(fecha: string, rows: ClickRow[]): string {
+  const total = rows.reduce((sum, r) => sum + r.clicks, 0);
+  const [y, m, d] = fecha.split("-");
+  const encabezado = `📊 *Aperturas directas del ${d}/${m}/${y}*`;
+  const lista = rows.map((r, i) => `${i + 1}. ${escapeMarkdown(r.carrera)} — *${r.clicks}*`).join("\n");
+  return `${encabezado}\n\n🔗 *${total}* aperturas sobre *${rows.length}* carreras\n\n${lista}`;
 }
 
 async function sendTelegram(text: string): Promise<boolean> {
@@ -110,10 +118,16 @@ Deno.serve(async (req: Request) => {
     // curso y el cron corria a las 20:00, asi que todos los dias se perdian los
     // clicks de 20:00 a medianoche.
     const fecha = (await fechaPedida(req)) ?? fechaEnBuenosAires(-1);
-    const rows = await fetchClicks(fecha);
+    const [rows, directRows] = await Promise.all([
+      fetchClicks(fecha),
+      fetchClicks(fecha, "directa"),
+    ]);
     const enviado = await sendTelegram(buildDigest(fecha, rows));
+    const enviadoDirectas = directRows.length > 0
+      ? await sendTelegram(buildDirectDigest(fecha, directRows))
+      : true;
 
-    return new Response(JSON.stringify({ ok: true, fecha, carreras: rows.length, telegram: enviado }), {
+    return new Response(JSON.stringify({ ok: true, fecha, carreras: rows.length, directas: directRows.length, telegram: enviado && enviadoDirectas }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {

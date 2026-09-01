@@ -483,7 +483,6 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
       <main className="flex-1">
         <DirectCareerOpenTracker
           carrera={carreraFullName(carrera)}
-          url={`/carreras/${canonicalSlug}`}
         />
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
         <DeferredEnrollmentForm carreras={opcionesFormulario} carreraInicial={carrera.id} />

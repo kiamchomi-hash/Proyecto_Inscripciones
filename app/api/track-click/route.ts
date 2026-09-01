@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
 
     const { error } = await supabase.rpc('registrar_click_carrera', {
       p_carrera: carrera.trim().slice(0, 200),
+      p_origen: 'modal',
     });
     if (error) throw error;
 

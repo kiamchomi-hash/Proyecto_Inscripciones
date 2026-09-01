@@ -1,19 +1,14 @@
-/** Mensaje de Telegram para una visita que cargó la ficha pública de una carrera. */
-export function buildAperturaDirectaMessage({ carrera, url, fecha }: {
-  carrera: string;
-  url: string;
-  fecha?: Date;
-}): string {
-  const momento = (fecha ?? new Date()).toLocaleString('es-AR', {
-    timeZone: 'America/Argentina/Buenos_Aires',
-    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
-  });
+/** Arma el aviso agregado: una línea por carrera, con su contador. */
+export function buildAperturasDirectasDigest(fecha: string, rows: Array<{ carrera: string; clicks: number }>): string {
+  const [y, m, d] = fecha.split('-');
+  const total = rows.reduce((suma, fila) => suma + fila.clicks, 0);
+  const lista = rows.map((fila, i) => `${i + 1}. ${fila.carrera} — *${fila.clicks}*`).join('\n');
 
   return [
-    '🔗 *Apertura directa de carrera*',
+    `📊 *Aperturas directas del ${d}/${m}/${y}*`,
     '',
-    `🎓 *Carrera:* ${carrera}`,
-    `🌐 *URL:* ${url}`,
-    `🕐 *Fecha:* ${momento}`,
+    `🔗 *${total}* aperturas sobre *${rows.length}* carreras`,
+    '',
+    lista,
   ].join('\n');
 }
