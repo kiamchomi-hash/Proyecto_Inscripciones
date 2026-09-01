@@ -7,6 +7,7 @@ import { esCursoTeclab, getFamiliaTeclab, esTeclab, getFichaTeclab, parseEnfoque
 import { parseIAMeta, tienePlanDeEstudios } from '@/components/carreras/career-content';
 import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
+import DirectCareerOpenTracker from '@/components/carreras/direct-career-open-tracker';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
@@ -480,6 +481,10 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbSchema) }}
       />
       <main className="flex-1">
+        <DirectCareerOpenTracker
+          carrera={carreraFullName(carrera)}
+          url={`/carreras/${canonicalSlug}`}
+        />
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
         <DeferredEnrollmentForm carreras={opcionesFormulario} carreraInicial={carrera.id} />
       </main>
