@@ -47,7 +47,56 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Slide 2: Cuotas (100% Vectorial y Adaptable) */}
+            {/* Slide 2: Teclab. Puerta de entrada a /teclab, que tampoco
+                esta en el navbar. Marca propia: tinta #071822 con el cian de
+                Tecnologia y el violeta de Gestion. */}
+            <div className="banner-slide">
+              <div className="w-full h-full relative min-h-[120px] bg-linear-to-br from-[#071822] to-[#0b2733] overflow-hidden flex flex-col items-center justify-center p-2 sm:p-4">
+
+                {/* Circuito decorativo en los extremos, igual que las slides 1 y 4 */}
+                <div className="absolute inset-0 pointer-events-none z-[1] overflow-hidden mix-blend-screen w-full">
+                  {/* Chip (Extremo Izquierdo) */}
+                  <svg className="absolute top-1/2 -translate-y-1/2 left-1 min-[400px]:left-2 sm:left-4 md:left-6 lg:left-8 xl:left-4 2xl:left-8 w-10 h-10 min-[400px]:w-12 min-[400px]:h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-40 lg:h-40 xl:w-24 xl:h-24 2xl:w-32 2xl:h-32 text-[#2ee7d7] opacity-[0.20] -rotate-12 hidden min-[320px]:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M12 3v1.5M15.75 3v1.5M8.25 19.5V21M12 19.5V21M15.75 19.5V21M3 8.25h1.5M3 12h1.5M3 15.75h1.5M19.5 8.25H21M19.5 12H21M19.5 15.75H21M6 6h12v12H6V6zm3.75 3.75h4.5v4.5h-4.5v-4.5z" />
+                  </svg>
+                  {/* Cursor / codigo (Extremo Derecho) */}
+                  <svg className="absolute top-1/2 -translate-y-1/2 right-1 min-[400px]:right-2 sm:right-4 md:right-6 lg:right-8 xl:right-4 2xl:right-8 w-10 h-10 min-[400px]:w-12 min-[400px]:h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-40 lg:h-40 xl:w-24 xl:h-24 2xl:w-32 2xl:h-32 text-[#8e2cf2] opacity-[0.28] rotate-12 hidden min-[320px]:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={0.9}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5L3 11.25l3.75 3.75M17.25 7.5L21 11.25l-3.75 3.75M13.5 4.5l-3 15" />
+                  </svg>
+                </div>
+
+                <Image
+                  src="/imagenes/teclab/logo-teclab.webp"
+                  alt="Teclab, Instituto Técnico Superior"
+                  width={296}
+                  height={100}
+                  loading="eager"
+                  className="relative z-10 w-[74px] min-[380px]:w-[95px] sm:w-[120px] md:w-[140px] lg:w-[170px] xl:w-[125px] 2xl:w-[150px] h-auto object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]"
+                />
+
+                <h2
+                  className="relative z-10 mt-1.5 sm:mt-2 text-white font-black text-[0.8rem] min-[380px]:text-[1.1rem] sm:text-[1.4rem] md:text-[1.6rem] lg:text-[2rem] xl:text-[1.5rem] 2xl:text-[1.8rem] text-center tracking-tight uppercase whitespace-nowrap leading-none px-2"
+                  style={{ textShadow: "1px 1px 0 #0b2733, 2px 2px 0 #071822, 3px 3px 8px rgba(0,0,0,0.6)" }}
+                >
+                  Carreras del futuro
+                </h2>
+
+                <div className="flex flex-col items-center gap-0.5 sm:gap-1 mt-2 sm:mt-3 z-10 w-full px-1">
+                  <Link
+                    href="/teclab"
+                    className="flex items-center justify-center gap-1 bg-[#2ee7d7] hover:bg-[#5cf0e3] text-[#071822] font-black py-1 px-3 sm:py-1.5 sm:px-6 rounded-full shadow-[0_4px_15px_rgba(46,231,215,0.35)] transition-transform hover:scale-105 active:scale-95 text-[7.5px] min-[380px]:text-[9px] sm:text-[11px] lg:text-[13px] uppercase tracking-widest border border-transparent text-center"
+                  >
+                    Ver más
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                  <span className="text-white/70 font-semibold text-[6.5px] min-[380px]:text-[8px] sm:text-[10px] lg:text-[11px] uppercase tracking-wider text-center">
+                    Tecnicaturas de dos años, 100% online
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Slide 3: Cuotas (100% Vectorial y Adaptable) */}
             <div className="banner-slide">
               <div className="w-full h-full relative min-h-[120px] bg-[#ebfcf4] overflow-hidden flex flex-row items-center w-full">
 
@@ -103,7 +152,7 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Slide 3: Benefits (Tailwind Reescrito y Blindado) */}
+            {/* Slide 4: Benefits (Tailwind Reescrito y Blindado) */}
             <div className="banner-slide">
               <div className="w-full h-full relative min-h-[120px] bg-linear-to-br from-[#013729] to-[#0c2920] overflow-hidden flex flex-col items-center justify-evenly pt-2 sm:pt-2.5 md:pt-3 pb-2 px-1 sm:px-6 md:px-12 lg:px-24">
 
@@ -140,7 +189,7 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Slide 4: Calendario academico. Es la puerta de entrada a
+            {/* Slide 5: Calendario academico. Es la puerta de entrada a
                 /calendario-academico, que no esta en el navbar por falta de
                 espacio. */}
             <div className="banner-slide">
