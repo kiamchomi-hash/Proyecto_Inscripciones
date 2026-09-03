@@ -167,7 +167,10 @@ BEGIN
                                'nombre', antes->>'nombre',
                                'prefix', antes->>'prefix'
                              ) END
-               )
+               ),
+    -- El arranque en frío de Vercel puede superar el valor por defecto de pg_net.
+    -- El pedido queda encolado igual, pero el timeout corto lo deja como NULL.
+    timeout_milliseconds := 15000
   );
 
   RETURN NULL;  -- AFTER trigger: el valor de retorno se ignora.
