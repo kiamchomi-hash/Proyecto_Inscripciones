@@ -5,15 +5,12 @@ import { carreraToSlug, esCarreraVisible } from '@/components/index/types';
 import { esTeclab, getFichaTeclab } from '@/components/index/teclab';
 import { getPortada } from '@/components/carreras/career-content';
 
-// `sitemap.ts` es un Route Handler que Next cachea por defecto: sin esta linea se
-// prerenderiza en el build y queda congelado hasta el proximo deploy. El
-// `revalidatePath('/sitemap.xml')` de /api/revalidar no tenia nada que invalidar,
-// asi que una novedad cargada en Supabase salia publicada y enlazada desde
-// /novedades/1, pero nunca entraba al sitemap. Se detecto el 22/08/2026 al publicar
-// `que-hace-un-administrador-cloud`: la pagina se rehizo, el sitemap siguio en 111
-// URLs. Declarar el revalidate lo convierte en entrada ISR y le da al on-demand algo
-// que invalidar; el dia es la red de abajo, igual que en las paginas de contenido.
-export const revalidate = 86400;
+// `sitemap.ts` es un Route Handler que Next puede cachear por defecto. En
+// producción la caché de Vercel conservaba esta metadata route aunque
+// `revalidatePath('/sitemap.xml')` marcara su tag, así que altas, bajas y
+// `lastmod` podían quedar viejos hasta un deploy. Se genera en cada petición:
+// la respuesta es chica y la frescura es prioritaria.
+export const dynamic = 'force-dynamic';
 
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;

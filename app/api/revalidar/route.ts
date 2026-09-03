@@ -58,12 +58,10 @@ function slugDeCarrera(nombre?: string | null, prefix?: string | null) {
  * mismo UPDATE, /clases-apoyo (literal, se rehizo) contra
  * /clases-apoyo/computacion (dinamica, no).
  *
- * /sitemap.xml es el caso inverso y estuvo roto por lo mismo hasta el
- * 08/08/2026: no es una pagina sino una metadata route, o sea un route handler,
- * y el tipo 'page' hacia que revalidatePath buscara una pagina que no existe.
- * Iba sin ruido: el sitemap solo se rehacia en el deploy. Se vio al renombrar el
- * slug de una novedad — /novedades/1 salio con el nuevo y el sitemap, que viaja
- * en la misma llamada, seguia listando el viejo. Va SIN tipo.
+ * El sitemap es una metadata route dinámica (`app/sitemap.ts`) y no necesita que
+ * este endpoint invalide su caché: se genera fresco en cada petición. No agregarlo
+ * acá como si fuera ISR; en producción Vercel podía conservarlo aunque
+ * `revalidatePath('/sitemap.xml')` marcara el tag.
  */
 type Ruta = [string, ('page' | 'layout')?];
 
@@ -76,7 +74,7 @@ function rutasA(aviso: Aviso): Ruta[] {
       // `/api/carreras-detalle` es el texto largo que abre los modales de la
       // home. Va aparte del HTML por peso, asi que si no se rehace acá los
       // modales siguen mostrando la ficha vieja aunque la home ya esté al día.
-      rutas.push(['/', 'page'], ['/teclab', 'page'], ['/api/carreras-detalle'], ['/sitemap.xml']);
+      rutas.push(['/', 'page'], ['/teclab', 'page'], ['/api/carreras-detalle']);
 
       const slug = slugDeCarrera(aviso.nombre, aviso.prefix);
       // Las carreras de un nivel fuera de la oferta no tienen pagina: no hay
@@ -97,7 +95,7 @@ function rutasA(aviso: Aviso): Ruta[] {
     }
 
     case 'novedades': {
-      rutas.push(['/novedades/[page]', 'page'], ['/sitemap.xml']);
+      rutas.push(['/novedades/[page]', 'page']);
       if (aviso.slug) rutas.push([`/novedades/articulo/${aviso.slug}`]);
       if (aviso.anterior?.slug && aviso.anterior.slug !== aviso.slug) {
         rutas.push([`/novedades/articulo/${aviso.anterior.slug}`]);
@@ -114,11 +112,7 @@ function rutasA(aviso: Aviso): Ruta[] {
       if (aviso.anterior?.slug && aviso.anterior.slug !== aviso.slug) {
         rutas.push([`/clases-apoyo/${aviso.anterior.slug}`]);
       }
-      // El sitemap lista las materias por slug: solo cambia si aparece o
-      // desaparece una, no cada vez que se bloquea un horario desde el panel.
-      if (esAltaOBaja || aviso.anterior?.slug !== aviso.slug) {
-        rutas.push(['/sitemap.xml']);
-      }
+      // El sitemap es dinámico y se lee fresco en cada petición.
       break;
     }
 

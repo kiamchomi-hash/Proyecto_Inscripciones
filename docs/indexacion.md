@@ -24,9 +24,10 @@ Las dos últimas son los 301 que Google todavía no vio (último rastreo 30/07 y
 del segundo semestre importa porque sigue recibiendo las consultas de calendario en
 posición 6,5 con 727 impresiones.
 
-`que-hace-un-administrador-cloud`, publicada el 22/08, **se indexó el mismo día**: es la
-tercera vez seguida que una URL nueva entra el día del deploy, así que la revalidación
-del sitemap sin deploy quedó confirmada en la práctica.
+`que-hace-un-administrador-cloud`, publicada el 22/08, **se indexó el mismo día**. Esa
+observación no alcanza para probar que el sitemap se haya revalidado sin deploy: también
+podía haberla descubierto desde `/novedades/1`. El sitemap ahora se genera de forma
+dinámica en cada petición, así que las altas, bajas y fechas `lastmod` no dependen de ISR.
 
 ## El apex redirigía con 307 (corregido el 25/08/2026)
 
