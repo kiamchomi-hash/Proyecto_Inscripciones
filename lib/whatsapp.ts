@@ -14,7 +14,7 @@
  */
 
 /** Villa Lugano, el que va escrito en el HTML. Formato de `wa.me`, sin `+`. */
-export const NUMERO_CAU = '5491166522722';
+export const NUMERO_CAU = '5491132973801';
 
 /**
  * Entre quiénes se reparten las consultas que entran por WhatsApp. El primero

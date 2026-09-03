@@ -223,7 +223,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   const hasPlan = tienePlanDeEstudios(carrera);
 
   const waMsg = mensajeWhatsAppInfo(carrera);
-  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
+  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(waMsg)}`;
 
   return (
     <article

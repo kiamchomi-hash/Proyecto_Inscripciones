@@ -1,4 +1,4 @@
-﻿-- Corrige la lista de Teclab Gestion en la novedad 'teclab-tecnicaturas-online'.
+-- Corrige la lista de Teclab Gestion en la novedad 'teclab-tecnicaturas-online'.
 --
 -- Problema: el encabezado decia "Teclab Gestion (11 carreras)" y la lista tenia
 -- 6 items, porque agrupaba carreras que en la tabla `carreras` son filas
@@ -51,7 +51,7 @@ set contenido = $html$
 <h2>Para quién es</h2>
 <p>El perfil de Teclab es técnico y corto: dos años, contenido aplicado y carreras armadas junto con empresas del rubro. Si buscás entrar rápido al mercado en un puesto técnico —desarrollo, datos, infraestructura, marketing— es el camino más directo del catálogo.</p>
 
-<p>Abrí cualquier ficha de Teclab en <a href="/">el catálogo</a> para ver el plan de estudios completo. La inscripción y las consultas se hacen desde el CAU, por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> o por <a href="/contacto">el formulario de contacto</a>.</p>
+<p>Abrí cualquier ficha de Teclab en <a href="/">el catálogo</a> para ver el plan de estudios completo. La inscripción y las consultas se hacen desde el CAU, por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> o por <a href="/contacto">el formulario de contacto</a>.</p>
 $html$
 where slug = 'teclab-tecnicaturas-online';
 

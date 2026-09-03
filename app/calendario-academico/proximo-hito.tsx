@@ -62,7 +62,7 @@ export default function ProximoHito() {
         </p>
       </div>
       <a
-        href="https://wa.me/5491166522722?text=Hola%2C%20quiero%20consultar%20por%20las%20fechas%20de%20inscripci%C3%B3n"
+        href="https://wa.me/5491132973801?text=Hola%2C%20quiero%20consultar%20por%20las%20fechas%20de%20inscripci%C3%B3n"
         target="_blank"
         rel="noopener nofollow"
         className="ca-cta inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-bold text-white text-sm flex-shrink-0"

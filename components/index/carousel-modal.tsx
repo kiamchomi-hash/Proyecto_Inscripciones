@@ -870,7 +870,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
   }, [handleClose]);
 
   const waMsg = mensajeWhatsAppInfo(carrera);
-  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
+  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(waMsg)}`;
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}`
     : '';
@@ -1232,7 +1232,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
         <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
-              href={`https://wa.me/5491166522722?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
+              href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2 md:py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white font-bold rounded-xl transition-all text-xs md:text-sm"

@@ -235,7 +235,7 @@ export default function CalendarioAcademicoPage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a
-            href="https://wa.me/5491166522722?text=Hola%2C%20quiero%20consultar%20por%20la%20inscripci%C3%B3n"
+            href="https://wa.me/5491132973801?text=Hola%2C%20quiero%20consultar%20por%20la%20inscripci%C3%B3n"
             target="_blank"
             rel="noopener nofollow"
             className="ca-cta inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-white text-sm"

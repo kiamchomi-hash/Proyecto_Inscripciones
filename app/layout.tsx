@@ -85,7 +85,7 @@ const jsonLd = jsonLdScript([
       "Villa Celina", "Ciudad Madero", "Tapiales", "Ingeniero Budge",
       "Comuna 8", "CABA"
     ].map(name => ({ "@type": "Place", name })),
-    "telephone": "+5491166522722",
+    "telephone": "+5491132973801",
     "sameAs": [
       "https://www.facebook.com/ceducativovillalugano/",
       "https://www.instagram.com/centroeducativovillalugano/"

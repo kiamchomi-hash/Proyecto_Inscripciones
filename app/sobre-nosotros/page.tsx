@@ -111,7 +111,7 @@ export default function SobreNosotrosPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <a
-            href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
+            href="https://wa.me/5491132973801?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
             target="_blank"
             rel="noopener nofollow"
             className="sn-whatsapp-btn inline-flex items-center gap-3 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
@@ -213,7 +213,7 @@ export default function SobreNosotrosPage() {
             </div>
             <div className="px-6 sm:px-8 pb-6 sm:pb-8 flex items-center justify-center gap-2 sm:gap-3">
               <a
-                href="https://wa.me/5491166522722"
+                href="https://wa.me/5491132973801"
                 target="_blank"
                 rel="noopener nofollow"
                 className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm text-white transition-all hover:brightness-110"
@@ -412,7 +412,7 @@ export default function SobreNosotrosPage() {
               </p>
               <div className="flex flex-col gap-2.5 w-full">
                 <a
-                  href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
+                  href="https://wa.me/5491132973801?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
                   target="_blank"
                   rel="noopener nofollow"
                   className="sn-whatsapp-btn inline-flex items-center gap-3 w-full py-3 px-5 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 hover:scale-[1.02]"

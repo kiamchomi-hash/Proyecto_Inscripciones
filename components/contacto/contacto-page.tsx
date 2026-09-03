@@ -257,7 +257,7 @@ export default function ContactoPageContent() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">WhatsApp</h2>
-                <p className="text-xs font-semibold" style={{ color: '#25D366' }}>11 6652-2722</p>
+                <p className="text-xs font-semibold" style={{ color: '#25D366' }}>11 3297-3801</p>
               </div>
             </div>
 
@@ -355,7 +355,7 @@ export default function ContactoPageContent() {
             {/* CTA */}
             <div className="p-6 pt-4">
               <a
-                href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
+                href="https://wa.me/5491132973801?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta"
                 target="_blank"
                 rel="noopener nofollow"
                 className="ct-btn-whatsapp flex items-center justify-center gap-2 w-full py-3 rounded-full font-bold text-white text-sm transition-all hover:brightness-110 "

@@ -121,10 +121,10 @@ const FAQ_ITEMS: FaqItem[] = [
     headerSocials: true,
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-2" style={{ color: '#c8dedd' }}>
-        <SocialLink href="https://wa.me/5491166522722" label="WhatsApp" color="#25D366" bgColor="rgba(37,211,102,0.1)" borderColor="rgba(37,211,102,0.3)"
+        <SocialLink href="https://wa.me/5491132973801" label="WhatsApp" color="#25D366" bgColor="rgba(37,211,102,0.1)" borderColor="rgba(37,211,102,0.3)"
           icon={<WhatsAppIcon className="w-5 h-5" />}>
           <span className="block font-semibold text-sm" style={{ color: '#25D366' }}>WhatsApp</span>
-          <span className="block text-xs" style={{ color: '#c8dedd' }}>11 6652-2722</span>
+          <span className="block text-xs" style={{ color: '#c8dedd' }}>11 3297-3801</span>
         </SocialLink>
         <SocialLink href="https://www.facebook.com/ceducativovillalugano/" label="Facebook" color="#1877F2" bgColor="rgba(24,119,242,0.1)" borderColor="rgba(24,119,242,0.3)"
           icon={<FacebookIcon className="w-5 h-5" />}>
@@ -325,7 +325,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
           </button>
           {!isOpen && (
             <div className="contact-socials-header flex items-center gap-1.5 flex-shrink-0">
-              <a href="https://wa.me/5491166522722?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta" target="_blank" rel="noopener nofollow" aria-label="WhatsApp" onClick={e => e.stopPropagation()}
+              <a href="https://wa.me/5491132973801?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta" target="_blank" rel="noopener nofollow" aria-label="WhatsApp" onClick={e => e.stopPropagation()}
                 className="flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-80"
                 style={{ background: 'rgba(37,211,102,0.18)', color: '#25D366', border: '1px solid rgba(37,211,102,0.5)' }}>
                 <WhatsAppIcon className="w-4 h-4" />
@@ -968,7 +968,7 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
               {/* WhatsApp contact */}
               <div className="rounded-xl p-4" style={{ background: 'rgba(5,140,112,0.18)', border: '1px solid rgba(5,140,112,0.5)' }}>
                 <p className="text-sm mb-2.5" style={{ color: '#c8dedd' }}>¿No encontrás lo que buscás? Escribinos directamente.</p>
-                <a href="https://wa.me/5491166522722" target="_blank" rel="noopener nofollow"
+                <a href="https://wa.me/5491132973801" target="_blank" rel="noopener nofollow"
                   className="flex items-center justify-center gap-2 font-semibold py-2.5 px-4 rounded-lg text-sm text-white w-full hover:brightness-110"
                   style={{ background: '#25D366' }}>
                   <WhatsAppIcon className="w-4 h-4" />

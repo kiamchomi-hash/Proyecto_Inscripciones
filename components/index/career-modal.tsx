@@ -107,7 +107,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
 
   // WhatsApp link
   const waMsg = mensajeWhatsAppInfo(carrera);
-  const waHref = `https://wa.me/5491166522722?text=${encodeURIComponent(waMsg)}`;
+  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(waMsg)}`;
 
   // Share URL
   const shareUrl = typeof window !== 'undefined'
