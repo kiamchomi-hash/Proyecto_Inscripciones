@@ -40,8 +40,16 @@ function ogCarrera(carrera: Carrera): string {
   return '/imagenes/og/default.jpg';
 }
 
-// Google corta el <title> alrededor de los 60 caracteres.
-const MAX_TITULO = 60;
+// Google corta el <title> alrededor de los 60 caracteres. Va en 61 y no en 60
+// por un caso concreto: con 60, cuatro fichas se quedaban sin " a Distancia"
+// por un solo caracter -- "Licenciatura en Administracion Agraria a Distancia |
+// Siglo 21" son 61 -- y caian al sufijo pelado. Administracion Agraria junto 55
+// impresiones y cero clics entre el 01 y el 21/07/2026, y el 21/07 Google dejo
+// de mostrarla ("Crawled - currently not indexed"). Con 61 esas cuatro ganan
+// "a Distancia" sin soltar el prefijo academico, y cuatro de Teclab cambian
+// "Villa Lugano" por "Tecnicatura Superior en". No se sube a 62: ahi entran
+// cinco titulos mas que solo agregan "Villa Lugano" de relleno.
+const MAX_TITULO = 61;
 
 // Pero el corte real se mide en pixeles, no en caracteres, asi que hay unos
 // pocos de margen. Se usan solo para los nombres que no entran de ninguna
@@ -97,6 +105,16 @@ function tituloSEO(carrera: Carrera): string {
       // distancia" al 10-33%. "Villa Lugano" no aparece en ninguna consulta de
       // carrera: las 500 que se bajaron lo usan solo para buscar el barrio o el
       // CAU, y esas caen en la home, /sobre-nosotros y /clases-apoyo.
+      //
+      // Remedido el 02/09/2026 sobre las 1.205 consultas de 90 dias, que es
+      // donde estan los 99 clics: "villa lugano" sigue en cero (8 impresiones,
+      // ningun clic), pero "a distancia" bajo a 1,9% de CTR y 6 clics, y el
+      // prefijo academico ("tecnicatura" o "licenciatura" en la consulta) da 25
+      // clics con 2,1%. O sea que el prefijo vale cuatro veces mas que "a
+      // Distancia", asi que el orden de los bucles de abajo -- nombre afuera,
+      // sufijo adentro -- es el correcto: primero se suelta "a Distancia" y
+      // recien despues el prefijo. Ya se simulo darlo vuelta y deja 83 de 88
+      // fichas sin el nombre largo; no rehacerlo.
       : [
           ' a Distancia | Siglo 21 Villa Lugano',
           ' a Distancia | Siglo 21',
