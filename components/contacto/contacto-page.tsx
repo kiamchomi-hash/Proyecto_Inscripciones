@@ -168,35 +168,49 @@ function ContactForm() {
           {/* Body */}
           <div className="px-5 py-3 space-y-2.5">
             <div className="grid grid-cols-2 gap-3">
-              <input type="text" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={inputClass} />
-              <input type="text" placeholder="Apellido" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={inputClass} />
+              <label className="block text-xs text-[#e8d0d8]">Nombre
+                <input type="text" autoComplete="given-name" value={nombre} onChange={e => setNombre(e.target.value)} maxLength={100} className={`${inputClass} mt-1`} />
+              </label>
+              <label className="block text-xs text-[#e8d0d8]">Apellido
+                <input type="text" autoComplete="family-name" value={apellido} onChange={e => setApellido(e.target.value)} maxLength={100} className={`${inputClass} mt-1`} />
+              </label>
             </div>
 
             <div className="space-y-1">
+              <label htmlFor="contacto-email" className="block text-xs text-[#e8d0d8]">Email</label>
               <input
+                id="contacto-email"
                 type="email"
-                placeholder="Email"
+                autoComplete="email"
+                aria-invalid={emailInvalid}
+                aria-describedby="contacto-email-error"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 maxLength={100}
                 className={`${inputClass} ${emailInvalid ? '!border-red-400/60' : ''}`}
               />
-              <p className="text-[11px] leading-4 min-h-4 text-red-400">{emailInvalid ? 'El formato del email no es válido.' : ''}</p>
+              <p id="contacto-email-error" className="text-[11px] leading-4 min-h-4 text-red-400">{emailInvalid ? 'El formato del email no es válido.' : ''}</p>
             </div>
 
             <div className="space-y-1">
+              <label htmlFor="contacto-telefono" className="block text-xs text-[#e8d0d8]">Teléfono</label>
               <input
+                id="contacto-telefono"
                 type="tel"
-                placeholder="Teléfono"
+                autoComplete="tel"
+                aria-invalid={telefonoInvalid}
+                aria-describedby="contacto-telefono-error"
                 value={telefono}
                 onChange={e => setTelefono(e.target.value)}
                 maxLength={100}
                 className={`${inputClass} ${telefonoInvalid ? '!border-red-400/60' : ''}`}
               />
-              <p className="text-[11px] leading-4 min-h-4 text-red-400">{telefonoError}</p>
+              <p id="contacto-telefono-error" className="text-[11px] leading-4 min-h-4 text-red-400">{telefonoError}</p>
             </div>
 
-            <input type="text" placeholder="Localidad" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={inputClass} />
+            <label className="block text-xs text-[#e8d0d8]">Localidad
+              <input type="text" autoComplete="address-level2" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={`${inputClass} mt-1`} />
+            </label>
 
             <p className="text-[11px] text-white">
               Solo necesitamos un dato de contacto (email o teléfono). El resto es opcional.

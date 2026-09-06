@@ -1,8 +1,19 @@
 # Indexación — siglo21sur.com
 
-**25/08/2026 · 110/112.**
+**05/09/2026 · 110/111 URLs del sitemap indexadas (99,1%).**
 
-## Enviar a GSC
+Revisado con `npm run seo` y la API de inspección de Search Console. Sólo falta
+`/carreras/tecnicatura-en-videojuegos`. El barrido la informó como «Google no
+reconoce esta URL» y una consulta puntual como «Descubierta: actualmente sin
+indexar»; ambas coinciden en que todavía no está indexada y no devolvieron fecha
+de rastreo.
+
+`/carreras/tecnicatura-superior-en-experiencia-del-cliente` ya está enviada e
+indexada, con canónica propia y último rastreo del **03/09/2026**. No se enviaron
+solicitudes de indexación en esta revisión. El detalle que sigue conserva el
+historial anterior.
+
+## Historial: solicitudes previstas el 25/08/2026
 
 Solicitar indexación:
 
@@ -139,7 +150,7 @@ con una segunda inspección antes de anotarlo.
 - ✅ `/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones` 17/08
 - ✅ `/carreras/tecnicatura-en-relaciones-laborales` 29/07
 - ✅ `/carreras/tecnicatura-superior-en-cloud-administration` 25/07
-- ❌ `/carreras/tecnicatura-superior-en-experiencia-del-cliente` — URL nueva publicada el 30/08; reemplaza con 301 a la que Google nunca rastreó
+- ✅ `/carreras/tecnicatura-superior-en-experiencia-del-cliente` — indexación confirmada el 05/09; último rastreo 03/09 y canónica propia. URL publicada el 30/08.
 - ✅ `/carreras/tecnicatura-superior-en-data-science` 10/08
 - ✅ `/carreras/tecnicatura-superior-en-gestion-agraria` 31/07
 - ✅ `/carreras/tecnicatura-superior-en-gestion-contable` 09/08

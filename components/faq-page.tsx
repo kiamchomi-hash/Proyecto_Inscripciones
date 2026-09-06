@@ -507,9 +507,9 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
       if (e.key === 'Tab') {
         const modal = modalRef.current;
         if (!modal) return;
-        const focusable = modal.querySelectorAll<HTMLElement>(
+        const focusable = Array.from(modal.querySelectorAll<HTMLElement>(
           'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
-        );
+        )).filter(el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden');
         if (focusable.length === 0) return;
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
@@ -528,19 +528,23 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   // después de cada render: al tipear, el foco volvía al primer botón (la X).
   useEffect(() => {
     if (!open) return;
+    const disparador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const id = requestAnimationFrame(() => {
       const modal = modalRef.current;
       if (!modal) return;
       const campo = modal.querySelector<HTMLElement>('input, textarea');
       (campo ?? modal.querySelector<HTMLElement>('button'))?.focus();
     });
-    return () => cancelAnimationFrame(id);
+    return () => {
+      cancelAnimationFrame(id);
+      if (disparador?.isConnected) disparador.focus();
+    };
   }, [open]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: 'rgba(0,10,10,0.82)' }} role="dialog" aria-modal="true" onClick={e => { if (e.target === e.currentTarget) handleClose(); }}>
+    <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: 'rgba(0,10,10,0.82)' }} role="dialog" aria-modal="true" aria-labelledby="ask-heading" onClick={e => { if (e.target === e.currentTarget) handleClose(); }}>
       <div ref={modalRef} className="w-full max-w-[480px] rounded-2xl overflow-hidden relative" style={{ background: '#122e2e', border: '1px solid rgba(5,140,112,0.5)', boxShadow: '0 24px 64px rgba(0,0,0,0.55)' }}>
         {/* Header */}
         <div className="flex items-center gap-3 px-8 py-5 rounded-t-2xl relative" style={{ background: 'linear-gradient(135deg, #012a1f 0%, #0d3040 100%)', borderBottom: '1px solid rgba(0,199,177,0.2)' }}>
@@ -554,7 +558,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             </svg>
           </div>
           <div>
-            <h3 className="font-bold leading-tight" style={{ color: '#fff', fontSize: '1.05rem' }}>Hacé tu pregunta</h3>
+            <h3 id="ask-heading" className="font-bold leading-tight" style={{ color: '#fff', fontSize: '1.05rem' }}>Hacé tu pregunta</h3>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'rgba(0,199,177,0.12)', border: '1px solid rgba(0,199,177,0.28)', borderRadius: 999, padding: '0.18rem 0.65rem', fontSize: '0.72rem', fontWeight: 600, color: '#00c7b1', marginTop: '0.25rem' }}>
               <span style={{ width: 6, height: 6, background: '#00c7b1', borderRadius: '50%', flexShrink: 0 }} />
               Te respondemos a la brevedad
@@ -860,14 +864,17 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
             {/* Main column */}
             <div className="flex-1 min-w-0">
               {/* Search */}
-              <div className="relative mb-3">
+              <div className="mb-3">
+                <label htmlFor="faq-search" className="block mb-2 text-sm font-semibold text-[#d6efed]">Buscar una pregunta</label>
+                <div className="relative">
                 <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none" style={{ color: 'var(--color-highlight)' }} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="m21 21-4.35-4.35" />
                 </svg>
-                <input id="faq-search" type="search" placeholder="Busca la pregunta que necesites..." autoComplete="off"
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl text-white text-base outline-none"
+                <input id="faq-search" type="search" placeholder="Buscá la pregunta que necesites..." autoComplete="off"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl text-white text-base outline-none focus:ring-2 focus:ring-[#00c7b1]"
                   style={{ background: '#0d2525', border: '2px solid rgba(0,199,177,0.45)' }}
                   value={search} onChange={e => setSearch(e.target.value)} />
+                </div>
               </div>
 
               {visibleCount === 0 && (

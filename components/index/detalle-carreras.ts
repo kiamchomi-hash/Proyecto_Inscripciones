@@ -23,10 +23,17 @@ export function bajarDetalle(): Promise<MapaDetalle> {
   // necesita para pintar. Sin esto se lleva ancho de banda del camino crítico y
   // el primer pintado no mejora aunque el HTML haya adelgazado.
   pedido ??= fetch('/api/carreras-detalle', { priority: 'low' })
-    .then(respuesta => (respuesta.ok ? respuesta.json() : {}))
-    // Si esto falla, el modal abre igual con lo que ya tiene la tarjeta: mejor
-    // una ficha sin temario que un modal que no abre.
-    .catch(() => ({}));
+    .then(async respuesta => {
+      if (!respuesta.ok) throw new Error('No se pudo descargar el detalle');
+      const mapa = await respuesta.json();
+      if (!mapa || typeof mapa !== 'object' || Array.isArray(mapa)) {
+        throw new Error('Detalle inválido');
+      }
+      return mapa as MapaDetalle;
+    })
+    // La ficha abre con los datos básicos, pero el fallo no se memoriza:
+    // volver a abrirla o recuperar la conexión permite un nuevo intento.
+    .catch(() => { pedido = null; return {}; });
   return pedido;
 }
 
@@ -59,7 +66,10 @@ export function useDetalleCarreras(): MapaDetalle | null {
   useEffect(() => {
     let vivo = true;
     let idOcioso = 0;
-    const arrancar = () => { bajarDetalle().then(mapa => { if (vivo) setDetalle(mapa); }); };
+    const arrancar = () => { bajarDetalle().then(mapa => {
+      if (vivo && Object.keys(mapa).length) setDetalle(mapa);
+    }); };
+    window.addEventListener('online', arrancar);
 
     // Primero `load` —ahí ya bajó todo lo que la página necesita para pintar— y
     // recién después la primera ventana de ocio. `requestIdleCallback` solo no
@@ -81,6 +91,7 @@ export function useDetalleCarreras(): MapaDetalle | null {
 
     return () => {
       vivo = false;
+      window.removeEventListener('online', arrancar);
       window.removeEventListener('load', alOcio);
       if (!idOcioso) return;
       if (ocio.cancelIdleCallback) ocio.cancelIdleCallback(idOcioso);

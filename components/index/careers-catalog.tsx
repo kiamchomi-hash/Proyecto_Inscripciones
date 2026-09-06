@@ -267,8 +267,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
     // El modal abre ya: si el detalle todavía no bajó —sólo pasa si alguien hace
     // clic en el primer segundo—, se completa apenas llega.
     setSelectedCarrera(completar(carrera, detalle));
-    if (!detalle) {
-      bajarDetalle().then(mapa => setSelectedCarrera(completar(carrera, mapa)));
+    if (!detalle?.[carrera.id]) {
+      bajarDetalle().then(mapa => setSelectedCarrera(actual =>
+        actual?.id === carrera.id ? completar(carrera, mapa) : actual));
     }
 
     // Telemetría: GA para el detalle, la tabla propia para el digest de las 20hs.
@@ -302,7 +303,11 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
       || carreras.find(c => c.nombre === slug);
     // Esta apertura no la dispara un clic sino la URL, así que el detalle casi
     // nunca bajó todavía: se espera a tenerlo en vez de abrir una ficha a medias.
-    if (found) bajarDetalle().then(mapa => setSelectedCarrera(completar(found, mapa)));
+    let vigente = true;
+    if (found) bajarDetalle().then(mapa => {
+      if (vigente) setSelectedCarrera(completar(found, mapa));
+    });
+    return () => { vigente = false; };
   }, [carreras, initialSlug]);
 
   // Update title and URL when modal opens/closes

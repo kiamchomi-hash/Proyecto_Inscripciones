@@ -18,6 +18,8 @@
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { acceso, consultar as consultarGsc } from './gsc.mjs';
+import nextConfig from '../next.config.ts';
+import { resolverRutaSeo, consolidarFilasSeo } from './seo-rutas.mjs';
 
 const RAIZ = path.resolve(import.meta.dirname, '..');
 const LOGS = path.join(RAIZ, 'herramientas', 'vigilancia-logs');
@@ -274,8 +276,11 @@ async function main() {
   // ── Paginas ───────────────────────────────────────────────────────────────
 
   const oferta = await slugsDeLaOferta();
-  const paginasAhora = await consultar({ ...PERIODO_ACTUAL, dimensions: ['page'], rowLimit: 500 });
-  const paginasAntes = await consultar({ ...PERIODO_PREVIO, dimensions: ['page'], rowLimit: 500 });
+  const resolver = resolverRutaSeo(await nextConfig.redirects());
+  const consolidar = (filas, indice) => consolidarFilasSeo(filas, indice, resolver, BASE);
+  const paginasAhora = consolidar(await consultar({ ...PERIODO_ACTUAL, dimensions: ['page'], rowLimit: 500 }), 0);
+  const paginasAntes = consolidar(await consultar({ ...PERIODO_PREVIO, dimensions: ['page'], rowLimit: 500 }), 0);
+  contexto.push('Las URLs renombradas se consolidan por destino antes de comparar periodos; las bajas que terminan en la home quedan separadas.');
   const antesPorRuta = new Map(paginasAntes.map(r => [rutaDe(r.keys[0]), r]));
 
   const vigentes = [];
@@ -291,7 +296,7 @@ async function main() {
     const clics = fueraDeOferta.reduce((a, f) => a + f.clicks, 0);
     const top = [...fueraDeOferta].sort((a, b) => b.clicks - a.clicks).slice(0, 5);
     contexto.push(
-      `${fueraDeOferta.length} paginas de carreras fuera de la oferta juntaron ${clics} clics y redirigen a la home. ` +
+      `${fueraDeOferta.length} URLs de carreras sin ficha vigente juntaron ${clics} clics. ` +
       `Quedan afuera del informe a proposito. Las de mas trafico: ${top.map(f => `${f.ruta} (${f.clicks})`).join(', ')}.`,
     );
   }
@@ -308,7 +313,7 @@ async function main() {
   // Search Console anonimiza las consultas raras: estas filas cubren ~27% de las
   // impresiones del periodo. Como lo anonimizado es cola larga, y la cola larga
   // es mas generica que de marca, el share de marca que sale de aca es un techo.
-  const consultas = await consultar({ ...PERIODO_ACTUAL, dimensions: ['query', 'page'], rowLimit: 5000 });
+  const consultas = consolidar(await consultar({ ...PERIODO_ACTUAL, dimensions: ['query', 'page'], rowLimit: 5000 }), 1);
 
   const factores = factoresPorIntencion(consultas);
 

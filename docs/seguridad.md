@@ -95,5 +95,21 @@ Queda abierto, nada urgente:
 
   **Al inspeccionarlas, un error de parseo de PowerShell volcó los dos tokens de OAuth y sus refresh tokens en texto plano en la terminal.** No salieron de la máquina, pero quedaron en el scrollback y en el transcript de la sesión, así que se revocan por eso además de por estar huérfanas. Lección para la próxima: leer una credencial para clasificarla, aunque sea sólo el prefijo, arriesga volcarla entera si el comando falla — conviene mirar metadatos (nombre, fecha, tamaño) y no el blob.
 - **Restos de Resend.** La clave `Onboarding` y la variable `RESEND_API_KEY` de Vercel quedaron sin uso cuando el mail salió del proyecto. No tocar `topykly-dev`, que es del otro proyecto que comparte la cuenta.
-- **El ruleset de OWASP CRS en Vercel.** Verificar en el dashboard si sigue apagado y decidir si se enciende; el CLI no lo muestra.
+- **El ruleset de OWASP CRS en Vercel.** Descartado el 08/08/2026 por costo y bajo valor marginal; ver `docs/criterios.md`. No queda pendiente habilitarlo.
 - **La API key muerta de TestSprite** en el `~/.claude.json` de la máquina de Linux. Es higiene: la key se borró en el servicio el 08/08/2026.
+
+### 05/09/2026, auditoría de código y comprobaciones públicas
+
+`npm run check` aprobado, 58 tests. Smoke aprobado sobre las 111 URLs del sitemap; `/api/admin/profesores` sin sesión responde 401 y `/admin` redirige al login. `npm audit` encontró tres paquetes afectados: Browserslist 4.28.6 (desarrollo, alto), fflate 0.8.2 y sanitize-html 2.17.6 (producción, moderados). Hay parches disponibles. No se identificaron en el código las entradas necesarias para explotar los avisos revisados: el sanitizador excluye SVG animado, el PDF se genera sin importar ZIPs del público y Browserslist llega por ESLint/Babel. Next 16.3.3 coincide con el parche de agosto.
+
+Con rol público `anon`, las consultas mínimas de `consultas.id`, `solicitudes_clase.id`, `faq_preguntas.contacto`, `faq_preguntas.titulo` y `profesores.id` devolvieron cero filas con 200; las tablas de infraestructura `form_rate_limits` y `career_clicks` devolvieron 401/42501. No se expusieron valores personales en la salida. Esto no certifica los grants: 200 vacío no distingue tabla vacía de filtrado RLS, y difiere de esperar rechazo por columna revocada. Queda fuera de esta revisión el contraste de policies/grants con una sesión autorizada y los avisos de Telegram.
+
+Sin coincidencias de formatos completos de PAT Supabase, tokens clásicos GitHub o encabezados de claves privadas en archivos textuales versionados. No es un barrido del historial ni de todas las clases de secretos. No se tocaron credenciales, base, firewall ni producción.
+
+Hallazgos adicionales: JSON inválido devuelve 503 en el endpoint de formularios; el modo `rate-limit-only` no está acotado al entorno local; errores de lectura se convierten en contenido vacío. Detalle, prioridades, fuentes y límites en [la auditoría del 05/09](auditoria-2026-09-05.md). En esta primera revisión no se aplicaron correcciones a la aplicación.
+
+### 05/09/2026, correcciones locales posteriores a la auditoría
+
+Actualizados sanitize-html a 2.17.7, fflate a 0.8.3 y Browserslist a 4.28.9: audit total y sin desarrollo en cero. El endpoint devuelve 400 para JSON mal formado y sobres inválidos; producción nunca acepta el modo `rate-limit-only` por falta de secreto. En desarrollo ese modo exige además `NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL=1` y no saltea la cuota ni la credencial de escritura. Lecturas de carreras y sitemap propagan errores para evitar publicar contenido vacío.
+
+`check` aprobado (65 tests), build de producción aprobado y pruebas del navegador/PDF aprobadas. No se publicaron estos cambios ni se alteraron grants, secretos, triggers o firewall. [Resultados y límites](correcciones-auditoria-2026-09-05.md).

@@ -25,7 +25,8 @@ async function getCarreras() {
     .from('carreras')
     .select('*')
     .eq('activa', true)
-    .order('orden', { ascending: true });
+    .order('orden', { ascending: true })
+    .throwOnError();
   // Solo la oferta vigente: los niveles fuera del catalogo no tienen pagina.
   return ((data || []) as Carrera[]).filter(esCarreraVisible);
 }

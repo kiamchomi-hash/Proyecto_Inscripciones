@@ -27,15 +27,12 @@ export default async function HomePage() {
   // Sólo lo liviano: el texto largo (slides, plan de estudios, secciones) lo
   // baja el catálogo por su cuenta después del primer pintado. `slides` se pide
   // igual, pero para saber si hay y no para mandarla — ver COLUMNAS_DETALLE.
-  const { data: carreras, error } = await supabase
+  const { data: carreras } = await supabase
     .from('carreras')
     .select(`${COLUMNAS_CATALOGO.join(', ')}, slides`)
     .eq('activa', true)
-    .order('orden', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching carreras:', error.message);
-  }
+    .order('orden', { ascending: true })
+    .throwOnError();
 
   const carrerasData: CarreraCatalogo[] = ((carreras || []) as unknown as Carrera[])
     .filter(esCarreraVisible)

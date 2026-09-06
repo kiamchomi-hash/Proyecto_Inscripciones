@@ -9,6 +9,9 @@ import {
 
 type JsonRecord = Record<string, unknown>;
 
+const esRegistro = (value: unknown): value is JsonRecord =>
+  value !== null && typeof value === 'object' && !Array.isArray(value);
+
 const text = (value: unknown, max: number) =>
   typeof value === 'string' ? value.trim().slice(0, max) : '';
 
@@ -51,7 +54,7 @@ async function checkRateLimit(kind: string, ip: string) {
 const MODOS: Modo[] = ['contacto', 'preinscripcion'];
 
 const esCasa = (value: unknown): value is CasaId =>
-  typeof value === 'string' && value in CASAS;
+  typeof value === 'string' && Object.hasOwn(CASAS, value);
 
 const esModo = (value: unknown): value is Modo =>
   MODOS.includes(value as Modo);
@@ -138,7 +141,8 @@ async function insertClase(payload: JsonRecord) {
   }
 
   const rows = payload.rows.map((raw) => {
-    const row = raw as JsonRecord;
+    if (!esRegistro(raw)) throw new TypeError('Solicitud inválida');
+    const row = raw;
     const materiaId = text(row.materia_id, 36);
     const telefono = text(row.telefono, 30);
     const dias = Array.isArray(row.dias)
@@ -167,17 +171,31 @@ async function insertClase(payload: JsonRecord) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json() as JsonRecord;
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch (error) {
+      if (!(error instanceof SyntaxError)) throw error;
+      return NextResponse.json({ error: 'Solicitud inválida' }, { status: 400 });
+    }
+    if (!esRegistro(body)) {
+      return NextResponse.json({ error: 'Solicitud inválida' }, { status: 400 });
+    }
     const kind = text(body.kind, 20);
     const token = text(body.token, 4096);
-    const payload = body.payload as JsonRecord;
+    const payload = body.payload;
     const ip = clientIp(request);
 
-    if (!['consulta', 'faq', 'clase'].includes(kind) || !token || !payload || typeof payload !== 'object') {
+    if (!['consulta', 'faq', 'clase'].includes(kind) || !token || !esRegistro(payload)) {
       return NextResponse.json({ error: 'Solicitud inválida' }, { status: 400 });
     }
 
     const captchaConfigured = Boolean(process.env.TURNSTILE_SECRET_KEY);
+    const pruebaLocal = process.env.NODE_ENV === 'development' &&
+      process.env.NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL === '1';
+    if (!captchaConfigured && !pruebaLocal) {
+      return NextResponse.json({ error: 'Servicio temporalmente no disponible' }, { status: 503 });
+    }
     const [captchaOk, allowed] = await Promise.all([
       captchaConfigured
         ? verifyTurnstile(token, ip)

@@ -49,7 +49,7 @@ El proyecto se trabaja desde las dos, con el mismo repo y el mismo comportamient
 
 ### Next.js 16 + App Router
 
-Las páginas son Server Components que leen de Supabase en el render. La home usa `revalidate = 3600`; `/carreras/[slug]`, `/novedades/[page]` y los artículos usan 86400 para no gastar ISR Writes; `/faq`, `/clases-apoyo/[materia]`, `/imagenes` y `/sitemap.xml` no declaran ninguno, así que son estáticos puros. Esos números son la red de abajo, no el mecanismo: lo que publica de verdad es la revalidación on-demand (ver más abajo). `/clases-apoyo` **también es estática**: mostraba un calendario relativo a hoy y por eso usaba `dynamic = 'force-dynamic'`, pero dejó de mostrarlo y el flag se sacó. La revalida el trigger de `materias`.
+Las páginas son Server Components que leen de Supabase en el render. La home usa `revalidate = 3600`; `/carreras/[slug]`, `/novedades/[page]` y los artículos usan 86400 para no gastar ISR Writes; `/faq`, `/clases-apoyo/[materia]` e `/imagenes` no declaran ninguno, así que son estáticos puros. `/sitemap.xml` usa `dynamic = 'force-dynamic'` y se genera en cada pedido para reflejar altas, bajas y fechas sin depender de ISR. Esos números son la red de abajo, no el mecanismo: lo que publica de verdad es la revalidación on-demand (ver más abajo). `/clases-apoyo` **también es estática**: mostraba un calendario relativo a hoy y por eso usaba `dynamic = 'force-dynamic'`, pero dejó de mostrarlo y el flag se sacó. La revalida el trigger de `materias`.
 
 `proxy.ts` en la raíz **es el middleware** — Next 16 renombró `middleware.ts` a `proxy.ts` y exporta una función `proxy()`. Ahí vive todo el control de acceso del panel admin.
 
@@ -175,7 +175,7 @@ El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada
 
 La plantilla completa está en `.env.example` y el reparto de cuál usa Next, cuál las Edge Functions y cuál las herramientas, en `docs/variables-de-entorno.md`.
 
-Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tiene `SUPABASE_SERVICE_ROLE_KEY`** (está marcada Sensitive y `vercel env pull` no la trae). Alcanza para levantar el sitio y leer de la base, pero **cualquier POST a `/api/formularios` devuelve 503 en local**. Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
+Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tiene `SUPABASE_SERVICE_ROLE_KEY`** (está marcada Sensitive y `vercel env pull` no la trae). Alcanza para levantar el sitio y leer de la base, pero **un POST válido a `/api/formularios` devuelve 503 en local** (un sobre inválido devuelve 400 antes de consultar la base). Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
 ## Base de datos
 
 Tablas de contenido y formularios: `carreras`, `materias`, `solicitudes_clase`, `consultas`, `faq_preguntas`, `novedades`, `profesores`.

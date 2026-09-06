@@ -80,14 +80,13 @@ const PARTNERS = [
 ];
 
 async function getOfertaTeclab(): Promise<CarreraCatalogo[]> {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('carreras')
     .select(`${COLUMNAS_CATALOGO.join(', ')}, slides`)
     .eq('activa', true)
     .in('nivel', ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'])
-    .order('orden', { ascending: true });
-
-  if (error) console.error('Error fetching oferta Teclab:', error.message);
+    .order('orden', { ascending: true })
+    .throwOnError();
 
   return ((data || []) as unknown as Carrera[])
     .filter(c => esCarreraVisible(c) && (esTeclab(c) || esCursoTeclab(c)))

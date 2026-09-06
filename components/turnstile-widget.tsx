@@ -66,7 +66,10 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
 
   useEffect(() => {
     if (!sitekey) {
-      onVerifyRef.current('rate-limit-only');
+      if (process.env.NODE_ENV === 'development' &&
+          process.env.NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL === '1') {
+        onVerifyRef.current('rate-limit-only');
+      }
       return;
     }
 

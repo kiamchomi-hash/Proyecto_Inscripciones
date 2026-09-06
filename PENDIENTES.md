@@ -36,6 +36,8 @@
 
   Ojo: `npm run smoke` imprime el peso pero **no lo puede reprobar** — no hay umbral en `herramientas/smoke.mjs`, así que un "todo verde" no dice nada sobre esto.
 
+  **Remedido el 05/09/2026 con Next 16.3.3:** siguen las tres copias. El build local de producción dio 626,4 KiB de HTML y 105,0 KiB gzip. Tres corridas móviles (390×844, CPU 4x, latencia 150 ms, descarga 1,6 Mbps, caché deshabilitada) dieron LCP de 1.584/2.120/2.052 ms y CLS acumulado observado de 0,000039/0/0. Son medidas locales, no de usuarios reales ni comparables directamente con Brotli en Vercel. Se mantuvo `inlineCss`; no se parcheó el framework. Evidencia y límites en `docs/correcciones-auditoria-2026-09-05.md`.
+
 - [ ] **Actualizar los datos locales desde el nuevo Dashboard Comercial de Teclab.** Desde el 26/08/2026 la fuente oficial es `https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(Agentes).html` y reemplaza al archivo `(01).html`. El acceso visual usa las credenciales entregadas por Teclab; no versionarlas. El HTML sigue trayendo los datos embebidos y se puede bajar sin iniciar sesión.
 
   Cuando se haga la actualización, regenerar `carreras/teclab/dashboard-comercial.json`, `carreras/teclab/calendario-teclab.json`, `ventas/teclab-convenios.md` y cualquier respuesta del corpus afectada. Después correr los tests de ventas, la auditoría de instituciones y los dos generadores. Hasta entonces esos archivos conservan correctamente la referencia a la fuente anterior porque describen el snapshot del 15/08/2026.

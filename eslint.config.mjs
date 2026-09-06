@@ -11,6 +11,20 @@ export default defineConfig([
     'node_modules/**',
     '.claude/**',
     'scripts/**',
+    // El material comercial y los artefactos locales no viajan con el sitio.
+    // Sus verificaciones se ejecutan con las herramientas de ventas.
+    'carreras/**',
+    'ventas/**',
+    'herramientas/ventas/**',
+    '.agents/**',
+    'entregables/**',
+    'output/**',
+    '.playwright-cli/**',
+    '.playwright-mcp/**',
+    '.vercel/**',
+    'notas-locales/**',
+    'screenshots/**',
+    'tmp/**',
     'next-env.d.ts',
   ]),
   {

@@ -43,7 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: carreras } = await supabase
     .from('carreras')
     .select('nombre, prefix, nivel, slides, updated_at')
-    .eq('activa', true);
+    .eq('activa', true)
+    .throwOnError();
 
   const carrerasEntries: MetadataRoute.Sitemap = ((carreras || []) as CarreraFila[])
     .filter(esCarreraVisible)
@@ -71,7 +72,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from('materias')
     .select('slug')
     .eq('activa', true)
-    .eq('en_construccion', false);
+    .eq('en_construccion', false)
+    .throwOnError();
 
   // Estas no llevan lastmod aunque `materias` tenga `updated_at`: la columna se
   // mueve cada vez que un profesor toca sus horarios desde el panel, y eso no
@@ -88,7 +90,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from('novedades')
     .select('id', { count: 'exact', head: true })
     .eq('publicada', true)
-    .eq('pinned', false);
+    .eq('pinned', false)
+    .throwOnError();
 
   const total = count ?? 0;
   const totalPages = Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
@@ -104,7 +107,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from('novedades')
     .select('slug, fecha, imagen_url')
     .eq('publicada', true)
-    .not('slug', 'is', null);
+    .not('slug', 'is', null)
+    .throwOnError();
 
   // La foto limpia del articulo (imagen_url), no la og compuesta: la og lleva el
   // titulo estampado encima y para Google Imagenes vale mas la foto sola.
