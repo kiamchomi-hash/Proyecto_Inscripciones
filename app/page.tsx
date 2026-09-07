@@ -31,6 +31,8 @@ export default async function HomePage() {
     .from('carreras')
     .select(`${COLUMNAS_CATALOGO.join(', ')}, slides`)
     .eq('activa', true)
+    // Se ocultan sólo en la home; sus fichas y enlaces siguen publicados.
+    .neq('nivel', 'Identidad Argentina')
     .order('orden', { ascending: true })
     .throwOnError();
 

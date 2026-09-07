@@ -1,0 +1,4 @@
+# Estadística Aplicada y Análisis Avanzado
+
+- https://21.edu.ar/carreras-y-programas/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado — Ficha oficial consultada el 07/09/2026: título, perfil, modalidades ED y EDH y plan completo de 18 materias en cinco cuatrimestres. Se toma la duración de portada (2 años y medio), coherente con el plan; se descarta la respuesta de la FAQ que dice 3 años. El encabezado abrevia el nombre, pero el título otorgado conserva «Análisis Avanzado». La ficha informa DI-2025-1083-APN-SSPU#MCH; no se verificó el acto administrativo por separado. Aperturas sujetas a cupo; no se fija una fecha de inicio en el contenido.
+- https://www.siglo21sur.com/carreras/tecnicatura-en-estadistica-aplicada-y-analisis-avanzado — Página del CAU que comparte los datos con el modal del catálogo. La disponibilidad local fue confirmada por el usuario; se conserva la URL.

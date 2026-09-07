@@ -105,8 +105,10 @@ proyecto, y modificarlo responde `401 OWASP Core Ruleset must be enabled`.
 ### Identidad Argentina se migra a otro sitio
 
 Decidido el 23/08/2026: su oferta no lleva página propia en `siglo21sur.com`. **No
-hacer un `/identidad`** — ya se descartó. Mientras la migración no ocurra, sus
-diplomaturas siguen en el catálogo de la home y se preinscriben desde ahí.
+hacer un `/identidad`** — ya se descartó. Desde el 07/09/2026, por pedido del
+usuario, sus diplomaturas ya no aparecen en el catálogo ni en los selectores
+de la home. Sus páginas, enlaces y entradas del sitemap se conservan: el filtro
+se aplica sólo en `app/page.tsx`.
 
 Cuando se haga, en este repo hay que desarmar la categoría `identidad_argentina`
 del catálogo, `components/index/ia-modal.tsx`, la casa `identidad` de
