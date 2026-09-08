@@ -1,0 +1,3 @@
+- https://www.siglo21sur.com/carreras/abogacia — reproducción al redimensionar: a 950 px de ancho, el alto mínimo de 560 px dejaba aproximadamente 265 px entre los botones y la siguiente sección.
+- http://localhost:3000/carreras/abogacia — comprobación con anchos de 320 a 1440 px y regreso a escritorio; a 950 px queda sólo el padding inferior y el borde (33 px).
+- ../app/carreras/career-detail.css — estilos compartidos del encabezado; se retiró el alto mínimo fijo para que el contenido determine el alto.

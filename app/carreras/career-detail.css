@@ -4,7 +4,8 @@
 }
 
 .career-hero {
-  min-height: min(560px, calc(100svh - var(--navbar-height, 64px)));
+  /* El contenido define el alto: un mínimo fijo dejaba un hueco bajo los
+     botones al achicar la ventana sin llegar al diseño móvil. */
   position: relative;
   isolation: isolate;
   display: flex;
