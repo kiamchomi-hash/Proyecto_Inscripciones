@@ -991,7 +991,7 @@ function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean) 
 function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePortada; carrera: Carrera }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
-      <div className="flex-1 flex flex-col md:justify-start pt-1 sm:pt-2 pb-6 sm:pb-8 px-6 sm:px-8 md:pt-3 md:pb-1 md:px-8 md:gap-1 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto">
+      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] flex flex-col md:justify-start pt-1 sm:pt-2 pb-6 sm:pb-8 px-6 sm:px-8 md:pt-3 md:pb-1 md:px-8 md:gap-1 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto">
         {/* Mobile: two zones - content (grows, centers children) + image/badges (fixed bottom) */}
         {/* Desktop: all sequential with justify-start */}
 
@@ -1018,9 +1018,9 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
             const cccMatch = cleanName.match(/\s*\(CCC\)\s*$/i);
             const displayName = cccMatch ? cleanName.replace(cccMatch[0], '') : cleanName;
             return (<>
-            <div className="flex gap-2.5">
+            <div className="flex min-w-0 gap-2.5">
               <div className="w-[3px] bg-[#00c7b1] rounded-sm flex-shrink-0 self-stretch" />
-              <div>
+              <div className="min-w-0">
                 {prefix && <p className="text-[clamp(0.55rem,2vw,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-left">{prefix}</p>}
                 <h2 className={`font-black text-white leading-[1] md:leading-[1.05] uppercase tracking-tighter ${displayName.length > 40 ? 'text-[clamp(0.9rem,min(5vw,3vh),1.4rem)] md:text-[clamp(1.2rem,min(2.5vw,3vh),1.8rem)]' : displayName.length > 25 ? 'text-[clamp(1rem,min(6vw,4vh),1.7rem)] md:text-[clamp(1.4rem,min(3vw,4vh),2.2rem)]' : 'text-[clamp(1.2rem,min(7.5vw,5vh),2rem)] md:text-[clamp(1.8rem,min(3.5vw,5vh),3rem)]'}`}>{displayName.toUpperCase()}</h2>
                 {cccMatch && <p className="text-[0.6rem] md:text-xs font-bold text-[#7ca19b] uppercase tracking-widest mt-0.5">Ciclo de Complementación Curricular</p>}
@@ -1203,9 +1203,11 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}
-      <div className="flex-1 relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-10 flex flex-col justify-center gap-5 md:gap-8 overflow-y-auto custom-scrollbar">
+      {/* Los márgenes automáticos centran sólo cuando sobra alto; al ampliar
+          el texto, el inicio queda accesible y el contenido crece hacia abajo. */}
+      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-10 flex flex-col gap-5 md:gap-8 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
         {/* Título */}
-        <div className="text-center md:text-left">
+        <div className="mt-auto text-center md:text-left">
           <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>') }}></h3>
           {slide.subtitulo && (
             <p className="text-[#7ca19b] text-sm md:text-base mt-2">{slide.subtitulo}</p>
@@ -1229,13 +1231,13 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
         </div>
 
         {/* Botones WhatsApp + Ubicación */}
-        <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
+        <div className="mb-auto flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
               href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2 md:py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white font-bold rounded-xl transition-all text-xs md:text-sm"
+              className="flex items-center justify-center gap-2 flex-[1_1_10rem] min-w-0 max-w-[min(100%,14rem)] px-2 py-2 md:py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white text-center font-bold rounded-xl transition-all text-xs md:text-sm"
             >
               <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
@@ -1248,7 +1250,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
             href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 flex-1 min-w-[10rem] max-w-[14rem] py-2 md:py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all text-xs md:text-sm border border-white/20"
+            className="flex items-center justify-center gap-2 flex-[1_1_10rem] min-w-0 max-w-[min(100%,14rem)] px-2 py-2 md:py-2.5 bg-white/10 hover:bg-white/20 text-white text-center font-bold rounded-xl transition-all text-xs md:text-sm border border-white/20"
           >
             <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />

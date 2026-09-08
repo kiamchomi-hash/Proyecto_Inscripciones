@@ -1,0 +1,3 @@
+- http://localhost:3000/ — prueba local del modal de Abogacía desde el catálogo, con anchos entre 320 y 1440 px y texto ampliado.
+- ../components/index/carousel-modal.tsx — estructura existente de portada, cierre, imágenes y botones; se conservaron sus estilos de marca.
+- ../components/index/modales.css — estilos compartidos de las barras de desplazamiento.
