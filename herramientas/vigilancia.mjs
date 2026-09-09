@@ -15,6 +15,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node
 import { lookup } from 'node:dns/promises';
 import path from 'node:path';
 import os from 'node:os';
+import { pathToFileURL } from 'node:url';
 
 const RAIZ = path.resolve(import.meta.dirname, '..');
 const LOGS = path.join(RAIZ, 'herramientas', 'vigilancia-logs');
@@ -54,6 +55,7 @@ const CHEQUEOS = {
     comando: 'npm run calidad -- --solo-web --visual',
     agente: 'auditor-web',
     necesitaRed: true,
+    interpretar: interpretarCalidad,
   },
   deps: {
     titulo: 'Dependencias (npm audit)',
@@ -136,6 +138,77 @@ function interpretarAudit(salida) {
     resumen: `${vulnerabilidades.length} paquete(s) con vulnerabilidades:\n${lineas.join('\n')}`,
   };
 }
+
+// `npm run calidad` corre once revisiones y la cola del log son las ultimas
+// lineas de la ultima, que casi nunca es la que fallo. Leemos la linea de
+// veredicto de cada una para que el aviso diga que se rompio y no un pedazo de
+// log suelto. El nombre tecnico no le sirve a nadie en el telefono, asi que cada
+// uno tiene su version en castellano.
+const NOMBRES_CALIDAD = {
+  'codigo': 'el codigo (lint, tipos y tests)',
+  'dependencias': 'las dependencias',
+  'contenido': 'el contenido de la base',
+  'SEO Search Console': 'el informe de Search Console',
+  'medicion': 'la medicion de leads',
+  'produccion': 'produccion (rutas, cabeceras y redirects)',
+  'SEO de paginas': 'el SEO de las paginas',
+  'integraciones': 'las integraciones',
+  'Chromium': 'la revision en Chromium (accesibilidad, recorridos y diseno)',
+  'firefox': 'la revision en Firefox',
+  'webkit': 'la revision en WebKit (Safari)',
+};
+
+// Se comparan sin acentos porque calidad.mjs los escribe y el log puede volver
+// con otra codificacion segun la consola que lo haya corrido.
+const sinAcentos = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+function nombreLegible(nombre) {
+  const buscado = sinAcentos(nombre).toLowerCase();
+  for (const [clave, legible] of Object.entries(NOMBRES_CALIDAD)) {
+    if (sinAcentos(clave).toLowerCase() === buscado) return legible;
+  }
+  return nombre;
+}
+
+// Une con comas y una "y" al final, como se escribe de verdad.
+function enumerar(partes) {
+  if (partes.length === 1) return partes[0];
+  return `${partes.slice(0, -1).join(', ')} y ${partes.at(-1)}`;
+}
+
+function interpretarCalidad(salida) {
+  const veredictos = [...(salida ?? '').matchAll(/^(.+?): (ok|fallo|no-verificado)\./gm)]
+    .map(([, nombre, estado]) => ({ nombre: nombreLegible(nombre.trim()), estado }));
+
+  if (!veredictos.length) {
+    return { estado: 'indeterminado', resumen: 'La revision de calidad no llego a informar ninguna verificacion (mira el log).' };
+  }
+
+  const fallaron = veredictos.filter((v) => v.estado === 'fallo').map((v) => v.nombre);
+  const sinVerificar = veredictos.filter((v) => v.estado === 'no-verificado').map((v) => v.nombre);
+  const pasaron = veredictos.filter((v) => v.estado === 'ok').map((v) => v.nombre);
+
+  if (!fallaron.length && !sinVerificar.length) {
+    return { estado: 'ok', resumen: `Pasaron las ${veredictos.length} revisiones.` };
+  }
+
+  const lineas = [];
+  if (fallaron.length) lineas.push(`Fallo ${enumerar(fallaron)}.`);
+  // Falta una fuente o no se pudo mirar. No es una falla, pero tampoco un
+  // aprobado: se nombra aparte para que no se lea como que esta todo bien.
+  if (sinVerificar.length) lineas.push(`No se pudo verificar ${enumerar(sinVerificar)}.`);
+  if (pasaron.length) lineas.push(`El resto paso bien: ${enumerar(pasaron)}.`);
+
+  return {
+    estado: fallaron.length ? 'problema' : 'indeterminado',
+    resumen: lineas.join('\n'),
+  };
+}
+
+// Se exporta solo para que tests/vigilancia.test.mjs pueda probar el texto del
+// aviso sin correr ningun chequeo. main() sigue arrancando igual al importarse
+// como script, que es como lo llaman las tareas programadas.
+export { interpretarCalidad };
 
 async function hayInternet() {
   // Host neutral a proposito: si preguntamos por el dominio propio, una caida
@@ -333,4 +406,8 @@ async function main() {
   process.exit(veredicto.estado === 'problema' ? 1 : 0);
 }
 
-main();
+// Solo corre cuando se lo invoca como script. Importarlo (lo hace el test) no
+// dispara ningun chequeo ni el process.exit del final.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}
