@@ -42,9 +42,9 @@ hacer con cada dato está en `PENDIENTES.md`.
 > `21.edu.ar/carreras-y-programas/licenciatura-en-administracion` devuelve 404
 > (la que funciona es la que lleva tilde en la URL). Lo dejamos por las dudas.
 >
-> **4. Fecha exacta de inicio del segundo período (2B).** Tenemos confirmado que
-> el 2A arranca el 3 de agosto, pero del 2B sólo sabemos que es en octubre.
-> Necesitamos el día para poder cerrar inscripciones sin dar una fecha aproximada.
+> **4. Fecha exacta de inicio del próximo período.** El 2A ya no se comercializa.
+> Necesitamos confirmar la fecha exacta del próximo período, que sabemos que
+> comienza en octubre, para poder cerrar inscripciones sin dar una fecha aproximada.
 >
 > **5. Dos consultas que nos hacen seguido y no queremos responder de memoria:**
 >

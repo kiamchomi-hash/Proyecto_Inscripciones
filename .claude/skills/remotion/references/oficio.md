@@ -8,6 +8,7 @@ son los errores que aparecen siempre.
 - [Legibilidad](#legibilidad)
 - [Tiempos](#tiempos)
 - [Composicion](#composicion)
+- [Vertical y redes](#vertical-y-redes)
 - [Movimiento y transiciones](#movimiento-y-transiciones)
 - [Zonas vacias](#zonas-vacias)
 - [Texto en pantalla](#texto-en-pantalla)
@@ -43,6 +44,10 @@ Otras dos que se pagan caro:
 
 - **Cuanto tiene que durar una placa: el tiempo de leerla en voz alta, mas aire.**
   Un nombre largo con dos datos no baja de 4 s si se mira de lejos.
+- **Si hay locucion, la duracion la manda el audio y no este criterio.** Se mide
+  el archivo primero y despues se escriben los bloques (`api.md`, seccion de
+  audio); escribir los tiempos a ojo y despues encajar la voz adentro es rehacer
+  el montaje entero.
 - Escalonar la entrada: primero el titular, el dato secundario **un segundo
   despues**. Todo junto no se lee nada.
 - Una portada o un logo suelto de 3 o 4 s **no se juzga aislado**: existe para
@@ -65,6 +70,33 @@ Otras dos que se pagan caro:
   final, no repetido en cada una robandole lugar a lo que cambia.
 - Codigos internos, numeros de resolucion y nomenclaturas no van: nadie los lee
   en pantalla.
+
+## Vertical y redes
+
+Todo lo de arriba supone 1920x1080 mirado de lejos. Una pieza para redes es otro
+formato, no la misma reescalada, y hay dos cosas que se pagan publicadas:
+
+- **La app se come el cuadro.** En 1080x1920, Instagram y TikTok le pisan encima
+  la interfaz: los ultimos **~250 px de abajo** (usuario, epigrafe, barra) y una
+  **columna de ~130 px a la derecha** (los botones). Ahi no va texto ni el sello:
+  el margen inferior util termina cerca de 1650. Arriba se pierden ~120 px.
+- **La caja de texto se angosta a la mitad.** Un titular de dos lineas en apaisado
+  es de cuatro en vertical, y el calculo de cuerpo por ancho
+  ([legibilidad](#legibilidad)) tiene que correr con el ancho nuevo, no heredar el
+  numero del horizontal.
+
+Lo demas que cambia:
+
+- Se mira **a 30 cm y con sonido apagado**: los cuerpos pueden ser menores que en
+  sala, pero lo que se dice tiene que estar escrito. Un dato que solo esta en la
+  locucion no existe.
+- Los primeros **dos segundos deciden si sigue mirando**: la pieza arranca por lo
+  que se ve, no por el sello.
+- El recorte de una foto apaisada a 9:16 casi nunca funciona centrado: se elige
+  el encuadre por foto, y las que tienen al sujeto sobre un borde no entran.
+- La version social se registra como **composicion aparte** (misma escena, otras
+  props), no como un flag adentro de la escena: asi se revisan las dos y ninguna
+  rompe a la otra.
 
 ## Movimiento y transiciones
 

@@ -1,6 +1,24 @@
 # Pendientes
 
-Última actualización: 2026-08-29
+Última actualización: 2026-09-03
+
+## Rutinas recurrentes
+
+Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se anota la fecha de la última revisión. Si una revisión encuentra un problema concreto, ese problema pasa a `## Abierto` con su propio detalle.
+
+- [ ] **Actualizar las novedades del sitio.** Revisar si hay noticias, fechas, aperturas, cambios de oferta o información institucional nueva; cargar o corregir `novedades`, generar la imagen OG del artículo y comprobar que aparezca en la página, el sitemap y la navegación.
+
+- [ ] **Revisar y mantener el corpus del bot.** Leer conversaciones reales y respuestas dudosas, confirmar cada dato contra su fuente vigente, corregir el corpus de la casa correspondiente y regenerar siempre las páginas de entrenador y buscador. No aprobar una respuesta sólo porque suena bien: verificar especialmente precios, fechas, modalidad, requisitos, cuotas y documentación.
+
+- [ ] **Revisar indexación y rendimiento SEO.** Ejecutar `npm run seo`, comparar con `docs/indexacion.md` y el informe anterior, revisar Search Console (cobertura, páginas excluidas, consultas, CTR y posiciones) y dejar registradas las conclusiones. Después de cambios de contenido, comprobar también `npm run smoke` y que el sitemap tenga las URLs y `lastmod` esperados.
+
+- [ ] **Auditar el contenido publicado.** Ejecutar `npm run auditar` y resolver o registrar los faltantes de carreras, planes, imágenes OG, materias, novedades y FAQ. Aplicar `esCarreraVisible()` a cualquier lectura nueva de `carreras` antes de publicar cambios.
+
+- [ ] **Actualizar fuentes comerciales cuando cambien.** Revisar los dashboards y comunicaciones oficiales de Siglo 21, Teclab e Identidad Argentina; actualizar precios, cuotas, fechas, financiación, modalidad y oferta sólo con fuente verificable. Regenerar los artefactos derivados y correr los tests de ventas.
+
+- [ ] **Controlar leads y canales.** Revisar consultas recibidas, clics de WhatsApp y el embudo de `npm run leads`; verificar que el número de WhatsApp, los formularios y los avisos por Telegram sigan funcionando. Para avisos, mirar `net._http_response`: un formulario que responde `201` no confirma que Telegram haya recibido el mensaje.
+
+- [ ] **Revisar producción después de cada deploy o cambio sensible.** Ejecutar `npm run smoke` y, cuando corresponda, `npm run seo`; comprobar rutas, redirects, cabeceras, noindex del admin, sitemap, formularios y panel. Si se toca CSP, secretos, triggers o Edge Functions, seguir además el procedimiento documentado y hacer la prueba manual correspondiente.
 
 ## Abierto
 
@@ -38,9 +56,9 @@
 
   **Remedido el 05/09/2026 con Next 16.3.3:** siguen las tres copias. El build local de producción dio 626,4 KiB de HTML y 105,0 KiB gzip. Tres corridas móviles (390×844, CPU 4x, latencia 150 ms, descarga 1,6 Mbps, caché deshabilitada) dieron LCP de 1.584/2.120/2.052 ms y CLS acumulado observado de 0,000039/0/0. Son medidas locales, no de usuarios reales ni comparables directamente con Brotli en Vercel. Se mantuvo `inlineCss`; no se parcheó el framework. Evidencia y límites en `docs/correcciones-auditoria-2026-09-05.md`.
 
-- [ ] **Actualizar los datos locales desde el nuevo Dashboard Comercial de Teclab.** Desde el 26/08/2026 la fuente oficial es `https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(Agentes).html` y reemplaza al archivo `(01).html`. El acceso visual usa las credenciales entregadas por Teclab; no versionarlas. El HTML sigue trayendo los datos embebidos y se puede bajar sin iniciar sesión.
+- [x] **Actualizar los datos locales desde el nuevo Dashboard Comercial de Teclab.** Verificado y regenerado el 03/09/2026 desde `https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20(Agentes).html`, sin tocar el corpus. Se actualizaron `carreras/teclab/dashboard-comercial.json`, `carreras/teclab/calendario-teclab.json` y `ventas/teclab-convenios.md`; las pruebas específicas de Teclab pasaron (13/13).
 
-  Cuando se haga la actualización, regenerar `carreras/teclab/dashboard-comercial.json`, `carreras/teclab/calendario-teclab.json`, `ventas/teclab-convenios.md` y cualquier respuesta del corpus afectada. Después correr los tests de ventas, la auditoría de instituciones y los dos generadores. Hasta entonces esos archivos conservan correctamente la referencia a la fuente anterior porque describen el snapshot del 15/08/2026.
+  El extractor de precios intentó actualizarse el 03/09/2026 pero falló antes de escribir y conservó el último lote válido del 02/09/2026. No se reintentó para evitar mezclar precios parciales ni se editó el corpus; queda para una corrida exitosa del script de precios.
 
 - [ ] **Remedir el CTR de las 8 fichas reescritas el 10/08/2026.** Se cambió la columna `enfoque` de 8 carreras, que es de donde `descripcionSEO()` saca la primera frase de la meta descripción. Venían escritas como listado de temas ("Prevención de Riesgos, Normativas OHSAS y Ergonomía") en vez de decir qué consigue quien estudia; el informe de `npm run seo` las marcaba con CTR por debajo de lo esperable para su posición. Son los ids **86, 21, 6** (primer pase) y **76, 87, 8, 19, 65** (segundo). Verificadas en producción el mismo día: las 8 meta descriptions salieron bien.
 
@@ -101,14 +119,16 @@
   3. Las condiciones para **cursar dos carreras a la vez** (hay requisitos de avance académico).
   4. ~~El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse.~~ Escrito el 08/08/2026 contra el reglamento en vivo. Lo que quedó sin fuente está listado adentro: qué es la IVU en la práctica, qué materias son Universitario 21, dónde se certifica la firma y cómo se legaliza el analítico.
 
-- [ ] **El sitemap NO se rehace on-demand. Verificado el 29/08/2026 y sigue roto.** El 08/08/2026 se arregló `revalidatePath('/sitemap.xml')` —iba con el tipo `'page'` y no hacía nada— y el 22/08 se le agregó el `export const revalidate` a `app/sitemap.ts`. Se dio por arreglado las dos veces. **No lo está.**
+- [x] **Verificar en producción el sitemap dinámico.** El sitemap dejó de depender de ISR: `app/sitemap.ts` usa `dynamic = 'force-dynamic'` porque Vercel conservaba la metadata route aunque `revalidatePath('/sitemap.xml')` marcara su tag. Verificado el 03/09/2026: el trigger respondió `200` en `net._http_response`, con las rutas de contenido correctas y sin `/sitemap.xml`; el sitemap público respondió `200` con `Age: 0`.
+
+  La prueba anterior del 29/08 queda como historial del defecto; no repetirla esperando una ruta `/sitemap.xml` en la respuesta de `/api/revalidar`, porque ya no forma parte de ese listado.
 
   Reproducido dos veces el 29/08/2026, la segunda sin ningún deploy de por medio:
 
-  1. `UPDATE carreras SET descripcion = ... WHERE id = 109` (Videojuegos). La ficha mostró el texto nuevo en producción en segundos. El `lastmod` del sitemap siguió en `2026-07-19` hasta que hubo un deploy, que sí lo movió.
+  1. `UPDATE carreras SET descripcion = ... WHERE id = 109` (Videojuegos). La ficha mostró el texto nuevo en producción en segundos. El `lastmod` del sitemap siguió en `2026-07-19` hasta que hubo un deploy, que sí lo movió; esto motivó el cambio a generación dinámica.
   2. `UPDATE carreras SET descripcion = ..., enfoque = ... WHERE id = 225` (Customer Experience), sin deploy. Idéntico: la ficha al instante, el `lastmod` clavado en `2026-07-22`.
 
-  O sea que **la revalidación funciona para las páginas y no para el sitemap, en la misma llamada del mismo trigger**. `rutasA()` sí incluye `['/sitemap.xml']` sin tipo, que es lo correcto para una metadata route.
+  O sea que **la revalidación funcionaba para las páginas y no para el sitemap, en la misma llamada del mismo trigger**. El sitemap ya no se delega a esa revalidación.
 
   Lo que se descartó: en `.next/prerender-manifest.json` la entrada `/sitemap.xml` tiene `routeType: "route"`, `initialRevalidateSeconds: 86400` y entre sus `x-next-cache-tags` está `_N_T_/sitemap.xml`, que es justo la etiqueta que emite `revalidatePath` sin tipo. La etiqueta está bien.
 
@@ -116,16 +136,16 @@
 
   **Por qué importa más de lo que parece**: `docs/indexacion.md` da por confirmado que el sitemap se rehace sin deploy, y la estrategia de indexación se apoya en eso (mover `updated_at` para que el `lastmod` le diga a Google que vuelva a mirar una URL). La "confirmación" del 22/08 fue que una URL nueva se indexó el mismo día, pero eso también se explica por el enlace desde `/novedades/1`: el sitemap nunca se midió directo. Corregir esa afirmación y el comentario de `app/sitemap.ts` según lo que resulte.
 
-  Falta también una verificación que lo detecte solo: `npm run smoke` mira el sitemap pero no que su contenido esté al día.
+  `npm run smoke` seguirá comprobando las URLs del sitemap, pero no puede comprobar por sí solo el `lastmod` contra la base.
 
-  **No hace falta esperar a un alta real.** Alcanza con tocar una carrera sin cambiarle nada y mirar si la respuesta del sitemap se rehizo, que es lo único que el fix promete:
+  **No hace falta esperar a un alta real.** Alcanza con tocar una carrera sin cambiarle nada y pedir el sitemap después del deploy:
 
   ```sql
   UPDATE public.carreras SET orden = orden WHERE id = 2;   -- Abogacía, no cambia nada
   SELECT id, status_code, content, created FROM net._http_response ORDER BY created DESC LIMIT 3;
   ```
 
-  Esperado en la base: `200` con `{"ok":true,"rutas":["/","/sitemap.xml","/carreras/abogacia"]}`. Y del lado del sitio, `curl -sI https://www.siglo21sur.com/sitemap.xml`: el `Age` tiene que volver a cero y el `Last-Modified` tiene que ser el del momento. La medición del 09/08 antes de tocar nada, para comparar: `Age: 6434`, `Last-Modified: Sun, 09 Aug 2026 16:42:32 GMT`, `X-Vercel-Cache: HIT`, `Etag: "97924cf3a319dcb7287a025a06dbdc8e"` (el Etag no tiene por qué cambiar: el contenido es el mismo, lo que se verifica es que se volvió a generar).
+  Esperado: `net._http_response` confirma la revalidación de las páginas, sin `/sitemap.xml` en la lista; y una petición nueva a `https://www.siglo21sur.com/sitemap.xml` muestra el `lastmod` actualizado.
 
   El secreto no se puede probar desde acá: `REVALIDATE_SECRET` está marcada Sensitive en Vercel, así que un POST directo a `/api/revalidar` no es opción y el disparo tiene que salir de la base.
 
@@ -211,7 +231,7 @@ Esperado: `200` y `{"ok":true,"telegram":true}`. Un `401` significa que el secre
 
 **Cuatro carreras quedaron restringidas por falta de una oferta oficial verificable al 30/07/2026.** Administración Hotelera (63) y Sociología (131) están inactivas; Administración Pública (68) y Negocios Agroecológicos (110) siguen visibles como `proximamente`, sin inscripción directa. Administración Pública no debe enlazarse a Licenciatura en Administración: son títulos y planes distintos. Negocios Agroecológicos también conserva `nueva = true`, de modo que al confirmarse la apertura basta con quitarle `proximamente`.
 
-**Los planes de Identidad Argentina se van a volver a desfasar.** Las fichas de convenio se regeneran solas desde las landings, pero nada vuelca eso a Supabase: la carga es manual. Al 28/07 están al día contra las fichas de `Desktop\Academia Identidad Argentina\fichas-diplomaturas\`. Dos decisiones quedaron abiertas ahí: los módulos 2 a 6 de Bienestar Integral no tienen título en la ficha (dice literal "MÓDULO 2") y se conservaron los de la base, y Mindfulness bajó de 8 módulos a los 4 de la ficha.
+**Los planes de Identidad Argentina se van a volver a desfasar.** Las fichas de convenio se regeneran solas desde las landings, pero nada vuelca eso a Supabase: la carga es manual. Al 28/07 están al día contra las fichas de `carreras/identidad/fuentes/fichas-diplomaturas/`. Dos decisiones quedaron abiertas ahí: los módulos 2 a 6 de Bienestar Integral no tienen título en la ficha (dice literal "MÓDULO 2") y se conservaron los de la base, y Mindfulness bajó de 8 módulos a los 4 de la ficha.
 
 **Hay un hueco en los datos de clicks entre el 22 y el 29/07.** `/api/track-click` fallaba en silencio —devolvía `{"ok":false}` con status 200— porque la tabla `career_clicks` y su RPC no existían. No se puede reconstruir.
 

@@ -12,19 +12,21 @@ librerias de bloques— esta en [elementos.md](elementos.md).
 
 ## Como se usa una referencia
 
-Mirar **tres o cuatro** y recien ahi decidir. Con una sola, lo que se hace es
-copiarla.
+**El procedimiento general lo fija la skill `diseno-uiverse`** (seccion «Buscar
+referencias: como se usa una»): mirar tres o cuatro antes de decidir, sacar el
+mecanismo y no la forma, y decir de donde salio cada decision. No se repite aca.
 
-De cada una se saca **el mecanismo, no la forma**: por que funciona. "El titulo
-entra despues del fondo y por eso se lee", "la transicion cruza el corte y por
-eso no se siente el corte", "el numero grande esta apoyado en una linea fina y
-por eso no flota". El mecanismo se puede traer; la forma pertenece a la pieza de
-la que salio, y ademas viene con la paleta, la tipografia y el ritmo de otro
-proyecto.
+Lo que cambia cuando la pieza es video:
 
-Conviene contarle al usuario en dos lineas que se vio y que se toma de ahi. Si
-la pieza tiene autor —una de UIverse, por ejemplo— el credito va en un
-comentario del codigo.
+- **Los cuerpos tipograficos y los tiempos no se copian nunca.** Dependen de
+  donde se va a ver la pieza (ver [oficio.md](oficio.md#legibilidad)) y casi
+  todas las referencias estan hechas para mirarse de cerca, en una pantalla a 30
+  cm.
+- **El mecanismo que se busca es temporal, no espacial**: "el titulo entra
+  despues del fondo y por eso se lee", "la transicion cruza el corte y por eso no
+  se siente el corte". Una referencia quieta no responde eso.
+- Si la pieza tiene autor —una de UIverse, por ejemplo— el credito va en un
+  comentario del codigo.
 
 ## Experimentar
 
@@ -50,10 +52,15 @@ mostrarle dos cuadros que discutir un adjetivo.
 
 ## El archivo de fuentes
 
-Todo trabajo terminado deja un archivo con **los enlaces que se usaron**, en
-`referencias/AAAA-MM-DD-<tema>.md` dentro del proyecto de video. Existe para que
+Todo trabajo que haya consultado algo deja los enlaces en
+`referencias/AAAA-MM-DD-<tema>.md`, dentro del proyecto de video. Existe para que
 el usuario pueda abrir cada uno, ver si le gusta y **guardarse la pieza en su
 UIverse local** — no para documentar lo que se hizo.
+
+**Uno por dia y por tema, y se le agrega.** Si el archivo del dia ya existe, van
+abajo los links nuevos: cinco ajustes en una tarde son un archivo, no cinco. Y un
+ajuste puntual resuelto sin consultar nada **no crea archivo**: eso se dice en el
+mensaje al usuario, que es donde se lee.
 
 Por eso son links y una linea, no parrafos:
 
@@ -83,8 +90,8 @@ Tres reglas:
   biblioteca local, el link esta igual en el indice (campo `url` de cada pieza).
 - **Lo mirado y descartado tambien va**, con el motivo en media linea. Es lo que
   evita volver a proponer lo mismo en la sesion siguiente.
-- **Si no se consulto nada, el archivo lo dice.** Un trabajo resuelto entero de
-  memoria es un dato, no un descuido que se tapa.
+- **Un trabajo grande resuelto entero de memoria se avisa.** No se tapa: es un
+  dato sobre como salio la pieza, y casi siempre explica por que salio obvia.
 
 ## Duda visual: con que palabras se busca
 
@@ -100,10 +107,6 @@ Tres reglas:
 
 Fuentes que devuelven piezas y no palabreria: Behance, Dribbble en su seccion de
 motion, Pinterest, y los staff picks de motion design de Vimeo.
-
-Lo que **no** se copia de una referencia: los cuerpos tipograficos y los tiempos.
-Dependen de donde se va a ver la pieza (ver [oficio.md](oficio.md#legibilidad)) y
-casi todas las referencias estan hechas para mirarse de cerca.
 
 ## Duda tecnica
 

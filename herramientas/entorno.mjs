@@ -78,6 +78,12 @@ const PIEZAS = [
     dentro: 'agents',
   },
   {
+    nombre: 'skills personales de Claude Code',
+    detalle: 'las de ~/.claude/skills, que valen en todos los proyectos y no viajan por git',
+    ruta: () => path.join(os.homedir(), '.claude', 'skills'),
+    dentro: 'claude-skills',
+  },
+  {
     nombre: 'ajustes globales de Claude Code',
     detalle: 'modelo, canal de updates, modo de la terminal',
     ruta: () => path.join(os.homedir(), '.claude', 'settings.json'),

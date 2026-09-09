@@ -69,7 +69,7 @@ Escribir el bucket pide la service role, que vive sólo en Vercel y está marcad
 
 Ojo con el cuadro "Estado de los precios" que imprime el script: mide la antigüedad del CSV, no si la actualización de esta corrida anduvo. Una institución puede fallar y salir "al día" porque el archivo previo es de hoy.
 
-Pendiente: desacoplar los actualizadores de las carpetas externas del Escritorio (`Teclab_Info/`, el perfil de Brave de `herramientas/ventas/perfil-navegador/`) y del Python con `openpyxl` que lee el `.xlsx` de CASA. Hasta que eso pase, la generación no puede correr en la nube.
+Pendiente: desacoplar los actualizadores del perfil de Brave de `herramientas/ventas/perfil-navegador/` y del Python con `openpyxl` que lee el `.xlsx` de CASA. Hasta que eso pase, la generación no puede correr en la nube.
 
 ### Lo que no viaja por git
 

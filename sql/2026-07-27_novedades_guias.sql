@@ -1,4 +1,4 @@
-﻿-- Repone la seccion de novedades con 10 guias del CAU.
+-- Repone la seccion de novedades con 10 guias del CAU.
 --
 -- Contexto: 2026-07-27_despublicar_novedades_relleno.sql dejo la seccion vacia
 -- porque las 58 filas anteriores inventaban hechos del CAU que no ocurrieron
@@ -67,11 +67,14 @@ values
 </ul>
 <p>A eso se suma el pago de la matrícula y los aranceles. Si alguno de esos trámites te puede demorar —la legalización del analítico es el clásico—, arrancalo ahora. Lo desarrollamos en <a href="/novedades/articulo/documentacion-legajo-inscripcion">la guía de documentación del legajo</a>.</p>
 
+<h2>Cuándo se paga cada concepto</h2>
+<p>La matrícula y el arancel del período no necesariamente se pagan al mismo tiempo. Cuando la inscripción a un próximo período todavía no comenzó, puede habilitarse el pago anticipado de la matrícula y el arancel se abona cuando empieza ese período. Por ejemplo, en agosto de 2026 se puede pagar la matrícula para la inscripción de octubre y dejar el arancel para el inicio de octubre. Es una posibilidad de la ventana comercial vigente, no una regla permanente.</p>
+
 <h2>Si todavía no elegiste carrera</h2>
 <p>En el <a href="/">catálogo del CAU</a> están las 96 carreras que se dictan hoy: licenciaturas, tecnicaturas de pregrado, las tecnicaturas de Teclab y las diplomaturas de Identidad Argentina. Cada ficha tiene el plan de estudios y la duración.</p>
 
 <h2>Cómo seguimos</h2>
-<p>Escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> o dejanos tus datos en <a href="/contacto">el formulario de contacto</a> y te acompañamos con el trámite de punta a punta. También podés acercarte a la sede, en Guaminí 4876, Villa Lugano.</p>
+<p>Escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> o dejanos tus datos en <a href="/contacto">el formulario de contacto</a> y te acompañamos con el trámite de punta a punta. También podés acercarte a la sede, en Guaminí 4876, Villa Lugano.</p>
 
 <p><em>Fecha de inicio según el calendario académico oficial de Educación Distribuida, verificado el 23 de julio de 2026 en <a href="https://www.lanube.21.edu.ar/calendario-acad%C3%A9mico-distancia" target="_blank">lanube.21.edu.ar</a>.</em></p>
 $html$,
@@ -100,7 +103,7 @@ $html$,
 <p>La inscripción se completa con el pago de la matrícula y los aranceles, y el inicio de la cursada incluye <a href="/novedades/articulo/ivu-universitario-21-inicio-cursada">Introducción a la Vida Universitaria y las materias de Universitario 21</a>.</p>
 
 <h2>Si te falta algo</h2>
-<p>No frenes el resto del trámite por un papel. Escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> contando en qué estás y vemos cómo ordenarlo, sobre todo si el analítico viene demorado y la <a href="/novedades/articulo/segundo-semestre-2026-inicio-3-de-agosto">fecha de inicio</a> está cerca.</p>
+<p>No frenes el resto del trámite por un papel. Escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> contando en qué estás y vemos cómo ordenarlo, sobre todo si el analítico viene demorado y la <a href="/novedades/articulo/segundo-semestre-2026-inicio-3-de-agosto">fecha de inicio</a> está cerca.</p>
 
 <p><em>Requisitos verificados el 23 de julio de 2026 en el <a href="https://contenidos.21.edu.ar/microsites/reglamento/index.php?put=2-2-documentacion-obligatoria-y-complementaria" target="_blank">reglamento oficial</a> y en la <a href="https://www.lanube.21.edu.ar/documentacion" target="_blank">guía de documentación</a> de la universidad. Pueden actualizarse: confirmalos antes de presentar.</em></p>
 $html$,
@@ -128,7 +131,7 @@ $html$,
 <h2>La oferta</h2>
 <p>Hoy el catálogo tiene <strong>96 carreras</strong> repartidas en cinco grupos: <a href="/novedades/articulo/carreras-de-grado-a-distancia">licenciaturas de grado</a>, <a href="/novedades/articulo/tecnicaturas-pregrado-dos-tres-anos">tecnicaturas de pregrado</a>, <a href="/novedades/articulo/teclab-tecnicaturas-online">tecnicaturas de Teclab</a> y <a href="/novedades/articulo/identidad-argentina-diplomaturas">diplomaturas de Identidad Argentina</a>. Podés verlas todas en <a href="/">el catálogo</a>.</p>
 
-<p>Estamos en Guaminí 4876, Villa Lugano, CABA. Los detalles para llegar están en <a href="/novedades/articulo/donde-queda-el-cau-villa-lugano">esta guía</a>, y si tenés una duda puntual mirá las <a href="/faq">preguntas frecuentes</a> o escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a>.</p>
+<p>Estamos en Guaminí 4876, Villa Lugano, CABA. Los detalles para llegar están en <a href="/novedades/articulo/donde-queda-el-cau-villa-lugano">esta guía</a>, y si tenés una duda puntual mirá las <a href="/faq">preguntas frecuentes</a> o escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a>.</p>
 $html$,
   '2026-07-23', 'Institucional', NULL,
   '/novedades/articulo/que-es-el-cau-villa-lugano',
@@ -152,7 +155,7 @@ $html$,
 <p>Llegá con algo concreto: el práctico que no te sale, el tema del parcial, la consigna que no entendés. Una clase de apoyo rinde mucho más cuando hay una pregunta puntual arriba de la mesa que cuando se arranca de cero.</p>
 
 <h2>Si tu materia no aparece</h2>
-<p>La grilla muestra solo los turnos cargados para los próximos días, así que cambia seguido. Si no ves tu materia, escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> y averiguamos si hay profesor disponible.</p>
+<p>La grilla muestra solo los turnos cargados para los próximos días, así que cambia seguido. Si no ves tu materia, escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> y averiguamos si hay profesor disponible.</p>
 $html$,
   '2026-07-21', 'Académico', NULL,
   '/novedades/articulo/clases-de-apoyo-como-reservar-turno',
@@ -185,7 +188,7 @@ $html$,
 <p>Si ya tenés un terciario o una tecnicatura, fijate primero en este grupo: te puede ahorrar dos años.</p>
 
 <h2>Cómo elegir</h2>
-<p>En <a href="/">el catálogo</a> podés filtrar por área y por duración, y cada ficha abre el plan de estudios completo. Si dudás entre dos, escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a>: la diferencia suele estar en la salida laboral, no en el contenido.</p>
+<p>En <a href="/">el catálogo</a> podés filtrar por área y por duración, y cada ficha abre el plan de estudios completo. Si dudás entre dos, escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a>: la diferencia suele estar en la salida laboral, no en el contenido.</p>
 $html$,
   '2026-07-19', 'Académico', NULL,
   '/novedades/articulo/carreras-de-grado-a-distancia',
@@ -215,7 +218,7 @@ $html$,
 <h2>La ventaja menos obvia</h2>
 <p>Una tecnicatura no es un callejón sin salida. Con el título de pregrado en la mano podés seguir después en un <a href="/novedades/articulo/carreras-de-grado-a-distancia">ciclo de complementación curricular</a> y completar la licenciatura en dos años más. Muchos estudiantes hacen exactamente eso: primero el título que les permite trabajar, después el grado.</p>
 
-<p>Para saber qué tecnicatura conecta con qué licenciatura, escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> o pasá por <a href="/contacto">el formulario</a>.</p>
+<p>Para saber qué tecnicatura conecta con qué licenciatura, escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> o pasá por <a href="/contacto">el formulario</a>.</p>
 $html$,
   '2026-07-17', 'Académico', NULL,
   '/novedades/articulo/tecnicaturas-pregrado-dos-tres-anos',
@@ -255,7 +258,7 @@ $html$,
 <h2>Para quién es</h2>
 <p>El perfil de Teclab es técnico y corto: dos años, contenido aplicado y carreras armadas junto con empresas del rubro. Si buscás entrar rápido al mercado en un puesto técnico —desarrollo, datos, infraestructura, marketing— es el camino más directo del catálogo.</p>
 
-<p>Abrí cualquier ficha de Teclab en <a href="/">el catálogo</a> para ver el plan de estudios completo. La inscripción y las consultas se hacen desde el CAU, por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> o por <a href="/contacto">el formulario de contacto</a>.</p>
+<p>Abrí cualquier ficha de Teclab en <a href="/">el catálogo</a> para ver el plan de estudios completo. La inscripción y las consultas se hacen desde el CAU, por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> o por <a href="/contacto">el formulario de contacto</a>.</p>
 $html$,
   '2026-07-15', 'Académico', NULL,
   '/novedades/articulo/teclab-tecnicaturas-online',
@@ -289,7 +292,7 @@ $html$,
 <h2>Para quién tiene sentido</h2>
 <p>Para tres situaciones: sumar una competencia puntual que te piden en el trabajo, probar un área antes de meterte en una carrera larga, o formarte en algo que no necesita cuatro años —Oratoria y Constitución de Sociedades son buenos ejemplos.</p>
 
-<p>Los detalles de cada programa están en <a href="/">el catálogo</a>, en la categoría Identidad Argentina. Para fechas de inicio y aranceles, escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a>.</p>
+<p>Los detalles de cada programa están en <a href="/">el catálogo</a>, en la categoría Identidad Argentina. Para fechas de inicio y aranceles, escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a>.</p>
 $html$,
   '2026-07-13', 'Institucional', NULL,
   '/novedades/articulo/identidad-argentina-diplomaturas',
@@ -310,7 +313,7 @@ $html$,
 <h2>Por qué conviene saberlo antes</h2>
 <p>Porque cambia cómo planificás el primer tramo. Si arrancás contando con que la primera semana ya vas a estar con las materias de tu carrera, el ingreso te descoloca. Sabiéndolo de entrada, lo usás para lo que es: agarrarle la mano a la modalidad con algo de margen.</p>
 
-<p>El detalle formal de las condiciones de ingreso está en el <a href="https://contenidos.21.edu.ar/microsites/reglamento/index.php?put=2-1-carreras-de-pregrado-y-grado" target="_blank">reglamento oficial de carreras de pregrado y grado</a>. Si querés que te lo expliquemos aplicado a tu caso, escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> o pasá por la sede.</p>
+<p>El detalle formal de las condiciones de ingreso está en el <a href="https://contenidos.21.edu.ar/microsites/reglamento/index.php?put=2-1-carreras-de-pregrado-y-grado" target="_blank">reglamento oficial de carreras de pregrado y grado</a>. Si querés que te lo expliquemos aplicado a tu caso, escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> o pasá por la sede.</p>
 
 <p><em>Verificado el 23 de julio de 2026 contra el reglamento publicado por la universidad.</em></p>
 $html$,
@@ -330,7 +333,7 @@ $html$,
 <h2>Escribinos antes de venir</h2>
 <p>La mayoría de los trámites se resuelven sin moverte de tu casa, y para los que sí necesitan presencia conviene avisar antes así te atendemos con el tiempo que hace falta:</p>
 <ul>
-  <li><strong>WhatsApp:</strong> <a href="https://wa.me/5491166522722" target="_blank">escribinos por acá</a>.</li>
+  <li><strong>WhatsApp:</strong> <a href="https://wa.me/5491132973801" target="_blank">escribinos por acá</a>.</li>
   <li><strong>Formulario:</strong> <a href="/contacto">dejanos tus datos</a> y te contactamos.</li>
   <li><strong>Dudas frecuentes:</strong> mirá primero <a href="/faq">las preguntas frecuentes</a>, capaz ya está respondida.</li>
 </ul>

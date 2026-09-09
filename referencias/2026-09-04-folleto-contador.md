@@ -1,0 +1,5 @@
+- https://www.basedash.com/ — jerarquía de datos e indicadores, reinterpretada para ordenar la información académica
+- https://antimetal.com/ — línea de tendencia y ejes, traducidos a un recurso editorial estático
+- https://www.busybeehoney.com/kitchen — marcos y capas de una tarjeta clara, reinterpretados para la cara exterior
+- https://kb-cau.21.edu.ar/bcsiglo21/admision/oferta-academica-programas/grado-pregrado/fichamail-contador-p%C3%BAblico — datos académicos y diferenciales de Contador Público
+- https://21.edu.ar/carreras-y-programas/contador-publico — enlace oficial de la carrera registrado en la ficha interna

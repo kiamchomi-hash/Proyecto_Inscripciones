@@ -1,4 +1,4 @@
-﻿-- La novedad del inicio de clases pasa a ser perenne.
+-- La novedad del inicio de clases pasa a ser perenne.
 --
 -- Estaba como `segundo-semestre-2026-inicio-3-de-agosto`: slug, titulo y cuerpo
 -- clavados a una fecha que ya paso. Cada cambio de fecha obligaba a un slug
@@ -68,7 +68,7 @@ update public.novedades set
 
 <h2>Cómo seguimos</h2>
 <div class="art-cta">
-  <p>Escribinos por <a href="https://wa.me/5491166522722" target="_blank">WhatsApp</a> o dejanos tus datos en <a href="/contacto">el formulario de contacto</a> y te acompañamos con el trámite de punta a punta. También podés acercarte a la sede, en <strong>Guaminí 4876</strong>, Villa Lugano.</p>
+  <p>Escribinos por <a href="https://wa.me/5491132973801" target="_blank">WhatsApp</a> o dejanos tus datos en <a href="/contacto">el formulario de contacto</a> y te acompañamos con el trámite de punta a punta. También podés acercarte a la sede, en <strong>Guaminí 4876</strong>, Villa Lugano.</p>
 </div>
 
 <p class="art-fuente"><em>Las fechas de inicio siguen el calendario académico oficial de Educación Distribuida, publicado en <a href="https://www.lanube.21.edu.ar/calendario-acad%C3%A9mico-distancia" target="_blank">lanube.21.edu.ar</a>. El día exacto lo confirmamos en la sede antes de cerrar la inscripción.</em></p>

@@ -1,0 +1,5 @@
+- https://chanhdai.com/components/dot-grid-spotlight — trama de puntos y foco luminoso, reinterpretados como textura editorial estática
+- https://x.ai/ — pliegue de luz azul, traducido a la separación cromática de las caras oscuras
+- https://benissen.com/chat — profundidad y sombra breve para el bloque de WhatsApp
+- https://kb-cau.21.edu.ar/bcsiglo21/admision/oferta-academica-programas/grado-pregrado/g21_admision_ofertacademicaprogramas_gradopregradoficha-mail-abogac%C3%ADa — datos académicos y diferenciales de Abogacía
+- https://21.edu.ar/carreras-y-programas/abogacia — enlace oficial de la carrera registrado en la ficha interna

@@ -8,7 +8,7 @@
 -- del temario en una sola línea y recortaba el resto. Medido el 28/07/2026,
 -- de los 331 puntos que traen las fichas faltaban 162 en la base.
 --
--- Fuente: Desktop\Academia Identidad Argentina\fichas-diplomaturas\*.txt,
+-- Fuente: carreras/identidad/fuentes/fichas-diplomaturas/*.txt,
 -- generadas el 25/07/2026 desde las landings de identidadargentina.com.ar.
 -- Los PDF oficiales de esa carpeta son de imagen: no se pueden cotejar.
 --

@@ -11,6 +11,7 @@ entre mayores y la doc de cada pagina es corta:
 - [Animar](#animar)
 - [Composition y metadata](#composition-y-metadata)
 - [Assets](#assets)
+- [Audio: musica y locucion](#audio-musica-y-locucion)
 - [Determinismo: por que parpadea](#determinismo-por-que-parpadea)
 - [Datos y fuentes externas](#datos-y-fuentes-externas)
 
@@ -99,6 +100,34 @@ mismo en todo el video.
 - Fuentes: `@remotion/google-fonts` con su `loadFont()`, o `delayRender` hasta
   que la fuente este. Sin eso el navegador cae a una fallback y el texto se
   compone distinto en algunos cuadros.
+
+## Audio: musica y locucion
+
+Un institucional sin sonido no existe, y el sonido no se juzga en un still: es
+lo que hay que mandarle al usuario para que lo escuche.
+
+```jsx
+<Audio src={staticFile("audio/locucion.mp3")} volume={1} />
+<Audio src={staticFile("audio/cama.mp3")} volume={(f) =>
+  interpolate(f, [0, 1 * fps], [0, 0.18], { extrapolateRight: "clamp" })} />
+```
+
+- `volume` acepta una funcion del frame: es asi como se hacen los fundidos y el
+  **ducking** (bajar la musica mientras habla la voz). Una cama a 1 tapa la
+  locucion; 0,15 a 0,25 es el orden de magnitud.
+- `startFrom` / `endAt` recortan el audio; `<Sequence>` lo ubica en el tiempo.
+- **La duracion la manda la locucion, no el criterio de "4 s por placa".** Si hay
+  voz, primero se mide el audio y despues se escriben los bloques:
+  `getAudioDurationInSeconds()` de `@remotion/media-utils`, o `calculateMetadata`
+  para que la composicion tome la duracion real sola.
+- `@remotion/media-utils` tambien da `useAudioData()` + `visualizeAudio()`, que
+  son las que permiten que algo en pantalla se mueva con la musica en vez de
+  moverse al lado de la musica.
+- En el render, el audio sale mezclado solo. `--muted` lo saca: va en toda ojeada
+  que despues se convierte en hoja de contactos, porque ahi el audio es peso
+  muerto.
+- El Studio reproduce el audio, el still no lo toca y el render lo mezcla al
+  final: **un desfase de sincronia se confirma en el mp4**, no en el preview.
 
 ## Determinismo: por que parpadea
 

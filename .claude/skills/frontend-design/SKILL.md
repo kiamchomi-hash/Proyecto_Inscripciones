@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.
+description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics. NOT for fixed-size pieces the user will hand-edit afterwards — a poster, flyer, brochure, artboard or /design canvas is `lienzo-de-diseno`.
 license: Complete terms in LICENSE.txt
 ---
 
@@ -23,6 +23,52 @@ Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 - Visually striking and memorable
 - Cohesive with a clear aesthetic point-of-view
 - Meticulously refined in every detail
+
+## Ground the Direction in Real References First
+
+The failure mode this skill exists to prevent — generic AI aesthetics — comes
+from designing out of memory. Memory averages. It hands back the median of
+everything ever scraped, which is exactly the look to avoid.
+
+So before writing CSS, spend one step pulling **real** references. Not to copy
+them: to have concrete evidence for the three decisions that set the tone.
+
+1. **Typefaces.** Memory returns Inter, Poppins and Space Grotesk. Find sites
+   that already have the tone you want and take the families they actually use.
+2. **Palette and spacing.** Read a real product's values and adapt them; do not
+   invent a scale.
+3. **Composition.** What sections the page has and in what order is a question
+   about the audience, not about taste. Study whole pages and real app flows.
+
+**Where to look is not listed here.** The catalogue lives in one place,
+`~/Desktop/uiverse/FUENTES.md`: what each source gives you, which one annotates
+the typefaces a site really uses, which publish `DESIGN.md` files, and which
+expose an MCP server (and which MCP not to install). Read it before choosing —
+it is generated from `fuentes.json`, so it is the only copy that stays current.
+
+**Components are a separate question.** Buttons, toggles, inputs and loaders
+should not be invented either — they come from the user's own UIverse library
+(`~/Desktop/uiverse`). That is the `diseno-uiverse` skill's job; this skill owns
+the direction and the page, that one owns the pieces.
+
+Say out loud which reference each decision came from. "Archivo + Söhne, taken
+from <site>" is a designed choice; "a distinctive grotesque" is a guess.
+
+## The Page Still Has a Job
+
+Everything above pushes toward a distinctive look. Nothing above stops that push
+from running over the reason the page exists. It has: a redesign of a
+neighbourhood learning centre's location page came back more coherent and worse
+at its job — three defensible aesthetic calls, three regressions for its reader.
+
+**Before you finish, read the skill `piezas-para-el-publico`, section «Los pisos
+de la pieza».** Those floors are binding here — body text that does not get
+quieter, the primary action staying a solid control, platform colours left
+alone, stat numbers set with weight, air that is not just empty column. Cross
+one only when the user asks.
+
+Say who this page's reader is before you start, and check the finished page
+against them. A reference gives you tone, never the brief.
 
 ## Frontend Aesthetics Guidelines
 

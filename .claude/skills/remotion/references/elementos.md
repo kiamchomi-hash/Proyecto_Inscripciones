@@ -7,49 +7,21 @@ tres casos lo que se trae es **material**, no una pieza para pegar: ver
 
 ## 1. UIverse local (offline, es la primera parada)
 
-Una copia completa del archivo abierto de UIverse en la maquina, con galeria
-propia: **3802 piezas** de HTML + CSS, mas las favoritas y las piezas propias
-del usuario. Vive en `~/Desktop/uiverse` (si no esta ahi:
-`find ~ -maxdepth 3 -name indice-galaxy.json`).
+La biblioteca de piezas del usuario, en `~/Desktop/uiverse`: HTML + CSS, con sus
+favoritas y las suyas propias. **Como se busca ahi lo fija la skill
+`diseno-uiverse`**, que es la que manda: orden de consulta, indice, favoritas
+primero. No repetir esos comandos aca. Lo que sigue es solo lo que cambia cuando
+el destino es video.
 
-```text
-biblioteca/
-  indice-galaxy.json   el indice: id, categoria, titulo, autor, etiquetas, url
-  galaxy/<Categoria>/<autor>_<slug>.html   la pieza: HTML con su <style> adentro
-  estado.json          "favoritas" y "ocultas" — las elegidas por el usuario
-  mias/                piezas propias
-```
+Para video sirven casi siempre tres categorias, y no son las obvias:
 
-Se busca sin abrir la galeria, que es lo que la hace util en medio de una tarea:
-
-```bash
-cd ~/Desktop/uiverse
-# por etiqueta o titulo
-node -e "JSON.parse(require('fs').readFileSync('biblioteca/indice-galaxy.json','utf8')).piezas
-  .filter(p=>JSON.stringify(p).toLowerCase().includes('glow'))
-  .slice(0,20).forEach(p=>console.log(p.categoria, '|', p.titulo, '|', p.archivo))"
-# las que ya eligio el usuario
-node -e "console.log(JSON.parse(require('fs').readFileSync('biblioteca/estado.json','utf8')).favoritas)"
-# y despues se lee la pieza entera
-cat "biblioteca/galaxy/Cards/<autor>_<slug>.html"
-```
-
-Categorias y cuantas hay: `Buttons` 1231, `Cards` 726, `loaders` 718,
-`Toggle-switches` 260, `Inputs` 226, `Forms` 180, `Checkboxes` 171,
-`Patterns` 103, `Radio-buttons` 102, `Tooltips` 62, `Notifications` 23.
-
-Para video las que sirven casi siempre son otras tres, no las obvias:
-
-- **`loaders`**: son 718 animaciones puras —pulsos, ondas, orbitas, barridos,
-  contadores—. Casi ninguna se usa como loader: se usan como el movimiento de
-  fondo de una escena, un halo que respira, una barra que avanza.
+- **`loaders`**: son cientos de animaciones puras —pulsos, ondas, orbitas,
+  barridos, contadores—. Casi ninguna se usa como loader: se usan como el
+  movimiento de fondo de una escena, un halo que respira, una barra que avanza.
 - **`Patterns`**: texturas y tramas de fondo, que es lo que le saca a una escena
   el aspecto de degradado plano.
 - **`Cards`**: bordes de gradiente, vidrio, halos. De ahi salio la tarjeta de la
   cifra de este proyecto.
-
-**Y `favoritas` primero**: son las que ya eligio el usuario, o sea su gusto ya
-filtrado. Antes de traer algo nuevo, mirar si entre esas hay una que sirva.
 
 ### Como se adapta una pieza de UIverse a Remotion
 
