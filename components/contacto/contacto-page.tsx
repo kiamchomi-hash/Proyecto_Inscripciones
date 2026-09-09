@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
-import { trackConsulta } from '@/lib/analytics';
+import { trackConsulta, trackInicioFormulario } from '@/lib/analytics';
 import './contacto.css';
 
 /* ── Publicaciones ────────────────────────────────────── *
@@ -42,6 +42,7 @@ const ZONAS = ['Villa Lugano', 'Mataderos', 'Liniers', 'Villa Celina', 'Ciudad M
 
 /* ── Contact Form ─────────────────────────────────────── */
 function ContactForm() {
+  const inicioMedido = useRef(false);
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
@@ -150,7 +151,9 @@ function ContactForm() {
           <p className="text-sm" style={{ color: '#7ca19b' }}>Nos comunicaremos a la brevedad</p>
         </div>
       )}
-      <form onSubmit={handleSubmit} noValidate className={success ? 'invisible' : undefined} aria-hidden={success}>
+      <form onSubmit={handleSubmit} onFocusCapture={() => {
+        if (!inicioMedido.current) { inicioMedido.current = true; trackInicioFormulario('contacto', 'contacto'); }
+      }} noValidate className={success ? 'invisible' : undefined} aria-hidden={success}>
           {/* Header */}
           <div className="px-5 pt-4 pb-3 flex items-center gap-3" style={{ borderBottom: '1px solid #4a2030' }}>
             <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"

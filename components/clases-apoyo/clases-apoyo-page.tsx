@@ -887,7 +887,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
                   </svg>
                 </div>
                 <div>
-                  <span className="block text-[0.5rem] font-extrabold uppercase tracking-[0.2em]" style={{ color: 'var(--ca-accent)' }}>Ubicación</span>
+                  <span className="block text-[0.5rem] font-extrabold uppercase tracking-[0.2em]" style={{ color: '#48c9b6' }}>Ubicación</span>
                   <span className="text-[0.95rem] font-bold" style={{ fontFamily: "'Unbounded', sans-serif", color: 'var(--ca-text-main)' }}>Guaminí 4876</span>
                 </div>
               </div>

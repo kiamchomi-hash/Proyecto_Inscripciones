@@ -50,6 +50,15 @@ test('el aviso de aperturas directas agrupa y cuenta por carrera', () => {
   assert.match(mensaje, /Aperturas directas del 01\/09\/2026/);
   assert.match(mensaje, /Licenciatura en Administración/);
   assert.match(mensaje, /\*3\*/);
-  assert.match(mensaje, /\*4\* aperturas sobre \*2\* carreras/);
+  assert.match(mensaje, /\*4\* aperturas directas en \*2\* carreras/);
   assert.doesNotMatch(mensaje, /URL/);
+});
+
+test('los avisos usan singular cuando corresponde', () => {
+  const mensaje = buildAperturasDirectasDigest('2026-09-01', [
+    { carrera: 'Abogacía', clicks: 1 },
+  ]);
+  assert.match(mensaje, /\*1\* apertura directa en \*1\* carrera/);
+  assert.doesNotMatch(mensaje, /aperturas directas/);
+  assert.doesNotMatch(mensaje, /carreras/);
 });

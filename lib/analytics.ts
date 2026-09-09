@@ -16,6 +16,11 @@ import { track } from '@vercel/analytics';
 /** Desde dónde se envió la consulta, para distinguir cada superficie de captación. */
 export type OrigenConsulta = 'home' | 'teclab' | 'contacto';
 
+/** Primer uso del formulario; sólo categorías, nunca valores ingresados. */
+export function trackInicioFormulario(origen: OrigenConsulta, modo: string) {
+  track('formulario-iniciado', { origen, modo });
+}
+
 /**
  * La carrera va como propiedad y no como evento aparte para poder agrupar por
  * ella en el panel. El de /contacto no pregunta carrera, de ahi el 'sin

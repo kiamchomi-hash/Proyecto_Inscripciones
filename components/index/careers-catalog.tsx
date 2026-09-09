@@ -736,7 +736,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
     : familiaTeclab === 'tecnologia'
       ? 'var(--teclab-cyan)'
       : familiaTeclab === 'gestion'
-        ? 'var(--teclab-purple)'
+        ? '#b578ff'
         : 'var(--catalogo-acento)';
 
   return (

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
-import { trackConsulta, type OrigenConsulta } from '@/lib/analytics';
+import { trackConsulta, trackInicioFormulario, type OrigenConsulta } from '@/lib/analytics';
 import {
   CAMPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
@@ -607,6 +607,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const [listo, setListo] = useState(false);
   const [error, setError] = useState('');
   const botonRef = useRef<HTMLButtonElement>(null);
+  const inicioMedido = useRef(false);
   // Mientras se salta al primer error, el acercamiento del botón no interviene.
   const saltandoRef = useRef(false);
   const listaRef = useRef<HTMLDivElement>(null);
@@ -772,6 +773,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
    * que se está escribiendo.
    */
   const acercarElBoton = (evento: React.FocusEvent<HTMLFormElement>) => {
+    if (!inicioMedido.current) {
+      inicioMedido.current = true;
+      trackInicioFormulario(origen, modo);
+    }
     const campo = evento.target;
     const boton = botonRef.current;
     if (saltandoRef.current || !boton || !(campo instanceof HTMLElement)) return;

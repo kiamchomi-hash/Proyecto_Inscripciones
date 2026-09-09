@@ -19,6 +19,7 @@ export const RUTAS = [
   '/',
   '/teclab',
   '/clases-apoyo',
+  '/calendario-academico',
   '/contacto',
   '/faq',
   '/sobre-nosotros',

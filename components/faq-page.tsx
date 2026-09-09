@@ -78,7 +78,7 @@ const FAQ_ITEMS: FaqItem[] = [
             arranca una hora antes: son dos cosas distintas, no una diferencia
             para emparejar. */}
         <p>Estamos en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Guaminí 4876, Piso 1</strong>, en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Mataderos, Liniers y Villa Celina</strong>. Atendemos de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>lunes a viernes de 9 a 20 hs</strong>.</p>
-        <p style={{ fontSize: '0.78rem', color: '#5a8a80', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>cerca de</p>
+        <p style={{ fontSize: '0.78rem', color: '#7ca19b', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>cerca de</p>
         <div className="grid grid-cols-3 gap-2">
           <ZonaCard name="Villa Lugano" />
           <ZonaCard name="Mataderos" />
@@ -164,7 +164,8 @@ const FAQ_ITEMS: FaqItem[] = [
     keywords: 'formas pago aranceles cuotas precio costo cuanto sale vale bimestral cuatrimestre tarjeta credito matricula financiacion mensual',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
-        <p><strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Podés abonar los aranceles por cuatrimestre.</strong> Cada cuatrimestre se compone de una <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>matrícula</strong> y <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>dos cuotas</strong>. Podés pagar el <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>cuatrimestre completo</strong> o de forma <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>bimestral</strong>.</p>
+        <p>La <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>matrícula</strong> y el arancel del período se abonan por separado. Cuando la inscripción a un próximo período todavía no comenzó, puede habilitarse el pago anticipado de la matrícula y el arancel se paga recién cuando empieza ese período.</p>
+        <p>Por ejemplo, durante agosto de 2026 podés pagar la matrícula para la inscripción de octubre; el arancel correspondiente se abona al comenzar el período de octubre. Esta posibilidad depende de la ventana comercial vigente y no implica que el período 2A siga disponible para comercialización.</p>
         <p>También podés pagar en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>cuotas</strong> con <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>tarjeta de crédito</strong> y otros medios de financiación, según la entidad bancaria o plataforma que elijas.</p>
       </div>
     ),
@@ -318,7 +319,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
       <div className={`faq-item rounded-xl overflow-hidden${isOpen ? ' is-open' : ''}`} style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.28)', borderLeft: 'none' }}>
         <div className="faq-header-wrap flex items-center gap-2 pr-2 md:pr-5" onClick={onToggle}>
           <button type="button" className="faq-btn flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4 flex-1 min-w-0" aria-expanded={isOpen}>
-            <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--cau-brand-green)' }}>{index + 1}</span>
+            <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--cau-brand-dark-green)' }}>{index + 1}</span>
             <span className="font-semibold flex-1 min-w-0 leading-snug text-sm md:text-lg" style={{ color: '#fff' }}>
               {questionLines.map((line, i) => <span key={i}>{line}{i < questionLines.length - 1 && <br />}</span>)}
             </span>
@@ -354,7 +355,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
   return (
     <div className={`faq-item rounded-xl overflow-hidden${isOpen ? ' is-open' : ''}`} style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.28)', borderLeft: 'none' }}>
       <button type="button" className="faq-btn w-full flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4" aria-expanded={isOpen} onClick={onToggle}>
-        <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--cau-brand-green)' }}>{index + 1}</span>
+        <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--cau-brand-dark-green)' }}>{index + 1}</span>
         <span className="font-semibold flex-1 min-w-0 leading-snug text-sm md:text-lg" style={{ color: '#fff' }}>
           {questionLines.map((line, i) => <span key={i}>{line}{i < questionLines.length - 1 && <br />}</span>)}
         </span>
@@ -574,12 +575,12 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               <div>
                 <label htmlFor="ask-title" className="block text-sm font-semibold mb-1.5" style={{ color: '#d6efed' }}>Título <span style={{ color: '#00c7b1' }}>*</span></label>
                 <input type="text" id="ask-title" className="ask-input" placeholder="Ej: ¿Cómo funcionan los pagos?" maxLength={120} value={title} onChange={e => setTitle(e.target.value)} />
-                <span className="block text-xs mt-1 text-right" style={{ color: title.length > 100 ? '#e67373' : '#4d8c85' }}>{title.length}/120</span>
+                <span className="block text-xs mt-1 text-right" style={{ color: title.length > 100 ? '#e67373' : '#91b8b1' }}>{title.length}/120</span>
               </div>
               <div>
-                <label htmlFor="ask-question" className="block text-sm font-semibold mb-1.5" style={{ color: '#d6efed' }}>Descripción <span className="font-normal" style={{ color: '#4d8c85' }}>(opcional)</span></label>
+                <label htmlFor="ask-question" className="block text-sm font-semibold mb-1.5" style={{ color: '#d6efed' }}>Descripción <span className="font-normal" style={{ color: '#91b8b1' }}>(opcional)</span></label>
                 <textarea id="ask-question" className="ask-input" rows={3} placeholder="Contá con más detalle tu consulta…" maxLength={500} value={desc} onChange={e => setDesc(e.target.value)} />
-                <span className="block text-xs mt-1 text-right" style={{ color: desc.length > 450 ? '#e67373' : '#4d8c85' }}>{desc.length}/500</span>
+                <span className="block text-xs mt-1 text-right" style={{ color: desc.length > 450 ? '#e67373' : '#91b8b1' }}>{desc.length}/500</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <button type="button" className="flex flex-col items-center w-full rounded-[0.875rem] p-4 text-white cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:grayscale-[0.6] disabled:pointer-events-none" style={{ border: '1.5px solid rgba(0,199,177,0.4)', background: 'rgba(0,199,177,0.08)' }} disabled={!titleOk} onClick={goPublish}>
@@ -589,7 +590,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                     </svg>
                   </div>
                   <div className="font-bold text-sm mt-2 mb-1 min-h-[2.4em] flex items-center text-center leading-tight" style={{ color: '#4ddfd0' }}>Publicar en la página</div>
-                  <div className="text-xs leading-relaxed" style={{ color: '#6a9b94' }}>Visible para todos. Te avisamos cuando sea respondida.</div>
+                  <div className="text-xs leading-relaxed" style={{ color: '#91b8b1' }}>Visible para todos. Te avisamos cuando sea respondida.</div>
                 </button>
                 <button type="button" className="flex flex-col items-center w-full rounded-[0.875rem] p-4 text-white cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:grayscale-[0.6] disabled:pointer-events-none" style={{ border: '1.5px solid rgba(55,181,170,0.4)', background: 'rgba(55,181,170,0.07)' }} disabled={!titleOk} onClick={goPrivate}>
                   <div style={{ height: '2.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -598,7 +599,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                     </svg>
                   </div>
                   <div className="font-bold text-sm mt-2 mb-1 min-h-[2.4em] flex items-center text-center leading-tight" style={{ color: '#5ecbb9' }}>Respuesta personal</div>
-                  <div className="text-xs leading-relaxed" style={{ color: '#4c7f78' }}>Te contactamos directamente a la brevedad.</div>
+                  <div className="text-xs leading-relaxed" style={{ color: '#91b8b1' }}>Te contactamos directamente a la brevedad.</div>
                 </button>
               </div>
             </div>
@@ -856,7 +857,7 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
 
             {/* Mobile ask button */}
             <button type="button" className="lg:hidden w-full flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl text-white text-base ask-cta-btn"
-              onClick={() => setModalOpen(true)}>
+              onClick={e => { e.currentTarget.focus(); setModalOpen(true); }}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
               Hacer una pregunta
             </button>
@@ -916,7 +917,7 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
             <aside className="w-full lg:w-80 xl:w-[340px] flex-shrink-0 flex flex-col gap-3 lg:sticky lg:overflow-y-auto" style={{ top: 'calc(var(--navbar-height, 60px) + 0.75rem)', maxHeight: 'calc(100vh - var(--navbar-height, 60px) - 1.5rem)' }}>
               {/* Desktop ask button */}
               <button type="button" className="hidden lg:flex w-full items-center justify-center gap-2 font-bold py-4 px-5 rounded-xl text-white text-base ask-cta-btn"
-                onClick={() => setModalOpen(true)}>
+                onClick={e => { e.currentTarget.focus(); setModalOpen(true); }}>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                 Hacer una pregunta
               </button>
@@ -977,7 +978,7 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
                 <p className="text-sm mb-2.5" style={{ color: '#c8dedd' }}>¿No encontrás lo que buscás? Escribinos directamente.</p>
                 <a href="https://wa.me/5491132973801" target="_blank" rel="noopener nofollow"
                   className="flex items-center justify-center gap-2 font-semibold py-2.5 px-4 rounded-lg text-sm text-white w-full hover:brightness-110"
-                  style={{ background: '#25D366' }}>
+                  style={{ background: '#25D366', color: '#062c21' }}>
                   <WhatsAppIcon className="w-4 h-4" />
                   Consultanos por WhatsApp
                 </a>

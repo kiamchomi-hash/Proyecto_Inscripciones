@@ -65,6 +65,8 @@ async function fetchClicks(fecha: string, origen: "modal" | "directa" = "modal")
 
 function buildDigest(fecha: string, rows: ClickRow[]): string {
   const total = rows.reduce((sum, r) => sum + r.clicks, 0);
+  const apertura = total === 1 ? "apertura" : "aperturas";
+  const carrera = rows.length === 1 ? "carrera" : "carreras";
   const [y, m, d] = fecha.split("-");
   const encabezado = `📊 *Resumen del ${d}/${m}/${y}*`;
 
@@ -78,15 +80,17 @@ function buildDigest(fecha: string, rows: ClickRow[]): string {
   }).join("\n");
 
   const resto = rows.length > TOP_N ? `\n\n_y ${rows.length - TOP_N} carreras más_` : "";
-  return `${encabezado}\n\n👆 *${total}* aperturas sobre *${rows.length}* carreras\n\n${top}${resto}`;
+  return `${encabezado}\n\n👆 *${total}* ${apertura} desde tarjetas en *${rows.length}* ${carrera}\n\n${top}${resto}`;
 }
 
 function buildDirectDigest(fecha: string, rows: ClickRow[]): string {
   const total = rows.reduce((sum, r) => sum + r.clicks, 0);
+  const apertura = total === 1 ? "apertura directa" : "aperturas directas";
+  const carrera = rows.length === 1 ? "carrera" : "carreras";
   const [y, m, d] = fecha.split("-");
   const encabezado = `📊 *Aperturas directas del ${d}/${m}/${y}*`;
   const lista = rows.map((r, i) => `${i + 1}. ${escapeMarkdown(r.carrera)} — *${r.clicks}*`).join("\n");
-  return `${encabezado}\n\n🔗 *${total}* aperturas sobre *${rows.length}* carreras\n\n${lista}`;
+  return `${encabezado}\n\n🔗 *${total}* ${apertura} en *${rows.length}* ${carrera}\n\n${lista}`;
 }
 
 async function sendTelegram(text: string): Promise<boolean> {

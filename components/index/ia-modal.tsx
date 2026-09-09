@@ -5,7 +5,7 @@
 // el lenguaje visual de la Academia: fondo tinta #101820 con lavados
 // ambientales amarillo/azul, trama fina, tipografia pesada en mayusculas y el
 // isotipo de la academia. Referencias: identidadargentina.com.ar y el render de
-// Remotion (Desktop\Academia Identidad Argentina\remotion-diplomaturas).
+// Remotion histórico de diplomaturas (no es necesario para ejecutar el sitio).
 
 import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';

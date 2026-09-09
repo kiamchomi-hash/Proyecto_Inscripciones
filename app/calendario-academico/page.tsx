@@ -42,6 +42,7 @@ export const metadata: Metadata = {
       'Inicio de cursada, cierre de inscripción a materias, integradores y feriados del ciclo 2026.',
     url: '/calendario-academico',
     type: 'article',
+    images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'Universidad Siglo 21 — CAU Online' }],
   },
 };
 

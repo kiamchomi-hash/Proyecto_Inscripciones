@@ -2,12 +2,14 @@
 export function buildAperturasDirectasDigest(fecha: string, rows: Array<{ carrera: string; clicks: number }>): string {
   const [y, m, d] = fecha.split('-');
   const total = rows.reduce((suma, fila) => suma + fila.clicks, 0);
+  const apertura = total === 1 ? 'apertura directa' : 'aperturas directas';
+  const carrera = rows.length === 1 ? 'carrera' : 'carreras';
   const lista = rows.map((fila, i) => `${i + 1}. ${fila.carrera} — *${fila.clicks}*`).join('\n');
 
   return [
     `📊 *Aperturas directas del ${d}/${m}/${y}*`,
     '',
-    `🔗 *${total}* aperturas sobre *${rows.length}* carreras`,
+    `🔗 *${total}* ${apertura} en *${rows.length}* ${carrera}`,
     '',
     lista,
   ].join('\n');

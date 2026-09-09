@@ -22,8 +22,16 @@ export default function HeroCarousel({ children }: Props) {
 
   useEffect(() => {
     if (isPaused) return;
-    const timer = setInterval(nextSlide, 5000);
-    return () => clearInterval(timer);
+    // La preferencia se consulta también al cambiarla, sin dejar un temporizador vivo.
+    const movimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const actualizar = () => {
+      if (timer) clearInterval(timer);
+      if (!movimiento.matches) timer = setInterval(nextSlide, 5000);
+    };
+    actualizar();
+    movimiento.addEventListener('change', actualizar);
+    return () => { clearInterval(timer); movimiento.removeEventListener('change', actualizar); };
   }, [nextSlide, isPaused]);
 
   const handleTouchStart = (e: React.TouchEvent) => {

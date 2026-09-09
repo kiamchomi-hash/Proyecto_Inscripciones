@@ -214,6 +214,10 @@ export const AREAS = [
 
 export type AreaId = (typeof AREAS)[number]['id'];
 
+// La carrera figura en singular y en plural según la fuente: Supabase la llama
+// "Ciencias de Datos" y el KB de la universidad "Ciencia de Datos", así que las
+// dos formas están. Con una sola, la que use la otra queda sin área.
+//
 // Varias de estas palabras las tomamos del tag que la propia Siglo 21 le pone a
 // cada carrera en el hero de su ficha (relevado en `notas-locales/tags-oficiales-21.md`):
 // por eso Martillero es Derecho y no Negocios, Comercialización es Comunicación,
@@ -225,7 +229,7 @@ export type AreaId = (typeof AREAS)[number]['id'];
 // que es el de la lista del filtro.
 const AREA_KEYWORDS: Record<AreaId, string[]> = {
   derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense', 'constitución de sociedades', 'martillero', 'corredor'],
-  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad'],
+  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'ciencia de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad'],
   exactas: ['estadística'],
   gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
   negocios: ['administración', 'finanzas', 'negocios digitales', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'customer experience', 'experiencia del cliente', 'seguros', 'logística', 'marketing para emprendedores', 'compliance', 'management hotelero'],

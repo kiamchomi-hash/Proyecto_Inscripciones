@@ -131,7 +131,7 @@ export default function Navbar() {
           ref={menuRef}
           id="mobile-navigation-menu"
           className={`navbar-menu${menuOpen ? ' active' : ''}`}
-          role={menuOpen ? 'dialog' : undefined}
+          role={menuOpen ? 'dialog' : 'navigation'}
           aria-modal={menuOpen ? true : undefined}
           aria-label="Menu de navegacion"
           onClick={(e) => e.stopPropagation()}
