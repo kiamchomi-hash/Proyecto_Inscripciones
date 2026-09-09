@@ -164,8 +164,10 @@ const FAQ_ITEMS: FaqItem[] = [
     keywords: 'formas pago aranceles cuotas precio costo cuanto sale vale bimestral cuatrimestre tarjeta credito matricula financiacion mensual',
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
-        <p>La <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>matrícula</strong> y el arancel del período se abonan por separado. Cuando la inscripción a un próximo período todavía no comenzó, puede habilitarse el pago anticipado de la matrícula y el arancel se paga recién cuando empieza ese período.</p>
-        <p>Por ejemplo, durante agosto de 2026 podés pagar la matrícula para la inscripción de octubre; el arancel correspondiente se abona al comenzar el período de octubre. Esta posibilidad depende de la ventana comercial vigente y no implica que el período 2A siga disponible para comercialización.</p>
+        <p>La <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>matrícula</strong> y el arancel del período se abonan por separado, y no siempre al mismo tiempo. Si la inscripción al próximo período todavía no abrió, puede habilitarse el pago anticipado de la matrícula: el arancel se paga recién cuando ese período empieza.</p>
+        {/* Sin el mes de ejemplo ni el codigo de periodo: el mes se vence solo y
+            2A/2B es vocabulario interno que no le dice nada a quien lee. */}
+        <p>No es una regla fija: cambia según el momento del año, así que <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>confirmalo con nosotros</strong> antes de contar con esa fecha.</p>
         <p>También podés pagar en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>cuotas</strong> con <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>tarjeta de crédito</strong> y otros medios de financiación, según la entidad bancaria o plataforma que elijas.</p>
       </div>
     ),

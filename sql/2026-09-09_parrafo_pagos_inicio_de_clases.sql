@@ -10,6 +10,12 @@
 -- contenido entero, para no pisar ediciones posteriores del articulo. El
 -- position() del where lo hace repetible: correrlo dos veces no duplica nada.
 --
+-- El texto no lleva un mes de ejemplo ni el codigo de periodo. La primera version
+-- decia "en agosto de 2026 se puede pagar la matricula para la inscripcion de
+-- octubre": se publico el 09/09, o sea con el mes ya vencido, y se corrigio el
+-- mismo dia. Un ejemplo con fecha envejece solo y nadie se entera; 2A/2B es
+-- vocabulario interno que al que lee no le dice nada.
+--
 -- Aplicado el 09/09/2026 con `npm run db`. El trigger on_novedades_revalidar
 -- publico el cambio solo; verificado en produccion el mismo dia.
 update public.novedades
@@ -17,7 +23,7 @@ set contenido = replace(
   contenido,
   '<h2>Si todavía no elegiste carrera</h2>',
   '<h2>Cuándo se paga cada concepto</h2>
-<p>La matrícula y el arancel del período no necesariamente se pagan al mismo tiempo. Cuando la inscripción a un próximo período todavía no comenzó, puede habilitarse el pago anticipado de la matrícula y el arancel se abona cuando empieza ese período. Por ejemplo, en agosto de 2026 se puede pagar la matrícula para la inscripción de octubre y dejar el arancel para el inicio de octubre. Es una posibilidad de la ventana comercial vigente, no una regla permanente.</p>
+<p>La matrícula y el arancel del período no siempre se pagan juntos. Si la inscripción al próximo período todavía no abrió, puede habilitarse el pago anticipado de la matrícula, y el arancel se abona recién cuando ese período empieza. No es una regla fija: cambia según el momento del año, así que conviene confirmarlo antes de contar con esa fecha.</p>
 
 <h2>Si todavía no elegiste carrera</h2>'
 )
