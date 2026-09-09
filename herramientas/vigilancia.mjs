@@ -49,6 +49,12 @@ function resolverEscritorio() {
 }
 
 const CHEQUEOS = {
+  calidad: {
+    titulo: 'Calidad web (accesibilidad, SEO, recorridos e integraciones)',
+    comando: 'npm run calidad -- --solo-web --visual',
+    agente: 'auditor-web',
+    necesitaRed: true,
+  },
   deps: {
     titulo: 'Dependencias (npm audit)',
     comando: 'npm audit --json',

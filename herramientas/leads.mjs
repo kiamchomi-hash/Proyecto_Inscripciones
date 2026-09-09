@@ -26,6 +26,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import pg from 'pg';
+import { spawn } from 'node:child_process';
+import { conciliarPorDia } from './conciliacion.mjs';
 import { acceso as accesoGsc, consultar as consultarGsc } from './gsc.mjs';
 
 const RAIZ = path.resolve(import.meta.dirname, '..');
@@ -81,7 +83,7 @@ const avisos = [];
 // El token lo deja la CLI al hacer login. Se lee del disco en vez de invocar
 // `vercel api` en un subproceso porque la salida de la CLI no siempre es JSON
 // pelado -a veces le antepone avisos- y parsearla es fragil.
-function tokenVercel() {
+async function tokenVercel() {
   if (process.env.VERCEL_TOKEN) return process.env.VERCEL_TOKEN;
 
   const datos = process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share');
@@ -92,8 +94,23 @@ function tokenVercel() {
 
   for (const archivo of candidatos) {
     if (!existsSync(archivo)) continue;
-    const { token } = JSON.parse(readFileSync(archivo, 'utf8'));
-    if (token) return token;
+    let sesion = JSON.parse(readFileSync(archivo, 'utf8'));
+    if (sesion.token && sesion.refreshToken && sesion.expiresAt * 1000 <= Date.now() + 60000) {
+      // Las sesiones OAuth vencen aunque el login siga vigente. La CLI renueva
+      // y guarda el refresh token con su propio protocolo; no lo duplicamos acá.
+      await new Promise((resolve, reject) => {
+        const windows = process.platform === 'win32';
+        const proceso = spawn(windows ? 'cmd.exe' : 'npx', windows
+          ? ['/d', '/s', '/c', 'npx --yes vercel whoami'] : ['--yes', 'vercel', 'whoami'], {
+          stdio: 'ignore', windowsHide: true, timeout: 90000,
+          env: { ...process.env, CI: '1', NO_UPDATE_NOTIFIER: '1', VERCEL_TELEMETRY_DISABLED: '1' },
+        });
+        proceso.on('error', () => reject(new Error('No se pudo ejecutar la CLI para renovar la sesión de Vercel.')));
+        proceso.on('exit', codigo => codigo === 0 ? resolve() : reject(new Error('No se pudo renovar la sesión de Vercel. Ejecutar npx vercel login.')));
+      });
+      sesion = JSON.parse(readFileSync(archivo, 'utf8'));
+    }
+    if (sesion.token) return sesion.token;
   }
   return null;
 }
@@ -111,13 +128,20 @@ async function analytics(token, ids, recurso, params) {
   if (ids.teamId) url.searchParams.set('teamId', ids.teamId);
   for (const [clave, valor] of Object.entries(params)) url.searchParams.set(clave, valor);
 
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  if (!r.ok) throw new Error(`web-analytics ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  return (await r.json()).data;
+  for (let intento = 0; intento < 3; intento++) {
+    const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(30000) });
+    if (r.ok) return (await r.json()).data;
+    const detalle = await r.text();
+    if (intento < 2 && (r.status >= 500 || detalle.includes('"code":"timeout"'))) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      continue;
+    }
+    throw new Error(`web-analytics ${r.status}: ${detalle.slice(0, 200)}`);
+  }
 }
 
 async function leerVercel() {
-  const token = tokenVercel();
+  const token = await tokenVercel();
   if (!token) throw new Error('no hay token de la CLI de Vercel. Correr: npx vercel login');
 
   const ids = idsDelProyecto();
@@ -129,16 +153,17 @@ async function leerVercel() {
   // El total de personas se pide aparte y no se suma del desglose por
   // dispositivo: quien toca desde el telefono y despues desde la computadora
   // aparece en las dos filas, y sumarlas lo cuenta dos veces.
-  const [porDia, porDispositivo, porOrigen, porEvento, visitas, total] = await Promise.all([
+  const [porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia] = await Promise.all([
     analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'day', limit: 100 }),
     analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'deviceType', limit: 10 }),
     analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'eventData/origen', limit: 8 }),
     analytics(token, ids, 'events/aggregate', { ...ventana, by: 'eventName', limit: 20 }),
     analytics(token, ids, 'visits/count', ventana),
     analytics(token, ids, 'events/count', soloWhatsapp),
+    analytics(token, ids, 'events/aggregate', { ...ventana, filter: "eventName eq 'consulta'", by: 'day', limit: 100 }).catch(() => null),
   ]);
 
-  return { porDia, porDispositivo, porOrigen, porEvento, visitas, total };
+  return { porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia };
 }
 
 // ── Supabase: las consultas que entraron de verdad ──────────────────────────
@@ -162,13 +187,15 @@ async function leerConsultas() {
   try {
     const { rows } = await cliente.query(
       `select to_char(created_at at time zone 'America/Argentina/Buenos_Aires', 'DD/MM HH24:MI') as cuando,
+              to_char(created_at at time zone 'UTC', 'YYYY-MM-DD') as dia_utc,
               coalesce(casa, '-') as casa,
               coalesce(tipo_formulario, '-') as tipo,
               coalesce(carrera, '-') as carrera
          from consultas
-        where created_at >= now() - ($1 || ' days')::interval
+        where created_at >= ($1::date::timestamp at time zone 'UTC')
+          and created_at < (($2::date + 1)::timestamp at time zone 'UTC')
         order by created_at desc`,
-      [String(DIAS)],
+      [DESDE, HASTA],
     );
     return rows;
   } finally {
@@ -289,16 +316,22 @@ if (consultas instanceof Error) {
 // el visitante dio por buenos y no llegaron a la tabla.
 //
 // No es prueba de nada por si solo, y por eso el aviso enumera las otras dos
-// explicaciones: las filas de prueba se borran a mano (para eso cau_editor tiene
-// DELETE sobre consultas) y los dos lados no cortan la ventana igual -Vercel
-// agrupa por dia UTC y la tabla por timestamp-, asi que un envio de la nochecita
-// puede caer de distinto lado del borde.
+// explicaciones: las filas de prueba pueden haberse borrado y Analytics puede
+// consolidar con demora. Las dos consultas usan ahora los mismos días UTC.
 if (!(vercel instanceof Error) && !(consultas instanceof Error)) {
   const medidos = vercel.porEvento.find(e => e.eventName === 'consulta')?.count ?? 0;
+  const inicios = vercel.porEvento.find(e => e.eventName === 'formulario-iniciado')?.count;
+  if (inicios === undefined) console.log('  Inicio de formularios: sin medición en esta ventana; no se puede estimar abandono.');
+  else console.log(`  Formularios iniciados: ${inicios}; envíos medidos: ${medidos}. La diferencia es orientativa: no vincula sesiones ni mide pasos individuales.`);
   if (medidos !== consultas.length) {
+    console.log('  Conciliación por día UTC (misma ventana en ambas fuentes):');
+    if (vercel.consultasPorDia === null) console.log('    El desglose diario de Analytics no está disponible; no se puede atribuir la diferencia.');
+    for (const { dia, eventos, filas } of conciliarPorDia(vercel.consultasPorDia, consultas)) {
+      console.log(`    ${dia}: ${eventos ?? 'no disponible'} evento(s), ${filas} fila(s)`);
+    }
     avisos.push(
       `Vercel midio ${medidos} envio(s) del formulario y en la tabla hay ${consultas.length}. `
-      + 'Puede ser una fila de prueba borrada, o un envio en el borde de la ventana. '
+      + 'Las ventanas UTC coinciden. Puede ser una fila de prueba borrada o una demora de Analytics. '
       + 'Si no es ninguna de las dos, hubo envios que no se guardaron.',
     );
   }
@@ -359,4 +392,9 @@ for (const aviso of avisos) console.log(`\nAviso: ${aviso}`);
 if (fuentesLeidas.length === 0) {
   console.log('\nNo se pudo leer ninguna de las tres fuentes.');
   process.exit(1);
+}
+// En una auditoría la falta de una fuente o una discrepancia no puede dar verde.
+if (args.includes('--estricto')) {
+  if (fuentesLeidas.length < 3) process.exitCode = 2;
+  else if (avisos.length > 0) process.exitCode = 1;
 }

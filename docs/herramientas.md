@@ -2,6 +2,9 @@
 
 Sale de `CLAUDE.md`, que sólo deja el puntero. Acá está el detalle de cada script y de los dos vigilantes.
 
+La auditoría ampliada (`npm run calidad`), sus comandos por área, referencias visuales,
+pruebas de navegador, CI y límites están en [controles automáticos](controles-automaticos.md).
+
 `check` sólo mira el código. En `herramientas/` están las que miran los datos y el sitio publicado, cada una con un `.bat` (Windows) y un `.sh` (Linux) de doble clic al lado (`LEER.md` explica cada una). Los envoltorios son dos, el `.mjs` que hace el trabajo es uno solo: la lógica se toca ahí. Nada de esa carpeta entra al bundle de Next. Las tres primeras salen con código 1 si encuentran algo:
 
 ```bash

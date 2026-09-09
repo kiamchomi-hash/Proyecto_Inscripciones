@@ -25,6 +25,7 @@ export default defineConfig([
     'notas-locales/**',
     'screenshots/**',
     'tmp/**',
+    'ventas/fuentes/teclab/**',
     'next-env.d.ts',
   ]),
   {
