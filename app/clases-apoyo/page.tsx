@@ -10,9 +10,9 @@ import './clases-apoyo.css';
 const BASE_URL = 'https://www.siglo21sur.com';
 
 export const metadata: Metadata = {
-  title: 'Clases de apoyo en Villa Lugano',
+  title: 'Clases particulares y apoyo escolar en Villa Lugano',
   description:
-    'Clases de apoyo presenciales en Villa Lugano y Villa Riachuelo: Matemática, Lengua, Física, Computación y Arte. Guaminí 4876, de lunes a viernes.',
+    'Clases particulares y apoyo escolar presenciales en Villa Lugano, Villa Riachuelo y alrededores: Matemática, Lengua, Física, Computación y Arte. Guaminí 4876.',
   keywords: [
     'clases de apoyo villa lugano',
     'apoyo escolar villa lugano',
@@ -40,10 +40,10 @@ export default async function Page() {
   const servicioSchema = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: 'Clases de apoyo escolar en Villa Lugano',
+    name: 'Clases particulares y apoyo escolar en Villa Lugano',
     serviceType: 'Clases de apoyo escolar',
     description:
-      'Clases de apoyo presenciales de primaria y secundaria en Villa Lugano, de lunes a viernes.',
+      'Clases particulares y apoyo escolar presenciales de primaria y secundaria en Villa Lugano, de lunes a viernes.',
     url: `${BASE_URL}/clases-apoyo`,
     // Los barrios de los que efectivamente vienen alumnos: la sede está sobre
     // el límite de Lugano con Villa Riachuelo, no en el centro del barrio.

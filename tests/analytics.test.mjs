@@ -9,12 +9,20 @@ test('los eventos de conversión conservan origen y no llevan datos personales',
   analytics.trackWhatsapp('/teclab');
   analytics.trackPreguntaFaq('privada');
   analytics.trackSolicitudClase(2);
+  analytics.trackMateriaClase('matematica');
+  analytics.trackDiaClase('matematica');
+  analytics.trackHorarioClase('matematica', '14:00-15:00');
+  analytics.trackWhatsappClase('matematica');
   analytics.trackInicioFormulario('contacto', 'contacto');
   assert.deepEqual(eventos, [
     { nombre: 'consulta', datos: { origen: 'contacto', carrera: 'sin especificar', tipo: 'sin especificar' } },
     { nombre: 'whatsapp', datos: { origen: '/teclab' } },
     { nombre: 'pregunta-faq', datos: { modo: 'privada' } },
     { nombre: 'solicitud-clase', datos: { materias: 2 } },
+    { nombre: 'clase-materia', datos: { materia: 'matematica' } },
+    { nombre: 'clase-dia', datos: { materia: 'matematica' } },
+    { nombre: 'clase-horario', datos: { materia: 'matematica', horario: '14:00-15:00' } },
+    { nombre: 'clase-whatsapp', datos: { materia: 'matematica' } },
     { nombre: 'formulario-iniciado', datos: { origen: 'contacto', modo: 'contacto' } },
   ]);
 });

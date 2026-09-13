@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { sanitizeContent } from '@/lib/sanitize-content';
-import { trackSolicitudClase } from '@/lib/analytics';
+import { trackDiaClase, trackHorarioClase, trackSolicitudClase, trackWhatsappClase } from '@/lib/analytics';
 
 // Lo mínimo para pintar la navegación entre materias. Las páginas de materia
 // mandan esto de las otras cinco y la ficha completa sólo de la propia: si van
@@ -105,7 +105,7 @@ function DescriptionPanel({ desc }: { desc: string[] }) {
 }
 
 /* ── Monthly Calendar ── */
-function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados }: { selectedDays: Set<string>; onToggleDay: (key: string, dayInfo: { num: string; month: string; past: boolean }) => void; locked?: boolean; diasBloqueados?: string[] }) {
+function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados, materiaSlug }: { selectedDays: Set<string>; onToggleDay: (key: string, dayInfo: { num: string; month: string; past: boolean }) => void; locked?: boolean; diasBloqueados?: string[]; materiaSlug: string }) {
   const bloqueadosSet = useMemo(() => {
     if (!diasBloqueados?.length) return new Set<string>();
     return new Set(diasBloqueados.map(iso => {
@@ -210,13 +210,21 @@ function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados }: 
           {weeks.map((week, wi) => (
             <div key={wi} className="ca-day-grid">
               {week.map((day, di) => (
-                <div
+                <button
+                  type="button"
                   key={di}
                   className={`ca-day ${day.empty ? 'empty' : ''} ${(day.past || bloqueadosSet.has(day.key)) && !day.empty ? 'past' : ''} ${selectedDays.has(day.key) ? 'selected' : ''} ${day.key === todayStr ? 'today' : ''} ${bloqueadosSet.has(day.key) && !day.empty ? 'blocked' : ''}`}
-                  onClick={() => !day.past && !day.empty && !locked && !bloqueadosSet.has(day.key) && onToggleDay(day.key, { num: day.num.toString().padStart(2, '0'), month: monthName, past: day.past })}
+                  disabled={day.past || day.empty || locked || bloqueadosSet.has(day.key)}
+                  aria-label={day.empty ? undefined : `${day.num} de ${monthName} de ${viewYear}${day.past || bloqueadosSet.has(day.key) ? ', no disponible' : ''}`}
+                  aria-pressed={!day.empty && selectedDays.has(day.key)}
+                  onClick={() => {
+                    if (day.past || day.empty || locked || bloqueadosSet.has(day.key)) return;
+                    trackDiaClase(materiaSlug);
+                    onToggleDay(day.key, { num: day.num.toString().padStart(2, '0'), month: monthName, past: day.past });
+                  }}
                 >
                   {day.empty ? '' : day.num}
-                </div>
+                </button>
               ))}
             </div>
           ))}
@@ -327,6 +335,8 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
   const datosCompletos = telefonoValido;
 
   const toggleHour = (i: number) => {
+    const slot = hours[i];
+    if (slot) trackHorarioClase(materiaSlug, `${slot.from}-${slot.to}`);
     setSelectedHours(prev => {
       const next = new Set(prev);
       if (next.has(i)) next.delete(i); else next.add(i);
@@ -336,6 +346,8 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
   };
 
   const togglePerDayHour = (day: string, i: number) => {
+    const slot = hours[i];
+    if (slot) trackHorarioClase(materiaSlug, `${slot.from}-${slot.to}`);
     setPerDayHours(prev => {
       const daySet = new Set(prev[day] || []);
       if (daySet.has(i)) daySet.delete(i); else daySet.add(i);
@@ -829,7 +841,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
                   entraba desde Google no leia en ningun lado que esto es en
                   Villa Lugano hasta el texto del pie. */}
               <h1 className="ca-widget-h1">
-                Clases de apoyo de <strong>{materia.label}</strong> en Villa Lugano
+                  Clases particulares de <strong>{materia.label}</strong> en Villa Lugano
               </h1>
             </div>
           </header>
@@ -867,7 +879,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
 
                     {/* Row 2: Calendar + Schedule */}
                     <div className="ca-r2">
-                      <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} />
+                      <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} materiaSlug={materia.slug} />
                       <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
                     </div>
                   </>
@@ -897,6 +909,7 @@ export default function ClasesApoyoPage({ materiasNav, materia }: { materiasNav:
               target="_blank"
               rel="noopener noreferrer nofollow"
               className="ca-wa-link"
+              onClick={() => trackWhatsappClase(materia.slug)}
             >
               <WhatsAppIcon />
               {/* Una materia en construccion todavia no tiene profesor asignado:

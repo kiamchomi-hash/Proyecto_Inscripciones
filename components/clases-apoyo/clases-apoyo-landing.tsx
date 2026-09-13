@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { sanitizeContent } from '@/lib/sanitize-content';
 import { MAPS_URL } from '@/lib/sede';
+import { NUMERO_CAU } from '@/lib/whatsapp';
+import LandingAnalytics from './landing-analytics';
 
 // La portada es un Server Component a propósito: toda la interacción es
 // navegación nativa y CSS, así que no necesita enviar JavaScript al navegador.
@@ -64,7 +66,7 @@ function Materia({ materia, numero }: { materia: MateriaCard; numero: number }) 
     return <div className="ca-materia ca-materia-off" aria-label={`${materia.label} — próximamente`}>{contenido}</div>;
   }
 
-  return <Link href={`/clases-apoyo/${materia.slug}`} className="ca-materia">{contenido}</Link>;
+  return <Link href={`/clases-apoyo/${materia.slug}`} className="ca-materia" data-clase-materia={materia.slug}>{contenido}</Link>;
 }
 
 const BARRIOS = ['Villa Lugano', 'Villa Riachuelo', 'Barrio Piedrabuena', 'Lugano I y II', 'Villa Soldati', 'Mataderos', 'Villa Celina'];
@@ -76,8 +78,12 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
         <Image src="/imagenes/clases-apoyo/hero-mesa-estudio.webp" alt="" fill preload quality={90} sizes="100vw" className="ca-hero-imagen" />
         <div className="ca-hero-velo" />
         <div className="ca-hero-contenido">
-          <h1 id="ca-hero-titulo">Clases de apoyo<span>en Villa Lugano</span></h1>
-          <a className="ca-hero-cta" href="#materias">Elegí una materia <Flecha /></a>
+          <h1 id="ca-hero-titulo">Clases particulares<span>y apoyo escolar en Villa Lugano</span></h1>
+          <p className="ca-hero-bajada">Para primaria y secundaria, con clases individuales o en grupo reducido.</p>
+          <div className="ca-hero-acciones">
+            <a className="ca-hero-cta" href="#materias">Elegí una materia <Flecha /></a>
+            <a className="ca-hero-cta ca-hero-cta-secundario" href={`https://wa.me/${NUMERO_CAU}?text=Hola%2C%20quiero%20consultar%20por%20clases%20particulares`} target="_blank" rel="noopener noreferrer nofollow">Consultar por WhatsApp</a>
+          </div>
         </div>
         <span className="ca-hero-marca" aria-hidden="true">CAU Villa Lugano</span>
       </section>
@@ -132,6 +138,7 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
           <a className="ca-ubicacion-link" href={MAPS_URL} target="_blank" rel="noopener noreferrer">Cómo llegar <Flecha /></a>
         </div>
       </section>
+      <LandingAnalytics />
     </main>
   );
 }

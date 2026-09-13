@@ -47,6 +47,23 @@ export function trackSolicitudClase(materias: number) {
   track('solicitud-clase', { materias });
 }
 
+/** Interacciones del embudo de clases; nunca incluye datos personales. */
+export function trackMateriaClase(materia: string) {
+  track('clase-materia', { materia });
+}
+
+export function trackDiaClase(materia: string) {
+  track('clase-dia', { materia });
+}
+
+export function trackHorarioClase(materia: string, horario: string) {
+  track('clase-horario', { materia, horario });
+}
+
+export function trackWhatsappClase(materia: string) {
+  track('clase-whatsapp', { materia });
+}
+
 /**
  * Un clic en cualquiera de los botones de WhatsApp que llevan al numero del
  * CAU. Es la conversion mas transitada del sitio y hasta ahora no se media:

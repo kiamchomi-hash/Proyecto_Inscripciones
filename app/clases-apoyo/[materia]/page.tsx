@@ -55,8 +55,8 @@ export async function generateMetadata({ params }: { params: Promise<{ materia: 
   const label = ficha.label;
 
   return {
-    title: { absolute: `Clases de apoyo de ${label} en Villa Lugano | CAU Siglo 21` },
-    description: `Clases de apoyo de ${label} en Villa Lugano: presenciales, individuales o en grupo reducido, con horario a convenir. Guaminí 4876.`,
+    title: { absolute: `Clases particulares de ${label} en Villa Lugano | CAU Siglo 21` },
+    description: `Clases particulares y apoyo escolar de ${label} en Villa Lugano: presenciales, individuales o en grupo reducido, con horario a convenir. Guaminí 4876.`,
     alternates: { canonical: `${BASE_URL}/clases-apoyo/${ficha.slug}` },
     // Una materia en construcción no tiene contenido propio que indexar: es el
     // cartel de "vuelva pronto". Se deja fuera del índice hasta que lo tenga
@@ -84,9 +84,9 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
   const serviceSchema = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: `Clases de apoyo de ${ficha.label}`,
+    name: `Clases particulares de ${ficha.label}`,
     serviceType: 'Clases de apoyo escolar',
-    description: `Clases de apoyo de ${ficha.label} en Villa Lugano, presenciales.`,
+    description: `Clases particulares de ${ficha.label} en Villa Lugano, presenciales.`,
     url,
     areaServed: { '@type': 'Place', name: 'Villa Lugano, Ciudad Autónoma de Buenos Aires' },
     provider: {
