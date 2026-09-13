@@ -54,6 +54,35 @@ async function enTandas<T>(items: T[], fn: (item: T) => Promise<void>) {
 /** El mensaje de un fallo tiene que alcanzar para saber que romper mirar. */
 const motivo = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
+function mensajeParaTelegram(fallo: string) {
+  const separador = ' — ';
+  const separadorEn = fallo.indexOf(separador);
+  const que = separadorEn >= 0 ? fallo.slice(0, separadorEn) : fallo;
+  const detalle = separadorEn >= 0 ? fallo.slice(separadorEn + separador.length) : '';
+
+  if (que === '/sitemap.xml') {
+    if (detalle.includes('no devolvio ninguna')) {
+      return 'El mapa de páginas del sitio está vacío. Google no puede descubrir las páginas nuevas; revisar la generación del sitemap y la conexión con la base de datos.';
+    }
+    return 'El mapa de páginas del sitio no estuvo disponible. Google podría no detectar cambios o páginas nuevas; revisar la conexión del sitio con la base de datos.';
+  }
+
+  if (que === 'URL del sitemap') {
+    const url = detalle.split(' → ')[0];
+    return `Una página incluida en el mapa no está disponible: ${url}. Revisar esa página publicada.`;
+  }
+
+  if (que === 'cabeceras de la home' || que === 'content-security-policy' || que === 'x-content-type-options' || que === 'referrer-policy' || que === 'permissions-policy' || que === 'strict-transport-security') {
+    return 'La página principal no cumple una configuración de seguridad esperada. Revisar las cabeceras del sitio.';
+  }
+
+  if (que.startsWith('/')) {
+    return `La página ${que} no está disponible. Revisar el sitio publicado.`;
+  }
+
+  return `El redireccionamiento ${que} no funciona como debería. Revisar la configuración de enlaces del sitio.`;
+}
+
 async function correrChequeos(base: string) {
   const fallos: string[] = [];
   const falla = (que: string, detalle: string) => fallos.push(`${que} — ${detalle}`);
@@ -117,21 +146,25 @@ async function correrChequeos(base: string) {
   let urlsSitemap = 0;
   try {
     const sm = await pedir(base + '/sitemap.xml');
-    const xml = await sm.text();
-    const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim());
-    urlsSitemap = urls.length;
-
-    if (urls.length === 0) {
-      falla('/sitemap.xml', 'no devolvio ninguna <loc>');
+    if (sm.status !== 200) {
+      falla('/sitemap.xml', `HTTP ${sm.status}`);
     } else {
-      await enTandas(urls, async u => {
-        try {
-          const r = await pedir(u);
-          if (r.status !== 200) falla('URL del sitemap', `${u} → HTTP ${r.status}`);
-        } catch (e) {
-          falla('URL del sitemap', `${u} → ${motivo(e)}`);
-        }
-      });
+      const xml = await sm.text();
+      const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim());
+      urlsSitemap = urls.length;
+
+      if (urls.length === 0) {
+        falla('/sitemap.xml', 'no devolvio ninguna <loc>');
+      } else {
+        await enTandas(urls, async u => {
+          try {
+            const r = await pedir(u);
+            if (r.status !== 200) falla('URL del sitemap', `${u} → HTTP ${r.status}`);
+          } catch (e) {
+            falla('URL del sitemap', `${u} → ${motivo(e)}`);
+          }
+        });
+      }
     }
   } catch (e) {
     falla('/sitemap.xml', motivo(e));
@@ -188,11 +221,11 @@ export async function GET(request: NextRequest) {
   if (fallos.length > 0) {
     aviso = await avisar(
       [
-        `Vigilancia de ${BASE_PROD}`,
-        `${fallos.length} falla(s):`,
+        `Vigilancia del sitio ${BASE_PROD}`,
+        fallos.length === 1 ? 'Se detectó un problema:' : `Se detectaron ${fallos.length} problemas:`,
         '',
-        ...fallos.slice(0, 20).map(f => `• ${f}`),
-        fallos.length > 20 ? `…y ${fallos.length - 20} mas.` : '',
+        ...fallos.slice(0, 20).map(f => `• ${mensajeParaTelegram(f)}`),
+        fallos.length > 20 ? `También hay ${fallos.length - 20} problemas más.` : '',
       ]
         .filter(Boolean)
         .join('\n'),

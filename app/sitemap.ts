@@ -14,6 +14,7 @@ export const dynamic = 'force-dynamic';
 
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
+const REINTENTOS_SUPABASE = 2;
 
 type CarreraFila = Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'slides'> & {
   updated_at: string | null;
@@ -29,6 +30,24 @@ function imagenDeCarrera(c: CarreraFila): string | null {
   return portada?.imagen_desktop || portada?.imagen_mobile || null;
 }
 
+// Supabase puede responder Gateway Timeout durante un pico de pedidos aunque
+// la consulta siguiente funcione. El sitemap es de solo lectura, así que una
+// repetición breve evita convertir ese fallo transitorio en un HTTP 500.
+async function consultarConReintentos<T>(consulta: () => Promise<T>): Promise<T> {
+  let ultimoError: unknown;
+  for (let intento = 0; intento <= REINTENTOS_SUPABASE; intento++) {
+    try {
+      return await consulta();
+    } catch (error) {
+      ultimoError = error;
+      if (intento < REINTENTOS_SUPABASE) {
+        await new Promise(resolve => setTimeout(resolve, 250 * (intento + 1)));
+      }
+    }
+  }
+  throw ultimoError;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.siglo21sur.com';
 
@@ -40,11 +59,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Carreras activas de la oferta vigente. Los niveles que quedaron fuera del
   // catalogo (Posgrado, APLV, Certificacion, Curso) ya no tienen pagina.
-  const { data: carreras } = await supabase
+  const { data: carreras } = await consultarConReintentos(async () => await supabase
     .from('carreras')
     .select('nombre, prefix, nivel, slides, updated_at')
     .eq('activa', true)
-    .throwOnError();
+    .throwOnError()
+    .then(resultado => resultado));
 
   const carrerasEntries: MetadataRoute.Sitemap = ((carreras || []) as CarreraFila[])
     .filter(esCarreraVisible)
@@ -68,12 +88,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Materias activas (clases de apoyo). Las que están en construcción quedan
   // afuera: su página es el cartel de "vuelva pronto" y no hay nada que
   // indexar. Vuelven solas al sitemap cuando se les carga el contenido.
-  const { data: materias } = await supabase
+  const { data: materias } = await consultarConReintentos(async () => await supabase
     .from('materias')
     .select('slug')
     .eq('activa', true)
     .eq('en_construccion', false)
-    .throwOnError();
+    .throwOnError()
+    .then(resultado => resultado));
 
   // Estas no llevan lastmod aunque `materias` tenga `updated_at`: la columna se
   // mueve cada vez que un profesor toca sus horarios desde el panel, y eso no
@@ -86,12 +107,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Calcular total de páginas de novedades
-  const { count } = await supabase
+  const { count } = await consultarConReintentos(async () => await supabase
     .from('novedades')
     .select('id', { count: 'exact', head: true })
     .eq('publicada', true)
     .eq('pinned', false)
-    .throwOnError();
+    .throwOnError()
+    .then(resultado => resultado));
 
   const total = count ?? 0;
   const totalPages = Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
@@ -103,12 +125,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Artículos individuales de novedades
-  const { data: novedades } = await supabase
+  const { data: novedades } = await consultarConReintentos(async () => await supabase
     .from('novedades')
     .select('slug, fecha, imagen_url')
     .eq('publicada', true)
     .not('slug', 'is', null)
-    .throwOnError();
+    .throwOnError()
+    .then(resultado => resultado));
 
   // La foto limpia del articulo (imagen_url), no la og compuesta: la og lleva el
   // titulo estampado encima y para Google Imagenes vale mas la foto sola.

@@ -19,14 +19,17 @@ test('un fallo del detalle no queda memorizado y las llamadas concurrentes compa
   }
 });
 
-function cargarPagina(archivo, fallaEn = 1) {
+function cargarPagina(archivo, fallaEn = 1, persistente = false) {
   let consultas = 0;
   const error = new Error('Base temporalmente inaccesible');
   const supabase = { from: () => {
     const numero = ++consultas;
     const consulta = new Proxy({}, { get: (_, metodo) => {
       if (metodo === 'then') return resolver => resolver({ data: [], count: 0, error: numero === fallaEn ? error : null });
-      if (metodo === 'throwOnError') return () => numero === fallaEn ? Promise.reject(error) : Promise.resolve({ data: [], count: 0 });
+      if (metodo === 'throwOnError') {
+        const falla = persistente ? numero >= fallaEn : numero === fallaEn;
+        return () => falla ? Promise.reject(error) : Promise.resolve({ data: [], count: 0 });
+      }
       return () => consulta;
     } });
     return consulta;
@@ -45,9 +48,9 @@ test('home y carrera rechazan fallas de la base antes de renderizar vacío o dev
   await assert.rejects(cargarPagina('app/carreras/[slug]/page.tsx').default({ params: Promise.resolve({ slug: 'abogacia' }) }), /Base temporalmente inaccesible/);
 });
 
-test('el sitemap falla completo si falla cualquiera de sus cuatro lecturas', async () => {
+test('el sitemap reintenta un timeout transitorio y falla si la base sigue inaccesible', async () => {
   for (let i = 1; i <= 4; i++) {
-    await assert.rejects(cargarPagina('app/sitemap.ts', i).default(), /Base temporalmente inaccesible/);
+    assert.ok((await cargarPagina('app/sitemap.ts', i).default()).length > 0);
   }
-  assert.ok((await cargarPagina('app/sitemap.ts', -1).default()).length > 0);
+  await assert.rejects(cargarPagina('app/sitemap.ts', 1, true).default(), /Base temporalmente inaccesible/);
 });
