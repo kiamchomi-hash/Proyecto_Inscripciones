@@ -209,21 +209,23 @@ function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados, ma
         <div className="flex-1 flex flex-col">
           {weeks.map((week, wi) => (
             <div key={wi} className="ca-day-grid">
-              {week.map((day, di) => (
+              {week.map((day, di) => day.empty ? (
+                <span key={di} className="ca-day empty" aria-hidden="true" />
+              ) : (
                 <button
                   type="button"
                   key={di}
-                  className={`ca-day ${day.empty ? 'empty' : ''} ${(day.past || bloqueadosSet.has(day.key)) && !day.empty ? 'past' : ''} ${selectedDays.has(day.key) ? 'selected' : ''} ${day.key === todayStr ? 'today' : ''} ${bloqueadosSet.has(day.key) && !day.empty ? 'blocked' : ''}`}
-                  disabled={day.past || day.empty || locked || bloqueadosSet.has(day.key)}
-                  aria-label={day.empty ? undefined : `${day.num} de ${monthName} de ${viewYear}${day.past || bloqueadosSet.has(day.key) ? ', no disponible' : ''}`}
-                  aria-pressed={!day.empty && selectedDays.has(day.key)}
+                  className={`ca-day ${day.past || bloqueadosSet.has(day.key) ? 'past' : ''} ${selectedDays.has(day.key) ? 'selected' : ''} ${day.key === todayStr ? 'today' : ''} ${bloqueadosSet.has(day.key) ? 'blocked' : ''}`}
+                  disabled={day.past || locked || bloqueadosSet.has(day.key)}
+                  aria-label={`${day.num} de ${monthName} de ${viewYear}${day.past || bloqueadosSet.has(day.key) ? ', no disponible' : ''}`}
+                  aria-pressed={selectedDays.has(day.key)}
                   onClick={() => {
                     if (day.past || day.empty || locked || bloqueadosSet.has(day.key)) return;
                     trackDiaClase(materiaSlug);
                     onToggleDay(day.key, { num: day.num.toString().padStart(2, '0'), month: monthName, past: day.past });
                   }}
                 >
-                  {day.empty ? '' : day.num}
+                  {day.num}
                 </button>
               ))}
             </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,6 +25,29 @@ interface Novedad {
   updated_at: string | null;
 }
 
+// Metadata y página deben salir de la misma lectura. Antes hacían dos consultas:
+// si una respuesta transitoria de Supabase fallaba sólo en generateMetadata, el
+// artículo respondía 200 pero quedaba cacheado como "Novedad no encontrada", sin
+// descripción ni canónica. React cache comparte el resultado durante el render.
+const obtenerNovedad = cache(async (slug: string): Promise<Novedad | null> => {
+  let ultimoError: Error | null = null;
+
+  for (let intento = 0; intento < 3; intento++) {
+    const { data, error } = await supabase
+      .from('novedades')
+      .select('id, titulo, contenido, extracto, fecha, tag, imagen_url, slug, updated_at')
+      .eq('slug', slug)
+      .eq('publicada', true)
+      .maybeSingle();
+
+    if (!error) return data as Novedad | null;
+    ultimoError = error;
+    if (intento < 2) await new Promise(resolve => setTimeout(resolve, 250 * (intento + 1)));
+  }
+
+  throw ultimoError ?? new Error('No se pudo leer la novedad');
+});
+
 export async function generateStaticParams() {
   const { data } = await supabase
     .from('novedades')
@@ -36,12 +60,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const { data } = await supabase
-    .from('novedades')
-    .select('titulo, extracto, imagen_url')
-    .eq('slug', slug)
-    .eq('publicada', true)
-    .single();
+  const data = await obtenerNovedad(slug);
 
   if (!data) return { title: 'Novedad no encontrada' };
 
@@ -73,13 +92,7 @@ function formatDate(iso: string): string {
 
 export default async function ArticuloPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-
-  const { data } = await supabase
-    .from('novedades')
-    .select('id, titulo, contenido, extracto, fecha, tag, imagen_url, slug, updated_at')
-    .eq('slug', slug)
-    .eq('publicada', true)
-    .single();
+  const data = await obtenerNovedad(slug);
 
   if (!data) notFound();
 

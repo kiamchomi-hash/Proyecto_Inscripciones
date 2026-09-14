@@ -62,8 +62,10 @@ await context.route('**/*', async route => {
       return await route.fulfill({ response: respuesta, headers });
     } catch { return route.abort('failed').catch(() => {}); }
   }
-  // Las claves reales de Turnstile rechazan localhost. No se simula su validación.
-  if (esLocal && u.hostname === 'challenges.cloudflare.com') return route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
+  // Turnstile queda fuera de estos recorridos: WebKit registra como pageerror el
+  // acceso cruzado de su iframe aunque la página funcione. Su validación real se
+  // controla por el procedimiento manual; acá evitamos además generar tráfico.
+  if (u.hostname === 'challenges.cloudflare.com') return route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
   if (u.pathname.startsWith('/_vercel/') || /google-analytics|googletagmanager|vercel-insights|vercel-scripts/.test(u.hostname) || u.pathname.startsWith('/api/track-')) return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method()) && u.origin === new URL(base).origin) return route.abort('blockedbyclient');
   return route.continue();
@@ -164,6 +166,7 @@ try {
       await page.keyboard.press('Tab');
       assert.ok(await dialogo.evaluate(e => e.contains(document.activeElement)), 'El foco quedó fuera del modal');
       await page.keyboard.press('Escape'); await dialogo.waitFor({ state: 'hidden' });
+      await page.waitForURL(url => url.pathname === '/', { timeout: 5000 });
       assert.equal(new URL(page.url()).pathname, '/', 'No volvió a la ruta del catálogo');
     });
     await comprobar(`FAQ: teclado y retorno del foco ${width}`, async () => {
