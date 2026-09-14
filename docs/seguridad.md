@@ -113,3 +113,9 @@ Hallazgos adicionales: JSON inválido devuelve 503 en el endpoint de formularios
 Actualizados sanitize-html a 2.17.7, fflate a 0.8.3 y Browserslist a 4.28.9: audit total y sin desarrollo en cero. El endpoint devuelve 400 para JSON mal formado y sobres inválidos; producción nunca acepta el modo `rate-limit-only` por falta de secreto. En desarrollo ese modo exige además `NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL=1` y no saltea la cuota ni la credencial de escritura. Lecturas de carreras y sitemap propagan errores para evitar publicar contenido vacío.
 
 `check` aprobado (65 tests), build de producción aprobado y pruebas del navegador/PDF aprobadas. No se publicaron estos cambios ni se alteraron grants, secretos, triggers o firewall. [Resultados y límites](correcciones-auditoria-2026-09-05.md).
+
+### 14/09/2026, controles automáticos de producción
+
+`npm audit` sin vulnerabilidades, `npm run check` aprobado (72 tests), build y GitHub Actions aprobados. El smoke verificó cabeceras, rutas, redirects y las 111 URLs del sitemap. El barrido SEO detectó y permitió corregir un artículo que había quedado cacheado con título de error y sin canónica: metadata y página ahora comparten una lectura con reintentos. Axe detectó botones vacíos en el calendario de clases; los espacios del mes dejaron de ser controles interactivos. Chromium, Firefox y WebKit aprobaron los recorridos posteriores.
+
+El digest diario registró un timeout de pg_net a los 5 s. El job existente se reprogramó, sin duplicarlo, con 15 s y quedó activo en el mismo horario. No se disparó un digest de prueba para evitar un aviso real; la siguiente ejecución diaria es la comprobación de punta a punta.

@@ -45,7 +45,10 @@ BEGIN
                        WHERE name = 'WEBHOOK_SECRET'
                      )
                    ),
-        body    := '{}'::jsonb
+        body    := '{}'::jsonb,
+        -- La función consulta Analytics antes de responder; 5 s dejó un falso
+        -- fallo el 14/09/2026 aunque el cron sí se ejecutó.
+        timeout_milliseconds := 15000
       );
     $cron$
   );

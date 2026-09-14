@@ -257,7 +257,10 @@ BEGIN
                        WHERE name = 'WEBHOOK_SECRET'
                      )
                    ),
-        body    := '{}'::jsonb
+        body    := '{}'::jsonb,
+        -- La función consulta Analytics antes de responder; el límite por
+        -- defecto de 5 s es insuficiente en un arranque frío.
+        timeout_milliseconds := 15000
       );
     $cron$
   );
