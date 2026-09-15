@@ -673,7 +673,28 @@
 
 .ca-materias-seccion {
   scroll-margin-top: calc(var(--navbar-height, 60px) + 1rem);
-  padding-top: clamp(3rem, 4vw, 4rem);
+  padding-top: clamp(2rem, 4vw, 4rem);
+  position: relative;
+  isolation: isolate;
+}
+
+/* Detalle tomado de las piezas propias `tarjetas-teal-grano-girado-gitbutler`
+   y `trama-puntos-cifra-supabase`: volumen y textura muy suaves, sin crear
+   otra sección ni poner una caja detrás de cada materia. */
+.ca-materias-seccion::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: -12%;
+  width: 58%;
+  height: 70%;
+  pointer-events: none;
+  opacity: 0.42;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(0, 199, 177, 0.12), transparent 38%),
+    radial-gradient(circle at 35% 70%, rgba(72, 179, 164, 0.07), transparent 42%);
+  filter: blur(10px);
 }
 
 .ca-encabezado {
@@ -721,15 +742,31 @@
   display: grid;
   min-width: 0;
   min-height: 132px;
-  grid-template-columns: 34px 48px minmax(0, 1fr) auto;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
   border-top: 1px solid rgba(0, 199, 177, 0.22);
   color: inherit;
   padding: 1.5rem 0.35rem;
   text-decoration: none;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   animation: ca-materia-entrada 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Halo de hover adaptado de `tarjetas-vidrio-tenido-weaviate`: sólo aparece
+   como profundidad alrededor de la fila y no altera su tamaño ni posición. */
+.ca-materia::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 15% 0 -10%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 18% 50%, rgba(0, 199, 177, 0.18), transparent 42%);
+  filter: blur(18px);
+  transition: opacity 0.3s ease;
 }
 
 .ca-materia:nth-child(2) { animation-delay: 0.04s; }
@@ -744,7 +781,10 @@
 a.ca-materia:hover {
   border-color: rgba(0, 199, 177, 0.72);
   background: linear-gradient(90deg, rgba(0, 199, 177, 0.08), transparent 75%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
+
+a.ca-materia:hover::before { opacity: 1; }
 
 .ca-materia-numero {
   align-self: start;
@@ -760,10 +800,12 @@ a.ca-materia:hover {
   width: 48px;
   height: 48px;
   place-items: center;
-  border: 1px solid rgba(0, 199, 177, 0.24);
-  border-radius: 50%;
+  border: 1px solid rgba(0, 199, 177, 0.42);
+  border-radius: 0.55rem;
+  background: rgba(0, 199, 177, 0.06);
   color: var(--ca-teal);
-  transition: background-color 0.22s ease, color 0.22s ease, border-color 0.22s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 0 rgba(0, 199, 177, 0);
+  transition: background-color 0.22s ease, color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
 .ca-materia-icon { width: 22px; height: 22px; }
@@ -772,6 +814,7 @@ a.ca-materia:hover .ca-materia-ico {
   border-color: var(--ca-teal);
   background: var(--ca-teal);
   color: #013729;
+  box-shadow: 0 0 0 4px rgba(0, 199, 177, 0.12);
 }
 
 .ca-materia-contenido { min-width: 0; }
@@ -813,6 +856,12 @@ a.ca-materia:hover .ca-materia-ico {
 
 .ca-materia-accion svg { width: 16px; height: 16px; }
 .ca-materia-estado { color: var(--ca-gold); }
+
+/* Chip de borde cromático, adaptado de `iconos-chip-borde-color-bugatti` con
+   los únicos acentos permitidos en esta sección. */
+.ca-materia:nth-child(2n) .ca-materia-ico { border-color: rgba(72, 179, 164, 0.55); color: #48b3a4; }
+.ca-materia:nth-child(3n) .ca-materia-ico { border-color: rgba(230, 155, 5, 0.42); color: #e69b05; }
+.ca-materia-off .ca-materia-ico { border-color: rgba(255, 255, 255, 0.16); color: #87a09b; background: transparent; }
 
 .ca-materia-off { opacity: 0.52; }
 .ca-materia-off .ca-materia-ico { border-color: rgba(255, 255, 255, 0.16); color: #87a09b; }
@@ -928,11 +977,11 @@ a.ca-materia:hover .ca-materia-ico {
   .ca-hero-marca { top: 1.2rem; right: 1rem; }
   .ca-seccion { padding-block: 4.5rem; }
   .ca-encabezado { margin-bottom: 2.4rem; }
-  .ca-materia { min-height: 118px; grid-template-columns: 26px 42px minmax(0, 1fr); gap: 0.8rem; padding-block: 1.25rem; }
+  .ca-materia { min-height: 118px; grid-template-columns: 42px minmax(0, 1fr); gap: 0.8rem; padding-block: 1.25rem; }
   .ca-materia-ico { width: 42px; height: 42px; }
   .ca-materia-icon { width: 19px; height: 19px; }
   .ca-materia-accion,
-  .ca-materia-estado { grid-column: 3; margin-top: -0.4rem; justify-self: start; }
+  .ca-materia-estado { grid-column: 2; margin-top: -0.4rem; justify-self: start; }
   .ca-materia-descripcion { -webkit-line-clamp: 1; }
   .ca-metodo { padding-block: 4.5rem; }
   .ca-metodo-datos { grid-template-columns: 1fr; }
@@ -1031,4 +1080,134 @@ a.ca-materia:hover .ca-materia-ico {
   height: 5px;
   border-radius: 50%;
   background: var(--ca-teal);
+}
+.ca-materias-seccion {
+  padding-top: clamp(2.25rem, 5vw, 4rem);
+}
+
+.ca-materias-lista {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  width: min(100%, 1180px);
+  margin-inline: auto;
+}
+
+.ca-materia {
+  min-height: 220px;
+  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  gap: 0 1rem;
+  padding: 1.45rem;
+  border: 1px solid rgba(185, 235, 226, 0.28);
+  border-radius: 1.1rem;
+  background: linear-gradient(145deg, #166d62, #08221f 78%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 16px 38px rgba(0, 0, 0, 0.16);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ca-materia::before {
+  inset: -48% auto auto 8%;
+  width: 84%;
+  height: 84%;
+  opacity: 0.34;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.28), transparent 66%);
+  filter: blur(22px);
+  transition: none;
+}
+
+.ca-materia-contenido { display: contents; }
+
+.ca-materia-ico {
+  grid-column: 1;
+  grid-row: 1;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: 0.75rem;
+  background: linear-gradient(145deg, rgba(0, 255, 225, 0.26), rgba(0, 108, 91, 0.52));
+  border-color: rgba(0, 255, 225, 0.68);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 0 22px rgba(0, 255, 225, 0.14);
+}
+
+.ca-materia-titulo {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  font-size: clamp(1.45rem, 2vw, 1.8rem);
+  line-height: 1;
+}
+
+.ca-materia-descripcion {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: start;
+  margin-top: 1rem;
+  color: rgba(244, 251, 249, 0.86);
+  font-size: 0.875rem;
+  font-weight: 520;
+  letter-spacing: 0.005em;
+  line-height: 1.48;
+}
+
+.ca-materia-accion,
+.ca-materia-estado {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  align-self: end;
+  justify-self: stretch;
+  justify-content: space-between;
+  margin-top: 1.35rem;
+}
+
+.ca-materia:nth-child(2) { background: linear-gradient(145deg, #294b78, #0b1c31 80%); }
+.ca-materia:nth-child(3) { background: linear-gradient(145deg, #126078, #071f2a 80%); }
+.ca-materia:nth-child(4) { background: linear-gradient(145deg, #80652a, #211b12 80%); }
+.ca-materia:nth-child(5) { background: linear-gradient(145deg, #8d3042, #28131b 80%); }
+
+.ca-materia:nth-child(2) .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(118, 170, 255, 0.38), rgba(35, 65, 120, 0.7));
+  border-color: rgba(151, 194, 255, 0.72);
+  color: #e3efff;
+}
+
+.ca-materia:nth-child(3) .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(52, 214, 218, 0.34), rgba(16, 91, 111, 0.72));
+  border-color: rgba(118, 239, 235, 0.7);
+  color: #e1fffd;
+}
+
+.ca-materia:nth-child(4) .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(236, 190, 72, 0.38), rgba(116, 78, 19, 0.72));
+  border-color: rgba(247, 211, 111, 0.72);
+  color: #fff5cb;
+}
+
+.ca-materia:nth-child(5) .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(244, 94, 116, 0.4), rgba(123, 29, 54, 0.74));
+  border-color: rgba(255, 144, 158, 0.76);
+  color: #ffe5e9;
+}
+
+a.ca-materia:hover {
+  transform: none;
+  background: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 20px 42px rgba(0, 0, 0, 0.34);
+}
+
+a.ca-materia:hover::before { transform: none; opacity: 0.34; }
+
+.ca-materia:nth-child(2n):hover { border-color: rgba(151, 194, 255, 0.9); }
+.ca-materia:nth-child(3n):hover { border-color: rgba(118, 239, 235, 0.9); }
+.ca-materia:nth-child(4n):hover { border-color: rgba(247, 211, 111, 0.9); }
+.ca-materia:nth-child(5n):hover { border-color: rgba(255, 144, 158, 0.92); }
+
+@media (max-width: 1020px) {
+  .ca-materias-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .ca-materias-lista { grid-template-columns: 1fr; gap: 0.75rem; }
+  .ca-materia { min-height: 198px; padding: 1.25rem; }
 }

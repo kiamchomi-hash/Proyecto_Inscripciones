@@ -2,11 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { sanitizeContent } from '@/lib/sanitize-content';
 import { MAPS_URL } from '@/lib/sede';
-import { NUMERO_CAU } from '@/lib/whatsapp';
 import LandingAnalytics from './landing-analytics';
 
-// La portada es un Server Component a propósito: toda la interacción es
-// navegación nativa y CSS, así que no necesita enviar JavaScript al navegador.
+// La portada empieza directamente con las materias: el contexto ya está dado
+// por la navegación. El h1 queda disponible para SEO y lectores de pantalla,
+// sin agregar una introducción visual que la persona no necesita.
 export interface MateriaCard {
   id: string;
   slug: string;
@@ -43,10 +43,9 @@ function Flecha() {
   );
 }
 
-function Materia({ materia, numero }: { materia: MateriaCard; numero: number }) {
+function Materia({ materia }: { materia: MateriaCard }) {
   const contenido = (
     <>
-      <span className="ca-materia-numero" aria-hidden="true">{String(numero).padStart(2, '0')}</span>
       <span className="ca-materia-ico"><IconoMateria slug={materia.slug} /></span>
       <span className="ca-materia-contenido">
         <span className="ca-materia-titulo">{materia.label}</span>
@@ -74,42 +73,11 @@ const BARRIOS = ['Villa Lugano', 'Villa Riachuelo', 'Barrio Piedrabuena', 'Lugan
 export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard[] }) {
   return (
     <main className="ca-landing">
-      <section className="ca-hero" aria-labelledby="ca-hero-titulo">
-        <Image src="/imagenes/clases-apoyo/hero-mesa-estudio.webp" alt="" fill preload quality={90} sizes="100vw" className="ca-hero-imagen" />
-        <div className="ca-hero-velo" />
-        <div className="ca-hero-contenido">
-          <h1 id="ca-hero-titulo">Clases particulares<span>y apoyo escolar en Villa Lugano</span></h1>
-          <p className="ca-hero-bajada">Para primaria y secundaria, con clases individuales o en grupo reducido.</p>
-          <div className="ca-hero-acciones">
-            <a className="ca-hero-cta" href="#materias">Elegí una materia <Flecha /></a>
-            <a className="ca-hero-cta ca-hero-cta-secundario" href={`https://wa.me/${NUMERO_CAU}?text=Hola%2C%20quiero%20consultar%20por%20clases%20particulares`} target="_blank" rel="noopener noreferrer nofollow">Consultar por WhatsApp</a>
-          </div>
-        </div>
-        <span className="ca-hero-marca" aria-hidden="true">CAU Villa Lugano</span>
-      </section>
+      <h1 className="sr-only">Clases de apoyo</h1>
 
-      <section className="ca-seccion ca-materias-seccion" id="materias" aria-labelledby="ca-materias-titulo">
-        <div className="ca-encabezado">
-          <span className="ca-eyebrow">Materias</span>
-          <h2 id="ca-materias-titulo">Elegí lo que necesitás preparar</h2>
-          <p>Entrá a la materia para ver los días y horarios disponibles.</p>
-        </div>
+      <section className="ca-seccion ca-materias-seccion" id="materias" aria-label="Materias disponibles">
         <div className="ca-materias-lista">
-          {materias.map((materia, index) => <Materia key={materia.id} materia={materia} numero={index + 1} />)}
-        </div>
-      </section>
-
-      <section className="ca-metodo" aria-labelledby="ca-metodo-titulo">
-        <div className="ca-metodo-titulo">
-          <span className="ca-eyebrow">La clase se adapta a vos</span>
-          <h2 id="ca-metodo-titulo">Traé lo que estás viendo en la escuela</h2>
-        </div>
-        <div className="ca-metodo-texto">
-          <p>Trabajamos con tu carpeta y las consignas de tu propia escuela. Podés venir para preparar una prueba, resolver un tema puntual o sostener el aprendizaje durante el año.</p>
-          <dl className="ca-metodo-datos">
-            <div><dt>Modalidad</dt><dd>Individual o en grupo reducido</dd></div>
-            <div><dt>Frecuencia</dt><dd>Una clase o acompañamiento regular</dd></div>
-          </dl>
+          {materias.map(materia => <Materia key={materia.id} materia={materia} />)}
         </div>
       </section>
 
