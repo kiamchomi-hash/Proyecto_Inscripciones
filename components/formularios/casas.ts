@@ -139,7 +139,7 @@ export const CASAS: Record<CasaId, Casa> = {
   siglo21: {
     nombre: 'Universidad Siglo 21',
     niveles: ['Grado', 'Grado (CCC)', 'Pregrado'],
-    contacto: ['nombre', 'equivalencias', 'email', 'telefono'],
+    contacto: ['nombre', 'apellido', 'equivalencias', 'email', 'telefono'],
     // La ficha del portal de Siglo 21, en su orden. No pide nivel de estudios
     // ni colegio: eso es de Teclab, no de acá.
     //
@@ -158,7 +158,7 @@ export const CASAS: Record<CasaId, Casa> = {
     nombre: 'Teclab',
     niveles: ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'],
     // Teclab no acredita equivalencias.
-    contacto: ['nombre', 'email', 'telefono'],
+    contacto: ['nombre', 'apellido', 'email', 'telefono'],
     preinscripcion: [
       'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
       'nacionalidad', 'estadoCivil',
@@ -171,7 +171,7 @@ export const CASAS: Record<CasaId, Casa> = {
   identidad: {
     nombre: 'Academia Identidad Argentina',
     niveles: ['Identidad Argentina'],
-    contacto: ['nombre', 'email', 'telefono'],
+    contacto: ['nombre', 'apellido', 'email', 'telefono'],
     // Las diplomaturas no tienen requisitos de ingreso —ni secundario, ni
     // título previo, ni examen—, así que el legajo es corto: alcanza con saber
     // quién es y dónde vive.

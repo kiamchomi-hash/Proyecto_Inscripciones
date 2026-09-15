@@ -160,7 +160,7 @@ test('no se pregunta la modalidad: toda la oferta es virtual', () => {
 test('sin carrera elegida se piden los campos que toda casa comparte', () => {
   // La home antes de que el lead elija: no se puede saber la casa todavia.
   const contacto = camposComunes('contacto');
-  assert.deepEqual(contacto, ['nombre', 'email', 'telefono']);
+  assert.deepEqual(contacto, ['nombre', 'apellido', 'email', 'telefono']);
   // Nada exclusivo de una casa puede colarse ahi.
   assert.ok(!contacto.includes('equivalencias'));
 

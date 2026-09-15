@@ -10,7 +10,7 @@ El sitio tiene **dos formularios por casa** —contacto y preinscripción— y u
 
 En la home la casa **la define la carrera elegida** y el formulario cambia solo; en `/teclab` va fija por props. `casa` y `tipo_formulario` se guardan en la fila, y con eso el aviso de Telegram encabeza "PREINSCRIPCIÓN — Teclab" o "Consulta — Siglo 21".
 
-El formulario de **contacto** pide sólo nombre y una vía de respuesta: email o teléfono. Elegir carrera sigue siendo opcional. Apellido y localidad quedan para la preinscripción, donde sí forman parte del legajo; mostrarlos antes sumaba fricción sin bloquear ni mejorar el envío.
+El formulario de **contacto** pide sólo nombre, apellido y una vía de respuesta: email o teléfono. Elegir carrera sigue siendo opcional. Localidad queda para la preinscripción, donde sí forma parte del legajo; mostrarla antes sumaba fricción sin bloquear ni mejorar el envío.
 
 Va todo en un archivo a propósito: Node strippea los tipos y corre los `.ts` en los tests, pero **no resuelve imports de valor entre `.ts` sin extensión**, y el `tsconfig` usa `moduleResolution: bundler` sin `allowImportingTsExtensions`. Separarlo deja la lógica sin poder testearse.
 

@@ -1081,7 +1081,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                           // un bloque fijo y verla crecer y encogerse molesta.
                           // En mobile las columnas se apilan y el hueco quedaría
                           // a la vista, peor que el salto: ahí no está.
-                          className={`${SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'} celda-ancho`}
+                          className={`${!esPreinscripcion && (id === 'nombre' || id === 'apellido') ? SPAN.completo : SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'} celda-ancho`}
                           style={{
                             ...(pide(id) ? null : { visibility: 'hidden' as const }),
                             ['--ancho' as string]: anchosDeColumna(todos)[indice],
