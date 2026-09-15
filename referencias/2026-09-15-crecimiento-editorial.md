@@ -1,0 +1,4 @@
+- https://teclab.edu.ar/carrera/tecnico-en-cloud-administration/ - contenidos, modalidad, duraciÃ³n, tÃ­tulo y perfiles de Cloud Administration.
+- https://21.edu.ar/carreras-y-programas/procurador - funciones, plan de estudios, modalidad, duraciÃ³n y salidas laborales de Procurador.
+- https://www.siglo21sur.com/carreras/tecnicatura-superior-en-cloud-administration - ficha propia enlazada desde el artÃ­culo ampliado.
+- https://www.siglo21sur.com/carreras/procurador - ficha propia enlazada desde el artÃ­culo nuevo.

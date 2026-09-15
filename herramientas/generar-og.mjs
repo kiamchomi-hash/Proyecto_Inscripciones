@@ -183,6 +183,11 @@ const ARTICULOS = [
     foto: 'public/imagenes/teclab/carreras/cloud-administration.webp' },
 ];
 
+// Artículo evergreen de Procurador: reutiliza la foto propia de la carrera.
+ARTICULOS.push({ id: 71, slug: 'que-hace-un-procurador', tag: 'AcadÃ©mico',
+  titulo: 'QuÃ© hace un procurador y dÃ³nde puede trabajar',
+  foto: 'public/imagenes/imagenes_carreras/procurador.webp' });
+
 for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { recursive: true });
 
 // Imagen por defecto del sitio: la toma el layout, asi la home y las fichas de
