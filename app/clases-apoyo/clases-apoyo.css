@@ -1330,10 +1330,8 @@ a.ca-materia:hover .ca-materia-ico {
 /* Fondo de sección inspirado en `trama-puntos-cifra-supabase`: una sola
    superficie con puntos muy apagados, sin otra caja ni pseudo-capa detrás. */
 .ca-materias-seccion {
-  background-color: #061716;
-  background-image: radial-gradient(circle, rgba(72, 179, 164, 0.11) 1px, transparent 1.5px);
-  background-position: center;
-  background-size: 28px 28px;
+  background: transparent;
+  background-image: none;
 }
 
 /* Hover plano: el cambio queda en el borde y el acento del ícono, sin sombra
@@ -1350,3 +1348,14 @@ a.ca-materia:hover .ca-materia-ico,
 .ca-materia-off:hover .ca-materia-ico {
   box-shadow: none;
 }
+
+.ca-materia-accion {
+  min-height: 2.35rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(244, 251, 249, 0.2);
+  border-radius: 0.55rem;
+  background: rgba(4, 18, 17, 0.28);
+  color: #fff;
+}
+
+.ca-materia-accion svg { color: #fff; }
