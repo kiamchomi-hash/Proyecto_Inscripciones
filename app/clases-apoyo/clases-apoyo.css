@@ -1211,3 +1211,42 @@ a.ca-materia:hover::before { transform: none; opacity: 0.34; }
   .ca-materias-lista { grid-template-columns: 1fr; gap: 0.75rem; }
   .ca-materia { min-height: 198px; padding: 1.25rem; }
 }
+
+/* El hover conserva la superficie de la materia: sólo marca el borde. */
+.ca-materias-seccion {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(0, 199, 177, 0.1), transparent 30%),
+    radial-gradient(circle at 88% 88%, rgba(124, 32, 123, 0.08), transparent 28%),
+    linear-gradient(180deg, #0b2422 0%, #071817 100%);
+  border-block: 1px solid rgba(0, 199, 177, 0.14);
+}
+
+.ca-materia { --ca-card-surface: linear-gradient(145deg, #166d62, #08221f 78%); background: var(--ca-card-surface); }
+.ca-materia:nth-child(2) { --ca-card-surface: linear-gradient(145deg, #294b78, #0b1c31 80%); }
+.ca-materia:nth-child(3) { --ca-card-surface: linear-gradient(145deg, #126078, #071f2a 80%); }
+.ca-materia:nth-child(4) { --ca-card-surface: linear-gradient(145deg, #80652a, #211b12 80%); }
+.ca-materia:nth-child(5) { --ca-card-surface: linear-gradient(145deg, #8d3042, #28131b 80%); }
+
+a.ca-materia:hover { background: var(--ca-card-surface); }
+a.ca-materia:hover::before { opacity: 0.34; }
+
+/* Inglés queda visible como oferta futura, sin parecer una tarjeta activa. */
+.ca-materia-off {
+  opacity: 0.48;
+  filter: grayscale(1);
+  background: linear-gradient(145deg, #26312f, #111817 80%) !important;
+  border-color: rgba(196, 211, 207, 0.16);
+  color: #aebbb8;
+}
+
+.ca-materia-off .ca-materia-ico {
+  background: rgba(163, 177, 173, 0.08);
+  border-color: rgba(196, 211, 207, 0.2);
+  color: #aebbb8;
+  box-shadow: none;
+}
+
+.ca-materia-off .ca-materia-titulo,
+.ca-materia-off .ca-materia-descripcion { color: #aebbb8; }
+.ca-materia-off .ca-materia-estado { color: #b5bfbc; }
+.ca-materia-off:hover { background: linear-gradient(145deg, #26312f, #111817 80%) !important; border-color: rgba(196, 211, 207, 0.2); box-shadow: none; }

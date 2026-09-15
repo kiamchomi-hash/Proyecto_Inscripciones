@@ -81,19 +81,6 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
         </div>
       </section>
 
-      <section className="ca-seccion ca-reserva" aria-labelledby="ca-reserva-titulo">
-        <div className="ca-encabezado">
-          <span className="ca-eyebrow">Reserva</span>
-          <h2 id="ca-reserva-titulo">Tres pasos y listo</h2>
-        </div>
-        <ol className="ca-pasos">
-          <li><span>01</span><h3>Elegí la materia</h3><p>Abrí la materia que necesitás preparar.</p></li>
-          <li><span>02</span><h3>Buscá tu horario</h3><p>Elegí entre los turnos disponibles.</p></li>
-          <li><span>03</span><h3>Enviá la reserva</h3><p>El profesor te responde por WhatsApp.</p></li>
-        </ol>
-        <a className="ca-link-materias" href="#materias">Ver materias</a>
-      </section>
-
       <section className="ca-ubicacion" aria-labelledby="ca-ubicacion-titulo">
         <div className="ca-ubicacion-imagen">
           <Image src="/imagenes/imagenes_cau/Foto-entrada.webp" alt="Entrada del CAU Villa Lugano en Guaminí 4876" fill sizes="(max-width: 760px) 100vw, 44vw" />
