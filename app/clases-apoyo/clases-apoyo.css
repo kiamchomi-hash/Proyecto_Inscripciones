@@ -1296,3 +1296,33 @@ a.ca-materia:hover .ca-materia-ico {
   color: #aebbb8;
   box-shadow: none;
 }
+
+/* Ubicación: una sola superficie y contenido centrado, también en mobile. */
+.ca-ubicacion {
+  background: #0a2220;
+}
+
+.ca-ubicacion-imagen::after { display: none; }
+
+.ca-ubicacion-contenido {
+  align-items: center;
+  justify-self: center;
+  width: min(100%, 680px);
+  text-align: center;
+}
+
+.ca-ubicacion .ca-barrios {
+  width: min(100%, 520px);
+  text-align: left;
+}
+
+.ca-ubicacion-link { align-self: center; }
+
+@media (max-width: 640px) {
+  .ca-ubicacion-contenido {
+    width: 100%;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .ca-ubicacion .ca-barrios { width: min(100%, 390px); }
+}
