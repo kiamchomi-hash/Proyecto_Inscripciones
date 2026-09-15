@@ -1218,8 +1218,8 @@ a.ca-materia:hover::before { transform: none; opacity: 0.34; }
 
 /* El hover conserva la superficie de la materia: sólo marca el borde. */
 .ca-materias-seccion {
-  background: #0b2422;
-  border-block: 1px solid rgba(0, 199, 177, 0.14);
+  background: transparent;
+  border-block: 0;
 }
 
 .ca-materias-seccion::before { content: none; display: none; }
