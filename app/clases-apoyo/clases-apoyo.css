@@ -1142,8 +1142,8 @@ a.ca-materia:hover .ca-materia-ico {
 .ca-materia-descripcion {
   grid-column: 1 / -1;
   grid-row: 2;
-  align-self: start;
-  margin-top: 1rem;
+  align-self: center;
+  margin-top: 0;
   color: rgba(244, 251, 249, 0.86);
   font-size: 0.875rem;
   font-weight: 520;
@@ -1212,14 +1212,17 @@ a.ca-materia:hover::before { transform: none; opacity: 0.34; }
   .ca-materia { min-height: 198px; padding: 1.25rem; }
 }
 
+@media (max-width: 640px) {
+  .ca-ubicacion-imagen { display: none; }
+}
+
 /* El hover conserva la superficie de la materia: sólo marca el borde. */
 .ca-materias-seccion {
-  background:
-    radial-gradient(circle at 12% 8%, rgba(0, 199, 177, 0.1), transparent 30%),
-    radial-gradient(circle at 88% 88%, rgba(124, 32, 123, 0.08), transparent 28%),
-    linear-gradient(180deg, #0b2422 0%, #071817 100%);
+  background: #0b2422;
   border-block: 1px solid rgba(0, 199, 177, 0.14);
 }
+
+.ca-materias-seccion::before { content: none; display: none; }
 
 .ca-materia { --ca-card-surface: linear-gradient(145deg, #166d62, #08221f 78%); background: var(--ca-card-surface); }
 .ca-materia:nth-child(2) { --ca-card-surface: linear-gradient(145deg, #294b78, #0b1c31 80%); }
@@ -1250,3 +1253,46 @@ a.ca-materia:hover::before { opacity: 0.34; }
 .ca-materia-off .ca-materia-descripcion { color: #aebbb8; }
 .ca-materia-off .ca-materia-estado { color: #b5bfbc; }
 .ca-materia-off:hover { background: linear-gradient(145deg, #26312f, #111817 80%) !important; border-color: rgba(196, 211, 207, 0.2); box-shadow: none; }
+
+/* El hover no convierte todos los íconos al verde: conserva y refuerza su acento. */
+a.ca-materia:hover .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(0, 255, 225, 0.34), rgba(0, 108, 91, 0.62));
+  border-color: rgba(0, 255, 225, 0.84);
+  color: #e4fffb;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 24px rgba(0, 255, 225, 0.2);
+}
+
+.ca-materia:nth-child(2):hover .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(118, 170, 255, 0.46), rgba(35, 65, 120, 0.78));
+  border-color: rgba(175, 207, 255, 0.9);
+  color: #f0f6ff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 24px rgba(89, 141, 235, 0.24);
+}
+
+.ca-materia:nth-child(3):hover .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(52, 214, 218, 0.42), rgba(16, 91, 111, 0.8));
+  border-color: rgba(148, 248, 244, 0.9);
+  color: #f0ffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 24px rgba(52, 214, 218, 0.24);
+}
+
+.ca-materia:nth-child(4):hover .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(236, 190, 72, 0.46), rgba(116, 78, 19, 0.8));
+  border-color: rgba(255, 224, 133, 0.92);
+  color: #fff9df;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 24px rgba(236, 190, 72, 0.24);
+}
+
+.ca-materia:nth-child(5):hover .ca-materia-ico {
+  background: linear-gradient(145deg, rgba(244, 94, 116, 0.48), rgba(123, 29, 54, 0.82));
+  border-color: rgba(255, 169, 180, 0.94);
+  color: #fff0f2;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 24px rgba(244, 94, 116, 0.25);
+}
+
+.ca-materia-off:hover .ca-materia-ico {
+  background: rgba(163, 177, 173, 0.08);
+  border-color: rgba(196, 211, 207, 0.2);
+  color: #aebbb8;
+  box-shadow: none;
+}
