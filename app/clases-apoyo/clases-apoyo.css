@@ -1326,3 +1326,27 @@ a.ca-materia:hover .ca-materia-ico {
 
   .ca-ubicacion .ca-barrios { width: min(100%, 390px); }
 }
+
+/* Fondo de sección inspirado en `trama-puntos-cifra-supabase`: una sola
+   superficie con puntos muy apagados, sin otra caja ni pseudo-capa detrás. */
+.ca-materias-seccion {
+  background-color: #061716;
+  background-image: radial-gradient(circle, rgba(72, 179, 164, 0.11) 1px, transparent 1.5px);
+  background-position: center;
+  background-size: 28px 28px;
+}
+
+/* Hover plano: el cambio queda en el borde y el acento del ícono, sin sombra
+   exterior ni iluminación central dentro de la tarjeta. */
+.ca-materia::before { content: none; display: none; }
+a.ca-materia:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+a.ca-materia:hover::before { display: none; }
+
+/* El color vive en el chip; no hay halo verde alrededor del SVG. */
+.ca-materia-ico,
+a.ca-materia:hover .ca-materia-ico,
+.ca-materia-off:hover .ca-materia-ico {
+  box-shadow: none;
+}
