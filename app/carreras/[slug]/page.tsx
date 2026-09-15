@@ -47,9 +47,8 @@ function ogCarrera(carrera: Carrera): string {
 // Siglo 21" son 61 -- y caian al sufijo pelado. Administracion Agraria junto 55
 // impresiones y cero clics entre el 01 y el 21/07/2026, y el 21/07 Google dejo
 // de mostrarla ("Crawled - currently not indexed"). Con 61 esas cuatro ganan
-// "a Distancia" sin soltar el prefijo academico, y cuatro de Teclab cambian
-// "Villa Lugano" por "Tecnicatura Superior en". No se sube a 62: ahi entran
-// cinco titulos mas que solo agregan "Villa Lugano" de relleno.
+// "a Distancia" sin soltar el prefijo academico. No se sube a 62: el margen
+// extra no aporta una intencion nueva.
 const MAX_TITULO = 61;
 
 // Pero el corte real se mide en pixeles, no en caracteres, asi que hay unos
@@ -62,9 +61,27 @@ const TOLERANCIA_TITULO = 66;
 // Y la description alrededor de los 160, tambien por pixeles. El presupuesto va
 // un poco por encima a proposito: pasarse hace que Google corte la ultima frase,
 // que es la que menos importa, mientras que quedarse corto la borra entera. Con
-// 158 habia fichas que perdian "Plan de estudios e inscripcion en el CAU Villa
-// Lugano" -- lo unico que invita a hacer algo -- por un solo caracter.
+// 158 habia fichas que perdian el cierre que invita a consultar el plan o la
+// inscripcion por un solo caracter.
 const MAX_DESCRIPCION = 165;
+
+// Ajustes puntuales medidos en Search Console. Estas tres fichas ya aparecen
+// cerca de la primera página, pero su resultado no gana el clic. Los textos
+// priorizan la intención genérica y el diferencial real de cada propuesta.
+const SEO_ESPECIFICO: Record<string, { title: string; description: string }> = {
+  'Licenciatura en Finanzas': {
+    title: 'Licenciatura en Finanzas: plan de estudios | Siglo 21',
+    description: 'Estudiá mercados, inversiones, riesgo, tecnología financiera y criptomonedas. Conocé el plan de estudios de la Licenciatura en Finanzas a distancia.',
+  },
+  'Tecnicatura Superior en Marketing Digital': {
+    title: 'Tecnicatura en Marketing Digital Online | Teclab',
+    description: 'Título oficial en 2 años, 100% online. Aprendé publicidad, contenidos, e-commerce y experiencia del cliente en la carrera de Marketing Digital de Teclab.',
+  },
+  'Tecnicatura Superior en Gestión Contable': {
+    title: 'Tecnicatura en Gestión Contable Online | Teclab',
+    description: 'Título oficial en 2 años, 100% online, con certificación intermedia de Auxiliar Contable. Estudiá contabilidad, impuestos y estados contables en Teclab.',
+  },
+};
 
 /**
  * Titulo que entra entero en el resultado de Google.
@@ -89,23 +106,20 @@ function tituloSEO(carrera: Carrera): string {
   // Siglo 21 y la persona se enterara recien despues de entrar.
   const conTeclab = esTeclab(carrera) || esCursoTeclab(carrera);
   const sufijos = carrera.nivel === 'Identidad Argentina'
-    ? [' | Academia Identidad Argentina', ' | Identidad Argentina']
+      ? [' | Academia Identidad Argentina', ' | Identidad Argentina']
     : conTeclab
       // Las dos marcas siempre juntas: el titulo lo emite el instituto, pero la
       // carrera articula para seguir en la universidad, asi que Siglo 21 no es
       // relleno de marca sino parte de lo que se ofrece -- y ademas es la mitad
       // de lo que la gente escribe en el buscador. No hay variante con la sede
-      // sola ("Teclab · CAU Villa Lugano") ni con el instituto solo: cualquiera
-      // de las dos entra en los nombres largos y les gana a esta, que es la
-      // unica que nombra a las dos.
-      ? [' | Teclab · Siglo 21 Villa Lugano', ' | Teclab · Siglo 21']
-      // "a Distancia" le gana a "Villa Lugano" cuando hay que soltar uno de los
-      // dos. Medido en Search Console a 28 dias: las consultas que dicen "siglo
+      // ni con el instituto solo: esta es la unica que nombra a las dos marcas.
+      ? [' | Teclab · Siglo 21']
+      // Medido en Search Console a 28 dias: las consultas que dicen "siglo
       // 21" nos clickean al 0-1% aunque estemos quintos (la persona quiere
       // 21.edu.ar y nos saltea), y las que dicen la carrera sola o con "a
-      // distancia" al 10-33%. "Villa Lugano" no aparece en ninguna consulta de
-      // carrera: las 500 que se bajaron lo usan solo para buscar el barrio o el
-      // CAU, y esas caen en la home, /sobre-nosotros y /clases-apoyo.
+      // distancia" al 10-33%. La sede no aparece en consultas de carrera; queda
+      // para la home, /sobre-nosotros y /contacto, donde si responde a la
+      // intencion de busqueda.
       //
       // Remedido el 02/09/2026 sobre las 1.205 consultas de 90 dias, que es
       // donde estan los 99 clics: "villa lugano" sigue en cero (8 impresiones,
@@ -117,9 +131,7 @@ function tituloSEO(carrera: Carrera): string {
       // recien despues el prefijo. Ya se simulo darlo vuelta y deja 83 de 88
       // fichas sin el nombre largo; no rehacerlo.
       : [
-          ' a Distancia | Siglo 21 Villa Lugano',
           ' a Distancia | Siglo 21',
-          ' | Siglo 21 Villa Lugano',
           ' | Siglo 21',
         ];
 
@@ -181,8 +193,8 @@ function descripcionSEO(carrera: Carrera): string {
   const cierre = carrera.proximamente
     ? 'Todavía no abrió la inscripción: dejanos tus datos y te avisamos.'
     : conPlan
-      ? 'Plan de estudios e inscripción en el CAU Villa Lugano.'
-      : 'Inscripción y consultas en el CAU Villa Lugano.';
+      ? 'Consultá el plan de estudios y cómo inscribirte.'
+      : 'Consultá la modalidad y cómo inscribirte.';
 
   if (carrera.nivel === 'Identidad Argentina') {
     const { modalidad } = parseIAMeta(carrera.enfoque || '');
@@ -203,7 +215,7 @@ function descripcionSEO(carrera: Carrera): string {
     const { modalidad } = parseEnfoqueTeclab(carrera.enfoque);
     return armarDescripcion([
       `${carrera.nombre_corto || nombreCompleto}: curso de Teclab de ${carrera.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`,
-      'Certificado oficial. Inscripción y consultas en el CAU Villa Lugano.',
+      'Certificado oficial. Consultá la modalidad y cómo inscribirte.',
     ]);
   }
 
@@ -268,8 +280,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // universidad: ni el titulo, ni la descripcion, ni las keywords la nombran.
   const esIA = carrera.nivel === 'Identidad Argentina';
 
-  const title = tituloSEO(carrera);
-  const description = descripcionSEO(carrera);
+  const especifico = SEO_ESPECIFICO[nombreCompleto];
+  const title = especifico?.title ?? tituloSEO(carrera);
+  const description = especifico?.description ?? descripcionSEO(carrera);
 
   const canonicalSlug = carreraToSlug(carrera);
 
@@ -451,10 +464,10 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
       esDiplomaturaIA
         ? `Estudia ${carrera.nombre} con la Academia Identidad Argentina. ${carrera.enfoque}.`
         : esCursoTeclabActual
-          ? `Curso de ${carrera.nombre} dictado por Teclab. Consultas en el CAU Villa Lugano.`
+          ? `Curso de ${carrera.nombre} dictado por Teclab. Consultá modalidad e inscripción.`
           : conTeclab
-            ? `${carrera.nombre}, carrera de Teclab Instituto Técnico Superior. Inscripción y acompañamiento en el CAU Villa Lugano.`
-            : `Estudia ${carrera.nombre} en Universidad Siglo 21 CAU Villa Lugano. ${carrera.enfoque}.`
+            ? `${carrera.nombre}, carrera de Teclab Instituto Técnico Superior. Título oficial y cursado online.`
+            : `Estudiá ${carrera.nombre} a distancia en Universidad Siglo 21. ${carrera.enfoque}.`
     ),
     provider,
     "educationalLevel": esCursoTeclabActual ? 'Curso' : carrera.nivel,

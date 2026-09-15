@@ -1,0 +1,12 @@
+- https://www.siglo21sur.com/ - portada y embudo principal.
+- https://www.siglo21sur.com/carreras/licenciatura-en-finanzas - oportunidad de CTR medida en Search Console.
+- https://www.siglo21sur.com/carreras/tecnicatura-superior-en-marketing-digital - oportunidad de CTR medida en Search Console.
+- https://www.siglo21sur.com/carreras/tecnicatura-superior-en-gestion-contable - oportunidad de CTR y consultas genéricas medida en Search Console.
+- https://www.siglo21sur.com/carreras/tecnicatura-superior-en-cloud-administration - racimo de consultas genéricas cerca de la primera página.
+- https://www.siglo21sur.com/carreras/procurador - demanda genérica por modalidad a distancia.
+- https://www.siglo21sur.com/carreras/diplomatura-en-compliance - racimo de consultas genéricas que necesita contenido.
+- https://www.siglo21sur.com/carreras/tecnicatura-superior-en-seguros - mejor combinación actual de clics orgánicos y clics a WhatsApp.
+- https://21.edu.ar/carreras-y-programas/procurador - funciones, modalidad, duración y plan oficial de Procurador.
+- https://teclab.edu.ar/carrera/tecnico-en-cloud-administration/ - contenidos, duración y modalidad oficial de Cloud Administration.
+- https://www.identidadargentina.com.ar/diplomatura-en-compliance-37986/ - modalidad, duración y contenidos de la Diplomatura en Compliance.
+- https://s3.us-east-1.amazonaws.com/identidadargentina.com.ar/pdf/compliance.pdf - programa detallado usado para el artículo de Compliance.

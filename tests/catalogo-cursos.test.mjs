@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
 import {
   carreraToSlug,
@@ -80,6 +81,15 @@ test('Videojuegos usa la URL corta acordada sin cambiar su nombre', () => {
     }),
     'tecnicatura-en-videojuegos',
   );
+});
+
+test('las fichas con margen de CTR tienen snippets específicos', async () => {
+  const page = await readFile(new URL('../app/carreras/[slug]/page.tsx', import.meta.url), 'utf8');
+  assert.match(page, /Licenciatura en Finanzas: plan de estudios \| Siglo 21/);
+  assert.match(page, /Tecnicatura en Marketing Digital Online \| Teclab/);
+  assert.match(page, /Tecnicatura en Gestión Contable Online \| Teclab/);
+  assert.doesNotMatch(page, /Plan de estudios e inscripción en el CAU Villa Lugano/);
+  assert.doesNotMatch(page, /Siglo 21 CAU Villa Lugano/);
 });
 
 test('Experiencia del Cliente conserva la clasificación y la ficha comercial de Customer Experience', () => {

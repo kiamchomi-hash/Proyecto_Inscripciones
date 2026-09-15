@@ -113,7 +113,7 @@ function anchosDeColumna(campos: CampoId[]): number[] {
 /**
  * Reparte los campos entre las dos columnas.
  *
- * En **contacto** manda el agrupamiento: son seis campos y separar "lo que
+ * En **contacto** manda el agrupamiento: son pocos campos y separar "lo que
  * consultás" de "tus datos" se lee bien.
  *
  * En **preinscripción** manda el equilibrio. Con el agrupamiento, Siglo 21
