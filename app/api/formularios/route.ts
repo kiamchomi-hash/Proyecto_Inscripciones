@@ -169,23 +169,6 @@ async function insertClase(payload: JsonRecord) {
   return createSupabaseAdmin().from('solicitudes_clase').insert(rows);
 }
 
-async function insertNewsletter(payload: JsonRecord) {
-  const email = text(payload.email, 254).toLowerCase();
-  const carreraId = Number(payload.carrera_id);
-  const carreraNombre = text(payload.carrera_nombre, 160);
-  if (!EMAIL.test(email) || !Number.isInteger(carreraId) || carreraId < 1 || !carreraNombre) {
-    throw new TypeError('Datos de suscripción inválidos');
-  }
-
-  return createSupabaseAdmin().from('suscripciones_newsletter').upsert({
-    email,
-    carrera_id: carreraId,
-    carrera_nombre: carreraNombre,
-    activo: true,
-    consentimiento_at: new Date().toISOString(),
-  }, { onConflict: 'email,carrera_id' });
-}
-
 export async function POST(request: NextRequest) {
   try {
     let body: unknown;
@@ -203,7 +186,7 @@ export async function POST(request: NextRequest) {
     const payload = body.payload;
     const ip = clientIp(request);
 
-    if (!['consulta', 'faq', 'clase', 'newsletter'].includes(kind) || !token || !esRegistro(payload)) {
+    if (!['consulta', 'faq', 'clase'].includes(kind) || !token || !esRegistro(payload)) {
       return NextResponse.json({ error: 'Solicitud inválida' }, { status: 400 });
     }
 
@@ -226,9 +209,7 @@ export async function POST(request: NextRequest) {
       ? await insertConsulta(payload)
       : kind === 'faq'
         ? await insertFaq(payload)
-        : kind === 'clase'
-          ? await insertClase(payload)
-          : await insertNewsletter(payload);
+        : await insertClase(payload);
 
     if (result.error) {
       console.error('[formularios] Error de base de datos', {
