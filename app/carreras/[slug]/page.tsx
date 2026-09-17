@@ -9,6 +9,8 @@ import CareerDetail from '@/components/carreras/career-detail';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import DirectCareerOpenTracker from '@/components/carreras/direct-career-open-tracker';
 import SiteFooter from '@/components/footer';
+import SuscripcionCarrera from '@/components/newsletter/suscripcion-carrera';
+import '@/components/newsletter/suscripcion-carrera.css';
 import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
 import { duracionISO } from '@/lib/duracion-iso';
@@ -517,6 +519,9 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
           carrera={carreraFullName(carrera)}
         />
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
+        <div className="career-page-wide">
+          <SuscripcionCarrera carreraId={carrera.id} carreraNombre={carreraFullName(carrera)} />
+        </div>
         <DeferredEnrollmentForm carreras={opcionesFormulario} carreraInicial={carrera.id} />
       </main>
       <SiteFooter />
