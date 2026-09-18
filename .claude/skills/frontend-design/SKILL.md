@@ -10,6 +10,20 @@ The user provides frontend requirements: a component, page, application, or inte
 
 ## Design Thinking
 
+### Copy visible: breve y funcional
+
+En interfaces públicas, no describas el mecanismo de la interfaz ni le cuentes
+al usuario cómo se está armando el resultado. El texto visible debe nombrar la
+acción, el contenido o el estado con la menor cantidad de palabras posible.
+
+- Preferí `Carreras`, `Resultado`, `12 preguntas` o `Empezar`.
+- Evitá frases como `Tu mapa se actualiza`, `Mientras respondés...` o
+  `preguntas para encontrar dirección`.
+- Si una animación o un cambio visual ya comunica algo, no lo expliques también
+  con texto.
+- La justificación de diseño va en el comentario de código o en el mensaje al
+  usuario, nunca en la interfaz.
+
 Before coding, understand the context and commit to a BOLD aesthetic direction:
 - **Purpose**: What problem does this interface solve? Who uses it?
 - **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
@@ -23,6 +37,34 @@ Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 - Visually striking and memorable
 - Cohesive with a clear aesthetic point-of-view
 - Meticulously refined in every detail
+
+## Inspección visual obligatoria antes de editar
+
+Nunca corregir una interfaz visual a ciegas ni atribuir un defecto a una causa sin comprobarlo. Antes de tocar CSS o markup, abrir la pantalla real en el navegador o capturarla, inspeccionar el elemento que produce el problema y verificar dimensiones, overflow, fondos, pseudoelementos y scroll. Después del cambio, volver a mirar la pantalla real y confirmar que la causa quedó resuelta. Si el problema no está localizado, seguir inspeccionando; no compensarlo con ajustes arbitrarios.
+
+## UIverse local: referencia obligatoria para este sitio
+
+Cuando el trabajo sea sobre el sitio del CAU, Universidad Siglo 21 o Teclab,
+consultá directamente la biblioteca local antes de escribir JSX o CSS:
+
+1. Leé `~/Desktop/uiverse/LEER.md` para conocer el catálogo y la forma de
+   guardar la curaduría.
+2. Leé `~/Desktop/uiverse/biblioteca/estado.json` y usá la clave `usos` para
+   filtrar las piezas marcadas para la marca correspondiente: `siglo21` o
+   `teclab`. No mezcles piezas marcadas `ninguna`.
+3. Para cada pieza seleccionada, abrí su carpeta en
+   `~/Desktop/uiverse/biblioteca/mias/` y revisá `meta.json`, `pieza.html` y
+   `pieza.css`. Consultá primero las piezas propias marcadas para esa marca;
+   el catálogo general y referencias externas quedan como segunda opción.
+4. Elegí referencias por el problema que resuelven —por ejemplo, transición,
+   botón, panel lateral, fondo o jerarquía— y adaptá su código al sistema del
+   sitio. No copies nombres genéricos de clases ni introduzcas otra paleta o
+   tipografía sin una razón concreta.
+
+En el mensaje de trabajo dejá constancia breve de qué piezas locales se
+consultaron y qué decisión tomó cada una. Si no hay una pieza pertinente,
+decilo y diseñá sólo el elemento faltante; no fuerces una referencia que no
+corresponda.
 
 ## Ground the Direction in Real References First
 
@@ -49,7 +91,9 @@ it is generated from `fuentes.json`, so it is the only copy that stays current.
 **Components are a separate question.** Buttons, toggles, inputs and loaders
 should not be invented either — they come from the user's own UIverse library
 (`~/Desktop/uiverse`). That is the `diseno-uiverse` skill's job; this skill owns
-the direction and the page, that one owns the pieces.
+the direction and the page, that one owns the pieces. For anything branded Siglo
+21 or Teclab, that skill walks only the pieces the user tagged for that brand in
+the gallery (the `usos` key of `biblioteca/estado.json`), not the whole library.
 
 Say out loud which reference each decision came from. "Archivo + Söhne, taken
 from <site>" is a designed choice; "a distinctive grotesque" is a guess.

@@ -38,7 +38,7 @@ Patrones de diseño extraídos de index.html, novedades.html y faq.html del siti
 
 - **Body:** `Inter`, weights 100-900
 - **Pills/Tags:** `Atkinson Hyperlegible`
-- **Branding:** `Unbounded`
+- **Branding:** `Inter`, igual que el cuerpo del sitio
 - **Headings:** font-weight 800-900, uppercase, tracking-tighter (-0.05em), text-shadow 0 2px 8px
 - **Labels:** 9-10px, bold, uppercase, tracking-wider, color rgba(0,199,177,0.8) o #9ac5be
 

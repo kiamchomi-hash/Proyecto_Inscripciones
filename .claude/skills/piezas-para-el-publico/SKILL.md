@@ -5,6 +5,15 @@ description: "Escribir el contenido de cualquier pieza que va a ver alguien más
 
 # Lo que se ve en pantalla es para quien mira
 
+## Copy corto por defecto
+
+No agregues textos que describan el funcionamiento de la pieza, el criterio con
+que fue armada o una obviedad que la composición ya muestra. En una interfaz,
+el rótulo debe ser directo y corto: `Carreras`, `Resultado`, `12 preguntas`,
+`Empezar`. No uses frases explicativas como `Tu mapa se actualiza`, `Mientras
+respondés...` o `preguntas para encontrar dirección`. Si el movimiento o el
+cambio de estado se entiende visualmente, no lo dupliques con una explicación.
+
 Regla única, de la que salen todas las demás:
 
 > Cada palabra que se renderiza está dirigida a quien mira la pieza. Todo lo
@@ -22,7 +31,8 @@ escena.
 ## Ajustar el texto al gusto visual del usuario
 
 Cuando la pieza también se diseña, leer `~/Desktop/uiverse/LEER.md` y consultar
-primero **★ Mías**. Usar tres o cuatro referencias pertinentes para calibrar el
+primero **★ Mías**; si es de Siglo 21 o de Teclab, sólo las marcadas para esa
+casa (skill `diseno-uiverse`). Usar tres o cuatro referencias pertinentes para calibrar el
 presupuesto de texto: cuánto ocupa el título, cuántos niveles de lectura admite
 la composición, cómo se rotulan los bloques y cuánto aire necesita el CTA.
 
