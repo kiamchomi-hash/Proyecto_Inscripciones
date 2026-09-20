@@ -65,10 +65,15 @@ const TOLERANCIA_TITULO = 66;
 // inscripcion por un solo caracter.
 const MAX_DESCRIPCION = 165;
 
-// Ajustes puntuales medidos en Search Console. Estas tres fichas ya aparecen
-// cerca de la primera página, pero su resultado no gana el clic. Los textos
-// priorizan la intención genérica y el diferencial real de cada propuesta.
+// Ajustes puntuales medidos en Search Console. Tres fichas ya aparecen cerca de
+// la primera página pero no ganan el clic; Videojuegos es la única carrera que
+// Google descubrió y todavía no rastreó. Los textos priorizan la intención
+// genérica y el diferencial real de cada propuesta.
 const SEO_ESPECIFICO: Record<string, { title: string; description: string }> = {
+  'Tecnicatura en Diseño y Desarrollo de Videojuegos': {
+    title: 'Tecnicatura en Diseño y Desarrollo de Videojuegos | Siglo 21',
+    description: 'Aprendé programación, animación 2D y 3D, inteligencia artificial y motores de videojuegos. Conocé el plan de la tecnicatura a distancia de Siglo 21.',
+  },
   'Licenciatura en Finanzas': {
     title: 'Licenciatura en Finanzas: plan de estudios | Siglo 21',
     description: 'Estudiá mercados, inversiones, riesgo, tecnología financiera y criptomonedas. Conocé el plan de estudios de la Licenciatura en Finanzas a distancia.',

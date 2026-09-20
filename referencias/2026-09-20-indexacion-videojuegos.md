@@ -1,0 +1,7 @@
+- https://www.siglo21sur.com/carreras/tecnicatura-en-videojuegos - estado HTTP, canónica y directivas de robots verificadas en producción.
+- https://www.siglo21sur.com/sitemap.xml - presencia de la ficha verificada en el sitemap publicado.
+- https://search.google.com/search-console/inspect?resource_id=sc-domain:siglo21sur.com&id=Y4IM2BR603DXPsYkUDWgFA - inspección de URL: descubierta, actualmente sin indexar y sin fecha de rastreo.
+- https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl - Google indica que repetir solicitudes no acelera el rastreo y que la inclusión prioriza contenido útil y de calidad.
+- https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap - criterio para usar un lastmod nuevo sólo cuando existe una actualización significativa.
+- https://developers.google.com/search/apis/indexing-api/v3/quickstart - descartada la Indexing API porque Google la limita a ofertas laborales y transmisiones en vivo.
+- https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview - fundamento para buscar una referencia externa genuina además de las señales internas ya presentes.
