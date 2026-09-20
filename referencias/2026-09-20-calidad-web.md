@@ -1,1 +1,1 @@
-https://www.siglo21sur.com/novedades/articulo/que-es-compliance - Título, etiqueta e imagen publicada del artículo cuya portada social faltaba.
+https://www.siglo21sur.com/novedades/articulo/que-es-compliance - Descartado: la nota correspondía a Academia Identidad Argentina y fue despublicada de Novedades.
