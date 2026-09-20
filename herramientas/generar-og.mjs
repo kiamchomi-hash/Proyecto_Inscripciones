@@ -188,6 +188,15 @@ ARTICULOS.push({ id: 71, slug: 'que-hace-un-procurador', tag: 'AcadÃ©mico',
   titulo: 'QuÃ© hace un procurador y dÃ³nde puede trabajar',
   foto: 'public/imagenes/imagenes_carreras/procurador.webp' });
 
+ARTICULOS.push(
+  { id: 72, slug: 'inscripciones-octubre-carreras-distancia', tag: 'Institucional',
+    titulo: 'Inscripciones para empezar en octubre',
+    foto: 'public/imagenes/novedades/fuentes/inicio-de-clases.webp', sinVelo: true },
+  { id: 73, slug: 'que-hace-tecnico-redes-informaticas', tag: 'Teclab',
+    titulo: 'Qué hace un técnico en Redes Informáticas',
+    foto: 'public/imagenes/teclab/carreras/redes-informaticas.webp' },
+);
+
 for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { recursive: true });
 
 // Imagen por defecto del sitio: la toma el layout, asi la home y las fichas de
