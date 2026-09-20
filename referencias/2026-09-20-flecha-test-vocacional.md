@@ -1,1 +1,2 @@
 - https://www.siglo21sur.com/test-vocacional - Página indicada para invertir hacia la izquierda la punta y la flecha del botón Volver del resultado final.
+- https://www.kraken.com/ - Referencia del halo radial desplazado, adaptado desde la pieza local "Tarjetas con halo radial - oscuro" para los botones de respuesta.
