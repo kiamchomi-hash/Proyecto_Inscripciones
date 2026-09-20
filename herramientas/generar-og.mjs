@@ -188,6 +188,11 @@ ARTICULOS.push({ id: 71, slug: 'que-hace-un-procurador', tag: 'AcadÃ©mico',
   titulo: 'QuÃ© hace un procurador y dÃ³nde puede trabajar',
   foto: 'public/imagenes/imagenes_carreras/procurador.webp' });
 
+// Artículo evergreen de Compliance: la foto limpia ya fue preparada para la nota.
+ARTICULOS.push({ id: 72, slug: 'que-es-compliance', tag: 'Formación',
+  titulo: 'Qué es compliance y qué se estudia',
+  foto: 'public/imagenes/novedades/que-es-compliance.jpg', soloOg: true });
+
 for (const d of [DIR_LIMPIA, DIR_OG, DIR_EXTRA].filter(Boolean)) mkdirSync(d, { recursive: true });
 
 // Imagen por defecto del sitio: la toma el layout, asi la home y las fichas de
@@ -331,8 +336,10 @@ for (const a of ARTICULOS) {
     .toBuffer();
 
   // La alternativa de la #69 no se publica: es solo para comparar.
-  if (!a.alterna) {
+  if (!a.alterna && !a.soloOg) {
     await sharp(limpia).toFile(`${DIR_LIMPIA}/${a.slug}.jpg`);
+  }
+  if (!a.alterna) {
     await sharp(og).toFile(`${DIR_OG}/${a.slug}.jpg`);
   }
   if (DIR_EXTRA) {
