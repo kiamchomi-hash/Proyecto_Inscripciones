@@ -1,1 +1,1 @@
-- https://www.siglo21sur.com/test-vocacional - Página indicada para corregir la posición y orientación de la flecha del botón Volver.
+- https://www.siglo21sur.com/test-vocacional - Página indicada para invertir hacia la izquierda la punta y la flecha del botón Volver del resultado final.

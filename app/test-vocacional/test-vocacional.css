@@ -222,7 +222,7 @@
   font-size: .68rem; font-weight: 900; letter-spacing: .1em;
 }
 .vocacional-actions .vocacional-button {
-  border-radius: 0; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%); font-size: .75rem;
+  border-radius: 0; clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%); font-size: .75rem;
 }
 .vocacional-actions .vocacional-restart { border-color: #6bd8a5; font-size: .7rem; }
 
