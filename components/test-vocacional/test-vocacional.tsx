@@ -373,7 +373,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
           </div>
           <h2 id="pregunta-titulo">{pregunta.pregunta}</h2>
           <div className="vocacional-options">{pregunta.opciones.map((opcion, indice) => <button key={opcion.texto} onClick={() => elegir(indice)} className="vocacional-option"><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{opcion.texto}</span><span aria-hidden="true">↗</span></button>)}</div>
-          <button className="vocacional-back" onClick={volver} disabled={paso === 0}>← Volver</button>
+          <button className="vocacional-back" onClick={volver} disabled={paso === 0}><span aria-hidden="true">←</span> Volver</button>
         </div>
         <aside className="vocacional-live" aria-live="polite">
           <div className="vocacional-live-heading"><span>CARRERAS</span><span className="vocacional-live-dot" aria-label="Actualizado" /></div>
@@ -393,7 +393,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
           </div>
           <h2 id="pregunta-titulo">¿Cuál de estas opciones te gustaría explorar primero?</h2>
           <div className="vocacional-options">{candidatasFinales.map((carrera, indice) => <button key={carrera.id} onClick={() => { setCarreraPrincipalId(carrera.id); setResultadoIntervenido(true); setPaso(PREGUNTAS.length + 1); }} className="vocacional-option"><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{descripcionParaDesempate(carrera)}</span><span aria-hidden="true">↗</span></button>)}</div>
-          <button className="vocacional-back" onClick={volver}>← Volver</button>
+          <button className="vocacional-back" onClick={volver}><span aria-hidden="true">←</span> Volver</button>
         </div>
         <aside className="vocacional-live" aria-live="polite">
           <div className="vocacional-live-heading"><span>MEJOR AFINIDAD</span><span className="vocacional-live-dot" aria-label="Actualizado" /></div>
