@@ -21,6 +21,57 @@ export function trackInicioFormulario(origen: OrigenConsulta, modo: string) {
   track('formulario-iniciado', { origen, modo });
 }
 
+export function trackFormularioVisto(origen: OrigenConsulta, modo: string) {
+  track('formulario-visto', { origen, modo });
+}
+
+export function trackCtaInscripcion(destino: string) {
+  track('cta-inscripcion', { destino });
+}
+
+export function trackIntentoFormulario(origen: OrigenConsulta, modo: string, resultado: string) {
+  track('formulario-intento', { origen, modo, resultado });
+  if (resultado !== 'valido') avisarTelegram('formulario-intento', { origen, modo, resultado });
+}
+
+/**
+ * Registra el abandono observable del formulario. No puede saber por qué se
+ * fue una persona, pero sí el último campo enfocado y si quedó una validación
+ * o un error de envío visible. Nunca incluye los valores escritos.
+ */
+export function trackAbandonoFormulario(
+  origen: OrigenConsulta,
+  modo: string,
+  ultimoCampo: string,
+  motivo: string,
+  camposCompletados: number,
+) {
+  track('formulario-abandonado', {
+    origen,
+    modo,
+    ultimo_campo: ultimoCampo || 'sin campo',
+    motivo,
+    campos_completados: camposCompletados,
+  });
+  avisarTelegram('formulario-abandonado', {
+    origen,
+    modo,
+    ultimo_campo: ultimoCampo || 'sin campo',
+    motivo,
+    campos_completados: camposCompletados,
+  });
+}
+
+function avisarTelegram(evento: string, datos: Record<string, string | number>) {
+  if (typeof window === 'undefined') return;
+  void fetch('/api/alertas-analytics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ evento, datos }),
+    keepalive: true,
+  }).catch(() => undefined);
+}
+
 /**
  * La carrera va como propiedad y no como evento aparte para poder agrupar por
  * ella en el panel. El de /contacto no pregunta carrera, de ahi el 'sin

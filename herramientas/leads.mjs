@@ -149,11 +149,12 @@ async function leerVercel() {
 
   const ventana = { since: DESDE, until: HASTA };
   const soloWhatsapp = { ...ventana, filter: `eventName eq 'whatsapp'` };
+  const soloAbandono = { ...ventana, filter: `eventName eq 'formulario-abandonado'` };
 
   // El total de personas se pide aparte y no se suma del desglose por
   // dispositivo: quien toca desde el telefono y despues desde la computadora
   // aparece en las dos filas, y sumarlas lo cuenta dos veces.
-  const [porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia] = await Promise.all([
+  const [porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia, abandonosPorCampo, abandonosPorMotivo] = await Promise.all([
     analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'day', limit: 100 }),
     analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'deviceType', limit: 10 }),
     analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'eventData/origen', limit: 8 }),
@@ -161,9 +162,11 @@ async function leerVercel() {
     analytics(token, ids, 'visits/count', ventana),
     analytics(token, ids, 'events/count', soloWhatsapp),
     analytics(token, ids, 'events/aggregate', { ...ventana, filter: "eventName eq 'consulta'", by: 'day', limit: 100 }).catch(() => null),
+    analytics(token, ids, 'events/aggregate', { ...soloAbandono, by: 'eventData/ultimo_campo', limit: 50 }),
+    analytics(token, ids, 'events/aggregate', { ...soloAbandono, by: 'eventData/motivo', limit: 20 }),
   ]);
 
-  return { porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia };
+  return { porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia, abandonosPorCampo, abandonosPorMotivo };
 }
 
 // ── Supabase: las consultas que entraron de verdad ──────────────────────────
@@ -334,6 +337,21 @@ if (!(vercel instanceof Error) && !(consultas instanceof Error)) {
       + 'Las ventanas UTC coinciden. Puede ser una fila de prueba borrada o una demora de Analytics. '
       + 'Si no es ninguna de las dos, hubo envios que no se guardaron.',
     );
+  }
+
+  const abandonos = vercel.porEvento.find(e => e.eventName === 'formulario-abandonado')?.count ?? 0;
+  if (abandonos) {
+    console.log(`  Abandonos medidos: ${plural(abandonos, 'formulario', 'formularios')}`);
+    console.log('    Ultimo campo:');
+    for (const fila of vercel.abandonosPorCampo.sort((a, b) => b.count - a.count)) {
+      console.log(`      ${String(fila['eventData/ultimo_campo']).padEnd(24)}${fila.count}`);
+    }
+    console.log('    Motivo observable:');
+    for (const fila of vercel.abandonosPorMotivo.sort((a, b) => b.count - a.count)) {
+      console.log(`      ${String(fila['eventData/motivo']).padEnd(24)}${fila.count}`);
+    }
+  } else {
+    console.log('  Abandono por campo: todavía no hay medición en esta ventana.');
   }
 }
 

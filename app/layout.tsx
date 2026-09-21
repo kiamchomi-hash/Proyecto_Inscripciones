@@ -3,6 +3,7 @@ import { Inter, Unbounded } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import ScrollToTop, { ScrollResetOnLoad } from '@/components/scroll-to-top';
 import PublicGoogleAnalytics from '@/components/google-analytics';
+import AnalyticsInteractions from '@/components/analytics-interactions';
 import WhatsappReparto from '@/components/whatsapp-reparto';
 import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
@@ -118,6 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <WhatsappReparto />
         <PublicGoogleAnalytics />
+        <AnalyticsInteractions />
         <Analytics />
         <SpeedInsights />
       </body>

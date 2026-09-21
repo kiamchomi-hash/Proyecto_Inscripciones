@@ -172,6 +172,7 @@ pantalla las tres cosas que hoy viven en tres paneles distintos:
 - **clics a WhatsApp** día por día, con el desglose por dispositivo y desde qué
   páginas se toca (Vercel Analytics, en vivo);
 - **las consultas que entraron de verdad** al formulario (Supabase, en vivo);
+- **los abandonos del formulario**, con último campo y motivo observable (Vercel Analytics, desde el deploy que lo incorpora);
 - **el tráfico que llega desde Google**, contra el período anterior (Search
   Console).
 

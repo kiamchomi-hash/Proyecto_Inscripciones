@@ -5,6 +5,9 @@ const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID")!;
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET")!;
+const VERCEL_ANALYTICS_TOKEN = Deno.env.get("VERCEL_ANALYTICS_TOKEN")!;
+const VERCEL_ANALYTICS_PROJECT_ID = Deno.env.get("VERCEL_ANALYTICS_PROJECT_ID")!;
+const VERCEL_ANALYTICS_TEAM_ID = Deno.env.get("VERCEL_ANALYTICS_TEAM_ID")!;
 
 const TOP_N = 10;
 
@@ -61,6 +64,24 @@ async function fetchClicks(fecha: string, origen: "modal" | "directa" = "modal")
   });
   if (!res.ok) throw new Error(`PostgREST ${res.status}: ${await res.text()}`);
   return await res.json() as ClickRow[];
+}
+
+async function fetchDailyVisitors(fecha: string): Promise<number> {
+  if (!VERCEL_ANALYTICS_TOKEN || !VERCEL_ANALYTICS_PROJECT_ID || !VERCEL_ANALYTICS_TEAM_ID) {
+    throw new Error("Faltan secretos de Vercel Analytics");
+  }
+  const url = new URL("https://api.vercel.com/v1/query/web-analytics/visits/count");
+  url.searchParams.set("projectId", VERCEL_ANALYTICS_PROJECT_ID);
+  url.searchParams.set("teamId", VERCEL_ANALYTICS_TEAM_ID);
+  url.searchParams.set("since", fecha);
+  url.searchParams.set("until", fecha);
+  const respuesta = await fetch(url, {
+    headers: { Authorization: `Bearer ${VERCEL_ANALYTICS_TOKEN}` },
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!respuesta.ok) throw new Error(`Vercel Analytics ${respuesta.status}: ${await respuesta.text()}`);
+  const cuerpo = await respuesta.json() as { data?: { visitors?: number } };
+  return Number(cuerpo.data?.visitors ?? 0);
 }
 
 function buildDigest(fecha: string, rows: ClickRow[]): string {
@@ -127,11 +148,20 @@ Deno.serve(async (req: Request) => {
       fetchClicks(fecha, "directa"),
     ]);
     const enviado = await sendTelegram(buildDigest(fecha, rows));
+    let usuariosActivos: number | null = null;
+    try {
+      usuariosActivos = await fetchDailyVisitors(fecha);
+    } catch (err) {
+      console.error("Vercel Analytics error:", err);
+    }
+    const enviadoUsuarios = usuariosActivos !== null
+      ? await sendTelegram(`Usuarios activos del ${fecha}: ${usuariosActivos}.`)
+      : true;
     const enviadoDirectas = directRows.length > 0
       ? await sendTelegram(buildDirectDigest(fecha, directRows))
       : true;
 
-    return new Response(JSON.stringify({ ok: true, fecha, carreras: rows.length, directas: directRows.length, telegram: enviado && enviadoDirectas }), {
+    return new Response(JSON.stringify({ ok: true, fecha, carreras: rows.length, directas: directRows.length, usuariosActivos, telegram: enviado && enviadoDirectas && enviadoUsuarios }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {

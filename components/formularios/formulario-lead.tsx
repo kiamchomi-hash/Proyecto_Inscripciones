@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
-import { trackConsulta, trackInicioFormulario, type OrigenConsulta } from '@/lib/analytics';
+import { trackAbandonoFormulario, trackConsulta, trackFormularioVisto, trackInicioFormulario, trackIntentoFormulario, type OrigenConsulta } from '@/lib/analytics';
 import {
   CAMPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
@@ -607,7 +607,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const [listo, setListo] = useState(false);
   const [error, setError] = useState('');
   const botonRef = useRef<HTMLButtonElement>(null);
+  const seccionRef = useRef<HTMLElement>(null);
   const inicioMedido = useRef(false);
+  const vistoMedido = useRef(false);
+  const ultimoCampoRef = useRef('');
+  const abandonoMedido = useRef(false);
+  const estadoAbandonoRef = useRef({ listo: false, enviando: false, error: '', intentado: false, valido: false, token: '', valores: {} as Valores });
   // Mientras se salta al primer error, el acercamiento del botón no interviene.
   const saltandoRef = useRef(false);
   const listaRef = useRef<HTMLDivElement>(null);
@@ -801,6 +806,55 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const valido = hayContacto && !errorEmail && !errorTelefono
     && !faltanObligatorios.length && !malEscritos.length && Boolean(token);
 
+  useEffect(() => {
+    estadoAbandonoRef.current = { listo, enviando, error, intentado, valido, token, valores };
+  }, [error, enviando, intentado, listo, token, valido, valores]);
+
+  useEffect(() => {
+    const medirAbandono = () => {
+      if (!inicioMedido.current || abandonoMedido.current) return;
+      const estado = estadoAbandonoRef.current;
+      if (estado.listo) return;
+
+      abandonoMedido.current = true;
+      const motivo = estado.enviando
+        ? 'envio-en-curso'
+        : estado.error
+          ? 'error-envio'
+          : estado.intentado && !estado.valido
+            ? (!estado.token ? 'captcha' : 'validacion')
+            : 'abandono';
+      const completados = Object.values(estado.valores).filter(valor =>
+        typeof valor === 'boolean' ? valor : Boolean(String(valor ?? '').trim()),
+      ).length;
+      trackAbandonoFormulario(origen, modo, ultimoCampoRef.current, motivo, completados);
+    };
+
+    window.addEventListener('pagehide', medirAbandono);
+    return () => {
+      window.removeEventListener('pagehide', medirAbandono);
+      medirAbandono();
+    };
+  }, [modo, origen]);
+
+  useEffect(() => {
+    const seccion = seccionRef.current;
+    if (!seccion || vistoMedido.current) return;
+    if (!('IntersectionObserver' in window)) {
+      vistoMedido.current = true;
+      trackFormularioVisto(origen, modo);
+      return;
+    }
+    const observador = new IntersectionObserver(([entrada]) => {
+      if (!entrada.isIntersecting || vistoMedido.current) return;
+      vistoMedido.current = true;
+      trackFormularioVisto(origen, modo);
+      observador.disconnect();
+    }, { threshold: 0.5 });
+    observador.observe(seccion);
+    return () => observador.disconnect();
+  }, [modo, origen]);
+
   /**
    * Al entrar en un campo, acerca el botón de enviar a la pantalla — pero sólo
    * lo que se pueda sin perder de vista el campo que se acaba de tocar.
@@ -812,6 +866,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
    * que se está escribiendo.
    */
   const acercarElBoton = (evento: React.FocusEvent<HTMLFormElement>) => {
+    const objetivo = evento.target;
+    if (objetivo instanceof HTMLElement) {
+      const id = objetivo.id.startsWith(`${prefijo}-`) ? objetivo.id.slice(prefijo.length + 1) : '';
+      if (id === 'carrera' || id in CAMPOS) ultimoCampoRef.current = id;
+    }
     if (!inicioMedido.current) {
       inicioMedido.current = true;
       trackInicioFormulario(origen, modo);
@@ -891,6 +950,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     // El botón no se apaga: apagado no explica nada. Se deja pulsar, y el
     // primer intento enciende los bordes rojos y lleva el foco a lo que falta.
     if (!valido) {
+      trackIntentoFormulario(origen, modo, !token ? 'captcha' : 'validacion');
       setIntentado(true);
       setEnFrio(true);
       if (frioRef.current) clearTimeout(frioRef.current);
@@ -904,6 +964,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       irAlPrimerProblema(problemas);
       return;
     }
+    trackIntentoFormulario(origen, modo, 'valido');
     setEnviando(true);
     setError('');
 
@@ -950,6 +1011,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
 
   return (
     <section
+      ref={seccionRef}
       id={esPreinscripcion ? 'preinscripcion' : 'formulario'}
       className="relative"
       style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}
