@@ -1,0 +1,4 @@
+- https://www.siglo21sur.com/carreras/tecnicatura-en-videojuegos - respuesta publicada, metadata y canónica.
+- https://www.siglo21sur.com/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos - redirección 301 a la URL actual.
+- https://www.siglo21sur.com/novedades/articulo/tecnicaturas-pregrado-dos-tres-anos - enlace editorial agregado hacia la ficha.
+- https://www.siglo21sur.com/sitemap.xml - presencia de la URL actual y fecha de última modificación.

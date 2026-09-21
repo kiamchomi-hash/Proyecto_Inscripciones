@@ -30,7 +30,7 @@ interface Props {
 type Valores = Partial<Record<CampoId, string | boolean>>;
 
 const ETIQUETA = 'block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider';
-const CAMPO = 'w-full bg-[var(--catalogo-form-campo)] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none transition-colors';
+const CAMPO = 'form-field-focus w-full bg-[var(--catalogo-form-campo)] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none transition-colors';
 const BORDE_OK = 'border-[var(--catalogo-acento)]/25 focus:border-[var(--catalogo-acento)]/60';
 const BORDE_MAL = '!border-red-400/60';
 
@@ -615,6 +615,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
 
   const esPreinscripcion = modo === 'preinscripcion';
   const prefijo = modo;
+  const idDestino = esPreinscripcion ? 'preinscripcion' : 'formulario';
 
   const carrera = useMemo(
     () => carreras.find(opcion => opcion.nombre === carreraElegida) || null,
@@ -723,6 +724,44 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     window.addEventListener(EVENTO_ELEGIR_CARRERA, alElegir);
     return () => window.removeEventListener(EVENTO_ELEGIR_CARRERA, alElegir);
   }, [carreras]);
+
+  // Los CTA llegan por ancla y el navegador desplaza la sección, pero una
+  // sección no recibe foco por sí sola. Cuando el formulario ya está montado,
+  // o termina de montarse después del scroll diferido, enfocamos el primer
+  // campo para que la persona pueda empezar a completar sin otro clic.
+  useEffect(() => {
+    const ancla = `#${idDestino}`;
+    let intentos = 0;
+    let temporizador: number | undefined;
+
+    const intentar = () => {
+      if (window.location.hash !== ancla) return;
+      const contenedor = document.getElementById(idDestino);
+      const campo = contenedor?.querySelector<HTMLElement>(
+        'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled])',
+      );
+      if (campo) {
+        campo.focus({ preventScroll: true });
+        return;
+      }
+      if (intentos < 20) {
+        intentos += 1;
+        temporizador = window.setTimeout(intentar, 75);
+      }
+    };
+
+    const alCambiarHash = () => {
+      intentos = 0;
+      window.setTimeout(intentar, 0);
+    };
+
+    window.addEventListener('hashchange', alCambiarHash);
+    alCambiarHash();
+    return () => {
+      window.removeEventListener('hashchange', alCambiarHash);
+      if (temporizador !== undefined) window.clearTimeout(temporizador);
+    };
+  }, [idDestino]);
 
   const poner = useCallback((id: CampoId, valor: string | boolean) => {
     setValores(previos => ({ ...previos, [id]: valor }));

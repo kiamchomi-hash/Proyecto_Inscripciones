@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return {
     title: data.titulo,
-    description: data.extracto || `${data.titulo} — CAU Villa Lugano, Universidad Siglo 21.`,
+    description: data.extracto || `${data.titulo} — Universidad Siglo 21.`,
     alternates: { canonical: `/novedades/articulo/${slug}` },
     openGraph: {
       title: data.titulo,

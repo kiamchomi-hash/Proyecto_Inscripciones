@@ -37,8 +37,8 @@ export async function generateMetadata({ params }: { params: Promise<{ page: str
   const suffix = pageNum > 1 ? ` — Página ${pageNum}` : '';
   return {
     title: `Novedades${suffix}`,
-    description: 'Últimas novedades del CAU Villa Lugano — Universidad Siglo 21.',
-    keywords: ['novedades', 'noticias', 'siglo 21', 'villa lugano', 'CAU'],
+    description: 'Últimas novedades sobre carreras, inscripción y formación online.',
+    keywords: ['novedades', 'noticias', 'siglo 21', 'carreras online', 'inscripción'],
     alternates: { canonical: `/novedades/${page}` },
   };
 }

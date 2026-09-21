@@ -161,6 +161,13 @@
   border-radius: 1rem 1rem 0 0;
 }
 
+/* El CTA llega por ancla y enfoca el primer campo automáticamente. El anillo
+   hace visible ese destino tanto con teclado como después de un clic. */
+.form-field-focus:focus {
+  border-color: var(--catalogo-acento);
+  box-shadow: 0 0 0 3px rgba(var(--catalogo-acento-rgb), 0.28);
+}
+
 /* El pie redondea las esquinas de abajo por su cuenta: la tarjeta ya no lleva
    `overflow-hidden` —recortaba el desplegable del buscador—, así que sin esto
    su fondo pisaría el redondeo de la tarjeta. */

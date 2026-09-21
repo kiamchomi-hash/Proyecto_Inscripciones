@@ -75,16 +75,24 @@ const SEO_ESPECIFICO: Record<string, { title: string; description: string }> = {
     description: 'Aprendé programación, animación 2D y 3D, inteligencia artificial y motores de videojuegos. Conocé el plan de la tecnicatura a distancia de Siglo 21.',
   },
   'Licenciatura en Finanzas': {
-    title: 'Licenciatura en Finanzas: plan de estudios | Siglo 21',
-    description: 'Estudiá mercados, inversiones, riesgo, tecnología financiera y criptomonedas. Conocé el plan de estudios de la Licenciatura en Finanzas a distancia.',
+    title: 'Licenciatura en Finanzas a Distancia | Siglo 21',
+    description: 'Estudiá mercados, inversiones, riesgo y tecnología financiera. Conocé el plan de estudios y cómo inscribirte en la Licenciatura en Finanzas a distancia.',
   },
   'Tecnicatura Superior en Marketing Digital': {
-    title: 'Tecnicatura en Marketing Digital Online | Teclab',
-    description: 'Título oficial en 2 años, 100% online. Aprendé publicidad, contenidos, e-commerce y experiencia del cliente en la carrera de Marketing Digital de Teclab.',
+    title: 'Tecnicatura en Marketing Digital | Teclab Online',
+    description: 'Estudiá marketing digital, publicidad, contenidos, e-commerce y experiencia del cliente. Título oficial, 2 años y modalidad 100% online en Teclab.',
+  },
+  'Tecnicatura Superior en Cloud Administration': {
+    title: 'Tecnicatura en Cloud Administration | Teclab',
+    description: 'Aprendé infraestructura cloud, redes, seguridad y servicios en la nube. Tecnicatura oficial de 2 años, 100% online, con certificación de Teclab.',
   },
   'Tecnicatura Superior en Gestión Contable': {
     title: 'Tecnicatura en Gestión Contable Online | Teclab',
     description: 'Título oficial en 2 años, 100% online, con certificación intermedia de Auxiliar Contable. Estudiá contabilidad, impuestos y estados contables en Teclab.',
+  },
+  'Procurador': {
+    title: 'Procurador a Distancia | Universidad Siglo 21',
+    description: 'Estudiá Procurador a distancia: formación en derecho procesal, trámites y representación jurídica. Conocé el plan de estudios y cómo inscribirte.',
   },
 };
 
@@ -299,7 +307,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     keywords: esIA
       ? [nombreCompleto, carrera.nombre, 'academia identidad argentina', 'diplomatura online', 'villa lugano', carrera.nivel, 'CABA']
       : esTeclab(carrera) || esCursoTeclab(carrera)
-        ? [nombreCompleto, carrera.nombre, 'teclab', 'instituto tecnico superior teclab', 'universidad siglo 21', 'villa lugano', carrera.nivel, 'CABA']
+        ? [nombreCompleto, carrera.nombre, 'teclab', 'instituto tecnico superior teclab', 'universidad siglo 21', carrera.nivel, 'estudiar online']
         : [nombreCompleto, carrera.nombre, 'universidad siglo 21', 'villa lugano', carrera.nivel, 'estudiar a distancia', 'CABA'],
     alternates: {
       canonical: `https://www.siglo21sur.com/carreras/${canonicalSlug}`,
@@ -484,9 +492,9 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     ...(duracion ? { "timeToComplete": duracion } : {}),
     ...(carrera.titulo && carrera.titulo !== 'Consultar' ? { "educationalCredentialAwarded": carrera.titulo } : {}),
     "inLanguage": "es",
-    // El curso se dicta entero por videollamada; las carreras combinan la
-    // plataforma con la tutoria presencial del CAU.
-    ...(esCursoTeclabActual ? {
+    // Teclab se cursa 100% online. Las carreras de Siglo 21 combinan la
+    // plataforma con el acompañamiento presencial del centro.
+    ...(conTeclab ? {
       "courseMode": "online",
     } : {
       "courseMode": "blended",

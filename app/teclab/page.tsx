@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     'carreras cortas',
     'instituto técnico superior teclab',
     'universidad siglo 21',
+    'estudiar online',
   ],
   alternates: { canonical: URL },
   openGraph: {

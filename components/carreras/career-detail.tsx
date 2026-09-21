@@ -307,7 +307,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               <p className="career-hero-intro">
                 {teclabIntro ||
                   carrera.descripcion ||
-                  `Formate en ${nombreCompleto} con el acompañamiento del CAU Villa Lugano.`}
+                  (isTeclab
+                    ? `Estudiá ${nombreCompleto} 100% online con Teclab.`
+                    : `Formate en ${nombreCompleto} con el acompañamiento del CAU Villa Lugano.`)}
               </p>
             )}
             {carrera.proximamente && (
@@ -517,8 +519,8 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               />
               <p>
                 {isTeclabCourse ? 'Curso oficial de Teclab' : 'Carrera oficial de Teclab'}
-                {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Desde el CAU Villa
-                Lugano te acompañamos en la inscripción y durante toda la cursada.
+                {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Te acompañamos en la
+                inscripción y durante toda la cursada.
               </p>
               {/* El titulo no es un punto final: es la mitad de una licenciatura
                   ya cursada. Va aca y no en el hero porque se lee despues del

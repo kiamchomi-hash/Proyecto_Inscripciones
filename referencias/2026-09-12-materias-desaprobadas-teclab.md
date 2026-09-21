@@ -1,0 +1,4 @@
+# Referencias - materias desaprobadas en Teclab
+
+- https://teclab.edu.ar/faq/ - el 12/09/2026 confirmaba los requisitos para regularizar cada materia, el plazo de 6 meses, los 3 intentos de examen final, la recursada cuando se reprueba y que las únicas correlativas son las prácticas profesionales.
+- https://portalalumno.teclab.edu.ar/5e01120d0cdce5c39761b58700f275b4.pdf - el Reglamento Institucional confirma que no regularizar obliga a recursar; los primeros 3 intentos de final son sin costo y desde el cuarto se paga derecho de examen; el arancel se cobra por cada período de inscripción independientemente de cuántas materias se cursen. No establece un cargo adicional por desaprobar una materia ni exige volver a pagar un bimestre ya abonado. Los puntos 3.4.1, 3.4.2 y 3.5.3 fijan 4 materias por cuatrimestre, distribuidas en 2 por bimestre, y contemplan que la Práctica Profesionalizante pueda adicionarse cuando no existan restricciones académicas.

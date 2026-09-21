@@ -13,7 +13,15 @@ favoritas y las suyas propias. **Como se busca ahi lo fija la skill
 primero. No repetir esos comandos aca. Lo que sigue es solo lo que cambia cuando
 el destino es video.
 
-Para video sirven casi siempre tres categorias, y no son las obvias:
+**Si el video es de Siglo 21 o de Teclab no se recorre toda la biblioteca**:
+solo las piezas que el usuario marco para esa casa en la galeria (clave `usos`
+de `biblioteca/estado.json`), unas cien de las 453 de Mias. Las marcadas
+«Ninguna» y las sin decidir no se miran. El comando que las lista y que hacer
+si ahi no hay nada: `diseno-uiverse`, seccion «Si la pieza es de Siglo 21 o de
+Teclab».
+
+Cuando haya que bajar al catalogo abierto, para video sirven casi siempre tres
+categorias, y no son las obvias:
 
 - **`loaders`**: son cientos de animaciones puras —pulsos, ondas, orbitas,
   barridos, contadores—. Casi ninguna se usa como loader: se usan como el

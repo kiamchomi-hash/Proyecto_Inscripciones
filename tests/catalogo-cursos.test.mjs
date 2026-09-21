@@ -85,8 +85,8 @@ test('Videojuegos usa la URL corta acordada sin cambiar su nombre', () => {
 
 test('las fichas con margen de CTR tienen snippets específicos', async () => {
   const page = await readFile(new URL('../app/carreras/[slug]/page.tsx', import.meta.url), 'utf8');
-  assert.match(page, /Licenciatura en Finanzas: plan de estudios \| Siglo 21/);
-  assert.match(page, /Tecnicatura en Marketing Digital Online \| Teclab/);
+  assert.match(page, /Licenciatura en Finanzas a Distancia \| Siglo 21/);
+  assert.match(page, /Tecnicatura en Marketing Digital \| Teclab Online/);
   assert.match(page, /Tecnicatura en Gestión Contable Online \| Teclab/);
   assert.doesNotMatch(page, /Plan de estudios e inscripción en el CAU Villa Lugano/);
   assert.doesNotMatch(page, /Siglo 21 CAU Villa Lugano/);

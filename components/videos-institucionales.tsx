@@ -36,7 +36,7 @@ const VIDEOS: VideoInstitucional[] = [
       preview: '/folletos/folleto-siglo21-preview.webp',
       archivo: '/folletos/folleto-siglo21.jpg',
       alt: 'Folleto de Universidad Siglo 21 con su oferta de carreras universitarias',
-      ancho: 1240,
+      ancho: 2480,
       alto: 1550,
     },
   },
@@ -46,15 +46,15 @@ const VIDEOS: VideoInstitucional[] = [
     titulo: 'Teclab',
     descripcion: 'Carreras online de Tecnología y Gestión, más el curso de Inteligencia Artificial.',
     destino: {
-      href: '/teclab',
+    href: '/teclab',
       texto: 'Ver propuesta de Teclab',
     },
     folleto: {
       preview: '/folletos/folleto-teclab-preview.webp',
       archivo: '/folletos/folleto-teclab.jpg',
       alt: 'Folleto de Teclab con tecnicaturas de Tecnología y Gestión',
-      ancho: 1240,
-      alto: 1550,
+      ancho: 2480,
+      alto: 1010,
     },
   },
 ];
