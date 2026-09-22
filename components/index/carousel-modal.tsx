@@ -1205,9 +1205,9 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
       )}
       {/* Los márgenes automáticos centran sólo cuando sobra alto; al ampliar
           el texto, el inicio queda accesible y el contenido crece hacia abajo. */}
-      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-10 flex flex-col gap-5 md:gap-8 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
+      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-8 flex flex-col gap-4 md:gap-5 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
         {/* Título */}
-        <div className="mt-auto text-center md:text-left">
+        <div className="mt-0 md:mt-auto text-center md:text-left">
           <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>') }}></h3>
           {slide.subtitulo && (
             <p className="text-[#7ca19b] text-sm md:text-base mt-2">{slide.subtitulo}</p>
@@ -1215,7 +1215,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
         </div>
 
         {/* Beneficios */}
-        <div className="flex flex-col gap-3 md:gap-5">
+        <div className="flex flex-col gap-3 md:gap-4">
           {slide.beneficios.map((b, i) => (
             <div key={i} className="flex items-center gap-2.5 md:gap-3">
               <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
@@ -1231,7 +1231,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
         </div>
 
         {/* Botones WhatsApp + Ubicación */}
-        <div className="mb-auto flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
+        <div className="mb-0 md:mb-auto flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
               href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
