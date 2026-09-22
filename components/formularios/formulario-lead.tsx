@@ -1300,6 +1300,25 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
               </div>
             </div>
             </>)}
+            {esperandoCarrera && (
+              <div
+                className="form-card-footer px-3 py-2 sm:px-4"
+                style={{ background: 'rgba(0,0,0,0.35)', borderTop: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}
+              >
+                <div className="flex min-h-4 flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[11px] leading-4">
+                  <span className="text-[var(--catalogo-texto-suave)]">¿Preferís hablar directamente?</span>
+                  <a
+                    href="https://wa.me/5491132973801?text=Hola%2C%20prefiero%20hacer%20una%20consulta%20por%20WhatsApp"
+                    target="_blank"
+                    rel="noopener nofollow"
+                    className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-bold text-[#063b20] transition-colors hover:bg-[#6ee7a0]"
+                  >
+                    <WhatsAppIcon className="h-3.5 w-3.5" />
+                    Chatear por WhatsApp
+                  </a>
+                </div>
+              </div>
+            )}
           </form>
         </div>
         </div>
