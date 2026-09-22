@@ -622,6 +622,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const esPreinscripcion = modo === 'preinscripcion';
   const prefijo = modo;
   const idDestino = esPreinscripcion ? 'preinscripcion' : 'formulario';
+  const mensajeWhatsAppFormulario = esPreinscripcion && carreraElegida
+    ? `Hola, me gustaría conocer más información sobre ${carreraElegida.toUpperCase()}`
+    : 'Hola, me gustaría realizar una consulta';
 
   const carrera = useMemo(
     () => carreras.find(opcion => opcion.nombre === carreraElegida) || null,
@@ -1289,7 +1292,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                       : null}
                 <span className="text-[var(--catalogo-texto-suave)]">¿Preferís hablar directamente?</span>
                 <a
-                  href="https://wa.me/5491132973801?text=Hola%2C%20prefiero%20hacer%20una%20consulta%20por%20WhatsApp"
+                  href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`}
                   target="_blank"
                   rel="noopener nofollow"
                   className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-bold text-[#063b20] transition-colors hover:bg-[#6ee7a0]"
@@ -1308,7 +1311,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 <div className="flex min-h-4 flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[11px] leading-4">
                   <span className="text-[var(--catalogo-texto-suave)]">¿Preferís hablar directamente?</span>
                   <a
-                    href="https://wa.me/5491132973801?text=Hola%2C%20prefiero%20hacer%20una%20consulta%20por%20WhatsApp"
+                    href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`}
                     target="_blank"
                     rel="noopener nofollow"
                     className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-bold text-[#063b20] transition-colors hover:bg-[#6ee7a0]"
