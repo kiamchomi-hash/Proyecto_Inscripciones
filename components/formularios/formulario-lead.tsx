@@ -1287,6 +1287,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                     : intentado && !token
                       ? <span className="text-amber-300">Falta tildar la verificación de seguridad.</span>
                       : null}
+                <span className="text-[var(--catalogo-texto-suave)]">¿Preferís hablar directamente?</span>
                 <a
                   href="https://wa.me/5491132973801?text=Hola%2C%20prefiero%20hacer%20una%20consulta%20por%20WhatsApp"
                   target="_blank"
