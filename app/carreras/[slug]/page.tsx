@@ -346,11 +346,9 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   const url = `https://www.siglo21sur.com/carreras/${canonicalSlug}`;
 
   // Enlaces internos entre paginas de carrera: seis del mismo nivel y dos de
-  // otro. Enlazar solo dentro del nivel dejaba cinco silos incomunicados, y se
-  // nota en la medicion: las 15 carreras que Google indexo solo despues del
-  // deploy del 24/07 son todas de Grado, mientras Pregrado, CCC e Identidad
-  // Argentina siguen enteros afuera. Las dos de afuera del nivel le dan a esos
-  // grupos una puerta desde las fichas que Google ya rastrea.
+  // otro nivel, pero siempre dentro de la misma casa. Las propuestas de
+  // Academia Identidad Argentina no se mezclan con Universidad Siglo 21 ni
+  // Teclab, porque son instituciones y ofertas distintas.
   //
   // El corte rota con el id para que no todas las fichas apunten a las mismas
   // dos carreras, y es deterministico para no romper el cache de ISR.
@@ -358,9 +356,15 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // El curso de Teclab es el unico de su nivel: sin excepcion se quedaba sin
   // enlaces propios y la seccion mostraba dos carreras de Siglo 21 bajo un
   // titulo que prometia Teclab. Sus hermanas son las tecnicaturas del instituto.
+  const esMismaCasa = (otra: Carrera) => {
+    if (carrera.nivel === 'Identidad Argentina') return otra.nivel === 'Identidad Argentina';
+    if (esTeclab(carrera) || esCursoTeclab(carrera)) return esTeclab(otra) || esCursoTeclab(otra);
+    return otra.nivel !== 'Identidad Argentina' && !esTeclab(otra) && !esCursoTeclab(otra);
+  };
+
   const hermanas = esCursoTeclab(carrera)
     ? carreras.filter(c => esTeclab(c))
-    : carreras.filter(c => c.nivel === carrera.nivel && c.id !== carrera.id);
+    : carreras.filter(c => c.nivel === carrera.nivel && c.id !== carrera.id && esMismaCasa(c));
   // La ventana de seis tambien rota, por el mismo motivo que las cruzadas: con
   // `slice(0, 6)` todas las fichas de un nivel enlazaban a las mismas seis, asi
   // que cinco paginas por nivel juntaban 33 enlaces entrantes y 47 de las 88 se
@@ -415,7 +419,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // Con paso 1 vuelve a recorrer todo. Simulado sobre las 88 fichas: minimo 2
   // enlaces entrantes, maximo 12, ninguna en cero, y 41% de los enlaces caen
   // dentro de la misma area contra 17% antes.
-  const otrosNiveles = carreras.filter(c => c.nivel !== carrera.nivel);
+  const otrosNiveles = carreras.filter(c => c.nivel !== carrera.nivel && esMismaCasa(c));
   const cruzadaArea = area
     ? rotar(otrosNiveles.filter(c => getAreaForCarrera(c) === area), 2, 1)
     : [];
