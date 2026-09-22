@@ -1279,7 +1279,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
               className="form-card-footer px-3 py-2 sm:px-4"
               style={{ background: 'rgba(0,0,0,0.35)', borderTop: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}
             >
-              <p className="min-h-4 text-center text-[11px] leading-4">
+              <div className="flex min-h-4 flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[11px] leading-4">
                 {error
                   ? <span className="text-red-400">{error}</span>
                   : captchaVencido
@@ -1287,14 +1287,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                     : intentado && !token
                       ? <span className="text-amber-300">Falta tildar la verificación de seguridad.</span>
                       : null}
-              </p>
-              <div className="mt-1 flex items-center justify-center gap-2 text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">
-                <span>¿Preferís hablar directamente?</span>
                 <a
                   href="https://wa.me/5491132973801?text=Hola%2C%20prefiero%20hacer%20una%20consulta%20por%20WhatsApp"
                   target="_blank"
                   rel="noopener nofollow"
-                  className="inline-flex items-center gap-1 font-bold text-[#25D366] transition-colors hover:text-[#6ee7a0]"
+                  className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-bold text-[#063b20] transition-colors hover:bg-[#6ee7a0]"
                 >
                   <WhatsAppIcon className="h-3.5 w-3.5" />
                   Chatear por WhatsApp
