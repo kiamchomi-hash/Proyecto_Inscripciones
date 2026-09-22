@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
+import { WhatsAppIcon } from '@/components/icons';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
 import { trackAbandonoFormulario, trackConsulta, trackFormularioVisto, trackInicioFormulario, trackIntentoFormulario, type OrigenConsulta } from '@/lib/analytics';
 import {
@@ -1287,6 +1288,18 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                       ? <span className="text-amber-300">Falta tildar la verificación de seguridad.</span>
                       : null}
               </p>
+              <div className="mt-1 flex items-center justify-center gap-2 text-[11px] leading-4 text-[var(--catalogo-texto-suave)]">
+                <span>¿Preferís hablar directamente?</span>
+                <a
+                  href="https://wa.me/5491132973801?text=Hola%2C%20prefiero%20hacer%20una%20consulta%20por%20WhatsApp"
+                  target="_blank"
+                  rel="noopener nofollow"
+                  className="inline-flex items-center gap-1 font-bold text-[#25D366] transition-colors hover:text-[#6ee7a0]"
+                >
+                  <WhatsAppIcon className="h-3.5 w-3.5" />
+                  Chatear por WhatsApp
+                </a>
+              </div>
             </div>
             </>)}
           </form>
