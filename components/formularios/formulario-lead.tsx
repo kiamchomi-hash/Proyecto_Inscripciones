@@ -623,7 +623,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const prefijo = modo;
   const idDestino = esPreinscripcion ? 'preinscripcion' : 'formulario';
   const mensajeWhatsAppFormulario = esPreinscripcion && carreraElegida
-    ? `Hola, me gustaría conocer más información sobre ${carreraElegida.toUpperCase()}`
+    ? `Hola, me gustaría conocer más información sobre la carrera ${carreraElegida.toUpperCase()}`
     : 'Hola, me gustaría realizar una consulta';
 
   const carrera = useMemo(
