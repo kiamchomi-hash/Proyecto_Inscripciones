@@ -346,9 +346,8 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   const url = `https://www.siglo21sur.com/carreras/${canonicalSlug}`;
 
   // Enlaces internos entre paginas de carrera: seis del mismo nivel y dos de
-  // otro nivel, pero siempre dentro de la misma casa. Las propuestas de
-  // Academia Identidad Argentina no se mezclan con Universidad Siglo 21 ni
-  // Teclab, porque son instituciones y ofertas distintas.
+  // otro nivel. Siglo 21 y Teclab pueden compartir recomendaciones; las
+  // propuestas de Academia Identidad Argentina quedan aisladas.
   //
   // El corte rota con el id para que no todas las fichas apunten a las mismas
   // dos carreras, y es deterministico para no romper el cache de ISR.
@@ -358,8 +357,8 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
   // titulo que prometia Teclab. Sus hermanas son las tecnicaturas del instituto.
   const esMismaCasa = (otra: Carrera) => {
     if (carrera.nivel === 'Identidad Argentina') return otra.nivel === 'Identidad Argentina';
-    if (esTeclab(carrera) || esCursoTeclab(carrera)) return esTeclab(otra) || esCursoTeclab(otra);
-    return otra.nivel !== 'Identidad Argentina' && !esTeclab(otra) && !esCursoTeclab(otra);
+    // Siglo 21 y Teclab pueden compartir recomendaciones; Identidad queda aislada.
+    return otra.nivel !== 'Identidad Argentina';
   };
 
   const hermanas = esCursoTeclab(carrera)
