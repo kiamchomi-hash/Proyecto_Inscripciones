@@ -1205,7 +1205,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
       )}
       {/* Los márgenes automáticos centran sólo cuando sobra alto; al ampliar
           el texto, el inicio queda accesible y el contenido crece hacia abajo. */}
-      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-8 flex flex-col gap-4 md:gap-5 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
+      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-8 flex flex-col justify-center md:justify-start gap-4 md:gap-5 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
         {/* Título */}
         <div className="mt-0 md:mt-auto text-center md:text-left">
           <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>') }}></h3>
