@@ -58,6 +58,9 @@ notas-locales/
 # rehacen los generadores de scripts/ y el sitio no las sirve: la copia buena se
 # manda por WhatsApp o se imprime.
 entregables/
+# Contenidos por casa (material oficial, piezas en curso, aprobadas y los
+# proyectos de Remotion). Pesa gigas y no es codigo del sitio; ver CLAUDE.md.
+contenidos/
 public/folletos/folleto-prueba-*
 public/folletos/clases-computacion-ofimatica-3d.png
 # Restos de una corrida: capturas sueltas, recortes temporales, el perfil que

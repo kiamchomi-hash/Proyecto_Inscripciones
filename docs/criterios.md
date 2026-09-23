@@ -218,8 +218,8 @@ que chequearle el exit code.
 
 ### El video institucional está fuera del repo
 
-Es un proyecto Remotion aparte en `~/Desktop/remotion-cau-villa-lugano`, **sin
-git**: los cambios no se pueden revertir y para eso hay una carpeta `respaldo/`.
+Es un proyecto Remotion aparte en `contenidos/cau/remotion/cau-villa-lugano/`
+(ignorado por git, ver `contenidos/LEER.md`), **sin git propio**: los cambios no se pueden revertir y para eso hay una carpeta `respaldo/`.
 `src/guion.jsx` es la fuente de verdad — el array `bloques` define las doce partes
 con su duración, y de ahí salen solas la composición completa y una por parte. **No
 agregar composiciones a mano en `index.jsx`**: las que había tenían los segundos de

@@ -10,9 +10,17 @@ Video como funcion del tiempo: cada cuadro es un render de React con
 
 ## Donde esta el video
 
-El institucional del CAU vive **fuera de este repo y fuera de git**, en
-`~/Desktop/remotion-cau-villa-lugano` (en Linux, `~/Escritorio/...`). Antes de
-tocar nada:
+Los proyectos de video viven en `contenidos/<casa>/remotion/`, dentro de la
+carpeta del sitio pero **fuera de git** (ignorada):
+`cau/remotion/cau-villa-lugano/` (el institucional del CAU y sus piezas,
+también las de Teclab que comparten su código) y
+`teclab/remotion/teclab-carreras/`. Un video aprobado se
+guarda en `contenidos/<casa>/aprobados/` con su mp4, una copia del código en
+`codigo/` y un `proceso.md` con la composición y el comando de render (ver
+`contenidos/LEER.md`). Si se piden referencias aprobadas para un video
+general (varias casas o el CAU como sede), se miran los `aprobados/` de las
+cuatro casas (`cau`, `siglo21`, `teclab`, `identidad`), no sólo los de una;
+el video general se guarda en `cau/`. Antes de tocar el institucional:
 
 | | |
 |---|---|

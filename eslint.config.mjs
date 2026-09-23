@@ -18,6 +18,7 @@ export default defineConfig([
     'herramientas/ventas/**',
     '.agents/**',
     'entregables/**',
+    'contenidos/**',
     'output/**',
     '.playwright-cli/**',
     '.playwright-mcp/**',
