@@ -196,6 +196,8 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
   const [paso, setPaso] = useState(-1);
   const [respuestas, setRespuestas] = useState<number[][]>([]);
   const [seleccion, setSeleccion] = useState<number[]>([]);
+  const [areaSeleccionada, setAreaSeleccionada] = useState<AreaId | null>(null);
+  const [carreraPrincipalId, setCarreraPrincipalId] = useState<number | null>(null);
   const [marca, setMarca] = useState<'siglo21' | 'teclab'>('siglo21');
 
   useEffect(() => {
@@ -216,6 +218,9 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
   const grupos = useMemo(() => recomendarPorArea(
     rankingAreas, carreras, getAreaForCarrera, terminosPreferidos, nivelesPreferidos, 3,
   ), [rankingAreas, carreras, terminosPreferidos, nivelesPreferidos]);
+  const areaActiva = grupos.some(grupo => grupo.area === areaSeleccionada) ? areaSeleccionada : grupos[0]?.area ?? null;
+  const resultados = grupos.find(grupo => grupo.area === areaActiva)?.carreras ?? [];
+  const carreraParaAccion = resultados.find(carrera => carrera.id === carreraPrincipalId) ?? resultados[0] ?? null;
   const recomendaciones = grupos.flatMap(grupo => grupo.carreras.map(carrera => ({ carrera, area: grupo.area }))).slice(0, 5);
 
   function avanzar(indices: number[]) {
@@ -259,9 +264,8 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
             <div className="vocacional-progress"><span style={{ width: `${(paso / PREGUNTAS.length) * 100}%` }} /></div>
           </div>
           <h2 id="pregunta-titulo">{pregunta.pregunta}</h2>
-          {pregunta.maximo && <p className="vocacional-help" id="vocacional-ayuda">Elegí hasta {pregunta.maximo} opciones y después continuá.</p>}
-          <div className="vocacional-options" aria-describedby={pregunta.maximo ? 'vocacional-ayuda' : undefined}>{pregunta.opciones.map((opcion, indice) => <button type="button" key={opcion.texto} aria-pressed={pregunta.maximo ? seleccion.includes(indice) : undefined} onClick={() => pregunta.maximo ? setSeleccion(actual => alternarSeleccion(actual, indice, pregunta.maximo!)) : avanzar([indice])} className={`vocacional-option${seleccion.includes(indice) ? ' is-selected' : ''}`}><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{opcion.texto}</span><span aria-hidden="true">{pregunta.maximo ? seleccion.includes(indice) ? '✓' : '+' : '↗'}</span></button>)}</div>
-          {pregunta.maximo && <button className="vocacional-button vocacional-continue" onClick={() => avanzar(seleccion)} disabled={seleccion.length === 0}>Continuar</button>}
+          <div className="vocacional-options" role={pregunta.maximo ? 'group' : undefined} aria-label={pregunta.maximo ? `Seleccioná hasta ${pregunta.maximo} opciones` : undefined}>{pregunta.opciones.map((opcion, indice) => <button type="button" key={opcion.texto} aria-pressed={pregunta.maximo ? seleccion.includes(indice) : undefined} onClick={() => pregunta.maximo ? setSeleccion(actual => alternarSeleccion(actual, indice, pregunta.maximo!)) : avanzar([indice])} className={`vocacional-option${pregunta.maximo ? ' vocacional-option--multiple' : ''}${seleccion.includes(indice) ? ' is-selected' : ''}`}><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{opcion.texto}</span>{pregunta.maximo ? <span className="vocacional-option-check" aria-hidden="true">{seleccion.includes(indice) ? '✓' : ''}</span> : <span aria-hidden="true">↗</span>}</button>)}</div>
+          {pregunta.maximo && <button className="vocacional-button vocacional-continue" onClick={() => avanzar(seleccion)} disabled={seleccion.length === 0}>Siguiente</button>}
           <button className="vocacional-back" onClick={volver} disabled={paso === 0}>← Volver</button>
         </div>
         <aside className="vocacional-live" aria-live="polite">
@@ -275,21 +279,12 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
   return (
     <section className="vocacional-result">
       <h2>Áreas y carreras para vos</h2>
-      <p className="vocacional-result-intro">Estas opciones combinan con tus intereses. Explorá las que más te llamen la atención.</p>
-      <div className="vocacional-result-groups">
-        {grupos.map(({ area, carreras: sugeridas }, indice) => (
-          <section className="vocacional-result-group" key={area} aria-labelledby={`area-${area}`}>
-            <div className="vocacional-result-area"><span>Área {indice + 1}</span><h3 id={`area-${area}`}>{AREA_LABELS[area]}</h3></div>
-            <ul className="vocacional-result-careers">{sugeridas.map(carrera => (
-              <li key={carrera.id}>
-                <strong>{nombreVisible(carrera)}</strong>
-                <div><Link href={`/carreras/${carreraToSlug(carrera)}`}>Conocer la carrera</Link><a href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`} target="_blank" rel="noopener nofollow">Consultar</a></div>
-              </li>
-            ))}</ul>
-          </section>
-        ))}
-      </div>
-      <div className="vocacional-result-footer"><button className="vocacional-restart" onClick={() => { setPaso(-1); setRespuestas([]); setSeleccion([]); }}>Hacerlo de nuevo</button><Link href="/">Volver al inicio</Link></div>
+      <div className="vocacional-areas">{grupos.map(({ area, puntos }, indice) => <button type="button" aria-pressed={areaActiva === area} onClick={() => { setAreaSeleccionada(area); setCarreraPrincipalId(null); }} className={`vocacional-area area-${indice + 1}${areaActiva === area ? ' is-active' : ''}`} key={area}><div className="vocacional-area-head"><strong>{AREA_LABELS[area]}</strong><b>{indice + 1} de {grupos.length}</b></div><span className="vocacional-area-meter" aria-hidden="true"><i style={{ width: `${Math.round((puntos / grupos[0].puntos) * 100)}%` }} /></span></button>)}</div>
+      <div className="vocacional-area-nav" role="group" aria-label="Elegir área">{grupos.map(({ area }) => <button type="button" aria-pressed={areaActiva === area} className={areaActiva === area ? 'is-active' : ''} onClick={() => { setAreaSeleccionada(area); setCarreraPrincipalId(null); }} key={area}>{AREA_LABELS[area]}</button>)}</div>
+      <div className="vocacional-careers-heading"><span>Carreras</span></div>
+      <div className="vocacional-careers" key={areaActiva}>{resultados.map(carrera => <button type="button" aria-pressed={carrera.id === carreraParaAccion?.id} className={`vocacional-career${carrera.id === carreraParaAccion?.id ? ' is-primary' : ''}`} onClick={() => setCarreraPrincipalId(carrera.id)} key={carrera.id}><span>{nombreVisible(carrera)}</span><span aria-hidden="true">→</span></button>)}</div>
+      {carreraParaAccion && <div className="vocacional-career-actions" key={carreraParaAccion.id}><strong>{nombreVisible(carreraParaAccion)}</strong><div><a href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppInfo(carreraParaAccion))}`} target="_blank" rel="noopener nofollow">Consultar por WhatsApp</a><Link href={`/carreras/${carreraToSlug(carreraParaAccion)}#preinscripcion`}>Quiero inscribirme</Link></div></div>}
+      <div className="vocacional-actions"><Link className="vocacional-button" href="/"><span aria-hidden="true">←</span> Volver</Link><button className="vocacional-restart" onClick={() => { setPaso(-1); setRespuestas([]); setSeleccion([]); setAreaSeleccionada(null); setCarreraPrincipalId(null); }}>Hacerlo de nuevo</button></div>
     </section>
   );
 }

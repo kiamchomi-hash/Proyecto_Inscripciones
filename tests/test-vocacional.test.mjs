@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { puntuarRespuestas, ordenarAreas, recomendarPorArea, alternarSeleccion } from '../components/test-vocacional/resultado.ts';
 
 const preguntas = [
@@ -40,4 +41,29 @@ test('muestra carreras de varias áreas de afinidad sin forzar una principal', (
   assert.deepEqual(grupos.map(grupo => grupo.area), ['tecnologia', 'salud']);
   assert.deepEqual(grupos[0].carreras.map(carrera => carrera.id), [1, 2]);
   assert.deepEqual(grupos[1].carreras.map(carrera => carrera.id), [3]);
+});
+
+test('la selección múltiple usa casillas visibles y avanza con Siguiente', () => {
+  const componente = readFileSync(new URL('../components/test-vocacional/test-vocacional.tsx', import.meta.url), 'utf8');
+  const estilos = readFileSync(new URL('../app/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
+  assert.doesNotMatch(componente, /Elegí hasta .* opciones y después continuá/);
+  assert.match(componente, /aria-pressed=\{pregunta\.maximo \? seleccion\.includes\(indice\)/);
+  assert.match(componente, /vocacional-option-check/);
+  assert.match(componente, />Siguiente<\/button>/);
+  assert.match(estilos, /\.vocacional-option \.vocacional-option-check\s*\{/);
+  assert.match(estilos, /\.vocacional-option\.is-selected \.vocacional-option-check\s*\{/);
+  assert.match(estilos, /\.vocacional-option\.vocacional-option--multiple > \.vocacional-option-check\s*\{\s*display: grid;/);
+});
+
+test('el resultado conserva la tarjeta con áreas seleccionables, carreras y acciones', () => {
+  const componente = readFileSync(new URL('../components/test-vocacional/test-vocacional.tsx', import.meta.url), 'utf8');
+  const estilos = readFileSync(new URL('../app/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
+  for (const clase of ['vocacional-areas', 'vocacional-area-nav', 'vocacional-careers-heading', 'vocacional-careers', 'vocacional-career-actions', 'vocacional-actions']) {
+    assert.match(componente, new RegExp(`className=["\\x60]${clase}`));
+    assert.match(estilos, new RegExp(`\\.${clase}\\s*\\{`));
+  }
+  assert.match(componente, /setAreaSeleccionada\(area\)/);
+  assert.match(componente, /setCarreraPrincipalId\(carrera\.id\)/);
+  assert.doesNotMatch(componente, /resultadoIntervenido|setInterval\(\(\) =>\s*\{\s*setAreaSeleccionada/);
+  assert.doesNotMatch(estilos, /\.vocacional-result\s*\{\s*display: block; width: min\(1120px/);
 });
