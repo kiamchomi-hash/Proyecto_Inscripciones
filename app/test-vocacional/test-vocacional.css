@@ -283,3 +283,37 @@
 @media (max-width: 430px) {
   .vocacional-career-actions > div { grid-template-columns: 1fr; }
 }
+
+/* Selección múltiple y resultados visibles sin carrusel */
+.vocacional-help { margin: .9rem 0 0; color: #c8dedd; font-size: .88rem; }
+.vocacional-option.is-selected { border-color: var(--tv-cyan); background-color: #18443f; box-shadow: inset 0 0 0 1px var(--tv-cyan); }
+.vocacional-option.is-selected .vocacional-option-number { background: var(--tv-cyan); color: #082326; }
+.vocacional-continue { align-self: flex-start; margin-top: 1rem; }
+.vocacional-continue:disabled { opacity: .45; cursor: not-allowed; }
+.vocacional-result {
+  display: block; width: min(1120px, calc(100% - 3rem)); margin: 2rem auto;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+.vocacional-result > h2 { margin-bottom: .7rem; }
+.vocacional-result-intro { margin: 0 0 1.4rem; color: #c8dedd; text-align: center; }
+.vocacional-result-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+.vocacional-result-group { min-width: 0; border: 1px solid #3d6866; border-radius: 14px; background: #0c2828; }
+.vocacional-result-area { padding: 1rem; border-bottom: 1px solid #3d6866; }
+.vocacional-result-area span { color: var(--tv-cyan); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.vocacional-result-area h3 { margin: .35rem 0 0; font-size: 1.15rem; line-height: 1.2; }
+.vocacional-result-careers { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.vocacional-result-careers li { display: grid; gap: .8rem; padding: 1rem; border-bottom: 1px solid #315453; }
+.vocacional-result-careers li:last-child { border-bottom: 0; }
+.vocacional-result-careers strong { line-height: 1.35; }
+.vocacional-result-careers li > div { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }
+.vocacional-result-careers a, .vocacional-result-footer a { color: var(--tv-cyan); font-size: .8rem; font-weight: 800; text-underline-offset: .2em; }
+.vocacional-result-careers a:focus-visible, .vocacional-result-footer a:focus-visible { outline: 2px solid var(--tv-green); outline-offset: 3px; }
+.vocacional-result-footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1.5rem; }
+.vocacional-result-footer .vocacional-restart { margin: 0; }
+@media (max-width: 900px) { .vocacional-result-groups { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .vocacional-test { min-height: 0; }
+  .vocacional-options { grid-auto-rows: minmax(3rem, auto); }
+  .vocacional-option { height: auto; min-height: 3rem; }
+  .vocacional-result { width: auto; margin: 1.25rem; }
+}

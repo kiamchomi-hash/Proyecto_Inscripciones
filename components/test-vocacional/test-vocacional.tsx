@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { carreraToSlug, getAreaForCarrera, type AreaId } from '@/components/index/types';
 import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
+import { alternarSeleccion, ordenarAreas, puntuarRespuestas, recomendarPorArea } from './resultado';
 
 type CarreraTest = { id: number; nombre: string; nivel: string; prefix: string | null; orden: number };
 
@@ -13,12 +14,13 @@ type Opcion = {
   niveles?: string[];
   terminos?: string[];
 };
-type Pregunta = { eje: string; pregunta: string; ayuda: string; opciones: Opcion[] };
+type Pregunta = { eje: string; pregunta: string; ayuda: string; opciones: Opcion[]; maximo?: number };
 
 const PREGUNTAS: Pregunta[] = [
   {
     eje: 'Área principal',
-    pregunta: '¿Qué área te interesa explorar primero?',
+    maximo: 3,
+    pregunta: '¿Qué áreas te interesan explorar?',
     ayuda: '',
     opciones: [
       { texto: 'Tecnología e informática', areas: { tecnologia: 5 } },
@@ -33,7 +35,8 @@ const PREGUNTAS: Pregunta[] = [
   },
   {
     eje: 'Rama concreta',
-    pregunta: 'Dentro de esas opciones, ¿qué te atrae más?',
+    maximo: 3,
+    pregunta: '¿Qué temas te gustaría conocer mejor?',
     ayuda: '',
     opciones: [
       { texto: 'Programación y sistemas', areas: { tecnologia: 4 }, terminos: ['informática', 'software', 'sistemas', 'programación', 'redes', 'cloud', 'quality assurance', 'videojuegos'] },
@@ -134,7 +137,8 @@ const PREGUNTAS: Pregunta[] = [
   },
   {
     eje: 'Decisión final',
-    pregunta: '¿Qué querés que pese más en la recomendación?',
+    pregunta: '¿Qué intereses querés destacar en la recomendación?',
+    maximo: 3,
     ayuda: '',
     opciones: [
       { texto: 'Salida tecnológica', areas: { tecnologia: 3 }, terminos: ['informática', 'software', 'datos'] },
@@ -188,75 +192,10 @@ function nombreVisible(carrera: CarreraTest) {
   return prefix ? `${prefix} ${nombre}` : nombre;
 }
 
-const DESCRIPCIONES_DESEMPATE: Array<[RegExp, string]> = [
-  [/abogac|procurador/, 'Analizar casos, interpretar normas y defender derechos'],
-  [/escriban/, 'Dar validez legal a contratos, actos y documentos'],
-  [/martillero|inmobiliari/, 'Intermediar, tasar y gestionar operaciones inmobiliarias'],
-  [/criminolog|escena del crimen|investigaci[oó]n/, 'Investigar hechos, evidencias y conductas vinculadas al delito'],
-  [/contador|contable|impositiva|tributaria/, 'Ordenar cuentas, impuestos y decisiones económicas'],
-  [/finanzas|actuario|seguros/, 'Evaluar riesgos y proyectar decisiones financieras'],
-  [/comercio internacional|log[ií]stica/, 'Coordinar operaciones, mercados y movimientos entre países'],
-  [/marketing|comercializaci[oó]n|equipos de venta|inbound/, 'Diseñar estrategias para atraer clientes y aumentar ventas'],
-  [/negocios digitales|experiencia del cliente/, 'Mejorar productos, servicios y experiencias en canales digitales'],
-  [/administraci[oó]n p[uú]blica|pol[ií]ticas p[uú]blicas/, 'Gestionar programas, recursos y servicios del Estado'],
-  [/ciencia pol[ií]tica/, 'Analizar instituciones, poder y decisiones públicas'],
-  [/relaciones internacionales/, 'Comprender vínculos políticos y económicos entre países'],
-  [/administraci[oó]n agraria|gesti[oó]n agraria|agroecol[oó]gicos/, 'Gestionar producción, recursos y negocios del sector agropecuario'],
-  [/administraci[oó]n|empresas familiares|emprendimiento/, 'Organizar recursos, equipos y proyectos para hacerlos crecer'],
-  [/inteligencia artificial|rob[oó]tica/, 'Crear soluciones capaces de aprender, automatizar y tomar decisiones'],
-  [/ciencias de datos|data science|estad[ií]stica/, 'Encontrar patrones y convertir datos en decisiones'],
-  [/seguridad inform[aá]tica/, 'Proteger sistemas, redes e información frente a amenazas'],
-  [/redes inform[aá]ticas|telecomunicaciones|cloud/, 'Diseñar y mantener la infraestructura que conecta servicios digitales'],
-  [/quality assurance/, 'Detectar fallas y asegurar la calidad de productos digitales'],
-  [/videojuegos/, 'Diseñar experiencias interactivas combinando creatividad y programación'],
-  [/bioinform[aá]tica/, 'Aplicar tecnología y datos al estudio de sistemas biológicos'],
-  [/inform[aá]tica|programaci[oó]n/, 'Desarrollar software y resolver problemas mediante código'],
-  [/matem[aá]tica/, 'Construir modelos y resolver problemas mediante razonamiento abstracto'],
-  [/gesti[oó]n ambiental|auditor[ií]as ambientales/, 'Evaluar impactos y mejorar el uso responsable de los recursos'],
-  [/higiene.*seguridad|seguridad laboral/, 'Prevenir riesgos y cuidar condiciones seguras de trabajo'],
-  [/hidrocarburos|geociencias/, 'Explorar recursos naturales y procesos del subsuelo'],
-  [/tur[ií]stica|tur[ií]sticos|hotelera/, 'Diseñar y gestionar experiencias de viaje y hospitalidad'],
-  [/gesti[oó]n deportiva/, 'Administrar organizaciones, eventos y proyectos deportivos'],
-  [/recursos humanos|relaciones laborales|clima laboral|talento/, 'Acompañar equipos y mejorar la vida dentro de las organizaciones'],
-  [/periodismo/, 'Investigar hechos y convertirlos en información clara y relevante'],
-  [/publicidad/, 'Crear campañas que conecten marcas, ideas y públicos'],
-  [/relaciones p[uú]blicas|rrpp|protocolo|eventos/, 'Construir vínculos institucionales y organizar experiencias públicas'],
-  [/diseño.*animaci[oó]n|moda/, 'Crear identidades y experiencias visuales con herramientas digitales'],
-  [/terapia ocupacional/, 'Acompañar a personas para ganar autonomía en su vida cotidiana'],
-  [/gerontolog/, 'Mejorar el bienestar y la autonomía durante el envejecimiento'],
-  [/servicios de salud/, 'Organizar equipos y recursos para mejorar servicios de salud'],
-  [/psicopedagog/, 'Comprender y acompañar dificultades en los procesos de aprendizaje'],
-  [/profesorado|educaci[oó]n/, 'Diseñar experiencias de enseñanza y acompañar aprendizajes'],
-  [/niñez|adolescencia|promoci[oó]n comunitaria/, 'Trabajar con comunidades para acompañar infancias y juventudes'],
-];
-
-function descripcionParaDesempate(carrera: CarreraTest) {
-  const nombre = normalizar(`${carrera.prefix ?? ''} ${carrera.nombre}`);
-  return DESCRIPCIONES_DESEMPATE.find(([patron]) => patron.test(nombre))?.[1]
-    ?? 'Aplicar conocimientos específicos para resolver problemas de un sector profesional';
-}
-
-function afinidadDeNivel(carrera: CarreraTest, nivelesPreferidos: string[]) {
-  if (nivelesPreferidos.length === 0) return 0;
-  const descripcion = `${carrera.nivel} ${carrera.prefix ?? ''} ${carrera.nombre}`.toLocaleLowerCase('es');
-  return nivelesPreferidos.some(nivel => descripcion.includes(nivel.toLocaleLowerCase('es'))) ? 1 : 0;
-}
-
-function afinidadDeCarrera(carrera: CarreraTest, terminosPreferidos: string[]) {
-  const descripcion = normalizar(`${carrera.nivel} ${carrera.prefix ?? ''} ${carrera.nombre}`);
-  return terminosPreferidos.reduce((puntaje, termino) => {
-    const terminoNormalizado = normalizar(termino);
-    return puntaje + (descripcion.includes(terminoNormalizado) ? 1 : 0);
-  }, 0);
-}
-
 export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }) {
   const [paso, setPaso] = useState(-1);
-  const [respuestas, setRespuestas] = useState<number[]>([]);
-  const [areas, setAreas] = useState<Partial<Record<AreaId, number>>>({});
-  const [areaSeleccionada, setAreaSeleccionada] = useState<AreaId | null>(null);
-  const [carreraPrincipalId, setCarreraPrincipalId] = useState<number | null>(null);
-  const [resultadoIntervenido, setResultadoIntervenido] = useState(false);
+  const [respuestas, setRespuestas] = useState<number[][]>([]);
+  const [seleccion, setSeleccion] = useState<number[]>([]);
   const [marca, setMarca] = useState<'siglo21' | 'teclab'>('siglo21');
 
   useEffect(() => {
@@ -270,79 +209,27 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
     return () => window.clearInterval(intervalo);
   }, []);
 
-  const rankingAreas = useMemo(() => Object.entries(areas)
-    .filter(([area, puntos]) => (puntos ?? 0) > 0 && carreras.some(carrera => getAreaForCarrera(carrera) === area))
-    .sort(([, a], [, b]) => (b ?? 0) - (a ?? 0))
-    .slice(0, 3) as [AreaId, number][], [areas, carreras]);
+  const { areas, niveles: nivelesPreferidos, terminos: terminosPreferidos } = useMemo(
+    () => puntuarRespuestas(PREGUNTAS, respuestas), [respuestas],
+  );
+  const rankingAreas = useMemo(() => ordenarAreas(areas, carreras, getAreaForCarrera), [areas, carreras]);
+  const grupos = useMemo(() => recomendarPorArea(
+    rankingAreas, carreras, getAreaForCarrera, terminosPreferidos, nivelesPreferidos, 3,
+  ), [rankingAreas, carreras, terminosPreferidos, nivelesPreferidos]);
+  const recomendaciones = grupos.flatMap(grupo => grupo.carreras.map(carrera => ({ carrera, area: grupo.area }))).slice(0, 5);
 
-  const areaActiva = areaSeleccionada ?? rankingAreas[0]?.[0] ?? null;
-  const nivelesPreferidos = useMemo(() => respuestas.flatMap((respuesta, indice) =>
-    PREGUNTAS[indice]?.opciones[respuesta]?.niveles ?? []
-  ), [respuestas]);
-  const terminosPreferidos = useMemo(() => respuestas.flatMap((respuesta, indice) =>
-    PREGUNTAS[indice]?.opciones[respuesta]?.terminos ?? []
-  ), [respuestas]);
-
-  const candidatasFinales = useMemo(() => {
-    const areaPrincipal = rankingAreas[0]?.[0];
-    if (!areaPrincipal) return [];
-    return carreras
-      .filter(carrera => getAreaForCarrera(carrera) === areaPrincipal)
-      .sort((a, b) => afinidadDeCarrera(b, terminosPreferidos) - afinidadDeCarrera(a, terminosPreferidos)
-        || afinidadDeNivel(b, nivelesPreferidos) - afinidadDeNivel(a, nivelesPreferidos)
-        || a.orden - b.orden)
-      .slice(0, 8);
-  }, [carreras, nivelesPreferidos, rankingAreas, terminosPreferidos]);
-
-  useEffect(() => {
-    if (paso < PREGUNTAS.length || resultadoIntervenido || rankingAreas.length < 2) return;
-    const intervalo = window.setInterval(() => {
-      setAreaSeleccionada(actual => {
-        const indiceActual = rankingAreas.findIndex(([area]) => area === (actual ?? rankingAreas[0][0]));
-        return rankingAreas[(indiceActual + 1) % rankingAreas.length][0];
-      });
-    }, 3200);
-    return () => window.clearInterval(intervalo);
-  }, [paso, rankingAreas, resultadoIntervenido]);
-
-  const resultados = useMemo(() => areaActiva ? carreras
-    .filter(carrera => getAreaForCarrera(carrera) === areaActiva)
-    .sort((a, b) => Number(b.id === carreraPrincipalId) - Number(a.id === carreraPrincipalId)
-      || afinidadDeCarrera(b, terminosPreferidos) - afinidadDeCarrera(a, terminosPreferidos)
-      || afinidadDeNivel(b, nivelesPreferidos) - afinidadDeNivel(a, nivelesPreferidos)
-      || a.orden - b.orden || a.nombre.localeCompare(b.nombre, 'es'))
-    .slice(0, 3)
-    .map(carrera => ({ carrera, area: areaActiva, puntos: areas[areaActiva] ?? 0 })) : [], [areaActiva, areas, carreraPrincipalId, carreras, nivelesPreferidos, terminosPreferidos]);
-  const carreraParaAccion = resultados.find(({ carrera }) => carrera.id === carreraPrincipalId)?.carrera ?? resultados[0]?.carrera ?? null;
-
-  const recomendaciones = useMemo(() => {
-    const ordenadas = carreras
-      .map(carrera => ({ carrera, area: getAreaForCarrera(carrera), puntos: (getAreaForCarrera(carrera) ? areas[getAreaForCarrera(carrera)!] ?? 0 : 0) }))
-      .sort((a, b) => b.puntos - a.puntos
-        || afinidadDeCarrera(b.carrera, terminosPreferidos) - afinidadDeCarrera(a.carrera, terminosPreferidos)
-        || afinidadDeNivel(b.carrera, nivelesPreferidos) - afinidadDeNivel(a.carrera, nivelesPreferidos)
-        || a.carrera.orden - b.carrera.orden);
-    return ordenadas.slice(0, 5);
-  }, [areas, carreras, nivelesPreferidos, terminosPreferidos]);
-
-  function elegir(indice: number) {
-    const nuevos = { ...areas };
-    Object.entries(PREGUNTAS[paso].opciones[indice].areas).forEach(([area, valor]) => {
-      nuevos[area as AreaId] = (nuevos[area as AreaId] ?? 0) + (valor ?? 0);
-    });
-    setAreas(nuevos);
-    setRespuestas([...respuestas, indice]);
-    setPaso(paso + 1);
+  function avanzar(indices: number[]) {
+    setRespuestas(actual => [...actual, indices]);
+    setSeleccion([]);
+    setPaso(actual => actual + 1);
   }
 
   function volver() {
-    if (paso <= 0) { setPaso(-1); return; }
-    const anterior = respuestas[respuestas.length - 1];
-    const nuevos = { ...areas };
-    Object.entries(PREGUNTAS[paso - 1].opciones[anterior].areas).forEach(([area, valor]) => {
-      nuevos[area as AreaId] = (nuevos[area as AreaId] ?? 0) - (valor ?? 0);
-    });
-    setAreas(nuevos); setRespuestas(respuestas.slice(0, -1)); setPaso(paso - 1);
+    if (paso <= 0) return;
+    const anterior = respuestas[paso - 1] ?? [];
+    setRespuestas(actual => actual.slice(0, -1));
+    setSeleccion(anterior);
+    setPaso(actual => actual - 1);
   }
 
   if (paso === -1) return (
@@ -368,11 +255,13 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
       <section className="vocacional-workspace" aria-labelledby="pregunta-titulo">
         <div className="vocacional-test">
           <div className="vocacional-progress-panel">
-            <div className="vocacional-progress-row"><span>Pregunta {paso + 1} de {PREGUNTAS.length + 1}</span><span>{Math.round((paso / (PREGUNTAS.length + 1)) * 100)}%</span></div>
-            <div className="vocacional-progress"><span style={{ width: `${(paso / (PREGUNTAS.length + 1)) * 100}%` }} /></div>
+            <div className="vocacional-progress-row"><span>Pregunta {paso + 1} de {PREGUNTAS.length}</span><span>{Math.round((paso / PREGUNTAS.length) * 100)}%</span></div>
+            <div className="vocacional-progress"><span style={{ width: `${(paso / PREGUNTAS.length) * 100}%` }} /></div>
           </div>
           <h2 id="pregunta-titulo">{pregunta.pregunta}</h2>
-          <div className="vocacional-options">{pregunta.opciones.map((opcion, indice) => <button key={opcion.texto} onClick={() => elegir(indice)} className="vocacional-option"><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{opcion.texto}</span><span aria-hidden="true">↗</span></button>)}</div>
+          {pregunta.maximo && <p className="vocacional-help" id="vocacional-ayuda">Elegí hasta {pregunta.maximo} opciones y después continuá.</p>}
+          <div className="vocacional-options" aria-describedby={pregunta.maximo ? 'vocacional-ayuda' : undefined}>{pregunta.opciones.map((opcion, indice) => <button type="button" key={opcion.texto} aria-pressed={pregunta.maximo ? seleccion.includes(indice) : undefined} onClick={() => pregunta.maximo ? setSeleccion(actual => alternarSeleccion(actual, indice, pregunta.maximo!)) : avanzar([indice])} className={`vocacional-option${seleccion.includes(indice) ? ' is-selected' : ''}`}><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{opcion.texto}</span><span aria-hidden="true">{pregunta.maximo ? seleccion.includes(indice) ? '✓' : '+' : '↗'}</span></button>)}</div>
+          {pregunta.maximo && <button className="vocacional-button vocacional-continue" onClick={() => avanzar(seleccion)} disabled={seleccion.length === 0}>Continuar</button>}
           <button className="vocacional-back" onClick={volver} disabled={paso === 0}>← Volver</button>
         </div>
         <aside className="vocacional-live" aria-live="polite">
@@ -383,35 +272,24 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
     );
   }
 
-  if (paso === PREGUNTAS.length && candidatasFinales.length > 0) {
-    return (
-      <section className="vocacional-workspace" aria-labelledby="pregunta-titulo">
-        <div className="vocacional-test">
-          <div className="vocacional-progress-panel">
-            <div className="vocacional-progress-row"><span>Pregunta {PREGUNTAS.length + 1} de {PREGUNTAS.length + 1}</span><span>91%</span></div>
-            <div className="vocacional-progress"><span style={{ width: '91%' }} /></div>
-          </div>
-          <h2 id="pregunta-titulo">¿Cuál de estas opciones te gustaría explorar primero?</h2>
-          <div className="vocacional-options">{candidatasFinales.map((carrera, indice) => <button key={carrera.id} onClick={() => { setCarreraPrincipalId(carrera.id); setResultadoIntervenido(true); setPaso(PREGUNTAS.length + 1); }} className="vocacional-option"><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{descripcionParaDesempate(carrera)}</span><span aria-hidden="true">↗</span></button>)}</div>
-          <button className="vocacional-back" onClick={volver}>← Volver</button>
-        </div>
-        <aside className="vocacional-live" aria-live="polite">
-          <div className="vocacional-live-heading"><span>MEJOR AFINIDAD</span><span className="vocacional-live-dot" aria-label="Actualizado" /></div>
-          <div className="vocacional-live-list">{candidatasFinales.slice(0, 5).map((carrera, indice) => <div className="vocacional-live-career" key={carrera.id}><span className="vocacional-live-index">0{indice + 1}</span><span className="vocacional-live-name"><strong>{nombreVisible(carrera)}</strong><small>{AREA_LABELS[getAreaForCarrera(carrera)!]}</small></span></div>)}</div>
-        </aside>
-      </section>
-    );
-  }
-
   return (
     <section className="vocacional-result">
       <h2>Áreas y carreras para vos</h2>
-      <div className="vocacional-areas">{rankingAreas.map(([area, puntos], indice) => <button type="button" aria-pressed={areaActiva === area} onClick={() => { setAreaSeleccionada(area); setResultadoIntervenido(true); }} className={`vocacional-area area-${indice + 1} afinidad-${Math.min(100, puntos * 4) >= 70 ? 'alta' : Math.min(100, puntos * 4) >= 40 ? 'media' : 'baja'}${areaActiva === area ? ' is-active' : ''}`} key={area}><div className="vocacional-area-head"><strong>{AREA_LABELS[area]}</strong><b>{Math.min(100, puntos * 4)}%</b></div><span className="vocacional-area-meter"><i style={{ width: `${Math.min(100, puntos * 4)}%`, background: 'linear-gradient(90deg, #d0fe70 0%, #00c7b1 100%)' }} /></span></button>)}</div>
-      <div className="vocacional-area-nav" aria-label="Elegir área">{rankingAreas.map(([area]) => <button type="button" aria-current={areaActiva === area ? 'true' : undefined} className={areaActiva === area ? 'is-active' : ''} onClick={() => { setAreaSeleccionada(area); setResultadoIntervenido(true); }} key={area}>{AREA_LABELS[area]}</button>)}</div>
-      <div className="vocacional-careers-heading"><span>Carreras</span></div>
-      <div className="vocacional-careers" key={areaActiva}>{resultados.map(({ carrera }) => <button type="button" aria-pressed={carrera.id === carreraParaAccion?.id} className={`vocacional-career${carrera.id === carreraParaAccion?.id ? ' is-primary' : ''}`} onClick={() => { setCarreraPrincipalId(carrera.id); setResultadoIntervenido(true); }} key={carrera.id}><span>{nombreVisible(carrera)}</span><span aria-hidden="true">→</span></button>)}</div>
-      {carreraParaAccion && <div className="vocacional-career-actions" key={carreraParaAccion.id}><strong>{nombreVisible(carreraParaAccion)}</strong><div><a href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppInfo(carreraParaAccion))}`} target="_blank" rel="noopener nofollow">Consultar por WhatsApp</a><Link href={`/carreras/${carreraToSlug(carreraParaAccion)}#preinscripcion`}>Quiero inscribirme</Link></div></div>}
-      <div className="vocacional-actions"><Link className="vocacional-button" href="/"><span aria-hidden="true">←</span> Volver</Link><button className="vocacional-restart" onClick={() => { setPaso(-1); setAreas({}); setRespuestas([]); setAreaSeleccionada(null); setCarreraPrincipalId(null); setResultadoIntervenido(false); }}>Hacerlo de nuevo</button></div>
+      <p className="vocacional-result-intro">Estas opciones combinan con tus intereses. Explorá las que más te llamen la atención.</p>
+      <div className="vocacional-result-groups">
+        {grupos.map(({ area, carreras: sugeridas }, indice) => (
+          <section className="vocacional-result-group" key={area} aria-labelledby={`area-${area}`}>
+            <div className="vocacional-result-area"><span>Área {indice + 1}</span><h3 id={`area-${area}`}>{AREA_LABELS[area]}</h3></div>
+            <ul className="vocacional-result-careers">{sugeridas.map(carrera => (
+              <li key={carrera.id}>
+                <strong>{nombreVisible(carrera)}</strong>
+                <div><Link href={`/carreras/${carreraToSlug(carrera)}`}>Conocer la carrera</Link><a href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`} target="_blank" rel="noopener nofollow">Consultar</a></div>
+              </li>
+            ))}</ul>
+          </section>
+        ))}
+      </div>
+      <div className="vocacional-result-footer"><button className="vocacional-restart" onClick={() => { setPaso(-1); setRespuestas([]); setSeleccion([]); }}>Hacerlo de nuevo</button><Link href="/">Volver al inicio</Link></div>
     </section>
   );
 }
