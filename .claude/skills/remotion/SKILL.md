@@ -52,13 +52,18 @@ Cómo se avanza:
 - **Un paso por mensaje, y ahí se frena.** Se arma el paso, se mira (ver «Cómo
   se muestra cada paso»), se manda y se espera. No se adelanta el siguiente
   «para ganar tiempo» ni se muestran dos pasos juntos.
+- **Cada paso se muestra con tres opciones, siempre.** Tres variantes realmente
+  distintas —otro recurso, otra composición o otro color, no la misma con un
+  ajuste—, en una sola hoja, rotuladas A, B y C, y cada una con la pieza o la
+  referencia de la que sale. El usuario elige una (o pide mezclar) y recién ahí
+  se aprueba. Lo pidió el usuario el 24/09/2026 tras rechazar un fondo mostrado
+  solo: con una sola propuesta no puede comparar, sólo aceptar o rechazar.
 - **Sólo un sí explícito aprueba** («dale», «va», «aprobado», «seguí»). Un
   comentario o una pregunta no es aprobación: se responde, se corrige si hace
   falta, se vuelve a mostrar y se sigue en el mismo paso.
-- **Si lo desaprueba, se rehace el mismo paso** con lo que dijo. Si no queda
-  claro qué no le gusta, una pregunta concreta, no un cuestionario. Al segundo
-  rechazo, en vez de otra propuesta sola van dos o tres variantes realmente
-  distintas en una misma hoja, para que elija viendo.
+- **Si lo desaprueba, se rehace el mismo paso** con lo que dijo, y otra vez con
+  tres opciones nuevas: ninguna repite una rechazada. Si no queda claro qué no
+  le gusta, una pregunta concreta, no un cuestionario.
 - **Todo lo rechazado va al `HISTORIAL-DESCARTES.md` del proyecto** en el
   momento (ver «Lo descartado no se vuelve a proponer»).
 - **Lo aprobado queda congelado.** Si un paso posterior necesita tocar una capa
@@ -288,7 +293,7 @@ la hoja de contactos no necesita permiso: es parte de mostrar el paso.
 
 | Paso | Qué miro yo | Qué se le manda |
 |---|---|---|
-| 1 a 4 | una hoja con el cuadro de póster de cada bloque (`renderStill` por bloque, o una composición de hoja con `<Freeze>`), abierta con Read | esa hoja, con `SendUserFile` (`display: "render"`) |
+| 1 a 4 | una hoja con el cuadro de póster de cada bloque (`renderStill` por bloque, o una composición de hoja con `<Freeze>`), abierta con Read | esa hoja con las tres opciones (A, B y C), con `SendUserFile` (`display: "render"`) |
 | 5 | la hoja de contactos de cada escena tocada, y una hoja del corte por cada transición o transformación | las hojas y el mp4 de ojeada |
 | 6 | la duración del audio contra la composición | el mp4 de ojeada con sonido |
 | 7 | un still por bloque contra lo aprobado | el mp4 final |
@@ -306,7 +311,7 @@ Un paso no es una entrega: son varias vueltas cortas con el usuario.
 - **Mostrar el recorte de lo que se tocó**, no el cuadro entero, cuando el
   cambio es un detalle.
 - **Las variantes se registran como composiciones aparte**, con otras props, y
-  se comparan en una hoja con las dos o tres al lado. La escena no se toca hasta
+  se comparan en una hoja con las tres al lado. La escena no se toca hasta
   que el usuario elige, y la variante que pierde se borra en el momento.
 - **Los colores y los efectos salen de las piezas, no del ojo.** Si el usuario
   rechaza dos elegidos a criterio propio, el tercero se busca en sus piezas de
