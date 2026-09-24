@@ -55,8 +55,11 @@ Cómo se avanza:
 - **Cada paso se muestra con tres opciones, siempre.** Tres variantes realmente
   distintas —otro recurso, otra composición o otro color, no la misma con un
   ajuste—, en una sola hoja, rotuladas A, B y C, y cada una con la pieza o la
-  referencia de la que sale. El usuario elige una (o pide mezclar) y recién ahí
-  se aprueba. Lo pidió el usuario el 24/09/2026 tras rechazar un fondo mostrado
+  referencia de la que sale. **La hoja pone las opciones en columnas y los
+  bloques en filas, y rotula cada panel (`1A`, `1B`, `1C`, `2A`…)**, porque el
+  usuario elige por bloque, no una opción para todo el video: el montaje tiene
+  que poder tomar un estilo distinto en cada bloque. Recién con su elección se
+  aprueba. Lo pidió el usuario el 24/09/2026 tras rechazar un fondo mostrado
   solo: con una sola propuesta no puede comparar, sólo aceptar o rechazar.
 - **Sólo un sí explícito aprueba** («dale», «va», «aprobado», «seguí»). Un
   comentario o una pregunta no es aprobación: se responde, se corrige si hace
