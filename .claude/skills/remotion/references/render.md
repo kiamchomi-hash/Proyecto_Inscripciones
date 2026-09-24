@@ -73,14 +73,44 @@ si dos placas hermanas se mueven igual, si la transicion cruza el corte o queda
 entre las dos escenas, y el cuadro apagado a mitad de camino que nadie busca
 porque nadie sabe que esta.
 
+### Hoja del corte: la transición se mira aparte
+
+Una transición dura menos de un segundo: en la hoja de la escena entera le toca
+un cuadro o ninguno, y se ajusta a ciegas. Cada transición que se toca lleva su
+propia hoja, con doce cuadros **en el segundo alrededor del corte**:
+
+```bash
+# T = segundo del corte dentro del clip; la ventana va de T-0.5 a T+0.5
+ffmpeg -y -v error -ss <T-0.5> -t 1 -i out/ojeada.mp4 \
+  -vf "fps=12,scale=420:-1,tile=4x3:margin=8:padding=6:color=0x101010" \
+  -frames:v 1 out/hoja-corte.png
+```
+
+Ahí se ve lo que la hoja de la escena esconde: si la transición arranca antes
+del corte y sigue después, si hay un cuadro apagado en el medio, si algo salta
+de posición entre dos cuadros seguidos, y si la curva frena o se corta en seco.
+Lo mismo sirve para una transformación de un elemento: la ventana va sobre el
+tramo en que cambia.
+
+**La referencia se mide igual.** Si una transición o una transformación de
+afuera es la guía, se le saca la misma hoja (con permiso para bajar el video) y
+se pone al lado de la nuestra. Así se copia su duración y su curva, que son lo
+que se inventa cuando se trabaja de memoria, y no su forma.
+
 **El mp4 se le manda al usuario con `SendUserFile`.** La hoja es para que yo
 juzgue; la fluidez real, el audio y el ritmo contra el reloj los mira el.
 
 ## Renderizar
 
+**Por defecto, baja calidad.** Todo render sale con los flags de ojeada, también
+el que se entrega al cerrar:
+
 ```bash
-npx remotion render <entrada> <ComposicionId> out/video.mp4 --codec=h264 --concurrency=4
+npx remotion render <entrada> <ComposicionId> out/video.mp4 --codec=h264 --concurrency=4 \
+  --scale=0.5 --crf=30 --image-format=jpeg --jpeg-quality=72
 ```
+
+La calidad completa (sin esos cuatro flags) **sólo si el usuario la pide**.
 
 Flags que se usan de verdad:
 

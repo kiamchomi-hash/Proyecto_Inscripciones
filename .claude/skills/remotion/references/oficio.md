@@ -10,6 +10,7 @@ son los errores que aparecen siempre.
 - [Composicion](#composicion)
 - [Vertical y redes](#vertical-y-redes)
 - [Movimiento y transiciones](#movimiento-y-transiciones)
+  - [Transformar un elemento](#transformar-un-elemento)
 - [Zonas vacias](#zonas-vacias)
 - [Texto en pantalla](#texto-en-pantalla)
 
@@ -38,7 +39,9 @@ Otras dos que se pagan caro:
 
 - Una tipografia de un solo peso (muchas display lo son) **no se pone en bold**:
   el navegador la engorda por sintesis y las astas salen sucias.
-- En caja alta el tracking negativo pega las letras. Va apenas positivo.
+- En caja alta el tracking negativo pega las letras. Va apenas positivo. El
+  tracking cerrado de la marca (Inter 900, -0.03 a -0.045em) es para titulares
+  en caja baja o mixta.
 
 ## Tiempos
 
@@ -113,6 +116,28 @@ Lo demas que cambia:
   por indice (deterministico), no al azar.
 - Un travelling sobre foto se queda cerca de escala 1 y la imagen va con un
   sobrante (`inset: -5%`) para que no aparezca el borde.
+- **Cada transicion se juzga en su hoja del corte**, no en la de la escena
+  ([render.md](render.md#hoja-del-corte-la-transicion-se-mira-aparte)), y su
+  duracion y su curva salen de una referencia medida igual, no del ojo.
+
+### Transformar un elemento
+
+- **Transformar no es destruir y crear.** Un elemento que se desvanece mientras
+  aparece otro en su lugar es un fundido, no una transformacion. El que se
+  transforma **sigue vivo**: cambia de posicion, tamano, radio, color o forma sin
+  cortarse, y el ojo lo acompana de una escena a la otra.
+- **Por eso vive fuera de las `<Sequence>`** de las escenas que cruza, montado a
+  nivel del tramo y llevado por el segundo absoluto. Adentro de una escena se
+  reinicia en el corte, que es justo donde tenia que seguir.
+- **La forma se interpola con `interpolatePath`** de `@remotion/paths`, que
+  necesita dos paths compatibles; un rectangulo que se vuelve circulo se hace con
+  el radio, no con dos elementos.
+- **Las propiedades no se mueven todas juntas.** Posicion, escala y color con el
+  mismo easing y el mismo arranque se leen como plantilla. Se desfasan unos
+  cuadros entre si, y lo que tiene masa va con `spring`, no con `easeInOut`.
+
+### Fotos que no se mueven
+
 - **Algunas fotos no toleran ningun movimiento**: sujeto pegado al borde de
   arriba, y cualquier acercamiento le come la cabeza. Eso se marca en el dato de
   la foto, no en el indice de la lista, para que siga a su imagen cuando el orden
@@ -137,6 +162,16 @@ Que suele entrar ahi:
 4. **Una luz que recorre** alguno de esos elementos, con periodo primo con el de
    los cortes: sin movimiento, una linea recta y quieta se lee como marco de
    plantilla.
+
+**Las decoraciones salen del kit de la casa, no se inventan por escena.** Cada
+casa tiene (o va a tener, cuando se arme el primero) un kit de sistema: cuatro o
+cinco elementos —un riel, un numeral, un halo, una trama, una luz que recorre—
+aprobados una vez y reusados en todos sus videos. Vive en el proyecto de la casa
+(`src/kit/`) y su hoja aprobada en `contenidos/<casa>/aprobados/`. Una
+decoracion nueva se agrega al kit con el si del usuario, no se improvisa en una
+escena: inventada escena por escena sale como adorno suelto. Y cada una tiene
+que poder decir para que esta —ritmo, indice, encuadre, quien habla—; si no
+puede, no va.
 
 Las cinco reglas:
 

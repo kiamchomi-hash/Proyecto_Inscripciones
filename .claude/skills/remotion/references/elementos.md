@@ -31,6 +31,15 @@ categorias, y no son las obvias:
 - **`Cards`**: bordes de gradiente, vidrio, halos. De ahi salio la tarjeta de la
   cifra de este proyecto.
 
+**Transiciones y transformaciones: UIverse todavia no tiene.** El usuario tiene
+pendiente buscarlas y cargarlas (esta en `PENDIENTES.md` del sitio). Mientras
+tanto, se buscan afuera (secciones 3 y 4, y los terminos de
+[buscar.md](buscar.md#duda-visual-con-que-palabras-se-busca)), y **cada
+transicion o transformacion que se mire va al archivo de referencias del dia**
+con su link, aunque se descarte: es la lista de la que el usuario elige que
+guardar. Si la biblioteca ya tiene alguna el dia que se lea esto, se empieza por
+ahi y se borra este parrafo.
+
 ### Como se adapta una pieza de UIverse a Remotion
 
 Ninguna entra tal cual. Lo que hay que rehacer siempre:
