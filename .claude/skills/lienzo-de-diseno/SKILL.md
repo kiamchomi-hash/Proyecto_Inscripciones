@@ -102,6 +102,10 @@ entra es contenido: cajas, imágenes, texto, logo.
   atmósfera va en trazos finos y tintas claras; una aurora a sangre en un A4 es
   tinta. En pantalla hay más libertad.
 - Blancos y negros puros no: cremas y negros teñidos hacia la paleta.
+- **Nada de círculos, arcos concéntricos ni halos redondos anclados a una
+  esquina**, sobre todo arriba a la derecha. Salía por reflejo en casi todas
+  las piezas y el usuario lo rechaza siempre (24/09/2026). La atmósfera se
+  arma con otra cosa: bandas, renglones, trama, luz a lo largo de un borde.
 - Etiquetas para filtrar la lista de UIverse: `fondo`, `aurora`, `líneas`,
   `halo`, `patrón`, `textura`, `trama`, `grilla`, `papel`, `ruido`,
   `degradado`. Para papel se descarta lo animado y el resplandor.
