@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { carreraToSlug, getAreaForCarrera, type AreaId } from '@/components/index/types';
 import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
-import { alternarSeleccion, ordenarAreas, puntuarRespuestas, recomendarPorArea } from './resultado';
+import { alternarSeleccion, avanzarRespuestas, ordenarAreas, porcentajeAfinidad, puntuarRespuestas, recomendarPorArea } from './resultado';
 
 type CarreraTest = { id: number; nombre: string; nivel: string; prefix: string | null; orden: number };
 
@@ -212,7 +212,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
   }, []);
 
   const { areas, niveles: nivelesPreferidos, terminos: terminosPreferidos } = useMemo(
-    () => puntuarRespuestas(PREGUNTAS, respuestas), [respuestas],
+    () => puntuarRespuestas(PREGUNTAS, respuestas.slice(0, paso)), [respuestas, paso],
   );
   const rankingAreas = useMemo(() => ordenarAreas(areas, carreras, getAreaForCarrera), [areas, carreras]);
   const grupos = useMemo(() => recomendarPorArea(
@@ -224,15 +224,16 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
   const recomendaciones = grupos.flatMap(grupo => grupo.carreras.map(carrera => ({ carrera, area: grupo.area }))).slice(0, 5);
 
   function avanzar(indices: number[]) {
-    setRespuestas(actual => [...actual, indices]);
-    setSeleccion([]);
+    const siguientes = avanzarRespuestas(respuestas, paso, indices);
+    setRespuestas(siguientes);
+    setSeleccion(siguientes[paso + 1] ?? []);
     setPaso(actual => actual + 1);
   }
 
   function volver() {
     if (paso <= 0) return;
     const anterior = respuestas[paso - 1] ?? [];
-    setRespuestas(actual => actual.slice(0, -1));
+    setRespuestas(avanzarRespuestas(respuestas, paso, seleccion));
     setSeleccion(anterior);
     setPaso(actual => actual - 1);
   }
@@ -256,6 +257,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
 
   if (paso < PREGUNTAS.length) {
     const pregunta = PREGUNTAS[paso];
+    const ultimaPregunta = paso === PREGUNTAS.length - 1;
     return (
       <section className="vocacional-workspace" aria-labelledby="pregunta-titulo">
         <div className="vocacional-test">
@@ -264,9 +266,11 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
             <div className="vocacional-progress"><span style={{ width: `${(paso / PREGUNTAS.length) * 100}%` }} /></div>
           </div>
           <h2 id="pregunta-titulo">{pregunta.pregunta}</h2>
-          <div className="vocacional-options" role={pregunta.maximo ? 'group' : undefined} aria-label={pregunta.maximo ? `Seleccioná hasta ${pregunta.maximo} opciones` : undefined}>{pregunta.opciones.map((opcion, indice) => <button type="button" key={opcion.texto} aria-pressed={pregunta.maximo ? seleccion.includes(indice) : undefined} onClick={() => pregunta.maximo ? setSeleccion(actual => alternarSeleccion(actual, indice, pregunta.maximo!)) : avanzar([indice])} className={`vocacional-option${pregunta.maximo ? ' vocacional-option--multiple' : ''}${seleccion.includes(indice) ? ' is-selected' : ''}`}><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{opcion.texto}</span>{pregunta.maximo ? <span className="vocacional-option-check" aria-hidden="true">{seleccion.includes(indice) ? '✓' : ''}</span> : <span aria-hidden="true">↗</span>}</button>)}</div>
-          {pregunta.maximo && <button className="vocacional-button vocacional-continue" onClick={() => avanzar(seleccion)} disabled={seleccion.length === 0}>Siguiente</button>}
-          <button className="vocacional-back" onClick={volver} disabled={paso === 0}>← Volver</button>
+          <div className="vocacional-options" role={pregunta.maximo ? 'group' : undefined} aria-label={pregunta.maximo ? `Seleccioná hasta ${pregunta.maximo} opciones` : undefined}>{pregunta.opciones.map((opcion, indice) => <button type="button" key={opcion.texto} aria-pressed={seleccion.includes(indice)} onClick={() => pregunta.maximo ? setSeleccion(actual => alternarSeleccion(actual, indice, pregunta.maximo!)) : ultimaPregunta ? avanzar([indice]) : setSeleccion([indice])} className={`vocacional-option${pregunta.maximo ? ' vocacional-option--multiple' : ''}${seleccion.includes(indice) ? ' is-selected' : ''}`}><span className="vocacional-option-number">{String.fromCharCode(65 + indice)}</span><span>{opcion.texto}</span>{pregunta.maximo ? <span className="vocacional-option-check" aria-hidden="true">{seleccion.includes(indice) ? '✓' : ''}</span> : <span aria-hidden="true">↗</span>}</button>)}</div>
+          <div className="vocacional-navigation">
+            <button className="vocacional-back" onClick={volver} disabled={paso === 0}>← Volver</button>
+            <button className="vocacional-button vocacional-continue" onClick={() => avanzar(seleccion)} disabled={ultimaPregunta || seleccion.length === 0}>Siguiente</button>
+          </div>
         </div>
         <aside className="vocacional-live" aria-live="polite">
           <div className="vocacional-live-heading"><span>CARRERAS</span><span className="vocacional-live-dot" aria-label="Actualizado" /></div>
@@ -279,7 +283,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
   return (
     <section className="vocacional-result">
       <h2>Áreas y carreras para vos</h2>
-      <div className="vocacional-areas">{grupos.map(({ area, puntos }, indice) => <button type="button" aria-pressed={areaActiva === area} onClick={() => { setAreaSeleccionada(area); setCarreraPrincipalId(null); }} className={`vocacional-area area-${indice + 1}${areaActiva === area ? ' is-active' : ''}`} key={area}><div className="vocacional-area-head"><strong>{AREA_LABELS[area]}</strong><b>{indice + 1} de {grupos.length}</b></div><span className="vocacional-area-meter" aria-hidden="true"><i style={{ width: `${Math.round((puntos / grupos[0].puntos) * 100)}%` }} /></span></button>)}</div>
+      <div className="vocacional-areas">{grupos.map(({ area, puntos }, indice) => <button type="button" aria-pressed={areaActiva === area} onClick={() => { setAreaSeleccionada(area); setCarreraPrincipalId(null); }} className={`vocacional-area area-${indice + 1}${areaActiva === area ? ' is-active' : ''}`} key={area}><div className="vocacional-area-head"><strong>{AREA_LABELS[area]}</strong><b>{porcentajeAfinidad(puntos)}%</b></div><span className="vocacional-area-meter" aria-hidden="true"><i style={{ width: `${porcentajeAfinidad(puntos)}%` }} /></span></button>)}</div>
       <div className="vocacional-area-nav" role="group" aria-label="Elegir área">{grupos.map(({ area }) => <button type="button" aria-pressed={areaActiva === area} className={areaActiva === area ? 'is-active' : ''} onClick={() => { setAreaSeleccionada(area); setCarreraPrincipalId(null); }} key={area}>{AREA_LABELS[area]}</button>)}</div>
       <div className="vocacional-careers-heading"><span>Carreras</span></div>
       <div className="vocacional-careers" key={areaActiva}>{resultados.map(carrera => <button type="button" aria-pressed={carrera.id === carreraParaAccion?.id} className={`vocacional-career${carrera.id === carreraParaAccion?.id ? ' is-primary' : ''}`} onClick={() => setCarreraPrincipalId(carrera.id)} key={carrera.id}><span>{nombreVisible(carrera)}</span><span aria-hidden="true">→</span></button>)}</div>

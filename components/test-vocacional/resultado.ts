@@ -9,6 +9,17 @@ export function alternarSeleccion(actual: number[], indice: number, maximo: numb
   return actual.length < maximo ? [...actual, indice] : actual;
 }
 
+export function porcentajeAfinidad(puntos: number) {
+  return Math.min(100, Math.max(0, Math.round(puntos * 4)));
+}
+
+export function avanzarRespuestas(respuestas: number[][], paso: number, indices: number[]) {
+  const anterior = respuestas[paso];
+  const sinCambios = anterior?.length === indices.length && anterior.every(indice => indices.includes(indice));
+  if (sinCambios) return respuestas;
+  return [...respuestas.slice(0, paso), indices];
+}
+
 export function puntuarRespuestas(preguntas: Pregunta[], respuestas: number[][]) {
   const areas: Partial<Record<AreaId, number>> = {};
   const niveles: string[] = [];

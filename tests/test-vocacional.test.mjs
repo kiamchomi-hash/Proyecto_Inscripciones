@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { puntuarRespuestas, ordenarAreas, recomendarPorArea, alternarSeleccion } from '../components/test-vocacional/resultado.ts';
+import { puntuarRespuestas, ordenarAreas, recomendarPorArea, alternarSeleccion, porcentajeAfinidad, avanzarRespuestas } from '../components/test-vocacional/resultado.ts';
 
 const preguntas = [
   { opciones: [{ areas: { tecnologia: 5 } }, { areas: { salud: 5 } }, { areas: { negocios: 5 } }] },
@@ -29,9 +29,40 @@ test('volver y cambiar respuesta elimina afinidad y términos anteriores', () =>
   assert.deepEqual(despues.terminos, ['terapia']);
 });
 
+test('volver y avanzar sin cambios conserva la selección posterior', () => {
+  const borrador = avanzarRespuestas([[0]], 1, [0, 2]);
+  assert.deepEqual(borrador, [[0], [0, 2]]);
+  const guardadas = [[0], [0, 2], [1]];
+  assert.deepEqual(avanzarRespuestas(guardadas, 0, [0]), guardadas);
+  assert.deepEqual(avanzarRespuestas(guardadas, 0, [1]), [[1]]);
+  assert.deepEqual(puntuarRespuestas(preguntas, guardadas.slice(0, 1)).areas, { tecnologia: 5 });
+});
+
 test('el límite de selección se aplica también por teclado/clic repetido', () => {
   assert.deepEqual(alternarSeleccion([0, 1, 2], 3, 3), [0, 1, 2]);
   assert.deepEqual(alternarSeleccion([0, 1], 1, 3), [0]);
+});
+
+test('el porcentaje de afinidad es consistente entre cifra y medidor', () => {
+  assert.equal(porcentajeAfinidad(0), 0);
+  assert.equal(porcentajeAfinidad(12.5), 50);
+  assert.equal(porcentajeAfinidad(30), 100);
+});
+
+test('las preguntas mantienen ambos botones y la última concluye al elegir', () => {
+  const componente = readFileSync(new URL('../components/test-vocacional/test-vocacional.tsx', import.meta.url), 'utf8');
+  const estilos = readFileSync(new URL('../app/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
+  assert.match(componente, /const ultimaPregunta = paso === PREGUNTAS\.length - 1/);
+  assert.match(componente, /setSeleccion\(\[indice\]\)/);
+  assert.match(componente, /ultimaPregunta \? avanzar\(\[indice\]\)/);
+  assert.match(componente, /disabled=\{ultimaPregunta \|\| seleccion\.length === 0\}/);
+  assert.match(componente, /disabled=\{paso === 0\}/);
+  assert.match(componente, /respuestas\.slice\(0, paso\)/);
+  assert.match(componente, /siguientes\[paso \+ 1\] \?\? \[\]/);
+  assert.match(componente, /setRespuestas\(avanzarRespuestas\(respuestas, paso, seleccion\)\)/);
+  assert.doesNotMatch(estilos, /vocacional-back:disabled\s*\{\s*visibility: hidden/);
+  assert.match(estilos, /\.vocacional-back:disabled/);
+  assert.match(estilos, /\.vocacional-continue:disabled/);
 });
 
 test('muestra carreras de varias áreas de afinidad sin forzar una principal', () => {
@@ -47,7 +78,7 @@ test('la selección múltiple usa casillas visibles y avanza con Siguiente', () 
   const componente = readFileSync(new URL('../components/test-vocacional/test-vocacional.tsx', import.meta.url), 'utf8');
   const estilos = readFileSync(new URL('../app/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
   assert.doesNotMatch(componente, /Elegí hasta .* opciones y después continuá/);
-  assert.match(componente, /aria-pressed=\{pregunta\.maximo \? seleccion\.includes\(indice\)/);
+  assert.match(componente, /aria-pressed=\{seleccion\.includes\(indice\)\}/);
   assert.match(componente, /vocacional-option-check/);
   assert.match(componente, />Siguiente<\/button>/);
   assert.match(estilos, /\.vocacional-option \.vocacional-option-check\s*\{/);

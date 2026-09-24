@@ -114,7 +114,7 @@
   margin-top: clamp(.75rem, 1.8svh, 1.4rem); padding: .65rem 1rem; border: 2px solid var(--tv-cyan);
   background: #143b39; color: var(--tv-cream); font: 800 .85rem var(--font-inter), sans-serif; cursor: pointer;
 }
-.vocacional-back:disabled { visibility: hidden; }
+.vocacional-back:disabled { opacity: .45; cursor: not-allowed; }
 .vocacional-back:hover:not(:disabled), .vocacional-restart:hover { background: #1b5149; }
 .vocacional-live {
   height: calc(100svh - var(--navbar-height)); padding: 2.5rem clamp(1.6rem, 5vw, 5rem);
@@ -293,7 +293,9 @@
   font-size: 1rem; font-weight: 900; line-height: 1;
 }
 .vocacional-option.is-selected .vocacional-option-check { border-color: var(--tv-cyan); background: var(--tv-cyan); }
-.vocacional-continue { align-self: flex-start; margin-top: 1rem; }
+.vocacional-navigation { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1rem; }
+.vocacional-navigation .vocacional-back, .vocacional-navigation .vocacional-continue { margin-top: 0; }
+.vocacional-continue { align-self: flex-start; }
 .vocacional-continue:disabled { opacity: .45; cursor: not-allowed; }
 @media (max-width: 760px) {
   .vocacional-test { min-height: 0; }
