@@ -67,6 +67,11 @@ Y despues **abrir `out/hoja.png` con Read**.
   `<Freeze frame={f}>`: una composicion de hoja de contactos que monta la escena
   doce veces, cada una congelada en su cuadro y escalada, y se saca con un solo
   `renderStill`. Sin dependencias y con los cuadros exactos que uno elija.
+  **La composicion de la hoja tiene que durar por lo menos tanto como el cuadro
+  mas alto que congela**: `useCurrentFrame()` recorta al largo de la
+  composicion, y con una hoja de 1 cuadro todo `<Freeze>` devuelve 0 sin avisar
+  (todas las escenas salen en su primer cuadro). Y nada de `<Sequence>` entre el
+  `<Freeze>` y la escena: la Sequence vuelve el cuadro a cero.
 
 Lo que aparece ahi y en un still no: si el texto entra escalonado o todo junto,
 si dos placas hermanas se mueven igual, si la transicion cruza el corte o queda
