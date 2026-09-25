@@ -64,6 +64,9 @@ Cómo se avanza:
 - **Sólo un sí explícito aprueba** («dale», «va», «aprobado», «seguí»). Un
   comentario o una pregunta no es aprobación: se responde, se corrige si hace
   falta, se vuelve a mostrar y se sigue en el mismo paso.
+- **«Vamos con el bloque N» es afinar, no rehacer.** Lo elegido de ese bloque se
+  queda como base y las tres opciones son ajustes finos sobre eso (tamaños,
+  alineaciones, un detalle), no composiciones nuevas.
 - **Si lo desaprueba, se rehace el mismo paso** con lo que dijo, y otra vez con
   tres opciones nuevas: ninguna repite una rechazada. Si no queda claro qué no
   le gusta, una pregunta concreta, no un cuestionario.
