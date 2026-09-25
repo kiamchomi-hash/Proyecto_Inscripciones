@@ -239,6 +239,10 @@ sobre las fotos y las transiciones entre bloques. Criterios completos en
 [references/oficio.md](references/oficio.md#movimiento-y-transiciones).
 
 - **Escalonar**: primero el titular, el dato secundario un segundo después.
+- **Las transiciones se trabajan de a una**, cada corte por separado, y **antes
+  de proponer se le pregunta al usuario qué se imagina** para ese corte: las
+  tres opciones salen de su idea, no de una transición única repetida en todo
+  el video (pedido del usuario, 25/09/2026).
 - **Transiciones ópticas** (luz, desenfoque, empuje, latigazo, iris), **encima
   del final de la escena que sale**, no entre las dos.
 - **Variar el recorrido entre placas hermanas**, elegido por índice y no al
