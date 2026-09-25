@@ -184,8 +184,8 @@ const ARTICULOS = [
 ];
 
 // Artículo evergreen de Procurador: reutiliza la foto propia de la carrera.
-ARTICULOS.push({ id: 71, slug: 'que-hace-un-procurador', tag: 'AcadÃ©mico',
-  titulo: 'QuÃ© hace un procurador y dÃ³nde puede trabajar',
+ARTICULOS.push({ id: 71, slug: 'que-hace-un-procurador', tag: 'Académico',
+  titulo: 'Qué hace un procurador y dónde puede trabajar',
   foto: 'public/imagenes/imagenes_carreras/procurador.webp' });
 
 ARTICULOS.push(

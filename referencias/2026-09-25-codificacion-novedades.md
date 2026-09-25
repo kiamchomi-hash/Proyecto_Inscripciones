@@ -1,0 +1,3 @@
+- https://www.siglo21sur.com/novedades/articulo/que-hace-un-procurador - artículo publicado; se verificaron título, cuerpo y metadatos tras corregir la codificación.
+- https://www.siglo21sur.com/novedades/articulo/que-hace-un-administrador-cloud - segunda novedad afectada por el mismo SQL; se verificó en producción.
+- https://www.siglo21sur.com/novedades/1 - listado público; se comprobó que muestra los títulos corregidos.
