@@ -184,7 +184,12 @@ aunque el pedido no lo diga.
   `transition` se rehacen en frames.
 - **Si no está, se dibuja**: SVG con volumen —gradiente, canto, sombra— queda
   nítido a cualquier escala.
-- **Las formas conocidas se arman con primitivas, no con un contorno a mano.**
+- **Una forma conocida primero se busca, no se dibuja.** Nube, escudo, candado,
+  engranaje: están en bibliotecas de íconos abiertas que se instalan por npm
+  —Tabler (MIT), Phosphor (MIT), Material Symbols (Apache-2.0), Lucide (ISC)—,
+  con variantes rellenas. Se trae el `path`, se anota de dónde salió y su
+  licencia en un comentario, y se ofrecen las de dos o tres bibliotecas.
+- **Si hay que dibujarla, se arma con primitivas, no con un contorno a mano.**
   Una nube son círculos apoyados en una base de extremos redondos; un escudo, un
   corazón o una gota, lo mismo con sus piezas. Dibujadas con arcos sueltos en un
   solo `path`, un lado sale siempre deformado (pasó varias veces con la nube,
