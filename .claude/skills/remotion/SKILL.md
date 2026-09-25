@@ -184,6 +184,12 @@ aunque el pedido no lo diga.
   `transition` se rehacen en frames.
 - **Si no está, se dibuja**: SVG con volumen —gradiente, canto, sombra— queda
   nítido a cualquier escala.
+- **Las formas conocidas se arman con primitivas, no con un contorno a mano.**
+  Una nube son círculos apoyados en una base de extremos redondos; un escudo, un
+  corazón o una gota, lo mismo con sus piezas. Dibujadas con arcos sueltos en un
+  solo `path`, un lado sale siempre deformado (pasó varias veces con la nube,
+  siempre del lado izquierdo). Se arman una vez como componente y se reusan, y
+  se miran a tamaño real antes de mostrarlas.
 - **De internet, con permiso**: se propone con su link y su licencia antes de
   bajarlo, y el crédito va en un comentario del código.
 - **Logos y marcas se calcan, no se dibujan** (skill `calcar-imagenes`), y se
