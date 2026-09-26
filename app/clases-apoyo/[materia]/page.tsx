@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import ClasesApoyoPage from '@/components/clases-apoyo/clases-apoyo-page';
-import type { MateriaDB, MateriaNav } from '@/components/clases-apoyo/clases-apoyo-page';
+import ReservaClase from '@/components/clases-apoyo/reserva/reserva-clase';
+import MateriaGenerica from '@/components/clases-apoyo/materia-generica';
+import { OtrasMaterias, VolverAClases } from '@/components/clases-apoyo/navegacion-materia';
+import type { MateriaDB, MateriaNav } from '@/components/clases-apoyo/tipos';
 import TextoMateria from '@/components/clases-apoyo/texto-materia';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { supabase } from '@/lib/supabase';
 import '../clases-apoyo.css';
+import '../reserva-clase.css';
 
 const BASE_URL = 'https://www.siglo21sur.com';
 
@@ -115,7 +118,23 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
 
   return (
     <>
-      <ClasesApoyoPage materiasNav={(nav ?? []) as MateriaNav[]} materia={ficha} />
+      <div className="ca-materia-pagina">
+        <VolverAClases />
+        <MateriaGenerica materia={ficha} />
+        {/* Al cliente viaja sólo lo que la reserva usa, no la ficha entera. */}
+        {!ficha.en_construccion && (
+          <ReservaClase
+            materia={{
+              id: ficha.id,
+              slug: ficha.slug,
+              modo_manana: ficha.modo_manana,
+              dias_bloqueados: ficha.dias_bloqueados,
+              horarios_bloqueados: ficha.horarios_bloqueados,
+            }}
+          />
+        )}
+        <OtrasMaterias materias={(nav ?? []) as MateriaNav[]} actual={ficha.slug} />
+      </div>
       <TextoMateria label={ficha.label} parrafos={ficha.texto_seo} />
       <SiteFooter />
       {!ficha.en_construccion && (
