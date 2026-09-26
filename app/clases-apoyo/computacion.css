@@ -243,3 +243,341 @@
   .cp-reservar,
   .cp-whatsapp { transition: none; }
 }
+
+/* ══ Herramientas: marcas y mascotas del dorso del folleto ══
+   Lenguaje del dorso: esquina apenas redondeada, contorno oscuro y sombra de
+   bloque. Cada tarjeta lleva su propio movimiento; las animaciones de píxel
+   usan steps() para que salten de a celdas en vez de deslizarse. */
+
+.hr {
+  --hr-tinta: #062420;
+  --hr-crema: #f1f4ec;
+  --hr-radio: 14px;
+  --hr-sombra: 8px;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hr-encabezado { display: grid; gap: 0.35rem; }
+
+.hr-ceja {
+  font-family: var(--cp-pixel-fuente);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cp-pixel-vivo);
+}
+
+.hr-titulo {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--cp-texto);
+}
+
+.hr-grilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: calc(1.25rem + var(--hr-sombra));
+  padding: 0 var(--hr-sombra) var(--hr-sombra) 0;
+}
+
+@media (min-width: 900px) {
+  .hr-grilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hr-ia,
+  .hr-creativas { grid-column: 1 / -1; }
+  /* A lo ancho, las fichas van a la izquierda y la línea de tiempo al costado. */
+  .hr-creativas { grid-template-columns: 1.1fr 1fr; grid-template-rows: auto; }
+  .hr-creativas .hr-pista { border-top: 0; border-left: 3px solid var(--hr-tinta); align-content: center; }
+  .hr-creativas .hr-clip { height: 64px; }
+}
+
+.hr-tarjeta {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  border: 3px solid var(--hr-tinta);
+  border-radius: var(--hr-radio);
+  background: var(--hr-crema);
+  color: var(--hr-tinta);
+  box-shadow: var(--hr-sombra) var(--hr-sombra) 0 var(--hr-tinta);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hr-tarjeta:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: calc(var(--hr-sombra) + 3px) calc(var(--hr-sombra) + 3px) 0 var(--hr-tinta);
+}
+
+.hr-texto { display: grid; gap: 0.3rem; padding: 1.4rem 1.5rem; }
+
+.hr-rotulo {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hr-nombre {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hr-uso { margin: 0; font-size: 0.98rem; color: #35524b; }
+
+/* ── IA ── */
+.hr-ia {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 0;
+  background: linear-gradient(90deg, #b3a9f0 0%, #d7b3c6 50%, #eba27c 100%);
+}
+
+.hr-mascota { image-rendering: pixelated; }
+
+.hr-codex {
+  width: 124px;
+  height: auto;
+  margin-bottom: 0.75rem;
+  animation: hr-respira 1.2s steps(2) infinite;
+}
+
+.hr-clawd {
+  width: 176px;
+  height: auto;
+  margin-bottom: 0.9rem;
+  animation: hr-respira 1.2s steps(2) infinite 0.6s;
+}
+
+/* Al pasar por la tarjeta, las mascotas se entusiasman. */
+.hr-ia:hover .hr-codex { animation: hr-salta 0.5s steps(3) infinite; }
+.hr-ia:hover .hr-clawd { animation: hr-camina 0.6s steps(2) infinite; }
+
+@keyframes hr-respira { 50% { transform: translateY(-4px); } }
+@keyframes hr-salta { 50% { transform: translateY(-12px); } }
+@keyframes hr-camina {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-8px) translateY(-3px); }
+  100% { transform: translateX(-16px); }
+}
+
+.hr-ia-centro {
+  align-self: center;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  padding: 1.1rem 1rem 0.9rem;
+  text-align: center;
+  background: #f6efdc;
+  border: 3px solid var(--hr-tinta);
+  border-radius: 10px;
+  box-shadow: 5px 5px 0 var(--hr-tinta);
+}
+
+.hr-ia-titulo {
+  margin: 0;
+  font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--hr-crema);
+  text-shadow:
+    2px 0 var(--hr-tinta), -2px 0 var(--hr-tinta), 0 2px var(--hr-tinta), 0 -2px var(--hr-tinta),
+    2px 2px var(--hr-tinta), -2px 2px var(--hr-tinta), 2px -2px var(--hr-tinta), -2px -2px var(--hr-tinta),
+    4px 4px 0 var(--hr-tinta);
+}
+
+.hr-ia-bajada { margin: 0; max-width: 34ch; font-size: 0.95rem; color: #35524b; }
+
+/* La cinta: la pista mide dos listas y se corre una, así empalma sin salto. */
+.hr-cinta {
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+}
+
+.hr-cinta-pista {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  padding: 0.35rem 0;
+  animation: hr-cinta 14s linear infinite;
+}
+
+.hr-cinta-logo { width: 34px; height: 34px; flex: 0 0 auto; }
+
+@keyframes hr-cinta { to { transform: translateX(calc(-50% - 0.75rem)); } }
+
+@media (max-width: 700px) {
+  .hr-ia { grid-template-columns: 1fr 1fr; }
+  .hr-ia-centro { grid-column: 1 / -1; grid-row: 1; margin-bottom: 0.5rem; }
+  .hr-codex { width: 96px; justify-self: start; }
+  .hr-clawd { width: 140px; justify-self: end; }
+}
+
+/* ── Office ── */
+.hr-office { display: grid; grid-template-rows: 1fr auto; }
+
+.hr-office-paneles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 3px solid var(--hr-tinta);
+}
+
+.hr-office-panel {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 1.1rem 0.5rem;
+  background: var(--hr-color);
+  color: var(--hr-crema);
+}
+
+.hr-office-panel + .hr-office-panel { border-left: 3px solid var(--hr-tinta); }
+
+.hr-office-logo { width: 48px; height: 48px; image-rendering: auto; }
+
+.hr-office-rotulo {
+  font-family: var(--cp-pixel-fuente);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hr-office:hover .hr-office-logo {
+  animation: hr-ventana 0.5s steps(3) both;
+  animation-delay: calc(var(--hr-i) * 0.12s);
+}
+
+@keyframes hr-ventana {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.12); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ── Google ── */
+.hr-google { display: grid; align-content: start; }
+
+.hr-google-raya {
+  height: 12px;
+  border-bottom: 3px solid var(--hr-tinta);
+  background: linear-gradient(90deg, #4285f4 0 25%, #ea4335 25% 50%, #fbbc04 50% 75%, #34a853 75% 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.hr-google:hover .hr-google-raya { animation: hr-raya 0.8s steps(4) both; }
+
+@keyframes hr-raya { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
+
+.hr-google-iconos {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 1.5rem 0;
+}
+
+.hr-google-icono { width: auto; height: 46px; image-rendering: auto; }
+
+.hr-google:hover .hr-google-icono {
+  animation: hr-ola 0.6s ease-in-out both;
+  animation-delay: calc(var(--hr-i) * 0.1s);
+}
+
+@keyframes hr-ola { 40% { transform: translateY(-12px) rotate(-6deg); } }
+
+/* ── Diseño y video ── */
+.hr-creativas {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  background: linear-gradient(120deg, #b7dcef 0%, #e3f1c9 55%, #cfd6cf 100%);
+}
+
+.hr-creativas-fichas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-content: center;
+  padding: 1.4rem 1rem;
+}
+
+.hr-ficha {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.65rem 0.5rem;
+  text-align: center;
+  background: var(--hr-crema);
+  border: 3px solid var(--hr-tinta);
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 var(--hr-tinta);
+}
+
+.hr-ficha strong { font-size: 1.05rem; font-weight: 900; letter-spacing: -0.02em; }
+.hr-ficha span { font-size: 0.75rem; font-weight: 600; color: #35524b; }
+
+.hr-pista {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 8px;
+  background: var(--hr-crema);
+  border-top: 3px solid var(--hr-tinta);
+}
+
+.hr-clip {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  background: var(--hr-campo);
+  border: 2px solid var(--hr-tinta);
+  border-radius: 4px;
+}
+
+.hr-clip-logo { width: 26px; height: 26px; image-rendering: auto; }
+
+/* El cabezal de edición recorre la línea de tiempo de punta a punta. */
+.hr-cabezal {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 8px;
+  width: 3px;
+  background: #ea4335;
+  box-shadow: 0 0 0 1px var(--hr-tinta);
+  animation: hr-cabezal 5s linear infinite;
+}
+
+.hr-cabezal::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -5px;
+  width: 13px;
+  height: 9px;
+  background: #ea4335;
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%);
+}
+
+@keyframes hr-cabezal { to { left: calc(100% - 11px); } }
+
+@media (max-width: 520px) {
+  .hr-creativas-fichas { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr *,
+  .hr-tarjeta { animation: none !important; transition: none !important; }
+  .hr-cabezal { display: none; }
+}

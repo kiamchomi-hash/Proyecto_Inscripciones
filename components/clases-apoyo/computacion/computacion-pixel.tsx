@@ -4,6 +4,7 @@ import Carousel from '@/components/clases-apoyo/carrusel-materia';
 import WhatsappClase from '@/components/clases-apoyo/whatsapp-clase';
 import type { MateriaDB } from '@/components/clases-apoyo/tipos';
 import { fuentePixel } from './fuente';
+import Herramientas from './herramientas';
 
 /* Computación: el mismo contenido que las demás materias (fotos, descripción
    y WhatsApp, todo desde la fila de `materias`), vestido con el lenguaje del
@@ -74,6 +75,8 @@ export default function ComputacionPixel({ materia }: { materia: MateriaComputac
           <a href="#reservar" className="cp-reservar">Elegir día y horario</a>
         </section>
       </div>
+
+      <Herramientas />
 
       <WhatsappClase
         slug={materia.slug}
