@@ -1,121 +1,124 @@
-import type { CSSProperties } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
-/* Herramientas que se enseñan en computación, con las marcas y mascotas del
-   dorso del folleto (copiadas de dorso.html, no redibujadas; ver
-   public/imagenes/clases-apoyo/computacion/herramientas/). Del dorso se toma
-   el lenguaje de tarjeta —esquina apenas redondeada, contorno oscuro y sombra
-   de bloque— y cada tarjeta tiene su gracia animada: las mascotas en reposo,
-   la cinta de logos de IA, las ventanas de Office que saltan, los íconos de
-   Google en ola y el cabezal que recorre la línea de tiempo de video. Todo se
-   apaga con prefers-reduced-motion. */
+/* "¿Qué querés aprender?": una escena de juego pixel. Abajo, una barra de
+   inventario con las herramientas; al elegir una, la mascota que la presenta
+   (Codex o Clawd, las del dorso del folleto) aparece y la cuenta en un cuadro
+   de diálogo que se escribe letra por letra. Marcas y mascotas son los SVG del
+   dorso copiados de dorso.html, no redibujados
+   (public/imagenes/clases-apoyo/computacion/herramientas/). */
 
 const DIR = '/imagenes/clases-apoyo/computacion/herramientas';
 
-function Marca({ nombre, ancho, alto, className, style }: { nombre: string; ancho: number; alto: number; className?: string; style?: CSSProperties }) {
-  return (
-    <Image src={`${DIR}/${nombre}.svg`} alt="" width={ancho} height={alto} unoptimized className={className} style={style} />
-  );
+type Mascota = 'codex' | 'clawd';
+
+type Herramienta = { id: string; nombre: string; logo: string; mascota: Mascota; texto: string };
+
+const HERRAMIENTAS: Herramienta[] = [
+  { id: 'excel', nombre: 'Excel', logo: 'excel', mascota: 'codex', texto: 'Planillas para ordenar números, listas y gastos, y que las cuentas se hagan solas.' },
+  { id: 'word', nombre: 'Word', logo: 'word', mascota: 'codex', texto: 'Documentos prolijos: tu currículum, una carta o el trabajo práctico con buen formato.' },
+  { id: 'powerpoint', nombre: 'PowerPoint', logo: 'powerpoint', mascota: 'codex', texto: 'Presentaciones para la escuela o el trabajo, con imágenes y todo en su lugar.' },
+  { id: 'gmail', nombre: 'Gmail', logo: 'gmail', mascota: 'codex', texto: 'Tu correo: mandar, responder, adjuntar archivos y encontrar lo que buscás.' },
+  { id: 'drive', nombre: 'Drive', logo: 'drive', mascota: 'codex', texto: 'Guardar tus archivos en la nube, abrirlos desde cualquier lado y compartirlos con un link.' },
+  { id: 'forms', nombre: 'Forms', logo: 'forms', mascota: 'codex', texto: 'Formularios y encuestas que la gente completa desde el celular.' },
+  { id: 'chatgpt', nombre: 'ChatGPT', logo: 'ia-chatgpt', mascota: 'clawd', texto: 'Pedirle bien las cosas a la IA: resúmenes, ideas, correos y ayuda para estudiar.' },
+  { id: 'claude', nombre: 'Claude', logo: 'ia-claude', mascota: 'clawd', texto: 'Una IA para escribir, revisar textos largos y ordenar información. Yo soy su mascota.' },
+  { id: 'gemini', nombre: 'Gemini', logo: 'ia-gemini', mascota: 'clawd', texto: 'La IA de Google, a mano en Gmail, Drive y el buscador.' },
+  { id: 'canva', nombre: 'Canva', logo: 'canva', mascota: 'clawd', texto: 'Placas y folletos con plantillas, aunque nunca hayas diseñado nada.' },
+  { id: 'affinity', nombre: 'Affinity', logo: 'affinity', mascota: 'clawd', texto: 'Retocar fotos e imágenes: recortes, color y luz.' },
+  { id: 'capcut', nombre: 'CapCut', logo: 'capcut', mascota: 'clawd', texto: 'Editar videos para redes: cortes, textos y música.' },
+];
+
+const SALUDO: Pick<Herramienta, 'mascota' | 'texto'> = {
+  mascota: 'codex',
+  texto: '¡Hola! Tocá una herramienta de abajo y te cuento qué vas a poder hacer con ella.',
+};
+
+const NOMBRE_MASCOTA: Record<Mascota, string> = { codex: 'Codex', clawd: 'Clawd' };
+
+// Letra por letra, salvo que el sistema pida menos movimiento.
+function useEscritura(texto: string) {
+  const [largo, setLargo] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setLargo(texto.length);
+      return;
+    }
+    setLargo(0);
+    const id = window.setInterval(() => {
+      setLargo(n => {
+        if (n >= texto.length) {
+          window.clearInterval(id);
+          return n;
+        }
+        return n + 1;
+      });
+    }, 22);
+    return () => window.clearInterval(id);
+  }, [texto]);
+
+  return { visible: texto.slice(0, largo), terminado: largo >= texto.length };
 }
 
-const IA = ['ia-claude', 'ia-chatgpt', 'ia-gemini', 'ia-copilot', 'ia-notebooklm', 'ia-elevenlabs'];
-
-const OFFICE = [
-  { nombre: 'excel', rotulo: 'Excel', color: '#217346' },
-  { nombre: 'word', rotulo: 'Word', color: '#2b579a' },
-  { nombre: 'powerpoint', rotulo: 'PowerPoint', color: '#c43e1c' },
-];
-
-const GOOGLE = [
-  { nombre: 'gmail', ancho: 256, alto: 204 },
-  { nombre: 'drive', ancho: 256, alto: 238 },
-  { nombre: 'forms', ancho: 192, alto: 192 },
-];
-
-const CREATIVAS = [
-  { nombre: 'canva', rotulo: 'Canva', uso: 'Placas y folletos', campo: 'linear-gradient(135deg, #00c4cc, #7d2ae7)' },
-  { nombre: 'affinity', rotulo: 'Affinity', uso: 'Imágenes y retoque', campo: '#a7f175' },
-  { nombre: 'capcut', rotulo: 'CapCut', uso: 'Edición de video', campo: '#062420', claro: true },
-];
-
 export default function Herramientas() {
+  const [elegida, setElegida] = useState<Herramienta | null>(null);
+  const actual = elegida ?? SALUDO;
+  const { visible, terminado } = useEscritura(actual.texto);
+
   return (
     <section className="hr" aria-labelledby="hr-titulo">
-      <header className="hr-encabezado">
-        <span className="hr-ceja">Aprendé a usar</span>
-        <h2 id="hr-titulo" className="hr-titulo">Las herramientas que vas a usar</h2>
-      </header>
+      <h2 id="hr-titulo" className="hr-titulo">
+        <span className="hr-ceja">Elegí una herramienta</span>
+        ¿Qué querés aprender?
+      </h2>
 
-      <div className="hr-grilla">
-        {/* ── IA: las dos mascotas a los lados y la cinta de logos ── */}
-        <article className="hr-tarjeta hr-ia">
-          <Marca nombre="pet-codex" ancho={414} alto={426} className="hr-mascota hr-codex" />
-          <div className="hr-ia-centro">
-            <h3 className="hr-ia-titulo">Dominá la IA</h3>
-            <p className="hr-ia-bajada">ChatGPT, Claude, Gemini y las herramientas que ya se usan en el trabajo</p>
-            <div className="hr-cinta" aria-hidden="true">
-              {/* La lista va dos veces para que la cinta dé la vuelta sin corte. */}
-              <div className="hr-cinta-pista">
-                {[...IA, ...IA].map((nombre, i) => (
-                  <Marca key={i} nombre={nombre} ancho={24} alto={24} className="hr-cinta-logo" />
-                ))}
-              </div>
-            </div>
-          </div>
-          <Marca nombre="clawd" ancho={276} alto={138} className="hr-mascota hr-clawd" />
-        </article>
+      <div className="hr-escena">
+        {/* La key cambia con la mascota: al cambiar de personaje, entra de nuevo. */}
+        <div className={`hr-personaje hr-personaje-${actual.mascota}`} key={actual.mascota}>
+          {actual.mascota === 'codex' ? (
+            <Image src={`${DIR}/pet-codex.svg`} alt="" width={414} height={426} unoptimized className="hr-mascota" />
+          ) : (
+            <Image src={`${DIR}/clawd.svg`} alt="" width={276} height={138} unoptimized className="hr-mascota" />
+          )}
+          <span className="hr-piso" aria-hidden="true" />
+        </div>
 
-        {/* ── Office: tres ventanas que saltan en orden ── */}
-        <article className="hr-tarjeta hr-office">
-          <div className="hr-texto">
-            <span className="hr-rotulo">Trabajo y organización</span>
-            <h3 className="hr-nombre">Excel, Word y PowerPoint</h3>
-            <p className="hr-uso">Planillas, documentos y presentaciones</p>
-          </div>
-          <ul className="hr-office-paneles">
-            {OFFICE.map((o, i) => (
-              <li key={o.nombre} className="hr-office-panel" style={{ '--hr-color': o.color, '--hr-i': i } as CSSProperties}>
-                <Marca nombre={o.nombre} ancho={32} alto={32} className="hr-office-logo" />
-                <span className="hr-office-rotulo">{o.rotulo}</span>
-              </li>
-            ))}
-          </ul>
-        </article>
-
-        {/* ── Google: la raya de cuatro colores se llena y los íconos hacen ola ── */}
-        <article className="hr-tarjeta hr-google">
-          <span className="hr-google-raya" aria-hidden="true" />
-          <div className="hr-google-iconos">
-            {GOOGLE.map((g, i) => (
-              <Marca key={g.nombre} nombre={g.nombre} ancho={g.ancho} alto={g.alto} className="hr-google-icono" style={{ '--hr-i': i } as CSSProperties} />
-            ))}
-          </div>
-          <div className="hr-texto">
-            <h3 className="hr-nombre">Gmail, Drive y Forms</h3>
-            <p className="hr-uso">Correo, archivos en la nube y formularios</p>
-          </div>
-        </article>
-
-        {/* ── Diseño y video: una línea de tiempo con cabezal ── */}
-        <article className="hr-tarjeta hr-creativas">
-          <div className="hr-creativas-fichas">
-            {CREATIVAS.map(c => (
-              <div key={c.nombre} className="hr-ficha">
-                <strong>{c.rotulo}</strong>
-                <span>{c.uso}</span>
-              </div>
-            ))}
-          </div>
-          <div className="hr-pista" aria-hidden="true">
-            {CREATIVAS.map(c => (
-              <span key={c.nombre} className={`hr-clip${c.claro ? ' hr-clip-oscuro' : ''}`} style={{ '--hr-campo': c.campo } as CSSProperties}>
-                <Marca nombre={c.nombre} ancho={28} alto={28} className="hr-clip-logo" />
-              </span>
-            ))}
-            <span className="hr-cabezal" />
-          </div>
-        </article>
+        <div className="hr-dialogo">
+          <span className="hr-dialogo-nombre">
+            {NOMBRE_MASCOTA[actual.mascota]}
+            {elegida && <span className="hr-dialogo-tema"> / {elegida.nombre}</span>}
+          </span>
+          {/* El lector de pantalla recibe la frase entera de una vez; lo que se
+              escribe letra por letra es sólo visual. */}
+          <p className="sr-only" aria-live="polite">{actual.texto}</p>
+          <p className="hr-dialogo-texto" aria-hidden="true">
+            {visible}
+            {terminado && <span className="hr-dialogo-sigue" />}
+          </p>
+        </div>
       </div>
+
+      <ul className="hr-inventario" aria-label="Herramientas">
+        {HERRAMIENTAS.map(h => {
+          const activa = elegida?.id === h.id;
+          return (
+            <li key={h.id}>
+              <button
+                type="button"
+                className="hr-casilla"
+                aria-pressed={activa}
+                onClick={() => setElegida(h)}
+              >
+                <Image src={`${DIR}/${h.logo}.svg`} alt="" width={40} height={40} unoptimized className="hr-casilla-logo" />
+                <span className="hr-casilla-nombre">{h.nombre}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
