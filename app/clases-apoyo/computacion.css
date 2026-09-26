@@ -244,11 +244,11 @@
   .cp-whatsapp { transition: none; }
 }
 
-/* ══ ¿Qué querés aprender?: escena de juego pixel ══
-   Mascota sobre un piso de celdas, cuadro de diálogo de RPG y barra de
-   inventario. Todo en el idioma del resto de la ficha: borde de píxel con
-   las esquinas vacías y sombra de bloque. Los movimientos de la mascota usan
-   steps() para saltar de a celdas, como un sprite. */
+/* ══ ¿Qué querés aprender?: escena pixel con inventario ══
+   Las mascotas del dorso decoran los costados sobre un piso de celdas; en el
+   centro, la ficha de la herramienta elegida. Todo en el idioma del resto de
+   la ficha: borde de píxel con las esquinas vacías y sombra de bloque. Los
+   movimientos usan steps() para saltar de a celdas, como un sprite. */
 
 .hr {
   display: grid;
@@ -276,12 +276,13 @@
 
 /* ── Escena ── */
 .hr-escena {
+  position: relative;
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-columns: 150px minmax(0, 1fr) 190px;
   align-items: end;
   gap: 1.5rem;
-  min-height: 230px;
-  padding: 1.5rem 1.5rem 0;
+  margin: var(--cp-borde);
+  padding: 1.75rem 1.5rem 0;
   background:
     radial-gradient(rgb(0 199 177 / 14%) 35%, transparent 36%) 0 0 / 12px 12px,
     var(--cp-pantalla);
@@ -290,55 +291,42 @@
     0 var(--cp-borde) 0 0 var(--cp-pixel),
     calc(-1 * var(--cp-borde)) 0 0 0 var(--cp-pixel),
     var(--cp-borde) 0 0 0 var(--cp-pixel);
-  margin: var(--cp-borde);
-}
-
-.hr-personaje {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  align-self: end;
-  animation: hr-entra 0.36s steps(3) both;
 }
 
 .hr-mascota {
   position: relative;
   z-index: 1;
+  width: 100%;
   height: auto;
   image-rendering: pixelated;
   animation: hr-respira 1.2s steps(2) infinite;
 }
 
-.hr-personaje-codex .hr-mascota { width: 150px; }
-.hr-personaje-clawd .hr-mascota { width: 190px; margin-bottom: 4px; }
-
-/* El piso: una franja de celdas donde apoya la mascota. */
-.hr-piso {
-  width: 100%;
-  height: 14px;
-  background:
-    linear-gradient(90deg, var(--cp-contorno) 50%, transparent 50%) 0 0 / 14px 7px,
-    linear-gradient(90deg, transparent 50%, var(--cp-contorno) 50%) 0 7px / 14px 7px,
-    var(--cp-barra);
-  background-repeat: repeat-x;
-}
-
-@keyframes hr-entra {
-  0% { transform: translateY(36px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
+.hr-codex { margin-bottom: 10px; }
+.hr-clawd { margin-bottom: 12px; animation-delay: 0.6s; }
 
 @keyframes hr-respira { 50% { transform: translateY(-5px); } }
 
-/* ── Cuadro de diálogo ── */
-.hr-dialogo {
-  position: relative;
+/* El piso: una franja de celdas de punta a punta donde apoyan las mascotas. */
+.hr-piso {
+  position: absolute;
+  inset: auto 0 0;
+  height: 14px;
+  background:
+    linear-gradient(90deg, var(--cp-contorno) 50%, transparent 50%) 0 0 / 14px 7px repeat-x,
+    linear-gradient(90deg, transparent 50%, var(--cp-contorno) 50%) 0 7px / 14px 7px repeat-x,
+    var(--cp-barra);
+}
+
+/* ── Ficha de la herramienta ── */
+.hr-ficha {
   align-self: center;
-  display: grid;
-  gap: 0.6rem;
-  margin: 0 var(--cp-borde) 1.5rem;
-  padding: 1.25rem 1.4rem 1.4rem;
-  min-height: 132px;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 0 var(--cp-borde) 2.25rem;
+  padding: 1.4rem 1.5rem;
+  min-height: 128px;
   background: var(--cp-contorno);
   box-shadow:
     0 calc(-1 * var(--cp-borde)) 0 0 var(--cp-crema),
@@ -346,50 +334,47 @@
     calc(-1 * var(--cp-borde)) 0 0 0 var(--cp-crema),
     var(--cp-borde) 0 0 0 var(--cp-crema),
     calc(var(--cp-borde) + 6px) calc(var(--cp-borde) + 6px) 0 0 #01100e;
+  animation: hr-aparece 0.24s steps(3) both;
 }
 
-/* La colita del globo apunta a la mascota: tres escalones de píxel. */
-.hr-dialogo::before {
-  content: "";
-  position: absolute;
-  left: -16px;
-  bottom: 28px;
-  width: 12px;
-  height: 12px;
+@keyframes hr-aparece {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.hr-ficha-logo {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
   background: var(--cp-crema);
-  box-shadow: -4px 4px 0 var(--cp-crema), -8px 8px 0 var(--cp-crema);
+  box-shadow: 4px 4px 0 #01100e;
 }
 
-.hr-dialogo-nombre {
+.hr-ficha-logo img { width: 52px; height: 52px; }
+
+/* CapCut es blanco sobre negro: sobre la base crema desaparece. */
+.hr-ficha-logo:has(img[src*="capcut"]) { background: #01100e; }
+
+.hr-ficha-texto { display: grid; gap: 0.35rem; min-width: 0; }
+
+.hr-ficha-nombre {
+  margin: 0;
   font-family: var(--cp-pixel-fuente);
-  font-size: 0.85rem;
-  letter-spacing: 0.14em;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--cp-pixel-vivo);
 }
 
-.hr-dialogo-tema { color: var(--cp-crema); }
-
-.hr-dialogo-texto {
+.hr-ficha-uso {
   margin: 0;
-  font-size: 1.08rem;
+  font-size: 1.05rem;
   line-height: 1.55;
   color: var(--cp-texto);
 }
-
-/* El triángulo que titila al final, como en los juegos cuando el texto
-   terminó de escribirse. */
-.hr-dialogo-sigue {
-  display: inline-block;
-  width: 10px;
-  height: 7px;
-  margin-left: 8px;
-  background: var(--cp-pixel-vivo);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  animation: hr-titila 0.8s steps(2) infinite;
-}
-
-@keyframes hr-titila { 50% { opacity: 0; } }
 
 /* ── Inventario ── */
 .hr-inventario {
@@ -426,13 +411,6 @@
 .hr-casilla-logo {
   width: 36px;
   height: 36px;
-  image-rendering: auto;
-}
-
-/* Los logos oscuros (ChatGPT) necesitan una base clara para verse. */
-.hr-casilla-logo[src*="ia-chatgpt"] {
-  padding: 3px;
-  background: var(--cp-crema);
 }
 
 .hr-casilla-nombre {
@@ -455,28 +433,38 @@
   box-shadow: 0 3px 0 #01100e;
 }
 
+/* ChatGPT viene en tinta oscura: sobre la casilla oscura necesita base clara. */
+.hr-casilla-logo[src*="ia-chatgpt"] {
+  padding: 3px;
+  background: var(--cp-crema);
+}
+
 .hr-casilla:focus-visible {
   outline: 3px solid var(--cp-pixel-vivo);
   outline-offset: 2px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
   .hr-escena {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     padding: 1.25rem 1rem 0;
+    gap: 1rem 1.5rem;
   }
-  .hr-dialogo { order: -1; margin-bottom: 0.5rem; }
-  .hr-dialogo::before { left: 40px; bottom: -16px; box-shadow: -4px 4px 0 var(--cp-crema); }
-  .hr-personaje { justify-self: start; width: 180px; }
-  .hr-personaje-codex .hr-mascota { width: 110px; }
-  .hr-personaje-clawd .hr-mascota { width: 150px; }
+  .hr-ficha { grid-column: 1 / -1; grid-row: 1; margin-bottom: 0.25rem; }
+  .hr-codex { width: 104px; justify-self: start; }
+  .hr-clawd { width: 140px; justify-self: end; }
+}
+
+@media (max-width: 700px) {
+  .hr-ficha { flex-direction: column; align-items: flex-start; gap: 0.9rem; }
+  .hr-ficha-logo { width: 60px; height: 60px; }
+  .hr-ficha-logo img { width: 40px; height: 40px; }
   .hr-inventario { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 8px; }
   .hr-casilla { min-height: 72px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hr-personaje,
   .hr-mascota,
-  .hr-dialogo-sigue { animation: none; }
+  .hr-ficha { animation: none; }
   .hr-casilla { transition: none; }
 }
