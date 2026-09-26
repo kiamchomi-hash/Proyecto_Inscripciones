@@ -1359,3 +1359,151 @@ a.ca-materia:hover .ca-materia-ico,
 }
 
 .ca-materia-accion svg { color: #fff; }
+
+/* ══ Página de materia ══
+   Cada /clases-apoyo/[materia] es una página independiente de una columna:
+   volver, contenido de la materia, reserva (reserva-clase.css) y otras
+   materias. Scrollea como cualquier otra página, sin alto fijo. */
+.ca-materia-pagina {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  width: min(100%, 1100px);
+  margin-inline: auto;
+  padding: 1.25rem 16px clamp(3rem, 6vw, 4.5rem);
+  color: var(--ca-text-main);
+}
+
+.ca-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-self: start;
+  min-height: 44px;
+  color: var(--ca-teal);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.ca-volver:hover { text-decoration: underline; text-underline-offset: 0.3rem; }
+
+.ca-ficha {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.ca-ficha-h1 {
+  color: var(--ca-text-muted);
+  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.ca-ficha-h1 strong {
+  color: var(--ca-teal);
+  font-weight: 900;
+}
+
+.ca-ficha-cuerpo {
+  display: grid;
+  grid-template-columns: 1fr;
+  border: 1px solid var(--ca-border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--ca-bg-temas);
+}
+
+.ca-ficha-fotos {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #000;
+}
+
+.ca-ficha-fotos > div {
+  position: absolute;
+  inset: 0;
+}
+
+.ca-ficha-desc { min-width: 0; }
+
+.ca-ficha-desc .ca-desc-item {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding-block: 0.35rem;
+}
+
+.ca-ficha-construccion {
+  min-height: 280px;
+  border: 1px solid var(--ca-border-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ca-ficha .ca-wa-link {
+  justify-self: start;
+  justify-content: center;
+  width: auto;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 18px;
+  white-space: normal;
+}
+
+@media (min-width: 769px) {
+  .ca-ficha-cuerpo:not(.ca-ficha-solo) { grid-template-columns: 1fr 1fr; }
+  .ca-ficha-fotos { aspect-ratio: auto; min-height: 340px; }
+}
+
+@media (max-width: 520px) {
+  .ca-ficha .ca-wa-link { justify-self: stretch; }
+}
+
+.ca-otras h2 {
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.ca-otras ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ca-otras a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 48px;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--ca-border-light);
+  border-radius: 10px;
+  background: var(--ca-bg-temas);
+  color: var(--ca-text-main);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--ca-transition);
+}
+
+.ca-otras a svg { color: var(--ca-teal); flex-shrink: 0; }
+
+.ca-otras a:hover {
+  border-color: var(--ca-border-visible);
+  color: #fff;
+}
+
+.ca-volver:focus-visible,
+.ca-otras a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
