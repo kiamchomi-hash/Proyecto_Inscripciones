@@ -1,9 +1,18 @@
 ---
 name: cau-design-patterns
-description: Patrones de diseño del sitio del CAU Villa Lugano: variables CSS, tarjetas, secciones, badges y animaciones ya usados en producción. Usar al escribir o modificar componentes y estilos del sitio, para que lo nuevo se parezca a lo que ya hay en vez de inventar un estilo aparte.
+description: Patrones de diseño del sitio del CAU Villa Lugano: variables CSS, tarjetas, secciones, badges y animaciones ya usados en producción. Usar al escribir o modificar componentes y estilos del sitio, para que lo nuevo se parezca a lo que ya hay en vez de inventar un estilo aparte. Fija además que todo cambio visual se cierra mandándole las capturas al usuario en el chat.
 ---
 
 # CAU Villa Lugano - Design Patterns
+
+## Regla de cierre: el usuario ve cómo quedó
+
+Un cambio visual en el sitio (página nueva, rediseño, estilos, layout) **no está terminado hasta que el usuario ve las capturas en el chat**. Que las mires vos para verificar no alcanza: el 26/09/2026 se rediseñó `/clases-apoyo/computacion`, las capturas se sacaron y se revisaron, y se cerró el trabajo con un resumen en texto sin mostrarle nada.
+
+- Sacar capturas de página completa de cada página tocada, en escritorio (1280px) y en celular (375px).
+- Mandarlas con `SendUserFile` (`display: "render"`) **antes** del mensaje final, no ofrecerlas ni describirlas.
+- Si el panel del navegador no llega a sacar la captura (timeout), usar Playwright desde un script. Tiene que correr desde la raíz del repo: desde el scratchpad no encuentra el paquete.
+- Si el trabajo lo hizo un subagente, la captura la manda igual el agente principal.
 
 Patrones de diseño extraídos de index.html, novedades.html y faq.html del sitio CAU Villa Lugano (Universidad Siglo 21).
 
