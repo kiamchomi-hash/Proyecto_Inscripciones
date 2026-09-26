@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ReservaClase from '@/components/clases-apoyo/reserva/reserva-clase';
 import MateriaGenerica from '@/components/clases-apoyo/materia-generica';
+import ComputacionPixel from '@/components/clases-apoyo/computacion/computacion-pixel';
 import { OtrasMaterias, VolverAClases } from '@/components/clases-apoyo/navegacion-materia';
 import type { MateriaDB, MateriaNav } from '@/components/clases-apoyo/tipos';
 import TextoMateria from '@/components/clases-apoyo/texto-materia';
@@ -10,6 +11,7 @@ import { jsonLdScript } from '@/lib/json-ld';
 import { supabase } from '@/lib/supabase';
 import '../clases-apoyo.css';
 import '../reserva-clase.css';
+import '../computacion.css';
 
 const BASE_URL = 'https://www.siglo21sur.com';
 
@@ -120,7 +122,11 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
     <>
       <div className="ca-materia-pagina">
         <VolverAClases />
-        <MateriaGenerica materia={ficha} />
+        {/* Cada materia puede tener su diseño propio; la que no, usa la ficha
+            genérica. En construcción siempre va la genérica, con su cartel. */}
+        {ficha.slug === 'computacion' && !ficha.en_construccion
+          ? <ComputacionPixel materia={ficha} />
+          : <MateriaGenerica materia={ficha} />}
         {/* Al cliente viaja sólo lo que la reserva usa, no la ficha entera. */}
         {!ficha.en_construccion && (
           <ReservaClase

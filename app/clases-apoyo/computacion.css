@@ -1,0 +1,434 @@
+/* ══ Computación: diseño pixel ══
+   Pasa a la web el folleto aprobado
+   (contenidos/cau/aprobados/2026-09-22-folleto-computacion-pixel/). La paleta
+   es la del folleto, en variables propias bajo .cp para no tocar globals.css.
+   Silkscreen sólo titula y rotula; lo que se lee va en Inter. Los íconos son
+   los SVG del folleto y se escalan en múltiplos enteros de su grilla cuando se
+   puede, para que cada píxel caiga entero. */
+
+.cp {
+  --cp-base-alta: #066c48;
+  --cp-base-baja: #0f4636;
+  --cp-pixel: #00c7b1;
+  --cp-pixel-vivo: #00ffe1;
+  --cp-crema: #e7d6b4;
+  --cp-texto: #e7efe9;
+  --cp-contorno: #062420;
+  --cp-tinta: #01100e;
+  --cp-panel: #134036;
+  --cp-papel: #eef1ea;
+  --cp-papel-trama: #d7dccd;
+  --cp-terracota: #c24e1c;
+  --cp-terracota-sombra: #7d3111;
+  --cp-whatsapp: #25d366;
+  --cp-cau-azul: #005587;
+  --cp-cau-verde: #058c70;
+  --cp-teal-oscuro: #008c7d;
+  --cp-borde: 5px;
+  --cp-linea: rgb(0 199 177 / 75%);
+  --cp-pixel-fuente: var(--fuente-pixel), monospace;
+
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.75rem);
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem) clamp(1.5rem, 3vw, 2.75rem);
+  color: var(--cp-texto);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background:
+    radial-gradient(ellipse 95% 26% at 65% 0%, rgb(0 199 177 / 13%), transparent 70%),
+    radial-gradient(ellipse 95% 24% at 35% 100%, rgb(0 199 177 / 10%), transparent 70%),
+    linear-gradient(180deg, var(--cp-base-alta) 0%, var(--cp-base-baja) 100%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* La grilla de celdas apagadas del fondo del folleto. */
+.cp::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgb(0 199 177 / 9%) 35%, transparent 36%);
+  background-size: 14px 14px;
+}
+
+.cp img { display: block; image-rendering: pixelated; }
+
+/* Borde de píxeles: cuatro sombras corridas un borde con las esquinas vacías,
+   que es como se redondea en pixel art. */
+.cp-encabezado,
+.cp-ventana {
+  box-shadow:
+    0 calc(-1 * var(--cp-borde)) 0 0 var(--cp-linea),
+    0 var(--cp-borde) 0 0 var(--cp-linea),
+    calc(-1 * var(--cp-borde)) 0 0 0 var(--cp-linea),
+    var(--cp-borde) 0 0 0 var(--cp-linea);
+}
+
+.cp-rotulo {
+  font-family: var(--cp-pixel-fuente);
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--cp-pixel-vivo);
+}
+
+/* ── Encabezado ── */
+.cp-encabezado {
+  --cp-linea: var(--cp-contorno);
+  container-type: inline-size;
+  margin: var(--cp-borde);
+}
+
+.cp-titulo {
+  display: grid;
+  font-family: var(--cp-pixel-fuente);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--cp-texto);
+}
+
+.cp-titulo-antes,
+.cp-titulo-palabra {
+  --cp-trazo: 0.06em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow:
+    var(--cp-trazo) 0 0 var(--cp-contorno),
+    calc(var(--cp-trazo) * -1) 0 0 var(--cp-contorno),
+    0 var(--cp-trazo) 0 var(--cp-contorno),
+    0 calc(var(--cp-trazo) * -1) 0 var(--cp-contorno),
+    var(--cp-trazo) var(--cp-trazo) 0 var(--cp-contorno),
+    calc(var(--cp-trazo) * -1) var(--cp-trazo) 0 var(--cp-contorno),
+    var(--cp-trazo) calc(var(--cp-trazo) * -1) 0 var(--cp-contorno),
+    calc(var(--cp-trazo) * -1) calc(var(--cp-trazo) * -1) 0 var(--cp-contorno);
+  background-image:
+    linear-gradient(rgb(1 16 14 / 22%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(1 16 14 / 22%) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+
+.cp-titulo-antes {
+  gap: 3cqi;
+  padding: 3cqi 3cqi 2.4cqi;
+  font-size: 6.6cqi;
+  background-color: var(--cp-cau-verde);
+  background-image:
+    linear-gradient(rgb(1 16 14 / 22%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(1 16 14 / 22%) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cp-cau-azul), var(--cp-cau-verde) 55%, var(--cp-teal-oscuro));
+  background-size: 7px 7px, 7px 7px, auto;
+}
+
+.cp-titulo-antes span { flex: 1; text-align: center; }
+
+.cp-titulo-logo,
+.cp-titulo-compu {
+  flex-shrink: 0;
+  width: 10cqi;
+  height: auto;
+}
+
+.cp-titulo-palabra {
+  padding: 2.6cqi 2cqi 3.2cqi;
+  font-size: 9.2cqi;
+  background-color: rgb(5 140 112 / 55%);
+}
+
+/* Medidas del folleto pasadas a em (allá, sobre 138 px de letra): la M
+   dibujada arranca 9 px a la derecha y 28,5 abajo, mide 136,75 × 102,25 con el
+   contorno incluido, y deja 17,25 de aire con la P. */
+.cp-m {
+  position: relative;
+  display: inline-block;
+  margin-right: 0.125em;
+  color: transparent;
+  text-shadow: none;
+}
+
+.cp .cp-m-dibujo {
+  position: absolute;
+  left: 0.0652em;
+  top: 0.2065em;
+  width: 0.991em;
+  height: 0.741em;
+  max-width: none;
+}
+
+/* ── Ventana y fichas ── */
+.cp-portada {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.cp-ventana {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: var(--cp-borde);
+  background: rgb(12 62 52 / 76%);
+}
+
+.cp-ventana-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 40px;
+  padding: 0 14px;
+  border-bottom: var(--cp-borde) solid var(--cp-linea);
+  background: rgb(0 199 177 / 20%);
+}
+
+.cp-barra-icono { width: 27px; height: 24px; }
+
+.cp-ventana-titulo {
+  font-family: var(--cp-pixel-fuente);
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cp-crema);
+}
+
+.cp-barra-botones { display: flex; gap: 8px; }
+.cp-barra-botones img { width: 18px; height: auto; }
+
+.cp-ventana-cuerpo {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 1rem;
+  background-image: radial-gradient(rgb(0 199 177 / 16%) 1.6px, transparent 1.7px);
+  background-size: 14px 14px;
+}
+
+.cp .cp-ilustracion {
+  width: 100%;
+  max-width: 632px;
+  height: auto;
+}
+
+.cp-datos {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cp-dato {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-height: 96px;
+  padding: 1rem 1rem 1rem 1.25rem;
+  border: 2px solid var(--cp-franja);
+  border-left-width: 10px;
+  background: var(--cp-panel);
+}
+
+.cp .cp-dato-icono { width: 52px; height: auto; flex-shrink: 0; }
+
+.cp-dato-texto { display: grid; gap: 0.5rem; min-width: 0; }
+
+.cp-dato-valor {
+  color: var(--cp-texto);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+@media (min-width: 900px) {
+  .cp-portada { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 2rem; }
+  .cp-datos { grid-template-rows: repeat(3, 1fr); }
+}
+
+/* ── Temas ── */
+.cp-temas-seccion { display: grid; gap: 1.25rem; }
+
+.cp-seccion-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.cp-seccion-titulo {
+  margin: 0;
+  font-family: var(--cp-pixel-fuente);
+  font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--cp-texto);
+}
+
+.cp-regla {
+  flex: 1;
+  min-width: 2rem;
+  height: var(--cp-borde);
+  background: var(--cp-linea);
+}
+
+.cp-temas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.1rem;
+  margin: 0 8px 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Filo de tinta y sombra dura corrida, como los íconos del folleto. */
+.cp-tema {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 3px solid var(--cp-contorno);
+  background: var(--cp-tema);
+  box-shadow: 7px 7px 0 0 var(--cp-tinta);
+}
+
+.cp-tema-icono {
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 1rem;
+}
+
+.cp-tema-icono img { width: 68px; height: auto; }
+
+/* La franja de papel: el texto queda con contraste alto sobre cualquier verde. */
+.cp-tema-nombre {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 0.75rem 0.5rem;
+  border-top: 3px solid var(--cp-contorno);
+  background-color: var(--cp-papel);
+  background-image: repeating-linear-gradient(45deg, var(--cp-papel-trama) 0 1.5px, transparent 1.5px 9px);
+  color: var(--cp-contorno);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.cp-tema:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+@media (min-width: 900px) {
+  .cp-temas { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .cp-tema:last-child:nth-child(odd) { grid-column: auto; }
+}
+
+/* ── Pasos ── */
+.cp-pasos {
+  display: grid;
+  gap: 1rem;
+  margin: 0 10px 10px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cp-paso {
+  display: flex;
+  align-items: stretch;
+  min-height: 72px;
+  border: 3px solid var(--cp-contorno);
+  background-color: var(--cp-papel);
+  background-image: repeating-linear-gradient(45deg, var(--cp-papel-trama) 0 1.5px, transparent 1.5px 9px);
+  box-shadow: 10px 10px 0 0 var(--cp-terracota-sombra);
+  color: var(--cp-contorno);
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cp-paso:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 7px 7px 0 0 var(--cp-terracota-sombra);
+}
+
+.cp-paso:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.cp-paso-cifra {
+  display: grid;
+  flex: 0 0 76px;
+  place-items: center;
+  border-right: 3px solid var(--cp-contorno);
+  background: var(--cp-terracota);
+  color: var(--cp-texto);
+  font-family: var(--cp-pixel-fuente);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cp-paso-texto {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .cp-pasos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+}
+
+/* ── WhatsApp ── */
+.cp-contacto {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem 1.5rem;
+  border: 4px solid var(--cp-whatsapp);
+  background: #051512;
+  text-align: center;
+}
+
+.cp-contacto-rotulo {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--cp-whatsapp);
+}
+
+.cp-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  max-width: 100%;
+  color: var(--cp-whatsapp);
+  font-size: clamp(1.35rem, 5vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+}
+
+.cp-whatsapp svg { width: 1.1em; height: 1.1em; flex-shrink: 0; }
+
+.cp-whatsapp:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+
+.cp-whatsapp:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp-paso { transition: none; }
+  .cp-paso:hover { transform: none; }
+}
