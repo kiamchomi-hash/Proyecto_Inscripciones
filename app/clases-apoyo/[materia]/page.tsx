@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ReservaClase from '@/components/clases-apoyo/reserva/reserva-clase';
 import MateriaGenerica from '@/components/clases-apoyo/materia-generica';
-import ComputacionPixel from '@/components/clases-apoyo/computacion/computacion-pixel';
+import ComputacionPixel, { ComputacionTexto } from '@/components/clases-apoyo/computacion/computacion-pixel';
 import { OtrasMaterias, VolverAClases } from '@/components/clases-apoyo/navegacion-materia';
 import type { MateriaDB, MateriaNav } from '@/components/clases-apoyo/tipos';
 import TextoMateria from '@/components/clases-apoyo/texto-materia';
@@ -118,17 +118,20 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
     ],
   };
 
+  // Cada materia puede tener su diseño propio; la que no, usa la ficha
+  // genérica. En construcción siempre va la genérica, con su cartel.
+  // Computación arma la reserva adentro de su diseño, junto a la foto.
+  const esComputacion = ficha.slug === 'computacion' && !ficha.en_construccion;
+
   return (
     <>
       <div className="ca-materia-pagina">
         <VolverAClases />
-        {/* Cada materia puede tener su diseño propio; la que no, usa la ficha
-            genérica. En construcción siempre va la genérica, con su cartel. */}
-        {ficha.slug === 'computacion' && !ficha.en_construccion
+        {esComputacion
           ? <ComputacionPixel materia={ficha} />
           : <MateriaGenerica materia={ficha} />}
         {/* Al cliente viaja sólo lo que la reserva usa, no la ficha entera. */}
-        {!ficha.en_construccion && (
+        {!ficha.en_construccion && !esComputacion && (
           <ReservaClase
             materia={{
               id: ficha.id,
@@ -141,7 +144,9 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
         )}
         <OtrasMaterias materias={(nav ?? []) as MateriaNav[]} actual={ficha.slug} />
       </div>
-      <TextoMateria label={ficha.label} parrafos={ficha.texto_seo} />
+      {esComputacion
+        ? <ComputacionTexto label={ficha.label} parrafos={ficha.texto_seo} />
+        : <TextoMateria label={ficha.label} parrafos={ficha.texto_seo} />}
       <SiteFooter />
       {!ficha.en_construccion && (
         <script

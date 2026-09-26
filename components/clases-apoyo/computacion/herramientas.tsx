@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 
-/* "¿Qué querés aprender?": una escena pixel con las mascotas del dorso del
-   folleto a los costados (Codex y Clawd, sólo de decoración) y en el centro
-   la ficha de la herramienta elegida en la barra de inventario de abajo.
+/* "¿Qué querés aprender?": una escena pixel con la ficha de la herramienta
+   elegida en la barra de inventario de abajo. Al elegir Claude aparece su
+   mascota, Clawd, la del dorso del folleto; es sólo decoración.
    Marcas y mascotas salen del dorso (dorso.html), no se redibujaron: ver
    public/imagenes/clases-apoyo/computacion/herramientas/. */
 
@@ -30,6 +30,7 @@ const HERRAMIENTAS: Herramienta[] = [
 
 export default function Herramientas() {
   const [elegida, setElegida] = useState<Herramienta>(HERRAMIENTAS[0]);
+  const conMascota = elegida.id === 'claude';
 
   return (
     <section className="hr" aria-labelledby="hr-titulo">
@@ -38,9 +39,7 @@ export default function Herramientas() {
         ¿Qué querés aprender?
       </h2>
 
-      <div className="hr-escena">
-        <Image src={`${DIR}/pet-codex.png`} alt="" width={406} height={418} unoptimized className="hr-mascota hr-codex" />
-
+      <div className={`hr-escena${conMascota ? ' hr-escena-mascota' : ''}`}>
         {/* La key reinicia la entrada de la ficha cada vez que se cambia. */}
         <div className="hr-ficha" key={elegida.id} aria-live="polite">
           <span className="hr-ficha-logo">
@@ -52,7 +51,10 @@ export default function Herramientas() {
           </div>
         </div>
 
-        <Image src={`${DIR}/clawd.svg`} alt="" width={276} height={138} unoptimized className="hr-mascota hr-clawd" />
+        {/* Clawd es la mascota de Claude: aparece sólo con Claude. */}
+        {conMascota && (
+          <Image src={`${DIR}/clawd.svg`} alt="" width={276} height={138} unoptimized className="hr-mascota hr-clawd" />
+        )}
         <span className="hr-piso" aria-hidden="true" />
       </div>
 

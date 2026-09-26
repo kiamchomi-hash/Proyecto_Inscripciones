@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, type ReactNode } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { trackDiaClase, trackHorarioClase, trackSolicitudClase } from '@/lib/analytics';
 import type { MateriaDB } from '@/components/clases-apoyo/tipos';
@@ -633,7 +633,19 @@ function SchedulePanel({ modoManana, materiaId, materiaSlug, selectedDays, onDon
 
 type MateriaReserva = Pick<MateriaDB, 'id' | 'slug' | 'modo_manana' | 'dias_bloqueados' | 'horarios_bloqueados'>;
 
-export default function ReservaClase({ materia }: { materia: MateriaReserva }) {
+/* Dos formas de armarse:
+   - Sin `foto`: la tarjeta sobria de siempre, calendario y horarios lado a lado.
+   - Con `foto` (la usa computación): la foto y el calendario arriba, y los
+     horarios debajo a lo ancho. Cada parte puede llevar un encabezado propio
+     (la barra de ventana del diseño de la página); adentro, calendario y
+     horarios siguen siendo los mismos en todas las materias. */
+export default function ReservaClase({ materia, foto, encabezadoCalendario, encabezadoHorarios, clase }: {
+  materia: MateriaReserva;
+  foto?: ReactNode;
+  encabezadoCalendario?: ReactNode;
+  encabezadoHorarios?: ReactNode;
+  clase?: string;
+}) {
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
   const [selectedDayInfoMap, setSelectedDayInfoMap] = useState<Record<string, { num: string; month: string; calendarKey: string }>>({});
   const [requestDone, setRequestDone] = useState(false);
@@ -668,16 +680,43 @@ export default function ReservaClase({ materia }: { materia: MateriaReserva }) {
 
   const selectedDayInfos = Array.from(selectedDays).map(key => selectedDayInfoMap[key]).filter(Boolean) as DayInfo[];
 
+  const calendario = (
+    <div className="rc-calendario">
+      <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} materiaSlug={materia.slug} />
+    </div>
+  );
+
+  const horarios = (
+    <div className="rc-horarios" ref={horariosRef}>
+      <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
+    </div>
+  );
+
+  if (foto) {
+    return (
+      <section id="reservar" className={`reserva-clase rc-con-foto${clase ? ` ${clase}` : ''}`} aria-labelledby="reservar-titulo">
+        <h2 id="reservar-titulo" className="sr-only">Reservá tu clase</h2>
+        <div className="rc-arriba">
+          {foto}
+          <div className="rc-marco">
+            {encabezadoCalendario}
+            {calendario}
+          </div>
+        </div>
+        <div className="rc-marco">
+          {encabezadoHorarios}
+          {horarios}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="reservar" className="reserva-clase" aria-labelledby="reservar-titulo">
       <h2 id="reservar-titulo" className="rc-titulo">Reservá tu clase</h2>
       <div className="rc-grid">
-        <div className="rc-calendario">
-          <MonthlyCalendar selectedDays={selectedDays} onToggleDay={handleToggleDay} locked={requestDone || calendarLocked} diasBloqueados={materia.dias_bloqueados} materiaSlug={materia.slug} />
-        </div>
-        <div className="rc-horarios" ref={horariosRef}>
-          <SchedulePanel key={scheduleKey} modoManana={materia.modo_manana} materiaId={materia.id} materiaSlug={materia.slug} selectedDays={selectedDayInfos} onDone={() => setRequestDone(true)} onReset={() => { setRequestDone(false); setCalendarLocked(false); setSelectedDays(new Set()); setSelectedDayInfoMap({}); }} onInteract={scrollToBottom} onLockCalendar={setCalendarLocked} horariosBloqueados={materia.horarios_bloqueados} />
-        </div>
+        {calendario}
+        {horarios}
       </div>
     </section>
   );

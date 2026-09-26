@@ -73,20 +73,11 @@
 }
 
 /* ── Ventanas ── */
-.cp-cuerpo {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: calc(1.75rem + var(--cp-sombra));
-  padding: var(--cp-borde) calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) var(--cp-borde);
-}
-
-@media (min-width: 900px) {
-  .cp-cuerpo:not(.cp-cuerpo-solo) { grid-template-columns: 1.1fr 1fr; }
-}
 
 /* Borde de píxel: cuatro sombras corridas un borde, que dejan las esquinas
    vacías (así se redondea en pixel art). La quinta es la sombra de bloque. */
-.cp-ventana {
+.cp-ventana,
+.cp-reserva .rc-marco {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -123,8 +114,7 @@
 .cp-barra-botones { display: flex; align-items: center; gap: 8px; }
 .cp-barra-botones img { width: 18px; height: auto; }
 
-/* La foto va en la "pantalla" de la ventana, con la misma proporción que en
-   la ficha genérica. */
+/* La foto va en la "pantalla" de la ventana. */
 .cp-pantalla {
   position: relative;
   flex: 1;
@@ -135,76 +125,59 @@
 .cp-pantalla > div { position: absolute; inset: 0; }
 
 @media (min-width: 900px) {
-  .cp-pantalla { aspect-ratio: auto; min-height: 360px; }
+  .cp-pantalla { aspect-ratio: auto; min-height: 380px; }
 }
 
-/* ── Descripción ── */
-.cp-lista {
+/* ── Reserva: foto y calendario arriba, horarios abajo ──
+   Por fuera, ventanas pixel; por dentro, el calendario y los horarios sobrios
+   que usan todas las materias (reserva-clase.css). El espacio de más a la
+   derecha y abajo es para que la sombra de bloque no se corte. */
+.cp-reserva {
+  gap: calc(2rem + var(--cp-sombra));
+  padding: var(--cp-borde) calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) var(--cp-borde);
+}
+
+.cp-reserva .rc-arriba { gap: calc(2rem + var(--cp-sombra)); }
+
+.cp-reserva .rc-marco .rc-calendario,
+.cp-reserva .rc-marco .rc-horarios { background: var(--rc-fondo); }
+
+/* ── WhatsApp: una banda a lo ancho, como la del folleto ── */
+.cp-contacto {
   display: grid;
-  align-content: center;
-  gap: 1.1rem;
-  flex: 1;
-  margin: 0;
-  padding: 1.75rem 1.5rem 1.25rem;
-  list-style: none;
+  justify-items: center;
+  gap: 0.9rem;
+  margin: var(--cp-borde) calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) var(--cp-borde);
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem);
+  text-align: center;
+  background: #01100e;
+  box-shadow:
+    0 calc(-1 * var(--cp-borde)) 0 0 var(--cp-whatsapp),
+    0 var(--cp-borde) 0 0 var(--cp-whatsapp),
+    calc(-1 * var(--cp-borde)) 0 0 0 var(--cp-whatsapp),
+    var(--cp-borde) 0 0 0 var(--cp-whatsapp),
+    calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) 0 0 var(--cp-contorno);
 }
 
-.cp-item {
-  position: relative;
-  padding-left: 30px;
-  font-size: 1rem;
-  line-height: 1.55;
-  color: var(--cp-texto);
-}
-
-/* Viñeta de píxel: un cuadrado con su sombra corrida una celda. */
-.cp-item::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 0.5em;
-  width: 10px;
-  height: 10px;
-  background: var(--cp-pixel);
-  box-shadow: 3px 3px 0 var(--cp-contorno);
-}
-
-.cp-item strong {
-  color: var(--cp-pixel);
-  font-weight: 700;
-}
-
-/* Lleva al bloque de reserva, que está más abajo en la misma página. */
-.cp-reservar {
-  align-self: flex-start;
-  margin: 0 1.5rem 1.5rem;
-  padding: 12px 18px;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
+.cp-contacto-rotulo {
   font-family: var(--cp-pixel-fuente);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  text-decoration: none;
-  color: var(--cp-contorno);
-  background: var(--cp-pixel);
-  border: 3px solid var(--cp-contorno);
-  box-shadow: 5px 5px 0 var(--cp-contorno);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  color: var(--cp-whatsapp);
 }
 
-/* ── WhatsApp ── */
 .cp-whatsapp {
-  justify-self: start;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  max-width: 100%;
-  min-height: 48px;
-  padding: 12px 20px;
-  font-weight: 700;
-  font-size: 1rem;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 24px;
+  font-size: clamp(1.15rem, 3vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
   text-decoration: none;
   color: var(--cp-contorno);
   background: var(--cp-whatsapp);
@@ -213,40 +186,76 @@
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
+.cp-whatsapp svg { width: 1.3em; height: 1.3em; flex: 0 0 auto; }
+
 /* El botón se hunde lo mismo que achica su sombra: no se deforma. */
-.cp-reservar:hover,
 .cp-whatsapp:hover {
   transform: translate(2px, 2px);
-  box-shadow: 3px 3px 0 var(--cp-contorno);
+  box-shadow: 4px 4px 0 var(--cp-contorno);
 }
 
-.cp-reservar:active,
 .cp-whatsapp:active {
-  transform: translate(5px, 5px);
+  transform: translate(6px, 6px);
   box-shadow: 0 0 0 var(--cp-contorno);
 }
 
-.cp-reservar:focus-visible,
 .cp-whatsapp:focus-visible {
   outline: 3px solid var(--cp-pixel-vivo);
   outline-offset: 4px;
 }
 
+/* ── Sobre las clases: el texto de la base en una ventana ── */
+.cp-texto {
+  /* El mismo ancho útil que el resto de la página (1100px menos su gutter). */
+  width: min(100% - 32px, 1068px);
+  margin: 0 auto clamp(3rem, 6vw, 4.5rem);
+  padding: var(--cp-borde) calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) var(--cp-borde);
+}
+
+.cp-texto .ca-seo {
+  padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 3vw, 2.5rem);
+  background: none;
+  border: 0;
+}
+
+.cp-texto .ca-seo-inner { max-width: 760px; margin: 0; }
+
+.cp-texto .ca-seo-inner h2 {
+  color: var(--cp-texto);
+  font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+}
+
+.cp-texto .ca-seo-inner p,
+.cp-texto .ca-seo-inner li {
+  font-size: 1rem;
+  color: var(--cp-texto-suave);
+}
+
+.cp-texto .ca-seo-inner strong { color: var(--cp-pixel); }
+
+/* Viñetas de píxel en vez de puntos redondos. */
+.cp-texto .ca-seo-inner li::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+  background: var(--cp-pixel);
+  box-shadow: 2px 2px 0 var(--cp-contorno);
+}
+
 @media (max-width: 520px) {
   .cp-h1 { align-items: flex-start; }
   .cp-h1-icono { width: 40px; height: 37px; margin-top: 4px; }
-  .cp-whatsapp { justify-self: stretch; justify-content: center; }
   .cp-barra-titulo { font-size: 0.7rem; letter-spacing: 0.12em; }
+  .cp-whatsapp { flex-wrap: wrap; gap: 8px 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cp-reservar,
   .cp-whatsapp { transition: none; }
 }
 
 /* ══ ¿Qué querés aprender?: escena pixel con inventario ══
-   Las mascotas del dorso decoran los costados sobre un piso de celdas; en el
-   centro, la ficha de la herramienta elegida. Todo en el idioma del resto de
+   La ficha de la herramienta elegida sobre un piso de celdas; con Claude
+   entra su mascota, Clawd, la del dorso. Todo en el idioma del resto de
    la ficha: borde de píxel con las esquinas vacías y sombra de bloque. Los
    movimientos usan steps() para saltar de a celdas, como un sprite. */
 
@@ -278,7 +287,7 @@
 .hr-escena {
   position: relative;
   display: grid;
-  grid-template-columns: 150px minmax(0, 1fr) 190px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: end;
   gap: 1.5rem;
   margin: var(--cp-borde);
@@ -302,8 +311,18 @@
   animation: hr-respira 1.2s steps(2) infinite;
 }
 
-.hr-codex { margin-bottom: 10px; }
-.hr-clawd { margin-bottom: 12px; animation-delay: 0.6s; }
+/* Con Claude elegido, Clawd entra a la derecha de la ficha. */
+.hr-escena-mascota { grid-template-columns: minmax(0, 1fr) 200px; }
+
+.hr-clawd {
+  margin-bottom: 12px;
+  animation: hr-entra 0.36s steps(3) both, hr-respira 1.2s steps(2) 0.36s infinite;
+}
+
+@keyframes hr-entra {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
 
 @keyframes hr-respira { 50% { transform: translateY(-5px); } }
 
@@ -445,14 +464,14 @@
 }
 
 @media (max-width: 800px) {
-  .hr-escena {
-    grid-template-columns: 1fr 1fr;
+  .hr-escena,
+  .hr-escena-mascota {
+    grid-template-columns: 1fr;
     padding: 1.25rem 1rem 0;
-    gap: 1rem 1.5rem;
+    gap: 1rem;
   }
-  .hr-ficha { grid-column: 1 / -1; grid-row: 1; margin-bottom: 0.25rem; }
-  .hr-codex { width: 104px; justify-self: start; }
-  .hr-clawd { width: 140px; justify-self: end; }
+  .hr-escena-mascota .hr-ficha { margin-bottom: 0.25rem; }
+  .hr-clawd { width: 150px; justify-self: end; }
 }
 
 @media (max-width: 700px) {
