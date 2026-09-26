@@ -7,7 +7,9 @@ import Image from 'next/image';
 
 const ICONOS = '/imagenes/clases-apoyo/computacion';
 
-export default function BarraVentana({ titulo }: { titulo: string }) {
+// Sin título, la barra queda sólo con ícono y botones (la usan las herramientas,
+// donde el contenido se explica solo).
+export default function BarraVentana({ titulo = '' }: { titulo?: string }) {
   return (
     <div className="cp-barra">
       <Image src={`${ICONOS}/barra-icono.svg`} alt="" width={9} height={8} unoptimized className="cp-barra-icono" />

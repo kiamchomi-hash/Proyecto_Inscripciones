@@ -253,34 +253,16 @@
   .cp-whatsapp { transition: none; }
 }
 
-/* ══ ¿Qué querés aprender?: escena pixel con inventario ══
-   La ficha de la herramienta elegida sobre un piso de celdas; con Claude
-   entra su mascota, Clawd, la del dorso. Todo en el idioma del resto de
-   la ficha: borde de píxel con las esquinas vacías y sombra de bloque. Los
-   movimientos usan steps() para saltar de a celdas, como un sprite. */
+/* ══ Herramientas: una ventana más, con escena e inventario ══
+   Barra de ventana como las otras; adentro, la ficha de la herramienta
+   elegida sobre un piso de celdas (con Claude entra su mascota, Clawd, la del
+   dorso) y abajo la barra de inventario. Los movimientos usan steps() para
+   saltar de a celdas, como un sprite. */
 
+/* El margen deja lugar al borde y a la sombra de bloque de la ventana, como
+   en la reserva. */
 .hr {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.hr-titulo {
-  display: grid;
-  gap: 0.35rem;
-  margin: 0;
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--cp-texto);
-}
-
-.hr-ceja {
-  font-family: var(--cp-pixel-fuente);
-  font-size: 0.8rem;
-  font-weight: 400;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--cp-pixel-vivo);
+  margin: var(--cp-borde) calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) var(--cp-borde);
 }
 
 /* ── Escena ── */
@@ -290,16 +272,8 @@
   grid-template-columns: minmax(0, 1fr);
   align-items: end;
   gap: 1.5rem;
-  margin: var(--cp-borde);
   padding: 1.75rem 1.5rem 0;
-  background:
-    radial-gradient(rgb(0 199 177 / 14%) 35%, transparent 36%) 0 0 / 12px 12px,
-    var(--cp-pantalla);
-  box-shadow:
-    0 calc(-1 * var(--cp-borde)) 0 0 var(--cp-pixel),
-    0 var(--cp-borde) 0 0 var(--cp-pixel),
-    calc(-1 * var(--cp-borde)) 0 0 0 var(--cp-pixel),
-    var(--cp-borde) 0 0 0 var(--cp-pixel);
+  background: radial-gradient(rgb(0 199 177 / 14%) 35%, transparent 36%) 0 0 / 12px 12px;
 }
 
 .hr-mascota {
@@ -404,7 +378,7 @@
   padding: 12px;
   list-style: none;
   background: var(--cp-contorno);
-  border: 3px solid #01100e;
+  border-top: var(--cp-borde) solid var(--cp-pixel);
 }
 
 /* Doce herramientas: una fila entera en escritorio, dos de seis en tablet. */

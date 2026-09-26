@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import BarraVentana from './barra-ventana';
 
-/* "¿Qué querés aprender?": una escena pixel con la ficha de la herramienta
+/* Herramientas: una ventana pixel con la ficha de la herramienta
    elegida en la barra de inventario de abajo. Al elegir Claude aparece su
    mascota, Clawd, la del dorso del folleto; es sólo decoración.
    Marcas y mascotas salen del dorso (dorso.html), no se redibujaron: ver
@@ -33,11 +34,11 @@ export default function Herramientas() {
   const conMascota = elegida.id === 'claude';
 
   return (
-    <section className="hr" aria-labelledby="hr-titulo">
-      <h2 id="hr-titulo" className="hr-titulo">
-        <span className="hr-ceja">Elegí una herramienta</span>
-        ¿Qué querés aprender?
-      </h2>
+    <section className="hr cp-ventana" aria-labelledby="hr-titulo">
+      {/* El título no se ve: la ventana con los logos se entiende sola. Queda
+          para lectores de pantalla y buscadores. */}
+      <h2 id="hr-titulo" className="sr-only">Herramientas que vas a usar</h2>
+      <BarraVentana />
 
       <div className={`hr-escena${conMascota ? ' hr-escena-mascota' : ''}`}>
         {/* La key reinicia la entrada de la ficha cada vez que se cambia. */}
