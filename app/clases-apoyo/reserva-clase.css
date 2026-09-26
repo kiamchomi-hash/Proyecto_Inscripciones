@@ -1,0 +1,221 @@
+/* ── Bloque de reserva de clases de apoyo ──
+   Tarjeta autónoma, igual en todas las materias. Define sus propias variables
+   para que ningún tema de página (por ejemplo el pixel de computación) la
+   altere: fondo liso, borde fino, un solo acento y la tipografía del sitio.
+   Las reglas del calendario y del horario vienen de clases-apoyo.css, con las
+   variables --ca-* pasadas a --rc-*. */
+
+.reserva-clase {
+  --rc-acento: #00c7b1;
+  --rc-fondo: #0e1918;
+  --rc-borde: rgba(255, 255, 255, 0.1);
+  --rc-borde-visible: rgba(0, 199, 177, 0.55);
+  --rc-texto: #c8d4cf;
+  --rc-texto-suave: #87a89e;
+  --rc-texto-seleccion: #042926;
+  --rc-hover-fondo: #0d2a28;
+  --rc-hover-texto: #07bfc5;
+  --rc-transicion: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  scroll-margin-top: calc(var(--navbar-height, 60px) + 1rem);
+  border: 1px solid var(--rc-borde);
+  border-radius: 12px;
+  background: var(--rc-fondo);
+  color: var(--rc-texto);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.reserva-clase .rc-titulo {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--rc-borde);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.reserva-clase .rc-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* Las piezas movidas traían alturas pensadas para la app de pantalla fija
+   (h-full, overflow oculto). Acá el alto lo da el contenido. */
+.reserva-clase .rc-calendario > div,
+.reserva-clase .rc-horarios > div {
+  height: auto;
+  overflow: visible;
+}
+
+.reserva-clase .rc-calendario > div {
+  padding: 12px 16px 16px;
+}
+
+.reserva-clase .rc-horarios > div {
+  border-left: 0 !important;
+  border-top: 1px solid var(--rc-borde);
+}
+
+@media (min-width: 769px) {
+  .reserva-clase .rc-grid {
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  .reserva-clase .rc-horarios > div {
+    height: 100%;
+    border-top: 0;
+    border-left: 1px solid var(--rc-borde) !important;
+  }
+}
+
+/* ── Calendario ── */
+.reserva-clase .ca-cal-box {
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--rc-borde-visible);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.reserva-clase .ca-cal-header {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: rgba(0, 199, 177, 0.04);
+  border-bottom: 1px solid var(--rc-borde-visible);
+  flex-shrink: 0;
+}
+
+.reserva-clase .ca-day-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  min-height: 44px;
+  flex: 1;
+  margin: -1px 0 0 0;
+  z-index: 1;
+}
+
+.reserva-clase .ca-day {
+  appearance: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.01);
+  border-top: 1px solid transparent;
+  border-left: 1px solid transparent;
+  border-right: 1px solid rgba(0, 199, 177, 0.1);
+  border-bottom: 1px solid rgba(0, 199, 177, 0.1);
+  transition: var(--rc-transicion);
+  color: var(--rc-texto);
+  cursor: pointer;
+  user-select: none;
+  height: 100%;
+  position: relative;
+}
+
+.reserva-clase .ca-day:nth-child(5n) { border-right: none; }
+
+.reserva-clase .ca-day:hover:not(.past):not(.selected) {
+  background: var(--rc-hover-fondo) !important;
+  color: var(--rc-hover-texto) !important;
+  border-color: rgba(7, 191, 197, 0.6) !important;
+  z-index: 10;
+}
+
+.reserva-clase .ca-day.selected {
+  background: var(--rc-acento) !important;
+  color: var(--rc-texto-seleccion) !important;
+  font-weight: 800 !important;
+  border-bottom-color: transparent !important;
+  z-index: 2;
+}
+
+.reserva-clase .ca-day.selected:hover {
+  background: #00b09d !important;
+}
+
+.reserva-clase .ca-day.past {
+  color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.005) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.reserva-clase .ca-day.empty {
+  background: transparent !important;
+  border-color: transparent !important;
+  pointer-events: none;
+}
+
+.reserva-clase .ca-day.blocked {
+  color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.005) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.reserva-clase .ca-day.today:not(.selected) {
+  border: 1.5px solid var(--rc-acento) !important;
+  color: var(--rc-acento) !important;
+  font-weight: 800;
+}
+
+.reserva-clase .ca-day:disabled { font: inherit; }
+
+@keyframes rc-check-draw {
+  from { stroke-dashoffset: 30; opacity: 0; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+.reserva-clase .ca-check-animate {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: rc-check-draw 0.4s ease 0.1s forwards;
+}
+
+/* ── Campos del horario ── */
+.reserva-clase .ca-schedule-transition input::placeholder,
+.reserva-clase .ca-slide-in input::placeholder {
+  color: #9ca3af;
+}
+
+.reserva-clase .ca-schedule-transition input:focus,
+.reserva-clase .ca-slide-in input:focus {
+  border-color: var(--rc-acento) !important;
+  box-shadow: 0 0 0 2px rgba(0, 199, 177, 0.25);
+}
+
+/* ── Panel de horarios ── */
+.reserva-clase .ca-schedule-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rc-acento) transparent;
+}
+
+@keyframes rc-slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reserva-clase .ca-slide-in { animation: rc-slide-in 0.3s ease-out; }
+.reserva-clase .ca-schedule-transition { transition: all 0.3s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reserva-clase .ca-slide-in,
+  .reserva-clase .ca-check-animate { animation: none; stroke-dashoffset: 0; }
+}
