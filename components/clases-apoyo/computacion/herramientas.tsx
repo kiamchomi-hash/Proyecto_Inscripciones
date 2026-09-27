@@ -40,22 +40,37 @@ export default function Herramientas() {
       <h2 id="hr-titulo" className="sr-only">Herramientas que vas a usar</h2>
       <BarraVentana />
 
-      <div className={`hr-escena${conMascota ? ' hr-escena-mascota' : ''}`}>
-        {/* La key reinicia la entrada de la ficha cada vez que se cambia. */}
-        <div className="hr-ficha" key={elegida.id} aria-live="polite">
-          <span className="hr-ficha-logo">
-            <Image src={`${DIR}/${elegida.logo}.svg`} alt="" width={56} height={56} unoptimized />
-          </span>
-          <div className="hr-ficha-texto">
-            <h3 className="hr-ficha-nombre">{elegida.nombre}</h3>
-            <p className="hr-ficha-uso">{elegida.texto}</p>
-          </div>
+      {/* Las doce fichas están siempre montadas, apiladas en la misma celda, y
+          sólo se ve la elegida. Así la ventana mide lo que la ficha más larga
+          y no salta de alto al cambiar, y cambiar es mostrar y ocultar: no se
+          crea nada ni se vuelven a cargar logos. Clawd también está siempre en
+          su lugar, visible sólo con Claude, para que el ancho no cambie. */}
+      <div className="hr-escena">
+        <div className="hr-fichas" aria-live="polite">
+          {HERRAMIENTAS.map(h => {
+            const activa = h.id === elegida.id;
+            return (
+              <div key={h.id} className={`hr-ficha${activa ? ' hr-ficha-activa' : ''}`} aria-hidden={!activa}>
+                <span className="hr-ficha-logo">
+                  <Image src={`${DIR}/${h.logo}.svg`} alt="" width={56} height={56} unoptimized />
+                </span>
+                <div className="hr-ficha-texto">
+                  <h3 className="hr-ficha-nombre">{h.nombre}</h3>
+                  <p className="hr-ficha-uso">{h.texto}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Clawd es la mascota de Claude: aparece sólo con Claude. */}
-        {conMascota && (
-          <Image src={`${DIR}/clawd.svg`} alt="" width={276} height={138} unoptimized className="hr-mascota hr-clawd" />
-        )}
+        <Image
+          src={`${DIR}/clawd.svg`}
+          alt=""
+          width={276}
+          height={138}
+          unoptimized
+          className={`hr-mascota hr-clawd${conMascota ? ' hr-clawd-visible' : ''}`}
+        />
       </div>
 
       <ul className="hr-inventario" aria-label="Herramientas">

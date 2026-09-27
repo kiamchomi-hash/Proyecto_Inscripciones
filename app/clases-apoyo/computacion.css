@@ -40,6 +40,9 @@
   background-image: radial-gradient(rgb(0 199 177 / 16%) 35%, transparent 36%);
   background-size: 12px 12px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 75%);
+  /* Capa propia: la grilla con máscara es cara de pintar y no tiene por qué
+     repintarse cada vez que cambia algo adentro de la sección. */
+  will-change: transform;
 }
 
 .cp img { display: block; image-rendering: pixelated; }
@@ -280,15 +283,33 @@
 }
 
 /* ── Escena ── */
+/* La columna de Clawd está siempre reservada: con o sin mascota, la ficha
+   mide lo mismo. `contain: paint` encierra los repintados de la escena para
+   que cambiar de ficha no obligue a repintar el fondo de la página. */
 .hr-escena {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 200px;
   align-items: end;
   gap: 1.5rem;
   padding: 1.75rem 1.5rem 0;
-  background: radial-gradient(rgb(0 199 177 / 14%) 35%, transparent 36%) 0 0 / 12px 12px;
+  contain: paint;
 }
+
+/* Los puntos del fondo van en su propia capa (will-change): se pintan una
+   vez y después sólo se componen. Pintados en la escena, el navegador los
+   rehacía enteros en cada cambio de ficha y eso era lo que trababa. */
+.hr-escena::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(rgb(0 199 177 / 14%) 35%, transparent 36%) 0 0 / 12px 12px;
+  will-change: transform;
+}
+
+.hr-escena > * { position: relative; z-index: 1; }
 
 .hr-mascota {
   position: relative;
@@ -296,31 +317,41 @@
   width: 100%;
   height: auto;
   image-rendering: pixelated;
-  animation: hr-respira 1.2s steps(2) infinite;
 }
 
-/* Con Claude elegido, Clawd entra a la derecha de la ficha. */
-.hr-escena-mascota { grid-template-columns: minmax(0, 1fr) 200px; }
-
+/* Clawd está siempre en su lugar; con Claude elegido aparece y respira. */
 .hr-clawd {
   margin-bottom: 12px;
-  animation: hr-entra 0.36s steps(3) both, hr-respira 1.2s steps(2) 0.36s infinite;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.24s steps(3), visibility 0s 0.24s;
 }
 
-@keyframes hr-entra {
-  from { transform: translateX(40px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+.hr-clawd-visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.24s steps(3), visibility 0s;
+  animation: hr-respira 1.2s steps(2) infinite;
 }
 
 @keyframes hr-respira { 50% { transform: translateY(-5px); } }
 
-/* ── Ficha de la herramienta ── */
-.hr-ficha {
+/* ── Fichas de las herramientas ──
+   Las doce en la misma celda de la grilla: la celda toma el alto de la más
+   larga y todas se estiran a esa medida, así la ventana no cambia de tamaño.
+   Sólo se ve la activa; el cambio anima opacidad y posición, que el
+   navegador resuelve sin repintar. */
+.hr-fichas {
+  display: grid;
   align-self: center;
+  margin: 0 var(--cp-borde) 2.25rem;
+}
+
+.hr-ficha {
+  grid-area: 1 / 1;
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  margin: 0 var(--cp-borde) 2.25rem;
   padding: 1.4rem 1.5rem;
   min-height: 128px;
   background: var(--cp-contorno);
@@ -330,12 +361,17 @@
     calc(-1 * var(--cp-borde)) 0 0 0 var(--cp-crema),
     var(--cp-borde) 0 0 0 var(--cp-crema),
     calc(var(--cp-borde) + 6px) calc(var(--cp-borde) + 6px) 0 0 #01100e;
-  animation: hr-aparece 0.24s steps(3) both;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.24s steps(3), transform 0.24s steps(3), visibility 0s 0.24s;
 }
 
-@keyframes hr-aparece {
-  from { transform: translateY(8px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.hr-ficha-activa {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.24s steps(3), transform 0.24s steps(3), visibility 0s;
 }
 
 .hr-ficha-logo {
@@ -446,15 +482,21 @@
   outline-offset: 2px;
 }
 
+/* En pantallas angostas no hay columna para Clawd: se sienta sobre el borde
+   de arriba de la ficha, en una franja que queda reservada siempre. */
 @media (max-width: 800px) {
-  .hr-escena,
-  .hr-escena-mascota {
+  .hr-escena {
     grid-template-columns: 1fr;
-    padding: 1.25rem 1rem 0;
-    gap: 1rem;
+    padding: 4rem 1rem 0;
   }
-  .hr-escena-mascota .hr-ficha { margin-bottom: 0.25rem; }
-  .hr-clawd { width: 150px; justify-self: end; }
+  .hr-fichas { margin-bottom: 1.5rem; }
+  .hr-clawd {
+    position: absolute;
+    top: 0.75rem;
+    right: 1.5rem;
+    width: 124px;
+    margin: 0;
+  }
 }
 
 @media (max-width: 700px) {
@@ -466,7 +508,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hr-mascota,
-  .hr-ficha { animation: none; }
-  .hr-casilla { transition: none; }
+  .hr-clawd,
+  .hr-ficha,
+  .hr-casilla { animation: none; transition: none; }
+  .hr-ficha { transform: none; }
 }
