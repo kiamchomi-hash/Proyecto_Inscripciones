@@ -68,7 +68,10 @@ export default function Herramientas() {
               onClick={() => setElegida(h)}
             >
               <Image src={`${DIR}/${h.logo}.svg`} alt="" width={40} height={40} unoptimized className="hr-casilla-logo" />
-              <span className="hr-casilla-nombre">{h.nombre}</span>
+              {/* PowerPoint no entra en una línea con la letra pixel: va en dos. */}
+              <span className="hr-casilla-nombre">
+                {h.id === 'powerpoint' ? <>Power<br />Point</> : h.nombre}
+              </span>
             </button>
           </li>
         ))}

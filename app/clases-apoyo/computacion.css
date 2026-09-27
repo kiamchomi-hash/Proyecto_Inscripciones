@@ -374,6 +374,10 @@
   .hr-inventario { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; }
 }
 
+/* Todas las casillas toman el alto de la fila: PowerPoint, en dos líneas,
+   ya no queda más alta que el resto. */
+.hr-inventario li { display: grid; }
+
 .hr-casilla {
   display: grid;
   justify-items: center;
@@ -396,10 +400,10 @@
 
 .hr-casilla-nombre {
   font-family: var(--cp-pixel-fuente);
-  font-size: 0.55rem;
-  letter-spacing: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  text-align: center;
   text-transform: uppercase;
 }
 
