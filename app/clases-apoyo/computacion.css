@@ -64,7 +64,22 @@
   height: 50px;
 }
 
+/* La M dibujada: 5 celdas de alto como las mayúsculas de Silkscreen, apoyada
+   en la línea de base, y una celda de aire antes de la letra siguiente (la
+   medida del folleto: 0,125em por celda). La sombra repite la del texto. */
+.cp-m {
+  display: inline-block;
+  width: 0.875em;
+  height: 0.625em;
+  margin-right: 0.125em;
+  vertical-align: baseline;
+  filter: drop-shadow(3px 3px 0 var(--cp-contorno));
+}
+
+/* nowrap: la M dibujada es un elemento aparte y el navegador cortaba la
+   palabra ahí ("COM / PUTACIÓN"). */
 .cp-h1 strong {
+  white-space: nowrap;
   font-family: var(--cp-pixel-fuente);
   font-weight: 700;
   letter-spacing: 0;

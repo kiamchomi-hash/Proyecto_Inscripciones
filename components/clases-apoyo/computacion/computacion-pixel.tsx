@@ -16,6 +16,37 @@ import Herramientas from './herramientas';
    las materias; acá se arma con la foto y el calendario arriba y los horarios
    debajo. Estilos en app/clases-apoyo/computacion.css (variables --cp-*). */
 
+/* La M de Silkscreen tiene el pico tan corto que se lee como H. Se reemplaza
+   por la M del folleto: la misma grilla de 7 × 5 celdas que dibujó para su
+   título, con el pico bajando hasta el medio. Va en currentColor, así toma el
+   color y la sombra del texto que la rodea. */
+const CELDAS_M = [
+  [0, 1, 5, 6],
+  [0, 1, 2, 4, 5, 6],
+  [0, 1, 2, 3, 4, 5, 6],
+  [0, 1, 3, 5, 6],
+  [0, 1, 5, 6],
+];
+
+function LetraM() {
+  return (
+    <svg className="cp-m" viewBox="0 0 7 5" shapeRendering="crispEdges" aria-hidden="true">
+      {CELDAS_M.flatMap((fila, y) => fila.map(x => <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="currentColor" />))}
+    </svg>
+  );
+}
+
+// El nombre en letra pixel con la M del folleto. La M de verdad sigue en el
+// texto, oculta a la vista en su lugar: buscadores y lectores de pantalla leen
+// "Computación" entero, y a la vista queda la M dibujada.
+function NombrePixel({ texto }: { texto: string }) {
+  return texto.split(/([mM])/).map((parte, i) =>
+    /^[mM]$/.test(parte)
+      ? <span key={i}><span className="sr-only">{parte}</span><LetraM /></span>
+      : parte
+  );
+}
+
 type MateriaComputacion = Pick<
   MateriaDB,
   'id' | 'slug' | 'label' | 'nombre_profesor' | 'whatsapp' | 'telefono_display' | 'imagenes' | 'en_construccion' | 'modo_manana' | 'dias_bloqueados' | 'horarios_bloqueados'
@@ -31,7 +62,7 @@ export default function ComputacionPixel({ materia }: { materia: MateriaComputac
       <h1 className="cp-h1">
         <Image src="/imagenes/clases-apoyo/computacion/computadora.svg" alt="" width={27} height={25} unoptimized className="cp-h1-icono" />
         <span>
-          Clases particulares de <strong>{materia.label}</strong> en Villa Lugano
+          Clases particulares de <strong><NombrePixel texto={materia.label} /></strong> en Villa Lugano
         </span>
       </h1>
 
