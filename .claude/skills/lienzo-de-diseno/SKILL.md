@@ -45,9 +45,46 @@ Cómo se avanza:
   comentario o una pregunta no es aprobación: se responde, se corrige si hace
   falta, se vuelve a mostrar y se sigue en el mismo paso.
 - **Si lo desaprueba, se rehace el mismo paso** con lo que dijo. Si no queda
-  claro qué no le gusta, una pregunta concreta, no un cuestionario. Al segundo
-  rechazo, en vez de otra propuesta sola van dos o tres variantes realmente
-  distintas en una misma captura, para que elija viendo.
+  claro qué no le gusta, una pregunta concreta, no un cuestionario.
+- **Cada paso arranca con seis variantes, nunca con una sola.** Van realmente
+  distintas en una misma captura, para que elija viendo. Una vez que elige, se
+  itera sobre la elegida; un rechazo se corrige sobre esa, no vuelve a abrir
+  las seis salvo que lo pida.
+- **Las seis variantes.** Tres armadas con el método de la skill y tres más,
+  cada una con su rótulo en la hoja:
+  1. **Fuera de UIverse**: no usa ninguna pieza, color ni efecto de la
+     biblioteca local de UIverse. Sale de referencias reales externas.
+  2. **Otra disposición**: los mismos elementos, colores y tipografía que
+     las demás, repartidos en el espacio de otra manera: otra grilla, otro
+     orden de lectura, otro peso entre las zonas. No agrega ningún objeto
+     nuevo (una hoja de cuaderno, un dibujo temático) y se tiene que entender
+     sin explicación; si hay que contarla, no funciona (27/09/2026).
+  3. **Marketing**: pensada sólo para convertir. Una acción principal que se
+     ve primero, el beneficio antes que la descripción, jerarquía para leer en
+     dos segundos. Respeta los pisos de `piezas-para-el-publico`.
+
+  La regla de «los colores salen de las piezas de UIverse» no aplica a la 1.
+- **Si la casa tiene subskill, son tres opciones y no seis.** Imágenes,
+  folletos, afiches, placas y posteos de Teclab (`piezas_teclab`) o de Siglo 21
+  (`piezas_siglo21`) arrancan cada paso con tres opciones en la misma captura,
+  cada una con su rótulo:
+  1. **Lienzo de diseño**: sale del método de esta skill (UIverse, referencias
+     reales, piezas aprobadas), sin el sistema de la casa.
+  2. **Sistema de la casa**: sale de la subskill, copiando su paleta,
+     tipografía y composiciones.
+  3. **Otra disposición**: el sistema de la casa, con su paleta, tipografía y
+     recursos, pero repartido en el espacio de una manera que no sale de sus
+     composiciones. Sin elementos nuevos, legible sin explicación, y
+     respeta los datos, el logo original y los pisos de
+     `piezas-para-el-publico`.
+
+  Elegida una, se itera sobre ésa, igual que con las seis.
+- **Siglo 21 va siempre con su sistema, sin opciones.** En las piezas de
+  Siglo 21 no se muestran las tres opciones: cada paso sale directo de
+  `piezas_siglo21` (pedido del usuario, 26/09/2026: «vamos siempre con sistema
+  siglo 21, el resto no me gusta»). Las tres opciones siguen para Teclab.
+  Si en una pieza de Siglo 21 pide varias variantes, todas salen del sistema
+  y una de ellas es **otra disposición**, como la describe la opción 3.
 - **Lo aprobado queda congelado.** Si un paso posterior necesita tocar una capa
   ya aprobada —el texto no entra en la caja, la foto pide otro fondo—, se dice y
   se pregunta antes de cambiarla.
@@ -139,7 +176,13 @@ entra el ojo, cuánto aire queda.
     logo: la dirección y la web ya dicen de quién es». Así el usuario lo decide
     viéndolo, en vez de encontrárselo.
 - Márgenes, columnas y calles parejos, declarados como tokens. En papel, zona
-  segura adentro del corte y sangrado si el fondo llega al borde.
+  segura adentro del corte y sangrado si el fondo llega al borde. **Las medidas
+  no se suponen**: corte, sangrado, zona segura y píxeles de salida salen de
+  `node scripts/medidas-impresion.mjs --formato=A5 --orientacion=vertical`
+  (desde esta carpeta de skill), y la especificación geométrica completa está
+  en [references/precision-y-salida.md](references/precision-y-salida.md). Si es
+  un folleto plegado o de doble faz, los paneles se nombran y se ordenan acá,
+  con [references/paneles-y-control.md](references/paneles-y-control.md).
 - **Cada caja se marca como lo que es**: las que quedan como contenedor de
   verdad (una tarjeta, una banda de color) y las que son sólo guía, con la clase
   `.guia`, que se borra en el paso 5.
@@ -233,6 +276,17 @@ que se lea como una sola cosa y no como capas apiladas:
 - Con varios artboards, que se lean como un sistema y no como piezas sueltas:
   misma escala, mismo radio, misma familia, el logo en el mismo lugar.
 
+- **Grano y degradado tonal, siempre** (pedido del usuario, 26/09/2026: «usalo
+  siempre»). Un grano fino en overlay sobre toda la pieza
+  (`tarjetas-degradado-granulado-elevenlabs` de UIverse, alrededor del 32%) y
+  un degradado de cada bloque dentro de su propio color. **Todo degradado tiene
+  que tener un sentido, y se puede decir cuál en una línea**: despegar algo del
+  fondo (un foco detrás de una persona, de un objeto o de una cifra), llevar el
+  ojo hacia donde sigue la lectura, marcar de dónde viene la luz (siempre del
+  mismo lado en toda la pieza) o asentar un bloque (sombra al pie). Un
+  degradado que no hace ninguna de esas cosas es decoración y no va. Nunca se
+  degrada de un color de la paleta a otro.
+
 El mensaje dice qué se ajustó, en una lista corta.
 
 ## Paso 6: detalles finales y arreglos
@@ -249,6 +303,13 @@ entregar:
 - Ninguna nota de trabajo ni rótulo del paso 2 renderizado, y los datos de la
   sede contrastados con `cau_brand`.
 - Fuentes incrustadas (ver «La marca») y todo el texto editable.
+- **Si va a papel, el control de salida**: la lista de verificación de
+  [references/precision-y-salida.md](references/precision-y-salida.md) (medidas
+  reales del PNG con `--png=<archivo>`, tamaño del PDF, zona segura, resolución
+  efectiva de cada foto) y, si lleva QR, decodificarlo del archivo final
+  ([references/paneles-y-control.md](references/paneles-y-control.md)). Se dice
+  qué se verificó y qué queda pendiente: una prueba en pantalla no es una prueba
+  impresa.
 - **Entrega**: con `/design`, recién ahora se publica el lienzo; si no, el
   archivo y el PDF que haya pedido.
 - **Si el usuario la da por aprobada**, se pregunta si va a
@@ -288,9 +349,9 @@ sostiene esas vueltas:
 - **Mostrar el recorte de la zona, no la hoja entera.** Cada vuelta va con un
   recorte ampliado de lo que se tocó; la hoja completa se manda cuando el
   cambio afecta al conjunto. Un detalle de 40 px no se discute mirando un A5.
-- **Las variantes se inyectan, no se guardan.** Para comparar dos o tres
+- **Las variantes se inyectan, no se guardan.** Para comparar las seis
   caminos, un script aparte abre la pieza, le inyecta el CSS de cada variante,
-  recorta la misma zona y arma una hoja con las tres al lado. La pieza no se
+  recorta la misma zona y arma una hoja con las seis al lado. La pieza no se
   toca hasta que el usuario elige. Así no queda el archivo lleno de versiones
   muertas ni hay que deshacer.
 - **Los colores y los efectos salen de las piezas, no del ojo.** Si el usuario
