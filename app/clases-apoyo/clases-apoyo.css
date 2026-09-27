@@ -1031,6 +1031,17 @@ a.ca-materia:hover .ca-materia-ico,
   .ca-ficha .ca-wa-link { justify-self: stretch; }
 }
 
+/* "Volver" va pegado a lo que sigue: el hueco general de la página entre él
+   y el título dejaba un bloque vacío arriba. */
+.ca-materia-pagina > .ca-volver {
+  margin-bottom: calc(0.25rem - clamp(2rem, 5vw, 3.5rem));
+}
+
+/* ── Otras materias ──
+   Igual en todas las materias, sin el diseño propio de ninguna. Tarjetas con
+   la primera foto de cada materia, el nombre apoyado sobre un degradé y la
+   flecha en un círculo; el hover es el de las tarjetas de novedades (borde
+   que se enciende, sube 3px y la foto se acerca). */
 .ca-otras h2 {
   margin-bottom: 1rem;
   color: #fff;
@@ -1040,39 +1051,123 @@ a.ca-materia:hover .ca-materia-ico,
 
 .ca-otras ul {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
-  gap: 0.6rem;
+  /* 150px de mínimo: las seis "otras" entran en una fila en escritorio. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 0.9rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.ca-otras a {
+.ca-otra {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--ca-border-light);
+  border-radius: 12px;
+  background: var(--ca-bg-temas);
+  color: #fff;
+  text-decoration: none;
+  transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.ca-otra-foto {
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* El degradé de abajo es lo que deja leer el nombre sobre cualquier foto. */
+.ca-otra::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(4 18 17 / 0%) 35%, rgb(4 18 17 / 88%) 100%);
+  pointer-events: none;
+}
+
+/* Sin foto (las que están en construcción): la grilla sutil del sitio. */
+.ca-otra-sin-foto {
+  background:
+    linear-gradient(rgb(0 199 177 / 6%) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, rgb(0 199 177 / 6%) 1px, transparent 1px) 0 0 / 20px 20px,
+    var(--ca-bg-temas);
+}
+
+.ca-otra-pie {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  min-height: 48px;
-  padding: 0.7rem 1rem;
-  border: 1px solid var(--ca-border-light);
-  border-radius: 10px;
-  background: var(--ca-bg-temas);
-  color: var(--ca-text-main);
-  font-size: 0.9rem;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+}
+
+.ca-otra-nombre {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 45%);
+}
+
+.ca-otra-flecha {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ca-teal);
+  color: #042926;
+  transition: transform 0.35s ease;
+}
+
+/* Arriba a la izquierda: al lado del nombre no entraba en las tarjetas chicas. */
+.ca-otra-pronto {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  z-index: 1;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgb(230 155 5 / 45%);
+  border-radius: 9999px;
+  background: rgb(230 155 5 / 12%);
+  color: #f2b84b;
+  font-size: 0.62rem;
   font-weight: 700;
-  text-decoration: none;
-  transition: var(--ca-transition);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.ca-otras a svg { color: var(--ca-teal); flex-shrink: 0; }
-
-.ca-otras a:hover {
+.ca-otra:hover {
   border-color: var(--ca-border-visible);
-  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 35%);
 }
+
+.ca-otra:hover .ca-otra-foto { transform: scale(1.05); }
+.ca-otra:hover .ca-otra-flecha { transform: translateX(3px); }
 
 .ca-volver:focus-visible,
-.ca-otras a:focus-visible {
+.ca-otra:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;
+}
+
+@media (max-width: 420px) {
+  .ca-otras ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+  .ca-otra-nombre { font-size: 0.9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-otra,
+  .ca-otra-foto,
+  .ca-otra-flecha { transition: none; }
+  .ca-otra:hover,
+  .ca-otra:hover .ca-otra-foto,
+  .ca-otra:hover .ca-otra-flecha { transform: none; }
 }

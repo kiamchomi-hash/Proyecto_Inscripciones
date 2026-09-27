@@ -255,8 +255,7 @@
 
 /* ══ Herramientas: una ventana más, con escena e inventario ══
    Barra de ventana como las otras; adentro, la ficha de la herramienta
-   elegida sobre un piso de celdas (con Claude entra su mascota, Clawd, la del
-   dorso) y abajo la barra de inventario. Los movimientos usan steps() para
+   elegida (con Claude entra su mascota, Clawd, la del dorso) y abajo la barra de inventario. Los movimientos usan steps() para
    saltar de a celdas, como un sprite. */
 
 /* El margen deja lugar al borde y a la sombra de bloque de la ventana, como
@@ -299,17 +298,6 @@
 }
 
 @keyframes hr-respira { 50% { transform: translateY(-5px); } }
-
-/* El piso: una franja de celdas de punta a punta donde apoyan las mascotas. */
-.hr-piso {
-  position: absolute;
-  inset: auto 0 0;
-  height: 14px;
-  background:
-    linear-gradient(90deg, var(--cp-contorno) 50%, transparent 50%) 0 0 / 14px 7px repeat-x,
-    linear-gradient(90deg, transparent 50%, var(--cp-contorno) 50%) 0 7px / 14px 7px repeat-x,
-    var(--cp-barra);
-}
 
 /* ── Ficha de la herramienta ── */
 .hr-ficha {
@@ -408,8 +396,10 @@
 
 .hr-casilla-nombre {
   font-family: var(--cp-pixel-fuente);
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
+  font-size: 0.55rem;
+  letter-spacing: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 

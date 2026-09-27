@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import ReservaClase from '@/components/clases-apoyo/reserva/reserva-clase';
 import MateriaGenerica from '@/components/clases-apoyo/materia-generica';
 import ComputacionPixel, { ComputacionTexto } from '@/components/clases-apoyo/computacion/computacion-pixel';
-import { OtrasMaterias, VolverAClases } from '@/components/clases-apoyo/navegacion-materia';
-import type { MateriaDB, MateriaNav } from '@/components/clases-apoyo/tipos';
+import { OtrasMaterias, VolverAClases, type MateriaOtra } from '@/components/clases-apoyo/navegacion-materia';
+import type { MateriaDB } from '@/components/clases-apoyo/tipos';
 import TextoMateria from '@/components/clases-apoyo/texto-materia';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
@@ -16,7 +16,7 @@ import '../computacion.css';
 const BASE_URL = 'https://www.siglo21sur.com';
 
 // Sólo las columnas que la ficha activa realmente usa. La navegación pide
-// aparte id/slug/label de todas: ver el comentario de MateriaNav.
+// aparte, de todas, lo que usan las tarjetas de "Otras materias".
 const CAMPOS_FICHA =
   'id, slug, label, nombre_profesor, whatsapp, telefono_display, descripcion, imagenes, en_construccion, orden, modo_manana, dias_bloqueados, horarios_bloqueados, texto_seo';
 
@@ -77,10 +77,19 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
     getMateria(materia),
     supabase
       .from('materias')
-      .select('id, slug, label')
+      .select('id, slug, label, en_construccion, imagenes')
       .eq('activa', true)
       .order('orden', { ascending: true }),
   ]);
+
+  // A las tarjetas de "Otras materias" les alcanza con la primera foto.
+  const otras: MateriaOtra[] = (nav ?? []).map(m => ({
+    id: m.id,
+    slug: m.slug,
+    label: m.label,
+    en_construccion: m.en_construccion,
+    foto: Array.isArray(m.imagenes) && typeof m.imagenes[0] === 'string' ? m.imagenes[0] : null,
+  }));
 
   if (!ficha) notFound();
 
@@ -142,7 +151,7 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
             }}
           />
         )}
-        <OtrasMaterias materias={(nav ?? []) as MateriaNav[]} actual={ficha.slug} />
+        <OtrasMaterias materias={otras} actual={ficha.slug} />
       </div>
       {esComputacion
         ? <ComputacionTexto label={ficha.label} parrafos={ficha.texto_seo} />

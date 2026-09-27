@@ -56,7 +56,6 @@ export default function Herramientas() {
         {conMascota && (
           <Image src={`${DIR}/clawd.svg`} alt="" width={276} height={138} unoptimized className="hr-mascota hr-clawd" />
         )}
-        <span className="hr-piso" aria-hidden="true" />
       </div>
 
       <ul className="hr-inventario" aria-label="Herramientas">
