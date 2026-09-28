@@ -29,6 +29,24 @@ export function trackCtaInscripcion(destino: string) {
   track('cta-inscripcion', { destino });
 }
 
+/** Sólo cuenta enlaces internos a la oferta cuando el clic nace en el calendario. */
+export function destinoDesdeCalendario(
+  paginaActual: string,
+  href: string,
+  origen: string,
+): 'inicio' | 'carreras' | null {
+  if (paginaActual !== '/calendario-academico') return null;
+  const destino = new URL(href, origen);
+  if (destino.origin !== new URL(origen).origin) return null;
+  if (destino.pathname.startsWith('/carreras/')) return 'carreras';
+  if (destino.pathname !== '/') return null;
+  return destino.hash === '#filtros-categoria' ? 'carreras' : 'inicio';
+}
+
+export function trackSalidaCalendario(destino: 'inicio' | 'carreras') {
+  track('calendario-salida', { origen: 'calendario', destino });
+}
+
 export function trackIntentoFormulario(origen: OrigenConsulta, modo: string, resultado: string) {
   track('formulario-intento', { origen, modo, resultado });
   if (resultado !== 'valido') avisarTelegram('formulario-intento', { origen, modo, resultado });

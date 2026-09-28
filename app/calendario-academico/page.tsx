@@ -119,6 +119,15 @@ export default function CalendarioAcademicoPage() {
         </p>
       </section>
 
+      <div className="flex justify-center mb-8">
+        <Link
+          href="/#filtros-categoria"
+          className="ca-carreras inline-flex items-center justify-center min-h-11 px-6 py-3 rounded-full font-bold text-sm"
+        >
+          Explorá las carreras
+        </Link>
+      </div>
+
       <ProximoHito />
 
       {/* ─── LOS CUATRO TRAMOS ────────────────────────────── */}

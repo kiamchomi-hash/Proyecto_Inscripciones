@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { trackCtaInscripcion } from '@/lib/analytics';
+import { destinoDesdeCalendario, trackCtaInscripcion, trackSalidaCalendario } from '@/lib/analytics';
 
-/** Mide los CTA que llevan a cualquiera de los formularios públicos. */
+/** Mide los CTA de formularios y las salidas del calendario hacia la oferta. */
 export default function AnalyticsInteractions() {
   useEffect(() => {
     const alClickear = (evento: MouseEvent) => {
@@ -12,6 +12,8 @@ export default function AnalyticsInteractions() {
       const enlace = objetivo.closest<HTMLAnchorElement>('a[href]');
       if (!enlace) return;
       const url = new URL(enlace.href, window.location.href);
+      const salida = destinoDesdeCalendario(window.location.pathname, url.href, window.location.href);
+      if (salida) trackSalidaCalendario(salida);
       if (url.origin !== window.location.origin || !['#formulario', '#preinscripcion'].includes(url.hash)) return;
       trackCtaInscripcion(url.hash.slice(1));
     };
