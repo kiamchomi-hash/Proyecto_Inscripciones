@@ -90,11 +90,15 @@ Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se an
 
   Con una foto sacada de frente con cualquier celular actual se resuelve: hay que dejarla en `public/imagenes/imagenes_cau/` y volver a correr `node herramientas/generar-og.mjs` apuntando esa ruta en la entrada `#69` del script. La alternativa —usar el campus— se ve nítida pero no es la sede de Lugano, que es justo lo que el artículo explica.
 
-- [ ] **Al curso de IA de Teclab le faltan precio, fechas y fotos propias.** Del contenido, la landing oficial (`teclab.edu.ar/landing/curso-profesional-ia/`) publica los cuatro ejes, la duración, la modalidad y el certificado —todo eso ya está cargado, con el SQL del 01/08— pero **no publica ni el precio ni la fecha de inicio ni el detalle de los cuatro encuentros**. Hay que pedírselos al instituto: el bot no puede cotizarlo y el modal no puede mostrar un temario que no existe.
+- [ ] **Confirmar medios de pago del curso de IA de Teclab.** Las fechas, el PDF con módulos y un arancel individual fechado ya tienen evidencia; no corresponde volver a pedir un temario inexistente. [Revisión y fuentes del 30/09/2026](docs/curso-ia-teclab-2026-09-30.md).
 
-  Las dos fotos del modal (`public/imagenes/teclab/carreras/curso-ia.webp` y `-cierre.webp`) son copias de las de Inbound Marketing: la landing no tiene fotos usables (su hero es un recorte sobre fondo liso). Se reemplazan pisando esos dos archivos, sin tocar código.
+  Próxima edición: 13/10/2026, venta hasta 12/10. La duración anunciada es cuatro semanas; el calendario registra el período hasta 16/11 y no las fechas de cada encuentro. Si hace falta publicar horarios, confirmar ese cronograma aparte.
 
-  Si algún día llega el temario por encuentro, va en `plan_estudios` **con el formato de viñetas que usa hoy** ("Cómo se cursa"), no con el de "Primer Año | 1er cuatrimestre" de las tecnicaturas: el código parsea distinto cuando `nivel = 'Teclab - Curso'`.
+  El simulador registró el 30/09 a las 17:55 UTC un total individual de $55.000, matrícula de $220.000 con 75% de descuento, promoción válida hasta el 30/09 y beneficio sujeto a aprobación de Teclab. Ya está en la base comercial local y conserva esa fecha de vencimiento; no fijarlo como permanente ni extender la vigencia. La financiación específica sigue sin confirmación.
+
+  Las imágenes curso-ia.webp y curso-ia-cierre.webp fueron reemplazadas localmente el 30/09 con la ilustración generada que aportó el usuario. No son material oficial ni fotografías documentales de Teclab. Publicación autorizada el 30/09/2026; verificación del deploy por realizar; los medios de pago siguen pendientes.
+
+  El plan, si después se actualiza la ficha, conserva el formato de viñetas de Teclab - Curso; no usar el formato por cuatrimestres de las tecnicaturas. Esta revisión no actualizó la base ni el corpus.
 
 - [ ] **Cinco carreras sin página pública en 21.edu.ar.** `datos/enlaces-sitio-oficial.json` tiene 61 de 66, cada uno verificado con un pedido real. Faltan Administración Pública, Agroinformática, Responsabilidad y Gestión Social, Estadística Aplicada y Negocios Agroecológicos — tres de ellas ya documentadas más abajo como sin oferta oficial verificable. **Son las mismas que dejan huecos en el KB**: 3 fichas sin resolución y 2 sin perfil profesional, que no se pueden completar porque no hay fuente pública.
 

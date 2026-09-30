@@ -280,9 +280,9 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
     },
   },
   {
-    // Curso, no tecnicatura: su landing no publica fotos propias -el hero es un
-    // recorte sobre fondo liso-, asi que usa dos del mismo banco de imagenes que
-    // el resto. Con nombre propio, para poder cambiarlas sin tocar el codigo.
+    // Curso, no tecnicatura: ilustración generada y aportada por el usuario.
+    // No representa estudiantes ni instalaciones reales de Teclab.
+    // Conserva rutas propias para sustituir los assets sin cambiar la ficha.
     match: 'inteligencia artificial',
     ficha: {
       url: 'https://teclab.edu.ar/landing/curso-profesional-ia/',
