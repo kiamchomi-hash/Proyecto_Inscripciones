@@ -207,11 +207,6 @@ const nextConfig: NextConfig = {
         destination: '/',
         statusCode: 301,
       },
-      {
-        source: '/carreras/tecnicatura-en-responsabilidad-y-gestion-social',
-        destination: '/',
-        statusCode: 301,
-      },
       // Teclab dejo de ofrecer Venta Directa (07/08/2026), asi que el CAU no la
       // puede vender: `activa = false` en Supabase. La ficha ya estaba indexada
       // (31/07), asi que la URL va a la home como las demas bajas — quien buscó
