@@ -231,7 +231,8 @@
   line-height: .92;
   text-wrap: balance;
   text-shadow: 0 2px 28px rgba(0, 0, 0, .24);
-  animation: career-copy-in .75s .2s ease-out both;
+  /* El título es el LCP: debe verse desde el primer render. */
+  animation: none;
 }
 
 .career-hero-intro {
