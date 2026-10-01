@@ -98,10 +98,18 @@ function Folletos({ video }: { video: VideoInstitucional }) {
         </span>
       </a>
       {carrusel && <div className="vi-carrusel-controles">
-        <button type="button" aria-label="Folleto anterior" onClick={() => enviar({ tipo: 'seleccionar', indice: estado.indice - 1 })}>‹</button>
-        <span aria-live={estado.detenido ? 'polite' : 'off'} aria-atomic="true">{estado.indice + 1} / {video.folletos.length}</span>
-        <button type="button" aria-label="Pausar carrusel" disabled={estado.detenido} onClick={detener}>Pausar</button>
-        <button type="button" aria-label="Folleto siguiente" onClick={() => enviar({ tipo: 'seleccionar', indice: estado.indice + 1 })}>›</button>
+        <button type="button" aria-label="Folleto anterior" onClick={() => enviar({ tipo: 'seleccionar', indice: estado.indice - 1 })}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
+          <span>Anterior</span>
+        </button>
+        <button className="vi-carrusel-estado" type="button" aria-label={estado.detenido ? 'Carrusel en pausa' : 'Pausar carrusel'} aria-disabled={estado.detenido} onClick={detener}>
+          <span className="vi-carrusel-contador" aria-live={estado.detenido ? 'polite' : 'off'} aria-atomic="true">{estado.indice + 1}<span> / {video.folletos.length}</span></span>
+          <span className="vi-carrusel-pausa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" /></svg>{estado.detenido ? 'En pausa' : 'Pausar'}</span>
+        </button>
+        <button type="button" aria-label="Folleto siguiente" onClick={() => enviar({ tipo: 'seleccionar', indice: estado.indice + 1 })}>
+          <span>Siguiente</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6" /></svg>
+        </button>
       </div>}
     </div>
   );

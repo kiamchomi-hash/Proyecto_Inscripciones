@@ -32,3 +32,11 @@ test('el espacio sobrante queda debajo del folleto, antes del enlace de destino'
   assert.doesNotMatch(css.match(/\.vi-caption\s*\{([^}]+)\}/)[1], /flex:\s*1\s*;/);
   assert.match(css, /\.vi-folletos\s*\{[^}]*flex:\s*1\s*;/);
 });
+
+test('los tres controles distribuyen el ancho y conservan contador y pausa', () => {
+ const componente = readFileSync(new URL('../components/videos-institucionales.tsx', import.meta.url), 'utf8');
+ assert.match(componente, /vi-carrusel-estado/);
+ assert.match(componente, /En pausa/);
+ const css = readFileSync(new URL('../app/sobre-nosotros/sobre-nosotros.css', import.meta.url), 'utf8');
+ assert.ok(css.includes('grid-template-columns: repeat(3, minmax(0, 1fr))'));
+});
