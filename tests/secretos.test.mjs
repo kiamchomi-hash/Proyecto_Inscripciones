@@ -6,7 +6,7 @@ test('rutas comerciales y credenciales se bloquean sin bloquear código público
   for (const p of ['app/carreras/page.tsx', 'components/carreras/ficha.tsx', '.env.example', 'docs/variables-de-entorno.md']) assert.equal(esRutaPrivada(p), false, p);
 });
 
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
@@ -106,4 +106,11 @@ test('service_role borrada no se confunde con anon en el mismo renglón', t => {
   writeFileSync(join(cwd, 'publico.txt'), `key=${jwt('service_role')}\n`); git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: alta');
   writeFileSync(join(cwd, 'publico.txt'), `key=${jwt('anon')}\n`); git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: reemplazo');
   assert.throws(() => revisarSecretos({ cwd }), /jwt/);
+});
+
+test('Vercel prepara el scanner antes de verificar y construir', () => {
+  const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+  assert.deepEqual(config.buildCommand.split('&&').map(command => command.trim()), [
+    'node herramientas/secretos.mjs instalar', 'npm run check', 'npm run build',
+  ]);
 });
