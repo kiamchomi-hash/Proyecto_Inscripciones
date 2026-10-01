@@ -125,7 +125,7 @@ vez de presentar un dibujo propio como si lo fuera.
 
 ## Implementaciones que ya funcionan
 
-En `contenidos/cau/aprobados/2026-09-22-folleto-computacion-pixel/` del proyecto del CAU:
+En `contenidos/cau/aprobados/generales/impresion/2026-09-22-folleto-computacion-pixel/` del proyecto del CAU:
 
 - `icono-trazado.mjs` — pixela cualquier trazo SVG en una grilla.
 - `clawd-pixel.mjs` — `cuadroASvg()`: copia un cuadro de un GIF píxel por píxel,

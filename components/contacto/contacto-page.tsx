@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
-import { trackConsulta, trackInicioFormulario } from '@/lib/analytics';
+import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackConsulta, trackInicioFormulario } from '@/lib/analytics';
 import './contacto.css';
 
 /* ── Publicaciones ────────────────────────────────────── *
@@ -82,6 +82,7 @@ function ContactForm() {
     setSubmitting(true);
     setError('');
 
+    let estadoRespuesta: number | null = null;
     try {
       const response = await fetch('/api/formularios', {
         method: 'POST',
@@ -106,11 +107,14 @@ function ContactForm() {
           },
         }),
       });
+      estadoRespuesta = response.status;
       if (!response.ok) {
         const detalle = await response.json().catch(() => null) as { error?: string } | null;
         throw new Error(detalle?.error || 'submit_failed');
       }
     } catch (err) {
+      const tipoFallo = tipoFalloTecnicoFormulario(estadoRespuesta);
+      if (tipoFallo) avisarFalloFormularioContacto('contacto', tipoFallo);
       const motivo = err instanceof Error ? err.message : '';
       setError(motivo === 'Demasiadas solicitudes'
         ? 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'

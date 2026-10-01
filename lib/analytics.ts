@@ -91,6 +91,23 @@ function avisarTelegram(evento: string, datos: Record<string, string | number>) 
 }
 
 /**
+ * Client Hints es la señal principal porque la entrega el navegador como un
+ * booleano. Safari y Firefox no la exponen; ahí usamos capacidad táctil más
+ * ancho de pantalla. Al servidor llega sólo el resultado, nunca el user agent,
+ * la resolución ni otra huella del dispositivo.
+ */
+function esDispositivoMovil() {
+  if (typeof window === 'undefined') return false;
+  const navegador = window.navigator as Navigator & {
+    userAgentData?: { mobile?: boolean };
+  };
+  if (typeof navegador.userAgentData?.mobile === 'boolean') {
+    return navegador.userAgentData.mobile;
+  }
+  return window.matchMedia('(pointer: coarse) and (max-width: 900px)').matches;
+}
+
+/**
  * La carrera va como propiedad y no como evento aparte para poder agrupar por
  * ella en el panel. El de /contacto no pregunta carrera, de ahi el 'sin
  * especificar' en vez de omitir la propiedad: si falta, la fila no aparece al
@@ -131,6 +148,21 @@ export function trackHorarioClase(materia: string, horario: string) {
 
 export function trackWhatsappClase(materia: string) {
   track('clase-whatsapp', { materia });
+  avisarTelegram('clase-whatsapp', { materia });
+}
+
+/** Avisa sólo fallos de infraestructura; validaciones, captcha y cuota no llaman a esta función. */
+export function avisarFalloFormularioContacto(
+  origen: OrigenConsulta,
+  motivo: 'red' | 'servidor',
+) {
+  avisarTelegram('formulario-fallo', { origen, motivo });
+}
+
+/** Clasifica sólo fallos técnicos; 4xx esperables no generan avisos. */
+export function tipoFalloTecnicoFormulario(estadoRespuesta: number | null): 'red' | 'servidor' | null {
+  if (estadoRespuesta === null) return 'red';
+  return estadoRespuesta >= 500 ? 'servidor' : null;
 }
 
 /**
@@ -151,4 +183,5 @@ export function trackWhatsappClase(materia: string) {
  */
 export function trackWhatsapp(origen: string) {
   track('whatsapp', { origen });
+  if (esDispositivoMovil()) avisarTelegram('whatsapp', { origen });
 }

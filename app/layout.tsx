@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_AR',
     url: 'https://www.siglo21sur.com',
-    siteName: 'Universidad Siglo 21 | CAU Online',
+    siteName: 'Universidad Siglo 21',
     title: 'Universidad Siglo 21 | CAU Online',
     description: 'Carreras universitarias online con acompañamiento para estudiantes de CABA y GBA. ¡Inscribite hoy!',
     // Miniatura por defecto de todo el sitio: sin esto, home y fichas de carrera se
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
       { url: '/icon.png', sizes: '48x48', type: 'image/png' },
     ],
     shortcut: '/favicon.ico',
-    apple: '/imagenes/imagenes_cau/logo_cau.png',
+    apple: { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
   },
 };
 
@@ -62,7 +62,8 @@ const jsonLd = jsonLdScript([
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Universidad Siglo 21 | CAU Online",
+    "name": "Universidad Siglo 21",
+    "alternateName": "Siglo 21",
     "url": "https://www.siglo21sur.com/"
   },
   {

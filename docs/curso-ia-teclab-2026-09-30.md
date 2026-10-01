@@ -1,6 +1,6 @@
 # Curso de IA de Teclab: revisión del 30/09/2026
 
-**El arancel individual ya está actualizado en la base comercial local: $55.000, con promoción válida hasta el 30/09/2026 y beneficio sujeto a aprobación de Teclab.** Las fechas y el PDF con módulos también están publicados. Queda confirmar los medios de pago. Las imágenes fueron reemplazadas localmente con una ilustración aportada por el usuario, pendiente de deploy. Esta revisión sólo actualizó documentación: no modificó el bot, los precios ni la base de datos.
+**El arancel individual ya está actualizado en la base comercial local: $55.000, con promoción válida hasta el 30/09/2026 y beneficio sujeto a aprobación de Teclab.** Las fechas y el PDF con módulos también están publicados. Queda confirmar los medios de pago. Las imágenes fueron publicadas el 30/09 con una ilustración aportada por el usuario. Esta revisión sólo actualizó documentación: no modificó el bot, los precios ni la base de datos.
 
 ## Verificación
 
@@ -13,7 +13,7 @@
 | Temario | La landing enlaza un PDF de seis páginas. La página 5 enumera cuatro módulos con contenidos, ejercicios y actividad final: IA laboral y perfil profesional; productividad y organización; decisiones y análisis; ética, seguridad y responsabilidad. No establece un cronograma fechado por encuentro. |
 | Precio individual | Extracción del simulador del 30/09/2026 a las 17:55:23 UTC: matrícula de $220.000 menos 75% ($165.000), total $55.000. Promoción hasta el 30/09/2026, beneficio sujeto a aprobación de Teclab. El bimestre en $0 no significa curso gratuito: se cobra la matrícula. No usar este precio después de su vencimiento ni como arancel permanente. |
 | Medios de pago | La extracción del curso no informa financiación ni CFT/TEA. Confirmar las condiciones específicas antes de ofrecer cuotas; no deducirlas del precio ni de la bonificación con una tecnicatura. |
-| Fotos | Se sustituyeron localmente curso-ia.webp y curso-ia-cierre.webp por una ilustración generada y aportada por el usuario el 30/09. Original conservado en contenidos/siglo21/imagenes_personas/Imagen de ChatGPT 30 sept 2026, 18_44_48.png. No representa personas o instalaciones reales ni es material oficial de Teclab. WebP optimizado, sin cambiar referencias ni datos de Supabase; falta deploy. |
+| Fotos | Se sustituyeron localmente curso-ia.webp y curso-ia-cierre.webp por una ilustración generada y aportada por el usuario el 30/09. Original conservado en contenidos/siglo21/imagenes_personas/Imagen de ChatGPT 30 sept 2026, 18_44_48.png. No representa personas o instalaciones reales ni es material oficial de Teclab. WebP optimizado, sin cambiar referencias ni datos de Supabase; publicado y verificado el 30/09/2026. |
 
 ## Fuentes y límites
 
@@ -28,4 +28,4 @@
 
 Confirmación de los medios de pago del curso individual. Si se necesita publicar fechas/horarios de cada clase, confirmar el cronograma detallado. El pedido preparado está en herramientas/pedidos-a-enviar.md; no fue enviado y debe ajustarse antes de enviarlo, porque ya existen arancel fechado, calendario de ediciones y plan oficial.
 
-La ilustración aportada por el usuario ya reemplaza ambos assets en local. Se conserva el original sin modificaciones. Las rutas actuales también actualizan su aparición en la landing /teclab después del deploy.
+La ilustración aportada por el usuario ya reemplaza ambos assets en local. Se conserva el original sin modificaciones. Las rutas actuales también actualizan su aparición en la landing /teclab con el deploy verificado del 30/09/2026.

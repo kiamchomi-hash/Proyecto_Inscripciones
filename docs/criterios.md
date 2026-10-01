@@ -5,7 +5,7 @@ descubrir. Vivía en la memoria de Claude Code, que es por herramienta y por
 máquina: no la ve Codex y no cruza a Linux. Acá lo ven los dos y viaja por git.
 
 `CLAUDE.md` y [`AGENTS.md`](../AGENTS.md) explican **cómo funciona el proyecto**;
-esto es **cómo se trabaja en él**. `PENDIENTES.md` es otra cosa: el backlog vivo.
+esto es **cómo se trabaja en él**. [`PENDIENTES.md`](../PENDIENTES.md) es la lista breve de tareas abiertas; enlaza rutinas, detalles, historial y procedimientos por separado.
 
 ## Cómo escribir
 
@@ -38,6 +38,14 @@ roto al destinatario.
 
 Las tildes y la `ñ` sí van. Y esto **no** aplica a los archivos del repo, donde el
 guión largo es el estilo de la casa.
+
+### Los mensajes se presentan por la institución
+
+En saludos, presentaciones y respuestas comerciales generales se nombra a
+Universidad Siglo 21, Teclab o Academia Identidad Argentina, según corresponda.
+No se agrega "CAU Villa Lugano" como firma o coletilla rutinaria. El CAU se
+menciona sólo cuando hace falta ubicar la sede o explicar una atención, gestión
+o examen presencial concreto.
 
 ### Las notas de trabajo no van en la pieza
 
@@ -201,7 +209,7 @@ rebota, y agregar `include:_spf.google.com` al SPF no arregla nada — el SPF se
 evalúa sobre el dominio del sobre, no sobre el del `From:`. La alineación la da el
 return-path de SMTP2GO. Los tres CNAME en Cloudflare **van con la nube gris**:
 proxeados, el return-path devuelve IPs de Cloudflare y el DMARC deja de alinear.
-El detalle completo está en `PENDIENTES.md`. Ningún código del sitio manda mails.
+El detalle completo está en [las notas operativas](notas-operativas.md). Ningún código del sitio manda mails.
 
 ### Abrir una URL en Windows va por `explorer`
 

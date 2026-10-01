@@ -10,7 +10,7 @@ import Herramientas from './herramientas';
 
 /* Computación: fotos, reserva y WhatsApp de la fila de `materias`, vestidos con
    el lenguaje del folleto pixel aprobado
-   (contenidos/cau/aprobados/2026-09-22-folleto-computacion-pixel/): ventanas
+   (contenidos/cau/aprobados/generales/impresion/2026-09-22-folleto-computacion-pixel/): ventanas
    de sistema con barra y botones, bordes de píxel con las esquinas vacías,
    sombras de bloque y la paleta del folleto. La reserva es la misma de todas
    las materias; acá se arma con la foto y el calendario arriba y los horarios

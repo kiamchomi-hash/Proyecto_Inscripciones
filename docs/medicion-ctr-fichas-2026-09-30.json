@@ -1,0 +1,388 @@
+{
+  "fecha": "2026-09-30",
+  "sitio": "sc-domain:siglo21sur.com",
+  "dataState": "final",
+  "tipo": "web",
+  "carreras": [
+    {
+      "id": 86,
+      "nombre": "Martillero, Corredor Público y Corredor Inmobiliario",
+      "prefix": "Pregrado",
+      "nivel": "Pregrado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario"
+    },
+    {
+      "id": 21,
+      "nombre": "Higiene, Seguridad y Medio ambiente del Trabajo",
+      "prefix": "Grado / Licenciatura en",
+      "nivel": "Grado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo"
+    },
+    {
+      "id": 6,
+      "nombre": "Finanzas",
+      "prefix": "Grado / Licenciatura en",
+      "nivel": "Grado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/licenciatura-en-finanzas"
+    },
+    {
+      "id": 76,
+      "nombre": "Terapia Ocupacional y Desarrollo Humano",
+      "prefix": "Grado / Licenciatura en ",
+      "nivel": "Grado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano"
+    },
+    {
+      "id": 87,
+      "nombre": "Procurador",
+      "prefix": "Pregrado",
+      "nivel": "Pregrado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/procurador"
+    },
+    {
+      "id": 8,
+      "nombre": "Comercio Internacional",
+      "prefix": "Grado / Licenciatura en",
+      "nivel": "Grado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional"
+    },
+    {
+      "id": 19,
+      "nombre": "Logística Global",
+      "prefix": "Grado / Licenciatura en",
+      "nivel": "Grado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global"
+    },
+    {
+      "id": 65,
+      "nombre": "Gestión Deportiva",
+      "prefix": "Grado / Licenciatura en",
+      "nivel": "Grado",
+      "activa": true,
+      "visible": true,
+      "url": "https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva"
+    }
+  ],
+  "ventanas": [
+    {
+      "nombre": "base",
+      "startDate": "2026-07-11",
+      "endDate": "2026-08-07",
+      "filas_recibidas": 123,
+      "medidas": [
+        {
+          "id": 86,
+          "url": "https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario"
+          ],
+          "clicks": 6,
+          "impressions": 879,
+          "ctr": 0.006825938566552901,
+          "position": 7.29806598407281
+        },
+        {
+          "id": 21,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo"
+          ],
+          "clicks": 0,
+          "impressions": 279,
+          "ctr": 0,
+          "position": 8.017921146953405
+        },
+        {
+          "id": 6,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-finanzas",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-finanzas"
+          ],
+          "clicks": 3,
+          "impressions": 343,
+          "ctr": 0.008746355685131196,
+          "position": 7.600583090379009
+        },
+        {
+          "id": 76,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano"
+          ],
+          "clicks": 3,
+          "impressions": 228,
+          "ctr": 0.013157894736842105,
+          "position": 6.166666666666667
+        },
+        {
+          "id": 87,
+          "url": "https://www.siglo21sur.com/carreras/procurador",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/procurador"
+          ],
+          "clicks": 1,
+          "impressions": 213,
+          "ctr": 0.004694835680751174,
+          "position": 8.71830985915493
+        },
+        {
+          "id": 8,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional"
+          ],
+          "clicks": 1,
+          "impressions": 201,
+          "ctr": 0.004975124378109453,
+          "position": 8.452736318407961
+        },
+        {
+          "id": 19,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global"
+          ],
+          "clicks": 2,
+          "impressions": 177,
+          "ctr": 0.011299435028248588,
+          "position": 7.011299435028248
+        },
+        {
+          "id": 65,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva"
+          ],
+          "clicks": 1,
+          "impressions": 123,
+          "ctr": 0.008130081300813009,
+          "position": 8.398373983739837
+        }
+      ],
+      "total": {
+        "clicks": 17,
+        "impressions": 2443,
+        "ctr": 0.006958657388456815,
+        "position": 7.570609905853459
+      }
+    },
+    {
+      "nombre": "post_inicial",
+      "startDate": "2026-08-24",
+      "endDate": "2026-09-20",
+      "filas_recibidas": 128,
+      "medidas": [
+        {
+          "id": 86,
+          "url": "https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario"
+          ],
+          "clicks": 12,
+          "impressions": 2481,
+          "ctr": 0.0048367593712212815,
+          "position": 7.178153970173317
+        },
+        {
+          "id": 21,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo"
+          ],
+          "clicks": 2,
+          "impressions": 339,
+          "ctr": 0.0058997050147492625,
+          "position": 7.353982300884955
+        },
+        {
+          "id": 6,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-finanzas",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-finanzas"
+          ],
+          "clicks": 1,
+          "impressions": 926,
+          "ctr": 0.0010799136069114472,
+          "position": 7.654427645788337
+        },
+        {
+          "id": 76,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano"
+          ],
+          "clicks": 17,
+          "impressions": 672,
+          "ctr": 0.025297619047619048,
+          "position": 5.325892857142857
+        },
+        {
+          "id": 87,
+          "url": "https://www.siglo21sur.com/carreras/procurador",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/procurador"
+          ],
+          "clicks": 11,
+          "impressions": 994,
+          "ctr": 0.011066398390342052,
+          "position": 7.6720321931589535
+        },
+        {
+          "id": 8,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional"
+          ],
+          "clicks": 8,
+          "impressions": 1117,
+          "ctr": 0.007162041181736795,
+          "position": 5.567591763652641
+        },
+        {
+          "id": 19,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global"
+          ],
+          "clicks": 5,
+          "impressions": 516,
+          "ctr": 0.009689922480620155,
+          "position": 6.912790697674419
+        },
+        {
+          "id": 65,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva"
+          ],
+          "clicks": 4,
+          "impressions": 228,
+          "ctr": 0.017543859649122806,
+          "position": 6.692982456140351
+        }
+      ],
+      "total": {
+        "clicks": 60,
+        "impressions": 7273,
+        "ctr": 0.008249690636601128,
+        "position": 6.861955176680874
+      }
+    },
+    {
+      "nombre": "actual",
+      "startDate": "2026-08-31",
+      "endDate": "2026-09-27",
+      "filas_recibidas": 127,
+      "medidas": [
+        {
+          "id": 86,
+          "url": "https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario"
+          ],
+          "clicks": 14,
+          "impressions": 2440,
+          "ctr": 0.005737704918032787,
+          "position": 6.976639344262295
+        },
+        {
+          "id": 21,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-higiene-seguridad-y-medio-ambiente-del-trabajo"
+          ],
+          "clicks": 0,
+          "impressions": 363,
+          "ctr": 0,
+          "position": 7.112947658402204
+        },
+        {
+          "id": 6,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-finanzas",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-finanzas"
+          ],
+          "clicks": 2,
+          "impressions": 885,
+          "ctr": 0.0022598870056497176,
+          "position": 7.663276836158192
+        },
+        {
+          "id": 76,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-terapia-ocupacional-y-desarrollo-humano"
+          ],
+          "clicks": 16,
+          "impressions": 655,
+          "ctr": 0.024427480916030534,
+          "position": 5.061068702290076
+        },
+        {
+          "id": 87,
+          "url": "https://www.siglo21sur.com/carreras/procurador",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/procurador"
+          ],
+          "clicks": 14,
+          "impressions": 1089,
+          "ctr": 0.012855831037649219,
+          "position": 7.330578512396694
+        },
+        {
+          "id": 8,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-comercio-internacional"
+          ],
+          "clicks": 10,
+          "impressions": 1059,
+          "ctr": 0.009442870632672332,
+          "position": 5.746931067044382
+        },
+        {
+          "id": 19,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-logistica-global"
+          ],
+          "clicks": 4,
+          "impressions": 513,
+          "ctr": 0.007797270955165692,
+          "position": 6.807017543859649
+        },
+        {
+          "id": 65,
+          "url": "https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva",
+          "keys": [
+            "https://www.siglo21sur.com/carreras/licenciatura-en-gestion-deportiva"
+          ],
+          "clicks": 4,
+          "impressions": 229,
+          "ctr": 0.017467248908296942,
+          "position": 7.065502183406114
+        }
+      ],
+      "total": {
+        "clicks": 64,
+        "impressions": 7233,
+        "ctr": 0.008848334024609428,
+        "position": 6.758053366514586
+      }
+    }
+  ]
+}

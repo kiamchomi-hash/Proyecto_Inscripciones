@@ -106,28 +106,51 @@ el de la Edge Function.
 
 ### 5 — Subir cambios
 
-Commit y push a `main`. **Push a main = deploy**, así que este botón publica el
-sitio. Por eso no es un clic solo: pide confirmación y frena si algo no cierra.
+Commit y push a `main`. **Push a main = deploy**. Ambos envoltorios llaman a
+`deploy.mjs`: selecciona archivos propios, no agrega todo el working tree.
 
-El orden:
+1. Exige `main` y la referencia local `origin/main`. Si falta, ejecutar
+   `git fetch origin` antes de reintentar; no supone cero commits pendientes.
+2. Si hay staged previo, frena **sin modificarlo**. Revisarlo con
+   `git diff --cached` y resolverlo por separado, o retirarlo con
+   `git restore --staged -- "ruta"` (no borra el cambio del archivo).
+3. Numera los archivos modificados, nuevos y borrados. Se escriben únicamente
+   los números propios separados por espacios, por ejemplo `2 5`. Vacío cancela;
+   no admite seleccionar todo con un comodín. Un renombre se presenta como baja
+   y alta: seleccionar ambas. Se seleccionan archivos completos, no fragmentos.
+4. Pide un mensaje convencional de una línea, por ejemplo
+   `fix: corregir formulario`. Admite tildes, comillas y metacaracteres sin
+   interpretarlos como comandos.
+5. Prepara **sólo esa selección**, muestra el resumen y el diff staged completos,
+   y pide confirmar con `S`. También lista los commits locales anteriores que el
+   push publicaría; revisarlos antes de confirmar.
+6. Materializa los bytes del árbol staged en una carpeta temporal, instala las
+   dependencias de su propio lock con `npm ci --ignore-scripts --no-audit --no-fund
+   --include=dev` y corre allí `npm run check --ignore-scripts`. No usa los cambios
+   excluidos ni el `node_modules` local. Si falla, **no commitea ni sube**. Comprueba que rama,
+   HEAD e index sigan siendo los revisados antes del commit. Si un hook altera
+   el árbol del commit, lo deja local y no hace push.
+7. Commit y `git push origin main:main`; recuerda correr el smoke cuando Vercel
+   termine. Vacía los tokens heredados `GH_TOKEN` y `GITHUB_TOKEN` sólo en los
+   procesos hijos para usar las credenciales guardadas.
 
-1. Corta si no estás en `main`, o si no hay nada para subir.
-2. Muestra la lista completa de lo que se va a subir. **Mirarla.** Sube todo lo
-   que esté modificado o sin trackear, no sólo lo último que tocaste.
-3. Pide una descripción del cambio. Sin descripción no sube nada.
-4. Pide confirmar con `S`.
-5. Corre `npm run check` (lint + tipos + tests). **Si falla, no commitea ni
-   sube**: es lo que evita publicar el sitio roto.
-6. Commit, push, y te recuerda correr el 2 cuando Vercel termine.
+Si se cancela o falla el check después de preparar la selección, queda staged
+para inspección: el publicador no hace resets ni borra archivos. Revisar
+`git diff --cached` y retirar cada ruta con `git restore --staged -- "ruta"`
+antes de reintentar. Si falla el push, el commit queda local.
 
-Si el push falla, el commit ya quedó guardado en local: no se pierde nada, se
-resuelve después.
-
-Vacía `GH_TOKEN` y `GITHUB_TOKEN` antes de empujar. Si quedaron seteados en el
-entorno con valores viejos, el push falla con un error que no explica nada.
-
-En Windows, en el mensaje no usar comillas dobles: cmd las come. Acentos, `%` y
-`&` van bien. El `.sh` de Linux no tiene esa limitación.
+`check` examina exactamente el árbol seleccionado, incluidos los archivos sin
+cambios de HEAD. La instalación aislada puede tardar varios minutos y requiere
+conexión a npm; si los tests de secretos están presentes, prepara también su
+Gitleaks fijado. No hereda `.env.local`, credenciales, hooks ni configuración
+privada de Git/npm. Los hooks npm de instalación y pre/postcheck están desactivados.
+Sólo permite caches de `node_modules`, `.next` y `tsconfig.tsbuildinfo`; si check
+cambia, agrega o borra código versionable, cancela. El temporal se elimina tanto
+al pasar como al fallar. Enlaces, submódulos y dependencias locales del lock no
+están soportados: fallan cerrado, sin publicar. No editar ni preparar archivos en
+paralelo durante la publicación: la comprobación detecta cambios entre etapas,
+pero no es un bloqueo global para otros procesos Git. `origin/main` refleja el
+último fetch, y un remoto adelantado puede rechazar el push sin perder el commit.
 
 ### 6 — Informe SEO
 
@@ -355,3 +378,8 @@ comercial: `carreras/`, `ventas/` y `herramientas/ventas/`. Están gitignoradas
 ya no son un repo aparte que se clone. Son ~600 MB (los videos de Teclab pesan
 casi todo), así que hay que copiarlas a mano entre máquinas. La historia vieja
 quedó archivada en `~/Desktop/historico-repo-ventas.git`.
+
+Para prevenir la publicación de datos privados, antes de usar el publicador por
+primera vez ejecutar `npm run secretos:instalar`. El control se realiza antes
+del diff y también incluye commits pendientes. Ver
+[publicación sin secretos](../docs/publicacion-sin-secretos.md).

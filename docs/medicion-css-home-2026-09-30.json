@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-30",
+  "status": 200,
+  "headers": {
+    "encoding": "identity",
+    "cache": "HIT",
+    "age": "3061"
+  },
+  "bytes": 634975,
+  "gzipLevel9": 105964,
+  "brotliQuality11": 43749,
+  "markers": {
+    ":root{--cau-brand-teal": {
+      "html": 3,
+      "styles": 1,
+      "rscDecoded": 2
+    },
+    "@layer base": {
+      "html": 3,
+      "styles": 1,
+      "rscDecoded": 2
+    },
+    "@layer theme": {
+      "html": 3,
+      "styles": 1,
+      "rscDecoded": 2
+    },
+    "@layer utilities": {
+      "html": 3,
+      "styles": 1,
+      "rscDecoded": 2
+    }
+  },
+  "styles": [
+    {
+      "bytes": 148532,
+      "root": 1,
+      "base": 1
+    }
+  ],
+  "rscCss": [
+    {
+      "decodedBytes": 113007,
+      "serializedBytes": 116078,
+      "root": 0,
+      "base": 1
+    },
+    {
+      "decodedBytes": 153567,
+      "serializedBytes": 157091,
+      "root": 1,
+      "base": 1
+    }
+  ],
+  "rscDecodedBytes": 343883,
+  "parseErrors": []
+}

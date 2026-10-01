@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit --pretty false",
     "test": "node --test tests/*.test.mjs",
     "check": "npm run lint && npm run typecheck && npm test",
+    "secretos:instalar": "node herramientas/secretos.mjs instalar",
+    "secretos": "node herramientas/secretos.mjs",
     "calidad:web": "node herramientas/calidad-web.mjs",
     "calidad:seo": "node herramientas/seo-paginas.mjs",
     "calidad:integraciones": "node --env-file-if-exists=.env.local herramientas/integraciones.mjs",
@@ -19,7 +21,11 @@
     "capturas": "node herramientas/capturas.mjs",
     "seo": "node --env-file-if-exists=.env.local herramientas/seo-semanal.mjs",
     "leads": "node --env-file-if-exists=.env.local herramientas/leads.mjs",
-    "db": "node --env-file-if-exists=.env.local herramientas/db.mjs"
+    "db": "node --env-file-if-exists=.env.local herramientas/db.mjs",
+    "db:local:iniciar": "node herramientas/supabase-local.mjs iniciar",
+    "db:local:detener": "node herramientas/supabase-local.mjs detener",
+    "db:local:estado": "node herramientas/supabase-local.mjs estado",
+    "test:integracion": "node --test --test-concurrency=1 tests/integracion/*.test.mjs"
   },
   "repository": {
     "type": "git",
@@ -34,7 +40,7 @@
   },
   "homepage": "https://github.com/kiamchomi-hash/Proyecto_Inscripciones#readme",
   "dependencies": {
-    "@next/third-parties": "^16.3.3",
+    "@next/third-parties": "^16.3.8",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.110.7",
     "@tailwindcss/postcss": "^4.3.3",
@@ -43,7 +49,7 @@
     "@vercel/speed-insights": "^1.3.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
-    "next": "^16.3.3",
+    "next": "^16.3.8",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "sanitize-html": "^2.17.6"
@@ -61,11 +67,12 @@
     "@types/react-dom": "^19.2.3",
     "axe-core": "^4.13.0",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^16.3.3",
+    "eslint-config-next": "^16.3.8",
     "pg": "^8.23.0",
     "pixelmatch": "^7.2.0",
     "playwright": "^1.61.1",
     "sharp": "^0.35.3",
+    "supabase": "2.118.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   },

@@ -1,0 +1,4 @@
+# Reglas oficiales completas. Las excepciones deben ser valores públicos exactos,
+# nunca carpetas enteras, baselines ni comentarios gitleaks:allow.
+[extend]
+useDefault = true

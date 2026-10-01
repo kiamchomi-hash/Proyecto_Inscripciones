@@ -2,11 +2,91 @@ import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
 
-const EVENTOS = new Set(['formulario-intento', 'formulario-abandonado']);
 const TIMEOUT_MS = 8000;
+const ORIGENES_FORMULARIO = new Set(['home', 'teclab', 'contacto']);
+const MODOS_FORMULARIO = new Set(['contacto', 'preinscripcion']);
+
+const esRegistro = (valor: unknown): valor is Record<string, unknown> =>
+  valor !== null && typeof valor === 'object' && !Array.isArray(valor);
 
 function textoSeguro(valor: unknown, max = 80): string {
-  return typeof valor === 'string' ? valor.replace(/[\r\n]/g, ' ').slice(0, max) : '';
+  return typeof valor === 'string'
+    ? valor.replace(/[\u0000-\u001f\u007f]+/g, ' ').trim().slice(0, max)
+    : '';
+}
+
+function enteroSeguro(valor: unknown, max = 99): number | null {
+  return typeof valor === 'number' && Number.isInteger(valor) && valor >= 0
+    ? Math.min(valor, max)
+    : null;
+}
+
+type AlertaPreparada = { texto: string; maximo: number };
+
+/**
+ * La allowlist es por evento y por campo: cualquier dato extra se descarta y
+ * nunca llega a Telegram. Los valores cerrados también se validan para que el
+ * endpoint no pueda usarse como relay de texto arbitrario.
+ */
+function prepararAlerta(evento: string, datos: Record<string, unknown>): AlertaPreparada | null {
+  const origen = textoSeguro(datos.origen);
+  const modo = textoSeguro(datos.modo);
+
+  if (evento === 'whatsapp') {
+    if (!origen.startsWith('/')) return null;
+    return { texto: ['Clic móvil a WhatsApp', `Página: ${origen}`].join('\n'), maximo: 5 };
+  }
+  if (evento === 'clase-whatsapp') {
+    const materia = textoSeguro(datos.materia);
+    if (!materia) return null;
+    return { texto: ['Clic a WhatsApp de clases', `Materia: ${materia}`].join('\n'), maximo: 5 };
+  }
+  if (evento === 'formulario-fallo') {
+    const motivo = textoSeguro(datos.motivo);
+    if (!ORIGENES_FORMULARIO.has(origen) || !['red', 'servidor'].includes(motivo)) return null;
+    return {
+      texto: [
+        'Fallo técnico del formulario de contacto',
+        `Origen: ${origen}`,
+        `Tipo: ${motivo}`,
+      ].join('\n'),
+      maximo: 5,
+    };
+  }
+  if (evento === 'formulario-intento') {
+    const resultado = textoSeguro(datos.resultado);
+    if (!ORIGENES_FORMULARIO.has(origen) || !MODOS_FORMULARIO.has(modo)
+      || !['captcha', 'validacion'].includes(resultado)) return null;
+    return {
+      texto: [
+        'Intento de envío de formulario',
+        `Origen: ${origen}`,
+        `Modo: ${modo}`,
+        `Resultado: ${resultado}`,
+      ].join('\n'),
+      maximo: 12,
+    };
+  }
+  if (evento === 'formulario-abandonado') {
+    const ultimoCampo = textoSeguro(datos.ultimo_campo);
+    const motivo = textoSeguro(datos.motivo);
+    const completados = enteroSeguro(datos.campos_completados);
+    if (!ORIGENES_FORMULARIO.has(origen) || !MODOS_FORMULARIO.has(modo)
+      || !ultimoCampo || !['envio-en-curso', 'error-envio', 'captcha', 'validacion', 'abandono'].includes(motivo)
+      || completados === null) return null;
+    return {
+      texto: [
+        'Abandono de formulario',
+        `Origen: ${origen}`,
+        `Modo: ${modo}`,
+        `Último campo: ${ultimoCampo}`,
+        `Motivo: ${motivo}`,
+        `Campos completados: ${completados}`,
+      ].join('\n'),
+      maximo: 12,
+    };
+  }
+  return null;
 }
 
 async function avisar(texto: string) {
@@ -24,11 +104,20 @@ async function avisar(texto: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    const cuerpo = await request.json() as { evento?: unknown; datos?: Record<string, unknown> };
-    const evento = textoSeguro(cuerpo.evento, 40);
-    if (!EVENTOS.has(evento) || !cuerpo.datos || typeof cuerpo.datos !== 'object') {
+    let cuerpo: unknown;
+    try {
+      cuerpo = await request.json();
+    } catch (error) {
+      if (!(error instanceof SyntaxError)) throw error;
       return NextResponse.json({ ok: false }, { status: 400 });
     }
+    if (!esRegistro(cuerpo)) return NextResponse.json({ ok: false }, { status: 400 });
+    const evento = textoSeguro(cuerpo.evento, 40);
+    if (!esRegistro(cuerpo.datos)) {
+      return NextResponse.json({ ok: false }, { status: 400 });
+    }
+    const alerta = prepararAlerta(evento, cuerpo.datos);
+    if (!alerta) return NextResponse.json({ ok: false }, { status: 400 });
 
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip') || 'unknown';
@@ -36,29 +125,13 @@ export async function POST(request: NextRequest) {
     const supabase = createSupabaseAdmin();
     const { data: permitido, error } = await supabase.rpc('check_form_rate_limit', {
       p_key: `analytics-alert:${evento}:${digest}`,
-      p_max_requests: 12,
+      p_max_requests: alerta.maximo,
       p_window_seconds: 600,
     });
     if (error) throw error;
     if (!permitido) return NextResponse.json({ ok: true, skipped: true });
 
-    const datos = cuerpo.datos;
-    const lineas = evento === 'formulario-abandonado'
-      ? [
-        'Abandono de formulario',
-        `Origen: ${textoSeguro(datos.origen)}`,
-        `Modo: ${textoSeguro(datos.modo)}`,
-        `Último campo: ${textoSeguro(datos.ultimo_campo)}`,
-        `Motivo: ${textoSeguro(datos.motivo)}`,
-        `Campos completados: ${textoSeguro(datos.campos_completados, 10)}`,
-      ]
-      : [
-        'Intento de envío de formulario',
-        `Origen: ${textoSeguro(datos.origen)}`,
-        `Modo: ${textoSeguro(datos.modo)}`,
-        `Resultado: ${textoSeguro(datos.resultado)}`,
-      ];
-    const enviado = await avisar(lineas.join('\n'));
+    const enviado = await avisar(alerta.texto);
     return NextResponse.json({ ok: enviado }, { status: enviado ? 200 : 502 });
   } catch (error) {
     console.error('[alertas-analytics]', error);

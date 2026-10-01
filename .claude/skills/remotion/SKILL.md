@@ -56,9 +56,24 @@ Cómo se avanza:
   comentario o una pregunta no es aprobación: se responde, se corrige si hace
   falta, se vuelve a mostrar y se sigue en el mismo paso.
 - **Si lo desaprueba, se rehace el mismo paso** con lo que dijo. Si no queda
-  claro qué no le gusta, una pregunta concreta, no un cuestionario. Al segundo
-  rechazo, en vez de otra propuesta sola van dos o tres variantes realmente
-  distintas en una misma hoja, para que elija viendo.
+  claro qué no le gusta, una pregunta concreta, no un cuestionario.
+- **Cada paso arranca con seis variantes, nunca con una sola.** Van realmente
+  distintas en una misma hoja, para que elija viendo. Una vez que elige, se
+  itera sobre la elegida; un rechazo se corrige sobre esa, no vuelve a abrir
+  las seis salvo que lo pida.
+- **Las seis variantes.** Tres armadas con el método de la skill y tres más,
+  cada una con su rótulo en la hoja:
+  1. **Fuera de UIverse**: no usa ninguna pieza, color ni efecto de la
+     biblioteca local de UIverse. Sale de referencias reales externas.
+  2. **Creativa**: un camino propio, sin partir de referencias ni de UIverse;
+     lo que Claude haría si la decisión fuera suya.
+  3. **Marketing**: pensada sólo para convertir. El mensaje y la acción
+     principal llegan en los primeros segundos, el beneficio antes que la
+     descripción, y se entiende sin sonido. Respeta los pisos de
+     `piezas-para-el-publico`.
+
+  La regla de «los colores salen de las piezas de UIverse» no aplica a la 1 ni
+  a la 2.
 - **Todo lo rechazado va al `HISTORIAL-DESCARTES.md` del proyecto** en el
   momento (ver «Lo descartado no se vuelve a proponer»).
 - **Lo aprobado queda congelado.** Si un paso posterior necesita tocar una capa
@@ -93,8 +108,9 @@ que es el único momento en que se pregunta antes de mostrar:
   se pregunta.
 - **Si hay locución, el archivo existe antes del paso 1**: la duración la manda
   el audio, y se mide antes de escribir los bloques.
-- **Videos anteriores, sólo los aprobados**, y **el `HISTORIAL-DESCARTES.md`**
-  del proyecto si lo hay (ver «Piezas anteriores»).
+- **Piezas anteriores, ninguna salvo que el usuario lo pida** (ni las
+  aprobadas); sí **el `HISTORIAL-DESCARTES.md`** del proyecto si lo hay (ver
+  «Piezas anteriores»).
 - Si es del CAU, leer `cau_brand`, `cau_design_patterns` y
   `piezas-para-el-publico`.
 - **Sacar la lista de UIverse una sola vez** (ver «De dónde sale cada
@@ -279,6 +295,15 @@ hecho: el Studio y el render no siempre coinciden.
 --crf=30 --image-format=jpeg --jpeg-quality=72`), incluido el del paso 7. La
 calidad completa se renderiza **sólo si el usuario la pide** explícitamente.
 
+**Las variantes de movimiento se muestran en video, una por archivo y con la
+pieza completa.** El movimiento no se juzga en una hoja de cuadros, y seis
+variantes pegadas en un solo mp4 tampoco se pueden comparar: el 26/09/2026 el
+usuario lo dijo con todas las letras («si no me mostrás todas las versiones en
+video no voy a poder evaluarlo»). Van seis mp4 de ojeada, cada uno con la parte
+entera y no sólo el tramo del principio. Se renderizan en segundo plano, en un
+solo lazo, y **antes de mandar cada uno se revisa también su final**: los
+bloques del cierre son los que nadie miró mientras se armaba la variante.
+
 **Antes de un render, la hoja.** Ningún mp4 que se entrega se renderiza sin
 haberle mandado antes al usuario la hoja de lo que va a salir (los cuadros de
 póster, o la hoja de contactos si hay movimiento) y tener su sí. Vale también
@@ -289,7 +314,7 @@ la hoja de contactos no necesita permiso: es parte de mostrar el paso.
 | Paso | Qué miro yo | Qué se le manda |
 |---|---|---|
 | 1 a 4 | una hoja con el cuadro de póster de cada bloque (`renderStill` por bloque, o una composición de hoja con `<Freeze>`), abierta con Read | esa hoja, con `SendUserFile` (`display: "render"`) |
-| 5 | la hoja de contactos de cada escena tocada, y una hoja del corte por cada transición o transformación | las hojas y el mp4 de ojeada |
+| 5 | la hoja de contactos de cada escena tocada, y una hoja del corte por cada transición o transformación | las hojas y un mp4 de ojeada por variante, con la pieza completa |
 | 6 | la duración del audio contra la composición | el mp4 de ojeada con sonido |
 | 7 | un still por bloque contra lo aprobado | el mp4 final |
 
@@ -306,7 +331,7 @@ Un paso no es una entrega: son varias vueltas cortas con el usuario.
 - **Mostrar el recorte de lo que se tocó**, no el cuadro entero, cuando el
   cambio es un detalle.
 - **Las variantes se registran como composiciones aparte**, con otras props, y
-  se comparan en una hoja con las dos o tres al lado. La escena no se toca hasta
+  se comparan en una hoja con las seis al lado. La escena no se toca hasta
   que el usuario elige, y la variante que pierde se borra en el momento.
 - **Los colores y los efectos salen de las piezas, no del ojo.** Si el usuario
   rechaza dos elegidos a criterio propio, el tercero se busca en sus piezas de
@@ -375,14 +400,22 @@ rebote» es una elección; «una transición dinámica» es una corazonada.
 
 ### Piezas anteriores
 
-**Los únicos videos anteriores que se miran están en
-`contenidos/<casa>/aprobados/`**: los de su casa si es de una sola, los de las
-cuatro (`cau`, `siglo21`, `teclab`, `identidad`) si es general o del CAU como
-sede. Un video general es del CAU y se guarda en `cau/`. Las composiciones que
-hay en un proyecto y nadie aprobó —los shorts sueltos, las variantes, lo de
-`out/`— son borradores y no se toman como referencia de nada.
+**Ninguna pieza anterior se toma como referencia hasta que el usuario lo
+pida**, ni siquiera las aprobadas: ni videos ni folletos. Una pieza nueva no
+tiene que parecerse a la anterior por ser de la misma casa o del mismo tema.
+El 25/09/2026 el fondo del video de clases de apoyo salió calcado del folleto
+aprobado de Computación y el usuario lo rechazó: no lo había pedido. Del
+proyecto sólo se lee el `HISTORIAL-DESCARTES.md`, que dice qué no volver a
+proponer. **La regla es para piezas ya hechas, no para el UIverse local**, que
+sigue siendo la primera fuente de cada paso (ver «De dónde sale cada decisión»).
 
-De un video aprobado se toma el mecanismo, no la forma.
+Cuando el usuario sí pide mirar piezas anteriores, **las únicas que se miran
+están en `contenidos/<casa>/aprobados/`**: los de su casa si es de una sola,
+los de las cuatro (`cau`, `siglo21`, `teclab`, `identidad`) si es general o del
+CAU como sede. Un video general es del CAU y se guarda en `cau/`. Las
+composiciones que hay en un proyecto y nadie aprobó —los shorts sueltos, las
+variantes, lo de `out/`— son borradores y no se toman como referencia de nada.
+De una pieza aprobada se toma el mecanismo, no la forma.
 
 ### La marca
 

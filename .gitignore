@@ -69,3 +69,5 @@ cap.png
 .playwright-mcp/
 herramientas/_crop-tmp.mjs
 __pycache__/
+# Local Pi runtime state
+.atl/

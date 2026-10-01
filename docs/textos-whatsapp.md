@@ -4,6 +4,10 @@ Respuestas listas para copiar y pegar cuando se atiende a un lead. Son el texto
 institucional del CAU, sin precios ni fechas: los importes cambian por
 cuatrimestre y salen del KB comercial (`ventas/`), no de acá.
 
+En los mensajes generales nos presentamos por la institución. El nombre del CAU
+se menciona sólo cuando hace falta ubicar la sede o explicar una atención,
+gestión o examen presencial concreto.
+
 No las usa el bot. El bot contesta desde su propio corpus (`ventas/corpus/`), que
 está por institución y se edita con el procedimiento de la skill
 `bot_respuestas`. Estos textos son para responder a mano.
@@ -14,7 +18,7 @@ Venían de `migracion_pendiente/pendientes-admin.md`, que se disolvió el
 ## Bienvenida a un nuevo inscripto
 
 ```
-¡Hola! Bienvenido/a a CAU Villa Lugano - Universidad Siglo 21. Ya recibimos tu consulta de inscripción. En breve nos comunicamos para darte toda la información. ¡Gracias por elegirnos!
+¡Hola! Bienvenido/a a Universidad Siglo 21. Ya recibimos tu consulta de inscripción. En breve nos comunicamos para darte toda la información. ¡Gracias por elegirnos!
 ```
 
 ## Consulta de precios

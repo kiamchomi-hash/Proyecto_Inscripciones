@@ -6,6 +6,8 @@ Sitio de **Universidad Siglo 21 — CAU Villa Lugano**. Next.js 16 (App Router) 
 
 Todo el texto de interfaz, los comentarios y la documentación van en **español (es-AR)**.
 
+En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede dar la impresión de que queremos quedarnos con la plata del lead. Para aranceles usar un encabezado neutro, por ejemplo `Arancel vigente:`.
+
 [`docs/criterios.md`](docs/criterios.md) es el otro que hay que leer: las decisiones ya tomadas que no hay que volver a proponer y cómo espera el usuario que se trabaje.
 
 ## Antes de commitear
@@ -70,7 +72,7 @@ Como `net.http_post` encola sin bloquear, **el `INSERT` responde 201 aunque la n
 - **`experimental.inlineCss: true` está activo a propósito.** Ya se midió A/B: apagarlo da peor resultado aunque el HTML pese menos.
 - **`carreras/`, `ventas/` y `herramientas/ventas/` están gitignoradas** (ancladas con `/`, si no se comerían `app/carreras/` y `components/carreras/`). Son la base de conocimiento comercial: **el repo es público y ahí hay precios, no commitearlas**. Grep no las ve — buscar ahí con Bash. El mapa de rutas está en `herramientas/ventas/rutas.mjs` y ningún script arma rutas a mano.
 - **`herramientas/` no entra al bundle.** Cada verificación es un `.mjs` con un `.bat` y un `.sh` al lado; la lógica se toca en el `.mjs`, los envoltorios no tienen lógica propia. `npm run auditar | smoke | capturas | seo` son las verificaciones que `check` no cubre.
-- **`PENDIENTES.md` es el backlog vivo**, con las verificaciones manuales que no se pueden automatizar. `docs/plans/` son planes históricos, no estado actual.
+- **[`PENDIENTES.md`](PENDIENTES.md) es la lista breve de tareas abiertas**; enlaza sus rutinas, detalles, historial y procedimientos en `docs/`. `docs/plans/` son planes históricos, no estado actual.
 
 ## Windows y Linux
 

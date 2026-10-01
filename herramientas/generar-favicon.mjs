@@ -13,7 +13,7 @@
  *
  *   node herramientas/generar-favicon.mjs
  *
- * Escribe `public/favicon.ico` (16/32/48) y `public/icon.png` (48).
+ * Escribe `public/favicon.ico` (16/32/48), `public/icon.png` (48), los PNG de instalación (192/512) y Apple (180).
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -102,3 +102,14 @@ writeFileSync(path.join(raiz, 'public/icon.png'), pngs.at(-1).buffer);
 
 console.log(`favicon.ico  ${MEDIDAS.join('/')}`);
 console.log(`icon.png     ${MEDIDAS.at(-1)}×${MEDIDAS.at(-1)}`);
+
+// Salen del mismo vector, no de agrandar el favicon de 48 px.
+// No se declaran maskable: el isologo ocupa el cuadrado completo.
+for (const [archivo, medida] of [['icon-192.png', 192], ['icon-512.png', 512], ['apple-touch-icon.png', 180]]) {
+  await sharp(Buffer.from(svg), { density: 1200 })
+    .resize({ width: medida, height: medida })
+    .flatten({ background: VERDE })
+    .png()
+    .toFile(path.join(raiz, 'public', archivo));
+  console.log(`${archivo} ${medida}×${medida}`);
+}

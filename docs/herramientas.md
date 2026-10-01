@@ -35,6 +35,16 @@ Dos cosas más que hace solo. **Avisa que los clics se miden desde el 17/08/2026
 
 Las tres fuentes usan credenciales que ya están en la máquina —el token de la CLI de Vercel (`~/.local/share/com.vercel.cli/auth.json` en Linux, `%APPDATA%\com.vercel.cli\Datauth.json` en Windows, o `VERCEL_TOKEN`), `EDITOR_DATABASE_URL` y la service account de Search Console—. **Si falta una, esa sección sale como no disponible y el resto se muestra igual**; sólo sale con código 1 si no se pudo leer ninguna. El acceso a Search Console vive en `herramientas/gsc.mjs`, compartido con `seo-semanal.mjs`: es una sola implementación del JWT.
 
+## Publicar sólo archivos revisados
+
+El botón `5 - Subir cambios (deploy)` usa `herramientas/deploy.mjs`, compartido
+por Windows y Linux. Selecciona archivos propios por número, muestra su diff
+staged, pide confirmación y corre `npm run check` sobre una copia temporal exacta
+del árbol Git, con dependencias instaladas desde su lock, antes del commit y push a
+`main`. No incluye staged anterior: si lo encuentra, frena sin modificarlo.
+El procedimiento y las salidas ante cancelación, fallos y commits pendientes
+están en [Herramientas, sección 5](../herramientas/LEER.md#5--subir-cambios).
+
 ## Vigilancia de producción: ya existe, son dos y no se duplican
 
 **Antes de proponer cualquier monitoreo, alerta o "que avise si el sitio se cae", leer esto: está hecho.** Hay dos vigilantes, a propósito, y ninguno reemplaza al otro:
@@ -60,4 +70,12 @@ También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada n
 
 `generar-secretos.mjs`, sin script npm, genera los valores nuevos para rotar `REVALIDATE_SECRET` y `WEBHOOK_SECRET` y deja el SQL de `sql/2026-08-28_rotar_secretos.sql` en el portapapeles con los valores ya puestos. No los escribe en ningún archivo: el repo es público. **El orden de aplicación está en ese SQL y no es simétrico** — Vercel primero, porque un cambio de env var necesita redeploy, y el `UPDATE` del Vault inmediatamente después; al revés, o con `WEBHOOK_SECRET` fuera de orden, quedan formularios guardándose sin aviso de Telegram.
 
-`generar-favicon.mjs`, también sin script npm, rehace `public/favicon.ico` (16/32/48) y `public/icon.png` recortando el isologo del vector `public/imagenes/imagenes_cau/siglo21-marca.svg` — el panel del "21" es un cuadrado exacto de 268 unidades ahí adentro, y el favicon es ese cuadrado con los colores invertidos. **No copiar a mano el favicon de 21.edu.ar**: el que publican es un JPEG de 48×48 con el "1" cortado y no hay versión más grande (`?width=` de HubSpot no agranda, y no tienen `apple-touch-icon` ni manifest).
+`generar-favicon.mjs`, también sin script npm, rehace `public/favicon.ico` (16/32/48), `public/icon.png` (48), `public/icon-192.png`, `public/icon-512.png` y `public/apple-touch-icon.png` (180) recortando el isologo del vector `public/imagenes/imagenes_cau/siglo21-marca.svg` — el panel del "21" es un cuadrado exacto de 268 unidades ahí adentro, y el favicon es ese cuadrado con los colores invertidos. **No copiar a mano el favicon de 21.edu.ar**: el que publican es un JPEG de 48×48 con el "1" cortado y no hay versión más grande (`?width=` de HubSpot no agranda, y no tienen `apple-touch-icon` ni manifest).
+
+## Control preventivo de secretos y archivos privados
+
+Antes del diff, commit y push, el publicador revisa la selección Git y los
+commits pendientes con Gitleaks fijado y verificado. Preparar una vez con
+`npm run secretos:instalar`; revisión manual: `npm run secretos`. GitHub Actions
+usa el mismo control. Alcance, bloqueos, excepciones y límites en
+[Publicar sin secretos](publicacion-sin-secretos.md).

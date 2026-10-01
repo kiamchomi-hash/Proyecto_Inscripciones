@@ -119,3 +119,15 @@ Actualizados sanitize-html a 2.17.7, fflate a 0.8.3 y Browserslist a 4.28.9: aud
 `npm audit` sin vulnerabilidades, `npm run check` aprobado (72 tests), build y GitHub Actions aprobados. El smoke verificó cabeceras, rutas, redirects y las 111 URLs del sitemap. El barrido SEO detectó y permitió corregir un artículo que había quedado cacheado con título de error y sin canónica: metadata y página ahora comparten una lectura con reintentos. Axe detectó botones vacíos en el calendario de clases; los espacios del mes dejaron de ser controles interactivos. Chromium, Firefox y WebKit aprobaron los recorridos posteriores.
 
 El digest diario registró un timeout de pg_net a los 5 s. El job existente se reprogramó, sin duplicarlo, con 15 s y quedó activo en el mismo horario. No se disparó un digest de prueba para evitar un aviso real; la siguiente ejecución diaria es la comprobación de punta a punta.
+
+### 30/09/2026, prevención antes de publicar
+
+El publicador guiado bloquea archivos privados y patrones de credenciales
+antes de mostrar el diff, commitear o pushear. Gitleaks 8.30.1, instalado desde
+la release oficial con SHA256 fijo, inspecciona el árbol del index y los commits
+pendientes, incluidos secretos agregados y borrados entre commits. Los informes
+se redactan y eliminan; sólo se muestran ruta, línea y regla. CI usa el mismo
+scanner y política. La clave pública anon de Supabase tiene una excepción
+semántica acotada; service_role y sesiones siguen bloqueadas. No se instalaron
+hooks, no se cambiaron permisos remotos ni se auditó toda la historia publicada.
+[Procedimiento y límites](publicacion-sin-secretos.md).

@@ -99,7 +99,7 @@ Hay **tres** triggers de Postgres, uno por tabla de formulario, y todos llaman a
 
 Como `net.http_post` encola sin bloquear, **el `INSERT` responde 201 aunque la notificación se caiga**. Pasó del 20 al 27/07/2026: se le agregó validación de secreto a la función y el trigger nunca se actualizó.
 
-Cada vez que se toque `WEBHOOK_SECRET`, la función `notificar` o el trigger, hay que verificar a mano — el procedimiento SQL está en `PENDIENTES.md` y en `sql/2026-08-28_rotar_secretos.sql`. Un `401` en `net._http_response` significa que los secretos no coinciden. **Verificar ahí y no por lo que responde el formulario**, que da 201 igual.
+Cada vez que se toque `WEBHOOK_SECRET`, la función `notificar` o el trigger, hay que verificar a mano — el procedimiento SQL está en [las notas operativas](docs/notas-operativas.md) y en `sql/2026-08-28_rotar_secretos.sql`. Un `401` en `net._http_response` significa que los secretos no coinciden. **Verificar ahí y no por lo que responde el formulario**, que da 201 igual.
 
 **El secreto ya no vive en el cuerpo del trigger sino en el Vault** (`sql/2026-08-28_secretos_al_vault.sql`, 28/08/2026): las dos funciones lo leen de `vault.decrypted_secrets` y por eso las dos son `SECURITY DEFINER`. `WEBHOOK_SECRET` lo validan **dos** Edge Functions, `notificar` y `digest-clicks`; rotarlo obliga a probar las dos. `alerta-firewall` no entra: usa `VERCEL_WEBHOOK_SECRET`, que es otro secreto.
 
@@ -197,7 +197,7 @@ Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano 
 - El contenido HTML que viene de la base (novedades) pasa siempre por `lib/sanitize-content.ts` antes de renderizarse.
 - Colores en `app/globals.css` `:root` — fondo `--color-deep-dark-bg: #013729`, acento `--color-highlight: #00c7b1`, tarjetas `--color-card-bg: #1c2f31`, dorado `--color-gold: #e69b05`, marca `--cau-brand-blue: #005587` / `--cau-brand-green: #058c70`.
 - `docs/textos-whatsapp.md` son las respuestas institucionales para copiar y pegar al atender un lead a mano. **No las usa el bot**, que contesta desde `ventas/corpus/`. No llevan precios ni fechas a propósito.
-- `PENDIENTES.md` es el backlog vivo, con las verificaciones manuales que no se pueden automatizar.
+- [`PENDIENTES.md`](PENDIENTES.md) es la lista breve de tareas abiertas. Sus rutinas, detalles, historial y procedimientos están enlazados desde ahí; no mezclar esos registros con la lista rápida.
 - `docs/seguridad.md` es el historial de seguridad: qué se endureció y cuándo, el mapa de qué defiende cada pieza, los cinco pasos de una revisión y la bitácora de las que se hicieron. Antes de proponer un endurecimiento, mirar ahí si ya está hecho; después de revisar, anotar el resultado.
 - `docs/criterios.md` son las decisiones ya tomadas (no volver a proponerlas) y las preferencias de trabajo del usuario. Lo leen Claude Code y Codex por igual: lo que está ahí no va en la memoria de ninguno de los dos, porque la memoria no cruza de herramienta ni de máquina.
 - `contenidos/` es el material gráfico y de video por casa (`cau/`, `siglo21/`, `teclab/`, `identidad/`; lo general y lo de la sede es del CAU; cada una con `oficial/`, `en-curso/`, `aprobados/` y `remotion/`, donde viven sus proyectos de video). Pesa más de 11 GB y está fuera de git, de TypeScript y de ESLint. **No se explora, no se lista ni se busca adentro salvo que el usuario lo pida** o que el trabajo sea una pieza gráfica o un video (ahí mandan las skills `lienzo-de-diseno`, `piezas_teclab` y `remotion`). Cómo se usa: `contenidos/LEER.md`.

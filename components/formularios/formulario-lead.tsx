@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { WhatsAppIcon } from '@/components/icons';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
-import { trackAbandonoFormulario, trackConsulta, trackFormularioVisto, trackInicioFormulario, trackIntentoFormulario, type OrigenConsulta } from '@/lib/analytics';
+import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackAbandonoFormulario, trackConsulta, trackFormularioVisto, trackInicioFormulario, trackIntentoFormulario, type OrigenConsulta } from '@/lib/analytics';
 import {
   CAMPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
@@ -622,8 +622,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const esPreinscripcion = modo === 'preinscripcion';
   const prefijo = modo;
   const idDestino = esPreinscripcion ? 'preinscripcion' : 'formulario';
+  const nombreCarreraWhatsApp = carreraElegida === 'Tecnicatura Superior en Experiencia del Cliente'
+    ? 'Tecnicatura Superior en Customer Experience'
+    : carreraElegida;
   const mensajeWhatsAppFormulario = esPreinscripcion && carreraElegida
-    ? `Hola, me gustaría conocer más información sobre la carrera ${carreraElegida.toUpperCase()}`
+    ? `Hola, me gustaría conocer más información sobre la carrera ${nombreCarreraWhatsApp.toUpperCase()}`
     : 'Hola, me gustaría realizar una consulta';
 
   const carrera = useMemo(
@@ -979,6 +982,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       ? armarPayload(casaActiva, modo, valores)
       : { ...valores };
 
+    let estadoRespuesta: number | null = null;
     try {
       const respuesta = await fetch('/api/formularios', {
         method: 'POST',
@@ -989,11 +993,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
           payload: { ...base, carrera: carreraElegida || null, tipo: etiquetaTipo },
         }),
       });
+      estadoRespuesta = respuesta.status;
       if (!respuesta.ok) {
         const detalle = await respuesta.json().catch(() => null) as { error?: string } | null;
         throw new Error(detalle?.error || 'submit_failed');
       }
     } catch (fallo) {
+      const tipoFallo = tipoFalloTecnicoFormulario(estadoRespuesta);
+      if (modo === 'contacto' && tipoFallo) avisarFalloFormularioContacto(origen, tipoFallo);
       const motivo = fallo instanceof Error ? fallo.message : '';
       setError(motivo === 'Demasiadas solicitudes'
         ? 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'
