@@ -55,6 +55,11 @@ Las páginas son Server Components que leen de Supabase en el render. La home us
 
 ### Los cuatro clientes de Supabase
 
+Los cuatro clientes y el del proxy usan `Database`, generado del esquema remoto
+en `lib/database.types.ts`. Regenerar con `npm run db:tipos` tras cambios de
+esquema, revisar el diff y correr `check`. Los tipos no validan JSON ni sustituyen
+RLS. [Procedimiento y alcance](docs/tipos-supabase.md).
+
 Elegir mal el cliente es el error más fácil de cometer:
 
 | Módulo | Credencial | Para qué |

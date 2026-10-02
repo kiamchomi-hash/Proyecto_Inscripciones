@@ -1,3 +1,5 @@
+import type { TablesInsert } from '@/lib/database.types';
+
 // Qué pide cada casa en cada formulario, y dónde se guarda cada dato.
 //
 // Este archivo es la fuente de verdad de los formularios: lo leen el componente
@@ -33,7 +35,7 @@ export type CampoId =
 
 export interface Campo {
   /** Columna de `consultas` donde se guarda. */
-  columna: string;
+  columna: keyof TablesInsert<'consultas'>;
   /** Bloque del formulario donde se pinta. Ordena la pantalla sola. */
   grupo: Grupo;
   /**
@@ -120,7 +122,7 @@ export const CAMPOS: Record<CampoId, Campo> = {
   telefono:      { columna: 'telefono', grupo: 'contacto',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30 },
 };
 
-export const columnaDe = (id: CampoId): string => CAMPOS[id].columna;
+export const columnaDe = (id: CampoId): keyof TablesInsert<'consultas'> => CAMPOS[id].columna;
 
 // ── Las casas ──
 

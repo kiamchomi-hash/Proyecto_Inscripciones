@@ -42,7 +42,7 @@ export default async function FaqPage() {
     .limit(5)
     .throwOnError();
 
-  const faqs = (data ?? []) as FaqPregunta[];
+  const faqs: FaqPregunta[] = data ?? [];
 
   const faqSchema = {
     "@context": "https://schema.org",

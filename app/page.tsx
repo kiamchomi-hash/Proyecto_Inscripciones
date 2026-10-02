@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
 import {
-  type Carrera, type CarreraCatalogo, COLUMNAS_CATALOGO, esCarreraVisible,
+  type CarreraCatalogo, COLUMNAS_CATALOGO, esCarreraVisible,
 } from '@/components/index/types';
+import { carreraACatalogo } from '@/lib/datos/carrera-catalogo';
 import Hero from '@/components/index/hero';
 import StatsCounter from '@/components/index/stats-counter';
 import CareersCatalog from '@/components/index/careers-catalog';
@@ -29,16 +30,16 @@ export default async function HomePage() {
   // igual, pero para saber si hay y no para mandarla — ver COLUMNAS_DETALLE.
   const { data: carreras } = await supabase
     .from('carreras')
-    .select(`${COLUMNAS_CATALOGO.join(', ')}, slides`)
+    .select(`${COLUMNAS_CATALOGO}, slides`)
     .eq('activa', true)
     // Se ocultan sólo en la home; sus fichas y enlaces siguen publicados.
     .neq('nivel', 'Identidad Argentina')
     .order('orden', { ascending: true })
     .throwOnError();
 
-  const carrerasData: CarreraCatalogo[] = ((carreras || []) as unknown as Carrera[])
+  const carrerasData: CarreraCatalogo[] = (carreras ?? [])
     .filter(esCarreraVisible)
-    .map(({ slides, ...resto }) => ({ ...resto, tieneSlides: (slides?.length ?? 0) > 0 } as CarreraCatalogo));
+    .map(carreraACatalogo);
 
   return (
     <>

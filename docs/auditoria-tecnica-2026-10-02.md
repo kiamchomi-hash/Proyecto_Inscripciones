@@ -51,6 +51,32 @@ dependencias simuladas; no certifican RLS real ni renovación de cookies en un
 navegador. No se realizaron escrituras reales ni se publicó el cambio.
 [Referencia de autorización](../referencias/2026-10-02-autorizacion-admin.md).
 
+En la tercera intervención se avanzó con **A3, primera etapa**. Se generó
+`lib/database.types.ts` mediante la CLI 2.118.0 desde el esquema público real
+del proyecto remoto, sin leer filas ni cambiar datos. Se revisó la salida antes
+de incorporarla: sólo tipos de columnas, tablas, relaciones y RPC, sin secretos
+ni valores comerciales. Los cuatro clientes y el cliente inline del proxy usan
+el genérico `Database`. `Campo.columna`/`columnaDe()` quedan ligados al contrato
+de insert de consultas y FAQ usa una proyección del tipo generado.
+
+La home y Teclab dejaron de forzar las consultas como `Carrera[]`: usan una
+proyección literal inferida y un adaptador de catálogo que normaliza campos
+anulables y excluye slides. En el panel se acotó el rol recibido a sus valores
+válidos antes de asignarlo al estado. No se modificaron payloads, filtros de
+oferta, permisos ni credenciales.
+
+`npm run db:tipos` regeneró correctamente el archivo con la herramienta nueva,
+compartida por Windows/Linux. `npm run check` aprobado con **163 tests**, cero
+fallos/omitidos, 27 advertencias de lint y cero errores. Typecheck también
+comprueba contratos negativos de tablas, columnas, valores y RPC. Build aprobado.
+No se probó la regeneración en Windows ni se realizaron escrituras reales.
+
+**A3 sigue abierta:** faltan adaptadores de detalle completo y materias, tipar el
+armado dinámico de consultas y validar JSON. No se presenta el genérico
+`Database` como validación en runtime ni como reemplazo de las pruebas RLS.
+[Procedimiento y límites](tipos-supabase.md),
+[fuentes](../referencias/2026-10-02-tipos-supabase.md). Cambios locales sin publicar.
+
 P1: siguiente intervención, antes de confiar en una nueva publicación. P2: siguiente ciclo de mantenimiento. P3: mejora opcional condicionada a mediciones. Esfuerzos orientativos para una persona familiarizada con el proyecto; incluyen pruebas, no son presupuestos.
 
 | ID | Prioridad | Acción | Impacto | Esfuerzo |

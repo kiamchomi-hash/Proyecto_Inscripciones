@@ -99,10 +99,8 @@ export type CarreraCatalogo = Omit<Carrera, (typeof COLUMNAS_DETALLE)[number]>
 
 // Las columnas que sí van en el HTML. Se listan a mano para que agregar una
 // columna pesada a Supabase no la meta sola en la home.
-export const COLUMNAS_CATALOGO = [
-  'id', 'nombre', 'nivel', 'duracion', 'titulo', 'modalidad', 'prefix',
-  'nombre_corto', 'orden', 'activa', 'destacada', 'nueva', 'proximamente',
-] as const;
+// Literal para que PostgREST pueda inferir la proyección en TypeScript.
+export const COLUMNAS_CATALOGO = 'id, nombre, nivel, duracion, titulo, modalidad, prefix, nombre_corto, orden, activa, destacada, nueva, proximamente' as const;
 
 // Lo minimo para pintar un enlace a otra carrera (nombre + slug).
 export type CarreraEnlace = Pick<Carrera, 'id' | 'nombre' | 'prefix'>;

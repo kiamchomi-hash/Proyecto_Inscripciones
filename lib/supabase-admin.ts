@@ -1,3 +1,4 @@
+import type { Database } from '@/lib/database.types';
 import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 
@@ -9,7 +10,7 @@ export function createSupabaseAdmin() {
     throw new Error('Supabase administrativo no configurado');
   }
 
-  return createClient(url, serviceRoleKey, {
+  return createClient<Database>(url, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }

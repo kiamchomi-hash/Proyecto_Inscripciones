@@ -61,7 +61,7 @@ export default function AdminDashboard() {
         return;
       }
 
-      setProfesor(prof);
+      setProfesor({ rol: prof.rol });
       setCurrentUserId(user.id);
       await loadSolicitudes();
       setLoading(false);

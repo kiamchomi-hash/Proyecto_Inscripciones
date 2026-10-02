@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import {
-  type Carrera,
   type CarreraCatalogo,
   COLUMNAS_CATALOGO,
   carreraToSlug,
   esCarreraVisible,
 } from '@/components/index/types';
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
+import { carreraACatalogo } from '@/lib/datos/carrera-catalogo';
 import CareersCatalog from '@/components/index/careers-catalog';
 import FormularioLead from '@/components/formularios/formulario-lead';
 import SiteFooter from '@/components/footer';
@@ -83,18 +83,15 @@ const PARTNERS = [
 async function getOfertaTeclab(): Promise<CarreraCatalogo[]> {
   const { data } = await supabase
     .from('carreras')
-    .select(`${COLUMNAS_CATALOGO.join(', ')}, slides`)
+    .select(`${COLUMNAS_CATALOGO}, slides`)
     .eq('activa', true)
     .in('nivel', ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'])
     .order('orden', { ascending: true })
     .throwOnError();
 
-  return ((data || []) as unknown as Carrera[])
+  return (data ?? [])
     .filter(c => esCarreraVisible(c) && (esTeclab(c) || esCursoTeclab(c)))
-    .map(({ slides, ...resto }) => ({
-      ...resto,
-      tieneSlides: (slides?.length ?? 0) > 0,
-    } as CarreraCatalogo));
+    .map(carreraACatalogo);
 }
 
 export default async function TeclabPage() {

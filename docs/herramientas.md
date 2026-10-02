@@ -37,6 +37,11 @@ Las tres fuentes usan credenciales que ya están en la máquina —el token de l
 
 ## Publicar sólo archivos revisados
 
+Para regenerar los tipos del esquema real está `npm run db:tipos`, con lógica en
+`tipos-supabase.mjs` y envoltorios `.sh`/`.bat`. Usa la CLI instalada y el acceso
+del usuario al proyecto, lee sólo metadatos y conserva los tipos anteriores si
+falla. [Procedimiento](tipos-supabase.md).
+
 El botón `5 - Subir cambios (deploy)` usa `herramientas/deploy.mjs`, compartido
 por Windows y Linux. Selecciona archivos propios por número, muestra su diff
 staged, pide confirmación y corre `npm run check` sobre una copia temporal exacta

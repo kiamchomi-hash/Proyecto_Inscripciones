@@ -22,6 +22,7 @@
     "seo": "node --env-file-if-exists=.env.local herramientas/seo-semanal.mjs",
     "leads": "node --env-file-if-exists=.env.local herramientas/leads.mjs",
     "db": "node --env-file-if-exists=.env.local herramientas/db.mjs",
+    "db:tipos": "node --env-file-if-exists=.env.local herramientas/tipos-supabase.mjs",
     "db:local:iniciar": "node herramientas/supabase-local.mjs iniciar",
     "db:local:detener": "node herramientas/supabase-local.mjs detener",
     "db:local:estado": "node herramientas/supabase-local.mjs estado",

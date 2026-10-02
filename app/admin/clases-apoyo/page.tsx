@@ -503,8 +503,8 @@ export default function AdminClasesApoyo() {
     if (!user) { router.replace('/admin/login'); return; }
 
     const { data: prof } = await supabase.from('profesores').select('rol, materia_id').eq('user_id', user.id).single();
-    if (!prof) { router.replace('/admin/login'); return; }
-    setProfesor(prof);
+    if (!prof || (prof.rol !== 'admin' && prof.rol !== 'profesor')) { router.replace('/admin/login'); return; }
+    setProfesor({ rol: prof.rol, materia_id: prof.materia_id });
 
     let query = supabase.from('materias')
       .select('id, slug, label, nombre_profesor, whatsapp, telefono_display, descripcion, imagenes, dias_bloqueados, horarios_bloqueados, en_construccion, modo_manana')
