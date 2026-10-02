@@ -80,6 +80,15 @@ marca, numeral índice, reglas— del mismo lenguaje óptico que ya usa la pieza
 montados **una vez para todo el bloque**, no dentro de cada ficha (si entran en
 cada corte, parpadean). Que aporten algo que la escena no dice, no adorno suelto.
 
+### El fondo de una pieza no ilustra el tema
+
+El fondo no se disfraza de la carrera: nada de luces desenfocadas, reflectores
+de escenario, guirnaldas ni ningún dibujo literal del rubro detrás del
+contenido. Se probaron las tres en la placa de Organización de Eventos de
+Teclab (02/10/2026) y quedaron «demasiado raras»: descartadas para siempre.
+Para que dos placas de la misma casa no se vean iguales, lo que cambia es la
+foto, la disposición o la luz abstracta de la paleta, no un decorado temático.
+
 ### Unbounded no se usa y los botones no se desplazan
 
 La tipografía `Unbounded` está descartada para todo el sitio, incluidos marca,

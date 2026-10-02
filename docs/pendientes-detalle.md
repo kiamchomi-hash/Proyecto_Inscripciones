@@ -72,7 +72,7 @@ Cerrado el 30/09/2026: respuesta corregida y ambas páginas regeneradas. Ver [ev
 
 - [ ] **Dudas institucionales que aún requieren revisión de fuentes**, que hoy el bot responde con un "lo confirmo y te aviso" en vez de inventar:
 
-  1. La **fecha exacta de inicio del próximo período** — el 2A ya no se comercializa y del siguiente sólo se sabe que es en octubre. Ojo: `periodoPorDefecto()` pasa al siguiente período el 4 de agosto, así que a partir de ahí el bot ofrece una apertura cuya fecha comercial exacta no está confirmada.
+  1. **Inicio de cursado ED/EDH 2B resuelto el 01/10/2026:** 05/10/2026, ya implementado en el bot. Inscripción a materias hasta 18/10/2026; no es un cierre comercial de admisión. El calendario no confirma cupos ni apertura de cada carrera. [Evidencia en el historial](historial-pendientes.md#inicio-ed-edh-2b-2026).
   2. Si hay **becas reales** más allá del descuento por beneficio. Se mencionan programas para situaciones vulnerables y por rendimiento, sin confirmar.
   3. Las condiciones para **cursar dos carreras a la vez** (hay requisitos de avance académico).
   4. ~~El **módulo general de requisitos y legajo** del KB (`requisitos.md`) sigue sin escribirse.~~ Escrito el 08/08/2026 contra el reglamento en vivo. Lo que quedó sin fuente está listado adentro: qué es la IVU en la práctica, qué materias son Universitario 21, dónde se certifica la firma y cómo se legaliza el analítico.

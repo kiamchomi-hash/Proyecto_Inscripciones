@@ -16,7 +16,7 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 Los pedidos ya redactados y el destino de cada dato están registrados en [las notas operativas](docs/notas-operativas.md). Confirmar que el pedido siga vigente antes de enviarlo.
 
 - [ ] **Confirmar medios de pago del curso de IA de Teclab**. Imágenes publicadas el 30/09 con una ilustración aportada por el usuario. Arancel individual registrado con vigencia hasta el 30/09; no es un precio permanente. [Detalle](docs/pendientes-detalle.md#pendiente-08).
-- [ ] **Confirmar fechas, becas, doble carrera y las dudas restantes de requisitos** [Detalle](docs/pendientes-detalle.md#pendiente-11).
+- [ ] **Confirmar becas, doble carrera y las dudas restantes de requisitos** [Detalle](docs/pendientes-detalle.md#pendiente-11).
 
 ## Pendientes que estaban dentro de las notas
 

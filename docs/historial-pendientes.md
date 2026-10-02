@@ -170,3 +170,9 @@ Registro histórico sustituido el 30/09/2026; las afirmaciones y acciones siguie
 ## responsabilidad-social-2026-09-30
 
 Cerrado: encontrada la página oficial de la Tecnicatura en Responsabilidad y Gestión Social. GET HTTP 200 y canónica coincidente; se agregó el enlace al mapa local y se retiró únicamente esta carrera de `sinEnlace`. El registro anterior permanece como histórico. [Evidencia](enlace-responsabilidad-social-2026-09-30.md). No se modificaron la base, el corpus ni las fichas generadas.
+
+## inicio-ed-edh-2b-2026
+
+- [x] **Verificar inicio de cursado ED/EDH 2B.** Revisado el 01/10/2026: el calendario oficial 2026, página 6, publica comienzo de clases el 05/10 y cierre de inscripción académica a materias el 18/10. La fecha ya está en `INICIO_CLASES` de `herramientas/ventas/contexto-carreras.mjs` y las páginas generadas del bot. No se modificó la lógica ni el mensaje al aspirante.
+
+  Fuente: [calendario oficial ED/EDH](https://contenidos.21.edu.ar/descargas/calendarios-2026/5-calendario-academico-2026-ed-edh-arccnbcod-0030.pdf). Esto cierra sólo la duda de inicio del pendiente 11, no becas, doble carrera, requisitos, cupos ni admisión comercial.
