@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { carreraToSlug, getAreaForCarrera, type AreaId } from '@/components/index/types';
 import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
+import { casaDeCarrera } from '@/components/formularios/casas';
+import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { alternarSeleccion, avanzarRespuestas, ordenarAreas, porcentajeAfinidad, puntuarRespuestas, recomendarPorArea } from './resultado';
 
 type CarreraTest = { id: number; nombre: string; nivel: string; prefix: string | null; orden: number };
@@ -287,7 +289,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
       <div className="vocacional-area-nav" role="group" aria-label="Elegir área">{grupos.map(({ area }) => <button type="button" aria-pressed={areaActiva === area} className={areaActiva === area ? 'is-active' : ''} onClick={() => { setAreaSeleccionada(area); setCarreraPrincipalId(null); }} key={area}>{AREA_LABELS[area]}</button>)}</div>
       <div className="vocacional-careers-heading"><span>Carreras</span></div>
       <div className="vocacional-careers" key={areaActiva}>{resultados.map(carrera => <button type="button" aria-pressed={carrera.id === carreraParaAccion?.id} className={`vocacional-career${carrera.id === carreraParaAccion?.id ? ' is-primary' : ''}`} onClick={() => setCarreraPrincipalId(carrera.id)} key={carrera.id}><span>{nombreVisible(carrera)}</span><span aria-hidden="true">→</span></button>)}</div>
-      {carreraParaAccion && <div className="vocacional-career-actions" key={carreraParaAccion.id}><strong>{nombreVisible(carreraParaAccion)}</strong><div><a href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppInfo(carreraParaAccion))}`} target="_blank" rel="noopener nofollow">Consultar por WhatsApp</a><Link href={`/carreras/${carreraToSlug(carreraParaAccion)}#preinscripcion`}>Quiero inscribirme</Link></div></div>}
+      {carreraParaAccion && <div className="vocacional-career-actions" key={carreraParaAccion.id}><strong>{nombreVisible(carreraParaAccion)}</strong><div><a href={`https://wa.me/${numeroWhatsAppDe(casaDeCarrera(carreraParaAccion))}?text=${encodeURIComponent(mensajeWhatsAppInfo(carreraParaAccion))}`} target="_blank" rel="noopener nofollow">Consultar por WhatsApp</a><Link href={`/carreras/${carreraToSlug(carreraParaAccion)}#preinscripcion`}>Quiero inscribirme</Link></div></div>}
       <div className="vocacional-actions"><Link className="vocacional-button" href="/"><span aria-hidden="true">←</span> Volver</Link><button className="vocacional-restart" onClick={() => { setPaso(-1); setRespuestas([]); setSeleccion([]); setAreaSeleccionada(null); setCarreraPrincipalId(null); }}>Hacerlo de nuevo</button></div>
     </section>
   );

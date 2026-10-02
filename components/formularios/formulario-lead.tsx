@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { WhatsAppIcon } from '@/components/icons';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
+import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackAbandonoFormulario, trackConsulta, trackFormularioVisto, trackInicioFormulario, trackIntentoFormulario, type OrigenConsulta } from '@/lib/analytics';
 import {
   CAMPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, obligatoriosDe,
@@ -1299,7 +1300,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                       : null}
                 <span className="text-[var(--catalogo-texto-suave)]">¿Preferís hablar directamente?</span>
                 <a
-                  href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`}
+                  href={`https://wa.me/${numeroWhatsAppDe(casaActiva)}?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`}
                   target="_blank"
                   rel="noopener nofollow"
                   className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-bold text-[#063b20] transition-colors hover:bg-[#6ee7a0]"
@@ -1318,7 +1319,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 <div className="flex min-h-4 flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[11px] leading-4">
                   <span className="text-[var(--catalogo-texto-suave)]">¿Preferís hablar directamente?</span>
                   <a
-                    href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`}
+                    href={`https://wa.me/${numeroWhatsAppDe(casaActiva)}?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`}
                     target="_blank"
                     rel="noopener nofollow"
                     className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-bold text-[#063b20] transition-colors hover:bg-[#6ee7a0]"

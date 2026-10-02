@@ -11,6 +11,7 @@
 // en ./teclab), pero el modal no enlaza al sitio del instituto: el contacto es
 // solo por WhatsApp o el formulario del CAU.
 
+import { NUMERO_TECLAB_IDENTIDAD } from '@/lib/whatsapp';
 import Image from 'next/image';
 import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
@@ -819,7 +820,7 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
   // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
   // en medio de la nada. El titulo y el certificado ya estan en la portada.
   const chips = [modalidad, carrera.duracion, esCursoTeclab(carrera) ? 'Certificado oficial' : 'Título oficial'].filter(Boolean);
-  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
+  const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
     <div className="teclab-slide teclab-cierre h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
@@ -1007,7 +1008,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [handleClose, slides.length]);
 
-  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
+  const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}` : '';
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 

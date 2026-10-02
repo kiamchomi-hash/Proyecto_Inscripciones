@@ -15,6 +15,7 @@ import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carrer
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
+import { NUMERO_TECLAB_IDENTIDAD } from '@/lib/whatsapp';
 
 interface Props {
   carrera: Carrera;
@@ -457,7 +458,7 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
   const chipCertificacion =
     certificacion && (/^certificaci[oó]n/i.test(certificacion) ? certificacion : `Certificación ${certificacion}`);
   const chips = [modalidad, carrera.duracion, chipCertificacion].filter(Boolean);
-  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
+  const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
     <div className="ia-slide ia-cierre relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
@@ -603,7 +604,7 @@ export default function IAModal({ carrera, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [handleClose, slides.length]);
 
-  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
+  const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}` : '';
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 

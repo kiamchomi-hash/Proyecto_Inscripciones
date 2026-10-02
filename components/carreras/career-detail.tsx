@@ -1,6 +1,7 @@
 // Detalle de carrera renderizado en el servidor: todo el contenido importante
 // permanece en el HTML para que cada URL sea una pagina real e indexable.
 
+import { NUMERO_CAU, NUMERO_TECLAB_IDENTIDAD } from '@/lib/whatsapp';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
@@ -223,7 +224,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   const hasPlan = tienePlanDeEstudios(carrera);
 
   const waMsg = mensajeWhatsAppInfo(carrera);
-  const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(waMsg)}`;
+  const waHref = `https://wa.me/${isIA || isTeclab ? NUMERO_TECLAB_IDENTIDAD : NUMERO_CAU}?text=${encodeURIComponent(waMsg)}`;
 
   return (
     <article
