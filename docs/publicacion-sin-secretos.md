@@ -75,8 +75,39 @@ local. Un barrido histórico puede encontrar credenciales ya revocadas: revisar
 cada caso, no silenciar todo el historial.
 
 **CI corre después del push y no impide un deploy automático de Vercel.** La
-prevención anterior a la salida está en el publicador guiado; `git commit` o
-`git push` manuales pueden saltearlo. No se instalaron hooks globales ni se
+prevención anterior a la salida está en el publicador guiado y en el hook local descrito abajo; `git commit` o
+`git push` manuales sin el hook instalado pueden saltearlo. No se instalaron hooks globales ni se
 cambiaron permisos remotos. Gitleaks detecta patrones conocidos, no certifica
 que cualquier dato comercial o personal esté ausente: sigue siendo necesaria
 la revisión humana de lo seleccionado.
+
+## Push manual: hook local por clon
+
+En Windows (Git for Windows) y Linux, preparar el scanner e instalar el hook:
+
+```sh
+npm run secretos:instalar
+node herramientas/pre-push.mjs instalar
+```
+
+Repetir en cada clon nuevo: Git no instala hooks del repositorio automáticamente.
+El instalador conserva los demás hooks, no cambia `core.hooksPath` y no reemplaza
+un `pre-push` distinto. Ante un conflicto hay que integrar ambos controles
+explícitamente. Reinstalar el mismo hook es seguro. Para verificarlo, leer el
+archivo indicado por `git rev-parse --git-path hooks/pre-push`, sin publicar.
+
+El hook usa las referencias y OID de stdin de Git, no `origin/main`. Revisa cada
+rama o tag ofrecido, aunque no sea la rama actual. Para una referencia nueva
+revisa toda la historia alcanzable; para una actualización o force push, los
+commits fuera del OID remoto y el árbol final. Detecta secretos y privados aun
+borrados después. Una eliminación no agrega blobs y no requiere escaneo.
+Si falta localmente el commit remoto anunciado, bloquea y pide hacer fetch del
+remoto elegido: no descarga nada automáticamente ni imprime su URL.
+
+No carga archivos ignorados ni cambia el index. Si falta Node, Gitleaks o el
+módulo del control, el push falla cerrado. En ramas nuevas con mucha historia
+puede tardar más o encontrar credenciales antiguas: revisar, no silenciar todo.
+
+El hook cubre pushes manuales **sólo después de instalarlo en ese clon**. Puede
+saltearse con `--no-verify`, editarse o desactivarse: protege errores accidentales,
+no a alguien que controla su máquina. No hay hooks globales ni cambios remotos.
