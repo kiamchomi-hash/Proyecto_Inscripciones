@@ -1,6 +1,6 @@
 # Catálogo: qué pieza usar para cada necesidad
 
-Mapa de la biblioteca local (`~/Desktop/uiverse`) por **necesidad de UI**, no por
+Mapa de la biblioteca local (`~/Escritorio/uiverse`) por **necesidad de UI**, no por
 categoría de UIverse. Cada entrada da la opción principal y **alternativas
 reales** —no variantes de lo mismo— para que se pueda elegir según la dirección
 estética elegida.
@@ -182,7 +182,7 @@ nuevos de la cuenta y `npm run galaxy` actualiza el catálogo abierto. Después 
 importar, para ver lo que entró:
 
 ```bash
-cd ~/Desktop/uiverse/descargas
+cd ~/Escritorio/uiverse/descargas
 for d in */; do
   python -c "import json;m=json.load(open('$d/meta.json'));print('${d%/}','::',m['titulo'],'::',m['etiquetas'][:80])"
 done

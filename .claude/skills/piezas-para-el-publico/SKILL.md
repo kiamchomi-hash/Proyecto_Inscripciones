@@ -30,7 +30,7 @@ escena.
 
 ## Ajustar el texto al gusto visual del usuario
 
-Cuando la pieza también se diseña, leer `~/Desktop/uiverse/LEER.md` y consultar
+Cuando la pieza también se diseña, leer `~/Escritorio/uiverse/LEER.md` y consultar
 primero **★ Mías**; si es de Siglo 21 o de Teclab, sólo las marcadas para esa
 casa (skill `diseno-uiverse`). Usar tres o cuatro referencias pertinentes para calibrar el
 presupuesto de texto: cuánto ocupa el título, cuántos niveles de lectura admite

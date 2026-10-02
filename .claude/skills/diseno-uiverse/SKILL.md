@@ -1,6 +1,6 @@
 ---
 name: diseno-uiverse
-description: Diseñar o rediseñar interfaces web usando componentes ya probados en vez de inventarlos. Parte siempre de la biblioteca local de UIverse del usuario (~/Desktop/uiverse) — sus piezas propias, sus favoritas y el catálogo abierto— y recién si ahí no hay nada busca en fuentes públicas equivalentes. Usar cuando se pida mejorar el diseño, el frontend, el CSS, la UI o el "look" de una página; armar botones, tarjetas, formularios, loaders, toggles, tooltips o fondos; elegir una dirección estética; o cuando el pedido sea "está feo", "mejorá el diseño", "hacelo más lindo", "rediseñá esto". También para revisar una UI contra los referentes reales del rubro antes de darla por terminada.
+description: Diseñar o rediseñar interfaces web usando componentes ya probados en vez de inventarlos. Parte siempre de la biblioteca local de UIverse del usuario (~/Escritorio/uiverse) — sus piezas propias, sus favoritas y el catálogo abierto— y recién si ahí no hay nada busca en fuentes públicas equivalentes. Usar cuando se pida mejorar el diseño, el frontend, el CSS, la UI o el "look" de una página; armar botones, tarjetas, formularios, loaders, toggles, tooltips o fondos; elegir una dirección estética; o cuando el pedido sea "está feo", "mejorá el diseño", "hacelo más lindo", "rediseñá esto". También para revisar una UI contra los referentes reales del rubro antes de darla por terminada.
 ---
 
 # Diseño con piezas probadas
@@ -16,13 +16,13 @@ ningún lado; se decide con el usuario y contra los referentes del rubro.
 
 ## Dónde está la biblioteca
 
-En la máquina del usuario vive en `~/Desktop/uiverse`. En una sesión en la nube
+En la máquina del usuario vive en `~/Escritorio/uiverse`. En una sesión en la nube
 esa ruta no existe: clonar el repo privado `kiamchomi-hash/uiverse-local` y
 bajar el catálogo abierto, que es un submódulo:
 
 ```bash
-git clone https://github.com/kiamchomi-hash/uiverse-local.git ~/Desktop/uiverse
-git -C ~/Desktop/uiverse submodule update --init --depth 1
+git clone https://github.com/kiamchomi-hash/uiverse-local.git ~/Escritorio/uiverse
+git -C ~/Escritorio/uiverse submodule update --init --depth 1
 ```
 
 Todas las rutas de abajo se leen igual después del clon.
@@ -32,16 +32,16 @@ Todas las rutas de abajo se leen igual después del clon.
 Siempre en este orden. No saltes al siguiente escalón sin haber mirado el
 anterior.
 
-1. **`~/Desktop/uiverse/biblioteca/mias/`** — piezas propias del usuario. Si hay
+1. **`~/Escritorio/uiverse/biblioteca/mias/`** — piezas propias del usuario. Si hay
    algo acá que sirva, gana sobre todo lo demás: ya está adaptado a su gusto.
-2. **`~/Desktop/uiverse/descargas/`** — favoritos importados de su cuenta de
+2. **`~/Escritorio/uiverse/descargas/`** — favoritos importados de su cuenta de
    uiverse.io. Cada carpeta trae `meta.json` (título, autor, etiquetas, URL),
    `pieza.html` y `pieza.css`. Son ~150 piezas que el usuario eligió a mano:
    son la mejor señal de su gusto disponible.
-3. **`~/Desktop/uiverse/biblioteca/estado.json`** — clave `favoritas`: rutas
+3. **`~/Escritorio/uiverse/biblioteca/estado.json`** — clave `favoritas`: rutas
    dentro de `galaxy/` que marcó como favoritas. La clave `ocultas` son las que
    **eliminó**: nunca las propongas.
-4. **`~/Desktop/uiverse/biblioteca/galaxy/`** — el catálogo abierto completo
+4. **`~/Escritorio/uiverse/biblioteca/galaxy/`** — el catálogo abierto completo
    (~3.800 piezas, MIT), ordenado en `Buttons/`, `Cards/`, `Checkboxes/`,
    `Forms/`, `Inputs/`, `loaders/`, `Notifications/`, `Patterns/`,
    `Radio-buttons/`, `Toggle-switches/`, `Tooltips/`. Cada pieza es un `.html`
@@ -74,7 +74,7 @@ La lista sale así, una línea por pieza con ruta, título y etiquetas (cambiar
 `galaxy/...` es un `.html` suelto cuyas etiquetas están en `indice-galaxy.json`.
 
 ```bash
-cd ~/Desktop/uiverse && node -e "
+cd ~/Escritorio/uiverse && node -e "
 const casa=process.argv[1],e=require('./biblioteca/estado.json'),fs=require('fs'),oc=new Set(e.ocultas);
 const gx=new Map(require('./biblioteca/indice-galaxy.json').piezas.map(p=>[p.id,p]));
 for(const [id,u] of Object.entries(e.usos)){if(!u.includes(casa)||oc.has(id))continue;
@@ -90,7 +90,7 @@ el nombre de la carpeta**, que no dice casi nada.
 Para buscar rápido por tema en los favoritos:
 
 ```bash
-cd ~/Desktop/uiverse/descargas
+cd ~/Escritorio/uiverse/descargas
 grep -il "checkout\|price\|cart" */meta.json     # por etiqueta o título
 ```
 
@@ -150,7 +150,7 @@ el proyecto), y que todo lo demás lo consuma:
   memoria siempre salen Inter, Roboto, Poppins y Space Grotesk, que están en
   todas partes y aplanan cualquier dirección. Se busca un sitio real con el tono
   que querés y se toman las familias que usa: dónde mirar está en
-  `~/Desktop/uiverse/FUENTES.md`. Decí de dónde salió la elección.
+  `~/Escritorio/uiverse/FUENTES.md`. Decí de dónde salió la elección.
 
 ## Reglas que no se negocian
 
@@ -204,7 +204,7 @@ Fuentes públicas equivalentes, en orden de utilidad para copiar mecánicas:
 
 UIverse tiene el botón; no tiene el orden de las secciones, la mezcla
 tipográfica ni el tono. Para eso hay una segunda biblioteca:
-**`~/Desktop/uiverse/FUENTES.md`** — qué da cada fuente, cuál anota la
+**`~/Escritorio/uiverse/FUENTES.md`** — qué da cada fuente, cuál anota la
 tipografía que cada sitio usa de verdad, cuáles publican `DESIGN.md` y cuáles
 tienen servidor MCP (y cuál no hay que instalar). Se lee antes de decidir cómo
 se ve la página.
@@ -219,7 +219,7 @@ Si la referencia es **un sitio puntual** y hacen falta sus valores exactos, no s
 estiman mirando una captura: se miden.
 
 ```bash
-cd ~/Desktop/uiverse && npm run generar-sistema -- https://el-sitio.com
+cd ~/Escritorio/uiverse && npm run generar-sistema -- https://el-sitio.com
 ```
 
 Abre el sitio a 1440x900 con el navegador que ya está instalado y escribe

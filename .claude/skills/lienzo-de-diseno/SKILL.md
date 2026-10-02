@@ -414,7 +414,7 @@ carpeta está vacía o no tiene nada del caso, se trabaja con UIverse y las
 fuentes, y no se busca en otro lado.
 
 **Dónde mirar afuera tampoco está acá.** El catálogo vive en un solo lugar,
-`~/Desktop/uiverse/FUENTES.md`: qué da cada fuente, cuál anota la tipografía que
+`~/Escritorio/uiverse/FUENTES.md`: qué da cada fuente, cuál anota la tipografía que
 cada sitio usa de verdad, cuáles publican `DESIGN.md` y cuáles tienen servidor
 MCP (y cuál no hay que instalar). Se genera desde `fuentes.json`, así que es la
 única copia que no envejece; la misma lista está en la pestaña **Fuentes** de la

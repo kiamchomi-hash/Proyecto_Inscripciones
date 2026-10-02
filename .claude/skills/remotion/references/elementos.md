@@ -7,7 +7,7 @@ tres casos lo que se trae es **material**, no una pieza para pegar: ver
 
 ## 1. UIverse local (offline, es la primera parada)
 
-La biblioteca de piezas del usuario, en `~/Desktop/uiverse`: HTML + CSS, con sus
+La biblioteca de piezas del usuario, en `~/Escritorio/uiverse`: HTML + CSS, con sus
 favoritas y las suyas propias. **Como se busca ahi lo fija la skill
 `diseno-uiverse`**, que es la que manda: orden de consulta, indice, favoritas
 primero. No repetir esos comandos aca. Lo que sigue es solo lo que cambia cuando

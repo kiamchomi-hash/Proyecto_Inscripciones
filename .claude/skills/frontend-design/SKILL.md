@@ -47,13 +47,13 @@ Nunca corregir una interfaz visual a ciegas ni atribuir un defecto a una causa s
 Cuando el trabajo sea sobre el sitio del CAU, Universidad Siglo 21 o Teclab,
 consultá directamente la biblioteca local antes de escribir JSX o CSS:
 
-1. Leé `~/Desktop/uiverse/LEER.md` para conocer el catálogo y la forma de
+1. Leé `~/Escritorio/uiverse/LEER.md` para conocer el catálogo y la forma de
    guardar la curaduría.
-2. Leé `~/Desktop/uiverse/biblioteca/estado.json` y usá la clave `usos` para
+2. Leé `~/Escritorio/uiverse/biblioteca/estado.json` y usá la clave `usos` para
    filtrar las piezas marcadas para la marca correspondiente: `siglo21` o
    `teclab`. No mezcles piezas marcadas `ninguna`.
 3. Para cada pieza seleccionada, abrí su carpeta en
-   `~/Desktop/uiverse/biblioteca/mias/` y revisá `meta.json`, `pieza.html` y
+   `~/Escritorio/uiverse/biblioteca/mias/` y revisá `meta.json`, `pieza.html` y
    `pieza.css`. Consultá primero las piezas propias marcadas para esa marca;
    el catálogo general y referencias externas quedan como segunda opción.
 4. Elegí referencias por el problema que resuelven —por ejemplo, transición,
@@ -83,14 +83,14 @@ them: to have concrete evidence for the three decisions that set the tone.
    about the audience, not about taste. Study whole pages and real app flows.
 
 **Where to look is not listed here.** The catalogue lives in one place,
-`~/Desktop/uiverse/FUENTES.md`: what each source gives you, which one annotates
+`~/Escritorio/uiverse/FUENTES.md`: what each source gives you, which one annotates
 the typefaces a site really uses, which publish `DESIGN.md` files, and which
 expose an MCP server (and which MCP not to install). Read it before choosing —
 it is generated from `fuentes.json`, so it is the only copy that stays current.
 
 **Components are a separate question.** Buttons, toggles, inputs and loaders
 should not be invented either — they come from the user's own UIverse library
-(`~/Desktop/uiverse`). That is the `diseno-uiverse` skill's job; this skill owns
+(`~/Escritorio/uiverse`). That is the `diseno-uiverse` skill's job; this skill owns
 the direction and the page, that one owns the pieces. For anything branded Siglo
 21 or Teclab, that skill walks only the pieces the user tagged for that brand in
 the gallery (the `usos` key of `biblioteca/estado.json`), not the whole library.
