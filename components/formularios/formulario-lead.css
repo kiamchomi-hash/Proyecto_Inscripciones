@@ -62,7 +62,10 @@
    campos y ahí el ancho completo se usa de verdad. */
 .contact-form-layout {
   display: grid;
-  grid-template-columns: 1fr;
+  /* `minmax(0, …)` y no `1fr` a secas: `1fr` no baja del ancho mínimo de su
+     contenido, y el widget de Turnstile estiraba la tarjeta fuera de la
+     pantalla en celulares angostos. */
+  grid-template-columns: minmax(0, 1fr);
   margin-inline: auto;
 }
 
@@ -72,7 +75,7 @@
 
 @media (min-width: 1280px) {
   .contact-form-layout {
-    grid-template-columns: 5fr 4fr;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
     align-items: stretch;
   }
 

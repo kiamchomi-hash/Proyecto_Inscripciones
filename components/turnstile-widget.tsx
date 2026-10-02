@@ -32,7 +32,7 @@ type TurnstileApi = {
       callback: (token: string) => void;
       'expired-callback'?: () => void;
       theme: 'dark';
-      size: 'flexible';
+      size: 'flexible' | 'compact';
     },
   ) => string;
   remove: (widgetId: string) => void;
@@ -49,6 +49,13 @@ const SCRIPT_SRC =
  */
 const ESPERA_MAXIMA_MS = 10000;
 
+/**
+ * Cloudflare no deja bajar el tamaño `flexible` de 300 px: en un celular
+ * angosto el widget se salía de la tarjeta y la página scrolleaba de costado.
+ * Debajo de ese ancho se usa `compact`, que mide 150 × 140.
+ */
+const ANCHO_MINIMO_FLEXIBLE = 300;
+
 export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -56,6 +63,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
   // vacío que aleja al botón de los datos. El marcador lo ocupa hasta que el
   // widget llega y lo tapa.
   const [montado, setMontado] = useState(false);
+  const [compacto, setCompacto] = useState(false);
   const onVerifyRef = useRef(onVerify);
   const onExpireRef = useRef(onExpire);
 
@@ -110,12 +118,14 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
     const renderWidget = () => {
       if (cancelled || widgetId || !turnstileWindow.turnstile) return;
 
+      const esCompacto = container.clientWidth < ANCHO_MINIMO_FLEXIBLE;
+      setCompacto(esCompacto);
       widgetId = turnstileWindow.turnstile.render(container, {
         sitekey,
         callback: (token) => onVerifyRef.current(token),
         'expired-callback': () => onExpireRef.current?.(),
         theme: 'dark',
-        size: 'flexible',
+        size: esCompacto ? 'compact' : 'flexible',
       });
       esperarAlIframe();
     };
@@ -150,9 +160,10 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
   if (!sitekey) return null;
 
   // El iframe del widget mide 71 px al montar (medido en prod, desktop y mobile);
-  // sin reservar ese lugar, todo lo que está debajo salta cuando aparece.
+  // sin reservar ese lugar, todo lo que está debajo salta cuando aparece. El
+  // compacto mide 140 px y va centrado.
   return (
-    <div className="relative min-h-[71px]">
+    <div className={compacto ? 'relative flex min-h-[140px] justify-center' : 'relative min-h-[71px]'}>
       {!montado && (
         <div
           aria-hidden="true"
