@@ -39,7 +39,8 @@ export default async function FaqPage() {
     .eq('destacada', true)
     .order('orden', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: false })
-    .limit(5);
+    .limit(5)
+    .throwOnError();
 
   const faqs = (data ?? []) as FaqPregunta[];
 

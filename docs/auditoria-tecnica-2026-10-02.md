@@ -10,6 +10,30 @@ La primera acción no es migrar de framework: **la instalación local ejecuta Ne
 
 ## Prioridades
 
+### Avance posterior del 02/10/2026 (Linux)
+
+Por pedido del usuario de avanzar con la auditoría, se corrigió **A2** en
+`app/faq/page.tsx` y `app/clases-apoyo/page.tsx`: ambas lecturas usan
+`throwOnError()` antes de construir contenido y JSON-LD. Se mantiene la colección
+vacía válida y no se agregaron reintentos ni cambios de caché.
+
+Las dos pruebas nuevas de `tests/resiliencia.test.mjs` fallaron antes de la
+corrección y pasan después: cubren errores con `data: null` y `data: []`, además
+del éxito con colección vacía. `npm run check` aprobado: 157 tests, cero fallos
+y cero omitidos; lint con 27 advertencias y cero errores. `npm run build`
+aprobado con Next 16.3.8, FAQ y clases prerenderizadas como páginas estáticas.
+**Pendiente para cerrar toda la aceptación de A2:** provocar una lectura fallida
+durante revalidación en un preview aislado y verificar que conserva el HTML
+anterior. Las pruebas del render y el build no demuestran por sí solos ese caso.
+
+Para **A1**, los manifests instalados en esta máquina de `next`,
+`@next/third-parties` y `eslint-config-next` coinciden con el lock en 16.3.8.
+No hizo falta reinstalar. Esto no certifica la instalación de Windows ni la
+versión del deployment activo. No se modificaron dependencias ni datos, ni se
+publicó este cambio.
+
+Guías consultadas: [referencias de esta corrección](../referencias/2026-10-02-fiabilidad-faq-clases.md).
+
 P1: siguiente intervención, antes de confiar en una nueva publicación. P2: siguiente ciclo de mantenimiento. P3: mejora opcional condicionada a mediciones. Esfuerzos orientativos para una persona familiarizada con el proyecto; incluyen pruebas, no son presupuestos.
 
 | ID | Prioridad | Acción | Impacto | Esfuerzo |

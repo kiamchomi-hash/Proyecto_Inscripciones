@@ -36,6 +36,7 @@ function cargarPagina(archivo, fallaEn = 1, persistente = false) {
   } };
   return cargarTypescript(archivo, {
     '@/lib/supabase': { supabase },
+    '@/lib/json-ld': { jsonLdScript: JSON.stringify },
     '@/components/index/types': taxonomia,
     'next/navigation': { notFound: () => { throw new Error('404 incorrecto'); } },
     'next/dynamic': { default: () => () => null },
@@ -47,6 +48,26 @@ test('home y carrera rechazan fallas de la base antes de renderizar vacío o dev
   await assert.rejects(cargarPagina('app/page.tsx').default(), /Base temporalmente inaccesible/);
   await assert.rejects(cargarPagina('app/carreras/[slug]/page.tsx').default({ params: Promise.resolve({ slug: 'abogacia' }) }), /Base temporalmente inaccesible/);
 });
+
+for (const archivo of ['app/faq/page.tsx', 'app/clases-apoyo/page.tsx']) {
+  test(`${archivo} propaga errores de lectura y acepta una colección realmente vacía`, async () => {
+    for (const data of [null, []]) {
+      const error = new Error('Base temporalmente inaccesible');
+      const consulta = new Proxy({}, { get: (_, metodo) => {
+        if (metodo === 'then') return resolver => resolver({ data, error });
+        if (metodo === 'throwOnError') return () => Promise.reject(error);
+        return () => consulta;
+      } });
+      const pagina = cargarTypescript(archivo, {
+        '@/lib/supabase': { supabase: { from: () => consulta } },
+        '@/lib/json-ld': { jsonLdScript: JSON.stringify },
+        'react/jsx-runtime': { jsx: () => null, jsxs: () => null },
+      }, () => ({}));
+      await assert.rejects(pagina.default(), /Base temporalmente inaccesible/);
+    }
+    await assert.doesNotReject(cargarPagina(archivo, 0).default());
+  });
+}
 
 test('el sitemap reintenta un timeout transitorio y falla si la base sigue inaccesible', async () => {
   for (let i = 1; i <= 4; i++) {

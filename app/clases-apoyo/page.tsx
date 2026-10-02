@@ -33,7 +33,8 @@ export default async function Page() {
     .from('materias')
     .select('id, slug, label, en_construccion, descripcion')
     .eq('activa', true)
-    .order('orden', { ascending: true });
+    .order('orden', { ascending: true })
+    .throwOnError();
 
   const materias = (data ?? []) as MateriaCard[];
 
