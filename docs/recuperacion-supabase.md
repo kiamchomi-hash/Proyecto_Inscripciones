@@ -1,11 +1,67 @@
 # Recuperar Supabase sin afectar producción
 
-**Estado al 30/09/2026: procedimiento preparado, restauración NO verificada.**
-No se consultó el dashboard ni se descargaron respaldos. Plan, retención,
-última copia utilizable y PITR siguen sin confirmar. Docker está
-[postergado](pruebas-supabase-local.md#retomar-la-configuración-en-windows).
+**Estado al 01/10/2026: dashboard comprobado y ensayo ficticio aprobado;
+recuperación de producción NO verificada.** Docker ya funciona en Linux.
+
+## Comprobación del 01/10/2026
+
+El dashboard del proyecto `yuwfkdehaowkselkhtck` mostró **Free Plan does not
+include project backups** en Scheduled backups. Point in time mostró que PITR
+es un adicional de Pro. Por lo tanto no hay copia programada ni punto PITR
+disponibles en estas pantallas; no se confirmó una copia independiente externa.
+No se cambió el plan ni se ejecutó Restore sobre producción.
+
+Se ensayó PostgreSQL 17 con la imagen
+`public.ecr.aws/supabase/postgres:17.6.1.171` en dos contenedores nuevos,
+independientes de `cau-guardrails-local`, sin red (`--network none`) y sin
+puertos publicados. Se crearon dos cursos y dos contactos `example.invalid`,
+una relación por clave foránea y un rol lector con RLS. Se respaldaron roles
+sin contraseñas y la base con `pg_dump --format=custom`; se restauraron mediante
+`psql` y `pg_restore --exit-on-error`.
+
+Resultado: datos idénticos al punto de copia, ninguna relación huérfana, RLS
+conservada (el lector ve sólo un curso), lectura de contactos y escritura
+denegadas. Una tercera fila insertada después del respaldo no se recuperó,
+como corresponde al punto de copia. Sin triggers externos. Restauración:
+204 ms; antigüedad de copia al iniciar restore: 317 ms; ciclo completo: 10.271 ms.
+Dump sintético de 4.094 bytes, SHA-256
+`1cca24afe3b014f578108bce14779f7f5f25105b647d97c0563606ef4eb51cc3`.
+Los dos contenedores y sus volúmenes se retiraron al finalizar.
+
+Este ensayo sólo verifica PostgreSQL ficticio: no Auth, Storage, Vault,
+servicios Supabase ni una copia real. Los tiempos no son un RPO/RTO de producción.
+
+Próximo paso concreto: obtener acceso de respaldo completo desde una fuente
+privada autorizada (esta máquina sólo tiene `EDITOR_DATABASE_URL`, cuyo rol no
+cubre toda la base), preparar custodia cifrada fuera del repo y un destino local
+aislado, y obtener autorización específica para copiar datos reales. La contraseña
+se proporciona por un medio privado, nunca en chat ni en archivos versionados.
+Sin esa credencial y custodia no se puede crear ni restaurar una copia completa.
 
 ## Antes de restaurar
+
+### Revisión previa al cambio de contraseña (01/10/2026)
+
+No se encontró uso de la contraseña de `postgres` en el sitio, Edge Functions,
+herramientas versionadas o scripts comerciales locales revisados. El sitio y
+las funciones usan la API con anon/service role; las conexiones PostgreSQL de
+`db.mjs`, `leads.mjs` e `integraciones.mjs` usan `EDITOR_DATABASE_URL`, cuyo
+usuario comprobado es `cau_editor`. Vercel (`proyecto-inscripciones`, scope
+`iuys-projects-18eed4e5`) no tiene variables de conexión PostgreSQL entre las
+variables listadas de producción, preview y desarrollo.
+
+Consulta de sólo lectura en el SQL Editor: `pg_stat_activity`, agrupada por
+`usename` y `application_name` para `backend_type = 'client backend'`. Mostró
+dos conexiones `authenticator/postgrest`, una `postgres/supabase/dashboard-query-editor`
+(la propia consulta) y dos `supabase_admin` (una `postgres_exporter`). No apareció
+un cliente externo conectado como `postgres`. Es una foto del momento: no prueba
+ausencia de clientes apagados, jobs externos o configuraciones de otra máquina.
+
+Conclusión: no se identificó una dependencia propia que requiera actualizar su
+contraseña al cambiar la de `postgres`. El dashboard advierte que el reset corta
+conexiones existentes; puede haber una reconexión transitoria. No se cambió ninguna
+contraseña. La clave nueva debe ingresarla y guardarla el usuario mediante un
+medio privado; luego comprobar lectura pública, formularios y `cau_editor`.
 
 1. El responsable confirma en **Database > Backups** el mecanismo disponible,
    fecha/zona horaria del punto recuperable, retención y costos. Conservar
@@ -93,7 +149,7 @@ autorizada por separado, con reversión acordada.
 
 ## Cierre del pendiente
 
-- [ ] Dashboard verificado: mecanismo, punto recuperable, retención y responsable.
+- [x] Dashboard verificado el 01/10/2026: plan gratuito sin copia programada ni PITR disponibles; no hay punto/retención recuperables que confirmar en esas pantallas.
 - [ ] Cobertura DB/Auth/Storage/secretos registrada y copias privadas accesibles.
 - [ ] RPO/RTO acordados y medidos, no inferidos de npm run check.
 - [ ] Copia real restaurada en destino separado y aislado; integridad,

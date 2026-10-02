@@ -6,9 +6,8 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 ## Revisión y trabajo propio
 
-- [ ] **Comprobar respaldos y ensayar recuperación de Supabase en un destino separado**. Dashboard y restore real no verificados; cerrar con integridad/permisos y RPO/RTO acordados y medidos. [Procedimiento](docs/recuperacion-supabase.md).
+- [ ] **Crear una copia completa y ensayar recuperación de Supabase en un destino separado**. Dashboard verificado el 01/10: plan gratuito sin respaldos automáticos ni PITR. Ensayo PostgreSQL ficticio aprobado; falta acceso para respaldo completo, custodia cifrada y restore real con integridad/permisos y RPO/RTO acordados y medidos. [Procedimiento](docs/recuperacion-supabase.md).
 
-- [ ] **Configurar WSL 2/Docker y validar las pruebas reales de Supabase local**. Docker muestra «Virtualization support not detected»; configuración postergada. [Comandos para retomarla](docs/pruebas-supabase-local.md#retomar-la-configuración-en-windows).
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo** [Detalle](docs/pendientes-detalle.md#pendiente-16).
 
 ## En espera de información externa

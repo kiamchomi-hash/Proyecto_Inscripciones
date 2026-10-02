@@ -5,7 +5,7 @@ datos reales ni triggers de Telegram, revalidación, cron o analytics.
 
 ## Preparación
 
-Requiere Node 20 o superior, dependencias instaladas (`npm ci`) y Docker con motor
+Requiere Node 24, dependencias instaladas (`npm ci`) y Docker con motor
 Linux disponible. En Windows, Docker Desktop necesita WSL 2 habilitado; puede
 requerir instalación como administrador y reinicio. Sus términos se aceptan
 manualmente, no mediante este script.
@@ -66,12 +66,28 @@ no un skip aprobado. No conectar este comando a credenciales de producción.
 Si cambió el esquema del fixture, se requiere recrear exclusivamente este entorno
 local; no ejecutar `db reset`, `db push`, `link` o comandos remotos para arreglarlo.
 
-## Estado inicial en esta PC (30/09/2026)
+## Validación en Linux (01/10/2026)
+
+Docker Engine 29.8.2 instalado en Linux Mint 22.3 mediante el repositorio oficial
+para Ubuntu Noble. Usuario agregado al grupo `docker`; cerrar sesión y volver
+a entrar para que las terminales y la aplicación incorporen el grupo. Mientras
+tanto, `sg docker -c 'npm run db:local:iniciar'` permite ejecutar con ese grupo.
+Usar Node 24 (instalado con nvm): `nvm use 24` y comprobar `node --version`.
+La terminal inicial usaba Node 18 y fallaba al importar TypeScript.
+
+`npm run test:integracion` aprobó 6 pruebas sin skips sobre Auth, PostgREST y
+PostgreSQL reales. `npm run check` aprobó 155 pruebas, con 27 advertencias de lint
+y ningún error. Se corrigió el rechazo de PostgreSQL al BOM UTF-8 de algunos SQL
+de Windows retirándolo sólo de la cadena que envía el harness, sin alterar las
+políticas. El proyecto aislado se detuvo al finalizar; conserva el fixture vacío.
+Esto cierra la validación local, no verifica recuperación de respaldos ni Windows.
+
+## Estado inicial en Windows (30/09/2026)
 
 CLI Supabase 2.118.0 instalada. Docker Desktop instalado, pero su motor no está
 disponible: la captura del 30/09/2026 muestra «Virtualization support not detected».
 Este mensaje no confirma por sí solo una causa en BIOS/UEFI. La configuración
-queda postergada por pedido del usuario. La suite real todavía NO pudo validarse.
+quedó postergada por pedido del usuario. La suite real no pudo validarse en Windows.
 No interpretar la aprobación de tests unitarios como integración aprobada.
 
 ## Retomar la configuración en Windows

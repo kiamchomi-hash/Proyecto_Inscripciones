@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Docker y Supabase local — 01/10/2026
+
+- [x] **Validar las pruebas reales de Supabase local desde Linux.** Docker Engine 29.8.2 instalado y operativo en Linux Mint 22.3. Se inició exclusivamente `cau-guardrails-local`, se corrigió la lectura del BOM UTF-8 en los SQL de Windows y `npm run test:integracion` aprobó las 6 pruebas, sin skips: RLS/grants, registro, persistencia HTTP de los tres formularios y rate limit. `npm run check` con Node 24.14.1 aprobó 155 pruebas; lint conservó 27 advertencias y ningún error. El stack se detuvo al terminar. No se conectó a producción. La instalación Windows/WSL sigue sin verificar, pero ya no bloquea la integración local. [Procedimiento](pruebas-supabase-local.md).
+
 Contiene tareas verificadas como terminadas y registros anteriores de tareas reformuladas. Las reproducciones y propuestas anteriores dentro de esos bloques son contexto histórico, no nuevas tareas ni instrucciones para ejecutarlas hoy.
 
 ## pendiente-03

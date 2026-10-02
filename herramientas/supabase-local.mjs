@@ -98,7 +98,11 @@ export async function fixtureDatabase(status) {
 }
 
 export async function applyPolicies(client) {
-  for (const name of ['2026-07-20_seguridad_admin.sql', '2026-07-20_seguridad_formularios.sql', '2026-07-22_cerrar_lectura_publica.sql']) await client.query(await readFile(join(ROOT, 'sql', name), 'utf8'));
+  for (const name of ['2026-07-20_seguridad_admin.sql', '2026-07-20_seguridad_formularios.sql', '2026-07-22_cerrar_lectura_publica.sql']) {
+    // PostgreSQL no acepta el BOM UTF-8 que conservan algunos archivos de Windows.
+    const sql = (await readFile(join(ROOT, 'sql', name), 'utf8')).replace(/^\uFEFF/, '');
+    await client.query(sql);
+  }
   await client.query("NOTIFY pgrst, 'reload schema'");
 }
 

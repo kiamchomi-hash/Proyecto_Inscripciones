@@ -2,8 +2,17 @@ import test from 'node:test';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import assert from 'node:assert/strict';
-import { assertLocalStatus, isolatedEnvironment, assertLocalDockerEndpoint, containerEnvironment, assertTemporaryCleanupPath } from '../herramientas/supabase-local.mjs';
+import { assertLocalStatus, isolatedEnvironment, assertLocalDockerEndpoint, containerEnvironment, assertTemporaryCleanupPath, applyPolicies } from '../herramientas/supabase-local.mjs';
 const status = { API_URL: 'http://127.0.0.1:55421', DB_URL: 'postgresql://postgres:postgres@127.0.0.1:55422/postgres', ANON_KEY: 'local-anon', SERVICE_ROLE_KEY: 'local-service' };
+test('los SQL reales se envían a PostgreSQL sin la marca BOM de Windows', async () => {
+  const queries = [];
+  await applyPolicies({ query: async sql => queries.push(sql) });
+  assert.equal(queries.length, 4);
+  for (const sql of queries) assert.equal(sql.startsWith('\uFEFF'), false);
+  assert.match(queries[0], /^BEGIN;/);
+  assert.match(queries[1], /^BEGIN;/);
+  assert.equal(queries[3], "NOTIFY pgrst, 'reload schema'");
+});
 test('integración acepta únicamente los puertos y direcciones locales dedicados', () => {
   assert.doesNotThrow(() => assertLocalStatus(status));
   for (const API_URL of ['https://example.supabase.co', 'http://localhost:55421', 'http://127.0.0.1:54321', 'http://127.0.0.1:55421/evil', 'http://user@127.0.0.1:55421']) assert.throws(() => assertLocalStatus({ ...status, API_URL }), /aislado/);
