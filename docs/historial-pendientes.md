@@ -180,3 +180,11 @@ Cerrado: encontrada la página oficial de la Tecnicatura en Responsabilidad y Ge
 - [x] **Verificar inicio de cursado ED/EDH 2B.** Revisado el 01/10/2026: el calendario oficial 2026, página 6, publica comienzo de clases el 05/10 y cierre de inscripción académica a materias el 18/10. La fecha ya está en `INICIO_CLASES` de `herramientas/ventas/contexto-carreras.mjs` y las páginas generadas del bot. No se modificó la lógica ni el mensaje al aspirante.
 
   Fuente: [calendario oficial ED/EDH](https://contenidos.21.edu.ar/descargas/calendarios-2026/5-calendario-academico-2026-ed-edh-arccnbcod-0030.pdf). Esto cierra sólo la duda de inicio del pendiente 11, no becas, doble carrera, requisitos, cupos ni admisión comercial.
+
+## modalidad-presentaciones-2026-10-02
+
+- [x] **Tarea 27 del pedido del 02/10: modalidad en las presentaciones de carreras.** Todas las variantes de `info-general` de Siglo 21 y Teclab usan `{modalidad}` y exigen ese marcador. El contexto de Siglo 21 explicita «virtual (Educación Distribuida Home)», según la oferta del CAU ya documentada. Teclab conserva el dato por carrera; Identidad ya lo usaba y no se modificó.
+- Verificación: 303 tests del material comercial aprobados. Se comprobaron las presentaciones seleccionadas por el motor con los 90 contextos reales del buscador: 65 de Siglo 21, 17 de Teclab y 8 de Identidad. Todas incluyen la modalidad correspondiente y no dejan marcadores sin resolver.
+- Regenerados `ventas/buscador-carreras.html` y `ventas/entrenar-bot.html`. Cambio local, sin publicación; el material comercial está ignorado por git.
+- Incidencias ajenas al cambio: el auditor institucional marca dos respuestas existentes del curso de IA de Teclab por la palabra «cohorte», clasificada como vocabulario de Identidad. El generador omite 2A porque su planilla no trae una promoción concluyente; generó 2B correctamente. No se alteraron precios ni promociones.
+- [Referencias locales](../referencias/2026-10-02-modalidad-presentaciones.md).

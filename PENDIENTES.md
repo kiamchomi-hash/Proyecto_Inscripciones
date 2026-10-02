@@ -1,6 +1,6 @@
 # Pendientes
 
-Actualizado el 30/09/2026: se retiraron las tareas verificadas como terminadas y se corrigieron motivos obsoletos. Las demás siguen abiertas hasta contar con evidencia de cierre.
+Actualizado el 02/10/2026: se agregaron las 31 tareas solicitadas por el usuario. Se conservan los pendientes anteriores; siguen abiertos hasta contar con evidencia de cierre.
 
 Lista de trabajo para una sola persona. No hace falta trasladarla a otra herramienta. Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; las revisiones repetibles van en rutinas.
 
@@ -26,6 +26,42 @@ Estas recomendaciones ya figuraban en el registro; se hacen visibles sin dar por
 - [ ] Comprobar si siguen sin uso las credenciales de Resend de este proyecto antes de retirarlas; no tocar las de otros proyectos.
 - [ ] Revisar las decisiones pendientes sobre los módulos de Bienestar Integral y Mindfulness, si siguen dentro del alcance del convenio.
 - [ ] Evaluar el endurecimiento menor de SPF de `~all` a `-all` sólo si sigue justificado (prioridad baja).
+
+## Tareas agregadas el 02/10/2026
+
+Se mantiene la numeración del pedido para poder referirse a cada tarea.
+
+- [ ] **1. Incorporar más imágenes de personas**.
+- [ ] **2. Mejorar las páginas de clases y crear sus folletos e imágenes**.
+- [ ] **3. Mejorar el mensaje de aranceles**.
+- [ ] **4. Extraer los precios 2027 de Universidad Siglo 21**.
+- [ ] **5. Mostrar la fecha de inicio y el mensaje «Todavía estás a tiempo de inscribirte» en todas las carreras**, según la vigencia de cada inscripción.
+- [ ] **6. Mejorar con IA las imágenes de algunos modales de carreras**.
+- [ ] **7. Mejorar la página de materias en base a los folletos creados**.
+- [ ] **8. Rediseñar Identidad Argentina: los modales y la página principal**. Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
+- [ ] **9. Dar imágenes a todas las carreras**.
+- [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso** para Teclab, Siglo 21, Identidad Argentina y clases de apoyo.
+- [ ] **11. Crear un folleto de carreras relevantes**.
+- [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
+- [ ] **13. Revisar la indexación y el rendimiento de las páginas**.
+- [ ] **14. Crear más mensajes de seguimiento que complementen al primero**.
+- [ ] **15. Permitir que una pregunta del buscador de carreras se responda combinando varias respuestas**, separadas por párrafos.
+- [ ] **16. Revisar el mensaje de bienvenida que se envía una vez que alguien se inscribe en una carrera**.
+- [ ] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas**.
+- [ ] **18. Revisar las aperturas de las carreras**: algunas no arrancan a mediados de bimestre.
+- [ ] **19. Ajustar los slides de Teclab para corregir el scroll**.
+- [ ] **20. Terminar de revisar el UIverse local**.
+- [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
+- [ ] **22. Revisar cómo funciona la garantía de adaptación y sumarla al corpus general**.
+- [ ] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram**, especialmente las de Estadística y Análisis Aplicado, que aparentemente tienen éxito.
+- [ ] **24. Incorporar newsletter y acceso al precio desde los slides**: agregar un checkbox al pedir el mail en formularios; poner el precio en el último slide con un botón «Ver precio» que abra una ventana con las opciones de iniciar sesión o hablar por WhatsApp.
+- [ ] **25. Ocultar preferentemente la ubicación en los slides de carreras**.
+- [ ] **26. Revisar los plugins de ChatGPT y Claude**.
+- [x] **27. Añadir la modalidad a los mensajes de presentación de las carreras**. Resuelto localmente el 02/10/2026; 90 carreras verificadas. [Evidencia](docs/historial-pendientes.md#modalidad-presentaciones-2026-10-02).
+- [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
+- [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
+- [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
+- [ ] **31. Arreglar la alineación de las carreras en la sección del test vocacional**.
 
 ## Documentación de apoyo
 
