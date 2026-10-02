@@ -55,7 +55,7 @@ const rango = (desde: number, hasta: number) => Array.from({ length: hasta - des
 /**
  * Reparte tarjetas -por su alto- en tandas que entren en `disponible`. Primero
  * cuenta el minimo de tandas necesarias y despues, entre todos los cortes que
- * dan ese mismo numero, se queda con el mas parejo.
+ * dan ese mismo numero, se queda con el que no crece y, entre esos, el mas parejo.
  */
 function repartir(altos: number[], disponible: number, separacion: number): number[][] {
   const n = altos.length;
@@ -75,15 +75,23 @@ function repartir(altos: number[], disponible: number, separacion: number): numb
   }
   if (aTope.length <= 1) return aTope;
 
+  // Antes de lo parejo en pixeles va el orden: se prefiere que ninguna tanda
+  // tenga mas tarjetas que la anterior. Con tres competencias en dos tandas,
+  // 2+1 y no 1+2; si la primera era larga, 1+2 salia mas parejo y la primera
+  // pantalla quedaba con una sola tarjeta. Si solo entran repartos que crecen
+  // (las dos primeras no caben juntas), se usa el mas parejo de esos.
   let mejor: number[][] | null = null;
+  let mejorCrece = true;
   let mejorDiferencia = Infinity;
   const buscar = (desde: number, faltan: number, acumulado: number[][]) => {
     if (faltan === 1) {
       if (alto(desde, n) > disponible) return;
       const grupos = [...acumulado, rango(desde, n)];
+      const crece = grupos.some((g, i) => i > 0 && g.length > grupos[i - 1].length);
       const suyos = grupos.map(g => alto(g[0], g[g.length - 1] + 1));
       const diferencia = Math.max(...suyos) - Math.min(...suyos);
-      if (diferencia < mejorDiferencia) {
+      if ((mejorCrece && !crece) || (crece === mejorCrece && diferencia < mejorDiferencia)) {
+        mejorCrece = crece;
         mejorDiferencia = diferencia;
         mejor = grupos;
       }

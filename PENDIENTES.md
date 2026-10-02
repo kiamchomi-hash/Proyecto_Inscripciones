@@ -49,7 +49,7 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **16. Revisar el mensaje de bienvenida que se envía una vez que alguien se inscribe en una carrera**.
 - [ ] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas**.
 - [ ] **18. Revisar las aperturas de las carreras**: algunas no arrancan a mediados de bimestre.
-- [ ] **19. Ajustar los slides de Teclab para corregir el scroll**.
+- [x] **19. Ajustar los slides de Teclab para corregir el scroll**. Resuelto el 02/10/2026: la slide 2 reparte 2+1 en vez de 1+2. [Evidencia](docs/historial-pendientes.md#teclab-slides-tandas-2026-10-02).
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
 - [ ] **22. Revisar cómo funciona la garantía de adaptación y sumarla al corpus general**.

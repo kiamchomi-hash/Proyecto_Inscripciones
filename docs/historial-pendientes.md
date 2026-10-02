@@ -188,3 +188,9 @@ Cerrado: encontrada la página oficial de la Tecnicatura en Responsabilidad y Ge
 - Regenerados `ventas/buscador-carreras.html` y `ventas/entrenar-bot.html`. Cambio local, sin publicación; el material comercial está ignorado por git.
 - Incidencias ajenas al cambio: el auditor institucional marca dos respuestas existentes del curso de IA de Teclab por la palabra «cohorte», clasificada como vocabulario de Identidad. El generador omite 2A porque su planilla no trae una promoción concluyente; generó 2B correctamente. No se alteraron precios ni promociones.
 - [Referencias locales](../referencias/2026-10-02-modalidad-presentaciones.md).
+
+## teclab-slides-tandas-2026-10-02
+
+- [x] **Tarea 19 del pedido del 02/10: tandas de la slide 2 de Teclab.** Cuando las competencias no entraban juntas (sobre todo en PC con ventana baja), `repartir()` elegía el reparto más parejo en píxeles y, si la primera competencia era larga, mostraba 1 tarjeta y después 2. Ahora prefiere repartos donde ninguna tanda tenga más tarjetas que la anterior (2+1) y usa lo parejo sólo para desempatar; 1+2 queda únicamente si las dos primeras no caben juntas.
+- Verificación: lint y typecheck aprobados; simulación de `repartir()` con altos reales de casos límite (primera larga → 2+1; 2+1 sin lugar → 1+2; todas entran → una tanda). Revisión de confiabilidad aprobada sin bloqueos.
+- Pendiente aparte: no hay test unitario de `repartir()`; requiere sacarla del componente.
