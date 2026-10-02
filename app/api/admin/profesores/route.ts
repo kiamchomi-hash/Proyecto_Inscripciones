@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
+import { exigirAdmin } from '@/lib/auth/exigir-admin';
 
 const ROLES = new Set(['admin', 'profesor']);
 
 export async function PATCH(request: NextRequest) {
-  const body = await request.json() as {
+  const denegado = await exigirAdmin();
+  if (denegado) return denegado;
+
+  let datos: unknown;
+  try {
+    datos = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
+  }
+  if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
+    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
+  }
+  const body = datos as {
     id?: unknown;
     estado?: unknown;
     rol?: unknown;
@@ -29,6 +42,9 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const denegado = await exigirAdmin();
+  if (denegado) return denegado;
+
   const id = new URL(request.url).searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Falta id' }, { status: 400 });
 

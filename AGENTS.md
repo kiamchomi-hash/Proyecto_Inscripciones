@@ -28,7 +28,7 @@ Hay cuatro y elegir mal es el error más fácil de cometer:
 |---|---|---|
 | `lib/supabase.ts` | anon, sin sesión | lecturas públicas desde Server Components |
 | `lib/supabase-auth.ts` | anon + sesión | **todo el panel admin**, incluidas sus escrituras |
-| `lib/supabase-server.ts` | anon + sesión | sesión en Server Components (hoy no lo importa nadie) |
+| `lib/supabase-server.ts` | anon + sesión | sesión en servidor y autorización de APIs privilegiadas con `lib/auth/exigir-admin.ts` |
 | `lib/supabase-admin.ts` | **service role** | escrituras del público y de las APIs; lleva `import 'server-only'` |
 
 El profesor logueado **escribe con la anon key** (policies `materias_approved_update` y `profesores_register_pending`): no metas service role en el panel.

@@ -34,6 +34,23 @@ publicó este cambio.
 
 Guías consultadas: [referencias de esta corrección](../referencias/2026-10-02-fiabilidad-faq-clases.md).
 
+En una segunda intervención se completó **A4**: `lib/auth/exigir-admin.ts`
+verifica sesión con `getUser()` y perfil aprobado con rol admin mediante el
+cliente anon con cookies. PATCH y DELETE de profesores lo invocan antes de
+crear el cliente privilegiado; el proxy conserva su protección. No hay caché
+global de permisos ni registro de cuentas desde el helper. Los errores de
+verificación impiden escribir. PATCH devuelve 400 para JSON malformado, nulo,
+arreglos y cuerpos que no son objetos.
+
+Cuatro pruebas nuevas ejecutan el helper y los handlers reales sin pasar por el
+proxy: matriz de autorización, cero clientes privilegiados ante denegación,
+operaciones válidas del admin, cuerpos inválidos y errores de escritura.
+`npm run check` aprobado: **161 tests**, cero fallos y cero omitidos,
+27 advertencias de lint y cero errores. Build aprobado. Estas pruebas usan
+dependencias simuladas; no certifican RLS real ni renovación de cookies en un
+navegador. No se realizaron escrituras reales ni se publicó el cambio.
+[Referencia de autorización](../referencias/2026-10-02-autorizacion-admin.md).
+
 P1: siguiente intervención, antes de confiar en una nueva publicación. P2: siguiente ciclo de mantenimiento. P3: mejora opcional condicionada a mediciones. Esfuerzos orientativos para una persona familiarizada con el proyecto; incluyen pruebas, no son presupuestos.
 
 | ID | Prioridad | Acción | Impacto | Esfuerzo |

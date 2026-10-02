@@ -61,7 +61,7 @@ Elegir mal el cliente es el error más fácil de cometer:
 |---|---|---|
 | `lib/supabase.ts` | anon, sin sesión | lecturas públicas desde Server Components (carreras, materias, novedades, FAQ) |
 | `lib/supabase-auth.ts` | anon + sesión en cookies | **todo el panel admin en el navegador**: login, layout, dashboard, `/admin/clases-apoyo`, sidebar. Incluye sus escrituras |
-| `lib/supabase-server.ts` | anon + sesión en cookies | sesión del usuario en Server Components. Hoy **no lo importa nadie** — `proxy.ts` arma su propio `createServerClient` inline |
+| `lib/supabase-server.ts` | anon + sesión en cookies | sesión del usuario en servidor; `lib/auth/exigir-admin.ts` lo usa para autorizar escrituras privilegiadas. `proxy.ts` arma su propio `createServerClient` inline |
 | `lib/supabase-admin.ts` | **service role** | escrituras del público y de las APIs. Tiene `import 'server-only'`; nunca puede entrar al bundle del cliente |
 
 Qué puede escribir cada rol (definido en `sql/2026-07-20_seguridad_*.sql`):
@@ -130,6 +130,12 @@ Rutas `/admin/*` y `/api/admin/*`, todas protegidas por `proxy.ts`. La cadena de
 4. `/admin` (dashboard) y todo `/api/admin/*` exigen además `rol === 'admin'`; un profesor cae en `/admin/clases-apoyo`.
 
 Públicas dentro de `/admin`: `login`, `auth/callback`, `reset-password`, `pendiente`. `next.config.ts` le pone `X-Robots-Tag: noindex, nofollow` a todo `/admin`.
+
+`PATCH` y `DELETE /api/admin/profesores` también verifican sesión, aprobación y
+rol admin dentro del handler con `lib/auth/exigir-admin.ts`, antes de crear el
+cliente service role. El helper usa el cliente anon con sesión, no registra
+cuentas y no cachea permisos entre solicitudes. Una falla de verificación
+rechaza la operación. Las escrituras del profesor en el panel siguen usando anon.
 
 ### Taxonomía de carreras
 

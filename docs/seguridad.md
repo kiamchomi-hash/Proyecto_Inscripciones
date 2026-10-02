@@ -131,3 +131,19 @@ scanner y política. La clave pública anon de Supabase tiene una excepción
 semántica acotada; service_role y sesiones siguen bloqueadas. No se instalaron
 hooks, no se cambiaron permisos remotos ni se auditó toda la historia publicada.
 [Procedimiento y límites](publicacion-sin-secretos.md).
+
+### 02/10/2026, autorización junto a escrituras de profesores
+
+PATCH y DELETE de `/api/admin/profesores` verifican también dentro del handler
+la sesión, el estado aprobado y el rol admin, con `lib/auth/exigir-admin.ts`.
+La verificación usa anon con sesión y ocurre antes de crear el cliente service
+role. Un error de auth/perfil impide escribir; no se cachean permisos globales
+ni se alteraron las escrituras anon del profesor. PATCH devuelve 400 para JSON
+malformado o cuerpos inválidos, incluido null.
+
+`check` aprobado con 161 tests y build aprobado. Las pruebas invocan handlers
+sin proxy, cubren denegaciones sin crear cliente privilegiado y operaciones de
+admin; usan mocks y no sustituyen la integración RLS/cookies real. Cambios
+locales, sin escrituras reales ni publicación.
+[Detalle](auditoria-tecnica-2026-10-02.md) y
+[referencia](../referencias/2026-10-02-autorizacion-admin.md).
