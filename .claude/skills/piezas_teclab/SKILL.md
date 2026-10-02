@@ -26,6 +26,7 @@ Toda pieza gráfica de Teclab: folleto, afiche, placa de WhatsApp, posteo, histo
 - **Tipografía: Poppins**, que es la fuente de marca de sus presentaciones. Titulares en Bold/SemiBold con interlineado cerrado (~1.0), bajadas en Regular y el remate en *Italic* («sos *imprescindible*»). Esto reemplaza en Teclab a la Inter 900 que `lienzo-de-diseno` fija para las demás piezas. Unbounded sigue vetada.
 - **Logo:** siempre el original (`contenidos/teclab/oficial/LOGOS TECLAB/`), con «INSTITUTO TÉCNICO SUPERIOR» debajo. Blanco sobre foto o navy, color sobre claro. No se redibuja.
 - **Foto real, nunca ilustración:** una persona joven con notebook o celular, luz cálida de interior y oscurecida para que el texto blanco se lea. Se toman de `PAUTA 1A 2026/` o `PAUTA - IMAGENES TECLAB/`.
+- **Las imágenes de personas, propias o generadas, se guardan siempre en `contenidos/siglo21/imagenes_personas/`** (para todas las casas, no sólo Siglo 21) y se buscan ahí primero. Si hace falta una nueva, se le pasa al usuario el prompt y la genera él en su app; él la deja en esa carpeta.
 - **Aval:** los escudos del Ministerio de Educación (Ciudad y Nación) al pie, en blanco. Si nombra una empresa cocreadora (AWS, Google, Microsoft, HubSpot, Avenga, Zendesk), va su logo real.
 - **Descuentos:** la cifra es el elemento más grande de la pieza («15% off») y la condición va debajo en Bold chico.
 
@@ -53,3 +54,5 @@ La pieza, más una línea por decisión que diga de qué pieza oficial salió.
 ## Referencias
 
 - `references/composiciones.md`: las seis composiciones, con medidas y carpetas de origen.
+- `references/fondos.md`: las luces de fondo ya usadas, las guardadas para próximas piezas y las descartadas. Leerlo en el paso 1 para no repetir el fondo de la placa anterior.
+- `references/recursos.md`: gráfica aprobada para llenar huecos entre bloques (trama de puntos, flechas de la marca).
