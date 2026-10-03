@@ -194,6 +194,15 @@ function montarEndpoint(t, respuestaHubspot = async () => new Response('{}', { s
   };
   const supabase = baseEnMemoria(tablas);
 
+  // Sin las variables del robot, que en Vercel sí existen durante el build: si
+  // no, el despacho a GitHub también pasa por `fetch` y este test cuenta de más.
+  const envRobot = { token: process.env.ROBOT_GITHUB_TOKEN, repo: process.env.ROBOT_GITHUB_REPO };
+  delete process.env.ROBOT_GITHUB_TOKEN;
+  delete process.env.ROBOT_GITHUB_REPO;
+  t.after(() => {
+    if (envRobot.token !== undefined) process.env.ROBOT_GITHUB_TOKEN = envRobot.token;
+    if (envRobot.repo !== undefined) process.env.ROBOT_GITHUB_REPO = envRobot.repo;
+  });
   // Nada sale a la red: `fetch` queda simulado y `after` sólo encola.
   const llamadas = [];
   t.mock.method(globalThis, 'fetch', async (url, init) => {
