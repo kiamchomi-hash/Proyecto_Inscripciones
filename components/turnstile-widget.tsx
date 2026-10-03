@@ -12,6 +12,12 @@ type TurnstileWidgetProps = {
    * clases de apoyo, que no tienen casa.
    */
   marca?: 'siglo21' | 'teclab' | 'identidad';
+  /**
+   * Modo invisible de Cloudflare (`interaction-only`): verifica por detras y
+   * solo muestra el desafio si sospecha de un bot. Sin marcador ni lugar
+   * reservado, porque casi nunca se ve nada.
+   */
+  invisible?: boolean;
 };
 
 /** La marca de la casa, para el marcador. Identidad va en su isotipo propio. */
@@ -33,6 +39,7 @@ type TurnstileApi = {
       'expired-callback'?: () => void;
       theme: 'dark';
       size: 'flexible' | 'compact';
+      appearance?: 'always' | 'execute' | 'interaction-only';
     },
   ) => string;
   remove: (widgetId: string) => void;
@@ -56,7 +63,7 @@ const ESPERA_MAXIMA_MS = 10000;
  */
 const ANCHO_MINIMO_FLEXIBLE = 300;
 
-export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' }: TurnstileWidgetProps) {
+export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21', invisible = false }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerRef = useRef<HTMLDivElement>(null);
   // Mientras Cloudflare no pintó el iframe, su lugar reservado es un hueco
@@ -126,6 +133,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
         'expired-callback': () => onExpireRef.current?.(),
         theme: 'dark',
         size: esCompacto ? 'compact' : 'flexible',
+        ...(invisible ? { appearance: 'interaction-only' as const } : {}),
       });
       esperarAlIframe();
     };
@@ -155,9 +163,13 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21' 
         turnstileWindow.turnstile.remove(widgetId);
       }
     };
-  }, [sitekey]);
+  }, [sitekey, invisible]);
 
   if (!sitekey) return null;
+
+  // Invisible: el contenedor queda vacio y solo crece si Cloudflare tiene que
+  // mostrar el desafio.
+  if (invisible) return <div ref={containerRef} className="flex justify-center" />;
 
   // El iframe del widget mide 71 px al montar (medido en prod, desktop y mobile);
   // sin reservar ese lugar, todo lo que está debajo salta cuando aparece. El

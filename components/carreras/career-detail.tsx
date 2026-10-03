@@ -19,6 +19,7 @@ import {
   parsePlanTeclab,
   partirDescripcionTeclab,
 } from '@/components/index/teclab';
+import AvisoInicioTeclab from '@/components/index/aviso-inicio-teclab';
 import CareerInfoButton from './career-info-button';
 import StickyEnrollmentCta from './sticky-enrollment-cta';
 import {
@@ -35,6 +36,7 @@ import {
   tienePlanDeEstudios,
   mensajeWhatsAppInfo,
 } from './career-content';
+import { rutaInscripcion, tieneInscripcionPropia } from './inscripcion-carrera';
 
 interface Props {
   carrera: Carrera;
@@ -222,6 +224,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   // si puede prometer el plan, y que `npm run auditar` para marcar las carreras
   // que no lo tienen. Vive en career-content.ts para que los tres no se separen.
   const hasPlan = tienePlanDeEstudios(carrera);
+  // Teclab tiene una pagina aparte que explica el tramite: esta ficha contesta
+  // "que es la carrera" y aquella "como me inscribo".
+  const inscripcionHref = tieneInscripcionPropia(carrera) ? rutaInscripcion(carrera) : null;
 
   const waMsg = mensajeWhatsAppInfo(carrera);
   const waHref = `https://wa.me/${isIA || isTeclab ? NUMERO_TECLAB_IDENTIDAD : NUMERO_CAU}?text=${encodeURIComponent(waMsg)}`;
@@ -395,6 +400,12 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             </section>
           )}
 
+          {/* Aviso de inicio de Teclab, justo arriba del plan (o de "Como se
+              cursa" en el curso): ahi se decide si anotarse, no en el hero. */}
+          {conMaterialTeclab && (
+            <AvisoInicioTeclab carrera={carrera} acento={accent} className="career-aviso-inicio" />
+          )}
+
           {/* Reemplaza al plan de estudios en los cursos: no tienen temario por
               cuatrimestre, pero si hay que contar como es la cursada. */}
           {cursada.length > 0 && (
@@ -522,6 +533,29 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 {isTeclabCourse ? 'Curso oficial de Teclab' : 'Carrera oficial de Teclab'}
                 {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Te acompañamos en la
                 inscripción y durante toda la cursada.
+                {inscripcionHref && (
+                  <>
+                    {' '}Mirá{' '}
+                    {/* Enlace de texto dentro del parrafo: `.career-oficial a`
+                        lo pintaria como un segundo boton al lado de "Solicitar
+                        informacion", que es el que tiene que ganar. */}
+                    <Link
+                      href={inscripcionHref}
+                      prefetch={false}
+                      style={{
+                        display: 'inline',
+                        padding: 0,
+                        border: 0,
+                        fontSize: 'inherit',
+                        textDecoration: 'underline',
+                        textUnderlineOffset: '.2em',
+                      }}
+                    >
+                      cómo inscribirte
+                    </Link>
+                    , paso a paso.
+                  </>
+                )}
               </p>
               {/* El titulo no es un punto final: es la mitad de una licenciatura
                   ya cursada. Va aca y no en el hero porque se lee despues del
@@ -564,6 +598,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               )}
               {cursada.length > 0 && <a href="#plan">Cómo se cursa</a>}
               {hasPlan && <a href="#plan">Plan de estudios</a>}
+              {inscripcionHref && (
+                <Link href={inscripcionHref} prefetch={false}>Cómo inscribirte</Link>
+              )}
             </nav>
             <div className="career-aside-cta">
               {carrera.proximamente && <span>Próxima apertura</span>}

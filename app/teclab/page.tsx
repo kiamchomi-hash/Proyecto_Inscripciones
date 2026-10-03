@@ -7,7 +7,8 @@ import {
   carreraToSlug,
   esCarreraVisible,
 } from '@/components/index/types';
-import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
+import { esCursoTeclab, esTeclab, TECLAB_CYAN } from '@/components/index/teclab';
+import AvisoInicioTeclab from '@/components/index/aviso-inicio-teclab';
 import { carreraACatalogo } from '@/lib/datos/carrera-catalogo';
 import CareersCatalog from '@/components/index/careers-catalog';
 import FormularioLead from '@/components/formularios/formulario-lead';
@@ -148,6 +149,8 @@ export default async function TeclabPage() {
                 preload
               />
               <h1 id="teclab-title">Tecnicaturas de dos años, 100% online.</h1>
+              {/* Las dos familias arrancan el mismo dia: cualquiera de sus niveles sirve */}
+              <AvisoInicioTeclab carrera={{ nivel: 'Teclab - Tecnología' }} acento={TECLAB_CYAN} className="teclab-hero-aviso" />
               <div className="teclab-hero-actions">
                 <a className="teclab-button teclab-button--primary" href="#oferta-teclab">
                   Ver las carreras

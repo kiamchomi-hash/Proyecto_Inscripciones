@@ -1,0 +1,124 @@
+# Autoinscripción en Teclab
+
+## Objetivo
+
+Quien llega desde el botón «Quiero inscribirme» del mail o desde el nuevo botón «Inscribite ya» de la ventana «Ver precio» completa la preinscripción en un carrusel: datos, medio de pago y confirmación. Un robot crea la cuenta en el Portal Administrativo de Teclab y dispara el mail con usuario y contraseña (los dos son el DNI, sin puntos). La persona paga sola en el portal del alumno.
+
+## Flujo real de Teclab (relevado el 02/10/2026)
+
+- La preinscripción se carga a mano en `portaladministrativo.teclab.edu.ar/admission/preregistration` («Nuevo» → «Guardar»). No hay API.
+- El mail con credenciales sale con el botón de acceso del Portal Administrativo.
+- El pago es autogestionado en `portalalumno.teclab.edu.ar` (Pagos → Pagos en línea). Alternativa documentada: link de Mercado Pago.
+- Existe una automatización local del portal con Playwright: `ventas/fuentes/teclab/marketing-agent/automation.js` (`registerLead`), que hoy completa pocos campos.
+
+## Decisiones
+
+- Se automatiza la carga (usuario, 02/10/2026). El texto final dice «te va a llegar un mail», nunca «te llegó».
+- Garantía: si el robot no logra cargar la preinscripción o disparar el mail, avisa por Telegram con los datos para cargarla a mano.
+- El robot corre en GitHub Actions, en un repositorio privado nuevo (gratis; los registros de un repo público expondrían nombres y DNI). Usuario del portal en los secretos cifrados de GitHub (usuario, 02/10/2026).
+- El aviso instantáneo por Telegram de cada preinscripción ya existe (trigger `on_consulta_insert`); no se crea otro.
+- Dos recorridos, sólo para Teclab:
+  - Entrada por autoinscripción (botón del mail o «Inscribite ya» de «Ver precio»): datos → medio de pago → confirmación. Sin la pregunta «¿Querés gestionar tu inscripción?».
+  - Entrada normal: datos → se envía la preinscripción (llega el aviso) → pantalla grande «¿Querés gestionar tu inscripción?» con medio de pago (tarjeta o banco) → confirmación. Esa pregunta aparece sólo en este recorrido.
+- Ninguna prueba contra el portal real de Teclab sin autorización explícita del usuario para esa corrida (destino, operación y credencial).
+- La contraseña no se toca desde el sitio (usuario, 03/10/2026): queda el DNI, el alumno la cambia y acepta el reglamento en su primer login. Por eso el robot sigue apretando «Enviar link de pago»: el mail dice «contraseña: tu DNI» y coincide.
+
+## Tareas
+
+- [x] T1. Botón «Inscribite ya» en el resultado de «Ver precio» y en el mail, que lleva al formulario en modo autoinscripción con la carrera elegida.
+- [x] T2. Carrusel del formulario en modo autoinscripción: 1) datos de la preinscripción, 2) medio de pago, 3) confirmación con aviso del mail y botón al portal del alumno.
+- [x] T3. Guardado: la autoinscripción entra como consulta marcada para el robot, con el medio de pago elegido.
+- [ ] T4. Robot: toma las autoinscripciones pendientes, crea la preinscripción en el Portal Administrativo, dispara el mail de acceso y marca la fila; si falla, aviso por Telegram.
+  - [x] T4a. Sitio: tabla `robot_autoinscripciones` (una fila por autoinscripción: estado `pendiente|cargada|error`, intentos, detalle sin datos personales), SQL a correr a mano. Al guardar la autoinscripción, `after()` crea la fila y despacha el robot (`repository_dispatch` de GitHub con sólo el id; sin token configurado, no despacha y queda pendiente). Endpoint `/api/robot/autoinscripciones`, protegido con `ROBOT_SECRET`: `GET` devuelve los datos de una fila pendiente y `POST` registra el resultado; un error avisa por Telegram con lo necesario para cargarla a mano. Los datos personales nunca viajan en el despacho ni quedan en GitHub: el robot los pide al endpoint.
+  - [x] T4b. Robot, repo privado `cau-robot-teclab` (se arma local en `~/Escritorio/cau-robot-teclab`; crear el repo en GitHub y cargar los secretos requiere autorización del usuario): Node + Playwright en GitHub Actions, uno a la vez (`concurrency`). Pasos: login (DNI y contraseña del portal en secretos; el login no tiene captcha, verificado el 03/10/2026) → «Nuevo» → mail del lead + lupa → teléfono +54 9 … → carrera del lead → datos del postulante (localidades y colegio por buscador, con la mejor coincidencia) → chequeo de DNI existente → «Crear» → «Enviar link de pago» → informa el resultado. Cualquier paso que no encuentre su dato frena y deja la fila en `error` con el motivo (sin cargar nada a medias). Modo `--ensayo` que recorre todo sin apretar «Crear».
+  - [ ] T4c. Prueba real autorizada (junto con T10).
+- [ ] T6. (código hecho; falta correr `sql/2026-10-03_enlaces_inscripcion.sql`, publicar el sitio y desplegar `notificar`) Enlace personalizado (usuario, 03/10/2026): cada preinscripción de Teclab trae en el aviso de Telegram un enlace listo para reenviar. El enlace lleva un código al azar (sin datos personales en la URL), vence a los 7 días o al inscribirse, muestra el precio vigente, precarga los datos (DNI parcialmente oculto) y abre directo en el medio de pago y la tarjeta.
+- [ ] T7. (reabierta 03/10: el formulario va arriba de todo, sin la foto ni el botón del encabezado) Página propia de preinscripción por carrera (usuario, 03/10/2026): sólo el formulario de preinscripción con la carrera precargada y los datos vacíos, indexable.
+- [ ] T5. Modo de prueba sin tocar el portal, y verificación de punta a punta autorizada.
+- [x] T8. (usuario, 03/10/2026) Sacar el paso de medio de pago (y su panel de banco y tarjeta): el portal pide la tarjeta y decide solo. Recorrido nuevo: datos → «¡Listo!».
+- [x] T9. (usuario, 03/10/2026) Alta del lead en la landing de la sede (`vinculacion.teclab.edu.ar/expo-bs-as-esposito`) con los datos del formulario, sin que la persona entre ahí.
+- [ ] T10. (usuario, 03/10/2026) Prueba con cuenta nueva: el usuario inicia sesión en el Portal Administrativo con su cuenta y se carga una preinscripción con un mail que Teclab nunca vio (`kiamchomi+teclab3@gmail.com`) y DNI ficticio 99000003, después del alta del lead en la landing. Verificar: que el portal tome el lead nuevo (localidad incluida), que llegue el mail «PAGO AUTOGESTIONADO!» y que, en el primer login de esa cuenta (cambio de contraseña y términos), el enlace `/payments/select` termine en Pagos.
+
+## Progreso
+
+Creado el 02/10/2026.
+
+- T1–T3 (02–03/10): carrusel aprobado con capturas; altura animada entre pasos, panel propio para banco y tarjeta, misma altura en pago y tarjeta (474 px medidos), botón «Inscribirme», captcha invisible. Tests 214/214.
+- T7 (03/10): `/carreras/<slug>/inscripcion` para Teclab, indexable, en el sitemap, enlazada desde la ficha. Revisada en celular.
+- T6 (03/10): enlace `/inscripcion/<codigo>` (32 caracteres alfanuméricos: un `_` rompe el Markdown de Telegram), kind `enlace` en la API, `notificar` agrega la línea al aviso. Tests 240/240, typecheck OK.
+- T8 (03/10, ruta delegada: 5+ archivos no triviales): sin paso de medio de pago. Entrada directa: datos («Paso 1 de 2», «Inscribirme», Turnstile invisible) → «¡Listo!»; entrada normal: «¿Querés gestionar tu inscripción?» con «Inscribirme» y «Ahora no»; enlace: datos precargados + «Inscribirme». La API ya no pide ni guarda `medioPago` (la columna `medio_pago` queda sin escribir; sin cambios de esquema). Se borraron `MEDIOS_PAGO`, bancos, marcas, `medioPagoDe`, `PasoPago`, `PasoTarjeta`, la cuota de la tarjeta y la igualación de alto entre paneles. Typecheck y lint OK, tests 245/245. Sin capturas todavía.
+- T9 (03/10, ruta: delegated writer (trigger: route + helpers + tests + docs)): cada autoinscripción guardada (`autoinscripcion` y `enlace`, en `insertarAutoinscripcion`) manda el lead a la landing de HubSpot de la sede con `after()`, timeout de 5 s y sin tumbar nunca el 201. Helpers puros en `casas.ts` (`carreraHubspotDe`, `provinciaHubspotDe`, `camposLeadSede`, `pedidoLeadSede`); Venta Directa queda sin opción y se omite. Forma del cuerpo v3 sin verificar contra la documentación de HubSpot (context7 no la trajo). Tests nuevos en `tests/lead-sede-teclab.test.mjs` (RED observado antes de implementar). Typecheck OK, lint sin errores, tests 254/254. Sin envío real todavía: se prueba en T10.
+- T4a (03/10, ruta: delegated writer (trigger: SQL + route + endpoint + tests + docs)): `sql/2026-10-03_robot_autoinscripciones.sql` (RLS sin políticas, sólo service role; tipos agregados a mano en `lib/database.types.ts`). `insertarAutoinscripcion` pide el id de la consulta (`.select('id').single()`) y con `after()` encola la fila y despacha `repository_dispatch` con sólo `{ id }` (5 s; sin `ROBOT_GITHUB_*` no despacha y queda pendiente). Endpoint `/api/robot/autoinscripciones` con `ROBOT_SECRET` en tiempo constante: `GET ?id` (legajo de filas pendiente/error vía `payloadDesdeConsulta`), `GET` (hasta 20 pendientes), `POST` (resultado; error suma intento y avisa por Telegram). `avisar` de la vigilancia extraído a `lib/telegram.ts`. Mocks de insert de tres tests adaptados al `.select().single()`. RED observado en `tests/robot-autoinscripciones.test.mjs` antes de las rutas. Typecheck OK, lint sin errores, tests 271/271. **Pendiente del usuario**: correr el SQL en el SQL Editor, `npm run db:tipos` y revisar el diff, cargar `ROBOT_SECRET`, `ROBOT_GITHUB_TOKEN` y `ROBOT_GITHUB_REPO` en Vercel (y `ROBOT_SECRET` como secreto del repo del robot), redeploy; sumar las tres a `.env.example` (el escritor no tuvo permiso de lectura sobre ese archivo).
+- T4b (03/10, ruta: delegated writer (trigger: proyecto nuevo de varios archivos)): `~/Escritorio/cau-robot-teclab` armado local (git init, sin remoto ni repo en GitHub). Node 22 + Playwright 1.63; `src/mapeo.mjs` puro (teléfono a `+54 9 11 xxxx-xxxx`, carrera, localidad y colegio por mejor coincidencia con umbral y ventaja, género/estado civil/nacionalidad, plan de carga y enmascarado), `src/portal.mjs` en el orden relevado (nunca «Enviar resumen», con guarda), `src/selectores.mjs`, `src/sitio.mjs`, `src/index.mjs` (un id o barrido, `--ensayo`, `--datos` local), workflow con `repository_dispatch`/`workflow_dispatch`/cron 30 min, `concurrency` y capturas sólo si falla (3 días). Tests 36/36, `node --check` OK. **Los selectores están sin verificar hasta la corrida supervisada (T4c)**; tampoco se relevó el aviso de éxito de «Enviar link de pago» ni la forma de `pre-register/exists`. Falta crear el repo privado y cargar los secretos (autorización del usuario).
+
+## Portal Administrativo: formulario de preinscripción (relevado el 03/10/2026, sesión iniciada por el usuario, sólo lectura)
+
+Ruta: `/admission/preregistration` → «Nuevo» → `/admission/preregistration/create`. El menú lateral sólo tiene Admisión → Preinscripciones; cada fila de la lista sólo ofrece «Editar».
+
+Todos los campos están en una sola página (el asistente de 4 pasos es visual). Botones: «Cancelar», «Crear». Panel «Tu Resumen»: «Enviar resumen» y «Enviar link de pago» (deshabilitados hasta crear).
+
+| Portal | Tipo | Nuestro campo | Nota |
+|---|---|---|---|
+| Información del Lead: Email lead | texto con búsqueda | email | |
+| Información del Lead: Nombre | texto | nombre | |
+| Información del Lead: Teléfono | teléfono con país (AR por defecto) | telefono | |
+| Información del Lead: Carrera | desplegable | carrera | nombres en mayúsculas en el portal |
+| Periodo | desplegable | — | única opción hoy: 2B 2026 (viene elegida) |
+| Nombre, Apellido | texto | nombre, apellido | |
+| Fecha nacimiento | fecha | fechaNacimiento | |
+| Lugar de nacimiento | texto | lugarNacimiento | |
+| Nacionalidad | desplegable (Argentina, …) | nacionalidad | |
+| Tipo identificación | desplegable: DNI (defecto), CUIT, LE, LC, Cedula, CURP | — | siempre DNI |
+| Número | texto | dni | |
+| Género | desplegable: Masculino, Femenino | sexo | **nuestro «Otro» no tiene equivalente** |
+| Estado civil | desplegable: Soltero, Casado, Divorciado, Viudo | estadoCivil | nuestro «Soltero/a» → Soltero; **«Otro» sin equivalente** |
+| Email | texto | email | |
+| Carrera | desplegable | carrera | |
+| Domicilio, Número, Piso, Departamento, Código postal, Localidad | texto | domicilio… | |
+| Nivel de estudios alcanzados | desplegable: Secundario, Homologacion | nivelEstudios | hay que normalizar nuestro valor a «Secundario» |
+| Datos del colegio: Localidad, Nombre del colegio | texto | colegioLocalidad, colegio | |
+
+Pendiente de confirmar con una carga de prueba autorizada (mail de prueba del usuario: kiamchomi@gmail.com): qué dispara el mail con usuario y contraseña (¿«Crear», «Enviar link de pago», «Enviar resumen»?) y qué devuelve el portal al crear.
+
+### Carga de prueba (03/10/2026, autorizada por el usuario, mail kiamchomi@gmail.com, DNI ficticio 99000001)
+
+Resultado: «Preinscripción creada correctamente» (`POST api.teclab.edu.ar/gw/student/pre-register` → 201).
+
+Orden real que exige el portal (lo que el robot tiene que respetar):
+1. Escribir el mail en «Email lead» y apretar la lupa: busca al contacto en el HubSpot de Teclab. Si existe, trae nombre, teléfono, carrera y localidad (el mail de prueba ya existía como lead).
+2. Completar o corregir nombre, teléfono y carrera del lead. **Elegir la carrera en esta sección es lo que habilita el Simulador de Precios** y copia la localidad del lead al domicilio.
+3. Completar los datos del postulante (varios se copian solos desde el lead).
+4. «Crear».
+
+Hallazgos:
+- **La localidad del domicilio no se carga a mano**: está bloqueada y sale del lead de HubSpot (en la prueba quedó «SIN LOCALIDAD»). Sin ella, «Crear» se pone rojo sin mensaje.
+- **Teléfono**: tiene que tener país Argentina y formato válido; el móvil va como 9 11 xxxx-xxxx (`+54 9 11 4000-0000`). Un número mal formado bloquea el alta.
+- **Lugar de nacimiento y localidad del colegio** se eligen de un buscador de localidades («LOCALIDAD, PROVINCIA, ARGENTINA»); **el colegio** se elige de la lista de escuelas de esa localidad. Nuestro formulario los pide como texto libre: hay que normalizarlos o pedirlos con el mismo buscador.
+- **El Simulador de Precios** muestra el precio vigente con su vencimiento real («Descuento válido hasta el 3 de octubre del 2026» para Programación: total $ 552.359,03). Es una segunda fuente de precios, más fresca que la planilla.
+- **Formas de pago** del simulador: «Tarjeta de crédito / débito», «Suscripción», «Tarjeta».
+- El portal usa una API JSON (`api.teclab.edu.ar/gw/...`): carreras, localidades, instituciones, existencia de DNI, alta de preinscripción. Un robot por API sería más robusto que uno por pantalla.
+- «Enviar resumen» se habilita con el lead y la carrera (no hace falta crear). Abre una vista previa y, al confirmar, manda al mail del lead el resumen de aranceles: carrera, período, localidad, asesor, precio de lista, descuentos en $, total, ahorro y «Descuento válido hasta el …». Sin usuario ni contraseña, sin botones, con el 0810 de Teclab y un error de copy («ahorrás $ … por mes»). Probado por el usuario el 03/10/2026: llegó a kiamchomi@gmail.com. El robot no debe usarlo (desvía al 0810).
+- «Enviar link de pago» se habilita recién después de «Crear» (en la pantalla de edición no está: sólo «Guardar»). Segunda carga de prueba el 03/10/2026 (DNI ficticio 99000002, código de la primera: 20262BPNET0106): el usuario lo apretó y el mail llegó al instante a kiamchomi@gmail.com. Contenido confirmado por el usuario: el mail trae usuario y contraseña (los dos son el DNI) y lleva al login del portal del alumno. Al entrar, el portal pide cambiar la contraseña y después aceptar los términos y condiciones; recién ahí entra al portal. Conclusión: el robot tiene que apretar «Crear» y después «Enviar link de pago»; no hace falta nada más. Mail real (pegado por el usuario el 03/10/2026): remitente `no-reply@teclab.edu.ar`, asunto «PAGO AUTOGESTIONADO!», título «Saldo pendiente». Explica que el pago es por Mercado Pago (efectivo, crédito y débito), muestra «DNI» y «Contraseña» (los dos el DNI) y un botón «Ingresar ahora» al portal del alumno, donde se paga. O sea: es el mail de acceso **y** de pago a la vez. «Ingresar ahora» lleva a `https://portalalumno.teclab.edu.ar/login?redirect=%2F`: usuario y contraseña, cambio de contraseña, términos y condiciones, portal. Es la raíz del portal redirigiendo al login porque no hay sesión; (el botón del sitio terminó apuntando a `/payments/select`, ver abajo). No apareció por el conector de Gmail (probablemente lo vio en otra cuenta).
+- El portal rechaza un DNI ya cargado («Identificación ya existente»): el robot tiene que chequearlo antes (`student/pre-register/exists`).
+
+### Portal del alumno, recorrido con la cuenta de prueba (03/10/2026)
+
+- Después del login (y, la primera vez, cambio de contraseña y términos) entra siempre a `/dashboard`. Ahí se ven el inicio de clases (14/10/2026), el último día de inscripción a materias (01/11/2026) y los canales de atención.
+- Para pagar: menú hamburguesa → Pagos → Pagos en línea → `/payments/select`. Muestra «Período completo»: matrícula cuatrimestral $ 256.911 → $ 64.228 (75% OFF), bimestre 2B de octubre a diciembre $ 642.278 → $ 488.131 (24% OFF), total $ 552.359 «en hasta 3 cuotas según medio de pago» y el botón «Ver opciones de pago». También aparece un curso de IA 100% bonificado.
+- El login usa `?redirect=`. Si el enlace del sitio apuntara a `/payments/select`, el alumno sin sesión caería en `/login?redirect=%2Fpayments%2Fselect` y, después de entrar, en la pantalla de pago. Falta probar que el redirect sobreviva al cambio de contraseña y a los términos de la primera vez.
+- Verificado en un navegador sin sesión: `https://portalalumno.teclab.edu.ar/payments/select` redirige a `/login?redirect=%2Fpayments%2Fselect`. Falta confirmar que la primera vez, después del cambio de contraseña y los términos, siga hasta la pantalla de pago.
+- «Ver opciones de pago» lleva a `/payments/method`, «¿Cómo prefieres pagar?»: Tarjetas (crédito, débito o dos tarjetas), Mercado Pago (dinero en cuenta), Go cuotas, Wibond, efectivo (Pago Fácil, Rapipago) y Financiación Teclab (suscripción). Diferencias con nuestro `MEDIOS_PAGO`: el portal no ofrece transferencia ni Naranja X como opción aparte (Naranja X aparece solo en el banner de cuotas sin interés) y suma «dos tarjetas» y Financiación Teclab.
+- «Tarjetas» lleva a `/payments/checkout`: número de tarjeta, titular, vencimiento, código de seguridad, DNI, «Agregar segunda tarjeta», cupón de descuento y «Pagar». No hay selector de banco ni de cuotas antes del número: presumiblemente los detecta por el número (BIN). No se verificó, porque habría que cargar una tarjeta. Para el sitio, banco y tarjeta sirven solo para mostrar la financiación; el portal no los pide.
+- El usuario probó con su cuenta: al loguearse desde `/payments/select` entra directo a Pagos. El botón «Ir al portal del alumno» del «¡Listo!» ahora apunta ahí. **Pendiente:** probarlo con una cuenta nueva, que entre por primera vez.
+
+### Alta del lead: landing de la sede (usuario, 03/10/2026)
+
+- El lead hay que cargarlo primero en `https://vinculacion.teclab.edu.ar/expo-bs-as-esposito`, la landing de HubSpot que lo asigna a la sede. Recién después se crea la preinscripción en el Portal Administrativo.
+- Es un formulario de HubSpot embebido: portal `5880041`, formulario `a19c1564-e23a-475c-a16a-11aa244c1b9e`, `captchaStatus: NOT_APPLICABLE` (sin captcha). Campos: `firstname`, `lastname`, `carrera` (obligatorio, lista), `phone`, `provincia` (lista), `email` (obligatorio), `cuando_te_recibis_` (Este año / El año que viene) y ocultos `token_landings` y `empresas_form` (los dos con el id del formulario).
+- Opciones de `carrera`: Relaciones laborales, Redes informáticas, Programación, Planificacion y organizacion de eventos, Periodismo y nuevas tecnologías, Seguros, Gestion hotelera, Gestion contable, Gestion de la empresa agraria, Seguridad informática, Administración de servicios en la nube (Cloud Administration), Inbound Marketing, Customer Experience, Marketing Digital, Data Science, Quality Assurance, Curso Inteligencia Artificial. Hace falta mapear nuestros nombres a estos.
+- Como no tiene captcha, el alta del lead se manda desde nuestro servidor al recibir la autoinscripción (API pública de formularios de HubSpot), sin pasar por el robot (T9).
+- Usuario, 03/10/2026: el banco y la tarjeta que se elijan no importan, porque «Pagos en línea» muestra sus propias opciones.
+- T4b calibración (03/10/2026, sesión del usuario, sólo lectura; se confirmó que el formulario quedó vacío): login «DNI»/«Contraseña»/«Siguiente»; dos tarjetas `.v-card` («Información del Lead» y «Preinscripción», con los subtítulos como `span.text-h6`); rótulos repetidos por orden («Número»: documento y después domicilio; «Localidad»: domicilio deshabilitada y después colegio); lupa `i.mdi-magnify`; teléfono `input[name=telephone]` (vue-tel-input, Argentina por defecto); opciones `role=option` en `.menuable__content__active`; nacionalidad en gentilicio; género Masculino/Femenino; «Fecha nacimiento» de sólo lectura con calendario de Vuetify (abre en años, el último 2011) y el robot ahora lo recorre año → mes → día. Quedan sin verificar 7 selectores que sólo aparecen con una carga real: meses y días del calendario, el aviso tras «Enviar link de pago», un posible diálogo de confirmación y los avisos. Se calibran en T4c.
+- **La cuenta de alumno se crea con «Crear»** (verificado el 03/10/2026): la primera prueba (DNI 99000001) nunca recibió «Enviar link de pago» y el usuario entró igual al portal del alumno con DNI/DNI. «Enviar link de pago» sólo manda el mail. Primer login: cambio de contraseña y después «Reglamento Institucional · Condiciones de uso» en `/reglamento/confirm`, que hay que aceptar.
+- T4c, primera carga real del robot (03/10/2026, autorizada por el usuario; prueba local `--prueba --visible` con sus credenciales tipeadas por él): alta del lead en la landing con el código del sitio (HubSpot respondió 200, formato v3 confirmado) y preinscripción **creada** por el robot de punta a punta: «Prueba Robot», DNI 99000003, `kiamchomi+teclab3@gmail.com`, Programación, colegio «COLEGIO NACIONAL DE BUENOS AIRES» y localidad del domicilio «SIN LOCALIDAD». Correcciones en el camino: el teléfono se elige con Argentina en el menú de países (el lead traía `11 …` como número de EE. UU.; el sitio ahora manda `+54` a la landing); el calendario y el menú de países van con clic del DOM; la localidad del domicilio se lee de `.v-select__selection`; el colegio se filtra escribiendo (la lista muestra sólo 20); después de «Crear» aparece el diálogo «Preinscripción creada correctamente» con «Cerrar», que tapaba «Enviar link de pago». Por eso esta carga quedó **sin el mail**: el robot ya cierra el diálogo, falta verificarlo con una carga nueva.
+- **T4c verificado de punta a punta (03/10/2026, carga 99000005, autorizada):** alta en la landing → robot: lead, teléfono, carrera, postulante, domicilio, colegio, «Crear», cierre del diálogo de éxito y «Enviar link de pago» → el mail llegó a kiamchomi@gmail.com. Nuevo hallazgo: un lead recién creado en la landing tarda unos minutos en tener localidad en HubSpot y el portal avisa «El contacto no posee localidad en HubSpot…»; el robot cierra el aviso y reintenta la lupa cada minuto, hasta 5 veces. Pendiente menor: el aviso que confirma «Enviar link de pago» no se relevó; `TEXTOS.linkEnviado` es amplio y puede dar por bueno un envío que no salió (la confirmación real es el mail). Cargas de prueba en Teclab: 99000001 a 99000005; la 3 y la 4 quedaron sin mail.

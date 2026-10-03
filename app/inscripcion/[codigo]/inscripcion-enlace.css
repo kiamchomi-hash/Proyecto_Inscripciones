@@ -1,0 +1,255 @@
+/* El enlace de inscripción de Teclab. Repinta los tokens --catalogo-* con la
+   marca del instituto, igual que .teclab-page: la confirmación y el «¡Listo!»
+   son los del formulario y leen esos tokens. La tabla del precio copia la de «Ver precio»
+   (.vp-* en components/index/modales.css), que en esta página no se carga. */
+.inscripcion-enlace {
+  --catalogo-acento: var(--teclab-cyan);
+  --catalogo-acento-vivo: #7ff6ea;
+  --catalogo-acento-suave: #26b7ab;
+  --catalogo-acento-oscuro: #17bdae;
+  --catalogo-acento-tinta: var(--teclab-ink);
+  --catalogo-acento-rgb: 46, 231, 215;
+  --catalogo-form-campo: #071b24;
+  --catalogo-form-tarjeta: #0d2734;
+  --catalogo-texto-suave: #7f9aa1;
+  --catalogo-etiqueta: #9fc0c7;
+
+  min-height: 100vh;
+  padding: 6rem 1rem 3rem;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(142, 44, 242, 0.12), transparent 28rem),
+    var(--teclab-ink);
+  color: #fff;
+}
+
+.ie-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.ie-cabecera {
+  text-align: center;
+}
+
+.ie-marca {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--catalogo-acento);
+}
+
+.ie-titulo {
+  margin-top: 0.35rem;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.ie-tarjeta {
+  border-radius: 1rem;
+  background: var(--catalogo-form-tarjeta);
+  box-shadow: inset 0 0 0 1px rgba(var(--catalogo-acento-rgb), 0.18);
+  padding: 1rem;
+}
+
+.ie-tarjeta.ie-pago {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* El aviso de enlace vencido va solo, centrado en la pantalla. */
+.inscripcion-enlace > .ie-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 28rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ie-pago .ie-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.ie-subtitulo {
+  margin-bottom: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--catalogo-etiqueta);
+}
+
+.ie-texto {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ie-precio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ie-lineas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ie-linea {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.ie-concepto {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.ie-monto {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ie-descuento {
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  background: var(--catalogo-acento);
+  color: var(--catalogo-acento-tinta);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.ie-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 4px;
+  background: var(--catalogo-acento);
+  color: var(--catalogo-acento-tinta);
+}
+
+.ie-total-rotulo {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ie-total-monto {
+  font-size: 1.3rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.ie-nota {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ie-vigencia {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--catalogo-acento-vivo);
+}
+
+.ie-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1rem;
+}
+
+.ie-datos dt {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--catalogo-etiqueta);
+}
+
+.ie-datos dd {
+  font-size: 0.95rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ie-corregir,
+.ie-secundario {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--catalogo-texto-suave);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ie-corregir:hover,
+.ie-secundario:hover {
+  color: #fff;
+}
+
+.ie-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #25d366;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  transition: background-color 0.15s ease;
+}
+
+.ie-whatsapp svg {
+  color: #25d366;
+}
+
+.ie-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.15);
+}
+
+.ie-whatsapp:focus-visible,
+.ie-corregir:focus-visible,
+.ie-secundario:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .inscripcion-enlace {
+    padding-top: 5rem;
+  }
+
+  .ie-datos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

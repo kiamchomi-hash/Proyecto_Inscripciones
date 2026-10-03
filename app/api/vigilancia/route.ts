@@ -24,6 +24,7 @@ import {
   RUTAS,
   redirectsEsperados,
 } from '@/lib/vigilancia-esperado';
+import { enviarTelegram } from '@/lib/telegram';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -173,23 +174,7 @@ async function correrChequeos(base: string) {
   return { fallos, urlsSitemap };
 }
 
-async function avisar(texto: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chat = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chat) return 'sin configurar';
-
-  try {
-    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ chat_id: chat, text: texto, disable_web_page_preview: true }),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-    return r.ok ? 'enviado' : `error HTTP ${r.status}`;
-  } catch (e) {
-    return `error ${motivo(e)}`;
-  }
-}
+const avisar = (texto: string) => enviarTelegram(texto, TIMEOUT_MS);
 
 export async function GET(request: NextRequest) {
   // Sin secreto el endpoint quedaria abierto y cualquiera podria disparar el

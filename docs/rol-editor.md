@@ -9,6 +9,7 @@ No es la service role con buenos modales: es un rol distinto, con su propia cont
 | `carreras`, `novedades`, `materias` | `SELECT`, `INSERT`, `UPDATE` |
 | `faq_preguntas` | `SELECT`/`UPDATE` **por columna**, sin `contacto` ni `nombre_contacto` |
 | `consultas` | `SELECT`, `DELETE` — **no** `INSERT`/`UPDATE` (`sql/2026-08-28_editor_consultas.sql`) |
+| `precios_privados` | `SELECT`, `INSERT`, `UPDATE`, `DELETE` (`sql/2026-10-02_precios_carrera.sql`). La escribe `herramientas/ventas/publicar-precios.mjs`; `anon` y `authenticated` no tienen acceso |
 | `solicitudes_clase`, `profesores`, `form_rate_limits`, `career_clicks` | nada |
 
 `DELETE` no está en ninguna de las de contenido: una carrera sale de la oferta cambiando `nivel`/`activa`, una novedad se despublica. Sobre `consultas` es al revés — lee y borra, pero no escribe: se agregó el 28/08/2026 para poder limpiar la fila que deja probar el formulario contra producción, y las consultas siguen entrando sólo por `/api/formularios`. Contra el resto de las tablas de formularios la respuesta es `permission denied for table solicitudes_clase`, y eso es el rol funcionando, no un bug — esa consulta va al dashboard.

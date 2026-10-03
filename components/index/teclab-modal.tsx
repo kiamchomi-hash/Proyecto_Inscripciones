@@ -18,6 +18,8 @@ import { type Carrera, carreraToSlug } from './types';
 import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
+import AvisoInicioTeclab from './aviso-inicio-teclab';
+import { AccesoVerPrecio, PanelVerPrecio } from './ver-precio-teclab';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import {
   destacarCompetencias,
@@ -814,7 +816,17 @@ function ListaMaterias({ materias, acento }: { materias: string[]; acento: strin
 }
 
 // ── Slide 4: cierre ──
-function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
+function SlideCierre({
+  carrera,
+  acento,
+  ficha,
+  onVerPrecio,
+}: {
+  carrera: Carrera;
+  acento: string;
+  ficha: TeclabFicha | null;
+  onVerPrecio: () => void;
+}) {
   const { modalidad } = parseEnfoqueTeclab(carrera.enfoque);
   // Los datos van como chips, igual que en la portada. Con cuadros rotulados
   // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
@@ -853,6 +865,10 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
             </span>
           ))}
         </div>
+
+        {/* El aviso de inicio va en el cierre, donde sobra lugar y queda junto
+            a los botones de contacto. */}
+        <AvisoInicioTeclab carrera={carrera} acento={acento} className="teclab-aviso-inicio self-center" />
       </div>
 
       {/* Bloque de contacto, pegado al titulo. En el telefono los botones van
@@ -863,15 +879,15 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
 
         {/* Un solo boton. Al lado habia otro con la direccion de la sede, que
             abria Google Maps: la carrera se cursa 100% online y a un lead que
-            vive lejos una direccion le lee como un requisito de asistencia. */}
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener nofollow"
-          className="flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
-        >
-          Consultar precios
-        </a>
+            vive lejos una direccion le lee como un requisito de asistencia.
+            El precio se ve a cambio del mail en el slide siguiente, al que
+            lleva este boton; WhatsApp queda a la vista abajo. */}
+        <AccesoVerPrecio
+          acento={acento}
+          textoAcento={textoSobreAcentoTeclab(acento)}
+          waHref={waHref}
+          onVerPrecio={onVerPrecio}
+        />
 
         {/* Lockup oficial: la carrera es de Teclab y articula con la Siglo 21 */}
         <Image
@@ -884,6 +900,51 @@ function SlideCierre({ carrera, acento, ficha }: { carrera: Carrera; acento: str
       </div>
     </div>
   );
+}
+
+// ── Slide 5: ver precio ──
+// Va despues del cierre y se llega con su boton «Ver precio», con «Siguiente»
+// o con las flechas, como a cualquier otro slide. Era una ventana encima del
+// modal; como slide no tapa nada y se vuelve con «Anterior».
+function SlideVerPrecio({
+  carrera,
+  acento,
+  activo,
+  ref,
+}: {
+  carrera: Carrera;
+  acento: string;
+  activo: boolean;
+  ref: React.Ref<HTMLDivElement>;
+}) {
+  const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
+
+  return (
+    // tabIndex -1: el boton «Ver precio» del cierre pasa el foco aca, y no al
+    // campo de mail, que en el telefono abriria el teclado y taparia los botones.
+    <div
+      ref={ref}
+      tabIndex={-1}
+      className="teclab-slide vp-slide h-full flex flex-col p-4 sm:p-7 overflow-y-auto custom-scrollbar outline-none"
+    >
+      <PanelVerPrecio
+        carreraId={carrera.id}
+        slug={carreraToSlug(carrera)}
+        nombreCarrera={carrera.nombre_corto || carrera.nombre}
+        acento={acento}
+        acentoClaro={CLARO[acento] ?? acento}
+        textoAcento={textoSobreAcentoTeclab(acento)}
+        waHref={waHref}
+        activo={activo}
+      />
+    </div>
+  );
+}
+
+/** Un campo de texto tiene las flechas para mover el cursor, no para pasar de slide. */
+function esCampoEditable(destino: EventTarget | null): boolean {
+  if (!(destino instanceof HTMLElement)) return false;
+  return destino.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(destino.tagName);
 }
 
 // ── Modal ──
@@ -909,8 +970,14 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   );
   const salida = useMemo(() => partirDescripcionTeclab(carrera.descripcion).salida, [carrera.descripcion]);
 
+  const [idx, setIdx] = useState(0);
+  const precioRef = useRef<HTMLDivElement>(null);
+
+  // El slide del precio es una funcion del slide activo (monta el captcha
+  // recien cuando se ve); el resto son nodos fijos, asi pasar de slide no los
+  // vuelve a renderizar.
   const slides = useMemo(() => {
-    const s: { key: string; node: React.ReactNode }[] = [
+    const s: { key: string; node: React.ReactNode | ((activo: boolean) => React.ReactNode) }[] = [
       { key: 'portada', node: <SlidePortada carrera={carrera} acento={acento} ficha={ficha} /> },
     ];
     if (competencias.length) {
@@ -933,11 +1000,21 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       });
     }
     if (periodos.length) s.push({ key: 'plan', node: <SlidePlan carrera={carrera} periodos={periodos} acento={acento} /> });
-    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} /> });
+    const indicePrecio = s.length + 1;
+    const irAPrecio = () => {
+      setIdx(indicePrecio);
+      // Sin `preventScroll` el navegador correria el carrusel para mostrar el
+      // slide de golpe, sin la transicion.
+      precioRef.current?.focus({ preventScroll: true });
+    };
+    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} onVerPrecio={irAPrecio} /> });
+    s.push({
+      key: 'precio',
+      node: (activo: boolean) => <SlideVerPrecio ref={precioRef} carrera={carrera} acento={acento} activo={activo} />,
+    });
     return s;
   }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida]);
 
-  const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -979,6 +1056,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
         handleClose();
         return;
       }
+      if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && esCampoEditable(e.target)) return;
       if (e.key === 'ArrowRight') {
         setIdx(i => Math.min(slides.length - 1, i + 1));
         return;
@@ -1029,6 +1107,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       {/* El tope en rem evita que en pantallas altas (tablet vertical) el modal
           se estire mucho mas de lo que el contenido necesita y queden huecos. */}
       <div
+        data-teclab-caja
         className={`${clase} relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
           h-[88dvh] sm:h-[min(92vh,52rem)] max-h-[88dvh] sm:max-h-[min(92vh,52rem)] overflow-hidden flex flex-col`}
         style={{
@@ -1080,13 +1159,13 @@ export default function TeclabModal({ carrera, onClose }: Props) {
             className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]"
             style={{ transform: `translateX(-${idx * 100}%)` }}
           >
-            {slides.map(s => (
+            {slides.map((s, i) => (
               <div
                 key={s.key}
                 className="flex-shrink-0 w-full h-full overflow-hidden"
                 style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}
               >
-                {s.node}
+                {typeof s.node === 'function' ? s.node(idx === i) : s.node}
               </div>
             ))}
           </div>

@@ -43,7 +43,6 @@ const ETIQUETAS: Record<string, string> = {
   nivel_estudios: '🎓 *Nivel de estudios:*',
   colegio: '🏫 *Colegio:*',
   colegio_localidad: '🏫 *Localidad del colegio:*',
-  medio_pago: '💳 *Medio de pago:*',
 };
 
 export function formatDate(iso: string): string {

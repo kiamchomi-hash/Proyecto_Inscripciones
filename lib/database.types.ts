@@ -255,6 +255,38 @@ export type Database = {
         }
         Relationships: []
       }
+      enlaces_inscripcion: {
+        Row: {
+          codigo: string
+          consulta_id: number
+          creado_at: string
+          usado_at: string | null
+          vence_at: string
+        }
+        Insert: {
+          codigo: string
+          consulta_id: number
+          creado_at?: string
+          usado_at?: string | null
+          vence_at?: string
+        }
+        Update: {
+          codigo?: string
+          consulta_id?: number
+          creado_at?: string
+          usado_at?: string | null
+          vence_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enlaces_inscripcion_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: false
+            referencedRelation: "consultas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       faq_preguntas: {
         Row: {
           contacto: string
@@ -552,6 +584,44 @@ export type Database = {
         }
         Relationships: []
       }
+      precios_privados: {
+        Row: {
+          actualizado_at: string
+          carrera_id: number
+          conceptos: Json
+          institucion: string
+          nota: string | null
+          total: string
+          vigente_hasta: string
+        }
+        Insert: {
+          actualizado_at?: string
+          carrera_id: number
+          conceptos: Json
+          institucion: string
+          nota?: string | null
+          total: string
+          vigente_hasta: string
+        }
+        Update: {
+          actualizado_at?: string
+          carrera_id?: number
+          conceptos?: Json
+          institucion?: string
+          nota?: string | null
+          total?: string
+          vigente_hasta?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "precios_privados_carrera_id_fkey"
+            columns: ["carrera_id"]
+            isOneToOne: true
+            referencedRelation: "carreras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profesores: {
         Row: {
           created_at: string
@@ -589,6 +659,44 @@ export type Database = {
             columns: ["materia_id"]
             isOneToOne: false
             referencedRelation: "materias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      robot_autoinscripciones: {
+        Row: {
+          consulta_id: number
+          created_at: string
+          detalle: string | null
+          estado: string
+          id: number
+          intentos: number
+          updated_at: string
+        }
+        Insert: {
+          consulta_id: number
+          created_at?: string
+          detalle?: string | null
+          estado?: string
+          id?: never
+          intentos?: number
+          updated_at?: string
+        }
+        Update: {
+          consulta_id?: number
+          created_at?: string
+          detalle?: string | null
+          estado?: string
+          id?: never
+          intentos?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "robot_autoinscripciones_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: true
+            referencedRelation: "consultas"
             referencedColumns: ["id"]
           },
         ]
@@ -637,8 +745,8 @@ export type Database = {
       suscripciones_newsletter: {
         Row: {
           activo: boolean
-          carrera_id: number
-          carrera_nombre: string
+          carrera_id: number | null
+          carrera_nombre: string | null
           consentimiento_at: string
           created_at: string
           email: string
@@ -647,8 +755,8 @@ export type Database = {
         }
         Insert: {
           activo?: boolean
-          carrera_id: number
-          carrera_nombre: string
+          carrera_id: number | null
+          carrera_nombre: string | null
           consentimiento_at?: string
           created_at?: string
           email: string
@@ -657,8 +765,8 @@ export type Database = {
         }
         Update: {
           activo?: boolean
-          carrera_id?: number
-          carrera_nombre?: string
+          carrera_id?: number | null
+          carrera_nombre?: string | null
           consentimiento_at?: string
           created_at?: string
           email?: string

@@ -407,6 +407,9 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [errorPub, setErrorPub] = useState(false);
   const [errorPriv, setErrorPriv] = useState(false);
   const [rateLimited, setRateLimited] = useState(false);
+  // Tildado de entrada (decisión del 02/10/2026). La API suscribe sólo si el
+  // contacto es un mail: en la respuesta personal puede ser un WhatsApp.
+  const [newsletter, setNewsletter] = useState(true);
 
   const titleOk = title.trim().length >= 5;
 
@@ -415,6 +418,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     setContactPub(''); setContactPriv(''); setName('');
     setPubReadonly(false); setPrivReadonly(false);
     setErrorPub(false); setErrorPriv(false); setRateLimited(false);
+    setNewsletter(true);
   }
 
   function handleClose() { reset(); onClose(); }
@@ -467,7 +471,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const c = contactPub.trim().slice(0, 200);
     setErrorPub(false);
     setSubmitting(true);
-    const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'publica', contacto: c });
+    const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'publica', contacto: c, newsletter });
     setSubmitting(false);
     if (!saved) { setErrorPub(true); resetCaptcha(); return; }
     recordSubmission();
@@ -485,7 +489,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const n = name.trim().slice(0, 80) || null;
     setErrorPriv(false);
     setSubmitting(true);
-    const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'privada', contacto: c, nombre_contacto: n });
+    const saved = await saveQuestion({ titulo: t, descripcion: d, modo: 'privada', contacto: c, nombre_contacto: n, newsletter });
     setSubmitting(false);
     if (!saved) { setErrorPriv(true); resetCaptcha(); return; }
     recordSubmission();
@@ -631,6 +635,11 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                 <div className={`text-xs mt-1 text-red-400 ${errorPub ? 'block' : 'hidden'}`}>Ingresá tu email para poder avisarte cuando sea respondida.</div>
                 <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
               </div>
+              <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: '#c8dedd' }}>
+                <input type="checkbox" id="ask-newsletter-pub" checked={newsletter} onChange={e => setNewsletter(e.target.checked)}
+                  className="h-4 w-4 flex-shrink-0 cursor-pointer" style={{ accentColor: '#00c7b1' }} />
+                Quiero recibir novedades por mail
+              </label>
               <TurnstileWidget
                 key={captchaKey}
                 onVerify={setTurnstileToken}
@@ -670,6 +679,14 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               </div>
               <div className={`text-xs mt-1 text-red-400 ${errorPriv ? 'block' : 'hidden'}`}>Ingresá un contacto para poder responderte.</div>
               <div className={`text-xs mt-1 text-red-400 ${rateLimited ? 'block' : 'hidden'}`}>Alcanzaste el límite de preguntas por hora. Intentá más tarde.</div>
+              {/* Sólo con un mail escrito: con un WhatsApp no hay a dónde mandarlas. */}
+              {contactPriv.includes('@') && (
+                <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: '#c8dedd' }}>
+                  <input type="checkbox" id="ask-newsletter-priv" checked={newsletter} onChange={e => setNewsletter(e.target.checked)}
+                    className="h-4 w-4 flex-shrink-0 cursor-pointer" style={{ accentColor: '#00c7b1' }} />
+                  Quiero recibir novedades por mail
+                </label>
+              )}
               <TurnstileWidget
                 key={captchaKey}
                 onVerify={setTurnstileToken}

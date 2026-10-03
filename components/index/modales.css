@@ -215,6 +215,38 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 
+/* Aviso de inicio de clases en la portada: misma anatomia que el cuadro de
+   dato secundario, con un filete en el acento. El acento se aclara con blanco
+   para que el texto chico se lea sobre el fondo tinta (el violeta puro no). */
+.teclab-aviso-inicio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.6rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--aviso-acento);
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.teclab-aviso-inicio .aviso-inicio-teclab-fecha {
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 600;
+}
+
+.teclab-aviso-inicio .aviso-inicio-teclab-fecha time {
+  color: #fff;
+  font-weight: 800;
+}
+
+.teclab-aviso-inicio .aviso-inicio-teclab-cta {
+  color: color-mix(in srgb, var(--aviso-acento) 55%, white);
+  font-weight: 900;
+}
+
 /* ── Modal ──
    Mismos lavados ambientales del <Background> del render, en el acento de la
    familia, sobre el fondo tinta de la marca. */
@@ -403,4 +435,365 @@
     radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
     linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
   background-size: auto, auto, auto, 42px 42px;
+}
+
+/* ── Ver precio (modal de Teclab) ──
+   El boton del cierre y el slide al que lleva, el ultimo del carrusel. El
+   contenido va en una columna angosta centrada en el alto; si no entra (en
+   telefonos bajos) el centrado se apaga y el slide scrollea por dentro. Los
+   colores salen de --vp-acento (el de la familia) y del fondo tinta. */
+.vp-boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--vp-acento);
+  color: var(--vp-texto-acento);
+  font-weight: 800;
+  font-size: 0.95rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  transition: filter 0.15s;
+}
+
+.vp-boton:hover {
+  filter: brightness(1.1);
+}
+
+.vp-boton:focus-visible,
+.vp-primario:focus-visible,
+.vp-whatsapp:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.vp-slide {
+  justify-content: safe center;
+}
+
+.vp-contenido {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 26rem;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  color: #fff;
+}
+
+.vp-encabezado {
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--vp-acento) 35%, transparent);
+}
+
+.vp-rotulo {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vp-acento-claro);
+}
+
+.vp-titulo {
+  margin-top: 0.15rem;
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+/* Un slide entero para el precio: el titulo crece como en los otros slides */
+@media (min-width: 640px) {
+  .vp-titulo {
+    font-size: 1.6rem;
+  }
+}
+
+.vp-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.vp-primario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--vp-acento);
+  color: var(--vp-texto-acento);
+  font-weight: 800;
+  font-size: 0.95rem;
+  transition: filter 0.15s;
+}
+
+.vp-primario:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.vp-primario:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.vp-ayuda {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.78);
+  text-align: center;
+}
+
+.vp-separador {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.vp-separador::before,
+.vp-separador::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* El verde de WhatsApp es informacion: se conserva. Como segunda opcion va
+   con borde; cuando es la salida principal (precio mostrado o en
+   actualizacion), lleno. */
+.vp-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #25d366;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+
+.vp-whatsapp svg {
+  color: #25d366;
+}
+
+.vp-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.12);
+}
+
+.vp-whatsapp-lleno {
+  background: #25d366;
+  /* Texto oscuro: el blanco sobre este verde no llega al contraste minimo.
+     Es el mismo par que usa el boton de WhatsApp de los formularios. */
+  color: #063b20;
+}
+
+.vp-whatsapp-lleno svg {
+  color: #063b20;
+}
+
+.vp-whatsapp-lleno:hover {
+  background: #6ee7a0;
+}
+
+.vp-etiqueta {
+  margin-bottom: -0.35rem;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vp-acento-claro);
+}
+
+.vp-campo {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 1rem; /* 16 px: por debajo, iOS hace zoom al enfocar */
+}
+
+.vp-campo:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--vp-acento);
+}
+
+.vp-campo[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 2px #f87171;
+}
+
+.vp-error-campo {
+  margin-top: -0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fca5a5;
+}
+
+.vp-check {
+  /* Pegada al mail: la casilla habla de ese dato, no flota sola */
+  margin-top: -0.3rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+}
+
+.vp-check input {
+  flex-shrink: 0;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.08rem;
+  accent-color: var(--vp-acento);
+}
+
+.vp-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.4rem;
+  border-left: 3px solid #f87171;
+  background: rgba(248, 113, 113, 0.1);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+/* La tabla del precio: tres columnas compartidas por todas las filas
+   (subgrid), así el descuento y el monto caen en la misma x en cada una. El
+   concepto se lleva el sobrante y puede partirse en dos renglones. */
+.vp-lineas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  row-gap: 0.4rem;
+}
+
+.vp-linea {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  column-gap: 0.6rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.vp-concepto {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+@supports not (grid-template-columns: subgrid) {
+  .vp-linea {
+    grid-template-columns: minmax(0, 1fr) 3.25rem 7.5rem;
+  }
+}
+
+.vp-celda-descuento {
+  justify-self: end;
+}
+
+.vp-monto {
+  justify-self: end;
+  text-align: right;
+  font-size: 0.92rem;
+  font-weight: 800;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.vp-descuento {
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  background: var(--vp-acento);
+  color: var(--vp-texto-acento);
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.vp-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  /* Mismo margen lateral que las filas: el total cierra en el mismo borde. */
+  padding: 0.6rem 0.65rem;
+  border-radius: 4px;
+  background: var(--vp-acento);
+  color: var(--vp-texto-acento);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+.vp-total-rotulo {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vp-total-monto {
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.vp-nota {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.vp-vigencia {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--vp-acento-claro);
+}
+
+.vp-financiacion {
+  padding: 0.5rem 0.65rem;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.vp-financiacion-rotulo {
+  margin-bottom: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vp-acento-claro);
+}
+
+.vp-financiacion-lineas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.vp-financiacion-lineas strong {
+  font-weight: 800;
+  color: #fff;
+}
+
+.vp-mensaje {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
 }

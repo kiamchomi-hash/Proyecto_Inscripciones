@@ -48,6 +48,9 @@ function ContactForm() {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [localidad, setLocalidad] = useState('');
+  // Tildado de entrada (decisión del 02/10/2026). Va a `suscripciones_newsletter`
+  // como suscripción general, y sólo si hay mail.
+  const [newsletter, setNewsletter] = useState(true);
   const [turnstileToken, setTurnstileToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (los tokens son de un solo uso)
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -104,6 +107,7 @@ function ContactForm() {
             email,
             telefono,
             localidad,
+            newsletter,
           },
         }),
       });
@@ -132,7 +136,7 @@ function ContactForm() {
     setSuccess(true);
     setTimeout(() => {
       setSuccess(false);
-      setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad(''); setTurnstileToken('');
+      setNombre(''); setApellido(''); setEmail(''); setTelefono(''); setLocalidad(''); setNewsletter(true); setTurnstileToken('');
       setCaptchaKey((k) => k + 1);
       setCaptchaExpirado(false);
     }, 4000);
@@ -217,6 +221,16 @@ function ContactForm() {
 
             <label className="block text-xs text-[#e8d0d8]">Localidad
               <input type="text" autoComplete="address-level2" value={localidad} onChange={e => setLocalidad(e.target.value)} maxLength={100} className={`${inputClass} mt-1`} />
+            </label>
+
+            <label className="flex items-center gap-2 text-xs text-[#e8d0d8] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newsletter}
+                onChange={e => setNewsletter(e.target.checked)}
+                className="h-3.5 w-3.5 flex-shrink-0 cursor-pointer accent-[#8a3050]"
+              />
+              Quiero recibir novedades por mail
             </label>
 
             <p className="text-[11px] text-white">

@@ -4,6 +4,7 @@ import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, esCarreraVisible } from '@/components/index/types';
 import { esTeclab, getFichaTeclab } from '@/components/index/teclab';
 import { getPortada } from '@/components/carreras/career-content';
+import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 
 // `sitemap.ts` es un Route Handler que Next puede cachear por defecto. En
 // producción la caché de Vercel conservaba esta metadata route aunque
@@ -16,7 +17,7 @@ const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
 const REINTENTOS_SUPABASE = 2;
 
-type CarreraFila = Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'slides'> & {
+type CarreraFila = Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'slides' | 'proximamente'> & {
   updated_at: string | null;
 };
 
@@ -61,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // catalogo (Posgrado, APLV, Certificacion, Curso) ya no tienen pagina.
   const { data: carreras } = await consultarConReintentos(async () => await supabase
     .from('carreras')
-    .select('nombre, prefix, nivel, slides, updated_at')
+    .select('nombre, prefix, nivel, slides, updated_at, proximamente')
     .eq('activa', true)
     .throwOnError()
     .then(resultado => resultado));
@@ -84,6 +85,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...(imagen ? { images: [urlImagen(imagen)] } : {}),
       };
     });
+
+  // Pagina de inscripcion de cada carrera de Teclab con inscripcion abierta
+  // (/carreras/<slug>/inscripcion). Contesta "como me inscribo" y no compite
+  // con la ficha: un escalon abajo de prioridad, y el mismo lastmod porque se
+  // arma con la misma fila.
+  const inscripcionEntries: MetadataRoute.Sitemap = ((carreras || []) as CarreraFila[])
+    .filter(c => tieneInscripcionPropia(c))
+    .map(c => ({
+      url: `${baseUrl}${rutaInscripcion(c)}`,
+      ...(c.updated_at ? { lastModified: new Date(c.updated_at) } : {}),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
 
   // Materias activas (clases de apoyo). Las que están en construcción quedan
   // afuera: su página es el cartel de "vuelva pronto" y no hay nada que
@@ -195,6 +209,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ],
     },
     ...carrerasEntries,
+    ...inscripcionEntries,
     ...materiasEntries,
     ...novedadesPageEntries,
     ...novedadesArticuloEntries,

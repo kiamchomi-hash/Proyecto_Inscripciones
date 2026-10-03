@@ -35,6 +35,21 @@ Dos cosas más que hace solo. **Avisa que los clics se miden desde el 17/08/2026
 
 Las tres fuentes usan credenciales que ya están en la máquina —el token de la CLI de Vercel (`~/.local/share/com.vercel.cli/auth.json` en Linux, `%APPDATA%\com.vercel.cli\Datauth.json` en Windows, o `VERCEL_TOKEN`), `EDITOR_DATABASE_URL` y la service account de Search Console—. **Si falta una, esa sección sale como no disponible y el resto se muestra igual**; sólo sale con código 1 si no se pudo leer ninguna. El acceso a Search Console vive en `herramientas/gsc.mjs`, compartido con `seo-semanal.mjs`: es una sola implementación del JWT.
 
+## Publicar los precios de «Ver precio»
+
+`herramientas/ventas/publicar-precios.mjs` copia los precios de Teclab a la tabla privada `precios_privados` (`sql/2026-10-02_precios_carrera.sql`), que es de donde los lee «Ver precio» en `POST /api/formularios`. No cotiza: toma lo que el pipeline de precios ya resolvió en `carreras/teclab/carreras-externas.json` (la ruta sale de `herramientas/ventas/rutas.mjs`) y lo publica con su vigencia, el último día de la promoción. Vive en `herramientas/ventas/`, que está gitignorada como el resto del material comercial.
+
+```bash
+node herramientas/ventas/publicar-precios.mjs --dry-run   # muestra qué escribiría, sin conectarse
+node herramientas/ventas/publicar-precios.mjs             # escribe con cau_editor
+```
+
+- **Correrlo después de cada actualización de precios.** Si no, la API muestra los anteriores hasta que vencen y después ofrece WhatsApp. Avisa cuántas carreras ya llegan vencidas: se publican igual y la API no las muestra.
+- Escribe con el rol `cau_editor` y la misma credencial que `npm run db` (`EDITOR_DATABASE_URL`, ver [rol-editor.md](rol-editor.md)); si la variable no está en el entorno, la lee de `.env.local`. Todo va en una transacción, con upsert por `carrera_id`.
+- El emparejamiento con `carreras` usa `nombres-carreras.mjs` contra las filas activas de los tres niveles de Teclab, más dos sinónimos fijos (`QA`, `Gestión de la Empresa Agraria`). Una carrera sin candidato, con dos candidatos o con el precio incompleto (sin total, sin conceptos o sin `promoHasta` válido) **no se publica** y se lista al final; en ese caso sale con código 1.
+- `--dry-run` no se conecta, así que no puede mostrar el `carrera_id`: el emparejamiento contra la base se ve recién al escribir.
+- Las funciones de mapeo están cubiertas por `herramientas/ventas/tests/publicar-precios.test.mjs` (`node --test herramientas/ventas/tests/*.test.mjs`).
+
 ## Publicar sólo archivos revisados
 
 Para regenerar los tipos del esquema real está `npm run db:tipos`, con lógica en

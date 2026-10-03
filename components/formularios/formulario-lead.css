@@ -195,3 +195,31 @@
     grid-column: span var(--ancho) / span var(--ancho);
   }
 }
+
+/* ── El carrusel de la autoinscripción de Teclab ──
+   Sólo existe al dejar el paso 1: la ventana recorta y acompaña con su alto al
+   paso activo (lo fija el componente en píxeles), la pista desliza los pasos en
+   horizontal. Quieto en el paso 1 no hay nada de esto, porque el recorte se
+   comería los desplegables del formulario. */
+.form-carrusel-ventana {
+  overflow: hidden;
+  transition: height 0.35s ease;
+}
+
+.form-carrusel-pista {
+  display: flex;
+  align-items: flex-start;
+  transition: transform 0.3s ease;
+}
+
+.form-carrusel-panel {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-carrusel-ventana,
+  .form-carrusel-pista {
+    transition: none;
+  }
+}

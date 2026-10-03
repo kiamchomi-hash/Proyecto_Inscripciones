@@ -13,6 +13,22 @@ indexada, con canónica propia y último rastreo del **03/09/2026**. No se envia
 solicitudes de indexación en esta revisión. El detalle que sigue conserva el
 historial anterior.
 
+## Páginas de inscripción de Teclab (03/10/2026)
+
+Cada carrera de Teclab con inscripción abierta (16 tecnicaturas y el curso) suma
+`/carreras/<slug>/inscripcion` al sitemap, con prioridad 0,6 y el mismo `lastmod` que
+su ficha. Apuntan a la intención «cómo me inscribo» («inscripción tecnicatura en
+programación teclab»), no a «qué es la carrera», que sigue siendo de la ficha.
+
+Para no canibalizarla ni quedar como contenido flaco, la página no repite el plan ni las
+competencias: trae los tres pasos reales del trámite, qué tener a mano, dos preguntas de
+inscripción (con `FAQPage`) y el formulario de preinscripción con la carrera elegida. El
+título arranca por «Inscripción a…» y la description por «Cómo inscribirte…», canónica
+propia y `BreadcrumbList` Inicio › carrera › Inscripción. La ficha enlaza a la página
+(«Cómo inscribirte») y la página vuelve a la ficha. Cuando se indexen, sumarlas a la
+lista de abajo; si Search Console muestra que una le roba consultas a su ficha, revisar
+el título antes de tocar otra cosa.
+
 ## Historial: solicitudes previstas el 25/08/2026
 
 Solicitar indexación:
