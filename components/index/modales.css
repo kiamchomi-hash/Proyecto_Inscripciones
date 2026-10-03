@@ -751,16 +751,18 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Qué cubre el pago, su vigencia y la financiación van en blanco pleno: con
+   el blanco al 80% y el acento claro sobre el fondo tinta no se leían bien. */
 .vp-nota {
   font-size: 0.78rem;
   line-height: 1.35;
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
 }
 
 .vp-vigencia {
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--vp-acento-claro);
+  color: #fff;
 }
 
 .vp-financiacion {
@@ -779,7 +781,7 @@
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--vp-acento-claro);
+  color: #fff;
   cursor: pointer;
   list-style: none;
 }
