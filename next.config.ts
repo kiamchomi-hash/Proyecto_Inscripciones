@@ -189,14 +189,8 @@ const nextConfig: NextConfig = {
       },
       // Mismo caso que Agroinformática: salieron del catálogo teniendo la ficha
       // indexada, y quedaron devolviendo 404 —que tira a la basura la autoridad
-      // de una URL que Google ya tenía—. Administración Hotelera venía con
-      // tráfico (32 impresiones, 2 clics, posición 14,2). Van a la home por lo
-      // mismo: quien buscó la carrera por su nombre no quiere otra ficha.
-      {
-        source: '/carreras/licenciatura-en-administracion-hotelera',
-        destination: '/',
-        statusCode: 301,
-      },
+      // de una URL que Google ya tenía—. Van a la home por lo mismo: quien
+      // buscó la carrera por su nombre no quiere otra ficha.
       {
         source: '/carreras/licenciatura-en-nutricion',
         destination: '/',
