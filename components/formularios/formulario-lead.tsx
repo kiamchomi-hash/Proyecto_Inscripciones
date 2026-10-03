@@ -12,7 +12,7 @@ import {
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
 } from './casas';
 import { EVENTO_ELEGIR_CARRERA, pideAutoinscripcion, type DetalleElegirCarrera } from './elegir-carrera';
-import { AVISO_TOKEN, PasoInscribirme, PasoListo } from './autoinscripcion-teclab';
+import { AVISO_TOKEN, AvisoSinPago, PasoInscribirme, PasoListo } from './autoinscripcion-teclab';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -1550,6 +1550,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
               >
                 {enviando ? 'Enviando...' : flujoAuto ? 'Inscribirme' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
               </button>
+              {flujoAuto && <AvisoSinPago />}
 
             </div>
 

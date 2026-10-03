@@ -62,6 +62,14 @@ function cabecera(fila: Fila): string {
   if (fila.tipo_formulario === 'preinscripcion') {
     return `📝 *PREINSCRIPCIÓN${casa ? ` — ${casa}` : ''}*`;
   }
+  // Ni «Ver precio» ni la autoinscripción son una pregunta: el título dice qué
+  // hizo la persona (valores de `FORMULARIO_PRECIO` y `FORMULARIO_AUTOINSCRIPCION`).
+  if (fila.tipo_formulario === 'autoinscripcion') {
+    return `✅ *AUTOINSCRIPCIÓN${casa ? ` — ${casa}` : ''}*`;
+  }
+  if (fila.tipo_formulario === 'precio') {
+    return `👀 *Vio el precio${casa ? ` — ${casa}` : ''}*`;
+  }
   if (casa) return `💬 *Consulta — ${casa}*`;
   return '📚 *Nueva consulta de carrera*';
 }

@@ -14,6 +14,14 @@ test('el aviso dice de una si es preinscripcion y de que casa', () => {
   assert.ok(consulta.startsWith('💬 *Consulta — Siglo 21*'), consulta.split('\n')[0]);
 });
 
+test('«Ver precio» y la autoinscripción no llegan como consulta', () => {
+  const precio = buildConsultaMessage({ ...base, casa: 'teclab', tipo_formulario: 'precio' });
+  assert.ok(precio.startsWith('👀 *Vio el precio — Teclab*'), precio.split('\n')[0]);
+
+  const auto = buildConsultaMessage({ ...base, casa: 'teclab', tipo_formulario: 'autoinscripcion' });
+  assert.ok(auto.startsWith('✅ *AUTOINSCRIPCIÓN — Teclab*'), auto.split('\n')[0]);
+});
+
 test('las filas viejas, sin casa, conservan el titulo de siempre', () => {
   // Anteriores al 23/08/2026: no sabemos de que casa vinieron y no se inventa.
   const viejo = buildConsultaMessage(base);

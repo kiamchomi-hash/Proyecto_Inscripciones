@@ -253,3 +253,27 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Carrusel confirmar → «¡Listo!»: el alto sigue al panel activo (lo mide el componente). */
+.ie-carrusel {
+  overflow: hidden;
+  transition: height 0.4s ease;
+}
+
+.ie-carrusel-pista {
+  display: flex;
+  align-items: flex-start;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ie-carrusel-panel {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ie-carrusel,
+  .ie-carrusel-pista {
+    transition: none;
+  }
+}

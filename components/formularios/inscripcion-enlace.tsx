@@ -10,7 +10,7 @@
 // Las props salen de `propsInscripcionEnlace` (casas.ts): no traen el DNI
 // completo, ni el domicilio, ni el teléfono, y este componente no los pide.
 
-import { useState, type CSSProperties } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { WhatsAppIcon } from '@/components/icons';
 import { PasoInscribirme, PasoListo } from './autoinscripcion-teclab';
 import { type PropsInscripcionEnlace } from './casas';
@@ -90,6 +90,19 @@ export default function InscripcionEnlace({ codigo, carrera, precio, datos, comp
   const [token, setToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (son de un solo uso).
   const [captchaKey, setCaptchaKey] = useState(0);
+  // Carrusel confirmar → «¡Listo!»: la tarjeta toma el alto del panel activo.
+  const panelesRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [alto, setAlto] = useState<number>();
+  useLayoutEffect(() => {
+    const panel = panelesRef.current[paso === 'listo' ? 1 : 0];
+    if (!panel) return;
+    const medir = () => setAlto(panel.offsetHeight);
+    medir();
+    if (!('ResizeObserver' in window)) return;
+    const observador = new ResizeObserver(medir);
+    observador.observe(panel);
+    return () => observador.disconnect();
+  }, [paso]);
 
   const mensajeCorregir = `Hola, quiero corregir mis datos de la inscripción a ${carrera.nombre}`;
 
@@ -156,19 +169,39 @@ export default function InscripcionEnlace({ codigo, carrera, precio, datos, comp
             <p className="ie-texto">Nos faltan algunos datos para completar tu inscripción. Escribinos y la terminamos juntos.</p>
             <BotonWhatsApp texto="Escribinos por WhatsApp" mensaje={`Hola, quiero completar mi inscripción a ${carrera.nombre}`} />
           </div>
-        ) : paso === 'confirmar' ? (
-          <PasoInscribirme
-            pregunta={false}
-            intentado={intentado}
-            enviando={enviando}
-            error={error}
-            captchaKey={captchaKey}
-            token={token}
-            onToken={setToken}
-            onEnviar={enviar}
-          />
         ) : (
-          <PasoListo dni={dniCompleto(datos.dni)} waHref={waHref(`Hola, ya me inscribí en ${carrera.nombre}`)} />
+          <div className="ie-carrusel" style={{ height: alto }}>
+            <div className="ie-carrusel-pista" style={{ transform: paso === 'listo' ? 'translateX(-100%)' : undefined }}>
+              <div
+                ref={panel => { panelesRef.current[0] = panel; }}
+                className="ie-carrusel-panel"
+                aria-hidden={paso !== 'confirmar'}
+                inert={paso !== 'confirmar'}
+              >
+                <PasoInscribirme
+                  pregunta={false}
+                  intentado={intentado}
+                  enviando={enviando}
+                  error={error}
+                  captcha={paso === 'confirmar'}
+                  captchaKey={captchaKey}
+                  token={token}
+                  onToken={setToken}
+                  onEnviar={enviar}
+                />
+              </div>
+              <div
+                ref={panel => { panelesRef.current[1] = panel; }}
+                className="ie-carrusel-panel"
+                aria-hidden={paso !== 'listo'}
+                inert={paso !== 'listo'}
+              >
+                {paso === 'listo' && (
+                  <PasoListo dni={dniCompleto(datos.dni)} waHref={waHref(`Hola, ya me inscribí en ${carrera.nombre}`)} />
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </section>
     </div>

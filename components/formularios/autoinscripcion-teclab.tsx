@@ -36,6 +36,18 @@ export const AVISO_TOKEN = 'Estamos verificando la conexión. Probá de nuevo en
  * pregunta y «Ahora no» (la preinscripción ya salió y esto es opcional); en el
  * enlace va sola, debajo de los datos precargados.
  */
+/**
+ * Inscribirse no cobra nada: el portal genera el ticket y la persona paga
+ * después, en «Pagos en línea». Va debajo de cada botón «Inscribirme».
+ */
+export function AvisoSinPago() {
+  return (
+    <p className="text-center text-[11px] leading-snug text-[var(--catalogo-texto-suave)]">
+      Inscribirte no te cobra nada: se genera un ticket de pago para que pagues desde el portal del alumno.
+    </p>
+  );
+}
+
 export function PasoInscribirme({
   pregunta, intentado, enviando, error, captcha = true, captchaKey, token, onToken, onEnviar, onSaltear,
 }: {
@@ -71,6 +83,7 @@ export function PasoInscribirme({
         <button type="submit" disabled={enviando} className={BOTON_PRINCIPAL} style={ESTILO_PRINCIPAL}>
           {enviando ? 'Enviando...' : 'Inscribirme'}
         </button>
+        <AvisoSinPago />
         {onSaltear && (
           <button type="button" onClick={onSaltear} disabled={enviando} className={LINK_SECUNDARIO}>
             Ahora no
