@@ -931,6 +931,7 @@ function SlideVerPrecio({
         carreraId={carrera.id}
         slug={carreraToSlug(carrera)}
         nombreCarrera={carrera.nombre_corto || carrera.nombre}
+        duracion={carrera.duracion}
         acento={acento}
         acentoClaro={CLARO[acento] ?? acento}
         textoAcento={textoSobreAcentoTeclab(acento)}

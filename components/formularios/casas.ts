@@ -619,7 +619,8 @@ export interface DatosEnlace {
 
 export interface PropsInscripcionEnlace {
   codigo: string;
-  carrera: { nombre: string; url: string };
+  /** `duracion` es la de la carrera («2 años»): arma la aclaración de qué cubre el pago. */
+  carrera: { nombre: string; url: string; duracion: string | null };
   precio: ResultadoPrecio;
   datos: DatosEnlace;
   /** Si lo guardado alcanza para crear la cuenta; si no, la página ofrece WhatsApp. */
@@ -634,7 +635,7 @@ export interface PropsInscripcionEnlace {
 export function propsInscripcionEnlace({ codigo, consulta, carrera, filaPrecio, ahora }: {
   codigo: string;
   consulta: FilaConsulta;
-  carrera: { nombre: string; url: string };
+  carrera: { nombre: string; url: string; duracion?: string | null };
   filaPrecio: FilaPrecio | null;
   ahora: Date;
 }): PropsInscripcionEnlace {
@@ -642,7 +643,7 @@ export function propsInscripcionEnlace({ codigo, consulta, carrera, filaPrecio, 
   const completo = legajoAutoinscripcionValido(payloadDesdeConsulta(consulta));
   return {
     codigo,
-    carrera: { nombre: carrera.nombre, url: carrera.url },
+    carrera: { nombre: carrera.nombre, url: carrera.url, duracion: carrera.duracion ?? null },
     precio: resultadoPrecio(filaPrecio, fechaArgentina(ahora)),
     datos: {
       nombre: `${texto(consulta.nombre)} ${texto(consulta.apellido)}`.trim(),

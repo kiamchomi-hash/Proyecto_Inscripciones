@@ -57,7 +57,7 @@ async function cargar(codigo: string): Promise<Carga> {
 
     const carrera = await supabase
       .from('carreras')
-      .select('id, nombre, prefix')
+      .select('id, nombre, prefix, duracion')
       .eq('nombre', consulta.data.carrera)
       .in('nivel', CASAS.teclab.niveles)
       .limit(1)
@@ -80,7 +80,7 @@ async function cargar(codigo: string): Promise<Carga> {
       props: propsInscripcionEnlace({
         codigo,
         consulta: consulta.data,
-        carrera: { nombre: carrera.data.nombre, url: carreraUrl },
+        carrera: { nombre: carrera.data.nombre, url: carreraUrl, duracion: carrera.data.duracion },
         filaPrecio: precio.error ? null : (precio.data as FilaPrecio | null),
         ahora,
       }),
@@ -95,7 +95,7 @@ async function cargar(codigo: string): Promise<Carga> {
 // «Inscribirme» pasa a «¡Listo!» sin enviar nada. En producción no existe.
 const DEMO: PropsInscripcionEnlace = {
   codigo: 'demo',
-  carrera: { nombre: 'Tecnicatura Superior en Programación', url: '/carreras/tecnicatura-superior-en-programacion' },
+  carrera: { nombre: 'Tecnicatura Superior en Programación', url: '/carreras/tecnicatura-superior-en-programacion', duracion: '2 años' },
   precio: {
     estado: 'vigente',
     precio: {

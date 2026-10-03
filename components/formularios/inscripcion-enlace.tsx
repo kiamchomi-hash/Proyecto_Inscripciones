@@ -14,6 +14,7 @@ import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { WhatsAppIcon } from '@/components/icons';
 import { PasoInscribirme, PasoListo } from './autoinscripcion-teclab';
 import { type PropsInscripcionEnlace } from './casas';
+import { coberturaDelPago } from './cobertura-pago';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 
 type Paso = 'confirmar' | 'listo';
@@ -47,7 +48,7 @@ const FILA: CSSProperties = {
 };
 const A_LA_DERECHA: CSSProperties = { justifySelf: 'end', textAlign: 'right' };
 
-function Precio({ precio, carrera }: Pick<PropsInscripcionEnlace, 'precio'> & { carrera: string }) {
+function Precio({ precio, carrera, duracion }: Pick<PropsInscripcionEnlace, 'precio'> & { carrera: string; duracion: string | null }) {
   if (precio.estado !== 'vigente') {
     return (
       <div className="ie-precio">
@@ -56,7 +57,9 @@ function Precio({ precio, carrera }: Pick<PropsInscripcionEnlace, 'precio'> & { 
       </div>
     );
   }
-  const { conceptos, total, nota, vigenteHasta } = precio.precio;
+  const { conceptos, total, vigenteHasta } = precio.precio;
+  // Qué cubre, con los meses; sin bimestres queda la nota de la base.
+  const nota = coberturaDelPago(conceptos, duracion) ?? precio.precio.nota;
   return (
     <div className="ie-precio">
       {conceptos.length > 0 && (
@@ -154,7 +157,7 @@ export default function InscripcionEnlace({
     <>
       <section className="ie-tarjeta" aria-labelledby="ie-precio-titulo">
         <h2 id="ie-precio-titulo" className="ie-subtitulo">Precio</h2>
-        <Precio precio={precio} carrera={carrera.nombre} />
+        <Precio precio={precio} carrera={carrera.nombre} duracion={carrera.duracion} />
       </section>
 
       <section className="ie-tarjeta" aria-labelledby="ie-datos-titulo">

@@ -14,6 +14,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent 
 import TurnstileWidget from '@/components/turnstile-widget';
 import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, type LineaPrecio } from '@/components/formularios/casas';
 import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
+import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
 import { urlAutoinscripcion } from '@/components/formularios/elegir-carrera';
 
 type Vista = 'formulario' | 'precio' | 'actualizando';
@@ -31,6 +32,28 @@ type Respuesta =
   | { ok: true; estado: 'sin-precio' };
 
 const FOCOABLES = 'button:not([disabled]), a[href], input:not([disabled])';
+
+// El mail con el que ya se vio un precio queda en el navegador: la próxima
+// carrera arranca con el campo completo y basta con tocar «Ver precio». No se
+// pide solo: cada pedido registra un lead y avisa por Telegram, y pasar por el
+// slide con «Siguiente» no es pedir el precio.
+const CLAVE_MAIL = 'teclab-precio-mail';
+
+function mailGuardado(): string {
+  try {
+    return localStorage.getItem(CLAVE_MAIL) ?? '';
+  } catch {
+    return ''; // Navegación privada o storage bloqueado: se tipea como siempre.
+  }
+}
+
+function guardarMail(email: string) {
+  try {
+    localStorage.setItem(CLAVE_MAIL, email);
+  } catch {
+    // Sin storage no se recuerda, y nada más.
+  }
+}
 
 /** `AAAA-MM-DD` -> `DD/MM`, sin pasar por `Date` (se correria un dia por UTC). */
 function diaMes(fecha: string): string {
@@ -138,9 +161,12 @@ export function PanelVerPrecio({
   waHref,
   slug,
   activo,
+  duracion,
 }: {
   carreraId: number;
   nombreCarrera: string;
+  /** `carrera.duracion` («2 años»): con ella la aclaración dice cuántos cuatrimestres se pagan. */
+  duracion?: string | null;
   /**
    * Slug de la ficha (`carreraToSlug(carrera)`). Con él, el precio vigente
    * ofrece «Inscribite ya», que lleva al formulario en modo autoinscripción.
@@ -158,7 +184,9 @@ export function PanelVerPrecio({
   activo: boolean;
 }) {
   const [vista, setVista] = useState<Vista>('formulario');
-  const [email, setEmail] = useState('');
+  // El panel sólo se monta en el navegador (modal con import dinámico), así
+  // que leer el storage al iniciar no desarma la hidratación.
+  const [email, setEmail] = useState(mailGuardado);
   const [newsletter, setNewsletter] = useState(true);
   const [token, setToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (son de un solo uso).
@@ -187,6 +215,9 @@ export function PanelVerPrecio({
   }, [vista]);
 
   const emailValido = EMAIL_VALIDO.test(email.trim());
+  // Qué cubre el pago, armado de los conceptos con los meses; si no hay
+  // bimestres (curso de pago único), queda la nota de la base.
+  const aclaracion = precio ? coberturaDelPago(precio.conceptos, duracion) ?? precio.nota : null;
 
   const enviar = async (e: FormEvent) => {
     e.preventDefault();
@@ -205,6 +236,7 @@ export function PanelVerPrecio({
       });
       status = respuesta.status;
       if (!respuesta.ok) throw new Error('submit_failed');
+      guardarMail(payload.email);
       const datos = (await respuesta.json()) as Respuesta;
       if (datos.estado === 'vigente' && datos.precio) {
         setPrecio(datos.precio);
@@ -311,7 +343,7 @@ export function PanelVerPrecio({
             <span className="vp-total-rotulo">Total</span>
             <span className="vp-total-monto">{precio.total}</span>
           </div>
-          {precio.nota ? <p className="vp-nota">{precio.nota}</p> : null}
+          {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
           <p className="vp-vigencia">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
           <Financiacion />
           {slug ? (
