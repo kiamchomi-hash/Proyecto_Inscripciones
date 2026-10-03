@@ -12,7 +12,7 @@
 // normal, después de enviar la preinscripción, ofrece «Inscribirme» con la
 // pregunta «¿Querés gestionar tu inscripción?».
 
-import { type FormEvent } from 'react';
+import { type FormEvent, type ReactNode } from 'react';
 import Image from 'next/image';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { WhatsAppIcon } from '@/components/icons';
@@ -65,6 +65,11 @@ export function PasoInscribirme({
   onEnviar: () => void;
   onSaltear?: () => void;
 }) {
+  const aviso = error
+    ? <span className="text-red-400">{error}</span>
+    : intentado && !token
+      ? <span className="text-amber-300">{AVISO_TOKEN}</span>
+      : null;
   const enviar = (evento: FormEvent) => {
     evento.preventDefault();
     if (!enviando) onEnviar();
@@ -103,19 +108,51 @@ export function PasoInscribirme({
         </div>
       </div>
 
-      <div
-        className="form-card-footer px-3 py-2 sm:px-4"
-        style={{ background: 'rgba(0,0,0,0.35)', borderTop: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}
-      >
-        <p className="min-h-4 text-center text-[11px] leading-4" role={error ? 'alert' : undefined}>
-          {error
-            ? <span className="text-red-400">{error}</span>
-            : intentado && !token
-              ? <span className="text-amber-300">{AVISO_TOKEN}</span>
-              : null}
-        </p>
-      </div>
+      {/* El pie aparece sólo con un aviso: vacío quedaba como una franja
+          oscura sin nada al fondo de la tarjeta. */}
+      {aviso && (
+        <div
+          className="form-card-footer px-3 py-2 sm:px-4"
+          style={{ background: 'rgba(0,0,0,0.35)', borderTop: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}
+        >
+          <p className="min-h-4 text-center text-[11px] leading-4" role={error ? 'alert' : undefined}>
+            {aviso}
+          </p>
+        </div>
+      )}
     </form>
+  );
+}
+
+/**
+ * El precio vigente, como un paso propio del carrusel entre la preinscripción
+ * y «Inscribirme». Sólo aparece en la entrada normal y con precio vigente: la
+ * entrada directa viene de «Ver precio», que ya lo mostró.
+ */
+export function PasoPrecio({ detalle, onContinuar, onSaltear }: {
+  detalle: ReactNode;
+  onContinuar: () => void;
+  onSaltear?: () => void;
+}) {
+  return (
+    <div className="flex grow flex-col">
+      <h3 data-paso-foco tabIndex={-1} className="px-3 pt-5 text-center text-2xl font-black leading-tight tracking-tight text-white focus:outline-none sm:px-4 sm:text-3xl">
+        El <span className="text-[var(--catalogo-acento)]">precio</span> de tu carrera
+      </h3>
+      <div className="mx-auto w-full max-w-3xl space-y-3 px-3 pb-5 pt-4 sm:px-4">
+        {detalle}
+        <div className="space-y-1.5">
+          <button type="button" onClick={onContinuar} className={BOTON_PRINCIPAL} style={ESTILO_PRINCIPAL}>
+            Continuar
+          </button>
+          {onSaltear && (
+            <button type="button" onClick={onSaltear} className={LINK_SECUNDARIO}>
+              Ahora no
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -518,6 +518,18 @@
   gap: 0.6rem;
 }
 
+/* El mismo detalle del precio dentro del paso «Inscribirme» del formulario de
+   preinscripción (`DetallePrecio`). Toma el acento del formulario en vez del
+   del modal; el fondo del formulario es oscuro, así que los blancos se leen
+   igual. Deja aire antes del botón. */
+.vp-en-formulario {
+  --vp-acento: var(--catalogo-acento);
+  --vp-acento-claro: var(--catalogo-acento);
+  --vp-texto-acento: var(--catalogo-acento-tinta);
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
 .vp-primario {
   display: flex;
   align-items: center;

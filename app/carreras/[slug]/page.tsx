@@ -436,9 +436,10 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
     .filter((c, i, arr) => arr.findIndex(o => o.id === c.id) === i)
     .map(c => ({ id: c.id, nombre: c.nombre, prefix: c.prefix }));
 
-  // El formulario solo necesita id/nombre/nivel: mandarle la fila entera metia
-  // todas las carreras completas en el HTML de cada pagina.
-  const opcionesFormulario = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel }));
+  // El formulario solo necesita id/nombre/nivel (y la duracion, para el precio
+  // de Teclab): mandarle la fila entera metia todas las carreras completas en
+  // el HTML de cada pagina.
+  const opcionesFormulario = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion }));
 
   // Quien dicta cada programa. Ojo: esto no es texto de marketing sino un dato
   // estructurado, o sea la afirmacion mas fuerte que la pagina le hace a Google.

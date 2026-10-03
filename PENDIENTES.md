@@ -64,6 +64,7 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **31. Arreglar la alineación de las carreras en la sección del test vocacional**.
 - [x] **32. Teclab: achicar el último slide del modal para reducir el scroll**. Resuelto el 03/10/2026: la financiación del precio va plegada; en 375x667 sobraban 67 px y ahora entra sin scroll.
 - [x] **33. Teclab: dejar claro qué cubre el pago** (bimestre o período completo), sobre todo si la persona se anota al inicio del cuatrimestre. Resuelto el 03/10/2026: «Ver precio» y el enlace personalizado dicen qué meses cubre y que el cuatrimestre siguiente vuelve a cobrar matrícula y bimestres (Reglamento de Teclab, 4.1) (`components/formularios/cobertura-pago.ts`).
+- [x] **34. Teclab: mostrar el precio en el formulario de autoinscripción** cuando la persona llega sin pasar por «Ver precio». Resuelto el 03/10/2026: la preinscripción de Teclab devuelve el precio y el paso «Inscribirme» lo muestra. [Detalle](odd/tasks/precio-en-autoinscripcion-teclab.md).
 
 ## Documentación de apoyo
 

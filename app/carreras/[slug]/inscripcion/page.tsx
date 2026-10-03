@@ -115,7 +115,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
   // ofrece sus carreras, como en /teclab.
   const opcionesFormulario = carreras
     .filter(c => tieneInscripcionPropia(c))
-    .map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel }));
+    .map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion }));
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',

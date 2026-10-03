@@ -12,7 +12,8 @@ import {
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
 } from './casas';
 import { EVENTO_ELEGIR_CARRERA, pideAutoinscripcion, type DetalleElegirCarrera } from './elegir-carrera';
-import { AVISO_TOKEN, AvisoSinPago, PasoInscribirme, PasoListo } from './autoinscripcion-teclab';
+import { AVISO_TOKEN, AvisoSinPago, PasoInscribirme, PasoListo, PasoPrecio } from './autoinscripcion-teclab';
+import { DetallePrecio, type PrecioVigente } from '@/components/index/ver-precio-teclab';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -199,8 +200,19 @@ const sinSuscripcion = () => () => {};
  * `gestionar` («¿Querés gestionar tu inscripción?») es sólo de la entrada
  * normal: la directa pasa de los datos a la confirmación.
  */
-type Paso = 'datos' | 'gestionar' | 'confirmacion';
-const ORDEN_PASOS: Paso[] = ['datos', 'gestionar', 'confirmacion'];
+/**
+ * La duración de la carrera, si la página la mandó. `CarreraOpcion` no la
+ * declara: la home y /teclab pasan la fila del catálogo, que la trae; la ficha
+ * y su página de inscripción mandan sólo id, nombre y nivel. Sin duración, la
+ * aclaración del precio no cuenta cuatrimestres.
+ */
+function duracionDe(carrera: CarreraOpcion | null): string | null {
+  return carrera?.duracion ?? null;
+}
+
+// `precio` sólo se recorre en la entrada normal de Teclab con precio vigente.
+type Paso = 'datos' | 'precio' | 'gestionar' | 'confirmacion';
+const ORDEN_PASOS: Paso[] = ['datos', 'precio', 'gestionar', 'confirmacion'];
 
 /** Tope por si el `transitionend` del deslizamiento no llega nunca. */
 const DURACION_MAXIMA_SLIDE = 450;
@@ -638,7 +650,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // quieto. Con movimiento reducido no hay deslizamiento y queda en `null`.
   const [pasoSaliente, setPasoSaliente] = useState<Paso | null>(null);
   const panelDatosRef = useRef<HTMLFormElement>(null);
-  const panelesRef = useRef<Array<HTMLDivElement | null>>([]);
+  const panelesRef = useRef<Partial<Record<Paso, HTMLDivElement | null>>>({});
   // La ventana del carrusel: su alto se maneja a mano (ver el efecto de abajo)
   // para que pase de un paso a otro con transición y no de golpe.
   const ventanaRef = useRef<HTMLDivElement>(null);
@@ -650,6 +662,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // La preinscripción ya entró (entrada normal): irse desde la pregunta no es
   // un abandono.
   const [preinscripcionEnviada, setPreinscripcionEnviada] = useState(false);
+  // El precio vigente que devuelve la preinscripción de Teclab, para mostrarlo
+  // arriba de «Inscribirme». Vencido o sin precio queda en null y no se ve nada.
+  const [precioTeclab, setPrecioTeclab] = useState<PrecioVigente | null>(null);
   const botonRef = useRef<HTMLButtonElement>(null);
   const seccionRef = useRef<HTMLElement>(null);
   const inicioMedido = useRef(false);
@@ -1034,7 +1049,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     if (pasoSaliente !== null || !enfocarPasoRef.current) return;
     enfocarPasoRef.current = false;
     if (listo) return;
-    const activo = paso === 'datos' ? panelDatosRef.current : panelesRef.current[ORDEN_PASOS.indexOf(paso)];
+    const activo = paso === 'datos' ? panelDatosRef.current : panelesRef.current[paso];
     const destino = activo?.querySelector<HTMLElement>('[data-paso-foco]') ?? activo?.querySelector<HTMLElement>(ENFOCABLES);
     destino?.focus({ preventScroll: true });
   }, [listo, paso, pasoSaliente]);
@@ -1087,10 +1102,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     irAPaso('confirmacion');
   };
 
-  /** «Ahora no» en la entrada normal: queda la preinscripción, como siempre. */
+  /**
+   * «Ahora no» en la entrada normal: queda la preinscripción, como siempre. La
+   * tarjeta no vuelve a los datos: el cartel de «enviada» la cubre entera, y
+   * sobre el formulario largo quedaba un mensaje chico en un espacio gigante.
+   * Se queda en el paso corto donde está; «Enviar otra» la reinicia.
+   */
   const saltearAutoinscripcion = () => {
     setError('');
-    irAPaso('datos');
     setListo(true);
   };
 
@@ -1099,6 +1118,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     setPaso('datos');
     setGestionIntentada(false);
     setPreinscripcionEnviada(false);
+    setPrecioTeclab(null);
     setListo(false);
     setIntentado(false);
     setEnFrio(false);
@@ -1152,6 +1172,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       : { ...valores };
 
     let estadoRespuesta: number | null = null;
+    let precio: PrecioVigente | null = null;
     try {
       const respuesta = await fetch('/api/formularios', {
         method: 'POST',
@@ -1169,6 +1190,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
         const detalle = await respuesta.json().catch(() => null) as { error?: string } | null;
         throw new Error(detalle?.error || 'submit_failed');
       }
+      // La preinscripción de Teclab trae el precio, como «Ver precio». Una
+      // respuesta que no se puede leer no es un error: la consulta ya entró.
+      const datos = await respuesta.json().catch(() => null) as
+        { estado?: string; precio?: PrecioVigente } | null;
+      if (datos?.estado === 'vigente' && datos.precio) precio = datos.precio;
     } catch (fallo) {
       const tipoFallo = tipoFalloTecnicoFormulario(estadoRespuesta);
       if (modo === 'contacto' && tipoFallo) avisarFalloFormularioContacto(origen, tipoFallo);
@@ -1187,9 +1213,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     // pregunta monta su captcha con uno nuevo.
     if (conAutoinscripcion) {
       setPreinscripcionEnviada(true);
+      setPrecioTeclab(precio);
       setGestionIntentada(false);
       nuevoCaptcha();
-      irAPaso('gestionar');
+      // Con precio vigente, primero el precio; si no, directo a «Inscribirme».
+      irAPaso(precio ? 'precio' : 'gestionar');
       return;
     }
     setListo(true);
@@ -1199,7 +1227,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // del otro. Lo monta sólo el paso activo: el 1 (invisible en la entrada
   // directa, que envía desde ahí) o la pregunta. El panel que sale deslizando
   // sigue montado, pero sin su captcha.
-  const indicePaso = ORDEN_PASOS.indexOf(paso);
+  // Sin precio vigente el paso del precio no está en la pista: si estuviera,
+  // ir de los datos a «Inscribirme» deslizaría por un panel vacío.
+  const pasos = precioTeclab ? ORDEN_PASOS : ORDEN_PASOS.filter(p => p !== 'precio');
+  const indicePaso = pasos.indexOf(paso);
   const captchaDatos = paso === 'datos';
   const montado = (cual: Paso) => paso === cual || pasoSaliente === cual;
   const conPaneles = paso !== 'datos' || pasoSaliente !== null;
@@ -1220,7 +1251,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       ventana.style.height = '';
       return;
     }
-    const activo = paso === 'datos' ? panelDatosRef.current : panelesRef.current[ORDEN_PASOS.indexOf(paso)];
+    // Con el cartel de «enviada» encima, la ventana baja a lo justo para él:
+    // con el alto del paso que quedó abajo, el mensaje flotaba en un hueco.
+    if (listo) {
+      void ventana.offsetHeight;
+      ventana.style.height = '11rem';
+      return;
+    }
+    const activo = paso === 'datos' ? panelDatosRef.current : panelesRef.current[paso];
     if (!activo) return;
     // Leer el alto antes de cambiarlo fija el punto de partida de la transición.
     void ventana.offsetHeight;
@@ -1230,14 +1268,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     const observador = new ResizeObserver(ajustar);
     observador.observe(activo);
     return () => observador.disconnect();
-  }, [conPaneles, paso]);
+  }, [conPaneles, listo, paso]);
 
   const titulo = esPreinscripcion ? 'PREINSCRIPCIÓN' : 'CONTACTO';
   // El encabezado es uno solo para todos los pasos y sólo cambia la bajada:
   // así no salta. Los textos son cortos para que no ocupen otra línea.
   const bajada = paso === 'confirmacion'
     ? (preinscripcionEnviada ? 'Inscripción enviada.' : 'Paso 2 de 2: inscripción enviada.')
-    : paso === 'gestionar'
+    : paso === 'gestionar' || paso === 'precio'
     ? 'Tu preinscripción ya fue enviada.'
     : flujoAuto
     ? 'Paso 1 de 2: completá tus datos.'
@@ -1605,11 +1643,33 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
           </form>
 
           {conPaneles && (<>
+          {precioTeclab && (
           <div
-            ref={panel => { panelesRef.current[1] = panel; }}
+            ref={panel => { panelesRef.current.precio = panel; }}
             className="form-carrusel-panel flex flex-col"
-            aria-hidden={paso !== 'gestionar'}
-            inert={paso !== 'gestionar'}
+            aria-hidden={listo || paso !== 'precio'}
+            inert={listo || paso !== 'precio'}
+          >
+          {montado('precio') && (
+            <PasoPrecio
+              detalle={
+                // Los colores salen del acento del formulario (ver
+                // `.vp-en-formulario` en modales.css), no de una tabla aparte.
+                <div className="vp-cuerpo vp-en-formulario">
+                  <DetallePrecio precio={precioTeclab} duracion={duracionDe(carrera)} />
+                </div>
+              }
+              onContinuar={() => irAPaso('gestionar')}
+              onSaltear={saltearAutoinscripcion}
+            />
+          )}
+          </div>
+          )}
+          <div
+            ref={panel => { panelesRef.current.gestionar = panel; }}
+            className="form-carrusel-panel flex flex-col"
+            aria-hidden={listo || paso !== 'gestionar'}
+            inert={listo || paso !== 'gestionar'}
           >
           {montado('gestionar') && (
             <PasoInscribirme
@@ -1627,7 +1687,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
           )}
           </div>
           <div
-            ref={panel => { panelesRef.current[2] = panel; }}
+            ref={panel => { panelesRef.current.confirmacion = panel; }}
             className="form-carrusel-panel"
             aria-hidden={paso !== 'confirmacion'}
             inert={paso !== 'confirmacion'}

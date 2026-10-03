@@ -19,7 +19,7 @@ import { urlAutoinscripcion } from '@/components/formularios/elegir-carrera';
 
 type Vista = 'formulario' | 'precio' | 'actualizando';
 
-interface PrecioVigente {
+export interface PrecioVigente {
   conceptos: LineaPrecio[];
   total: string;
   nota: string | null;
@@ -111,6 +111,45 @@ function Financiacion() {
         ))}
       </ul>
     </details>
+  );
+}
+
+/**
+ * El precio vigente: conceptos, total, qué cubre el pago, vigencia y
+ * financiación plegada. Sin acciones: cada lugar que lo muestra pone las suyas
+ * («Inscribite ya» acá, «Inscribirme» en el formulario de preinscripción).
+ * Toma los colores de `--vp-acento`, `--vp-acento-claro` y
+ * `--vp-texto-acento`, que define el contenedor.
+ */
+export function DetallePrecio({ precio, duracion }: { precio: PrecioVigente; duracion?: string | null }) {
+  // Qué cubre el pago, armado de los conceptos con los meses; si no hay
+  // bimestres (curso de pago único), queda la nota de la base.
+  const aclaracion = coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
+  return (
+    <>
+      {precio.conceptos.length > 0 && (
+        <ul className="vp-lineas">
+          {/* Tres columnas compartidas por todas las filas: concepto,
+              descuento (vacío si no hay) y monto, alineados a la derecha. */}
+          {precio.conceptos.map(linea => (
+            <li key={linea.concepto} className="vp-linea">
+              <span className="vp-concepto">{linea.concepto}</span>
+              <span className="vp-celda-descuento">
+                {linea.descuento ? <span className="vp-descuento">-{linea.descuento}%</span> : null}
+              </span>
+              <span className="vp-monto">{linea.monto}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="vp-total">
+        <span className="vp-total-rotulo">Total</span>
+        <span className="vp-total-monto">{precio.total}</span>
+      </div>
+      {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
+      <p className="vp-vigencia">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
+      <Financiacion />
+    </>
   );
 }
 
@@ -215,9 +254,6 @@ export function PanelVerPrecio({
   }, [vista]);
 
   const emailValido = EMAIL_VALIDO.test(email.trim());
-  // Qué cubre el pago, armado de los conceptos con los meses; si no hay
-  // bimestres (curso de pago único), queda la nota de la base.
-  const aclaracion = precio ? coberturaDelPago(precio.conceptos, duracion) ?? precio.nota : null;
 
   const enviar = async (e: FormEvent) => {
     e.preventDefault();
@@ -324,28 +360,7 @@ export function PanelVerPrecio({
 
       {vista === 'precio' && precio && (
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
-          {precio.conceptos.length > 0 && (
-            <ul className="vp-lineas">
-              {/* Tres columnas compartidas por todas las filas: concepto,
-                  descuento (vacío si no hay) y monto, alineados a la derecha. */}
-              {precio.conceptos.map(linea => (
-                <li key={linea.concepto} className="vp-linea">
-                  <span className="vp-concepto">{linea.concepto}</span>
-                  <span className="vp-celda-descuento">
-                    {linea.descuento ? <span className="vp-descuento">-{linea.descuento}%</span> : null}
-                  </span>
-                  <span className="vp-monto">{linea.monto}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <div className="vp-total">
-            <span className="vp-total-rotulo">Total</span>
-            <span className="vp-total-monto">{precio.total}</span>
-          </div>
-          {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
-          <p className="vp-vigencia">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
-          <Financiacion />
+          <DetallePrecio precio={precio} duracion={duracion} />
           {slug ? (
             <>
               <a href={urlAutoinscripcion(slug)} className="vp-primario">Inscribite ya</a>

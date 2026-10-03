@@ -226,6 +226,42 @@ async function suscribirDesdeFormulario(kind: string, payload: JsonRecord) {
 }
 
 /**
+ * La carrera, si su casa publica precio. La casa se valida contra el `nivel`
+ * de la base, no contra lo que diga el navegador: por ahora sólo Teclab
+ * publica precio. `carrera: null` es una carrera inexistente, inactiva o de
+ * otra casa.
+ */
+async function buscarCarreraConPrecio(supabase: ClienteAdmin, carreraId: number) {
+  const { data, error } = await supabase
+    .from('carreras')
+    .select('id, nombre, nivel, activa')
+    .eq('id', carreraId)
+    .maybeSingle();
+  if (error) return { carrera: null, error };
+  return { carrera: data && carreraConPrecio(data) ? data : null, error: null };
+}
+
+/**
+ * El precio que acompaña a la preinscripción de Teclab, para mostrarlo antes
+ * de «Inscribirme». Corre con el lead ya guardado, así que nunca lo tumba: si
+ * la carrera no se puede verificar, la respuesta es sólo el ok. El resto de las
+ * consultas no lee precios.
+ */
+async function precioDePreinscripcion(payload: JsonRecord) {
+  const carreraId = carreraIdDe(payload);
+  if (payload.casa !== 'teclab' || payload.tipoFormulario !== 'preinscripcion' || !carreraId) return null;
+  try {
+    const supabase = createSupabaseAdmin();
+    const { carrera, error } = await buscarCarreraConPrecio(supabase, carreraId);
+    if (error) console.error('[formularios] No se pudo verificar la carrera del precio', { code: error.code });
+    return carrera ? await leerPrecio(supabase, carrera.id) : null;
+  } catch (error) {
+    console.error('[formularios] No se pudo leer el precio de la preinscripción', error);
+    return null;
+  }
+}
+
+/**
  * «Ver precio»: registra el lead y devuelve el precio si está vigente.
  *
  * El orden importa. El lead entra primero en `consultas` (y dispara el aviso de
@@ -238,15 +274,9 @@ async function registrarPrecio(payload: JsonRecord) {
   if (!datos) throw new TypeError('Datos inválidos');
 
   const supabase = createSupabaseAdmin();
-  const { data: carrera, error: errorCarrera } = await supabase
-    .from('carreras')
-    .select('id, nombre, nivel, activa')
-    .eq('id', datos.carreraId)
-    .maybeSingle();
+  const { carrera, error: errorCarrera } = await buscarCarreraConPrecio(supabase, datos.carreraId);
   if (errorCarrera) return { error: errorCarrera };
-  // La casa se valida contra el `nivel` de la base, no contra lo que diga el
-  // navegador: por ahora sólo Teclab publica precio.
-  if (!carrera || !carreraConPrecio(carrera)) throw new TypeError('Carrera inválida');
+  if (!carrera) throw new TypeError('Carrera inválida');
 
   // Las columnas salen de casas.ts, igual que en la consulta. Hoy es sólo el
   // mail: `nombre` no viaja y queda en null.
@@ -572,9 +602,12 @@ export async function POST(request: NextRequest) {
     // «Ver precio», la autoinscripción y el enlace ya suscribieron adentro, con su carrera.
     if (kind === 'consulta' || kind === 'faq') await suscribirDesdeFormulario(kind, payload);
 
-    // «Ver precio» devuelve además el estado y, si está vigente, el precio.
-    // El resto, sólo el ok.
-    const extra = 'resultado' in result && result.resultado ? result.resultado : {};
+    // «Ver precio» y la preinscripción de Teclab devuelven además el estado y,
+    // si está vigente, el precio. El resto, sólo el ok.
+    const resultado = 'resultado' in result && result.resultado
+      ? result.resultado
+      : kind === 'consulta' ? await precioDePreinscripcion(payload) : null;
+    const extra = resultado ?? {};
     return NextResponse.json({ ok: true, ...extra }, { status: 201 });
   } catch (error) {
     if (error instanceof TypeError) {

@@ -267,19 +267,54 @@ test('si el lead no se guarda, no se muestra el precio', async t => {
   assert.equal(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS), false);
 });
 
-// ── Las consultas no leen precios: sólo «Ver precio» ──
+// ── La preinscripción de Teclab trae el precio; el resto de las consultas, no ──
 
 const preinscripcion = {
   email: 'ana@example.test', casa: 'teclab', tipoFormulario: 'preinscripcion',
   carrera: 'Tecnicatura Superior en Programación', carreraId: 7, newsletter: false,
 };
 
-test('las consultas, preinscripción de Teclab incluida, responden sólo el ok, sin leer precios', async t => {
+test('la preinscripción de Teclab devuelve el precio vigente, con un solo lead', async t => {
+  const { estado, enviar } = montarEndpoint(t);
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+
+  const { status, cuerpo } = await enviar(preinscripcion, 'consulta');
+  assert.equal(status, 201);
+  assert.deepEqual(cuerpo, {
+    ok: true,
+    estado: 'vigente',
+    precio: { conceptos: fila.conceptos, total: fila.total, nota: fila.nota, vigenteHasta: '2999-12-31' },
+  });
+  // La consulta no se registra dos veces por traer el precio.
+  assert.equal(estado.escrituras.filter(e => e.tabla === 'consultas').length, 1);
+  assert.equal(estado.escrituras[0].fila.tipo_formulario, 'preinscripcion');
+  assert.ok(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS && l.valor === 7));
+});
+
+test('la preinscripción de Teclab con el precio vencido devuelve sólo la vigencia', async t => {
+  const { estado, enviar } = montarEndpoint(t);
+  estado.precios.set(7, { ...fila, vigente_hasta: '2000-01-01' });
+  const { status, cuerpo } = await enviar(preinscripcion, 'consulta');
+  assert.equal(status, 201);
+  assert.deepEqual(cuerpo, { ok: true, estado: 'vencido', vigenteHasta: '2000-01-01' });
+});
+
+test('si no se puede verificar la carrera, la preinscripción ya guardada responde el ok', async t => {
+  const { estado, enviar } = montarEndpoint(t);
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  estado.errores['leer:carreras'] = { code: '42501' };
+  const { status, cuerpo } = await enviar(preinscripcion, 'consulta');
+  assert.equal(status, 201);
+  assert.deepEqual(cuerpo, { ok: true });
+  assert.equal(estado.escrituras.filter(e => e.tabla === 'consultas').length, 1);
+  assert.equal(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS), false);
+});
+
+test('el resto de las consultas responde sólo el ok, sin leer precios', async t => {
   const { estado, enviar } = montarEndpoint(t);
   estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
   estado.precios.set(8, { ...fila, vigente_hasta: '2999-12-31' });
   for (const payload of [
-    preinscripcion,
     { ...preinscripcion, tipoFormulario: 'contacto' },
     { ...preinscripcion, casa: 'siglo21', carreraId: 8 },
     { ...preinscripcion, casa: 'identidad' },

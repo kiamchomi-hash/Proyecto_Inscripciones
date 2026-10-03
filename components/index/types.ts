@@ -72,7 +72,9 @@ export interface Carrera {
 
 // Lo minimo que necesita el select del formulario de inscripcion. Mandarle la
 // fila completa metia todas las carreras enteras en el HTML de cada pagina.
-export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'>;
+// `duracion` es opcional: la usa el precio de la autoinscripción de Teclab para
+// decir cuántos cuatrimestres tiene la carrera.
+export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'> & Partial<Pick<Carrera, 'duracion'>>;
 
 // ── El texto largo no viaja en el HTML de la home ──
 //
