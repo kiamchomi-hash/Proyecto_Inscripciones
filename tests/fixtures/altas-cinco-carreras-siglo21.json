@@ -1,0 +1,2214 @@
+{
+  "verificado": "2026-10-03",
+  "carreras": [
+    {
+      "operacion": "update",
+      "id": 77,
+      "esperado": {
+        "nombre": "Antropología Organizacional",
+        "prefix": "Grado / Licenciatura en ",
+        "nivel": "Grado",
+        "activa": false,
+        "orden": 36,
+        "updated_at": "2026-03-21T20:09:07.010Z"
+      },
+      "slug": "licenciatura-en-antropologia-organizacional",
+      "fuente": {
+        "nombre": "Licenciatura en Antropología Organizacional",
+        "url": "https://21.edu.ar/carreras-y-programas/licenciatura-en-antropologia-organizacional",
+        "verificado": "2026-10-03",
+        "plan": [
+          {
+            "tag": "H6",
+            "text": "Primer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Primer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Principios de Economía"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología"
+          },
+          {
+            "tag": "LI",
+            "text": "Epistemología"
+          },
+          {
+            "tag": "LI",
+            "text": "Psicología Social de la Comunicación"
+          },
+          {
+            "tag": "LI",
+            "text": "Etnografía"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero I"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Segundo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Historia de América Latina"
+          },
+          {
+            "tag": "LI",
+            "text": "Fundamentos de Antropología Organizacional"
+          },
+          {
+            "tag": "LI",
+            "text": "Oratoria"
+          },
+          {
+            "tag": "LI",
+            "text": "Cibercultura"
+          },
+          {
+            "tag": "LI",
+            "text": "Sociología General"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero II"
+          },
+          {
+            "tag": "H6",
+            "text": "Segundo año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Tercer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Comunicación Organizacional"
+          },
+          {
+            "tag": "LI",
+            "text": "Escuelas Antropológicas"
+          },
+          {
+            "tag": "LI",
+            "text": "Métodos y Técnicas de Investigación Social"
+          },
+          {
+            "tag": "LI",
+            "text": "Organización Social"
+          },
+          {
+            "tag": "LI",
+            "text": "Cultura Organizacional"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero III"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Cuarto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Lenguaje y Cultura"
+          },
+          {
+            "tag": "LI",
+            "text": "Métodos y Técnicas de Investigación Etnográfica"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología Urbana"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología Política y Legal"
+          },
+          {
+            "tag": "LI",
+            "text": "Desarrollo Emprendedor"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero IV"
+          },
+          {
+            "tag": "H6",
+            "text": "Tercer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Quinto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Corrientes Antropológicas Contemporáneas"
+          },
+          {
+            "tag": "LI",
+            "text": "Historia Universal"
+          },
+          {
+            "tag": "LI",
+            "text": "Marco Legal de las Organizaciones"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología del Trabajo"
+          },
+          {
+            "tag": "LI",
+            "text": "Ética y Deontología Profesional"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero V"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Sexto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Historia del Trabajo"
+          },
+          {
+            "tag": "LI",
+            "text": "Análisis y Diagnóstico del Cambio Organizacional"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología Aplicada"
+          },
+          {
+            "tag": "LI",
+            "text": "Historia Argentina"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero VI"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario de Práctica de Antropología Organizacional"
+          },
+          {
+            "tag": "H6",
+            "text": "Cuarto año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Séptimo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Grupo y Liderazgo"
+          },
+          {
+            "tag": "LI",
+            "text": "Desarrollo y Globalización"
+          },
+          {
+            "tag": "LI",
+            "text": "Migración, Nuevas Identidades y Multiculturalidad"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología, Recursos Humanos y RSE"
+          },
+          {
+            "tag": "LI",
+            "text": "Tecnología, Medio Ambiente y Cultura en el Siglo XXI"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Profesional de Antropología Organizacional"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Octavo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Sociología del Poder"
+          },
+          {
+            "tag": "LI",
+            "text": "Movimientos Sociales y Cultura del Trabajo"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología Rural"
+          },
+          {
+            "tag": "LI",
+            "text": "Antropología Económica"
+          },
+          {
+            "tag": "LI",
+            "text": "Emprendimientos Universitarios"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario Final de Antropología Organizacional"
+          },
+          {
+            "tag": "H6",
+            "text": "Materias adicionales"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Solidaria"
+          },
+          {
+            "tag": "LI",
+            "text": "Materias electivas"
+          }
+        ],
+        "reconocimiento": "R.M. 1236/2021"
+      },
+      "fila": {
+        "nombre": "Antropología Organizacional",
+        "prefix": "Grado / Licenciatura en ",
+        "nivel": "Grado",
+        "modalidad": "Distancia",
+        "duracion": "4 años",
+        "titulo": "Licenciado/a en Antropología Organizacional",
+        "descripcion": "Analizá culturas y vínculos en las organizaciones. Aplicá herramientas antropológicas al mundo del trabajo.",
+        "enfoque": "Aplicá herramientas antropológicas al mundo del trabajo.",
+        "seccion_duracion": "4 años. Consultá el plan de estudios y sus requisitos adicionales.",
+        "seccion_modalidad": "Educación Distribuida Home (EDH): cursado virtual con instancias presenciales según el trayecto académico.",
+        "plan_estudios": "Primer año\nPrimer Cuatrimestre\n• Principios de Economía\n• Antropología\n• Epistemología\n• Psicología Social de la Comunicación\n• Etnografía\n• Idioma Extranjero I\nSegundo Cuatrimestre\n• Historia de América Latina\n• Fundamentos de Antropología Organizacional\n• Oratoria\n• Cibercultura\n• Sociología General\n• Idioma Extranjero II\nSegundo año\nTercer Cuatrimestre\n• Comunicación Organizacional\n• Escuelas Antropológicas\n• Métodos y Técnicas de Investigación Social\n• Organización Social\n• Cultura Organizacional\n• Idioma Extranjero III\nCuarto Cuatrimestre\n• Lenguaje y Cultura\n• Métodos y Técnicas de Investigación Etnográfica\n• Antropología Urbana\n• Antropología Política y Legal\n• Desarrollo Emprendedor\n• Idioma Extranjero IV\nTercer año\nQuinto Cuatrimestre\n• Corrientes Antropológicas Contemporáneas\n• Historia Universal\n• Marco Legal de las Organizaciones\n• Antropología del Trabajo\n• Ética y Deontología Profesional\n• Idioma Extranjero V\nSexto Cuatrimestre\n• Historia del Trabajo\n• Análisis y Diagnóstico del Cambio Organizacional\n• Antropología Aplicada\n• Historia Argentina\n• Idioma Extranjero VI\n• Seminario de Práctica de Antropología Organizacional\nCuarto año\nSéptimo Cuatrimestre\n• Grupo y Liderazgo\n• Desarrollo y Globalización\n• Migración, Nuevas Identidades y Multiculturalidad\n• Antropología, Recursos Humanos y RSE\n• Tecnología, Medio Ambiente y Cultura en el Siglo XXI\n• Práctica Profesional de Antropología Organizacional\nOctavo Cuatrimestre\n• Sociología del Poder\n• Movimientos Sociales y Cultura del Trabajo\n• Antropología Rural\n• Antropología Económica\n• Emprendimientos Universitarios\n• Seminario Final de Antropología Organizacional\nMaterias adicionales\n• Práctica Solidaria\n• Materias electivas",
+        "nombre_corto": "Antropología Organizacional",
+        "area": "RRHH",
+        "activa": true,
+        "orden": 36,
+        "slides": [
+          {
+            "type": "portada",
+            "imagen_desktop": "/imagenes/gente/Header_1920x450-1.webp",
+            "imagen_desktop_position": "center",
+            "bullets": [
+              "Analizá culturas y vínculos en las organizaciones.",
+              "Aplicá herramientas antropológicas al mundo del trabajo."
+            ],
+            "badges": [
+              {
+                "label": "Título",
+                "value": "Licenciado/a en Antropología Organizacional"
+              },
+              {
+                "label": "Área",
+                "value": "RRHH"
+              }
+            ]
+          },
+          {
+            "type": "plan_estudios",
+            "paginas": [
+              {
+                "izquierda": {
+                  "año": "Primer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Primer Cuatrimestre",
+                      "materias": [
+                        "Principios de Economía",
+                        "Antropología",
+                        "Epistemología",
+                        "Psicología Social de la Comunicación",
+                        "Etnografía",
+                        "Idioma Extranjero I"
+                      ]
+                    },
+                    {
+                      "label": "Segundo Cuatrimestre",
+                      "materias": [
+                        "Historia de América Latina",
+                        "Fundamentos de Antropología Organizacional",
+                        "Oratoria",
+                        "Cibercultura",
+                        "Sociología General",
+                        "Idioma Extranjero II"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Segundo año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Tercer Cuatrimestre",
+                      "materias": [
+                        "Comunicación Organizacional",
+                        "Escuelas Antropológicas",
+                        "Métodos y Técnicas de Investigación Social",
+                        "Organización Social",
+                        "Cultura Organizacional",
+                        "Idioma Extranjero III"
+                      ]
+                    },
+                    {
+                      "label": "Cuarto Cuatrimestre",
+                      "materias": [
+                        "Lenguaje y Cultura",
+                        "Métodos y Técnicas de Investigación Etnográfica",
+                        "Antropología Urbana",
+                        "Antropología Política y Legal",
+                        "Desarrollo Emprendedor",
+                        "Idioma Extranjero IV"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "izquierda": {
+                  "año": "Tercer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Quinto Cuatrimestre",
+                      "materias": [
+                        "Corrientes Antropológicas Contemporáneas",
+                        "Historia Universal",
+                        "Marco Legal de las Organizaciones",
+                        "Antropología del Trabajo",
+                        "Ética y Deontología Profesional",
+                        "Idioma Extranjero V"
+                      ]
+                    },
+                    {
+                      "label": "Sexto Cuatrimestre",
+                      "materias": [
+                        "Historia del Trabajo",
+                        "Análisis y Diagnóstico del Cambio Organizacional",
+                        "Antropología Aplicada",
+                        "Historia Argentina",
+                        "Idioma Extranjero VI",
+                        "Seminario de Práctica de Antropología Organizacional"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Cuarto año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Séptimo Cuatrimestre",
+                      "materias": [
+                        "Grupo y Liderazgo",
+                        "Desarrollo y Globalización",
+                        "Migración, Nuevas Identidades y Multiculturalidad",
+                        "Antropología, Recursos Humanos y RSE",
+                        "Tecnología, Medio Ambiente y Cultura en el Siglo XXI",
+                        "Práctica Profesional de Antropología Organizacional"
+                      ]
+                    },
+                    {
+                      "label": "Octavo Cuatrimestre",
+                      "materias": [
+                        "Sociología del Poder",
+                        "Movimientos Sociales y Cultura del Trabajo",
+                        "Antropología Rural",
+                        "Antropología Económica",
+                        "Emprendimientos Universitarios",
+                        "Seminario Final de Antropología Organizacional"
+                      ]
+                    }
+                  ]
+                },
+                "extras": [
+                  {
+                    "titulo": "Materias adicionales",
+                    "items": [
+                      "Práctica Solidaria",
+                      "Materias electivas"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "cierre",
+            "imagen": "/imagenes/imagenes_cau/entrada_estetica.png",
+            "titulo": "Estudiá con acompañamiento del CAU Villa Lugano",
+            "subtitulo": "Consultanos para conocer la modalidad y los requisitos de ingreso.",
+            "beneficios": [
+              {
+                "icono": "graduation-cap",
+                "texto": "Título universitario"
+              },
+              {
+                "icono": "users",
+                "texto": "Acompañamiento del CAU"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "operacion": "update",
+      "id": 63,
+      "esperado": {
+        "nombre": "Administración Hotelera",
+        "prefix": "Grado / Licenciatura en",
+        "nivel": "Grado",
+        "activa": false,
+        "orden": 22,
+        "updated_at": "2026-07-30T22:17:18.993Z"
+      },
+      "slug": "licenciatura-en-administracion-hotelera",
+      "fuente": {
+        "nombre": "Licenciatura en Administración Hotelera",
+        "url": "https://21.edu.ar/carreras-y-programas/licenciatura-en-administracion-hotelera",
+        "verificado": "2026-10-03",
+        "plan": [
+          {
+            "tag": "H6",
+            "text": "Primer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Primer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Administración"
+          },
+          {
+            "tag": "LI",
+            "text": "Desarrollo Emprendedor"
+          },
+          {
+            "tag": "LI",
+            "text": "Geografía Turística"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas II - Análisis -"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero I"
+          },
+          {
+            "tag": "LI",
+            "text": "Mercados Turísticos"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Segundo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Alimentos y Bebidas"
+          },
+          {
+            "tag": "LI",
+            "text": "Comportamiento del Consumidor"
+          },
+          {
+            "tag": "LI",
+            "text": "Eventos, Ceremonial y Protocolo"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero II"
+          },
+          {
+            "tag": "LI",
+            "text": "Servicios Turísticos"
+          },
+          {
+            "tag": "H6",
+            "text": "Segundo año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Tercer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Contabilidad Básica y de Gestión"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión de Empresas Gastronómicas"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas III - Estadística I"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero III"
+          },
+          {
+            "tag": "LI",
+            "text": "Marketing I"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Solidaria"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Cuarto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Cultura Organizacional"
+          },
+          {
+            "tag": "LI",
+            "text": "Economía I"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión de Alojamiento"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero IV"
+          },
+          {
+            "tag": "LI",
+            "text": "Investigación de Mercado"
+          },
+          {
+            "tag": "LI",
+            "text": "Marco Legal de las Organizaciones"
+          },
+          {
+            "tag": "H6",
+            "text": "Tercer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Quinto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Administración De Recursos Humanos"
+          },
+          {
+            "tag": "LI",
+            "text": "Análisis Cuantitativo Financiero"
+          },
+          {
+            "tag": "LI",
+            "text": "Contabilidad De Costos"
+          },
+          {
+            "tag": "LI",
+            "text": "Economía II"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero V"
+          },
+          {
+            "tag": "LI",
+            "text": "Recepción, Conserjería y Reservas"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Sexto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Dirección General"
+          },
+          {
+            "tag": "LI",
+            "text": "Formulación Y Evaluación De Proyectos"
+          },
+          {
+            "tag": "LI",
+            "text": "Historia Universal"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero VI"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario de Práctica de Administración Hotelera"
+          },
+          {
+            "tag": "LI",
+            "text": "Ética y Deontología Profesional"
+          },
+          {
+            "tag": "H6",
+            "text": "Cuarto año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Séptimo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Emprendimientos Universitarios"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión de Turismo de Negocios y de Tiempo Libre"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero VII"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Profesional de Administración Hotelera"
+          },
+          {
+            "tag": "LI",
+            "text": "Turismo y Mercado"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Octavo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero VIII"
+          },
+          {
+            "tag": "LI",
+            "text": "Instituciones Políticas y Gubernamentales"
+          },
+          {
+            "tag": "LI",
+            "text": "Pisos y Habitaciones - Mantenimiento y Seguridad"
+          },
+          {
+            "tag": "LI",
+            "text": "Hotelera"
+          },
+          {
+            "tag": "LI",
+            "text": "Planificación Turística"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario Final de Administración Hotelera"
+          }
+        ],
+        "reconocimiento": "RESOL-2023-2593-APN-ME"
+      },
+      "fila": {
+        "nombre": "Administración Hotelera",
+        "prefix": "Grado / Licenciatura en",
+        "nivel": "Grado",
+        "modalidad": "Distancia",
+        "duracion": "4 años",
+        "titulo": "Licenciado/a en Administración Hotelera",
+        "descripcion": "Gestioná servicios y operaciones hoteleras. Desarrollá experiencias de hospitalidad y equipos de trabajo.",
+        "enfoque": "Desarrollá experiencias de hospitalidad y equipos de trabajo.",
+        "seccion_duracion": "4 años. Consultá el plan de estudios y sus requisitos adicionales.",
+        "seccion_modalidad": "Educación Distribuida Home (EDH): cursado virtual con instancias presenciales según el trayecto académico.",
+        "plan_estudios": "Primer año\nPrimer Cuatrimestre\n• Administración\n• Desarrollo Emprendedor\n• Geografía Turística\n• Herramientas Matemáticas II - Análisis -\n• Idioma Extranjero I\n• Mercados Turísticos\nSegundo Cuatrimestre\n• Alimentos y Bebidas\n• Comportamiento del Consumidor\n• Eventos, Ceremonial y Protocolo\n• Idioma Extranjero II\n• Servicios Turísticos\nSegundo año\nTercer Cuatrimestre\n• Contabilidad Básica y de Gestión\n• Gestión de Empresas Gastronómicas\n• Herramientas Matemáticas III - Estadística I\n• Idioma Extranjero III\n• Marketing I\n• Práctica Solidaria\nCuarto Cuatrimestre\n• Cultura Organizacional\n• Economía I\n• Gestión de Alojamiento\n• Idioma Extranjero IV\n• Investigación de Mercado\n• Marco Legal de las Organizaciones\nTercer año\nQuinto Cuatrimestre\n• Administración De Recursos Humanos\n• Análisis Cuantitativo Financiero\n• Contabilidad De Costos\n• Economía II\n• Idioma Extranjero V\n• Recepción, Conserjería y Reservas\nSexto Cuatrimestre\n• Dirección General\n• Formulación Y Evaluación De Proyectos\n• Historia Universal\n• Idioma Extranjero VI\n• Seminario de Práctica de Administración Hotelera\n• Ética y Deontología Profesional\nCuarto año\nSéptimo Cuatrimestre\n• Emprendimientos Universitarios\n• Gestión Ambiental\n• Gestión de Turismo de Negocios y de Tiempo Libre\n• Idioma Extranjero VII\n• Práctica Profesional de Administración Hotelera\n• Turismo y Mercado\nOctavo Cuatrimestre\n• Idioma Extranjero VIII\n• Instituciones Políticas y Gubernamentales\n• Pisos y Habitaciones - Mantenimiento y Seguridad\n• Hotelera\n• Planificación Turística\n• Seminario Final de Administración Hotelera",
+        "nombre_corto": "Administración Hotelera",
+        "area": "Turismo y Hotelería",
+        "activa": true,
+        "orden": 22,
+        "slides": [
+          {
+            "type": "portada",
+            "imagen_desktop": "/imagenes/gente/Header_1920x450-1.webp",
+            "imagen_desktop_position": "center",
+            "bullets": [
+              "Gestioná servicios y operaciones hoteleras.",
+              "Desarrollá experiencias de hospitalidad y equipos de trabajo."
+            ],
+            "badges": [
+              {
+                "label": "Título",
+                "value": "Licenciado/a en Administración Hotelera"
+              },
+              {
+                "label": "Área",
+                "value": "Turismo y Hotelería"
+              }
+            ]
+          },
+          {
+            "type": "plan_estudios",
+            "paginas": [
+              {
+                "izquierda": {
+                  "año": "Primer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Primer Cuatrimestre",
+                      "materias": [
+                        "Administración",
+                        "Desarrollo Emprendedor",
+                        "Geografía Turística",
+                        "Herramientas Matemáticas II - Análisis -",
+                        "Idioma Extranjero I",
+                        "Mercados Turísticos"
+                      ]
+                    },
+                    {
+                      "label": "Segundo Cuatrimestre",
+                      "materias": [
+                        "Alimentos y Bebidas",
+                        "Comportamiento del Consumidor",
+                        "Eventos, Ceremonial y Protocolo",
+                        "Idioma Extranjero II",
+                        "Servicios Turísticos"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Segundo año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Tercer Cuatrimestre",
+                      "materias": [
+                        "Contabilidad Básica y de Gestión",
+                        "Gestión de Empresas Gastronómicas",
+                        "Herramientas Matemáticas III - Estadística I",
+                        "Idioma Extranjero III",
+                        "Marketing I",
+                        "Práctica Solidaria"
+                      ]
+                    },
+                    {
+                      "label": "Cuarto Cuatrimestre",
+                      "materias": [
+                        "Cultura Organizacional",
+                        "Economía I",
+                        "Gestión de Alojamiento",
+                        "Idioma Extranjero IV",
+                        "Investigación de Mercado",
+                        "Marco Legal de las Organizaciones"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "izquierda": {
+                  "año": "Tercer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Quinto Cuatrimestre",
+                      "materias": [
+                        "Administración De Recursos Humanos",
+                        "Análisis Cuantitativo Financiero",
+                        "Contabilidad De Costos",
+                        "Economía II",
+                        "Idioma Extranjero V",
+                        "Recepción, Conserjería y Reservas"
+                      ]
+                    },
+                    {
+                      "label": "Sexto Cuatrimestre",
+                      "materias": [
+                        "Dirección General",
+                        "Formulación Y Evaluación De Proyectos",
+                        "Historia Universal",
+                        "Idioma Extranjero VI",
+                        "Seminario de Práctica de Administración Hotelera",
+                        "Ética y Deontología Profesional"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Cuarto año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Séptimo Cuatrimestre",
+                      "materias": [
+                        "Emprendimientos Universitarios",
+                        "Gestión Ambiental",
+                        "Gestión de Turismo de Negocios y de Tiempo Libre",
+                        "Idioma Extranjero VII",
+                        "Práctica Profesional de Administración Hotelera",
+                        "Turismo y Mercado"
+                      ]
+                    },
+                    {
+                      "label": "Octavo Cuatrimestre",
+                      "materias": [
+                        "Idioma Extranjero VIII",
+                        "Instituciones Políticas y Gubernamentales",
+                        "Pisos y Habitaciones - Mantenimiento y Seguridad",
+                        "Hotelera",
+                        "Planificación Turística",
+                        "Seminario Final de Administración Hotelera"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "cierre",
+            "imagen": "/imagenes/imagenes_cau/entrada_estetica.png",
+            "titulo": "Estudiá con acompañamiento del CAU Villa Lugano",
+            "subtitulo": "Consultanos para conocer la modalidad y los requisitos de ingreso.",
+            "beneficios": [
+              {
+                "icono": "graduation-cap",
+                "texto": "Título universitario"
+              },
+              {
+                "icono": "users",
+                "texto": "Acompañamiento del CAU"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "operacion": "insert",
+      "slug": "licenciatura-en-ambiente-y-energias-renovables",
+      "fuente": {
+        "nombre": "Licenciatura en Ambiente y Energías Renovables",
+        "url": "https://21.edu.ar/carreras-y-programas/licenciatura-en-ambiente-y-energias-renovables",
+        "verificado": "2026-10-03",
+        "plan": [
+          {
+            "tag": "H6",
+            "text": "Primer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Primer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Ecología"
+          },
+          {
+            "tag": "LI",
+            "text": "Física Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas I – Álgebra"
+          },
+          {
+            "tag": "LI",
+            "text": "Introducción a las Energías Renovables"
+          },
+          {
+            "tag": "LI",
+            "text": "Sociología General"
+          },
+          {
+            "tag": "LI",
+            "text": "Desarrollo Emprendedor"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Segundo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión del Recurso Aire y Agua"
+          },
+          {
+            "tag": "LI",
+            "text": "Química Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Hidráulica"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero I"
+          },
+          {
+            "tag": "LI",
+            "text": "Geografía Económica"
+          },
+          {
+            "tag": "H6",
+            "text": "Segundo año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Tercer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas III - Estadística I"
+          },
+          {
+            "tag": "LI",
+            "text": "Mediciones Ambientales"
+          },
+          {
+            "tag": "LI",
+            "text": "Ordenamiento Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Introducción a las Políticas Públicas"
+          },
+          {
+            "tag": "LI",
+            "text": "Grupo y Liderazgo"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero II"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Cuarto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Evaluación del Impacto Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Derecho Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Energía Solar Fotovoltaica"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión De Residuos I"
+          },
+          {
+            "tag": "LI",
+            "text": "Energía Hidráulica"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero III"
+          },
+          {
+            "tag": "H6",
+            "text": "Tercer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Quinto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Eco Marketing"
+          },
+          {
+            "tag": "LI",
+            "text": "Auditoría Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Sistemas de Información Geográfica"
+          },
+          {
+            "tag": "LI",
+            "text": "Energía Eólica"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario de Práctica"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero IV"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Sexto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Métodos y Técnicas de Investigación Social"
+          },
+          {
+            "tag": "LI",
+            "text": "Evaluación del Impacto Ambiental II"
+          },
+          {
+            "tag": "LI",
+            "text": "Desastres Naturales y Adaptación Climática"
+          },
+          {
+            "tag": "LI",
+            "text": "Energía de Biomasa"
+          },
+          {
+            "tag": "LI",
+            "text": "Responsabilidad Social"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero V"
+          },
+          {
+            "tag": "H6",
+            "text": "Cuarto año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Séptimo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Seguridad e Higiene Laboral"
+          },
+          {
+            "tag": "LI",
+            "text": "Salud y Ambiente"
+          },
+          {
+            "tag": "LI",
+            "text": "Desarrollo Sustentable"
+          },
+          {
+            "tag": "LI",
+            "text": "Comunicación y Educación Medioambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Emprendimientos Universitarios"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Profesional"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Octavo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión de Proyectos de Energías Renovables"
+          },
+          {
+            "tag": "LI",
+            "text": "Proyectos de Reducción y Reutilización de Recursos"
+          },
+          {
+            "tag": "LI",
+            "text": "Políticas Energéticas Internacionales"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión de los Alimentos"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero VI"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario Final"
+          }
+        ],
+        "reconocimiento": "R.S.E. 13/25 (distancia); R.M. 308/17 (presencial)"
+      },
+      "fila": {
+        "nombre": "Ambiente y Energías Renovables",
+        "prefix": "Grado / Licenciatura en",
+        "nivel": "Grado",
+        "modalidad": "Distancia",
+        "duracion": "4 años",
+        "titulo": "Licenciado/a en Ambiente y Energías Renovables",
+        "descripcion": "Estudiá energías renovables y gestión ambiental. Desarrollá proyectos orientados a la sostenibilidad.",
+        "enfoque": "Desarrollá proyectos orientados a la sostenibilidad.",
+        "seccion_duracion": "4 años. Consultá el plan de estudios y sus requisitos adicionales.",
+        "seccion_modalidad": "Educación Distribuida Home (EDH): cursado virtual con instancias presenciales según el trayecto académico.",
+        "plan_estudios": "Primer año\nPrimer Cuatrimestre\n• Ecología\n• Física Ambiental\n• Herramientas Matemáticas I – Álgebra\n• Introducción a las Energías Renovables\n• Sociología General\n• Desarrollo Emprendedor\nSegundo Cuatrimestre\n• Gestión Ambiental\n• Gestión del Recurso Aire y Agua\n• Química Ambiental\n• Hidráulica\n• Idioma Extranjero I\n• Geografía Económica\nSegundo año\nTercer Cuatrimestre\n• Herramientas Matemáticas III - Estadística I\n• Mediciones Ambientales\n• Ordenamiento Ambiental\n• Introducción a las Políticas Públicas\n• Grupo y Liderazgo\n• Idioma Extranjero II\nCuarto Cuatrimestre\n• Evaluación del Impacto Ambiental\n• Derecho Ambiental\n• Energía Solar Fotovoltaica\n• Gestión De Residuos I\n• Energía Hidráulica\n• Idioma Extranjero III\nTercer año\nQuinto Cuatrimestre\n• Eco Marketing\n• Auditoría Ambiental\n• Sistemas de Información Geográfica\n• Energía Eólica\n• Seminario de Práctica\n• Idioma Extranjero IV\nSexto Cuatrimestre\n• Métodos y Técnicas de Investigación Social\n• Evaluación del Impacto Ambiental II\n• Desastres Naturales y Adaptación Climática\n• Energía de Biomasa\n• Responsabilidad Social\n• Idioma Extranjero V\nCuarto año\nSéptimo Cuatrimestre\n• Seguridad e Higiene Laboral\n• Salud y Ambiente\n• Desarrollo Sustentable\n• Comunicación y Educación Medioambiental\n• Emprendimientos Universitarios\n• Práctica Profesional\nOctavo Cuatrimestre\n• Gestión de Proyectos de Energías Renovables\n• Proyectos de Reducción y Reutilización de Recursos\n• Políticas Energéticas Internacionales\n• Gestión de los Alimentos\n• Idioma Extranjero VI\n• Seminario Final",
+        "nombre_corto": "Ambiente y Energías Renovables",
+        "area": "Ambiente y Energía",
+        "activa": true,
+        "orden": 58,
+        "slides": [
+          {
+            "type": "portada",
+            "imagen_desktop": "/imagenes/gente/Header_1920x450-1.webp",
+            "imagen_desktop_position": "center",
+            "bullets": [
+              "Estudiá energías renovables y gestión ambiental.",
+              "Desarrollá proyectos orientados a la sostenibilidad."
+            ],
+            "badges": [
+              {
+                "label": "Título",
+                "value": "Licenciado/a en Ambiente y Energías Renovables"
+              },
+              {
+                "label": "Área",
+                "value": "Ambiente y Energía"
+              }
+            ]
+          },
+          {
+            "type": "plan_estudios",
+            "paginas": [
+              {
+                "izquierda": {
+                  "año": "Primer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Primer Cuatrimestre",
+                      "materias": [
+                        "Ecología",
+                        "Física Ambiental",
+                        "Herramientas Matemáticas I – Álgebra",
+                        "Introducción a las Energías Renovables",
+                        "Sociología General",
+                        "Desarrollo Emprendedor"
+                      ]
+                    },
+                    {
+                      "label": "Segundo Cuatrimestre",
+                      "materias": [
+                        "Gestión Ambiental",
+                        "Gestión del Recurso Aire y Agua",
+                        "Química Ambiental",
+                        "Hidráulica",
+                        "Idioma Extranjero I",
+                        "Geografía Económica"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Segundo año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Tercer Cuatrimestre",
+                      "materias": [
+                        "Herramientas Matemáticas III - Estadística I",
+                        "Mediciones Ambientales",
+                        "Ordenamiento Ambiental",
+                        "Introducción a las Políticas Públicas",
+                        "Grupo y Liderazgo",
+                        "Idioma Extranjero II"
+                      ]
+                    },
+                    {
+                      "label": "Cuarto Cuatrimestre",
+                      "materias": [
+                        "Evaluación del Impacto Ambiental",
+                        "Derecho Ambiental",
+                        "Energía Solar Fotovoltaica",
+                        "Gestión De Residuos I",
+                        "Energía Hidráulica",
+                        "Idioma Extranjero III"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "izquierda": {
+                  "año": "Tercer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Quinto Cuatrimestre",
+                      "materias": [
+                        "Eco Marketing",
+                        "Auditoría Ambiental",
+                        "Sistemas de Información Geográfica",
+                        "Energía Eólica",
+                        "Seminario de Práctica",
+                        "Idioma Extranjero IV"
+                      ]
+                    },
+                    {
+                      "label": "Sexto Cuatrimestre",
+                      "materias": [
+                        "Métodos y Técnicas de Investigación Social",
+                        "Evaluación del Impacto Ambiental II",
+                        "Desastres Naturales y Adaptación Climática",
+                        "Energía de Biomasa",
+                        "Responsabilidad Social",
+                        "Idioma Extranjero V"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Cuarto año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Séptimo Cuatrimestre",
+                      "materias": [
+                        "Seguridad e Higiene Laboral",
+                        "Salud y Ambiente",
+                        "Desarrollo Sustentable",
+                        "Comunicación y Educación Medioambiental",
+                        "Emprendimientos Universitarios",
+                        "Práctica Profesional"
+                      ]
+                    },
+                    {
+                      "label": "Octavo Cuatrimestre",
+                      "materias": [
+                        "Gestión de Proyectos de Energías Renovables",
+                        "Proyectos de Reducción y Reutilización de Recursos",
+                        "Políticas Energéticas Internacionales",
+                        "Gestión de los Alimentos",
+                        "Idioma Extranjero VI",
+                        "Seminario Final"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "cierre",
+            "imagen": "/imagenes/imagenes_cau/entrada_estetica.png",
+            "titulo": "Estudiá con acompañamiento del CAU Villa Lugano",
+            "subtitulo": "Consultanos para conocer la modalidad y los requisitos de ingreso.",
+            "beneficios": [
+              {
+                "icono": "graduation-cap",
+                "texto": "Título universitario"
+              },
+              {
+                "icono": "users",
+                "texto": "Acompañamiento del CAU"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "operacion": "insert",
+      "slug": "licenciatura-en-hidrocarburos-y-geociencias",
+      "fuente": {
+        "nombre": "Licenciatura en Hidrocarburos y Geociencias",
+        "url": "https://21.edu.ar/carreras-y-programas/licenciatura-en-hidrocarburos-y-geociencias",
+        "verificado": "2026-10-03",
+        "plan": [
+          {
+            "tag": "H6",
+            "text": "Primer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Primer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas I - Álgebra"
+          },
+          {
+            "tag": "LI",
+            "text": "Geología I"
+          },
+          {
+            "tag": "LI",
+            "text": "Física"
+          },
+          {
+            "tag": "LI",
+            "text": "Introducción a la Industria de los Hidrocarburos"
+          },
+          {
+            "tag": "LI",
+            "text": "Sociología General"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero I"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Segundo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Electrotecnia y Termotecnia"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas II - Análisis"
+          },
+          {
+            "tag": "LI",
+            "text": "Química General e Inorgánica"
+          },
+          {
+            "tag": "LI",
+            "text": "Sistemas de Representación"
+          },
+          {
+            "tag": "LI",
+            "text": "Desarrollo Emprendedor"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero II"
+          },
+          {
+            "tag": "H6",
+            "text": "Segundo año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Tercer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Química Orgánica"
+          },
+          {
+            "tag": "LI",
+            "text": "Mecánica de los Fluidos"
+          },
+          {
+            "tag": "LI",
+            "text": "Marco Legal de las Organizaciones"
+          },
+          {
+            "tag": "LI",
+            "text": "Geología II"
+          },
+          {
+            "tag": "LI",
+            "text": "Máquinas y Sistemas"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero III"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Cuarto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Evaluación de Impacto Ambiental I"
+          },
+          {
+            "tag": "LI",
+            "text": "Reservorios"
+          },
+          {
+            "tag": "LI",
+            "text": "Perforación"
+          },
+          {
+            "tag": "LI",
+            "text": "Derecho Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Economía I"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero IV"
+          },
+          {
+            "tag": "H6",
+            "text": "Tercer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Quinto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Perforación Avanzada"
+          },
+          {
+            "tag": "LI",
+            "text": "Materiales para la Industria Petrolera"
+          },
+          {
+            "tag": "LI",
+            "text": "Logística"
+          },
+          {
+            "tag": "LI",
+            "text": "Evaluación de Impacto Ambiental II"
+          },
+          {
+            "tag": "LI",
+            "text": "Ética y Deontología Profesional"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero V"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Sexto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Yacimientos No Convencionales"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas III - Estadística I"
+          },
+          {
+            "tag": "LI",
+            "text": "Seguridad e Higiene Laboral"
+          },
+          {
+            "tag": "LI",
+            "text": "Grupo y Liderazgo"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero VI"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario de Práctica de Hidrocarburos y Geociencia"
+          },
+          {
+            "tag": "H6",
+            "text": "Cuarto año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Séptimo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Derecho y Energía"
+          },
+          {
+            "tag": "LI",
+            "text": "Terminación y Reparación de Pozos"
+          },
+          {
+            "tag": "LI",
+            "text": "Sistemas Artificiales de Producción"
+          },
+          {
+            "tag": "LI",
+            "text": "Instalaciones de Superficie"
+          },
+          {
+            "tag": "LI",
+            "text": "Recuperación Secundaria y Mejorada"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Profesional de Hidrocarburos y Geociencia"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Octavo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Implementación de Normas de Calidad"
+          },
+          {
+            "tag": "LI",
+            "text": "Política y Economía Ambiental"
+          },
+          {
+            "tag": "LI",
+            "text": "Gas y Gasolina"
+          },
+          {
+            "tag": "LI",
+            "text": "Industrialización de los Hidrocarburos"
+          },
+          {
+            "tag": "LI",
+            "text": "Emprendimientos Universitarios"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario Final de Hidrocarburos y Geociencia"
+          },
+          {
+            "tag": "H6",
+            "text": "Otros requisitos"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Noveno Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Solidaria"
+          },
+          {
+            "tag": "LI",
+            "text": "Materia Electiva I"
+          },
+          {
+            "tag": "LI",
+            "text": "Materia Electiva II"
+          }
+        ],
+        "reconocimiento": "Resoluciones Ministeriales 1361/2021 y 1317/2024"
+      },
+      "fila": {
+        "nombre": "Hidrocarburos y Geociencias",
+        "prefix": "Grado / Licenciatura en",
+        "nivel": "Grado",
+        "modalidad": "Distancia",
+        "duracion": "4 años",
+        "titulo": "Licenciado/a en Hidrocarburos y Geociencias",
+        "descripcion": "Estudiá geociencias y recursos hidrocarburíferos. Participá en proyectos vinculados a exploración y producción.",
+        "enfoque": "Participá en proyectos vinculados a exploración y producción.",
+        "seccion_duracion": "4 años. Consultá el plan de estudios y sus requisitos adicionales.",
+        "seccion_modalidad": "Educación Distribuida Home (EDH): cursado virtual con instancias presenciales según el trayecto académico.",
+        "plan_estudios": "Primer año\nPrimer Cuatrimestre\n• Herramientas Matemáticas I - Álgebra\n• Geología I\n• Física\n• Introducción a la Industria de los Hidrocarburos\n• Sociología General\n• Idioma Extranjero I\nSegundo Cuatrimestre\n• Electrotecnia y Termotecnia\n• Herramientas Matemáticas II - Análisis\n• Química General e Inorgánica\n• Sistemas de Representación\n• Desarrollo Emprendedor\n• Idioma Extranjero II\nSegundo año\nTercer Cuatrimestre\n• Química Orgánica\n• Mecánica de los Fluidos\n• Marco Legal de las Organizaciones\n• Geología II\n• Máquinas y Sistemas\n• Idioma Extranjero III\nCuarto Cuatrimestre\n• Evaluación de Impacto Ambiental I\n• Reservorios\n• Perforación\n• Derecho Ambiental\n• Economía I\n• Idioma Extranjero IV\nTercer año\nQuinto Cuatrimestre\n• Perforación Avanzada\n• Materiales para la Industria Petrolera\n• Logística\n• Evaluación de Impacto Ambiental II\n• Ética y Deontología Profesional\n• Idioma Extranjero V\nSexto Cuatrimestre\n• Yacimientos No Convencionales\n• Herramientas Matemáticas III - Estadística I\n• Seguridad e Higiene Laboral\n• Grupo y Liderazgo\n• Idioma Extranjero VI\n• Seminario de Práctica de Hidrocarburos y Geociencia\nCuarto año\nSéptimo Cuatrimestre\n• Derecho y Energía\n• Terminación y Reparación de Pozos\n• Sistemas Artificiales de Producción\n• Instalaciones de Superficie\n• Recuperación Secundaria y Mejorada\n• Práctica Profesional de Hidrocarburos y Geociencia\nOctavo Cuatrimestre\n• Implementación de Normas de Calidad\n• Política y Economía Ambiental\n• Gas y Gasolina\n• Industrialización de los Hidrocarburos\n• Emprendimientos Universitarios\n• Seminario Final de Hidrocarburos y Geociencia\nOtros requisitos\nNoveno Cuatrimestre\n• Práctica Solidaria\n• Materia Electiva I\n• Materia Electiva II",
+        "nombre_corto": "Hidrocarburos y Geociencias",
+        "area": "Energía",
+        "activa": true,
+        "orden": 59,
+        "slides": [
+          {
+            "type": "portada",
+            "imagen_desktop": "/imagenes/Modales/Tecnicatura Universitaria en Hidrocarburos y Geociencias/Foto-hero-tecnicatura-hidrocarburos-y-geociencia.webp",
+            "imagen_desktop_position": "40% center",
+            "bullets": [
+              "Estudiá geociencias y recursos hidrocarburíferos.",
+              "Participá en proyectos vinculados a exploración y producción."
+            ],
+            "badges": [
+              {
+                "label": "Título",
+                "value": "Licenciado/a en Hidrocarburos y Geociencias"
+              },
+              {
+                "label": "Área",
+                "value": "Energía"
+              }
+            ]
+          },
+          {
+            "type": "plan_estudios",
+            "paginas": [
+              {
+                "izquierda": {
+                  "año": "Primer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Primer Cuatrimestre",
+                      "materias": [
+                        "Herramientas Matemáticas I - Álgebra",
+                        "Geología I",
+                        "Física",
+                        "Introducción a la Industria de los Hidrocarburos",
+                        "Sociología General",
+                        "Idioma Extranjero I"
+                      ]
+                    },
+                    {
+                      "label": "Segundo Cuatrimestre",
+                      "materias": [
+                        "Electrotecnia y Termotecnia",
+                        "Herramientas Matemáticas II - Análisis",
+                        "Química General e Inorgánica",
+                        "Sistemas de Representación",
+                        "Desarrollo Emprendedor",
+                        "Idioma Extranjero II"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Segundo año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Tercer Cuatrimestre",
+                      "materias": [
+                        "Química Orgánica",
+                        "Mecánica de los Fluidos",
+                        "Marco Legal de las Organizaciones",
+                        "Geología II",
+                        "Máquinas y Sistemas",
+                        "Idioma Extranjero III"
+                      ]
+                    },
+                    {
+                      "label": "Cuarto Cuatrimestre",
+                      "materias": [
+                        "Evaluación de Impacto Ambiental I",
+                        "Reservorios",
+                        "Perforación",
+                        "Derecho Ambiental",
+                        "Economía I",
+                        "Idioma Extranjero IV"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "izquierda": {
+                  "año": "Tercer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Quinto Cuatrimestre",
+                      "materias": [
+                        "Perforación Avanzada",
+                        "Materiales para la Industria Petrolera",
+                        "Logística",
+                        "Evaluación de Impacto Ambiental II",
+                        "Ética y Deontología Profesional",
+                        "Idioma Extranjero V"
+                      ]
+                    },
+                    {
+                      "label": "Sexto Cuatrimestre",
+                      "materias": [
+                        "Yacimientos No Convencionales",
+                        "Herramientas Matemáticas III - Estadística I",
+                        "Seguridad e Higiene Laboral",
+                        "Grupo y Liderazgo",
+                        "Idioma Extranjero VI",
+                        "Seminario de Práctica de Hidrocarburos y Geociencia"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Cuarto año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Séptimo Cuatrimestre",
+                      "materias": [
+                        "Derecho y Energía",
+                        "Terminación y Reparación de Pozos",
+                        "Sistemas Artificiales de Producción",
+                        "Instalaciones de Superficie",
+                        "Recuperación Secundaria y Mejorada",
+                        "Práctica Profesional de Hidrocarburos y Geociencia"
+                      ]
+                    },
+                    {
+                      "label": "Octavo Cuatrimestre",
+                      "materias": [
+                        "Implementación de Normas de Calidad",
+                        "Política y Economía Ambiental",
+                        "Gas y Gasolina",
+                        "Industrialización de los Hidrocarburos",
+                        "Emprendimientos Universitarios",
+                        "Seminario Final de Hidrocarburos y Geociencia"
+                      ]
+                    }
+                  ]
+                },
+                "extras": [
+                  {
+                    "titulo": "Otros requisitos, Noveno Cuatrimestre",
+                    "items": [
+                      "Práctica Solidaria",
+                      "Materia Electiva I",
+                      "Materia Electiva II"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "cierre",
+            "imagen": "/imagenes/imagenes_cau/entrada_estetica.png",
+            "titulo": "Estudiá con acompañamiento del CAU Villa Lugano",
+            "subtitulo": "Consultanos para conocer la modalidad y los requisitos de ingreso.",
+            "beneficios": [
+              {
+                "icono": "graduation-cap",
+                "texto": "Título universitario"
+              },
+              {
+                "icono": "users",
+                "texto": "Acompañamiento del CAU"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "operacion": "update",
+      "id": 18,
+      "esperado": {
+        "nombre": "Licenciatura en Administración de Infraestructura Tecnológica",
+        "prefix": null,
+        "nivel": "Grado",
+        "activa": false,
+        "orden": 17,
+        "updated_at": "2026-03-21T20:43:42.159Z"
+      },
+      "slug": "licenciatura-en-administracion-de-infraestructura-tecnologica",
+      "fuente": {
+        "nombre": "Licenciatura en Administración de Infraestructura Tecnológica",
+        "url": "https://21.edu.ar/carreras-y-programas/licenciatura-en-administracion-de-infraestructura-tecnologica",
+        "verificado": "2026-10-03",
+        "plan": [
+          {
+            "tag": "H6",
+            "text": "Primer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Primer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Álgebra y Geometría"
+          },
+          {
+            "tag": "LI",
+            "text": "Lógica Simbólica"
+          },
+          {
+            "tag": "LI",
+            "text": "Introducción a Tecnologías de Información y Comunicaciones"
+          },
+          {
+            "tag": "LI",
+            "text": "Sistemas de Información"
+          },
+          {
+            "tag": "LI",
+            "text": "Introducción a los algoritmos"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero I"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Segundo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Análisis Matemático"
+          },
+          {
+            "tag": "LI",
+            "text": "Programación orientada a Objetos"
+          },
+          {
+            "tag": "LI",
+            "text": "Arquitectura del Computador"
+          },
+          {
+            "tag": "LI",
+            "text": "Estadística y Probabilidad"
+          },
+          {
+            "tag": "LI",
+            "text": "Física"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero II"
+          },
+          {
+            "tag": "H6",
+            "text": "Segundo año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Tercer Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Introducción a la Infraestructura Tecnológica"
+          },
+          {
+            "tag": "LI",
+            "text": "Algoritmos y Estructura de Datos I"
+          },
+          {
+            "tag": "LI",
+            "text": "Sistemas Operativos"
+          },
+          {
+            "tag": "LI",
+            "text": "Base de Datos I"
+          },
+          {
+            "tag": "LI",
+            "text": "Innovación Tecnológica"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero III"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Cuarto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Sistemas Operativos Avanzados"
+          },
+          {
+            "tag": "LI",
+            "text": "Algoritmos y Estructura de Datos II"
+          },
+          {
+            "tag": "LI",
+            "text": "Comunicaciones"
+          },
+          {
+            "tag": "LI",
+            "text": "Legislación de Proyectos Tecnológicos"
+          },
+          {
+            "tag": "LI",
+            "text": "Base de Datos II"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero IV"
+          },
+          {
+            "tag": "H6",
+            "text": "Tercer año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Quinto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Inteligencia Artificial"
+          },
+          {
+            "tag": "LI",
+            "text": "Computación en la Nube"
+          },
+          {
+            "tag": "LI",
+            "text": "Ingeniería de Software"
+          },
+          {
+            "tag": "LI",
+            "text": "Seguridad Informática"
+          },
+          {
+            "tag": "LI",
+            "text": "Oratoria"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero V"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Sexto Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Herramientas Matemáticas VI - Modelos de Simulación"
+          },
+          {
+            "tag": "LI",
+            "text": "Redes"
+          },
+          {
+            "tag": "LI",
+            "text": "Privacidad y Seguridad de los Datos"
+          },
+          {
+            "tag": "LI",
+            "text": "Grupo y Liderazgo"
+          },
+          {
+            "tag": "LI",
+            "text": "Idioma Extranjero VI"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario de Práctica de Infraestructura  Tecnológica"
+          },
+          {
+            "tag": "H6",
+            "text": "Cuarto año"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Séptimo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión de la Calidad, Riesgos y Evaluación de Proyectos"
+          },
+          {
+            "tag": "LI",
+            "text": "Internet de las Cosas"
+          },
+          {
+            "tag": "LI",
+            "text": "Auditoría de Sistemas"
+          },
+          {
+            "tag": "LI",
+            "text": "Ética y Deontología Profesional"
+          },
+          {
+            "tag": "LI",
+            "text": "Nanotecnología"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Profesional de Infraestructura Tecnológica"
+          },
+          {
+            "tag": "STRONG",
+            "text": "Octavo Cuatrimestre"
+          },
+          {
+            "tag": "LI",
+            "text": "Desarrollo Emprendedor"
+          },
+          {
+            "tag": "LI",
+            "text": "Gestión de Proyectos de Infraestructura"
+          },
+          {
+            "tag": "LI",
+            "text": "Riesgo Eléctrico en Edificios e Instalaciones"
+          },
+          {
+            "tag": "LI",
+            "text": "Inteligencia de Negocios"
+          },
+          {
+            "tag": "LI",
+            "text": "Emprendimientos Universitarios"
+          },
+          {
+            "tag": "LI",
+            "text": "Seminario Final de Infraestructura Tecnológica"
+          },
+          {
+            "tag": "H6",
+            "text": "Materias adicionales"
+          },
+          {
+            "tag": "LI",
+            "text": "Práctica Solidaria"
+          },
+          {
+            "tag": "LI",
+            "text": "Materias electivas"
+          }
+        ],
+        "reconocimiento": "RESOL-2021-2375-APN-ME"
+      },
+      "fila": {
+        "nombre": "Licenciatura en Administración de Infraestructura Tecnológica",
+        "prefix": null,
+        "nivel": "Grado",
+        "modalidad": "Distancia",
+        "duracion": "4 años",
+        "titulo": "Licenciado/a en Administración de Infraestructura Tecnológica",
+        "descripcion": "Gestioná infraestructura y servicios tecnológicos. Planificá proyectos y recursos de tecnología.",
+        "enfoque": "Planificá proyectos y recursos de tecnología.",
+        "seccion_duracion": "4 años. Consultá el plan de estudios y sus requisitos adicionales.",
+        "seccion_modalidad": "Educación Distribuida Home (EDH): cursado virtual con instancias presenciales según el trayecto académico.",
+        "plan_estudios": "Primer año\nPrimer Cuatrimestre\n• Álgebra y Geometría\n• Lógica Simbólica\n• Introducción a Tecnologías de Información y Comunicaciones\n• Sistemas de Información\n• Introducción a los algoritmos\n• Idioma Extranjero I\nSegundo Cuatrimestre\n• Análisis Matemático\n• Programación orientada a Objetos\n• Arquitectura del Computador\n• Estadística y Probabilidad\n• Física\n• Idioma Extranjero II\nSegundo año\nTercer Cuatrimestre\n• Introducción a la Infraestructura Tecnológica\n• Algoritmos y Estructura de Datos I\n• Sistemas Operativos\n• Base de Datos I\n• Innovación Tecnológica\n• Idioma Extranjero III\nCuarto Cuatrimestre\n• Sistemas Operativos Avanzados\n• Algoritmos y Estructura de Datos II\n• Comunicaciones\n• Legislación de Proyectos Tecnológicos\n• Base de Datos II\n• Idioma Extranjero IV\nTercer año\nQuinto Cuatrimestre\n• Inteligencia Artificial\n• Computación en la Nube\n• Ingeniería de Software\n• Seguridad Informática\n• Oratoria\n• Idioma Extranjero V\nSexto Cuatrimestre\n• Herramientas Matemáticas VI - Modelos de Simulación\n• Redes\n• Privacidad y Seguridad de los Datos\n• Grupo y Liderazgo\n• Idioma Extranjero VI\n• Seminario de Práctica de Infraestructura  Tecnológica\nCuarto año\nSéptimo Cuatrimestre\n• Gestión de la Calidad, Riesgos y Evaluación de Proyectos\n• Internet de las Cosas\n• Auditoría de Sistemas\n• Ética y Deontología Profesional\n• Nanotecnología\n• Práctica Profesional de Infraestructura Tecnológica\nOctavo Cuatrimestre\n• Desarrollo Emprendedor\n• Gestión de Proyectos de Infraestructura\n• Riesgo Eléctrico en Edificios e Instalaciones\n• Inteligencia de Negocios\n• Emprendimientos Universitarios\n• Seminario Final de Infraestructura Tecnológica\nMaterias adicionales\n• Práctica Solidaria\n• Materias electivas",
+        "nombre_corto": "Administración de Infraestructura Tecnológica",
+        "area": "Tecnología",
+        "activa": true,
+        "orden": 17,
+        "slides": [
+          {
+            "type": "portada",
+            "imagen_desktop": "/imagenes/gente/Header_1920x450-1.webp",
+            "imagen_desktop_position": "center",
+            "bullets": [
+              "Gestioná infraestructura y servicios tecnológicos.",
+              "Planificá proyectos y recursos de tecnología."
+            ],
+            "badges": [
+              {
+                "label": "Título",
+                "value": "Licenciado/a en Administración de Infraestructura Tecnológica"
+              },
+              {
+                "label": "Área",
+                "value": "Tecnología"
+              }
+            ]
+          },
+          {
+            "type": "plan_estudios",
+            "paginas": [
+              {
+                "izquierda": {
+                  "año": "Primer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Primer Cuatrimestre",
+                      "materias": [
+                        "Álgebra y Geometría",
+                        "Lógica Simbólica",
+                        "Introducción a Tecnologías de Información y Comunicaciones",
+                        "Sistemas de Información",
+                        "Introducción a los algoritmos",
+                        "Idioma Extranjero I"
+                      ]
+                    },
+                    {
+                      "label": "Segundo Cuatrimestre",
+                      "materias": [
+                        "Análisis Matemático",
+                        "Programación orientada a Objetos",
+                        "Arquitectura del Computador",
+                        "Estadística y Probabilidad",
+                        "Física",
+                        "Idioma Extranjero II"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Segundo año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Tercer Cuatrimestre",
+                      "materias": [
+                        "Introducción a la Infraestructura Tecnológica",
+                        "Algoritmos y Estructura de Datos I",
+                        "Sistemas Operativos",
+                        "Base de Datos I",
+                        "Innovación Tecnológica",
+                        "Idioma Extranjero III"
+                      ]
+                    },
+                    {
+                      "label": "Cuarto Cuatrimestre",
+                      "materias": [
+                        "Sistemas Operativos Avanzados",
+                        "Algoritmos y Estructura de Datos II",
+                        "Comunicaciones",
+                        "Legislación de Proyectos Tecnológicos",
+                        "Base de Datos II",
+                        "Idioma Extranjero IV"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "izquierda": {
+                  "año": "Tercer año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Quinto Cuatrimestre",
+                      "materias": [
+                        "Inteligencia Artificial",
+                        "Computación en la Nube",
+                        "Ingeniería de Software",
+                        "Seguridad Informática",
+                        "Oratoria",
+                        "Idioma Extranjero V"
+                      ]
+                    },
+                    {
+                      "label": "Sexto Cuatrimestre",
+                      "materias": [
+                        "Herramientas Matemáticas VI - Modelos de Simulación",
+                        "Redes",
+                        "Privacidad y Seguridad de los Datos",
+                        "Grupo y Liderazgo",
+                        "Idioma Extranjero VI",
+                        "Seminario de Práctica de Infraestructura  Tecnológica"
+                      ]
+                    }
+                  ]
+                },
+                "derecha": {
+                  "año": "Cuarto año",
+                  "cuatrimestres": [
+                    {
+                      "label": "Séptimo Cuatrimestre",
+                      "materias": [
+                        "Gestión de la Calidad, Riesgos y Evaluación de Proyectos",
+                        "Internet de las Cosas",
+                        "Auditoría de Sistemas",
+                        "Ética y Deontología Profesional",
+                        "Nanotecnología",
+                        "Práctica Profesional de Infraestructura Tecnológica"
+                      ]
+                    },
+                    {
+                      "label": "Octavo Cuatrimestre",
+                      "materias": [
+                        "Desarrollo Emprendedor",
+                        "Gestión de Proyectos de Infraestructura",
+                        "Riesgo Eléctrico en Edificios e Instalaciones",
+                        "Inteligencia de Negocios",
+                        "Emprendimientos Universitarios",
+                        "Seminario Final de Infraestructura Tecnológica"
+                      ]
+                    }
+                  ]
+                },
+                "extras": [
+                  {
+                    "titulo": "Materias adicionales",
+                    "items": [
+                      "Práctica Solidaria",
+                      "Materias electivas"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "cierre",
+            "imagen": "/imagenes/imagenes_cau/entrada_estetica.png",
+            "titulo": "Estudiá con acompañamiento del CAU Villa Lugano",
+            "subtitulo": "Consultanos para conocer la modalidad y los requisitos de ingreso.",
+            "beneficios": [
+              {
+                "icono": "graduation-cap",
+                "texto": "Título universitario"
+              },
+              {
+                "icono": "users",
+                "texto": "Acompañamiento del CAU"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
