@@ -194,3 +194,9 @@ Cerrado: encontrada la página oficial de la Tecnicatura en Responsabilidad y Ge
 - [x] **Tarea 19 del pedido del 02/10: tandas de la slide 2 de Teclab.** Cuando las competencias no entraban juntas (sobre todo en PC con ventana baja), `repartir()` elegía el reparto más parejo en píxeles y, si la primera competencia era larga, mostraba 1 tarjeta y después 2. Ahora prefiere repartos donde ninguna tanda tenga más tarjetas que la anterior (2+1) y usa lo parejo sólo para desempatar; 1+2 queda únicamente si las dos primeras no caben juntas.
 - Verificación: lint y typecheck aprobados; simulación de `repartir()` con altos reales de casos límite (primera larga → 2+1; 2+1 sin lugar → 1+2; todas entran → una tanda). Revisión de confiabilidad aprobada sin bloqueos.
 - Pendiente aparte: no hay test unitario de `repartir()`; requiere sacarla del componente.
+
+## teclab-precio-2026-10-03
+
+- [x] **Tarea 32: achicar el último slide del modal de Teclab.** El scroll aparecía con el precio a la vista en teléfonos bajos (375x667: 67 px de más) por el bloque de financiación. Va plegado («Ver financiación»). Commit `a094245`.
+- [x] **Tarea 33: dejar claro qué cubre el pago.** «Ver precio» y el enlace personalizado arman la aclaración desde los conceptos: qué meses cubre, cuántos cuatrimestres tiene la carrera y que cada cuatrimestre se paga matrícula y bimestres (Reglamento Institucional de Teclab, 4.1). El robot de precios rotula los bimestres según el período. Commits `1db22d3` y `0676aeb`. [Detalle](../odd/tasks/cobertura-pago-teclab.md).
+- [x] **Tarea 34: precio en la autoinscripción.** La preinscripción de Teclab devuelve el precio y el formulario lo muestra como paso propio del carrusel antes de «Inscribirme». Commit `2f3cc9c`. [Detalle](../odd/tasks/precio-en-autoinscripcion-teclab.md).

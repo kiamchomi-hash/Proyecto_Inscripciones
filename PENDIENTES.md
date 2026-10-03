@@ -49,7 +49,6 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **16. Revisar el mensaje de bienvenida que se envía una vez que alguien se inscribe en una carrera**.
 - [ ] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas**.
 - [ ] **18. Revisar las aperturas de las carreras**: algunas no arrancan a mediados de bimestre.
-- [x] **19. Ajustar los slides de Teclab para corregir el scroll**. Resuelto el 02/10/2026: la slide 2 reparte 2+1 en vez de 1+2. [Evidencia](docs/historial-pendientes.md#teclab-slides-tandas-2026-10-02).
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
 - [ ] **22. Revisar cómo funciona la garantía de adaptación y sumarla al corpus general**.
@@ -57,14 +56,12 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **24. Incorporar newsletter y acceso al precio desde los slides**: agregar un checkbox al pedir el mail en formularios; poner el precio en el último slide con un botón «Ver precio» que abra una ventana con las opciones de iniciar sesión o hablar por WhatsApp.
 - [ ] **25. Ocultar preferentemente la ubicación en los slides de carreras**.
 - [ ] **26. Revisar los plugins de ChatGPT y Claude**.
-- [x] **27. Añadir la modalidad a los mensajes de presentación de las carreras**. Resuelto localmente el 02/10/2026; 90 carreras verificadas. [Evidencia](docs/historial-pendientes.md#modalidad-presentaciones-2026-10-02).
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
 - [ ] **31. Arreglar la alineación de las carreras en la sección del test vocacional**.
-- [x] **32. Teclab: achicar el último slide del modal para reducir el scroll**. Resuelto el 03/10/2026: la financiación del precio va plegada; en 375x667 sobraban 67 px y ahora entra sin scroll.
-- [x] **33. Teclab: dejar claro qué cubre el pago** (bimestre o período completo), sobre todo si la persona se anota al inicio del cuatrimestre. Resuelto el 03/10/2026: «Ver precio» y el enlace personalizado dicen qué meses cubre y que el cuatrimestre siguiente vuelve a cobrar matrícula y bimestres (Reglamento de Teclab, 4.1) (`components/formularios/cobertura-pago.ts`).
-- [x] **34. Teclab: mostrar el precio en el formulario de autoinscripción** cuando la persona llega sin pasar por «Ver precio». Resuelto el 03/10/2026: la preinscripción de Teclab devuelve el precio y el paso «Inscribirme» lo muestra. [Detalle](odd/tasks/precio-en-autoinscripcion-teclab.md).
+- [ ] **36. Activar el mail con el resumen del precio**: crear una API key en SMTP2GO, cargarla en Vercel como `SMTP2GO_API_KEY` (Sensitive) y redeployar; hasta entonces el sitio no manda mails. Sumar a `.env.example` la línea `SMTP2GO_API_KEY=` con su comentario (los permisos del proyecto no dejan que Claude lo lea). [Detalle](odd/tasks/mail-precio-teclab.md).
+- [ ] **37. Newsletter: mandar a cada suscripto un mail cada X días desde que se suscribe**, con la plantilla de `docs/mails/mail-inicio-teclab.html`. Falta definir X y cómo se da de baja. [Detalle](odd/tasks/mail-precio-teclab.md).
 
 ## Documentación de apoyo
 
