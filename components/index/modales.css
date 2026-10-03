@@ -769,16 +769,46 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
+/* Plegada por defecto: el rotulo es el boton, con una flecha que gira al abrir */
 .vp-financiacion-rotulo {
-  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--vp-acento-claro);
+  cursor: pointer;
+  list-style: none;
+}
+
+.vp-financiacion-rotulo::-webkit-details-marker {
+  display: none;
+}
+
+.vp-financiacion-rotulo::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.15s;
+}
+
+.vp-financiacion[open] .vp-financiacion-rotulo::after {
+  transform: translateY(25%) rotate(-135deg);
+}
+
+.vp-financiacion-rotulo:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
 }
 
 .vp-financiacion-lineas {
+  margin-top: 0.4rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;

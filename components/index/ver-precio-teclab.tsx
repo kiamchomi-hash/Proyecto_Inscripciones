@@ -70,12 +70,15 @@ function EnlaceWhatsApp({ href, texto, principal = false }: { href: string; text
 /**
  * Las opciones de financiación vigentes, en letra chica bajo el total. El
  * medio se nombra una vez aunque tenga dos líneas (Visa y Mastercard).
+ * Va plegada: abierta eran cinco renglones que en un teléfono bajo (375x667)
+ * empujaban «Inscribite ya» fuera del slide. Al abrirla, el CFT sigue al lado
+ * de cada interés.
  */
 function Financiacion() {
   const lineas = financiacionGeneral();
   return (
-    <div className="vp-financiacion">
-      <p className="vp-financiacion-rotulo">Financiación</p>
+    <details className="vp-financiacion">
+      <summary className="vp-financiacion-rotulo">Ver financiación</summary>
       <ul className="vp-financiacion-lineas">
         {lineas.map((linea, i) => (
           <li key={linea.detalle}>
@@ -84,7 +87,7 @@ function Financiacion() {
           </li>
         ))}
       </ul>
-    </div>
+    </details>
   );
 }
 

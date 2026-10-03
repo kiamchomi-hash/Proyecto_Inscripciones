@@ -62,6 +62,7 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
 - [ ] **31. Arreglar la alineación de las carreras en la sección del test vocacional**.
+- [x] **32. Teclab: achicar el último slide del modal para reducir el scroll**. Resuelto el 03/10/2026: la financiación del precio va plegada; en 375x667 sobraban 67 px y ahora entra sin scroll.
 
 ## Documentación de apoyo
 
