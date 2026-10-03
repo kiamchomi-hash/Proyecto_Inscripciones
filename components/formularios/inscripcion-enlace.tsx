@@ -82,7 +82,9 @@ function Precio({ precio, carrera }: Pick<PropsInscripcionEnlace, 'precio'> & { 
   );
 }
 
-export default function InscripcionEnlace({ codigo, carrera, precio, datos, completo }: PropsInscripcionEnlace) {
+export default function InscripcionEnlace({
+  codigo, carrera, precio, datos, completo, demo = false,
+}: PropsInscripcionEnlace & { /** Sólo desarrollo: pasa a «¡Listo!» sin enviar. */ demo?: boolean }) {
   const [paso, setPaso] = useState<Paso>('confirmar');
   const [intentado, setIntentado] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -104,10 +106,20 @@ export default function InscripcionEnlace({ codigo, carrera, precio, datos, comp
     return () => observador.disconnect();
   }, [paso]);
 
+  // El «¡Listo!» es mucho más corto que la página: se vuelve arriba mientras desliza.
+  const pasarAListo = () => {
+    setPaso('listo');
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  };
+
   const mensajeCorregir = `Hola, quiero corregir mis datos de la inscripción a ${carrera.nombre}`;
 
   const enviar = async () => {
     if (enviando) return;
+    if (demo) {
+      pasarAListo();
+      return;
+    }
     setIntentado(true);
     if (!token) return;
     setEnviando(true);
@@ -135,16 +147,11 @@ export default function InscripcionEnlace({ codigo, carrera, precio, datos, comp
       return;
     }
     setEnviando(false);
-    setPaso('listo');
+    pasarAListo();
   };
 
-  return (
-    <div className="ie-contenido">
-      <header className="ie-cabecera">
-        <p className="ie-marca">Teclab</p>
-        <h1 className="ie-titulo">{carrera.nombre}</h1>
-      </header>
-
+  const precioYDatos = (
+    <>
       <section className="ie-tarjeta" aria-labelledby="ie-precio-titulo">
         <h2 id="ie-precio-titulo" className="ie-subtitulo">Precio</h2>
         <Precio precio={precio} carrera={carrera.nombre} />
@@ -162,22 +169,39 @@ export default function InscripcionEnlace({ codigo, carrera, precio, datos, comp
           ¿Algo no está bien? Avisanos por WhatsApp
         </a>
       </section>
+    </>
+  );
 
-      <section className="ie-tarjeta ie-pago" aria-label="Inscripción">
-        {!completo ? (
-          <div className="ie-aviso">
-            <p className="ie-texto">Nos faltan algunos datos para completar tu inscripción. Escribinos y la terminamos juntos.</p>
-            <BotonWhatsApp texto="Escribinos por WhatsApp" mensaje={`Hola, quiero completar mi inscripción a ${carrera.nombre}`} />
-          </div>
-        ) : (
-          <div className="ie-carrusel" style={{ height: alto }}>
-            <div className="ie-carrusel-pista" style={{ transform: paso === 'listo' ? 'translateX(-100%)' : undefined }}>
-              <div
-                ref={panel => { panelesRef.current[0] = panel; }}
-                className="ie-carrusel-panel"
-                aria-hidden={paso !== 'confirmar'}
-                inert={paso !== 'confirmar'}
-              >
+  return (
+    <div className="ie-contenido">
+      <header className="ie-cabecera">
+        <p className="ie-marca">Teclab</p>
+        <h1 className="ie-titulo">{carrera.nombre}</h1>
+      </header>
+
+      {!completo ? (
+        <>
+          {precioYDatos}
+          <section className="ie-tarjeta ie-pago" aria-label="Inscripción">
+            <div className="ie-aviso">
+              <p className="ie-texto">Nos faltan algunos datos para completar tu inscripción. Escribinos y la terminamos juntos.</p>
+              <BotonWhatsApp texto="Escribinos por WhatsApp" mensaje={`Hola, quiero completar mi inscripción a ${carrera.nombre}`} />
+            </div>
+          </section>
+        </>
+      ) : (
+        // Carrusel de página entera: precio, datos y «Inscribirme» se deslizan
+        // juntos y queda sólo el «¡Listo!».
+        <div className="ie-carrusel" style={{ height: alto }}>
+          <div className="ie-carrusel-pista" style={{ transform: paso === 'listo' ? 'translateX(-100%)' : undefined }}>
+            <div
+              ref={panel => { panelesRef.current[0] = panel; }}
+              className="ie-carrusel-panel"
+              aria-hidden={paso !== 'confirmar'}
+              inert={paso !== 'confirmar'}
+            >
+              {precioYDatos}
+              <section className="ie-tarjeta ie-pago" aria-label="Inscripción">
                 <PasoInscribirme
                   pregunta={false}
                   intentado={intentado}
@@ -189,21 +213,23 @@ export default function InscripcionEnlace({ codigo, carrera, precio, datos, comp
                   onToken={setToken}
                   onEnviar={enviar}
                 />
-              </div>
-              <div
-                ref={panel => { panelesRef.current[1] = panel; }}
-                className="ie-carrusel-panel"
-                aria-hidden={paso !== 'listo'}
-                inert={paso !== 'listo'}
-              >
-                {paso === 'listo' && (
+              </section>
+            </div>
+            <div
+              ref={panel => { panelesRef.current[1] = panel; }}
+              className="ie-carrusel-panel"
+              aria-hidden={paso !== 'listo'}
+              inert={paso !== 'listo'}
+            >
+              {paso === 'listo' && (
+                <section className="ie-tarjeta ie-pago" aria-label="Inscripción confirmada">
                   <PasoListo dni={dniCompleto(datos.dni)} waHref={waHref(`Hola, ya me inscribí en ${carrera.nombre}`)} />
-                )}
-              </div>
+                </section>
+              )}
             </div>
           </div>
-        )}
-      </section>
+        </div>
+      )}
     </div>
   );
 }

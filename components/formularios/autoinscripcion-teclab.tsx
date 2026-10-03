@@ -22,7 +22,6 @@ import { WhatsAppIcon } from '@/components/icons';
 // entre por primera vez (cambio de contraseña y términos en el medio).
 export const PORTAL_ALUMNO_TECLAB = 'https://portalalumno.teclab.edu.ar/payments/select';
 
-const ETIQUETA = 'block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-1 uppercase tracking-wider';
 const BOTON_PRINCIPAL = 'w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40';
 const ESTILO_PRINCIPAL = { background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' };
 const LINK_SECUNDARIO = 'w-full cursor-pointer py-1 text-sm font-bold text-[var(--catalogo-texto-suave)] underline underline-offset-2 transition-colors hover:text-white';
@@ -138,25 +137,19 @@ export function PasoListo({ waHref, dni }: { waHref: string; dni: string }) {
       </div>
       <p data-paso-foco tabIndex={-1} className="text-3xl font-black tracking-tight text-white focus:outline-none">¡Listo!</p>
       {usuario ? (
-        <dl className="relative isolate grid w-full max-w-xs grid-cols-[auto_1fr] items-baseline gap-x-4 gap-y-2 overflow-hidden rounded-xl border border-white/15 bg-white/5 px-5 py-4 text-left">
-          {/* Textura con el logotipo de Teclab, apenas visible detrás de los datos */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute -inset-1/2 -z-10 -rotate-12 opacity-[0.07]"
-            style={{ backgroundImage: 'url(/imagenes/teclab/logo-teclab.webp)', backgroundSize: '72px auto', backgroundRepeat: 'repeat', backgroundPosition: 'center' }}
-          />
-          <dt className={ETIQUETA}>Usuario</dt>
-          <dd className="text-right font-mono text-xl font-bold tabular-nums tracking-wider text-white">{usuario}</dd>
-          <dt className={ETIQUETA}>Contraseña</dt>
-          <dd className="text-right font-mono text-xl font-bold tabular-nums tracking-wider text-white">{usuario}</dd>
+        <dl className="grid w-full max-w-xs grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 rounded-xl border border-white/15 bg-white/5 px-5 py-4 text-left">
+          <dt className="text-xs font-bold uppercase leading-none tracking-wider text-[var(--catalogo-etiqueta)]">Usuario</dt>
+          <dd className="text-right font-mono text-xl font-bold leading-none tabular-nums tracking-wider text-white">{usuario}</dd>
+          <dt className="text-xs font-bold uppercase leading-none tracking-wider text-[var(--catalogo-etiqueta)]">Contraseña</dt>
+          <dd className="text-right font-mono text-xl font-bold leading-none tabular-nums tracking-wider text-white">{usuario}</dd>
         </dl>
       ) : (
         <p className="max-w-md text-base leading-snug text-white">
           Tu usuario y tu contraseña son <strong className="font-black">tu DNI, sin puntos</strong>.
         </p>
       )}
-      <p className="max-w-md text-sm leading-snug text-[var(--catalogo-texto-suave)]">
-        A la brevedad te llega un mail de Teclab, «PAGO AUTOGESTIONADO!», para entrar y pagar. Si no lo ves, revisá el correo no deseado.
+      <p className="max-w-md text-[15px] leading-snug text-white/85">
+        A la brevedad te llega un mail de Teclab, «PAGO AUTOGESTIONADO!». Si no lo ves, revisá el correo no deseado.
       </p>
       <Desplegable titulo="Así se ve el mail">
         <Image
@@ -223,7 +216,7 @@ export function PasoListo({ waHref, dni }: { waHref: string; dni: string }) {
 function Desplegable({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <details className="group w-full max-w-sm rounded-lg border border-white/10 bg-white/[0.03] text-left">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-xs font-bold text-[var(--catalogo-etiqueta)] [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2.5 text-sm font-bold text-white/90 [&::-webkit-details-marker]:hidden">
         {titulo}
         <span aria-hidden="true" className="transition-transform group-open:rotate-180">▾</span>
       </summary>

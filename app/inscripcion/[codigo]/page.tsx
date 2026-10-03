@@ -91,8 +91,36 @@ async function cargar(codigo: string): Promise<Carga> {
   }
 }
 
+// Sólo en desarrollo: `/inscripcion/demo` muestra la página con datos falsos y
+// «Inscribirme» pasa a «¡Listo!» sin enviar nada. En producción no existe.
+const DEMO: PropsInscripcionEnlace = {
+  codigo: 'demo',
+  carrera: { nombre: 'Tecnicatura Superior en Programación', url: '/carreras/tecnicatura-superior-en-programacion' },
+  precio: {
+    estado: 'vigente',
+    precio: {
+      conceptos: [
+        { concepto: 'Matrícula', monto: '$ 64.228', descuento: 75 },
+        { concepto: 'Bimestre 2B', monto: '$ 488.131', descuento: 24 },
+      ],
+      total: '$ 552.359',
+      nota: null,
+      vigenteHasta: '2026-10-31',
+    },
+  },
+  datos: { nombre: 'Prueba Demo', dni: '99000099', email: 'prueba@example.test', carrera: 'Tecnicatura Superior en Programación' },
+  completo: true,
+};
+
 export default async function Page({ params }: { params: Promise<{ codigo: string }> }) {
   const { codigo } = await params;
+  if (process.env.NODE_ENV !== 'production' && codigo === 'demo') {
+    return (
+      <main className="inscripcion-enlace">
+        <InscripcionEnlace {...DEMO} demo />
+      </main>
+    );
+  }
   const carga = await cargar(codigo);
 
   return (

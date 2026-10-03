@@ -15,7 +15,7 @@
   --catalogo-etiqueta: #9fc0c7;
 
   min-height: 100vh;
-  padding: 6rem 1rem 3rem;
+  padding: 2.5rem 1rem 3rem;
   background:
     radial-gradient(circle at 82% 18%, rgba(142, 44, 242, 0.12), transparent 28rem),
     var(--teclab-ink);
@@ -245,10 +245,6 @@
 }
 
 @media (max-width: 480px) {
-  .inscripcion-enlace {
-    padding-top: 5rem;
-  }
-
   .ie-datos {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -267,8 +263,17 @@
 }
 
 .ie-carrusel-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   flex: 0 0 100%;
   min-width: 0;
+}
+
+/* Página sin ruido: ni la barra del sitio ni el botón flotante de subir. */
+body:has(.inscripcion-enlace) .main-navbar,
+body:has(.inscripcion-enlace) .scroll-to-top-button {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
