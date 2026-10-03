@@ -10,7 +10,7 @@
         "nivel": "Grado",
         "activa": false,
         "orden": 36,
-        "updated_at": "2026-03-21T20:09:07.010Z"
+        "updated_at": "2026-03-21 20:09:07.010409+00"
       },
       "slug": "licenciatura-en-antropologia-organizacional",
       "fuente": {
@@ -463,7 +463,7 @@
         "nivel": "Grado",
         "activa": false,
         "orden": 22,
-        "updated_at": "2026-07-30T22:17:18.993Z"
+        "updated_at": "2026-07-30 22:17:18.993736+00"
       },
       "slug": "licenciatura-en-administracion-hotelera",
       "fuente": {
@@ -1766,7 +1766,7 @@
         "nivel": "Grado",
         "activa": false,
         "orden": 17,
-        "updated_at": "2026-03-21T20:43:42.159Z"
+        "updated_at": "2026-03-21 20:43:42.15959+00"
       },
       "slug": "licenciatura-en-administracion-de-infraestructura-tecnologica",
       "fuente": {

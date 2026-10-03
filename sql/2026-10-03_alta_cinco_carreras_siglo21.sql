@@ -12,17 +12,17 @@ DECLARE
 BEGIN
   IF current_user <> 'cau_editor' THEN RAISE EXCEPTION 'Rol no autorizado para esta operación'; END IF;
   SELECT to_jsonb(c) INTO actual FROM public.carreras c WHERE id = 77 FOR UPDATE;
-  esperado := '{"nombre":"Antropología Organizacional","prefix":"Grado / Licenciatura en ","nivel":"Grado","activa":false,"orden":36,"updated_at":"2026-03-21T20:09:07.010Z"}'::jsonb;
+  esperado := '{"nombre":"Antropología Organizacional","prefix":"Grado / Licenciatura en ","nivel":"Grado","activa":false,"orden":36,"updated_at":"2026-03-21 20:09:07.010409+00"}'::jsonb;
   IF actual IS NULL OR NOT actual @> (esperado - 'updated_at') OR (actual->>'updated_at')::timestamptz IS DISTINCT FROM (esperado->>'updated_at')::timestamptz THEN
     RAISE EXCEPTION 'Baseline modificado o fila ausente: ID 77';
   END IF;
   SELECT to_jsonb(c) INTO actual FROM public.carreras c WHERE id = 63 FOR UPDATE;
-  esperado := '{"nombre":"Administración Hotelera","prefix":"Grado / Licenciatura en","nivel":"Grado","activa":false,"orden":22,"updated_at":"2026-07-30T22:17:18.993Z"}'::jsonb;
+  esperado := '{"nombre":"Administración Hotelera","prefix":"Grado / Licenciatura en","nivel":"Grado","activa":false,"orden":22,"updated_at":"2026-07-30 22:17:18.993736+00"}'::jsonb;
   IF actual IS NULL OR NOT actual @> (esperado - 'updated_at') OR (actual->>'updated_at')::timestamptz IS DISTINCT FROM (esperado->>'updated_at')::timestamptz THEN
     RAISE EXCEPTION 'Baseline modificado o fila ausente: ID 63';
   END IF;
   SELECT to_jsonb(c) INTO actual FROM public.carreras c WHERE id = 18 FOR UPDATE;
-  esperado := '{"nombre":"Licenciatura en Administración de Infraestructura Tecnológica","prefix":null,"nivel":"Grado","activa":false,"orden":17,"updated_at":"2026-03-21T20:43:42.159Z"}'::jsonb;
+  esperado := '{"nombre":"Licenciatura en Administración de Infraestructura Tecnológica","prefix":null,"nivel":"Grado","activa":false,"orden":17,"updated_at":"2026-03-21 20:43:42.15959+00"}'::jsonb;
   IF actual IS NULL OR NOT actual @> (esperado - 'updated_at') OR (actual->>'updated_at')::timestamptz IS DISTINCT FROM (esperado->>'updated_at')::timestamptz THEN
     RAISE EXCEPTION 'Baseline modificado o fila ausente: ID 18';
   END IF;

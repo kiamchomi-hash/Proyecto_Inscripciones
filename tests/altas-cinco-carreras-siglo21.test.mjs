@@ -39,3 +39,20 @@ test('el SQL limita la escritura y verifica concurrencia antes de modificar', ()
   assert.ok(sql.indexOf('Baseline modificado') < sql.indexOf('UPDATE public.carreras SET'));
   assert.match(sql, /BEGIN;[\s\S]*COMMIT;\s*$/);
 });
+
+test('el baseline SQL conserva la precisión original de PostgreSQL sin convertir a Date', () => {
+  const datos = JSON.parse(readFileSync(new URL('./fixtures/altas-cinco-carreras-siglo21.json', import.meta.url)));
+  const sql = readFileSync(new URL('../sql/2026-10-03_alta_cinco_carreras_siglo21.sql', import.meta.url), 'utf8');
+  const exactos = {
+    77: '2026-03-21 20:09:07.010409+00',
+    63: '2026-07-30 22:17:18.993736+00',
+    18: '2026-03-21 20:43:42.15959+00',
+  };
+  const literales = [...sql.matchAll(/esperado := '([^']+)'::jsonb;/g)].map(m => JSON.parse(m[1]));
+  for (const entrada of datos.carreras.filter(c => c.id)) {
+    assert.equal(entrada.esperado.updated_at, exactos[entrada.id]);
+    const esperadoSQL = literales.find(c => c.nombre === entrada.esperado.nombre);
+    assert.deepEqual(esperadoSQL, entrada.esperado);
+    assert.match(esperadoSQL.updated_at, /\.\d{5,6}\+00$/);
+  }
+});

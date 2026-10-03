@@ -27,3 +27,15 @@ La taxonomía vigente no se modifica: Antropología puede no tener área detecta
 ## Estado
 
 Preparación local, no aplicación remota. Las páginas y los slugs se resuelven por las rutas dinámicas existentes al activar las filas y mediante revalidación ya montada. No se afirma publicación ni readback remoto hasta completar T2.
+
+### Aplicación detenida
+
+03/10/2026: el único intento autorizado del SQL protegido abortó con P0001, seguido de respuesta a ROLLBACK explícito. Sin COMMIT ni IDs nuevos observados. Readback posterior falló ENETUNREACH; no se afirma alta pública ni verificación HTTP. Causa específica pendiente de evidencia de sólo lectura. No hubo reintento de escritura.
+
+### Corrección puntual del baseline, sin aplicación remota
+
+Causa comprobada por SELECT autorizado: pg convirtió timestamptz a Date y perdió microsegundos. La primera guarda ID77 comparaba .010Z contra .010409+00 y abortó; ID63 tenía .993736+00 e ID18 .15959+00. Los demás campos coincidían. Readback posterior exitoso confirmó tres filas inactivas y ambas nuevas ausentes: no se publicaron altas del intento abortado.
+
+Se reemplazan únicamente los tres timestamps esperados del SQL y fixture por updated_at::text exacto. Se conservan guardas, comparación timestamptz, bloqueo, conteos y todos los payloads académicos. Regresión determinística nueva: RED 2 aprobadas/1 falla por precisión truncada; GREEN 3/3. Comparaciones PostgreSQL de sólo lectura posteriores: campos y timestamps coinciden true para IDs77/63/18. No DO, escrituras remotas ni commits en esta corrección.
+
+SQL anterior fallido SHA256 7185d63735d6ee451fb5280428b1b65311e42992a42d10ddbcf4f50691d4768b se conserva como evidencia histórica. Candidato corregido SQL SHA256 908ceeb9649ffcbe0c64d1b71f32dc122bd4f1512068e2bef2721add8429d60f; fixture SHA256 aaae4187c1f3fab235d3b3b2a5566908b1cd43fb4b2b67e0bb745a012eb0bc3e. Semántica fuera de baseline idéntica, comprobada normalizando sólo esas tres fechas; SHA256 del payload público serializado con claves ordenadas 445107e7aafb37fd464673d96fea0d612426b80e7e4a27c7a6e0fcf21676af8d.

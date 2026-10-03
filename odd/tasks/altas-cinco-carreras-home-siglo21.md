@@ -47,3 +47,21 @@ Sin cambios de taxonomía; Antropología sin área detectada y Hotelera/Infraest
 Aislamiento comprobado: components/index/types.ts SHA256 4da33d70244b0901ffc09e4199766dc88d8a19d9c7b2ba2f866ced98dc8a293a y buscador publicado SHA256 d85334d5fb31b8443783c08dab3d32535cd35641eb4126f6d7237cb93eac4798 sin cambios. SQL SHA256 7185d63735d6ee451fb5280428b1b65311e42992a42d10ddbcf4f50691d4768b. Fixture SHA256 4ab8fc04ed85e7b4c81b3479481dfaceb65c2aadb4c80109f6cbf4ea9ffa4c22.
 
 No commits/push. T2 espera autorización del padre posterior a revisión independiente: no se afirma alta pública todavía.
+
+### Intento T2 en producción, 03/10/2026
+
+Usuario confirmó continuar la transacción protegida en producción aun sin prueba local PostgreSQL de rollback. T1 commit local 8f70ae02 revisado por nativo, aprobado y ACK consumido; aviso R3 informativo, sin reabrir review.
+
+Se verificaron hashes exactos SQL7185d63735d6ee451fb5280428b1b65311e42992a42d10ddbcf4f50691d4768b y fixture4ab8fc04ed85e7b4c81b3479481dfaceb65c2aadb4c80109f6cbf4ea9ffa4c22; rol cau_editor confirmado. Una única ejecución del SQL exacto abortó con código PostgreSQL P0001. El cliente recibió respuesta al ROLLBACK explícito en la misma conexión. No recibió COMMIT ni cinco filas resultantes; no reintentó la mutación. El mensaje específico de excepción no se conservó, por lo que no se identifica qué guarda abortó.
+
+Readback posterior autorizado, sólo lectura de las filas objetivo, no llegó a completarse: ENETUNREACH. No se hicieron GET públicos ni capturas porque no hubo COMMIT exitoso. No se afirma publicación ni se asignan IDs nuevos. T2 pendiente y detenida; resolver causa mediante sólo lectura cuando la conexión esté disponible, sin reaplicar ni cambiar SQL automáticamente.
+
+### Corrección puntual del baseline, sin aplicación remota
+
+Causa comprobada por SELECT autorizado: pg convirtió timestamptz a Date y perdió microsegundos. La primera guarda ID77 comparaba .010Z contra .010409+00 y abortó; ID63 tenía .993736+00 e ID18 .15959+00. Los demás campos coincidían. Readback posterior exitoso confirmó tres filas inactivas y ambas nuevas ausentes: no se publicaron altas del intento abortado.
+
+Se reemplazan únicamente los tres timestamps esperados del SQL y fixture por updated_at::text exacto. Se conservan guardas, comparación timestamptz, bloqueo, conteos y todos los payloads académicos. Regresión determinística nueva: RED 2 aprobadas/1 falla por precisión truncada; GREEN 3/3. Comparaciones PostgreSQL de sólo lectura posteriores: campos y timestamps coinciden true para IDs77/63/18. No DO, escrituras remotas ni commits en esta corrección.
+
+SQL anterior fallido SHA256 7185d63735d6ee451fb5280428b1b65311e42992a42d10ddbcf4f50691d4768b se conserva como evidencia histórica. Candidato corregido SQL SHA256 908ceeb9649ffcbe0c64d1b71f32dc122bd4f1512068e2bef2721add8429d60f; fixture SHA256 aaae4187c1f3fab235d3b3b2a5566908b1cd43fb4b2b67e0bb745a012eb0bc3e. Semántica fuera de baseline idéntica, comprobada normalizando sólo esas tres fechas; SHA256 del payload público serializado con claves ordenadas 445107e7aafb37fd464673d96fea0d612426b80e7e4a27c7a6e0fcf21676af8d.
+
+Verificación de corrección: npm run check aprobado, lint 0 errores/27 avisos fuera alcance, typecheck aprobado, 274/274 tests sin skips; git diff --check de cinco superficies aprobado. Nueva evaluación y autorización de aplicación quedan a cargo del padre; no se aplicó el SQL corregido.
