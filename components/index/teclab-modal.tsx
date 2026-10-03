@@ -910,11 +910,14 @@ function SlideVerPrecio({
   carrera,
   acento,
   activo,
+  pedido,
   ref,
 }: {
   carrera: Carrera;
   acento: string;
   activo: boolean;
+  /** Toques de «Ver precio» en el cierre (ver `pedidoPrecio`). */
+  pedido: number;
   ref: React.Ref<HTMLDivElement>;
 }) {
   const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
@@ -937,6 +940,7 @@ function SlideVerPrecio({
         textoAcento={textoSobreAcentoTeclab(acento)}
         waHref={waHref}
         activo={activo}
+        pedido={pedido}
       />
     </div>
   );
@@ -974,6 +978,10 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const [idx, setIdx] = useState(0);
   const precioRef = useRef<HTMLDivElement>(null);
 
+  // Cuenta los toques de «Ver precio» del cierre. Con un mail ya recordado, el
+  // slide del precio lo pide solo; llegar con «Siguiente» no lo pide.
+  const [pedidoPrecio, setPedidoPrecio] = useState(0);
+
   // El slide del precio es una funcion del slide activo (monta el captcha
   // recien cuando se ve); el resto son nodos fijos, asi pasar de slide no los
   // vuelve a renderizar.
@@ -1003,6 +1011,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     if (periodos.length) s.push({ key: 'plan', node: <SlidePlan carrera={carrera} periodos={periodos} acento={acento} /> });
     const indicePrecio = s.length + 1;
     const irAPrecio = () => {
+      setPedidoPrecio(n => n + 1);
       setIdx(indicePrecio);
       // Sin `preventScroll` el navegador correria el carrusel para mostrar el
       // slide de golpe, sin la transicion.
@@ -1011,10 +1020,10 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} onVerPrecio={irAPrecio} /> });
     s.push({
       key: 'precio',
-      node: (activo: boolean) => <SlideVerPrecio ref={precioRef} carrera={carrera} acento={acento} activo={activo} />,
+      node: (activo: boolean) => <SlideVerPrecio ref={precioRef} carrera={carrera} acento={acento} activo={activo} pedido={pedidoPrecio} />,
     });
     return s;
-  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida]);
+  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio]);
 
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);

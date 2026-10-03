@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as casas from '../components/formularios/casas.ts';
+import * as taxonomia from '../components/index/types.ts';
+import * as inicio from '../components/index/inicio-teclab.ts';
+import * as cobertura from '../components/formularios/cobertura-pago.ts';
+import * as elegirCarrera from '../components/formularios/elegir-carrera.ts';
+import * as whatsapp from '../lib/whatsapp.ts';
+import * as vigilancia from '../lib/vigilancia-esperado.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
 const {
@@ -104,18 +110,57 @@ test('sólo las carreras activas de Teclab tienen «ver precio»', () => {
 
 // ── El endpoint, con Supabase simulado ──
 
+// El mail del precio, real, con sus dependencias inyectadas: el alias `@/` no
+// lo resuelve Node pelado.
+const mailPrecio = cargarTypescript('components/formularios/mail-precio.ts', {
+  '@/components/formularios/cobertura-pago': cobertura,
+  '@/components/formularios/elegir-carrera': elegirCarrera,
+  '@/components/index/types': taxonomia,
+  '@/components/index/inicio-teclab': inicio,
+  '@/lib/whatsapp': whatsapp,
+  '@/lib/vigilancia-esperado': vigilancia,
+});
+
+const SMTP2GO = 'https://api.smtp2go.com/v3/email/send';
+
 function montarEndpoint(t) {
-  const anteriores = Object.fromEntries(['NODE_ENV', 'TURNSTILE_SECRET_KEY'].map(k => [k, process.env[k]]));
+  const anteriores = Object.fromEntries(
+    ['NODE_ENV', 'TURNSTILE_SECRET_KEY', 'SMTP2GO_API_KEY'].map(k => [k, process.env[k]]),
+  );
   const logError = console.error;
+  const logWarn = console.warn;
+  const fetchOriginal = globalThis.fetch;
   t.after(() => {
     console.error = logError;
+    console.warn = logWarn;
+    globalThis.fetch = fetchOriginal;
     for (const [k, v] of Object.entries(anteriores)) {
       if (v === undefined) delete process.env[k]; else process.env[k] = v;
     }
   });
-  console.error = () => {};
+  const registros = [];
+  console.error = (...args) => registros.push(args);
+  console.warn = (...args) => registros.push(args);
   process.env.NODE_ENV = 'production';
   process.env.TURNSTILE_SECRET_KEY = 'prueba-simulada';
+  delete process.env.SMTP2GO_API_KEY;
+
+  // SMTP2GO simulado: nunca se llama a la API real. `respuestaMail` decide qué
+  // contesta (o lanza) y cada pedido queda en `mails`.
+  const mails = [];
+  let respuestaMail = () => new Response(JSON.stringify({ data: { succeeded: 1, failed: 0 } }), { status: 200 });
+  globalThis.fetch = async (url, init) => {
+    if (url !== SMTP2GO) throw new Error(`fetch inesperado a ${url}`);
+    mails.push({ headers: init.headers, cuerpo: JSON.parse(init.body) });
+    return respuestaMail();
+  };
+
+  // `after()` de Next: las tareas se guardan y corren cuando el test lo pide,
+  // con la respuesta ya armada.
+  const pendientes = [];
+  const correrPendientes = async () => {
+    while (pendientes.length) await pendientes.shift()();
+  };
 
   const estado = {
     carreras: new Map([
@@ -154,8 +199,9 @@ function montarEndpoint(t) {
   };
 
   const { POST } = cargarTypescript('app/api/formularios/route.ts', {
-    'next/server': { NextResponse: Response },
+    'next/server': { NextResponse: Response, after: tarea => { pendientes.push(tarea); } },
     '@/components/formularios/casas': casas,
+    '@/components/formularios/mail-precio': mailPrecio,
     '@/lib/turnstile': { verifyTurnstile: async () => true },
     '@/lib/supabase-admin': { createSupabaseAdmin: () => supabase },
   });
@@ -169,7 +215,8 @@ function montarEndpoint(t) {
     return { status: respuesta.status, cuerpo: await respuesta.json() };
   };
 
-  return { estado, enviar };
+  const contestarMail = fn => { respuestaMail = fn; };
+  return { estado, enviar, mails, registros, correrPendientes, contestarMail };
 }
 
 const pedido = { carreraId: 7, email: 'ana@example.test', newsletter: false };
@@ -327,4 +374,107 @@ test('el resto de las consultas responde sólo el ok, sin leer precios', async t
     assert.deepEqual(cuerpo, { ok: true }, JSON.stringify(payload));
   }
   assert.equal(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS), false);
+});
+
+// ── El mail con el resumen del precio (SMTP2GO, después de responder) ──
+
+const CLAVE = 'clave-smtp2go-de-prueba';
+
+test('con precio vigente, «Ver precio» manda un mail por SMTP2GO después de responder', async t => {
+  const { estado, enviar, mails, correrPendientes } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+
+  const { status, cuerpo } = await enviar(pedido);
+  assert.equal(status, 201);
+  assert.equal(cuerpo.estado, 'vigente');
+  assert.equal(mails.length, 0, 'la respuesta no espera al mail');
+
+  await correrPendientes();
+  assert.equal(mails.length, 1);
+  const [mail] = mails;
+  assert.equal(mail.headers['X-Smtp2go-Api-Key'], CLAVE);
+  assert.equal(mail.headers['Content-Type'], 'application/json');
+  assert.deepEqual(mail.cuerpo.to, ['ana@example.test']);
+  assert.equal(mail.cuerpo.sender, 'CAU Villa Lugano <inscripciones@siglo21sur.com>');
+  assert.equal(mail.cuerpo.subject, 'Precio de Tecnicatura Superior en Programación en Teclab');
+  assert.match(mail.cuerpo.html_body, /\$ 552\.359,03/);
+  assert.match(mail.cuerpo.text_body, /Promo hasta el 31\/12/);
+});
+
+test('la preinscripción de Teclab con precio vigente también manda el mail', async t => {
+  const { estado, enviar, mails, correrPendientes } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.carreras.set(7, {
+    ...estado.carreras.get(7), nombre: 'Programación', prefix: 'Tecnicatura Superior',
+    nombre_corto: 'Programación', duracion: '2 años',
+  });
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+
+  const { status } = await enviar(preinscripcion, 'consulta');
+  assert.equal(status, 201);
+  await correrPendientes();
+  assert.equal(mails.length, 1);
+  assert.deepEqual(mails[0].cuerpo.to, ['ana@example.test']);
+  assert.equal(mails[0].cuerpo.subject, 'Precio de Programación en Teclab');
+  // La carrera se lee con lo que el mail necesita.
+  const lectura = estado.lecturas.find(l => l.tabla === 'carreras');
+  for (const columna of ['prefix', 'nombre_corto', 'duracion']) assert.match(lectura.columnas, new RegExp(columna));
+});
+
+test('vencido, sin precio o sin mail en la preinscripción, no se manda nada', async t => {
+  const { estado, enviar, mails, correrPendientes } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.precios.set(7, { ...fila, vigente_hasta: '2000-01-01' });
+  await enviar(pedido);
+  await enviar(preinscripcion, 'consulta');
+  estado.precios.clear();
+  await enviar(pedido);
+  await enviar(preinscripcion, 'consulta');
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  const { status } = await enviar({ ...preinscripcion, email: '', telefono: '1155555555' }, 'consulta');
+  assert.equal(status, 201);
+  await correrPendientes();
+  assert.equal(mails.length, 0);
+});
+
+test('sin SMTP2GO_API_KEY no manda y lo registra, sin tocar la respuesta', async t => {
+  const { estado, enviar, mails, registros, correrPendientes } = montarEndpoint(t);
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  const { status, cuerpo } = await enviar(pedido);
+  assert.equal(status, 201);
+  assert.equal(cuerpo.estado, 'vigente');
+  await correrPendientes();
+  assert.equal(mails.length, 0);
+  assert.ok(registros.some(r => /SMTP2GO_API_KEY/.test(String(r[0]))), JSON.stringify(registros));
+});
+
+test('si SMTP2GO falla o no responde, el lead y el precio salen igual y nada filtra la clave ni el mail', async t => {
+  const { estado, enviar, mails, registros, correrPendientes, contestarMail } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+
+  const esperado = (await enviar(pedido)).cuerpo;
+  await correrPendientes();
+
+  contestarMail(() => new Response(
+    JSON.stringify({ data: { error_code: 'E_ApiResponseCodes.API_EXCEPTION', error: 'falló' } }),
+    { status: 500 },
+  ));
+  const conError = await enviar(pedido);
+  assert.equal(conError.status, 201);
+  assert.deepEqual(conError.cuerpo, esperado);
+  await correrPendientes();
+
+  contestarMail(() => { throw new TypeError('fetch failed'); });
+  const caido = await enviar(pedido);
+  assert.equal(caido.status, 201);
+  assert.deepEqual(caido.cuerpo, esperado);
+  await correrPendientes();
+
+  assert.equal(mails.length, 3);
+  assert.ok(registros.some(r => /SMTP2GO/.test(String(r[0]))), 'el rechazo queda registrado');
+  const salida = JSON.stringify(registros, (_k, v) => (v instanceof Error ? v.message : v));
+  assert.equal(salida.includes(CLAVE), false);
+  assert.equal(salida.includes('ana@example.test'), false);
 });

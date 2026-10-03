@@ -42,7 +42,7 @@ export const AVISO_TOKEN = 'Estamos verificando la conexión. Probá de nuevo en
 export function AvisoSinPago() {
   return (
     <p className="text-center text-[11px] leading-snug text-[var(--catalogo-texto-suave)]">
-      Inscribirte no te cobra nada: se genera un ticket de pago para que pagues desde el portal del alumno.
+      Al tocar Inscribirme todavía no pagás nada. Se genera un ticket y lo pagás después desde el portal del alumno de Teclab.
     </p>
   );
 }

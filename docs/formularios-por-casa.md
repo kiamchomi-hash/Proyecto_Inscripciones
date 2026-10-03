@@ -48,6 +48,14 @@ El modal de Teclab cambia el mail por el precio de la carrera. Va por el mismo e
 - El precio se lee con la service role de `precios_privados`, tabla sin acceso para `anon` ni `authenticated` (`sql/2026-10-02_precios_carrera.sql`). Si el precio estuviera en el HTML o en una tabla pública, el registro sería decorativo. Se muestra hasta `vigente_hasta` **inclusive**, comparado contra la fecha de Argentina, no la UTC. Vencido, sin fila o con error de lectura, la respuesta no trae montos y la ventana ofrece WhatsApp.
 - Los precios los carga `herramientas/ventas/publicar-precios.mjs` (ver [herramientas](herramientas.md)). `tests/ver-precio.test.mjs` cubre la validación, la vigencia y el endpoint con Supabase simulado.
 
+### Mail con el resumen del precio
+
+- **Cuándo**: sólo con precio `vigente`, en «Ver precio» y en la preinscripción de Teclab que devuelve el precio (ahí, sólo si la persona dejó un mail válido, que en ese formulario es opcional). Vencido o sin precio no se manda nada.
+- **Cómo**: `POST https://api.smtp2go.com/v3/email/send` con `X-Smtp2go-Api-Key: SMTP2GO_API_KEY`, remitente `CAU Villa Lugano <inscripciones@siglo21sur.com>` (dominio ya autenticado en SMTP2GO), HTML y texto. Sin la clave no manda y deja un `console.warn`.
+- **Nunca bloquea**: corre con `after()`, con el 201 ya enviado, y un timeout de 8 s. Si SMTP2GO rechaza o no responde, el lead y el precio ya salieron; el registro lleva sólo el `status` y el `error_code`, nunca el mail de la persona ni la clave.
+- **Plantilla**: el armado es `components/formularios/mail-precio.ts` (puro, probado en `tests/mail-precio.test.mjs`) y copia el diseño aprobado, `docs/mails/mail-inicio-teclab.html`: si cambia uno, cambia el otro. El titular usa la misma lógica de inicio de clases que la ficha (`inicio-teclab.ts`); el logo es un PNG público en `public/imagenes/teclab/mail/` (Outlook de escritorio no muestra WebP). Es un resumen transaccional: no lleva enlace de baja.
+- **Riesgos**: cualquiera puede escribir el mail de otra persona y hacerle llegar un resumen; lo frenan Turnstile y la cuota del endpoint, y el mail no lleva datos de nadie, sólo la carrera y el precio. Pedir el precio varias veces en la misma carrera manda un mail por pedido.
+
 ## Autoinscripción de Teclab: `kind: 'autoinscripcion'`
 
 Quien elige gestionar su inscripción en Teclab manda la preinscripción completa. No hay medio de pago: desde el 03/10/2026 el formulario no lo pregunta, porque el portal del alumno pide la tarjeta y decide la financiación por su cuenta. Hay dos entradas al carrusel de `formulario-lead.tsx` (la pregunta y el «¡Listo!» en `autoinscripcion-teclab.tsx`), sólo con una carrera de Teclab elegida:

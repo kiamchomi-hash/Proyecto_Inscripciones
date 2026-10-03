@@ -201,6 +201,7 @@ export function PanelVerPrecio({
   slug,
   activo,
   duracion,
+  pedido = 0,
 }: {
   carreraId: number;
   nombreCarrera: string;
@@ -221,6 +222,12 @@ export function PanelVerPrecio({
   waHref: string;
   /** Si el slide esta a la vista. El captcha se monta recien en la primera visita. */
   activo: boolean;
+  /**
+   * Cuántas veces se tocó «Ver precio» para llegar acá. Cada toque nuevo, con
+   * el mail recordado en el campo, pide el precio solo, sin volver a tocar
+   * «Ver precio» en el formulario.
+   */
+  pedido?: number;
 }) {
   const [vista, setVista] = useState<Vista>('formulario');
   // El panel sólo se monta en el navegador (modal con import dinámico), así
@@ -255,11 +262,15 @@ export function PanelVerPrecio({
 
   const emailValido = EMAIL_VALIDO.test(email.trim());
 
-  const enviar = async (e: FormEvent) => {
-    e.preventDefault();
+  /**
+   * `conNewsletter` es falso en el pedido automático: la casilla ya se
+   * decidió la primera vez, y un `true` de entrada volvería a suscribir a quien
+   * la destildó.
+   */
+  const pedirPrecio = async (conNewsletter: boolean) => {
     setIntentado(true);
     setError('');
-    const payload = validarPayloadPrecio({ carreraId, email, newsletter });
+    const payload = validarPayloadPrecio({ carreraId, email, newsletter: conNewsletter && newsletter });
     if (!payload || !token || enviando) return;
 
     setEnviando(true);
@@ -289,6 +300,26 @@ export function PanelVerPrecio({
       setEnviando(false);
     }
   };
+
+  const enviar = (e: FormEvent) => {
+    e.preventDefault();
+    void pedirPrecio(true);
+  };
+
+  // El pedido automático: un toque nuevo de «Ver precio», el mail recordado
+  // todavía en el campo y el token del captcha. Si el token tarda, espera a que
+  // llegue. Un toque se atiende una sola vez, salga bien o mal.
+  const atendidoRef = useRef(pedido);
+  useEffect(() => {
+    if (pedido <= atendidoRef.current || enviando) return;
+    if (vista !== 'formulario') {
+      atendidoRef.current = pedido;
+      return;
+    }
+    if (!email.trim() || email.trim() !== mailGuardado().trim() || !token) return;
+    atendidoRef.current = pedido;
+    void pedirPrecio(false);
+  });
 
   const estilos = {
     '--vp-acento': acento,

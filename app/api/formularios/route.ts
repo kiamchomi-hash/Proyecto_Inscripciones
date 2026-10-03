@@ -11,8 +11,9 @@ import {
   validarPayloadPrecio,
   CASAS_CON_AUTOINSCRIPCION, TABLA_ENLACES, consultaConEnlace, estadoEnlace, payloadDesdeConsulta,
   validarPayloadEnlace, pedidoLeadSede, TABLA_ROBOT, despachoRobot,
-  type CampoId, type CasaId, type FilaEnlace, type FilaPrecio, type Modo,
+  type CampoId, type CasaId, type FilaEnlace, type FilaPrecio, type Modo, type ResultadoPrecio,
 } from '@/components/formularios/casas';
+import type { CarreraDelMail } from '@/components/formularios/mail-precio';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -229,12 +230,13 @@ async function suscribirDesdeFormulario(kind: string, payload: JsonRecord) {
  * La carrera, si su casa publica precio. La casa se valida contra el `nivel`
  * de la base, no contra lo que diga el navegador: por ahora sólo Teclab
  * publica precio. `carrera: null` es una carrera inexistente, inactiva o de
- * otra casa.
+ * otra casa. Trae además lo que usa el mail del precio: prefijo, nombre corto
+ * y duración.
  */
 async function buscarCarreraConPrecio(supabase: ClienteAdmin, carreraId: number) {
   const { data, error } = await supabase
     .from('carreras')
-    .select('id, nombre, nivel, activa')
+    .select('id, nombre, nivel, activa, prefix, nombre_corto, duracion')
     .eq('id', carreraId)
     .maybeSingle();
   if (error) return { carrera: null, error };
@@ -254,7 +256,13 @@ async function precioDePreinscripcion(payload: JsonRecord) {
     const supabase = createSupabaseAdmin();
     const { carrera, error } = await buscarCarreraConPrecio(supabase, carreraId);
     if (error) console.error('[formularios] No se pudo verificar la carrera del precio', { code: error.code });
-    return carrera ? await leerPrecio(supabase, carrera.id) : null;
+    if (!carrera) return null;
+    const resultado = await leerPrecio(supabase, carrera.id);
+    // El mail es opcional en la preinscripción (alcanza con el teléfono):
+    // sin uno válido no hay a quién mandarle el resumen.
+    const email = text(payload.email, 254);
+    if (EMAIL.test(email)) enviarMailPrecio(email, carrera, resultado);
+    return resultado;
   } catch (error) {
     console.error('[formularios] No se pudo leer el precio de la preinscripción', error);
     return null;
@@ -299,7 +307,75 @@ async function registrarPrecio(payload: JsonRecord) {
     await suscribirNewsletter(supabase, filaNewsletter(datos.email.toLowerCase(), carrera, new Date()));
   }
 
-  return { error: null, resultado: await leerPrecio(supabase, carrera.id) };
+  const resultado = await leerPrecio(supabase, carrera.id);
+  enviarMailPrecio(datos.email, carrera, resultado);
+  return { error: null, resultado };
+}
+
+const SMTP2GO_URL = 'https://api.smtp2go.com/v3/email/send';
+const REMITENTE_MAIL = 'CAU Villa Lugano <inscripciones@siglo21sur.com>';
+const TIMEOUT_MAIL_MS = 8000;
+
+/** El `error_code` de una respuesta de SMTP2GO, si lo trae. Nunca el mensaje. */
+function codigoSmtp2go(cuerpo: unknown) {
+  const data = esRegistro(cuerpo) && esRegistro(cuerpo.data) ? cuerpo.data : null;
+  return typeof data?.error_code === 'string' ? data.error_code : undefined;
+}
+
+/**
+ * El mail con el resumen del precio, por la API de SMTP2GO. Sólo con precio
+ * vigente: vencido o sin precio no hay nada que resumir. Corre con `after()`,
+ * con la respuesta ya enviada, y nunca la cambia ni tumba el lead, que ya está
+ * guardado. Sin `SMTP2GO_API_KEY` no manda. Los registros llevan sólo el
+ * estado o el código de error: ni el mail de la persona ni la clave.
+ *
+ * El armado se importa recién adentro de la tarea: sólo lo necesita este
+ * camino, y los tests de los otros envíos cargan el endpoint sin él.
+ */
+function enviarMailPrecio(email: string, carrera: CarreraDelMail, resultado: ResultadoPrecio) {
+  if (resultado.estado !== 'vigente') return;
+  const clave = process.env.SMTP2GO_API_KEY;
+  if (!clave) {
+    console.warn('[formularios] Mail del precio omitido: falta SMTP2GO_API_KEY');
+    return;
+  }
+  const { precio } = resultado;
+  try {
+    after(async () => {
+      try {
+        const { armarMailPrecio } = await import('@/components/formularios/mail-precio');
+        const mail = armarMailPrecio({ carrera, precio, hoy: new Date() });
+        const respuesta = await fetch(SMTP2GO_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Smtp2go-Api-Key': clave },
+          body: JSON.stringify({
+            sender: REMITENTE_MAIL,
+            to: [email],
+            subject: mail.asunto,
+            html_body: mail.html,
+            text_body: mail.texto,
+          }),
+          signal: AbortSignal.timeout(TIMEOUT_MAIL_MS),
+        });
+        const cuerpo: unknown = await respuesta.json().catch(() => null);
+        const fallidos = esRegistro(cuerpo) && esRegistro(cuerpo.data) ? cuerpo.data.failed : undefined;
+        if (!respuesta.ok || (typeof fallidos === 'number' && fallidos > 0)) {
+          console.error('[formularios] SMTP2GO rechazó el mail del precio', {
+            status: respuesta.status,
+            error_code: codigoSmtp2go(cuerpo),
+          });
+        }
+      } catch (error) {
+        console.error('[formularios] No se pudo mandar el mail del precio por SMTP2GO', {
+          code: error instanceof Error ? error.name : 'desconocido',
+        });
+      }
+    });
+  } catch (error) {
+    console.error('[formularios] No se pudo programar el mail del precio', {
+      code: error instanceof Error ? error.name : 'desconocido',
+    });
+  }
 }
 
 /**

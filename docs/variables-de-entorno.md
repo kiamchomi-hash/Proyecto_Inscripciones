@@ -14,4 +14,8 @@ El robot de Teclab (`docs/formularios-por-casa.md`) suma tres, todas en Vercel:
 - `ROBOT_GITHUB_TOKEN`: token de GitHub con permiso para disparar `repository_dispatch` en el repo del robot (fine-grained, Contents: read and write, sólo ese repo). Sin ella, no se despacha y las autoinscripciones quedan pendientes.
 - `ROBOT_GITHUB_REPO`: `dueño/repo` del robot, por ejemplo `kiamchomi-hash/cau-robot-teclab`.
 
+El mail con el resumen del precio de Teclab (`docs/formularios-por-casa.md`) usa una, en Vercel y marcada Sensitive:
+
+- `SMTP2GO_API_KEY`: clave de la API de SMTP2GO con la que `/api/formularios` manda el mail desde `inscripciones@siglo21sur.com`. Sin ella no se manda nada (queda un `console.warn`) y la respuesta del formulario no cambia. Como toda variable nueva en Vercel, recién vale después de un redeploy.
+
 `NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL=1` habilita el token `rate-limit-only` únicamente con `NODE_ENV=development` y sin claves Turnstile. El valor por defecto es `0`; producción lo ignora aunque esté en `1`. No reemplaza la service role ni el rate limit.
