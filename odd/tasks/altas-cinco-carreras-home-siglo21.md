@@ -12,6 +12,11 @@ Usuario autorizó consultar y cargar únicamente estas cinco en el Supabase de s
 
 - [x] T1: preparar payloads oficiales con tres slides, validar planes, slugs, títulos e imágenes.
 - [ ] T2: aplicar transacción limitada, comprobar cinco filas y páginas públicas, y entregar capturas escritorio/móvil.
+- [x] T3: retirar la redirección antigua de Hotelera, publicar únicamente esa corrección y comprobar las cinco páginas directas.
+
+T2 aplicada en Supabase: COMMIT confirmado del SQL corregido, cinco payloads activos coincidentes (77, 63, 18, 240 y 241). Home y sitemap contienen las cinco. La comprobación inicial encontró cuatro páginas con 200 directo y Hotelera con 301 a la home por next.config.ts. La corrección aislada de Hotelera fue publicada en el commit bb1ececaa3abd5ab128c42dd3ffe40f18969b99f y la página responde 200 directo. Capturas pendientes; no se repite la carga SQL.
+
+T3 autorizada explícitamente por el usuario: usar acceso GitHub configurado de este repo para publicar sólo la corrección, sin cambios ajenos. Ruta delegada por preparación y prueba. Checkout limpio y separado, HEAD remoto 13bbfbd6fb60dc2ed09a76c000abc89fe052d3bc, bajo el directorio de worktrees del usuario. No ramas ni PRs; commit separado y push acotado a main sólo si la base remota sigue coincidente, sin force. No publicar los commits locales de SQL, fixtures o documentos con otros trabajos. Estimación menor de 100 líneas authored. Mantener redirecciones de otras carreras y expectativas vigentes de vigilancia.
 
 ## Preflight comprobado
 

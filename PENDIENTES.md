@@ -44,14 +44,12 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **11. Crear un folleto de carreras relevantes**.
 - [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
 - [ ] **13. Revisar la indexación y el rendimiento de las páginas**.
-- [ ] **14. Crear más mensajes de seguimiento que complementen al primero**.
+- [ ] **14. Crear más mensajes de seguimiento que complementen al primero**. Segundo seguimiento de Siglo 21 implementado y verificado localmente el 03/10/2026, sin tocar las otras casas. El alcance global sigue abierto. [Evidencia](docs/historial-pendientes.md#mensajes-siglo21-2026-10-03).
 - [ ] **15. Permitir que una pregunta del buscador de carreras se responda combinando varias respuestas**, separadas por párrafos.
-- [ ] **16. Revisar el mensaje de bienvenida que se envía una vez que alguien se inscribe en una carrera**.
 - [ ] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas**.
 - [ ] **18. Revisar las aperturas de las carreras**: algunas no arrancan a mediados de bimestre.
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
-- [ ] **22. Revisar cómo funciona la garantía de adaptación y sumarla al corpus general**.
 - [ ] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram**, especialmente las de Estadística y Análisis Aplicado, que aparentemente tienen éxito.
 - [ ] **24. Incorporar newsletter y acceso al precio desde los slides**: agregar un checkbox al pedir el mail en formularios; poner el precio en el último slide con un botón «Ver precio» que abra una ventana con las opciones de iniciar sesión o hablar por WhatsApp.
 - [ ] **25. Ocultar preferentemente la ubicación en los slides de carreras**.

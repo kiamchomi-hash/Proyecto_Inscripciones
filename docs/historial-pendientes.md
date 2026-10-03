@@ -4,6 +4,20 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+<a id="mensajes-siglo21-2026-10-03"></a>
+
+## Mensajes Siglo 21 — 03/10/2026
+
+- **14, alcance Siglo 21:** agregado `retomar-panel-2` al corpus institucional. Complementa el primero con requisitos y pasos de inscripción, sin inventar fechas, cupos ni precios. Las otras casas no se modificaron; el pendiente global sigue abierto.
+- **16:** corregida la bienvenida de `textos-whatsapp.md`, limitada a inscripción confirmada. Es un texto manual; no se verificó ni implementó su envío automático.
+- **22:** agregado `garantia-adaptacion` a Siglo 21. General lo incorpora desde ese corpus, con la institución explícita; `comun.json`, Teclab e Identidad permanecen intactos. Se conserva la fuente de la variante anterior en `ahora-no-puedo`.
+
+La Nube 21 y Reglamento 14.3.C coinciden: reconocimiento de matrícula y aranceles iniciales para recomenzar grado/pregrado, sin aprobación de materias ni avance del primer semestre; una vez, hasta dos años desde la matrícula inicial. Se pierden las regularidades salvo Universitario 21. No promete devolución de dinero ni aprobación automática. [Fuentes públicas comprobadas](../referencias/2026-10-03-mensajes-siglo21.md).
+
+**Verificación local:** la prueba nueva pasó de RED (exit 1 antes de agregar los mensajes) a GREEN, 9/9. La suite comercial aprobó 321/321; ambas páginas fueron regeneradas con `--descuento-beneficio 10` y contienen los mensajes nuevos. `npm run check` aprobó lint, typecheck y 242 tests del sitio, sin skips. No se actualizó ninguna fuente de precios ni se publicó el buscador.
+
+**Límites:** la auditoría institucional sale con código 1 por dos avisos clasificados como problemas en el corpus inalterado de Teclab (`cuando-empieza` e `inscripcion-abierta`); no hay problemas nuevos de Siglo 21. El buscador conserva sólo 2B porque la planilla local 2A no trae tabla de promociones; informa una carrera sin precio y ocho sin ficha. No se corrigieron datos fuera del alcance. Corpus, tests comerciales y HTML permanecen gitignorados: no se incluyen en el repositorio público ni en `npm run check`.
+
 ## Docker y Supabase local — 01/10/2026
 
 - [x] **Validar las pruebas reales de Supabase local desde Linux.** Docker Engine 29.8.2 instalado y operativo en Linux Mint 22.3. Se inició exclusivamente `cau-guardrails-local`, se corrigió la lectura del BOM UTF-8 en los SQL de Windows y `npm run test:integracion` aprobó las 6 pruebas, sin skips: RLS/grants, registro, persistencia HTTP de los tres formularios y rate limit. `npm run check` con Node 24.14.1 aprobó 155 pruebas; lint conservó 27 advertencias y ningún error. El stack se detuvo al terminar. No se conectó a producción. La instalación Windows/WSL sigue sin verificar, pero ya no bloquea la integración local. [Procedimiento](pruebas-supabase-local.md).

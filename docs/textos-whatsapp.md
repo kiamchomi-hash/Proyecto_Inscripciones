@@ -17,8 +17,14 @@ Venían de `migracion_pendiente/pendientes-admin.md`, que se disolvió el
 
 ## Bienvenida a un nuevo inscripto
 
+Usar sólo después de confirmar la inscripción. Es un texto manual, no un envío automático ni una respuesta para quien recién consulta.
+
 ```
-¡Hola! Bienvenido/a a Universidad Siglo 21. Ya recibimos tu consulta de inscripción. En breve nos comunicamos para darte toda la información. ¡Gracias por elegirnos!
+¡Bienvenido/a a *Universidad Siglo 21*! 🎓
+
+Gracias por elegirnos para comenzar esta etapa.
+
+Seguimos en contacto por acá para acompañarte con tus consultas sobre el inicio de la carrera.
 ```
 
 ## Consulta de precios
