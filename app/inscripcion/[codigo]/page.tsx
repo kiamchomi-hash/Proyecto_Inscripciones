@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Poppins } from 'next/font/google';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { carreraToSlug } from '@/components/index/types';
@@ -18,6 +19,15 @@ import './inscripcion-enlace.css';
 // fila con datos personales: nada de esto se cachea ni se indexa, y al
 // navegador llega sólo el resumen oculto que arma `propsInscripcionEnlace`.
 export const dynamic = 'force-dynamic';
+
+// Poppins es la fuente de marca de Teclab. Se carga sólo en sus páginas (no en
+// el layout) y llega a la hoja de estilos como --font-poppins.
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 
 // La vista previa al compartir el enlace por WhatsApp. Es la misma para todos
 // los códigos y no nombra a la persona ni la carrera: la página no confirma
@@ -133,7 +143,7 @@ export default async function Page({ params }: { params: Promise<{ codigo: strin
   const { codigo } = await params;
   if (process.env.NODE_ENV !== 'production' && codigo === 'demo') {
     return (
-      <main className="inscripcion-enlace">
+      <main className={`inscripcion-enlace ${poppins.variable}`}>
         <InscripcionEnlace {...DEMO} demo />
       </main>
     );
@@ -141,7 +151,7 @@ export default async function Page({ params }: { params: Promise<{ codigo: strin
   const carga = await cargar(codigo);
 
   return (
-    <main className="inscripcion-enlace">
+    <main className={`inscripcion-enlace ${poppins.variable}`}>
       {carga.estado === 'valido' ? (
         <InscripcionEnlace {...carga.props} />
       ) : (

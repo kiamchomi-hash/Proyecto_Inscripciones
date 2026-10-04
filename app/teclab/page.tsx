@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { Poppins } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 import {
   type CarreraCatalogo,
@@ -17,6 +18,15 @@ import '../index.css';
 import './teclab.css';
 
 const URL = 'https://www.siglo21sur.com/teclab';
+
+// Poppins es la fuente de marca de Teclab. Se carga sólo en sus páginas (no en
+// el layout) y llega a la hoja de estilos como --font-poppins.
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: { absolute: 'Tecnicaturas Teclab Online | Carreras de 2 años' },
@@ -130,7 +140,7 @@ export default async function TeclabPage() {
 
   return (
     <>
-      <main className="teclab-page">
+      <main className={`teclab-page ${poppins.variable}`}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
 
         <section className="teclab-hero" aria-labelledby="teclab-title">

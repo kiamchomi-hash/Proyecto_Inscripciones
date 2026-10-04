@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import type { CSSProperties } from 'react';
 import Link from 'next/link';
+import { Poppins } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 import type { Carrera } from '@/components/index/types';
 import { GuiaInscripcion, SITIO, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
@@ -18,6 +18,15 @@ const RUTA = '/teclab/inscripcion';
 const TITULO = 'Inscripción a Teclab';
 const DESCRIPCION = 'Preinscribite en una tecnicatura o curso de Teclab, 100% online: elegí la carrera, completá tus datos, mirá el precio y confirmá tu inscripción.';
 const IMAGEN_OG = '/imagenes/og/default-teclab-inscripcion.jpg';
+
+// Poppins es la fuente de marca de Teclab. Se carga sólo en sus páginas (no en
+// el layout) y llega a la hoja de estilos como --font-poppins.
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: { absolute: `${TITULO} | Tecnicaturas online` },
@@ -64,14 +73,6 @@ function ArrowIcon() {
 export default async function InscripcionTeclabPage() {
   const opciones = await getOpciones();
 
-  // Los colores de las páginas de inscripción de cada tecnicatura.
-  const estilo = {
-    '--career-accent': '#00c7b1',
-    '--career-accent-bright': '#70f0dc',
-    '--career-ink': '#071d1b',
-    '--career-soft': '#b7d1cd',
-  } as CSSProperties;
-
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -86,7 +87,9 @@ export default async function InscripcionTeclabPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbSchema) }} />
       <main className="flex-1">
-        <article className="career-page inscripcion-page" style={estilo}>
+        {/* Los colores son los de la inscripción de cada tecnicatura: la paleta de
+            Teclab que declara .inscripcion-teclab en inscripcion.css. */}
+        <article className={`career-page inscripcion-page inscripcion-teclab ${poppins.variable}`}>
           {/* Como en la inscripción de cada carrera: arriba sólo migas y el H1,
               así el formulario entra en la primera pantalla del celular. */}
           <header className="inscripcion-encabezado">

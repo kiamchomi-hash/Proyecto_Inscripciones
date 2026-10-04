@@ -1,6 +1,53 @@
-/* Pagina de inscripcion de Teclab (/carreras/<slug>/inscripcion). Parte de los
+/* Pagina de inscripcion de Teclab (/carreras/<slug>/inscripcion y
+   /teclab/inscripcion). Parte de los
    estilos de la ficha (career-detail.css, que la pagina importa antes) y solo
    ajusta lo propio: un titulo mas largo, los pasos y las preguntas. */
+
+/* ── Marca Teclab ── Las dos paginas que usan esta hoja (/teclab/inscripcion y
+   /carreras/<carrera de Teclab>/inscripcion) son solo de Teclab. La paleta
+   oficial (skill piezas_teclab) se declara aca, en la clase raiz, y no en el
+   :root de globals.css. Los --career-* repintan lo que viene de
+   career-detail.css y los --catalogo-* el formulario, igual que en /teclab. */
+.inscripcion-teclab {
+  --tl-azul: #0055f0;
+  --tl-navy: #0c1824;
+  --tl-navy-claro: #112236;
+  --tl-cian: #4ae2e7;
+  --tl-cian-vivo: #8deef1;
+  --tl-papel: #f0f0f6;
+  /* Texto secundario sobre navy: 11,8:1 (WCAG AA). */
+  --tl-texto: #c8d0dc;
+
+  --career-accent: var(--tl-cian);
+  --career-accent-bright: var(--tl-cian-vivo);
+  --career-ink: var(--tl-navy);
+  --career-soft: var(--tl-texto);
+
+  --catalogo-acento: var(--tl-cian);
+  --catalogo-acento-vivo: var(--tl-cian-vivo);
+  --catalogo-acento-suave: #3cc4c9;
+  /* Cian oscurecido: el navy encima sigue dando 6,3:1. */
+  --catalogo-acento-oscuro: #2aa9ae;
+  --catalogo-acento-tinta: var(--tl-navy);
+  --catalogo-acento-rgb: 74, 226, 231;
+  --catalogo-tarjeta: #12243a;
+  --catalogo-tarjeta-hover: #0e1d2f;
+  --catalogo-barra: rgba(10, 20, 31, 0.97);
+  --catalogo-form-fondo: #0f1e30;
+  --catalogo-form-tarjeta: #14263c;
+  --catalogo-form-panel: #14263c;
+  --catalogo-form-campo: #0a1520;
+  /* Sobre --catalogo-form-tarjeta: 6,6:1 (WCAG AA). */
+  --catalogo-texto-suave: #9dabbe;
+  --catalogo-etiqueta: #c3ccd9;
+
+  background:
+    radial-gradient(circle at 82% 8%, rgba(0, 85, 240, 0.16), transparent 28rem),
+    var(--tl-navy);
+  color: #fff;
+  /* Poppins, cargada con next/font solo en estas rutas (--font-poppins). */
+  font-family: var(--font-poppins), "Poppins", sans-serif;
+}
 
 /* ── Encabezado ── El formulario va arriba de todo, asi que antes de el solo
    queda una linea de migas, el H1 a tamaño de titulo de seccion (no de hero:
@@ -20,7 +67,7 @@
   margin-bottom: .55rem;
   color: rgba(255, 255, 255, .62);
   font-size: .74rem;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.3;
 }
 
@@ -42,12 +89,12 @@
 
 .inscripcion-encabezado h1 {
   max-width: 34ch;
-  color: #f6fbfa;
-  font-family: var(--font-inter), "Inter", sans-serif;
+  color: #fff;
+  font-family: var(--font-poppins), "Poppins", sans-serif;
   font-size: clamp(1.35rem, 2.6vw, 2.1rem);
-  font-weight: 800;
-  letter-spacing: -.035em;
-  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.1;
   text-wrap: balance;
 }
 
@@ -69,18 +116,18 @@
 }
 
 .inscripcion-aviso .aviso-inicio-teclab-fecha {
-  color: rgba(240, 249, 247, .88);
+  color: rgba(240, 240, 246, .88);
   font-weight: 600;
 }
 
 .inscripcion-aviso .aviso-inicio-teclab-fecha time {
   color: #fff;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .inscripcion-aviso .aviso-inicio-teclab-cta {
   color: var(--career-accent-bright);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .inscripcion-cuerpo {
@@ -103,9 +150,11 @@
 }
 
 .inscripcion-page .career-section-heading h2 {
-  font-family: var(--font-inter), "Inter", sans-serif;
-  letter-spacing: -.045em;
-  line-height: 1;
+  color: #fff;
+  font-family: var(--font-poppins), "Poppins", sans-serif;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.05;
 }
 
 /* ── Pasos ── */
@@ -128,15 +177,15 @@
 .inscripcion-pasos li > span {
   color: var(--career-accent);
   font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: -.04em;
+  font-weight: 700;
+  letter-spacing: -.02em;
   line-height: 1;
 }
 
 .inscripcion-pasos h3 {
-  color: #f6fbfa;
+  color: #fff;
   font-size: 1.05rem;
-  font-weight: 750;
+  font-weight: 600;
   line-height: 1.3;
 }
 
@@ -158,9 +207,9 @@
 }
 
 .inscripcion-preguntas dt {
-  color: #f6fbfa;
+  color: #fff;
   font-size: 1.05rem;
-  font-weight: 750;
+  font-weight: 600;
   line-height: 1.35;
 }
 
@@ -189,7 +238,7 @@
   border: 1px solid color-mix(in srgb, var(--career-accent) 70%, transparent);
   color: var(--career-accent-bright);
   font-size: .85rem;
-  font-weight: 750;
+  font-weight: 600;
   transition: background .2s ease, border-color .2s ease;
 }
 

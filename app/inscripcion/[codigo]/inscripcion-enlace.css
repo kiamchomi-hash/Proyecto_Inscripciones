@@ -3,23 +3,34 @@
    son los del formulario y leen esos tokens. La tabla del precio copia la de «Ver precio»
    (.vp-* en components/index/modales.css), que en esta página no se carga. */
 .inscripcion-enlace {
-  --catalogo-acento: var(--teclab-cyan);
-  --catalogo-acento-vivo: #7ff6ea;
-  --catalogo-acento-suave: #26b7ab;
-  --catalogo-acento-oscuro: #17bdae;
-  --catalogo-acento-tinta: var(--teclab-ink);
-  --catalogo-acento-rgb: 46, 231, 215;
-  --catalogo-form-campo: #071b24;
-  --catalogo-form-tarjeta: #0d2734;
-  --catalogo-texto-suave: #7f9aa1;
-  --catalogo-etiqueta: #9fc0c7;
+  /* Paleta oficial de Teclab (skill piezas_teclab), declarada en la raiz de la
+     pagina y no en el :root de globals.css. */
+  --tl-azul: #0055f0;
+  --tl-navy: #0c1824;
+  --tl-cian: #4ae2e7;
+  --tl-cian-vivo: #8deef1;
+
+  --catalogo-acento: var(--tl-cian);
+  --catalogo-acento-vivo: var(--tl-cian-vivo);
+  --catalogo-acento-suave: #3cc4c9;
+  /* Cian oscurecido: el navy encima sigue dando 6,3:1. */
+  --catalogo-acento-oscuro: #2aa9ae;
+  --catalogo-acento-tinta: var(--tl-navy);
+  --catalogo-acento-rgb: 74, 226, 231;
+  --catalogo-form-campo: #0a1520;
+  --catalogo-form-tarjeta: #14263c;
+  /* Sobre --catalogo-form-tarjeta: 6,6:1 y 9,4:1 (WCAG AA). */
+  --catalogo-texto-suave: #9dabbe;
+  --catalogo-etiqueta: #c3ccd9;
 
   min-height: 100vh;
   padding: 2.5rem 1rem 3rem;
   background:
-    radial-gradient(circle at 82% 18%, rgba(142, 44, 242, 0.12), transparent 28rem),
-    var(--teclab-ink);
+    radial-gradient(circle at 82% 18%, rgba(0, 85, 240, 0.16), transparent 28rem),
+    var(--tl-navy);
   color: #fff;
+  /* Poppins, cargada con next/font solo en esta ruta (--font-poppins). */
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
 }
 
 .ie-contenido {
@@ -36,7 +47,7 @@
 
 .ie-marca {
   font-size: 0.75rem;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--catalogo-acento);
@@ -45,8 +56,8 @@
 .ie-titulo {
   margin-top: 0.35rem;
   font-size: clamp(1.5rem, 4vw, 2.1rem);
-  font-weight: 900;
-  line-height: 1.15;
+  font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.02em;
 }
 
@@ -84,7 +95,7 @@
 .ie-subtitulo {
   margin-bottom: 0.6rem;
   font-size: 0.7rem;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--catalogo-etiqueta);
@@ -129,7 +140,7 @@
   align-items: baseline;
   gap: 0.45rem;
   font-size: 0.95rem;
-  font-weight: 800;
+  font-weight: 700;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
@@ -140,7 +151,7 @@
   background: var(--catalogo-acento);
   color: var(--catalogo-acento-tinta);
   font-size: 0.7rem;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .ie-total {
@@ -156,14 +167,14 @@
 
 .ie-total-rotulo {
   font-size: 0.7rem;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .ie-total-monto {
   font-size: 1.3rem;
-  font-weight: 900;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 

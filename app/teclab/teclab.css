@@ -1,34 +1,94 @@
 .teclab-page {
-  --teclab-page-ink: #071822;
-  --teclab-page-ink-soft: #0d2530;
+  /* Paleta oficial de Teclab (skill piezas_teclab): azul, navy, cian, blanco y
+     gris claro. Los tonos intermedios salen de esos cinco y viven aca, no en
+     el :root de globals.css, porque solo los usa esta pagina. */
+  --tl-azul: #0055f0;
+  /* Azul aclarado para texto sobre navy: el azul pleno da 3:1 y no llega a AA. */
+  --tl-azul-claro: #6fa0ff;
+  --tl-navy: #0c1824;
+  --tl-navy-hondo: #08111a;
+  --tl-navy-claro: #112236;
+  --tl-cian: #4ae2e7;
+  --tl-cian-vivo: #8deef1;
+  /* Menta: solo en el cruce Teclab → Siglo 21, como en las piezas oficiales. */
+  --tl-menta: #78fcba;
+  --tl-papel: #f0f0f6;
+  /* Texto secundario sobre navy: 11,8:1 y 8,2:1 (WCAG AA). */
+  --tl-texto: #c8d0dc;
+  --tl-texto-suave: #a4b1c2;
 
   /* El catalogo, el buscador y el formulario son los mismos componentes que la
      home, pero aca no es Siglo 21 quien firma: repintarlos es redefinir los
      tokens --catalogo-* que declara globals.css. Nada de esto toca la home ni
      el pie, que queda fuera de .teclab-page a proposito porque el pie es del
      CAU y es igual en todo el sitio. */
-  --catalogo-acento: var(--teclab-cyan);
-  --catalogo-acento-vivo: #7ff6ea;
-  --catalogo-acento-suave: #26b7ab;
-  --catalogo-acento-oscuro: #17bdae;
-  --catalogo-acento-tinta: var(--teclab-page-ink);
-  --catalogo-acento-rgb: 46, 231, 215;
-  --catalogo-tarjeta: #102934;
-  --catalogo-tarjeta-hover: #0a1f29;
-  --catalogo-barra: rgba(6, 20, 28, 0.97);
-  --catalogo-form-fondo: #08202b;
-  --catalogo-form-tarjeta: #0d2734;
-  --catalogo-form-panel: #0d2734;
-  --catalogo-form-campo: #071b24;
-  --catalogo-texto-suave: #7f9aa1;
-  --catalogo-etiqueta: #9fc0c7;
+  --catalogo-acento: var(--tl-cian);
+  --catalogo-acento-vivo: var(--tl-cian-vivo);
+  --catalogo-acento-suave: #3cc4c9;
+  /* Cian oscurecido: el navy encima sigue dando 6,3:1. */
+  --catalogo-acento-oscuro: #2aa9ae;
+  --catalogo-acento-tinta: var(--tl-navy);
+  --catalogo-acento-rgb: 74, 226, 231;
+  --catalogo-tarjeta: #12243a;
+  --catalogo-tarjeta-hover: #0e1d2f;
+  --catalogo-barra: rgba(10, 20, 31, 0.97);
+  --catalogo-form-fondo: #0f1e30;
+  --catalogo-form-tarjeta: #14263c;
+  --catalogo-form-panel: #14263c;
+  --catalogo-form-campo: #0a1520;
+  /* Sobre --catalogo-form-tarjeta: 6,6:1 (WCAG AA). */
+  --catalogo-texto-suave: #9dabbe;
+  --catalogo-etiqueta: #c3ccd9;
 
   min-height: 100vh;
   overflow: clip;
   background:
-    radial-gradient(circle at 82% 28%, rgba(142, 44, 242, 0.11), transparent 28rem),
-    var(--teclab-page-ink);
+    radial-gradient(circle at 82% 28%, rgba(0, 85, 240, 0.16), transparent 28rem),
+    var(--tl-navy);
   color: #fff;
+  /* Poppins es la fuente de marca de Teclab; la carga page.tsx con next/font
+     y la expone en esta variable solo en esta ruta. */
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+}
+
+/* Las piezas del catalogo que pintan la marca Teclab leen --teclab-cyan,
+   --teclab-purple y --teclab-ink de globals.css (el cian y el violeta del
+   sitio). Aca se redefinen solo en esos elementos, y no en .teclab-page, para
+   no tocar el modal de carrera, que se monta adentro del catalogo y queda
+   fuera de este rediseño. Gestion pasa del violeta al azul de la marca. */
+.teclab-page .section-header-container,
+.teclab-page .section-divider-teclab,
+.teclab-page .section-category-pills,
+.teclab-page .filter-pill-teclab,
+.teclab-page .career-card-teclab {
+  --teclab-cyan: var(--tl-cian);
+  --teclab-purple: var(--tl-azul);
+  --teclab-ink: var(--tl-navy);
+}
+
+/* El acento de "Gestion" en el titulo de seccion viene como estilo en linea
+   (careers-catalog.tsx). Se lo ubica por la insignia de la familia y no por el
+   valor del estilo, que el navegador reescribe como rgb() al navegar del lado
+   del cliente. Sobre navy va el azul aclarado, que pasa AA. */
+.teclab-page .section-header-container:has(.teclab-section-badge.teclab-gestion) h2 span[style] {
+  color: var(--tl-azul-claro) !important;
+}
+
+/* La pildora activa del filtro trae el verde del CAU fijo en index.css (no
+   lee los tokens --catalogo-*). Aca va el azul de Teclab: blanco encima, 5,9:1. */
+.teclab-page .filter-pill.filter-pill-all.active,
+.teclab-page .filter-pill.active:not(.filter-pill-teclab) {
+  background-color: var(--tl-azul) !important;
+  border-color: var(--tl-azul-claro);
+  color: #fff !important;
+}
+
+/* Titulares del catalogo en Poppins, con el interlineado cerrado de la marca. */
+.teclab-page .section-header-container h2 {
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
 }
 
 .teclab-hero {
@@ -38,8 +98,8 @@
   min-height: clamp(17rem, 42svh, 24rem);
   isolation: isolate;
   overflow: hidden;
-  border-bottom: 1px solid rgba(46, 231, 215, 0.42);
-  background: linear-gradient(115deg, #071822 0%, #0b2532 52%, #071822 100%);
+  border-bottom: 1px solid rgba(74, 226, 231, 0.42);
+  background: linear-gradient(115deg, var(--tl-navy) 0%, #0f2340 52%, var(--tl-navy) 100%);
 }
 
 .teclab-hero-trama,
@@ -54,8 +114,8 @@
   z-index: -2;
   opacity: 0.55;
   background-image:
-    linear-gradient(rgba(46, 231, 215, 0.075) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46, 231, 215, 0.075) 1px, transparent 1px);
+    linear-gradient(rgba(74, 226, 231, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 226, 231, 0.075) 1px, transparent 1px);
   background-size: 3.4rem 3.4rem;
   mask-image: radial-gradient(ellipse 70% 90% at 22% 50%, #000 5%, transparent 78%);
 }
@@ -70,9 +130,9 @@
   z-index: -1;
   opacity: 0.45;
   background:
-    linear-gradient(90deg, transparent, var(--teclab-purple)) 100% 16% / min(20vw, 17rem) 2px no-repeat,
-    linear-gradient(90deg, transparent, var(--teclab-cyan)) 100% 47% / min(13vw, 11rem) 2px no-repeat,
-    linear-gradient(90deg, transparent, var(--teclab-purple)) 100% 78% / min(26vw, 22rem) 2px no-repeat;
+    linear-gradient(90deg, transparent, var(--tl-azul)) 100% 16% / min(20vw, 17rem) 2px no-repeat,
+    linear-gradient(90deg, transparent, var(--tl-cian)) 100% 47% / min(13vw, 11rem) 2px no-repeat,
+    linear-gradient(90deg, transparent, var(--tl-azul)) 100% 78% / min(26vw, 22rem) 2px no-repeat;
   animation: teclabLinesIn 1.2s 0.5s ease both;
 }
 
@@ -95,9 +155,9 @@
 }
 
 .teclab-eyebrow {
-  color: var(--teclab-cyan);
+  color: var(--tl-cian);
   font-size: 0.76rem;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.19em;
   text-transform: uppercase;
 }
@@ -105,11 +165,11 @@
 .teclab-hero h1 {
   max-width: 17ch;
   margin: 0;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
   font-size: clamp(1.75rem, 2.9vw, 2.75rem);
-  font-weight: 900;
-  letter-spacing: -0.035em;
-  line-height: 1.04;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   text-wrap: balance;
   opacity: 0;
   animation: teclabRise 0.72s 0.24s ease-out forwards;
@@ -139,9 +199,9 @@
 
 .teclab-hero-partners > p {
   margin: 0 0 0.9rem;
-  color: #7f9aa1;
+  color: var(--tl-texto-suave);
   font-size: 0.66rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.17em;
   text-transform: uppercase;
 }
@@ -184,13 +244,13 @@
 }
 
 .teclab-hero-mosaico > div:nth-child(1) {
-  border-color: var(--teclab-cyan);
-  box-shadow: 7px 7px 0 rgba(46, 231, 215, 0.16);
+  border-color: var(--tl-cian);
+  box-shadow: 7px 7px 0 rgba(74, 226, 231, 0.16);
 }
 
 .teclab-hero-mosaico > div:nth-child(4) {
-  border-color: var(--teclab-purple);
-  box-shadow: -7px 7px 0 rgba(142, 44, 242, 0.22);
+  border-color: var(--tl-azul);
+  box-shadow: -7px 7px 0 rgba(0, 85, 240, 0.45);
 }
 
 .teclab-hero-mosaico img {
@@ -204,10 +264,10 @@
   justify-content: center;
   gap: 0.7rem;
   padding: 0.8rem 1.15rem;
-  border: 2px solid var(--teclab-cyan);
+  border: 2px solid var(--tl-cian);
   border-radius: 0.35rem;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-decoration: none;
   text-transform: uppercase;
@@ -215,13 +275,13 @@
 }
 
 .teclab-button--primary {
-  background: var(--teclab-cyan);
-  color: var(--teclab-page-ink);
-  box-shadow: 6px 6px 0 var(--teclab-purple);
+  background: var(--tl-cian);
+  color: var(--tl-navy);
+  box-shadow: 6px 6px 0 var(--tl-azul);
 }
 
 .teclab-button--ghost {
-  background: rgba(7, 24, 34, 0.58);
+  background: rgba(12, 24, 36, 0.58);
   color: #fff;
 }
 
@@ -230,7 +290,7 @@
 }
 
 .teclab-button--primary:hover {
-  box-shadow: 9px 9px 0 var(--teclab-purple);
+  box-shadow: 9px 9px 0 var(--tl-azul);
 }
 
 .teclab-button:focus-visible,
@@ -240,8 +300,8 @@
 }
 
 .teclab-proof {
-  border-top: 1px solid rgba(46, 231, 215, 0.28);
-  background: #06131b;
+  border-top: 1px solid rgba(74, 226, 231, 0.28);
+  background: var(--tl-navy-hondo);
 }
 
 .teclab-proof-inner {
@@ -265,16 +325,17 @@
 }
 
 .teclab-proof strong {
-  color: var(--teclab-cyan);
-  font-family: var(--font-unbounded), sans-serif;
+  color: var(--tl-cian);
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
   font-size: clamp(1.25rem, 2.4vw, 2.1rem);
+  font-weight: 700;
   line-height: 1;
 }
 
 .teclab-proof span {
-  color: #a9c1c7;
+  color: var(--tl-texto-suave);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -323,25 +384,25 @@
   width: 3.5rem;
   height: 4px;
   margin-bottom: 1.15rem;
-  background: var(--teclab-cyan);
+  background: var(--tl-cian);
 }
 
-/* Inter y no Unbounded: la Unbounded a 4.7rem se comia el bloque entero y no se
-   parecia en nada al hero, que es el que fija el tono de la pagina. */
+/* Poppins, como el hero, que es el que fija el tono de la pagina. Unbounded
+   sigue vetada: a 4.7rem se comia el bloque entero. */
 .teclab-continuity h2 {
   margin: 0.7rem 0 1.1rem;
   max-width: 22ch;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
   font-size: clamp(1.6rem, 2.8vw, 2.6rem);
-  font-weight: 900;
-  letter-spacing: -0.035em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.08;
   text-wrap: balance;
 }
 
 .teclab-continuity-copy > p:not(.teclab-eyebrow) {
   max-width: 50ch;
-  color: #b7cbd0;
+  color: var(--tl-texto);
   font-size: 1rem;
   line-height: 1.7;
 }
@@ -351,8 +412,8 @@
   align-items: center;
   gap: 0.55rem;
   margin-top: 1.4rem;
-  color: var(--teclab-cyan);
-  font-weight: 900;
+  color: var(--tl-cian);
+  font-weight: 700;
   text-underline-offset: 0.35rem;
 }
 
@@ -373,8 +434,8 @@
   padding: clamp(1.5rem, 2.4vw, 2rem);
   border: 3px solid rgba(255, 255, 255, 0.14);
   border-radius: 0.6rem;
-  background: #0a1f2a;
-  box-shadow: 10px 10px 0 rgba(142, 44, 242, 0.25);
+  background: var(--tl-navy-claro);
+  box-shadow: 10px 10px 0 var(--tl-azul);
 }
 
 .teclab-ruta-marca {
@@ -395,35 +456,37 @@
   display: grid;
   gap: 0.1rem;
   padding: 0.85rem 1rem;
-  border-left: 4px solid var(--teclab-cyan);
+  border-left: 4px solid var(--tl-cian);
   border-radius: 0 0.35rem 0.35rem 0;
   background: rgba(255, 255, 255, 0.045);
 }
 
+/* El paso de Siglo 21 es el cruce Teclab → Siglo 21: lleva el menta, que es el
+   resaltador que la marca reserva para ese cross-sell. */
 .teclab-ruta-paso--siglo {
-  border-left-color: var(--teclab-purple);
+  border-left-color: var(--tl-menta);
 }
 
 .teclab-ruta-paso-orden {
-  color: var(--teclab-cyan);
+  color: var(--tl-cian);
   font-size: 0.62rem;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.19em;
   text-transform: uppercase;
 }
 
 .teclab-ruta-paso--siglo .teclab-ruta-paso-orden {
-  color: #c39bff;
+  color: var(--tl-menta);
 }
 
 .teclab-ruta-paso strong {
   font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .teclab-ruta-paso-dato {
-  color: #91aab0;
+  color: var(--tl-texto-suave);
   font-size: 0.82rem;
 }
 
@@ -444,9 +507,9 @@
 
 .teclab-ruta-pie {
   margin: 0;
-  color: #7f9aa1;
+  color: var(--tl-texto-suave);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.11em;
   line-height: 1.6;
   text-transform: uppercase;
@@ -464,11 +527,11 @@
   box-sizing: border-box;
   padding: 0.7rem 1.1rem;
   border: 3px solid #fff;
-  outline: 3px solid var(--teclab-page-ink);
-  background-color: #04121a;
-  box-shadow: 6px 6px 0 var(--teclab-cyan);
+  outline: 3px solid var(--tl-navy);
+  background-color: var(--tl-navy-hondo);
+  box-shadow: 6px 6px 0 var(--tl-cian);
   color: #fff;
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: none;
   transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, background-color 0.12s ease-out, color 0.12s ease-out;
 }
@@ -492,15 +555,15 @@
 
 .teclab-brutal-button:hover {
   transform: translate(-4px, -4px);
-  box-shadow: 10px 10px 0 var(--teclab-purple);
+  box-shadow: 10px 10px 0 var(--tl-azul);
 }
 
 .teclab-brutal-button:active {
   transform: translate(4px, 4px);
-  box-shadow: 0 0 0 var(--teclab-cyan);
-  border-color: var(--teclab-page-ink);
-  background-color: var(--teclab-cyan);
-  color: var(--teclab-page-ink);
+  box-shadow: 0 0 0 var(--tl-cian);
+  border-color: var(--tl-navy);
+  background-color: var(--tl-cian);
+  color: var(--tl-navy);
 }
 
 .teclab-brutal-marca {
@@ -511,14 +574,14 @@
   place-items: center;
   width: 1.65rem;
   height: 1.65rem;
-  background: var(--teclab-cyan);
+  background: var(--tl-cian);
   transition: transform 0.2s ease-out;
 }
 
 .teclab-brutal-marca svg {
   width: 1.1rem;
   height: 1.1rem;
-  stroke: var(--teclab-page-ink);
+  stroke: var(--tl-navy);
   stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -529,11 +592,11 @@
 }
 
 .teclab-brutal-button:active .teclab-brutal-marca {
-  background: var(--teclab-page-ink);
+  background: var(--tl-navy);
 }
 
 .teclab-brutal-button:active .teclab-brutal-marca svg {
-  stroke: var(--teclab-cyan);
+  stroke: var(--tl-cian);
 }
 
 .teclab-brutal-texto {
@@ -663,7 +726,7 @@
   /* En una columna la sombra dura se sale de la pantalla y abre scroll
      horizontal: se achica y se apoya sobre el mismo eje del panel. */
   .teclab-ruta {
-    box-shadow: 5px 5px 0 rgba(142, 44, 242, 0.25);
+    box-shadow: 5px 5px 0 var(--tl-azul);
   }
 
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
+import { Poppins } from 'next/font/google';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { Carrera } from '@/components/index/types';
@@ -29,6 +30,15 @@ import './inscripcion.css';
 // regeneracion es un ISR Write. Publicar un cambio lo revalida el trigger de
 // `carreras` (ver app/api/revalidar).
 export const revalidate = 86400;
+
+// Poppins es la fuente de marca de Teclab. Se carga sólo en sus páginas (no en
+// el layout) y llega a la hoja de estilos como --font-poppins.
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 
 async function getCarreras(): Promise<Carrera[]> {
   const { data } = await supabase
@@ -101,15 +111,13 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
   const curso = esCursoTeclab(carrera);
   const preguntas = preguntasInscripcion(carrera);
 
-  // Los mismos colores que la ficha: el curso con su ambar, las tecnicaturas con
-  // el acento del sitio.
-  const accent = curso ? '#f4aa22' : '#00c7b1';
-  const estilo = {
-    '--career-accent': accent,
-    '--career-accent-bright': curso ? '#ffc95e' : '#70f0dc',
-    '--career-ink': '#071d1b',
-    '--career-soft': '#b7d1cd',
-  } as CSSProperties;
+  // Las tecnicaturas toman la paleta de Teclab que declara .inscripcion-teclab
+  // (inscripcion.css). El curso conserva el ambar con el que se distingue en el
+  // catalogo y en su ficha.
+  const estilo = curso
+    ? ({ '--career-accent': '#f4aa22', '--career-accent-bright': '#ffc95e' } as CSSProperties)
+    : undefined;
+  const accent = 'var(--career-accent)';
 
   // Toda la pagina es de Teclab, asi que el formulario va con la casa fija y solo
   // ofrece sus carreras, como en /teclab.
@@ -148,7 +156,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(faqSchema) }} />
       )}
       <main className="flex-1">
-        <article className="career-page inscripcion-page" style={estilo}>
+        <article className={`career-page inscripcion-page inscripcion-teclab ${poppins.variable}`} style={estilo}>
           {/* Arriba de todo, el formulario: la pagina existe para preinscribirse.
               Antes del formulario va solo lo minimo: migas en una linea (llevan
               a la ficha, que es el enlace interno que importa), el H1, que es lo

@@ -103,6 +103,7 @@ function cargarPagina() {
       notFound: () => { throw new Error('404'); },
       permanentRedirect: destino => { throw new Redireccion(destino); },
     },
+    'next/font/google': { Poppins: () => ({ variable: '' }) },
     'react/jsx-runtime': jsx,
   }, () => ({}));
 }
