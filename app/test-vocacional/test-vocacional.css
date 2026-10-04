@@ -198,10 +198,13 @@
 .vocacional-career:nth-child(2) { animation-delay: .07s; }
 .vocacional-career:nth-child(3) { animation-delay: .14s; }
 .vocacional-career.is-primary { border-color: var(--tv-cream); box-shadow: 5px 5px 0 var(--tv-cyan); }
-.vocacional-career > .texto-desplazable { flex: 1; }
-/* Un renglón por carrera, así todas quedan a la misma altura; las largas se
-   deslizan (components/test-vocacional/texto-desplazable.tsx). */
-.texto-desplazable { display: block; min-width: 0; overflow: hidden; white-space: nowrap; }
+.vocacional-career > span:first-child {
+  display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+}
+/* El nombre de la carrera elegida va en un renglón, a la izquierda; si no
+   entra, el texto corre adentro de su caja como una cinta
+   (components/test-vocacional/texto-desplazable.tsx). */
+.texto-desplazable { display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-align: left; }
 .texto-desplazable > span { display: inline-block; will-change: transform; }
 @media (prefers-reduced-motion: reduce) {
   .texto-desplazable { text-overflow: ellipsis; }
@@ -210,11 +213,11 @@
 @keyframes vocacional-career-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .vocacional-career-actions, .vocacional-actions { grid-row: 4; margin-top: 1rem; padding: .9rem; border-radius: 12px; }
 .vocacional-career-actions {
-  grid-column: 2; display: grid; gap: .7rem; border: 2px solid #39717a;
+  grid-column: 2; display: grid; grid-template-columns: minmax(0, 1fr); gap: .7rem; border: 2px solid #39717a;
   background: #102f38; animation: vocacional-career-in .28s ease both;
 }
 .vocacional-career-actions > strong {
-  min-width: 0; color: var(--tv-cream); font-size: .82rem; line-height: 1.25;
+  min-width: 0; text-align: left; color: var(--tv-cream); font-size: .82rem; line-height: 1.25;
 }
 .vocacional-career-actions > div, .vocacional-actions {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem;
