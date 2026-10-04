@@ -73,10 +73,11 @@ test('el precio se muestra hasta el último día de la promoción, inclusive', (
   assert.equal(resultadoPrecio(fila, '2026-09-15').estado, 'vigente');
 });
 
-test('vencido o sin fila, no hay precio en la respuesta', () => {
+test('vencido conserva el precio de referencia y sin fila no hay precio', () => {
   const vencido = resultadoPrecio(fila, '2026-10-02');
-  assert.deepEqual(vencido, { estado: 'vencido', vigenteHasta: '2026-10-01' });
-  assert.equal('precio' in vencido, false);
+  assert.equal(vencido.estado, 'vencido');
+  assert.equal(vencido.vigenteHasta, '2026-10-01');
+  assert.deepEqual(vencido.precio, resultadoPrecio(fila, '2026-10-01').precio);
   assert.deepEqual(resultadoPrecio(null, '2026-10-02'), { estado: 'sin-precio' });
 });
 
@@ -283,12 +284,12 @@ test('si falla la suscripción, el lead y el precio salen igual', async t => {
   assert.equal(cuerpo.estado, 'vigente');
 });
 
-test('vencido o sin precio, el lead queda registrado y la respuesta no trae montos', async t => {
+test('vencido trae montos de referencia y sin precio conserva el lead sin montos', async t => {
   const { estado, enviar } = montarEndpoint(t);
   estado.precios.set(7, { ...fila, vigente_hasta: '2000-01-01' });
   let { status, cuerpo } = await enviar(pedido);
   assert.equal(status, 201);
-  assert.deepEqual(cuerpo, { ok: true, estado: 'vencido', vigenteHasta: '2000-01-01' });
+  assert.deepEqual(cuerpo, { ok: true, estado: 'vencido', vigenteHasta: '2000-01-01', precio: { conceptos: fila.conceptos, total: fila.total, nota: fila.nota, vigenteHasta: '2000-01-01' } });
 
   estado.precios.clear();
   ({ status, cuerpo } = await enviar(pedido));
@@ -338,12 +339,12 @@ test('la preinscripción de Teclab devuelve el precio vigente, con un solo lead'
   assert.ok(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS && l.valor === 7));
 });
 
-test('la preinscripción de Teclab con el precio vencido devuelve sólo la vigencia', async t => {
+test('la preinscripción de Teclab conserva el estado vencido con precio de referencia', async t => {
   const { estado, enviar } = montarEndpoint(t);
   estado.precios.set(7, { ...fila, vigente_hasta: '2000-01-01' });
   const { status, cuerpo } = await enviar(preinscripcion, 'consulta');
   assert.equal(status, 201);
-  assert.deepEqual(cuerpo, { ok: true, estado: 'vencido', vigenteHasta: '2000-01-01' });
+  assert.deepEqual(cuerpo, { ok: true, estado: 'vencido', vigenteHasta: '2000-01-01', precio: { conceptos: fila.conceptos, total: fila.total, nota: fila.nota, vigenteHasta: '2000-01-01' } });
 });
 
 test('si no se puede verificar la carrera, la preinscripción ya guardada responde el ok', async t => {
@@ -477,4 +478,18 @@ test('si SMTP2GO falla o no responde, el lead y el precio salen igual y nada fil
   const salida = JSON.stringify(registros, (_k, v) => (v instanceof Error ? v.message : v));
   assert.equal(salida.includes(CLAVE), false);
   assert.equal(salida.includes('ana@example.test'), false);
+});
+
+test('el precio vencido usa el mismo saneamiento y el corte de Argentina', () => {
+  const sucia = { ...fila, conceptos: [null, { concepto: 'Matrícula', monto: '$ 1', descuento: '75', extra: 'privado' }] };
+  const referencia = resultadoPrecio(sucia, '2026-10-02');
+  assert.deepEqual(referencia.precio.conceptos, [{ concepto: 'Matrícula', monto: '$ 1', descuento: null }]);
+  assert.equal(resultadoPrecio(fila, fechaArgentina(new Date('2026-10-02T02:59:59Z'))).estado, 'vigente');
+  assert.equal(resultadoPrecio(fila, fechaArgentina(new Date('2026-10-02T03:00:00Z'))).estado, 'vencido');
+});
+
+test('el aviso de actualización puntual se retira a las 8 h de Argentina', () => {
+  assert.equal(casas.avisoActualizacionPrecio(new Date('2026-10-05T10:59:59Z')), 'Actualización prevista: 5 de octubre, alrededor de las 8 h.');
+  assert.equal(casas.avisoActualizacionPrecio(new Date('2026-10-05T11:00:00Z')), null);
+  assert.equal(casas.avisoActualizacionPrecio(new Date('2026-10-06T10:00:00Z')), null);
 });

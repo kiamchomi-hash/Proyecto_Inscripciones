@@ -4,7 +4,7 @@
 // despues del cierre: el boton «Ver precio» del cierre lleva hasta aca. Muestra
 // de entrada los dos caminos: dejar el mail y ver el precio ahi mismo, o hablar
 // por WhatsApp. El precio no viaja en el HTML: lo devuelve `POST /api/formularios`
-// (kind `precio`) recien despues de registrar el lead, y solo si esta vigente.
+// (kind `precio`) recien despues de registrar el lead; vencido se muestra sólo como referencia.
 //
 // Antes era una ventana encima del modal (portal, velo y foco atrapado). Como
 // slide no necesita nada de eso: el modal ya cierra con Escape y no pasa de
@@ -12,12 +12,12 @@
 
 import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
-import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, type LineaPrecio } from '@/components/formularios/casas';
+import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type LineaPrecio } from '@/components/formularios/casas';
 import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
 import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
 import { urlAutoinscripcion } from '@/components/formularios/elegir-carrera';
 
-type Vista = 'formulario' | 'precio' | 'actualizando';
+type Vista = 'formulario' | 'precio' | 'vencido' | 'actualizando';
 
 export interface PrecioVigente {
   conceptos: LineaPrecio[];
@@ -28,7 +28,7 @@ export interface PrecioVigente {
 
 type Respuesta =
   | { ok: true; estado: 'vigente'; precio: PrecioVigente }
-  | { ok: true; estado: 'vencido'; vigenteHasta: string }
+  | { ok: true; estado: 'vencido'; vigenteHasta: string; precio: PrecioVigente }
   | { ok: true; estado: 'sin-precio' };
 
 const FOCOABLES = 'button:not([disabled]), a[href], input:not([disabled])';
@@ -121,7 +121,7 @@ function Financiacion() {
  * Toma los colores de `--vp-acento`, `--vp-acento-claro` y
  * `--vp-texto-acento`, que define el contenedor.
  */
-export function DetallePrecio({ precio, duracion }: { precio: PrecioVigente; duracion?: string | null }) {
+export function DetallePrecio({ precio, duracion, vencido = false }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean }) {
   // Qué cubre el pago, armado de los conceptos con los meses; si no hay
   // bimestres (curso de pago único), queda la nota de la base.
   const aclaracion = coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
@@ -143,12 +143,12 @@ export function DetallePrecio({ precio, duracion }: { precio: PrecioVigente; dur
         </ul>
       )}
       <div className="vp-total">
-        <span className="vp-total-rotulo">Total</span>
+        <span className="vp-total-rotulo">{vencido ? 'Total de referencia' : 'Total'}</span>
         <span className="vp-total-monto">{precio.total}</span>
       </div>
       {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
-      <p className="vp-vigencia">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
-      <Financiacion />
+      <p className="vp-vigencia">{vencido ? 'Promoción finalizada el' : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
+      {!vencido && <Financiacion />}
     </>
   );
 }
@@ -285,9 +285,9 @@ export function PanelVerPrecio({
       if (!respuesta.ok) throw new Error('submit_failed');
       guardarMail(payload.email);
       const datos = (await respuesta.json()) as Respuesta;
-      if (datos.estado === 'vigente' && datos.precio) {
+      if ((datos.estado === 'vigente' || datos.estado === 'vencido') && datos.precio) {
         setPrecio(datos.precio);
-        setVista('precio');
+        setVista(datos.estado === 'vencido' ? 'vencido' : 'precio');
       } else {
         setVista('actualizando');
       }
@@ -398,6 +398,20 @@ export function PanelVerPrecio({
               <EnlaceWhatsApp href={waHref} texto="Quiero inscribirme" />
             </>
           ) : <EnlaceWhatsApp href={waHref} texto="Quiero inscribirme" principal />}
+        </div>
+      )}
+
+      {vista === 'vencido' && precio && (
+        <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
+          <p className="vp-aviso">
+            <strong>Promoción vencida</strong><br />
+            Estos valores son sólo de referencia. Consultá el precio vigente antes de inscribirte.
+          </p>
+          <DetallePrecio precio={precio} duracion={duracion} vencido />
+          {avisoActualizacionPrecio(new Date()) ? (
+            <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
+          ) : null}
+          <EnlaceWhatsApp href={waHref} texto="Consultar precio vigente" principal />
         </div>
       )}
 

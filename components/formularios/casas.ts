@@ -358,9 +358,16 @@ export interface FilaPrecio {
   vigente_hasta: string;
 }
 
+/** Aviso puntual confirmado para esta actualización, no una frecuencia diaria. */
+export function avisoActualizacionPrecio(ahora: Date): string | null {
+  return ahora.getTime() < Date.parse('2026-10-05T11:00:00Z')
+    ? 'Actualización prevista: 5 de octubre, alrededor de las 8 h.'
+    : null;
+}
+
 export type ResultadoPrecio =
   | { estado: 'vigente'; precio: { conceptos: LineaPrecio[]; total: string; nota: string | null; vigenteHasta: string } }
-  | { estado: 'vencido'; vigenteHasta: string }
+  | { estado: 'vencido'; vigenteHasta: string; precio: Extract<ResultadoPrecio, { estado: 'vigente' }>['precio'] }
   | { estado: 'sin-precio' };
 
 /** Las líneas de precio que se pueden mostrar; lo mal formado se descarta. */
@@ -375,21 +382,20 @@ function lineasDe(conceptos: unknown): LineaPrecio[] {
 }
 
 /**
- * Qué se le devuelve al lead. El precio viaja sólo si está vigente: el último
- * día de la promoción todavía vale. Vencido, la ventana ofrece WhatsApp.
+ * Qué se le devuelve al lead. El último día de la promoción todavía vale.
+ * Vencido, el precio viaja como referencia, sin convertirlo en oferta vigente.
  */
 export function resultadoPrecio(fila: FilaPrecio | null, hoy: string): ResultadoPrecio {
   if (!fila) return { estado: 'sin-precio' };
-  if (fila.vigente_hasta < hoy) return { estado: 'vencido', vigenteHasta: fila.vigente_hasta };
-  return {
-    estado: 'vigente',
-    precio: {
-      conceptos: lineasDe(fila.conceptos),
-      total: fila.total,
-      nota: fila.nota,
-      vigenteHasta: fila.vigente_hasta,
-    },
+  const precio = {
+    conceptos: lineasDe(fila.conceptos),
+    total: fila.total,
+    nota: fila.nota,
+    vigenteHasta: fila.vigente_hasta,
   };
+  return fila.vigente_hasta < hoy
+    ? { estado: 'vencido', vigenteHasta: fila.vigente_hasta, precio }
+    : { estado: 'vigente', precio };
 }
 
 // ── Newsletter ──

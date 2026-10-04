@@ -116,7 +116,7 @@ test('las props del cliente llevan sólo el resumen oculto, nunca el legajo', ()
   }
 });
 
-test('con el legajo incompleto o el precio vencido, las props lo dicen sin montos', () => {
+test('las props conservan el legajo incompleto y el precio vencido como referencia', () => {
   const props = propsInscripcionEnlace({
     codigo: CODIGO,
     consulta: { ...consulta, dni: null },
@@ -125,7 +125,10 @@ test('con el legajo incompleto o el precio vencido, las props lo dicen sin monto
     ahora: AHORA,
   });
   assert.equal(props.completo, false);
-  assert.deepEqual(props.precio, { estado: 'vencido', vigenteHasta: '2026-10-02' });
+  assert.deepEqual(props.precio, {
+    estado: 'vencido', vigenteHasta: '2026-10-02',
+    precio: { conceptos: [], total: '$ 1', nota: null, vigenteHasta: '2026-10-02' },
+  });
 });
 
 test('el payload por enlace pide sólo un código válido; el medio de pago ya no se pide', () => {
