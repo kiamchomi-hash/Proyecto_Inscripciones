@@ -68,7 +68,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
   const containerRef = useRef<HTMLDivElement>(null);
   // Mientras Cloudflare no pintó el iframe, su lugar reservado es un hueco
   // vacío que aleja al botón de los datos. El marcador lo ocupa hasta que el
-  // widget llega y lo tapa.
+  // iframe termina de cargar; recién entonces se revela el widget.
   const [montado, setMontado] = useState(false);
   const [compacto, setCompacto] = useState(false);
   const onVerifyRef = useRef(onVerify);
@@ -96,9 +96,13 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
     let cancelled = false;
     let observer: MutationObserver | undefined;
     let tope: ReturnType<typeof setTimeout> | undefined;
+    let iframeEsperado: HTMLIFrameElement | null = null;
 
     const listo = () => {
       if (cancelled) return;
+      observer?.disconnect();
+      if (tope) clearTimeout(tope);
+      iframeEsperado?.removeEventListener('load', listo);
       setMontado(true);
     };
 
@@ -109,17 +113,19 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
     const engancharIframe = () => {
       const iframe = container.querySelector('iframe');
       if (!iframe) return false;
+      iframeEsperado = iframe;
       iframe.addEventListener('load', listo, { once: true });
       return true;
     };
 
     const esperarAlIframe = () => {
+      // También cubre el iframe que render() insertó sincrónicamente.
+      tope = setTimeout(listo, ESPERA_MAXIMA_MS);
       if (engancharIframe()) return;
       observer = new MutationObserver(() => {
         if (engancharIframe()) observer?.disconnect();
       });
       observer.observe(container, { childList: true, subtree: true });
-      tope = setTimeout(listo, ESPERA_MAXIMA_MS);
     };
 
     const renderWidget = () => {
@@ -158,6 +164,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
       cancelled = true;
       observer?.disconnect();
       if (tope) clearTimeout(tope);
+      iframeEsperado?.removeEventListener('load', listo);
       script?.removeEventListener('load', renderWidget);
       if (widgetId && turnstileWindow.turnstile) {
         turnstileWindow.turnstile.remove(widgetId);
@@ -179,7 +186,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
       {!montado && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 flex items-center justify-center gap-3 border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-3 border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] px-4"
         >
           <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -190,7 +197,8 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
           <Marca marca={marca} />
         </div>
       )}
-      <div ref={containerRef} />
+      {/* Ocultar el iframe evita que se vea a través de fondos transparentes. */}
+      <div ref={containerRef} style={{ visibility: montado ? 'visible' : 'hidden', opacity: montado ? 1 : 0 }} />
     </div>
   );
 }
