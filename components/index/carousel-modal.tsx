@@ -1214,6 +1214,10 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
           )}
         </div>
 
+        {/* Beneficios y botones comparten columna: en celular el título va
+            centrado y, sueltos, los beneficios quedaban pegados a la izquierda
+            mientras los botones se centraban. El ancho tope es el de dos botones. */}
+        <div className="mb-0 md:mb-auto flex flex-col gap-4 md:gap-5 w-full max-w-[28.5rem] md:max-w-none mx-auto md:mx-0">
         {/* Beneficios */}
         <div className="flex flex-col gap-3 md:gap-4">
           {slide.beneficios.map((b, i) => (
@@ -1231,7 +1235,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
         </div>
 
         {/* Botones WhatsApp + Ubicación */}
-        <div className="mb-0 md:mb-auto flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
+        <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
               href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
@@ -1258,6 +1262,7 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
             </svg>
             Guaminí 4876
           </a>
+        </div>
         </div>
       </div>
     </div>
