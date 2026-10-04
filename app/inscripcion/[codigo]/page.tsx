@@ -19,9 +19,26 @@ import './inscripcion-enlace.css';
 // navegador llega sólo el resumen oculto que arma `propsInscripcionEnlace`.
 export const dynamic = 'force-dynamic';
 
+// La vista previa al compartir el enlace por WhatsApp. Es la misma para todos
+// los códigos y no nombra a la persona ni la carrera: la página no confirma
+// qué códigos existen. Sin esto heredaba la del sitio, que es de Siglo 21.
+const TITULO = 'Tu inscripción en Teclab';
+const DESCRIPCION = 'Revisá tus datos y el precio de tu carrera, y confirmá tu inscripción. Al inscribirte todavía no pagás nada.';
+const IMAGEN_OG = '/imagenes/og/default-teclab-inscripcion.jpg';
+
 export const metadata: Metadata = {
-  title: { absolute: 'Tu inscripción en Teclab' },
+  title: { absolute: TITULO },
+  description: DESCRIPCION,
   robots: { index: false, follow: false },
+  openGraph: {
+    type: 'website',
+    locale: 'es_AR',
+    siteName: 'CAU Online',
+    title: TITULO,
+    description: DESCRIPCION,
+    images: [{ url: IMAGEN_OG, width: 1200, height: 630, alt: 'Tu inscripción en Teclab' }],
+  },
+  twitter: { card: 'summary_large_image', title: TITULO, description: DESCRIPCION, images: [IMAGEN_OG] },
 };
 
 const WA_TECLAB = (mensaje: string) =>

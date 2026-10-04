@@ -13,6 +13,7 @@ Tecnología, con grano en overlay al 32%. Encima, una de estas luces.
 |---|---|---|
 | Esquinas: azul abajo a la derecha y contraluz arriba a la izquierda (UIverse `mias/pliegue-luz-azul-xai`) | Placa Teclab en Villa Lugano, 23/09/2026 | `aprobados/2026-09-23-placa-teclab-villa-lugano/placa.html` |
 | Banda diagonal ancha y difusa, azul con un filo cian | Placa Planificación y Organización de Eventos, 02/10/2026 | abajo |
+| Luz a la derecha, detrás de la persona, con núcleo cian abajo; la izquierda queda limpia para el texto | Vista previa del enlace de inscripción (OG 1200×630), 03/10/2026 | `aprobados/2026-10-03-og-inscripcion-teclab/pieza.html` |
 
 ```css
 .luz-diagonal {

@@ -56,9 +56,9 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
 - [ ] **31. Arreglar la alineación de las carreras en la sección del test vocacional**.
-- [ ] **35. Teclab: cambiar la vista previa (OG) del enlace personalizado** (`/inscripcion/<codigo>`) que se ve al compartirlo por WhatsApp.
-- [ ] **36. Activar el mail con el resumen del precio**: crear una API key en SMTP2GO, cargarla en Vercel como `SMTP2GO_API_KEY` (Sensitive) y redeployar; hasta entonces el sitio no manda mails. Sumar a `.env.example` la línea `SMTP2GO_API_KEY=` con su comentario (los permisos del proyecto no dejan que Claude lo lea). [Detalle](odd/tasks/mail-precio-teclab.md).
-- [ ] **37. Newsletter: mandar a cada suscripto un mail cada X días desde que se suscribe**, con la plantilla de `docs/mails/mail-inicio-teclab.html`. Falta definir X y cómo se da de baja. [Detalle](odd/tasks/mail-precio-teclab.md).
+- [x] **35. Teclab: cambiar la vista previa (OG) del enlace personalizado** (`/inscripcion/<codigo>`) que se ve al compartirlo por WhatsApp. Resuelto el 03/10/2026: título, descripción e imagen propios de Teclab (`public/imagenes/og/default-teclab-inscripcion.jpg`), iguales para todos los códigos.
+- [x] **36. Activar el mail con el resumen del precio**. Resuelto el 03/10/2026: clave cargada en Vercel, redeploy hecho y mail recibido en la prueba; sale como «CAU Online». [Detalle](odd/tasks/mail-precio-teclab.md).
+- [x] **37. Newsletter: mandar a cada suscripto un mail cada X días desde que se suscribe**. Resuelto el 03/10/2026 para Teclab: cron diario a las 10:00, un mail cada 7 días por suscripción, baja de un clic. Siglo 21, Identidad y las suscripciones generales quedan para más adelante. [Detalle](odd/tasks/newsletter-teclab.md).
 
 ## Documentación de apoyo
 
