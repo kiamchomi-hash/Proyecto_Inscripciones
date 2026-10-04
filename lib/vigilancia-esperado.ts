@@ -18,6 +18,7 @@ export const BASE_PROD = 'https://www.siglo21sur.com';
 export const RUTAS = [
   '/',
   '/teclab',
+  '/teclab/inscripcion',
   '/clases-apoyo',
   '/calendario-academico',
   '/contacto',

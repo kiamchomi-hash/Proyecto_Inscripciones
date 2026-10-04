@@ -170,6 +170,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       images: [`${baseUrl}/imagenes/teclab/carreras/marketing-digital.webp`],
     },
     {
+      url: `${baseUrl}/teclab/inscripcion`,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/clases-apoyo`,
       changeFrequency: 'monthly',
       priority: 0.8,

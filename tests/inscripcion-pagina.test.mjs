@@ -111,8 +111,10 @@ const params = slug => ({ params: Promise.resolve({ slug }) });
 
 test('el sitemap publica la inscripcion solo de las carreras de Teclab con inscripcion abierta', async () => {
   const entradas = await cargarSitemap().default();
-  const inscripciones = entradas.map(e => e.url).filter(url => url.endsWith('/inscripcion'));
+  const inscripciones = entradas.map(e => e.url).filter(url => url.startsWith(`${BASE}/carreras/`) && url.endsWith('/inscripcion'));
   assert.deepEqual(inscripciones.sort(), slugTeclab.map(s => `${BASE}/carreras/${s}/inscripcion`).sort());
+  // La inscripción genérica de Teclab, con el selector de todas sus carreras.
+  assert.ok(entradas.some(e => e.url === `${BASE}/teclab/inscripcion`));
   // La ficha sigue publicada aparte: la inscripcion no la reemplaza.
   assert.ok(entradas.some(e => e.url === `${BASE}/carreras/${slugTeclab[0]}`));
 });
