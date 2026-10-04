@@ -13,11 +13,11 @@ Mostrar la última promoción vencida como referencia, sin presentarla como una 
 Sólo cambios locales. Sin escrituras remotas, deploy, commits ni push por el ejecutor.
 
 ## Plan
-- [x] T1: Conservar los montos saneados en la respuesta vencida y mostrarlos con aviso, sin financiación ni inscripción activa. Mantener los estados vigente y sin precio. Implementación y comprobaciones completas; commit y revisión pendientes.
+- [x] T1: Conservar los montos saneados en la respuesta vencida y mostrarlos con aviso, sin financiación ni inscripción activa. Mantener los estados vigente y sin precio. Implementación y comprobaciones completas; commit bc5710495aa984c5af84d7c0448c4c9d80688aac.
 
 Ruta: delegada directa; requiere lectura preparatoria y cambios en varios archivos.
 Pronóstico: aproximadamente 150 líneas editadas. Entrega: ask-on-risk.
-Commit y revisión nativa: pendientes del coordinador.
+Commit: bc5710495aa984c5af84d7c0448c4c9d80688aac. Evaluación nativa: medium, under_budget; no corresponde iniciar revisión de este tramo (145 líneas con documento).
 
 ## Aceptación
 - Estado vencido conserva vigencia original y montos saneados.
@@ -39,7 +39,7 @@ Commit y revisión nativa: pendientes del coordinador.
 - `git diff --check`: aprobado. Cambios de código y pruebas: 100 líneas agregadas más eliminadas (69 agregadas, 31 eliminadas); documento no incluido en ese conteo.
 - UI local simulada con el componente real y sus estilos (`modales.css` y `globals.css` compilado), sin tráfico de producción ni POST. Estados vencido (1280/375), vigente (375) y sin precio (375) comprobados. Capturas `teclab-vencido-1280.png` y `teclab-vencido-375.png` en artefactos temporales del ejecutor, para entrega por el coordinador.
 - Lectura de código: el vencido conserva el saneamiento, fecha inclusiva argentina, registro de lead y estado diferenciado; no muestra financiación ni inscripción. La preinscripción mantiene su lógica basada en el estado, con DTO actualizado en su prueba.
-- Sin commit ni push del ejecutor. Evaluación y revisión nativa pendientes del coordinador.
+- Sin commit ni push del ejecutor. Evaluación del commit: medium, review_due=false, under_budget. Prueba focal repetida por coordinador: 41/41.
 
 ## Próximo paso
-Coordinador entrega capturas, resuelve commit y revisión nativa; publicación pendiente de autorización.
+Capturas entregadas en chat. Publicación pendiente de autorización; no se realizó push.
