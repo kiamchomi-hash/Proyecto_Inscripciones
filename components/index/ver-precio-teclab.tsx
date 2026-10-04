@@ -359,19 +359,19 @@ export function PanelVerPrecio({
             <span>Quiero recibir novedades de la carrera por mail</span>
           </label>
 
-          {/* Invisible: Cloudflare verifica por detras y solo pide algo si
-              sospecha de un bot, asi el slide queda en mail y botones. */}
+          {/* Visible a propósito: con el invisible, un desafío fallido dejaba
+              sólo un error que la gente no entendía. Así ve la verificación y
+              su estado antes de tocar el botón. */}
           {visitado && (
             <TurnstileWidget
               key={captchaKey}
               marca="teclab"
-              invisible
               onVerify={nuevo => setToken(nuevo)}
               onExpire={() => setToken('')}
             />
           )}
           {intentado && !token && !enviando && (
-            <p className="vp-error-campo">Estamos verificando la conexión. Probá de nuevo en un segundo.</p>
+            <p className="vp-error-campo">Completá la verificación de seguridad de arriba y volvé a tocar «Ver precio».</p>
           )}
 
           <button type="submit" className="vp-primario" disabled={enviando} aria-describedby={error ? errorId : undefined}>
