@@ -210,7 +210,7 @@ test('el mail es el newsletter de la plantilla, con la baja de un clic en los en
   await correr();
   const mail = mails.find(m => m.cuerpo.to[0] === fila(ID.vieja).email);
   assert.equal(mail.headers['X-Smtp2go-Api-Key'], CLAVE);
-  assert.equal(mail.cuerpo.sender, 'CAU Villa Lugano <inscripciones@siglo21sur.com>');
+  assert.equal(mail.cuerpo.sender, 'CAU Online <inscripciones@siglo21sur.com>');
   assert.match(mail.cuerpo.subject, /^Programación en Teclab: /);
   assert.match(mail.cuerpo.html_body, /\$ 64\.227,75/);
   assert.match(mail.cuerpo.html_body, /pediste novedades de esta carrera/);

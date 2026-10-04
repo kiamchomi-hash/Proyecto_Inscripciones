@@ -396,7 +396,7 @@ test('con precio vigente, «Ver precio» manda un mail por SMTP2GO después de r
   assert.equal(mail.headers['X-Smtp2go-Api-Key'], CLAVE);
   assert.equal(mail.headers['Content-Type'], 'application/json');
   assert.deepEqual(mail.cuerpo.to, ['ana@example.test']);
-  assert.equal(mail.cuerpo.sender, 'CAU Villa Lugano <inscripciones@siglo21sur.com>');
+  assert.equal(mail.cuerpo.sender, 'CAU Online <inscripciones@siglo21sur.com>');
   assert.equal(mail.cuerpo.subject, 'Precio de Tecnicatura Superior en Programación en Teclab');
   assert.match(mail.cuerpo.html_body, /\$ 552\.359,03/);
   assert.match(mail.cuerpo.text_body, /Promo hasta el 31\/12/);

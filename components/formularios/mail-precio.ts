@@ -282,7 +282,7 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
 }
 
 const SMTP2GO_URL = 'https://api.smtp2go.com/v3/email/send';
-const REMITENTE_MAIL = 'CAU Villa Lugano <inscripciones@siglo21sur.com>';
+const REMITENTE_MAIL = 'CAU Online <inscripciones@siglo21sur.com>';
 const TIMEOUT_MAIL_MS = 8000;
 
 export interface EnvioSmtp2go {
