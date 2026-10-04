@@ -4,6 +4,14 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Tareas del 02/10/2026 cerradas — 03 y 04/10/2026
+
+- [x] **25. Ocultar preferentemente la ubicación en los slides de carreras**. Resuelto el 04/10/2026: se sacó el botón «Guaminí 4876» de los modales de Siglo 21 (`carousel-modal.tsx`) e Identidad (`ia-modal.tsx`); Teclab ya no lo tenía.
+- [x] **31. Arreglar la alineación de las carreras en la sección del test vocacional**. Resuelto el 04/10/2026 (`24ef0cd`): el nombre de la carrera elegida va a la izquierda en un renglón y, si no entra, corre como cinta dentro de su caja.
+- [x] **35. Teclab: cambiar la vista previa (OG) del enlace personalizado** (`/inscripcion/<codigo>`) que se ve al compartirlo por WhatsApp. Resuelto el 03/10/2026: título, descripción e imagen propios de Teclab (`public/imagenes/og/default-teclab-inscripcion.jpg`), iguales para todos los códigos.
+- [x] **36. Activar el mail con el resumen del precio**. Resuelto el 03/10/2026: clave cargada en Vercel, redeploy hecho y mail recibido en la prueba; sale como «CAU Online». [Detalle](odd/tasks/mail-precio-teclab.md).
+- [x] **37. Newsletter: mandar a cada suscripto un mail cada X días desde que se suscribe**. Resuelto el 03/10/2026 para Teclab: cron diario a las 10:00, un mail cada 7 días por suscripción, baja de un clic. Siglo 21, Identidad y las suscripciones generales quedan para más adelante. [Detalle](odd/tasks/newsletter-teclab.md).
+
 <a id="mensajes-siglo21-2026-10-03"></a>
 
 ## Mensajes Siglo 21 — 03/10/2026
