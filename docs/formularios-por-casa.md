@@ -80,7 +80,7 @@ Cron de Vercel (`vercel.json`, `0 13 * * *`: todos los días a las 10 de Argenti
 Quien elige gestionar su inscripción en Teclab manda la preinscripción completa. No hay medio de pago: desde el 03/10/2026 el formulario no lo pregunta, porque el portal del alumno pide la tarjeta y decide la financiación por su cuenta. Hay dos entradas al carrusel de `formulario-lead.tsx` (la pregunta y el «¡Listo!» en `autoinscripcion-teclab.tsx`), sólo con una carrera de Teclab elegida:
 
 - **Directa**: la ficha con `?inscripcion=auto#preinscripcion` (`urlAutoinscripcion()` en `elegir-carrera.ts`). La usan «Inscribite ya» del precio vigente en «Ver precio» y el botón «Quiero inscribirme» del mail. El parámetro se lee en el navegador, así la página sigue siendo estática. Datos («Paso 1 de 2», botón «Inscribirme», Turnstile invisible) → «¡Listo!» («Paso 2 de 2»), con **un solo envío**, el de la autoinscripción, que sale desde los datos.
-- **Normal**: la preinscripción se envía como siempre (`kind: 'consulta'`, con su aviso) y, en vez del cartel de enviada, sigue el paso «¿Querés gestionar tu inscripción?» con un botón «Inscribirme» y un Turnstile invisible. «Ahora no» deja el cartel de siempre; «Inscribirme» hace el **segundo envío**, con un token nuevo (los tokens son de un solo uso), y pasa al «¡Listo!».
+- **Normal**: la preinscripción se envía como siempre (`kind: 'consulta'`, con su aviso) y, en vez del cartel de enviada, sigue el paso «¿Querés gestionar tu inscripción?» con un botón «Inscribirme» y un Turnstile invisible. «Ahora no» deja el cartel de siempre; «Inscribirme» hace el **segundo envío** y pasa al «¡Listo!». Ese envío no pide otro captcha: va con el **pase** que devolvió la preinscripción (ver abajo). Sin pase, o si el servidor lo rechaza, el paso muestra un Turnstile **visible** con el aviso «Completá la verificación de seguridad y volvé a tocar Inscribirme.».
 
 ```json
 { "kind": "autoinscripcion", "token": "<turnstile>",
@@ -94,6 +94,16 @@ Quien elige gestionar su inscripción en Teclab manda la preinscripción complet
 - `newsletter` funciona como en el resto. En la entrada normal el segundo envío manda `false`: la suscripción ya salió con la preinscripción.
 - Por ahora no dispara nada externo: el robot que carga la preinscripción en el portal de Teclab (T4 de `odd/tasks/autoinscripcion-teclab.md`) va donde lo marca el comentario de `registrarAutoinscripcion`.
 - `tests/autoinscripcion.test.mjs` cubre la validación, la casa y el endpoint con Supabase simulado.
+
+### El pase: un solo captcha en la entrada normal
+
+Los tokens de Turnstile son de un solo uso, y la entrada normal envía dos veces. Hasta el 04/10/2026 la pregunta montaba un segundo Turnstile invisible y, cuando ese desafío fallaba, la persona quedaba frente a «Estamos verificando la conexión…» sin saber qué hacer. Ahora el servidor le devuelve una prueba de que ya verificó:
+
+- **Emisión** (`lib/pase-autoinscripcion.ts`): una preinscripción (`kind: 'consulta'`, `tipoFormulario: 'preinscripcion'`) con mail válido y un `carreraId` cuya carrera, **leída de la base**, tiene autoinscripción responde además `pase`. Es un HMAC-SHA256 sobre `{ s, iat, exp }`: `s` es el SHA-256 del mail en minúsculas más `:carreraId`, y vence a los 10 minutos. La clave se deriva de `TURNSTILE_SECRET_KEY` con separación de dominio (`HMAC(secreto, 'pase-autoinscripcion-v1')`): no hay variable nueva, rotar el secreto invalida los pases y sin él no se emite ninguno. Un fallo al emitir nunca tumba la preinscripción, que ya está guardada.
+- **Uso**: `{ "kind": "autoinscripcion", "pase": "<pase>", "payload": { … } }`, sin `token`. Sólo este `kind` acepta `pase`. Con pase no se llama a Turnstile; se verifican firma (en tiempo constante), vencimiento y que sea del mismo mail y la misma carrera del payload. **La cuota corre igual.** Un pase vencido, adulterado, de otra persona o de otra carrera devuelve 403 `CAPTCHA inválido`, igual que un captcha rechazado, y no cae al token.
+- **Reuso**: si desde el `iat` del pase ya entró en `consultas` una autoinscripción del mismo mail (sin distinguir mayúsculas) y la misma carrera, 403. No es atómico: dos envíos simultáneos con el mismo pase pueden entrar los dos, dentro de la cuota.
+- **Cliente** (`formulario-lead.tsx`): guarda el pase de la respuesta, no monta captcha en la pregunta mientras lo tiene y lo descarta si el envío falla. `PasoInscribirme` suma `captchaVisible`; el enlace y la entrada directa siguen con su Turnstile invisible.
+- `tests/pase-autoinscripcion.test.mjs` cubre el módulo; `tests/autoinscripcion.test.mjs`, la emisión y el uso en el endpoint (sin Turnstile, con cuota, rechazos, reuso y sin secreto).
 
 ### La financiación y el precio que quedaron
 

@@ -22,6 +22,7 @@ test('el endpoint valida el sobre, captcha, cuota y resultado de escritura', asy
     'next/server': { NextResponse: Response },
     '@/components/formularios/casas': casas,
     '@/lib/turnstile': { verifyTurnstile: async () => { verificaciones++; return captcha; } },
+    '@/lib/pase-autoinscripcion': cargarTypescript('lib/pase-autoinscripcion.ts', { 'server-only': {} }),
     '@/lib/supabase-admin': { createSupabaseAdmin: () => ({
       rpc: async () => ({ data: cuota, error: null }),
       from: tabla => ({ insert: async fila => { filas.push({ tabla, fila }); return { error: errorBase }; } }),

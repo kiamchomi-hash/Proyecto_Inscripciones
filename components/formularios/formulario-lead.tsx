@@ -12,7 +12,7 @@ import {
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
 } from './casas';
 import { EVENTO_ELEGIR_CARRERA, pideAutoinscripcion, type DetalleElegirCarrera } from './elegir-carrera';
-import { AVISO_TOKEN, AvisoSinPago, PasoInscribirme, PasoListo, PasoPrecio } from './autoinscripcion-teclab';
+import { AVISO_TOKEN, AVISO_VERIFICAR, AvisoSinPago, PasoInscribirme, PasoListo, PasoPrecio } from './autoinscripcion-teclab';
 import { DetallePrecio, type PrecioVigente } from '@/components/index/ver-precio-teclab';
 
 interface Props {
@@ -628,6 +628,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const [captchaKey, setCaptchaKey] = useState(0);
   // El token vence a los 300 s; sin avisar, el botón se apaga sin motivo visible.
   const [captchaVencido, setCaptchaVencido] = useState(false);
+  // El pase que devuelve la preinscripción de Teclab: con él, «Inscribirme» no
+  // pide un segundo captcha. Si el servidor lo rechaza, se descarta y aparece
+  // el captcha visible.
+  const [pase, setPase] = useState('');
   // Se enciende al primer intento de envío. Antes de eso nada se pinta en rojo:
   // un formulario que te reta por lo que todavía no llenaste es hostil.
   const [intentado, setIntentado] = useState(false);
@@ -1066,7 +1070,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const enviarAutoinscripcion = async () => {
     if (enviando || !carrera || !casaDeLaCarrera) return;
     setGestionIntentada(true);
-    if (!token) return;
+    const conPase = Boolean(pase);
+    if (!conPase && !token) return;
     setEnviando(true);
     setError('');
     try {
@@ -1075,7 +1080,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           kind: 'autoinscripcion',
-          token,
+          ...(conPase ? { pase } : { token }),
           payload: {
             ...armarPayload(casaDeLaCarrera, 'preinscripcion', valores),
             carreraId: carrera.id,
@@ -1092,8 +1097,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       const motivo = fallo instanceof Error ? fallo.message : '';
       setError(motivo === 'Demasiadas solicitudes'
         ? 'Recibimos varios envíos desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'
-        : 'Hubo un error al enviar. Intentá de nuevo o escribinos por WhatsApp.');
+        : motivo === 'CAPTCHA inválido'
+          ? AVISO_VERIFICAR
+          : 'Hubo un error al enviar. Intentá de nuevo o escribinos por WhatsApp.');
       setEnviando(false);
+      // Un pase que no sirvió no se reintenta: el paso monta el captcha visible.
+      if (conPase) setPase('');
       nuevoCaptcha();
       return;
     }
@@ -1121,6 +1130,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     setGestionIntentada(false);
     setPreinscripcionEnviada(false);
     setPrecioTeclab(null);
+    setPase('');
     setListo(false);
     setIntentado(false);
     setEnFrio(false);
@@ -1175,6 +1185,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
 
     let estadoRespuesta: number | null = null;
     let precio: PrecioVigente | null = null;
+    let paseNuevo = '';
     try {
       const respuesta = await fetch('/api/formularios', {
         method: 'POST',
@@ -1195,8 +1206,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       // La preinscripción de Teclab trae el precio, como «Ver precio». Una
       // respuesta que no se puede leer no es un error: la consulta ya entró.
       const datos = await respuesta.json().catch(() => null) as
-        { estado?: string; precio?: PrecioVigente } | null;
+        { estado?: string; precio?: PrecioVigente; pase?: unknown } | null;
       if (datos?.estado === 'vigente' && datos.precio) precio = datos.precio;
+      if (typeof datos?.pase === 'string') paseNuevo = datos.pase;
     } catch (fallo) {
       const tipoFallo = tipoFalloTecnicoFormulario(estadoRespuesta);
       if (modo === 'contacto' && tipoFallo) avisarFalloFormularioContacto(origen, tipoFallo);
@@ -1211,11 +1223,13 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
 
     trackConsulta(origen, carreraElegida || null, etiquetaTipo);
     setEnviando(false);
-    // Teclab ofrece seguir con la autoinscripción. El token ya se gastó: la
-    // pregunta monta su captcha con uno nuevo.
+    // Teclab ofrece seguir con la autoinscripción. El token ya se gastó: el
+    // pase que devolvió el servidor lo reemplaza. Sin pase, la pregunta monta
+    // su captcha, visible, con uno nuevo.
     if (conAutoinscripcion) {
       setPreinscripcionEnviada(true);
       setPrecioTeclab(precio);
+      setPase(paseNuevo);
       setGestionIntentada(false);
       nuevoCaptcha();
       // Con precio vigente, primero el precio; si no, directo a «Inscribirme».
@@ -1679,7 +1693,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
               intentado={gestionIntentada}
               enviando={enviando}
               error={error}
-              captcha={paso === 'gestionar'}
+              captcha={paso === 'gestionar' && !pase}
+              captchaVisible
               captchaKey={captchaKey}
               token={token}
               onToken={setToken}

@@ -88,8 +88,35 @@ test('sólo las carreras de Teclab admiten autoinscripción', () => {
 
 // ── El endpoint, con Supabase simulado ──
 
+// El pase se carga real: es lo que se prueba. Sólo se reemplaza `server-only`.
+const pases = cargarTypescript('lib/pase-autoinscripcion.ts', { 'server-only': {} });
+
+// Lo que pide el control de reuso del pase: `.select().eq().ilike().eq().gte().limit()`
+// sobre `consultas`. Se resuelve contra las filas que el endpoint ya insertó.
+function consultaDeReuso(estado) {
+  const filtros = [];
+  const q = {
+    eq: (columna, valor) => { filtros.push(f => f[columna] === valor); return q; },
+    ilike: (columna, patron) => {
+      const literal = patron.replace(/\\([\\%_])/g, '$1').toLowerCase();
+      filtros.push(f => String(f[columna] ?? '').toLowerCase() === literal);
+      return q;
+    },
+    gte: (columna, valor) => { filtros.push(f => f[columna] >= valor); return q; },
+    limit: async () => ({
+      data: estado.escrituras
+        .filter(e => e.tabla === 'consultas' && e.op === 'insert')
+        .map(e => e.fila)
+        .filter(f => filtros.every(cumple => cumple(f)))
+        .map(() => ({ id: 41 })),
+      error: null,
+    }),
+  };
+  return q;
+}
+
 function montarEndpoint(t) {
-  const anteriores = Object.fromEntries(['NODE_ENV', 'TURNSTILE_SECRET_KEY'].map(k => [k, process.env[k]]));
+  const anteriores = Object.fromEntries(['NODE_ENV', 'TURNSTILE_SECRET_KEY', 'NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL'].map(k => [k, process.env[k]]));
   const logError = console.error;
   t.after(() => {
     console.error = logError;
@@ -109,14 +136,20 @@ function montarEndpoint(t) {
     ]),
     escrituras: [],
     claves: [],
+    captcha: true,
+    turnstile: 0,
   };
 
   const supabase = {
     rpc: async (_nombre, args) => { estado.claves.push(args.p_key); return { data: true, error: null }; },
     from: tabla => ({
-      insert: fila => { estado.escrituras.push({ tabla, op: 'insert', fila }); return conId({ error: null }); },
+      // `created_at` lo pone la base; acá, el reloj del test.
+      insert: fila => {
+        estado.escrituras.push({ tabla, op: 'insert', fila: { ...fila, created_at: new Date().toISOString() } });
+        return conId({ error: null });
+      },
       upsert: async fila => { estado.escrituras.push({ tabla, op: 'upsert', fila }); return { error: null }; },
-      select: () => ({
+      select: () => tabla === 'consultas' ? consultaDeReuso(estado) : ({
         eq: (_columna, valor) => ({
           maybeSingle: async () => ({ data: tabla === 'carreras' ? estado.carreras.get(valor) ?? null : null, error: null }),
         }),
@@ -127,20 +160,22 @@ function montarEndpoint(t) {
   const { POST } = cargarTypescript('app/api/formularios/route.ts', {
     'next/server': { NextResponse: Response },
     '@/components/formularios/casas': casas,
-    '@/lib/turnstile': { verifyTurnstile: async () => true },
+    '@/lib/turnstile': { verifyTurnstile: async () => { estado.turnstile++; return estado.captcha; } },
     '@/lib/supabase-admin': { createSupabaseAdmin: () => supabase },
+    '@/lib/pase-autoinscripcion': pases,
   });
 
-  const enviar = async payload => {
+  const pedir = async sobre => {
     const respuesta = await POST(new Request('http://localhost/api/formularios', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kind: 'autoinscripcion', token: 'simulado', payload }),
+      body: JSON.stringify(sobre),
     }));
     return { status: respuesta.status, cuerpo: await respuesta.json() };
   };
+  const enviar = payload => pedir({ kind: 'autoinscripcion', token: 'simulado', payload });
 
-  return { estado, enviar };
+  return { estado, enviar, pedir };
 }
 
 test('el endpoint rechaza payloads inválidos y carreras que no son de Teclab sin escribir nada', async t => {
@@ -192,4 +227,87 @@ test('con el checkbox, la autoinscripción suscribe al newsletter de la carrera'
   assert.equal(suscripcion.op, 'upsert');
   assert.equal(suscripcion.fila.email, 'ana@example.test');
   assert.equal(suscripcion.fila.carrera_id, 7);
+});
+
+// ── El pase: la preinscripción ya resolvió el captcha ──
+
+const preinscripcion = { ...datos, carreraId: 7, newsletter: false };
+const conPase = (pase, payload = pedido) => ({ kind: 'autoinscripcion', pase, payload });
+
+test('la preinscripción de una carrera con autoinscripción devuelve un pase', async t => {
+  const { pedir } = montarEndpoint(t);
+  const { status, cuerpo } = await pedir({ kind: 'consulta', token: 'simulado', payload: preinscripcion });
+  assert.equal(status, 201);
+  assert.equal(typeof cuerpo.pase, 'string');
+  assert.ok(pases.verificarPase(cuerpo.pase, 'ana@example.test', 7));
+
+  // La carrera manda, no la casa que diga el navegador.
+  const siglo = await pedir({ kind: 'consulta', token: 'simulado', payload: { ...preinscripcion, carreraId: 8 } });
+  assert.equal(siglo.status, 201);
+  assert.equal('pase' in siglo.cuerpo, false, 'Siglo 21 no tiene autoinscripción');
+  const sinMail = await pedir({ kind: 'consulta', token: 'simulado', payload: { ...preinscripcion, email: '' } });
+  assert.equal('pase' in sinMail.cuerpo, false, 'sin mail no hay a quién atar el pase');
+  const contacto = await pedir({ kind: 'consulta', token: 'simulado', payload: { ...preinscripcion, tipoFormulario: 'contacto' } });
+  assert.equal('pase' in contacto.cuerpo, false, 'el contacto no sigue a la autoinscripción');
+});
+
+test('con el pase, la autoinscripción entra sin volver a llamar a Turnstile, y el rate limit corre igual', async t => {
+  const { estado, pedir } = montarEndpoint(t);
+  const { cuerpo } = await pedir({ kind: 'consulta', token: 'simulado', payload: preinscripcion });
+  const turnstile = estado.turnstile;
+  const claves = estado.claves.length;
+
+  const { status } = await pedir(conPase(cuerpo.pase));
+  assert.equal(status, 201);
+  assert.equal(estado.turnstile, turnstile, 'el pase reemplaza al segundo captcha');
+  assert.equal(estado.claves.length, claves + 1, 'el rate limit se consulta igual');
+  assert.ok(estado.claves.at(-1).startsWith('autoinscripcion:'));
+  assert.equal(estado.escrituras.at(-1).fila.tipo_formulario, FORMULARIO_AUTOINSCRIPCION);
+});
+
+test('un pase vencido, adulterado, de otra persona o de otra carrera es un captcha inválido', async t => {
+  const { estado, pedir } = montarEndpoint(t);
+  estado.captcha = false;
+  const once = 11 * 60 * 1000;
+  const bueno = pases.emitirPase('ana@example.test', 7);
+  const [datosPase, firma] = bueno.split('.');
+  for (const [motivo, pase] of [
+    ['vencido', pases.emitirPase('ana@example.test', 7, Date.now() - once)],
+    ['adulterado', `${datosPase}.${firma.slice(0, -2)}${firma.endsWith('AA') ? 'BB' : 'AA'}`],
+    ['de otra persona', pases.emitirPase('otra@example.test', 7)],
+    ['de otra carrera', pases.emitirPase('ana@example.test', 9)],
+    ['basura', 'no-es-un-pase'],
+  ]) {
+    const { status, cuerpo } = await pedir(conPase(pase));
+    assert.equal(status, 403, motivo);
+    assert.equal(cuerpo.error, 'CAPTCHA inválido', motivo);
+  }
+  assert.equal(estado.turnstile, 0, 'un pase malo no cae a Turnstile');
+  assert.equal(estado.escrituras.length, 0);
+
+  // El pase es sólo de la autoinscripción: en otro formulario no reemplaza al token.
+  const { status } = await pedir({ kind: 'consulta', pase: bueno, payload: preinscripcion });
+  assert.equal(status, 400);
+});
+
+test('el pase no se puede reusar para una segunda autoinscripción', async t => {
+  const { estado, pedir } = montarEndpoint(t);
+  const { cuerpo } = await pedir({ kind: 'consulta', token: 'simulado', payload: preinscripcion });
+  assert.equal((await pedir(conPase(cuerpo.pase))).status, 201);
+  const escrituras = estado.escrituras.length;
+  const segunda = await pedir(conPase(cuerpo.pase, { ...pedido, email: 'ANA@example.test' }));
+  assert.equal(segunda.status, 403);
+  assert.equal(estado.escrituras.length, escrituras);
+});
+
+test('sin TURNSTILE_SECRET_KEY no se emite pase', async t => {
+  const { pedir } = montarEndpoint(t);
+  delete process.env.TURNSTILE_SECRET_KEY;
+  process.env.NODE_ENV = 'development';
+  process.env.NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL = '1';
+  const { status, cuerpo } = await pedir({ kind: 'consulta', token: 'rate-limit-only', payload: preinscripcion });
+  assert.equal(status, 201);
+  assert.equal('pase' in cuerpo, false);
+  const firmado = await pedir(conPase('cualquiera.cosa'));
+  assert.equal(firmado.status, 403);
 });

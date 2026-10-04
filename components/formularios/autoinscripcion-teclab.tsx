@@ -29,6 +29,9 @@ const LINK_SECUNDARIO = 'w-full cursor-pointer py-1 text-sm font-bold text-[var(
 /** Lo que se muestra si se aprieta antes de que el captcha invisible devuelva el token. */
 export const AVISO_TOKEN = 'Estamos verificando la conexión. Probá de nuevo en un segundo.';
 
+/** Lo que se muestra con el captcha visible: el pase no sirvió o no lo hubo. */
+export const AVISO_VERIFICAR = 'Completá la verificación de seguridad y volvé a tocar Inscribirme.';
+
 /**
  * La confirmación de la autoinscripción: «Inscribirme», con el captcha
  * invisible que firma el envío. En la entrada normal del formulario suma la
@@ -48,7 +51,7 @@ export function AvisoSinPago() {
 }
 
 export function PasoInscribirme({
-  pregunta, intentado, enviando, error, captcha = true, captchaKey, token, onToken, onEnviar, onSaltear,
+  pregunta, intentado, enviando, error, captcha = true, captchaVisible = false, captchaKey, token, onToken, onEnviar, onSaltear,
 }: {
   pregunta: boolean;
   intentado: boolean;
@@ -59,6 +62,12 @@ export function PasoInscribirme({
    * vencimiento de un widget que sobra borraría el token del que envía.
    */
   captcha?: boolean;
+  /**
+   * El captcha a la vista, con su casilla. Lo usa el carrusel cuando no tiene
+   * el pase de la preinscripción o el servidor lo rechazó: ahí la persona
+   * tiene que saber qué resolver. El enlace sigue con el invisible.
+   */
+  captchaVisible?: boolean;
   captchaKey: number;
   token: string;
   onToken: (token: string) => void;
@@ -67,8 +76,8 @@ export function PasoInscribirme({
 }) {
   const aviso = error
     ? <span className="text-red-400">{error}</span>
-    : intentado && !token
-      ? <span className="text-amber-300">{AVISO_TOKEN}</span>
+    : captcha && intentado && !token
+      ? <span className="text-amber-300">{captchaVisible ? AVISO_VERIFICAR : AVISO_TOKEN}</span>
       : null;
   const enviar = (evento: FormEvent) => {
     evento.preventDefault();
@@ -93,14 +102,15 @@ export function PasoInscribirme({
             Ahora no
           </button>
         )}
-        {/* Invisible, como en «Ver precio»: Cloudflare solo pide algo si
-            sospecha de un bot. Va último para que lo que mida no corra el botón. */}
+        {/* Invisible en el enlace: Cloudflare solo pide algo si sospecha de
+            un bot. En el carrusel, sin pase, va visible (ver `captchaVisible`).
+            Va último para que lo que mida no corra el botón. */}
         <div>
           {captcha && (
             <TurnstileWidget
               key={captchaKey}
               marca="teclab"
-              invisible
+              invisible={!captchaVisible}
               onVerify={onToken}
               onExpire={() => onToken('')}
             />

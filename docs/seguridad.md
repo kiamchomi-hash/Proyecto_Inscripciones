@@ -147,3 +147,19 @@ admin; usan mocks y no sustituyen la integración RLS/cookies real. Cambios
 locales, sin escrituras reales ni publicación.
 [Detalle](auditoria-tecnica-2026-10-02.md) y
 [referencia](../referencias/2026-10-02-autorizacion-admin.md).
+
+### 04/10/2026, pase firmado para la autoinscripción
+
+La autoinscripción de la entrada normal de Teclab (`kind: 'autoinscripcion'`)
+acepta, en lugar de un segundo token de Turnstile, un pase que emite la
+preinscripción que acaba de resolver el captcha (`lib/pase-autoinscripcion.ts`).
+Es HMAC-SHA256 con clave derivada de `TURNSTILE_SECRET_KEY` por separación de
+dominio, vence a los 10 minutos y está atado al hash del mail normalizado y al
+`carreraId`; la carrera se valida contra la base al emitir. Se compara en
+tiempo constante; vencido, adulterado o ajeno responde 403 como un captcha
+inválido, sin caer a Turnstile. El rate limit sigue corriendo y se rechaza el
+reuso si ya entró una autoinscripción del mismo mail y carrera desde la
+emisión (no atómico: dos envíos simultáneos pueden pasar, dentro de la cuota).
+Sin secreto no se emite ni se acepta ningún pase. Sin variable ni tabla nueva.
+Tests con mocks; sin escrituras reales ni publicación.
+[Detalle](formularios-por-casa.md).

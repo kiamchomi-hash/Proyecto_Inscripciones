@@ -270,6 +270,71 @@ async function precioDePreinscripcion(payload: JsonRecord) {
 }
 
 /**
+ * El módulo del pase se importa recién cuando hace falta, como el del mail del
+ * precio: sólo lo usan la preinscripción de Teclab y la autoinscripción, y los
+ * tests de los otros envíos cargan el endpoint sin él.
+ */
+const modPase = () => import('@/lib/pase-autoinscripcion');
+
+/**
+ * El pase que deja a la preinscripción de Teclab seguir a «Inscribirme» sin un
+ * segundo captcha (ver `lib/pase-autoinscripcion.ts`). Sólo con mail válido,
+ * porque el pase se ata a él, y con la carrera verificada en la base: la casa
+ * que diga el navegador no manda. Corre con el lead ya guardado y nunca lo
+ * tumba: sin pase, el carrusel pide el captcha como antes.
+ */
+async function paseDePreinscripcion(payload: JsonRecord) {
+  const carreraId = carreraIdDe(payload);
+  const email = text(payload.email, 254);
+  if (payload.tipoFormulario !== 'preinscripcion' || !carreraId || !EMAIL.test(email)) return null;
+  if (!process.env.TURNSTILE_SECRET_KEY) return null;
+  try {
+    const { data: carrera, error } = await createSupabaseAdmin()
+      .from('carreras')
+      .select('id, nivel')
+      .eq('id', carreraId)
+      .maybeSingle();
+    if (error) {
+      console.error('[formularios] No se pudo verificar la carrera del pase', { code: error.code });
+      return null;
+    }
+    if (!carrera || !carreraConAutoinscripcion(carrera)) return null;
+    const { emitirPase } = await modPase();
+    return emitirPase(email, carrera.id);
+  } catch (error) {
+    console.error('[formularios] No se pudo emitir el pase de la autoinscripción', {
+      code: error instanceof Error ? error.name : 'desconocido',
+    });
+    return null;
+  }
+}
+
+/** Un pase que no vale o ya se usó: se responde como un captcha inválido. */
+class PaseRechazado extends Error {}
+
+/** Un texto literal para `ilike`: el `_` de un mail no es un comodín. */
+const literalIlike = (valor: string) => valor.replace(/[\\%_]/g, c => `\\${c}`);
+
+/**
+ * El pase dura 10 minutos y sirve para una sola autoinscripción: si desde que
+ * se emitió ya entró una del mismo mail y la misma carrera, se rechaza. No es
+ * atómico —dos envíos simultáneos pueden pasar los dos—, pero el rate limit
+ * sigue corriendo y lo que se gana es una fila repetida, no saltear el captcha.
+ */
+async function paseYaUsado(supabase: ClienteAdmin, email: string, carrera: string, iat: number) {
+  const { data, error } = await supabase
+    .from('consultas')
+    .select('id')
+    .eq('tipo_formulario', FORMULARIO_AUTOINSCRIPCION)
+    .ilike(columnaDe('email'), literalIlike(email.trim()))
+    .eq('carrera', carrera)
+    .gte('created_at', new Date(iat).toISOString())
+    .limit(1);
+  if (error) return { error };
+  return { error: null, usado: (data?.length ?? 0) > 0 };
+}
+
+/**
  * «Ver precio»: registra el lead y devuelve el precio si está vigente.
  *
  * El orden importa. El lead entra primero en `consultas` (y dispara el aviso de
@@ -410,7 +475,7 @@ async function leerPrecio(supabase: ClienteAdmin, carreraId: number) {
  * navegador, y el legajo se arma con la misma declaración que la
  * preinscripción: acá tampoco hay nombres de columna escritos a mano.
  */
-async function registrarAutoinscripcion(payload: JsonRecord) {
+async function registrarAutoinscripcion(payload: JsonRecord, paseIat: number | null) {
   const datos = validarPayloadAutoinscripcion(payload);
   if (!datos) throw new TypeError('Datos inválidos');
 
@@ -422,6 +487,12 @@ async function registrarAutoinscripcion(payload: JsonRecord) {
     .maybeSingle();
   if (errorCarrera) return { error: errorCarrera };
   if (!carrera || !carreraConAutoinscripcion(carrera)) throw new TypeError('Carrera inválida');
+
+  if (paseIat !== null) {
+    const reuso = await paseYaUsado(supabase, datos.email, carrera.nombre, paseIat);
+    if (reuso.error) return { error: reuso.error };
+    if (reuso.usado) throw new PaseRechazado();
+  }
 
   return insertarAutoinscripcion(supabase, carrera, datos, payload);
 }
@@ -638,10 +709,13 @@ export async function POST(request: NextRequest) {
     }
     const kind = text(body.kind, 20);
     const token = text(body.token, 4096);
+    // El pase reemplaza al token sólo en la autoinscripción: es la que sigue a
+    // una preinscripción que ya resolvió el captcha.
+    const pase = kind === 'autoinscripcion' ? text(body.pase, 1024) : '';
     const payload = body.payload;
     const ip = clientIp(request);
 
-    if (!['consulta', 'faq', 'clase', 'precio', 'autoinscripcion', 'enlace'].includes(kind) || !token || !esRegistro(payload)) {
+    if (!['consulta', 'faq', 'clase', 'precio', 'autoinscripcion', 'enlace'].includes(kind) || !(token || pase) || !esRegistro(payload)) {
       return NextResponse.json({ error: 'Solicitud inválida' }, { status: 400 });
     }
 
@@ -651,10 +725,18 @@ export async function POST(request: NextRequest) {
     if (!captchaConfigured && !pruebaLocal) {
       return NextResponse.json({ error: 'Servicio temporalmente no disponible' }, { status: 503 });
     }
+    // Con pase no se llama a Turnstile: el pase ya prueba el captcha de la
+    // preinscripción, y tiene que ser de este mail y esta carrera. Un pase que
+    // no vale no cae al token: es un captcha inválido. La cuota corre igual.
+    const paseValido = pase
+      ? (await modPase()).verificarPase(pase, text(payload.email, 254), carreraIdDe(payload) ?? 0)
+      : null;
     const [captchaOk, allowed] = await Promise.all([
-      captchaConfigured
-        ? verifyTurnstile(token, ip)
-        : Promise.resolve(token === 'rate-limit-only'),
+      pase
+        ? Promise.resolve(paseValido !== null)
+        : captchaConfigured
+          ? verifyTurnstile(token, ip)
+          : Promise.resolve(token === 'rate-limit-only'),
       checkRateLimit(kind, ip),
     ]);
     if (!captchaOk) return NextResponse.json({ error: 'CAPTCHA inválido' }, { status: 403 });
@@ -667,7 +749,7 @@ export async function POST(request: NextRequest) {
         : kind === 'clase'
           ? await insertClase(payload)
           : kind === 'autoinscripcion'
-            ? await registrarAutoinscripcion(payload)
+            ? await registrarAutoinscripcion(payload, paseValido?.iat ?? null)
             : kind === 'enlace'
               ? await registrarPorEnlace(payload)
               : await registrarPrecio(payload);
@@ -689,8 +771,13 @@ export async function POST(request: NextRequest) {
       ? result.resultado
       : kind === 'consulta' ? await precioDePreinscripcion(payload) : null;
     const extra = resultado ?? {};
-    return NextResponse.json({ ok: true, ...extra }, { status: 201 });
+    // La preinscripción de Teclab trae además el pase para «Inscribirme».
+    const paseNuevo = kind === 'consulta' ? await paseDePreinscripcion(payload) : null;
+    return NextResponse.json({ ok: true, ...extra, ...(paseNuevo ? { pase: paseNuevo } : {}) }, { status: 201 });
   } catch (error) {
+    if (error instanceof PaseRechazado) {
+      return NextResponse.json({ error: 'CAPTCHA inválido' }, { status: 403 });
+    }
     if (error instanceof TypeError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
