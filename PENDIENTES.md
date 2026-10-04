@@ -54,7 +54,7 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
-- [ ] **38. Rediseñar la página de cada carrera de Teclab (`/carreras/<slug>`) con el sistema de `piezas_teclab`** (paleta, Poppins, fotos y logo oficiales), sin cambiar la disposición ni los textos. El 04/10/2026 se rediseñaron por error `/teclab` y las de inscripción (`/teclab/inscripcion`, `/carreras/<slug>/inscripcion`, `/inscripcion/<codigo>`), commit `d73a904`, ya publicado; las fichas de carrera siguen pendientes. [Detalle](odd/tasks/rediseno-paginas-teclab.md).
+- [ ] **38. Rediseñar la página de cada carrera de Teclab (`/carreras/<slug>`) con el sistema de `piezas_teclab`** (paleta, Poppins, fotos y logo oficiales), sin cambiar la disposición ni los textos.`/carreras/<slug>/inscripcion`, `/inscripcion/<codigo>`), commit `d73a904`, ya publicado; las fichas de carrera siguen pendientes. [Detalle](odd/tasks/rediseno-paginas-teclab.md).
 
 ## Documentación de apoyo
 
