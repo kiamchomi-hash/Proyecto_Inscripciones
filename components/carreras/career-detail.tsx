@@ -22,6 +22,7 @@ import {
 import AvisoInicioTeclab from '@/components/index/aviso-inicio-teclab';
 import CareerInfoButton from './career-info-button';
 import StickyEnrollmentCta from './sticky-enrollment-cta';
+import ResaltarInscripcion from './resaltar-inscripcion';
 import {
   getCareerPrefix,
   parseIAMeta,
@@ -348,6 +349,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           </div>
         </div>
       </header>
+
+      {/* Llegada desde el mail: titila el botón de inscripción del encabezado. */}
+      <ResaltarInscripcion />
 
       <StickyEnrollmentCta
         destino={carrera.proximamente ? '#formulario' : '#preinscripcion'}

@@ -345,6 +345,28 @@
   color: var(--career-ink);
 }
 
+/* Llegada desde «Quiero inscribirme» del mail (resaltar-inscripcion.tsx): el
+   contorno titila unas vueltas para marcar por dónde seguir. Contorno y no
+   borde ni sombra: no pisa el estilo del botón. */
+.career-button.career-cta-titila {
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+  animation: career-cta-titila 0.9s ease-in-out 0.4s 4;
+}
+
+@keyframes career-cta-titila {
+  50% {
+    outline-color: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .career-button.career-cta-titila {
+    animation: none;
+    outline-color: #fff;
+  }
+}
+
 /* En movil aparece cuando el CTA equivalente del hero ya quedo atras. Vive
    fuera del flujo para seguir al alcance, pero se retira antes del formulario. */
 .career-mobile-cta {

@@ -28,14 +28,21 @@ export function pedirCarreraEnFormulario(id: number) {
 /**
  * La entrada directa a la autoinscripción de Teclab: la ficha de la carrera con
  * `?inscripcion=auto`, que el formulario lee en el navegador (no en el server,
- * así la página sigue siendo estática). La usan «Inscribite ya» de «Ver precio»
- * y el botón «Quiero inscribirme» del mail.
+ * así la página sigue siendo estática). La usa «Inscribite ya» de «Ver precio».
  */
 export const PARAMETRO_INSCRIPCION = 'inscripcion';
 export const VALOR_AUTOINSCRIPCION = 'auto';
 
 export const urlAutoinscripcion = (slug: string) =>
   `/carreras/${slug}?${PARAMETRO_INSCRIPCION}=${VALOR_AUTOINSCRIPCION}#preinscripcion`;
+
+/**
+ * La marca del botón «Quiero inscribirme» del mail: la ficha que llega con
+ * `?desde=mail` hace titilar su botón de inscripción. También se lee en el
+ * navegador, por la misma razón.
+ */
+export const PARAMETRO_DESDE = 'desde';
+export const VALOR_DESDE_MAIL = 'mail';
 
 /** Si la página se abrió en modo autoinscripción. Sólo en el navegador. */
 export function pideAutoinscripcion(): boolean {

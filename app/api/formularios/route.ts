@@ -312,16 +312,6 @@ async function registrarPrecio(payload: JsonRecord) {
   return { error: null, resultado };
 }
 
-const SMTP2GO_URL = 'https://api.smtp2go.com/v3/email/send';
-const REMITENTE_MAIL = 'CAU Villa Lugano <inscripciones@siglo21sur.com>';
-const TIMEOUT_MAIL_MS = 8000;
-
-/** El `error_code` de una respuesta de SMTP2GO, si lo trae. Nunca el mensaje. */
-function codigoSmtp2go(cuerpo: unknown) {
-  const data = esRegistro(cuerpo) && esRegistro(cuerpo.data) ? cuerpo.data : null;
-  return typeof data?.error_code === 'string' ? data.error_code : undefined;
-}
-
 /**
  * El mail con el resumen del precio, por la API de SMTP2GO. Sólo con precio
  * vigente: vencido o sin precio no hay nada que resumir. Corre con `after()`,
@@ -329,8 +319,9 @@ function codigoSmtp2go(cuerpo: unknown) {
  * guardado. Sin `SMTP2GO_API_KEY` no manda. Los registros llevan sólo el
  * estado o el código de error: ni el mail de la persona ni la clave.
  *
- * El armado se importa recién adentro de la tarea: sólo lo necesita este
- * camino, y los tests de los otros envíos cargan el endpoint sin él.
+ * El armado y el envío (`mandarPorSmtp2go`, el mismo que usa el newsletter)
+ * se importan recién adentro de la tarea: sólo los necesita este camino, y los
+ * tests de los otros envíos cargan el endpoint sin ellos.
  */
 function enviarMailPrecio(email: string, carrera: CarreraDelMail, resultado: ResultadoPrecio) {
   if (resultado.estado !== 'vigente') return;
@@ -343,26 +334,16 @@ function enviarMailPrecio(email: string, carrera: CarreraDelMail, resultado: Res
   try {
     after(async () => {
       try {
-        const { armarMailPrecio } = await import('@/components/formularios/mail-precio');
+        const { armarMailPrecio, mandarPorSmtp2go } = await import('@/components/formularios/mail-precio');
         const mail = armarMailPrecio({ carrera, precio, hoy: new Date() });
-        const respuesta = await fetch(SMTP2GO_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Smtp2go-Api-Key': clave },
-          body: JSON.stringify({
-            sender: REMITENTE_MAIL,
-            to: [email],
-            subject: mail.asunto,
-            html_body: mail.html,
-            text_body: mail.texto,
-          }),
-          signal: AbortSignal.timeout(TIMEOUT_MAIL_MS),
-        });
-        const cuerpo: unknown = await respuesta.json().catch(() => null);
-        const fallidos = esRegistro(cuerpo) && esRegistro(cuerpo.data) ? cuerpo.data.failed : undefined;
-        if (!respuesta.ok || (typeof fallidos === 'number' && fallidos > 0)) {
+        const envio = await mandarPorSmtp2go({ clave, para: email, mail });
+        if (envio.enviado) return;
+        if (envio.status === null) {
+          console.error('[formularios] No se pudo mandar el mail del precio por SMTP2GO', { code: envio.codigo });
+        } else {
           console.error('[formularios] SMTP2GO rechazó el mail del precio', {
-            status: respuesta.status,
-            error_code: codigoSmtp2go(cuerpo),
+            status: envio.status,
+            error_code: envio.codigo,
           });
         }
       } catch (error) {

@@ -751,16 +751,18 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          ultimo_envio_at: string | null
           updated_at: string
         }
         Insert: {
           activo?: boolean
-          carrera_id: number | null
-          carrera_nombre: string | null
+          carrera_id?: number | null
+          carrera_nombre?: string | null
           consentimiento_at?: string
           created_at?: string
           email: string
           id?: string
+          ultimo_envio_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -771,6 +773,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          ultimo_envio_at?: string | null
           updated_at?: string
         }
         Relationships: [

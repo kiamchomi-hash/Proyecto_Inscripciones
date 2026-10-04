@@ -1,8 +1,12 @@
 // El mail con el resumen del precio de Teclab: lo que la persona acaba de ver
 // en «Ver precio» o en la preinscripción, para que le quede guardado. Lo manda
-// `/api/formularios` por SMTP2GO, con la respuesta ya enviada.
+// `/api/formularios` por SMTP2GO, con la respuesta ya enviada. La misma
+// plantilla es el newsletter semanal (`tipo: 'newsletter'`, lo manda el cron
+// `/api/newsletter`): cambian el asunto y el pie, que lleva la baja.
 //
-// Puro: arma asunto, HTML y texto, y no manda nada. El diseño es el aprobado
+// `armarMailPrecio` es puro: arma asunto, HTML y texto, y no manda nada. Lo
+// único que sale a la red es `mandarPorSmtp2go`, que comparten los dos
+// envíos. El diseño es el aprobado
 // el 02/10/2026 (docs/mails/mail-inicio-teclab.html): si se cambia uno, se
 // cambia el otro. Reusa las mismas piezas que la pantalla (inicio de clases,
 // qué cubre el pago, enlace de autoinscripción) para que el mail no diga otra
@@ -12,7 +16,7 @@
 // que los convierte en signos de pregunta.
 
 import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
-import { urlAutoinscripcion } from '@/components/formularios/elegir-carrera';
+import { PARAMETRO_DESDE, VALOR_DESDE_MAIL } from '@/components/formularios/elegir-carrera';
 import { carreraFullName, carreraToSlug } from '@/components/index/types';
 import { inicioTeclab } from '@/components/index/inicio-teclab';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
@@ -51,6 +55,13 @@ const LINEA = '#24405e';
 const SUAVE = '#9fb0c2';
 const CLARO = '#F0F0F6';
 const PIE = 'Te escribimos porque pediste el precio de esta carrera en siglo21sur.com.';
+const PIE_NEWSLETTER = 'Te escribimos desde el CAU porque pediste novedades de esta carrera en siglo21sur.com.';
+const BAJA = 'Dejar de recibir novedades';
+
+/** El id de una suscripción al newsletter: es lo que identifica la baja. */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const esIdSuscripcion = (valor: unknown): valor is string =>
+  typeof valor === 'string' && UUID.test(valor);
 
 const escapar = (valor: string) =>
   valor
@@ -80,8 +91,6 @@ function titularDe(carrera: CarreraDelMail, hoy: Date) {
     : { antes: 'Las clases arrancan el ', fecha: inicio.inicioTexto, bajada: 'Todavía estás a tiempo de inscribirte.' };
 }
 
-const sinCorte = (valor: string) => escapar(valor).replace(/ /g, '&nbsp;');
-
 const PILDORA = `display:inline-block;background:${CIAN};color:${TARJETA};font-weight:700;border-radius:999px;`;
 const ENCABEZADO = `padding:0 0 10px;font-size:11px;font-weight:600;color:${SUAVE};text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid ${LINEA};`;
 const CELDA = `padding:14px 0;border-bottom:1px solid ${LINEA};`;
@@ -98,7 +107,23 @@ function filaHtml(linea: LineaPrecio): string {
                       </tr>`;
 }
 
-export function armarMailPrecio({ carrera, precio, hoy }: { carrera: CarreraDelMail; precio: PrecioDelMail; hoy: Date }): MailPrecio {
+/** El resumen es transaccional y no lleva baja; el newsletter la lleva siempre. */
+export type OpcionesMail = { carrera: CarreraDelMail; precio: PrecioDelMail; hoy: Date } & (
+  | { tipo?: 'resumen'; bajaUrl?: undefined }
+  | { tipo: 'newsletter'; bajaUrl: string }
+);
+
+/**
+ * El asunto del newsletter: la carrera, la casa y el titular del mail. Con la
+ * inscripción cerrada el titular neutro («El precio de tu carrera») no dice
+ * nada en la bandeja, así que se nombra la semana.
+ */
+function asuntoNewsletter(corto: string, titular: { antes: string; fecha: string }) {
+  const frase = titular.fecha ? `${titular.antes}${titular.fecha}` : 'El precio de esta semana';
+  return `${corto} en Teclab: ${frase.charAt(0).toLowerCase()}${frase.slice(1)}`;
+}
+
+export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: OpcionesMail): MailPrecio {
   // El nombre como lo muestra la ficha: el prefijo de la base ya trae la
   // preposición («Tecnicatura Superior en», «Curso de»). `carreraFullName`
   // arma el slug y simplifica el prefijo: dejaba «Tecnicatura en Programación».
@@ -107,17 +132,21 @@ export function armarMailPrecio({ carrera, precio, hoy }: { carrera: CarreraDelM
     ? `${prefijo} ${carrera.nombre}`
     : carreraFullName({ nombre: carrera.nombre, prefix: carrera.prefix ?? null });
   const corto = carrera.nombre_corto?.trim() || carrera.nombre;
-  const asunto = `Precio de ${corto} en Teclab`;
-
   const titular = titularDe(carrera, hoy);
+  const esNewsletter = tipo === 'newsletter';
+  const asunto = esNewsletter ? asuntoNewsletter(corto, titular) : `Precio de ${corto} en Teclab`;
+  const pie = esNewsletter ? PIE_NEWSLETTER : PIE;
   const promo = `Promo hasta el ${diaMes(precio.vigenteHasta)}`;
   const cobertura = coberturaDelPago(precio.conceptos, carrera.duracion) ?? precio.nota;
-  const inscripcion = `${BASE_PROD}${urlAutoinscripcion(carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null }))}`;
+  // A la ficha y no al formulario: con `desde=mail` el botón «Quiero
+  // inscribirme» de la ficha titila (components/carreras/resaltar-inscripcion.tsx).
+  const inscripcion = `${BASE_PROD}/carreras/${carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null })}?${PARAMETRO_DESDE}=${VALOR_DESDE_MAIL}`;
   const whatsapp = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(`Hola, quiero consultar por la ${nombre}`)}`;
 
   const texto = [
     nombre,
-    `${titular.antes}${titular.fecha}`,
+    // Sin titular grande en el cuerpo: ocupaba demasiado alto. La fecha queda
+    // en el asunto del newsletter y en esta línea.
     ...(titular.bajada ? [titular.bajada] : []),
     '',
     `Precio (${promo})`,
@@ -130,11 +159,12 @@ export function armarMailPrecio({ carrera, precio, hoy }: { carrera: CarreraDelM
     '',
     'Para lo que viene sos imprescindible',
     '',
-    PIE,
+    pie,
+    ...(esNewsletter ? [`${BAJA}: ${bajaUrl}`] : []),
   ].join('\n');
 
   const bajadaHtml = titular.bajada
-    ? `\n              <div style="font-size:15px;line-height:1.45;color:${CLARO};margin-top:8px;">${escapar(titular.bajada)}</div>`
+    ? `\n              <div style="font-size:15px;line-height:1.45;color:${CLARO};margin-top:12px;">${escapar(titular.bajada)}</div>`
     : '';
   const coberturaHtml = cobertura
     ? `
@@ -170,8 +200,7 @@ export function armarMailPrecio({ carrera, precio, hoy }: { carrera: CarreraDelM
           <!-- Carrera, fecha y aviso -->
           <tr>
             <td align="center" style="padding:24px 28px 0;text-align:center;">
-              <span style="${PILDORA}font-size:14px;padding:6px 16px;">${escapar(nombre)}</span>
-              <div style="font-size:30px;line-height:1.1;font-weight:600;color:#ffffff;margin-top:16px;letter-spacing:-0.5px;">${escapar(titular.antes)}${sinCorte(titular.fecha)}</div>${bajadaHtml}
+              <span style="${PILDORA}font-size:14px;padding:6px 16px;">${escapar(nombre)}</span>${bajadaHtml}
             </td>
           </tr>
 
@@ -237,7 +266,10 @@ export function armarMailPrecio({ carrera, precio, hoy }: { carrera: CarreraDelM
         <!-- Pie -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
           <tr>
-            <td style="padding:18px 8px;font-size:12px;line-height:1.6;color:#7f90a2;text-align:center;">${escapar(PIE)}</td>
+            <td style="padding:18px 8px;font-size:12px;line-height:1.6;color:#7f90a2;text-align:center;">${escapar(pie)}${esNewsletter
+    ? `<br>
+              <a href="${escapar(bajaUrl)}" style="color:#9fb0c2;">${BAJA}</a>`
+    : ''}</td>
           </tr>
         </table>
       </td>
@@ -247,4 +279,56 @@ export function armarMailPrecio({ carrera, precio, hoy }: { carrera: CarreraDelM
 </html>`;
 
   return { asunto, html, texto };
+}
+
+const SMTP2GO_URL = 'https://api.smtp2go.com/v3/email/send';
+const REMITENTE_MAIL = 'CAU Villa Lugano <inscripciones@siglo21sur.com>';
+const TIMEOUT_MAIL_MS = 8000;
+
+export interface EnvioSmtp2go {
+  /** `true` sólo si SMTP2GO confirmó al menos un destinatario sin fallos. */
+  enviado: boolean;
+  /** El HTTP de la respuesta; `null` si no hubo respuesta (red, timeout). */
+  status: number | null;
+  /** El `error_code` de SMTP2GO o el nombre del error de red. Nunca el mensaje. */
+  codigo?: string;
+}
+
+const registro = (valor: unknown): Record<string, unknown> | null =>
+  valor !== null && typeof valor === 'object' && !Array.isArray(valor) ? valor as Record<string, unknown> : null;
+
+/**
+ * Manda un mail por la API de SMTP2GO, desde `inscripciones@siglo21sur.com`.
+ * No lanza: devuelve si quedó confirmado, para que cada envío decida qué
+ * registra. `encabezados` va como `custom_headers` (el newsletter manda ahí la
+ * baja de un clic). Lo que devuelve no lleva ni el mail ni la clave.
+ */
+export async function mandarPorSmtp2go({ clave, para, mail, encabezados }: {
+  clave: string;
+  para: string;
+  mail: MailPrecio;
+  encabezados?: { header: string; value: string }[];
+}): Promise<EnvioSmtp2go> {
+  try {
+    const respuesta = await fetch(SMTP2GO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Smtp2go-Api-Key': clave },
+      body: JSON.stringify({
+        sender: REMITENTE_MAIL,
+        to: [para],
+        subject: mail.asunto,
+        html_body: mail.html,
+        text_body: mail.texto,
+        ...(encabezados?.length ? { custom_headers: encabezados } : {}),
+      }),
+      signal: AbortSignal.timeout(TIMEOUT_MAIL_MS),
+    });
+    const data = registro(registro(await respuesta.json().catch(() => null))?.data);
+    const codigo = typeof data?.error_code === 'string' ? data.error_code : undefined;
+    const enviados = typeof data?.succeeded === 'number' ? data.succeeded : 0;
+    const fallidos = typeof data?.failed === 'number' ? data.failed : 0;
+    return { enviado: respuesta.ok && enviados >= 1 && fallidos === 0, status: respuesta.status, codigo };
+  } catch (error) {
+    return { enviado: false, status: null, codigo: error instanceof Error ? error.name : 'desconocido' };
+  }
 }

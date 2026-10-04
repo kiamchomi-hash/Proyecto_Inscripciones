@@ -10,7 +10,7 @@ import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
 // El módulo importa con el alias `@/`, que Node pelado no resuelve: se carga
 // con sus dependencias reales inyectadas.
-const { armarMailPrecio } = cargarTypescript('components/formularios/mail-precio.ts', {
+const { armarMailPrecio, esIdSuscripcion } = cargarTypescript('components/formularios/mail-precio.ts', {
   '@/components/formularios/cobertura-pago': cobertura,
   '@/components/formularios/elegir-carrera': elegirCarrera,
   '@/components/index/types': taxonomia,
@@ -59,26 +59,27 @@ test('la píldora lleva el nombre completo de la carrera', () => {
   assert.ok(texto.includes(nombreCompleto));
 });
 
-test('antes del 14/10 el titular anuncia el inicio de clases', () => {
+// El cuerpo no lleva titular grande (ocupaba demasiado alto): queda sólo la
+// línea chica bajo la píldora. La fecha sigue en el asunto del newsletter.
+test('antes del 14/10 no hay titular, sólo la línea de que todavía está a tiempo', () => {
   const { html, texto } = armar({ hoy: dia('2026-10-03') });
-  assert.match(texto, /Las clases arrancan el 14 de octubre/);
+  for (const cuerpo of [html, texto]) assert.doesNotMatch(cuerpo, /Las clases arrancan/);
   assert.match(texto, /Todavía estás a tiempo de inscribirte\./);
-  assert.match(html, /Las clases arrancan el 14(&nbsp;| )de(&nbsp;| )octubre/);
+  assert.match(html, /Todavía estás a tiempo de inscribirte\./);
 });
 
-test('entre el 14/10 y el 3/11 el titular es el cierre de inscripción', () => {
+test('entre el 14/10 y el 3/11 queda la línea de que las clases empezaron', () => {
   const { html, texto } = armar({ hoy: dia('2026-10-20') });
-  assert.match(texto, /Tenés tiempo hasta el 3 de noviembre/);
+  for (const cuerpo of [html, texto]) assert.doesNotMatch(cuerpo, /Tenés tiempo hasta/);
   assert.match(texto, /Las clases empezaron el 14 de octubre\./);
-  assert.match(html, /Tenés tiempo hasta el 3(&nbsp;| )de(&nbsp;| )noviembre/);
-  assert.doesNotMatch(texto, /arrancan/);
+  assert.match(html, /Las clases empezaron el 14 de octubre\./);
 });
 
-test('cerrada la inscripción el titular es neutro y no hay bajada', () => {
+test('cerrada la inscripción no hay titular ni línea de fechas', () => {
   const { html, texto } = armar({ hoy: dia('2026-11-10') });
-  assert.match(texto, /El precio de tu carrera/);
-  assert.match(html, /El precio de tu carrera/);
-  assert.doesNotMatch(texto, /arrancan|Tenés tiempo|a tiempo de inscribirte|empezaron/);
+  for (const cuerpo of [html, texto]) {
+    assert.doesNotMatch(cuerpo, /El precio de tu carrera|arrancan|Tenés tiempo|a tiempo de inscribirte|empezaron/);
+  }
 });
 
 test('trae cada concepto, sus descuentos, el total y la promo DD/MM', () => {
@@ -110,10 +111,12 @@ test('dice qué cubre el pago con la duración; sin bimestres, la nota', () => {
   assert.match(curso.texto, /Ese pago cubre un bimestre de cursada\./);
 });
 
-test('los enlaces son absolutos: autoinscripción con el slug y WhatsApp de Teclab', () => {
+// «Quiero inscribirme» lleva a la ficha marcada con `desde=mail`: ahí titila
+// el botón de inscripción (components/carreras/resaltar-inscripcion.tsx).
+test('los enlaces son absolutos: la ficha marcada desde el mail y WhatsApp de Teclab', () => {
   const { html, texto } = armar();
   const slug = taxonomia.carreraToSlug(carrera);
-  const inscripcion = `https://www.siglo21sur.com/carreras/${slug}?inscripcion=auto#preinscripcion`;
+  const inscripcion = `https://www.siglo21sur.com/carreras/${slug}?desde=mail`;
   assert.ok(texto.includes(inscripcion), texto);
   assert.ok(html.includes(`href="${inscripcion}"`));
   assert.match(html, />Quiero inscribirme</);
@@ -160,4 +163,57 @@ test('la versión de texto no lleva etiquetas HTML ni puntuación decorativa', (
   assert.equal(/<\/?[a-z][^>]*>/i.test(texto), false, texto);
   assert.equal(/[—–·•]/.test(texto), false, texto);
   assert.equal(/[—–·•]/.test(html), false);
+});
+
+// ── La variante newsletter: misma plantilla, otro asunto y pie con baja ──
+
+const BAJA = 'https://www.siglo21sur.com/newsletter/baja?id=6f1c2a4e-1b2c-4d3e-8f90-a1b2c3d4e5f6';
+const newsletter = (extra = {}) => armar({ tipo: 'newsletter', bajaUrl: BAJA, ...extra });
+
+test('sin tipo, el mail sigue siendo el resumen del precio', () => {
+  const porDefecto = armar();
+  assert.deepEqual(armar({ tipo: 'resumen' }), porDefecto);
+  assert.equal(porDefecto.asunto, 'Precio de Programación en Teclab');
+});
+
+test('el asunto del newsletter es la carrera corta, la casa y el titular en minúscula', () => {
+  assert.equal(newsletter({ hoy: dia('2026-10-03') }).asunto, 'Programación en Teclab: las clases arrancan el 14 de octubre');
+  assert.equal(newsletter({ hoy: dia('2026-10-20') }).asunto, 'Programación en Teclab: tenés tiempo hasta el 3 de noviembre');
+  assert.equal(newsletter({ hoy: dia('2026-11-10') }).asunto, 'Programación en Teclab: el precio de esta semana');
+  for (const hoy of ['2026-10-03', '2026-10-20', '2026-11-10']) {
+    assert.equal(/[—–·•]/.test(newsletter({ hoy: dia(hoy) }).asunto), false);
+  }
+});
+
+test('el pie del newsletter explica el envío y tiene una baja real, escapada', () => {
+  const { html, texto } = newsletter();
+  const pie = /Te escribimos desde el CAU porque pediste novedades de esta carrera en siglo21sur\.com\./;
+  assert.match(html, pie);
+  assert.match(texto, pie);
+  assert.doesNotMatch(html, /pediste el precio/);
+  assert.ok(html.includes(`href="${BAJA}"`), html);
+  assert.match(html, />Dejar de recibir novedades<\/a>/);
+  assert.ok(texto.includes(`Dejar de recibir novedades: ${BAJA}`), texto);
+  assert.equal(html.includes('href="#"'), false);
+
+  const conComillas = newsletter({ bajaUrl: 'https://www.siglo21sur.com/newsletter/baja?id=x"&y=<z>' });
+  assert.ok(conComillas.html.includes('href="https://www.siglo21sur.com/newsletter/baja?id=x&quot;&amp;y=&lt;z&gt;"'));
+});
+
+test('el newsletter conserva el precio, los accesos y el remate de la plantilla', () => {
+  const { html, texto } = newsletter();
+  for (const cuerpo of [html, texto]) {
+    assert.match(cuerpo, /\$ 552\.359,03/);
+    assert.match(cuerpo, /Quiero inscribirme/);
+    assert.match(cuerpo, /Para lo que viene sos/);
+  }
+  assert.equal(/<\/?[a-z][^>]*>/i.test(texto), false);
+});
+
+test('el id de la suscripción se valida como UUID', () => {
+  assert.equal(esIdSuscripcion('6f1c2a4e-1b2c-4d3e-8f90-a1b2c3d4e5f6'), true);
+  assert.equal(esIdSuscripcion('6F1C2A4E-1B2C-4D3E-8F90-A1B2C3D4E5F6'), true);
+  for (const malo of ['', 'x', '6f1c2a4e1b2c4d3e8f90a1b2c3d4e5f6', '6f1c2a4e-1b2c-4d3e-8f90-a1b2c3d4e5f6 ', null, undefined, 7]) {
+    assert.equal(esIdSuscripcion(malo), false, String(malo));
+  }
 });

@@ -53,8 +53,27 @@ El modal de Teclab cambia el mail por el precio de la carrera. Va por el mismo e
 - **Cuándo**: sólo con precio `vigente`, en «Ver precio» y en la preinscripción de Teclab que devuelve el precio (ahí, sólo si la persona dejó un mail válido, que en ese formulario es opcional). Vencido o sin precio no se manda nada.
 - **Cómo**: `POST https://api.smtp2go.com/v3/email/send` con `X-Smtp2go-Api-Key: SMTP2GO_API_KEY`, remitente `CAU Villa Lugano <inscripciones@siglo21sur.com>` (dominio ya autenticado en SMTP2GO), HTML y texto. Sin la clave no manda y deja un `console.warn`.
 - **Nunca bloquea**: corre con `after()`, con el 201 ya enviado, y un timeout de 8 s. Si SMTP2GO rechaza o no responde, el lead y el precio ya salieron; el registro lleva sólo el `status` y el `error_code`, nunca el mail de la persona ni la clave.
-- **Plantilla**: el armado es `components/formularios/mail-precio.ts` (puro, probado en `tests/mail-precio.test.mjs`) y copia el diseño aprobado, `docs/mails/mail-inicio-teclab.html`: si cambia uno, cambia el otro. El titular usa la misma lógica de inicio de clases que la ficha (`inicio-teclab.ts`); el logo es un PNG público en `public/imagenes/teclab/mail/` (Outlook de escritorio no muestra WebP). Es un resumen transaccional: no lleva enlace de baja.
+- **Plantilla**: el armado es `armarMailPrecio` en `components/formularios/mail-precio.ts` (puro, probado en `tests/mail-precio.test.mjs`); el envío, `mandarPorSmtp2go` del mismo módulo, que comparte con el newsletter y copia el diseño aprobado, `docs/mails/mail-inicio-teclab.html`: si cambia uno, cambia el otro. El titular usa la misma lógica de inicio de clases que la ficha (`inicio-teclab.ts`); el logo es un PNG público en `public/imagenes/teclab/mail/` (Outlook de escritorio no muestra WebP). Es un resumen transaccional: no lleva enlace de baja.
 - **Riesgos**: cualquiera puede escribir el mail de otra persona y hacerle llegar un resumen; lo frenan Turnstile y la cuota del endpoint, y el mail no lleva datos de nadie, sólo la carrera y el precio. Pedir el precio varias veces en la misma carrera manda un mail por pedido.
+
+## Newsletter de Teclab: `GET /api/newsletter`
+
+Cron de Vercel (`vercel.json`, `0 13 * * *`: todos los días a las 10 de Argentina) que le manda a cada suscripción el mail de la plantilla aprobada con el precio vigente de su carrera. No es un formulario: no pasa por `/api/formularios` y escribe con la service role.
+
+- **Cadencia**: cada 7 días desde el último envío (`ultimo_envio_at`) o, si nunca se le mandó, desde el consentimiento (`consentimiento_at`). La regla va en la consulta (`or` de PostgREST). Volver a suscribirse renueva el consentimiento pero no borra el último envío.
+- **Alcance**: suscripciones activas a carreras de Teclab activas con precio `vigente` hoy. Las carreras se leen primero y las suscripciones se filtran por ellas en la misma consulta, para que las que no pueden salir no ocupen el tope todos los días. Siglo 21, Identidad y las generales (sin carrera) quedan afuera hasta tener plantilla. Tope de 50 por corrida, de a una; lo que no entra sale al día siguiente.
+- **Autenticación**: igual que `/api/vigilancia`, `Authorization: Bearer CRON_SECRET` (Vercel lo manda solo). Sin la variable responde 503; con otro valor, 401. Sin `SMTP2GO_API_KEY` responde 503 sin leer la base ni mandar nada.
+- **El mail**: `armarMailPrecio` con `tipo: 'newsletter'`. Asunto `<nombre corto> en Teclab: <titular>` («Programación en Teclab: las clases arrancan el 14 de octubre»; con la inscripción cerrada, «el precio de esta semana»). Pie «Te escribimos desde el CAU porque pediste novedades de esta carrera en siglo21sur.com.» con «Dejar de recibir novedades» a `/newsletter/baja?id=<id>`.
+- **Encabezados de baja**: `custom_headers` de SMTP2GO con `List-Unsubscribe: <https://www.siglo21sur.com/api/newsletter/baja?id=<id>>` y `List-Unsubscribe-Post: List-Unsubscribe=One-Click` (RFC 8058, lo que piden Gmail y Yahoo a los envíos masivos).
+- **`ultimo_envio_at`**: se escribe sólo cuando SMTP2GO confirma (`data.succeeded >= 1` sin fallidos). Un rechazo o un timeout cuenta como fallido y la suscripción vuelve a salir al día siguiente. Si el mail salió pero no se pudo marcar, se registra y mañana se repite.
+- **Respuesta**: `{ candidatas, enviados, salteados, fallidos }`. Los registros llevan cantidades y códigos de error, nunca mails, ids (el id es la baja) ni la clave.
+- **Requiere** la columna `ultimo_envio_at`: `sql/2026-10-03_newsletter_ultimo_envio.sql`, a mano en el SQL Editor. Sin ella la consulta falla y el cron responde 500 sin mandar nada. Después, `npm run db:tipos` (el tipo ya se agregó a mano en `lib/database.types.ts`).
+
+### La baja
+
+- `/newsletter/baja?id=<id>` muestra un botón; abrirla **no** da de baja, porque los escáneres de enlaces de los correos abren todo. Con `?listo=1` confirma. No se indexa y no lee la base.
+- `POST /api/newsletter/baja` pone `activo = false`. Toma el id de la query (la baja de un clic de Gmail, responde 200) o del cuerpo del formulario de la página (responde 303 a `/newsletter/baja?listo=1`). Un id que no es UUID es 400; uno que no existe responde igual que uno que sí, para no confirmar suscripciones. La CSP ya permite el envío (`form-action 'self'`).
+- `tests/newsletter-envio.test.mjs` cubre el cron (autenticación, la regla de los 7 días, el alcance, los encabezados, la marca sólo con envío confirmado, sin clave) y la baja (los dos caminos, id mal formado o inexistente, y que la página no escriba).
 
 ## Autoinscripción de Teclab: `kind: 'autoinscripcion'`
 
