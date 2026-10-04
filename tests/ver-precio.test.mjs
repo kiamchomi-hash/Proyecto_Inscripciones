@@ -186,6 +186,15 @@ function montarEndpoint(t) {
         estado.escrituras.push({ tabla, op: 'upsert', fila, opciones });
         return { error: estado.errores[tabla] ?? null };
       },
+      update: valores => {
+        const escritura = { tabla, op: 'update', valores, filtros: {} };
+        estado.escrituras.push(escritura);
+        const cadena = {
+          eq: (columna, valor) => { escritura.filtros[columna] = valor; return cadena; },
+          then: (ok, mal) => Promise.resolve({ error: estado.errores[`update:${tabla}`] ?? null }).then(ok, mal),
+        };
+        return cadena;
+      },
       select: columnas => ({
         eq: (columna, valor) => ({
           maybeSingle: async () => {
@@ -401,6 +410,12 @@ test('con precio vigente, «Ver precio» manda un mail por SMTP2GO después de r
   assert.equal(mail.cuerpo.subject, 'Precio de Tecnicatura Superior en Programación en Teclab');
   assert.match(mail.cuerpo.html_body, /\$ 552\.359,03/);
   assert.match(mail.cuerpo.text_body, /Promo hasta el 31\/12/);
+
+  // El resumen cuenta como primer envío del newsletter: el cron no lo repite.
+  const marca = estado.escrituras.find(e => e.op === 'update' && e.tabla === casas.TABLA_NEWSLETTER);
+  assert.ok(marca, 'marca el envío en la suscripción');
+  assert.ok(!Number.isNaN(Date.parse(marca.valores.ultimo_envio_at)));
+  assert.deepEqual(marca.filtros, { email: 'ana@example.test', carrera_id: 7 });
 });
 
 test('la preinscripción de Teclab con precio vigente también manda el mail', async t => {
@@ -474,6 +489,8 @@ test('si SMTP2GO falla o no responde, el lead y el precio salen igual y nada fil
   await correrPendientes();
 
   assert.equal(mails.length, 3);
+  const marcas = estado.escrituras.filter(e => e.op === 'update' && e.tabla === casas.TABLA_NEWSLETTER);
+  assert.equal(marcas.length, 1, 'sólo el envío confirmado cuenta para el newsletter');
   assert.ok(registros.some(r => /SMTP2GO/.test(String(r[0]))), 'el rechazo queda registrado');
   const salida = JSON.stringify(registros, (_k, v) => (v instanceof Error ? v.message : v));
   assert.equal(salida.includes(CLAVE), false);

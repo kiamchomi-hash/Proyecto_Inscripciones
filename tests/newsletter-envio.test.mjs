@@ -53,12 +53,12 @@ const precioVigente = {
 /**
  * Un cliente de Supabase de juguete: cada consulta encadenada se evalúa sobre
  * las filas en memoria. El `or(...)` del cron se interpreta como la regla de
- * los 7 días, con la fecha límite que trae la expresión.
+ * envío: nunca se le mandó, o el último envío tiene 7 días o más.
  */
 function supabaseSimulado(estado) {
   const reglaOr = expr => {
     const limite = expr.match(/lte\.([^,)]+)/)?.[1];
-    return f => (f.ultimo_envio_at ? f.ultimo_envio_at <= limite : f.consentimiento_at <= limite);
+    return f => (f.ultimo_envio_at ? f.ultimo_envio_at <= limite : expr.includes('ultimo_envio_at.is.null'));
   };
   const ejecutar = q => {
     estado.consultas.push(q);
@@ -186,18 +186,23 @@ test('el cron se autentica como /api/vigilancia: 503 sin secreto, 401 si no coin
   assert.deepEqual(estado.consultas, []);
 });
 
-test('manda a las suscripciones de Teclab con 7 días desde el último envío o el consentimiento', async t => {
+test('manda a quien nunca recibió el precio y, después, cada 7 días desde el último envío', async t => {
   const { correr, fila, destinatarios, estado } = montar(t);
   const { status, cuerpo } = await correr();
   assert.equal(status, 200);
-  assert.deepEqual(cuerpo, { candidatas: 2, enviados: 2, salteados: 0, fallidos: 0 });
-  assert.deepEqual(destinatarios().sort(), [fila(ID.vieja).email, fila(ID.nunca).email].sort());
+  assert.deepEqual(cuerpo, { candidatas: 3, enviados: 3, salteados: 0, fallidos: 0 });
+  // La que se suscribió hace 3 días sin recibir el precio (no había, o estaba
+  // vencido) sale ya: no espera 7 días desde el consentimiento.
+  assert.deepEqual(
+    destinatarios().sort(),
+    [fila(ID.vieja).email, fila(ID.nunca).email, fila(ID.nueva).email].sort(),
+  );
 
-  // La regla de los 7 días va en la consulta, con su tope por corrida.
+  // La regla va en la consulta, con su tope por corrida.
   const lectura = estado.consultas.find(q => q.tabla === TABLA_NEWSLETTER && q.op === 'select');
   assert.equal(lectura.eq.activo, true);
   assert.match(lectura.or, /ultimo_envio_at\.is\.null/);
-  assert.match(lectura.or, /consentimiento_at\.lte\./);
+  assert.doesNotMatch(lectura.or, /consentimiento_at/);
   assert.match(lectura.or, /ultimo_envio_at\.lte\./);
   assert.ok(lectura.limite > 0 && lectura.limite <= 100);
   // Sólo carreras de Teclab activas con precio vigente: ni Siglo 21, ni la
@@ -228,15 +233,16 @@ test('ultimo_envio_at se actualiza sólo con el envío confirmado', async t => {
     ? new Response(JSON.stringify({ data: { succeeded: 1, failed: 0 } }), { status: 200 })
     : new Response(JSON.stringify({ data: { succeeded: 0, failed: 1, error_code: 'E_X' } }), { status: 200 }));
   const { cuerpo } = await correr();
-  assert.deepEqual(cuerpo, { candidatas: 2, enviados: 1, salteados: 0, fallidos: 1 });
+  assert.deepEqual(cuerpo, { candidatas: 3, enviados: 1, salteados: 0, fallidos: 2 });
   assert.equal(fila(ID.vieja).ultimo_envio_at, antes, 'el rechazo no cuenta como envío');
+  assert.equal(fila(ID.nueva).ultimo_envio_at, null);
   const nuevo = Date.parse(fila(ID.nunca).ultimo_envio_at);
   assert.ok(Math.abs(Date.now() - nuevo) < 60_000);
 
-  // Corrida siguiente: la que salió ya no es candidata; la rechazada, sí.
+  // Corrida siguiente: la que salió ya no es candidata; las rechazadas, sí.
   contestarMail(() => { throw new TypeError('fetch failed'); });
   const segunda = await correr();
-  assert.deepEqual(segunda.cuerpo, { candidatas: 1, enviados: 0, salteados: 0, fallidos: 1 });
+  assert.deepEqual(segunda.cuerpo, { candidatas: 2, enviados: 0, salteados: 0, fallidos: 2 });
   assert.equal(fila(ID.vieja).ultimo_envio_at, antes);
 });
 
@@ -248,10 +254,10 @@ test('un fallo no corta la corrida y los registros no llevan mails, ids ni la cl
     return new Response(JSON.stringify({ data: { succeeded: 1, failed: 0 } }), { status: 200 });
   });
   const { cuerpo } = await correr();
-  assert.equal(mails.length, 2);
-  assert.deepEqual(cuerpo, { candidatas: 2, enviados: 1, salteados: 0, fallidos: 1 });
+  assert.equal(mails.length, 3);
+  assert.deepEqual(cuerpo, { candidatas: 3, enviados: 2, salteados: 0, fallidos: 1 });
   const salida = JSON.stringify(registros);
-  for (const secreto of [CLAVE, fila(ID.vieja).email, fila(ID.nunca).email, ID.vieja, ID.nunca]) {
+  for (const secreto of [CLAVE, fila(ID.vieja).email, fila(ID.nunca).email, fila(ID.nueva).email, ID.vieja, ID.nunca, ID.nueva]) {
     assert.equal(salida.includes(secreto), false, secreto);
   }
 });

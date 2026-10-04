@@ -2,8 +2,10 @@
 //
 // A cada suscripción activa a una carrera de Teclab le manda, cada 7 días, el
 // mail de la plantilla aprobada (`armarMailPrecio` con `tipo: 'newsletter'`)
-// con el precio vigente de su carrera. Los 7 días cuentan desde el último
-// envío o, si nunca se le mandó, desde el consentimiento. Siglo 21, Identidad
+// con el precio vigente de su carrera. Quien nunca recibió el precio (se
+// suscribió cuando no había o estaba vencido) lo recibe en la primera corrida
+// con precio vigente; después, cada 7 días desde el último envío. El mail de
+// resumen de «Ver precio» cuenta como envío (lo marca /api/formularios). Siglo 21, Identidad
 // y las suscripciones generales quedan afuera: la plantilla es de Teclab.
 //
 // `ultimo_envio_at` se escribe recién cuando SMTP2GO confirma el envío: un
@@ -108,15 +110,15 @@ export async function GET(request: NextRequest) {
   }
   if (!vigentes.size) return NextResponse.json(resumen);
 
-  // Los 7 días van en la consulta: nunca se le mandó y consintió hace 7 días
-  // o más, o el último envío tiene 7 días o más.
+  // La regla va en la consulta: nunca se le mandó, o el último envío tiene
+  // 7 días o más.
   const limite = new Date(inicio - DIAS_ENTRE_ENVIOS * DIA_MS).toISOString();
   const suscripciones = await supabase
     .from(TABLA_NEWSLETTER)
     .select('id, email, carrera_id')
     .eq('activo', true)
     .in('carrera_id', [...vigentes.keys()])
-    .or(`and(ultimo_envio_at.is.null,consentimiento_at.lte.${limite}),ultimo_envio_at.lte.${limite}`)
+    .or(`ultimo_envio_at.is.null,ultimo_envio_at.lte.${limite}`)
     .order('ultimo_envio_at', { ascending: true, nullsFirst: true })
     .limit(POR_CORRIDA);
   if (suscripciones.error) {

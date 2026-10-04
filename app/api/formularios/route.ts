@@ -323,7 +323,28 @@ async function registrarPrecio(payload: JsonRecord) {
  * se importan recién adentro de la tarea: sólo los necesita este camino, y los
  * tests de los otros envíos cargan el endpoint sin ellos.
  */
-function enviarMailPrecio(email: string, carrera: CarreraDelMail, resultado: ResultadoPrecio) {
+/**
+ * El resumen ya le dio el precio: si además se suscribió a esta carrera, cuenta
+ * como envío del newsletter y el cron no lo repite hasta dentro de 7 días. Sin
+ * suscripción no toca nada. Un fallo sólo se registra: lo peor es un mail de
+ * más al día siguiente.
+ */
+async function marcarEnvioNewsletter(email: string, carreraId: number) {
+  try {
+    const { error } = await createSupabaseAdmin()
+      .from(TABLA_NEWSLETTER)
+      .update({ ultimo_envio_at: new Date().toISOString() })
+      .eq('email', email.toLowerCase())
+      .eq('carrera_id', carreraId);
+    if (error) console.error('[formularios] No se pudo marcar el envío del newsletter', { code: error.code });
+  } catch (error) {
+    console.error('[formularios] No se pudo marcar el envío del newsletter', {
+      code: error instanceof Error ? error.name : 'desconocido',
+    });
+  }
+}
+
+function enviarMailPrecio(email: string, carrera: CarreraDelMail & { id: number }, resultado: ResultadoPrecio) {
   if (resultado.estado !== 'vigente') return;
   const clave = process.env.SMTP2GO_API_KEY;
   if (!clave) {
@@ -337,7 +358,10 @@ function enviarMailPrecio(email: string, carrera: CarreraDelMail, resultado: Res
         const { armarMailPrecio, mandarPorSmtp2go } = await import('@/components/formularios/mail-precio');
         const mail = armarMailPrecio({ carrera, precio, hoy: new Date() });
         const envio = await mandarPorSmtp2go({ clave, para: email, mail });
-        if (envio.enviado) return;
+        if (envio.enviado) {
+          await marcarEnvioNewsletter(email, carrera.id);
+          return;
+        }
         if (envio.status === null) {
           console.error('[formularios] No se pudo mandar el mail del precio por SMTP2GO', { code: envio.codigo });
         } else {
