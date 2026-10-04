@@ -10,8 +10,6 @@ Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se an
 
 - [ ] **Revisar y mantener el corpus del bot.** Leer conversaciones reales y respuestas dudosas, confirmar cada dato contra su fuente vigente, corregir el corpus de la casa correspondiente y regenerar siempre las páginas de entrenador y buscador. No aprobar una respuesta sólo porque suena bien: verificar especialmente precios, fechas, modalidad, requisitos, cuotas y documentación.
 
-- [ ] **Revisar indexación y rendimiento SEO.** Ejecutar `npm run seo`, comparar con `docs/indexacion.md` y el informe anterior, revisar Search Console (cobertura, páginas excluidas, consultas, CTR y posiciones) y dejar registradas las conclusiones. Después de cambios de contenido, comprobar también `npm run smoke` y que el sitemap tenga las URLs y `lastmod` esperados.
-
 - [ ] **Auditar el contenido publicado.** Ejecutar `npm run auditar` y resolver o registrar los faltantes de carreras, planes, imágenes OG, materias, novedades y FAQ. Aplicar `esCarreraVisible()` a cualquier lectura nueva de `carreras` antes de publicar cambios.
 
 - [ ] **Actualizar fuentes comerciales cuando cambien.** Revisar los dashboards y comunicaciones oficiales de Siglo 21, Teclab e Identidad Argentina; actualizar precios, cuotas, fechas, financiación, modalidad y oferta sólo con fuente verificable. Regenerar los artefactos derivados y correr los tests de ventas.
@@ -19,6 +17,16 @@ Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se an
 - [ ] **Controlar leads y canales.** Revisar consultas recibidas, clics de WhatsApp y el embudo de `npm run leads`; verificar que el número de WhatsApp, los formularios y los avisos por Telegram sigan funcionando. Para avisos, mirar `net._http_response`: un formulario que responde `201` no confirma que Telegram haya recibido el mensaje.
 
 - [ ] **Revisar producción después de cada deploy o cambio sensible.** Ejecutar `npm run smoke` y, cuando corresponda, `npm run seo`; comprobar rutas, redirects, cabeceras, noindex del admin, sitemap, formularios y panel. Si se toca CSP, secretos, triggers o Edge Functions, seguir además el procedimiento documentado y hacer la prueba manual correspondiente.
+
+## Seguimiento permanente de indexación y rendimiento
+
+La antigua tarea 13 del backlog continúa acá: no se cierra con una revisión. Revisar tras altas de carreras o cambios de contenido y en las revisiones de mantenimiento; registrar la fecha, las URLs revisadas, los resultados y cualquier limitación de acceso o medición.
+
+- **Indexabilidad pública:** ejecutar `npm run smoke` y comprobar respuesta directa `200`, canónica, permisos de rastreo/indexación y presencia de las URLs y `lastmod` esperados en el sitemap. Estas comprobaciones no demuestran que Google haya indexado una página.
+- **Indexación y tráfico en Google:** ejecutar `npm run seo`, comparar con [el registro de indexación](indexacion.md) y el informe anterior; revisar Search Console (cobertura, páginas excluidas, consultas, CTR y posiciones). Si no hay acceso, dejar esa parte pendiente sin inferir el estado a partir del sitio público.
+- **Rendimiento de carga:** distinguir mediciones de laboratorio de datos de usuarios reales; registrar herramienta, fecha, URL, dispositivo y condiciones para poder comparar. El peso del HTML o el tiempo de una petición aislada no prueban la experiencia de carga. Mantener `inlineCss` conforme a los criterios vigentes: no apagarlo sólo para reducir el peso del HTML.
+
+Los problemas concretos que aparezcan vuelven a [Pendientes](../PENDIENTES.md) con su evidencia; esta rutina sigue vigente. No agrega automatizaciones ni duplica la vigilancia de producción existente.
 
 ## CSS de la home al actualizar Next
 

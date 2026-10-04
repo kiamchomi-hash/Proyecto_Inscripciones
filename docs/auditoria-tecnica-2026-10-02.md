@@ -71,11 +71,40 @@ fallos/omitidos, 27 advertencias de lint y cero errores. Typecheck también
 comprueba contratos negativos de tablas, columnas, valores y RPC. Build aprobado.
 No se probó la regeneración en Windows ni se realizaron escrituras reales.
 
-**A3 sigue abierta:** faltan adaptadores de detalle completo y materias, tipar el
-armado dinámico de consultas y validar JSON. No se presenta el genérico
+**A3 sigue abierta:** al cierre de esa primera etapa faltaban adaptadores de
+detalle completo y materias, tipar el armado dinámico de consultas y validar JSON.
+No se presenta el genérico
 `Database` como validación en runtime ni como reemplazo de las pruebas RLS.
 [Procedimiento y límites](tipos-supabase.md),
 [fuentes](../referencias/2026-10-02-tipos-supabase.md). Cambios locales sin publicar.
+
+En la continuación **A3-D1** se validó el detalle completo de carreras mediante
+un adaptador puro. API y página usan proyecciones literales inferidas, sin casts
+de `Carrera[]`, y reconstruyen sólo campos públicos. La validación recursiva
+cubre las cinco variantes de slides y sus objetos anidados, elimina claves
+desconocidas y normaliza opcionales null a ausencia. Se conservan slides null,
+listas vacías y filtros de oferta, aplicados antes de validar. Un dato corrupto
+visible produce API 502 sin caché pública y error contextual en la página; nunca
+una respuesta parcial exitosa. Los errores de validación identifican id y ruta,
+sin registrar contenido. No se cambió UI, sitemap ni caché de éxito.
+
+La consulta remota previamente autorizada encontró 89 filas activas visibles
+compatibles con esa normalización: ocho `imagen_mobile: null`, una derecha null
+y un extras desconocido en la raíz del plan. No hubo escrituras en la base ni
+consultas remotas adicionales durante la implementación.
+
+RED observado: el GET real con `materias: 42` respondió 200, cuando la prueba
+esperaba 502. GREEN: **11 pruebas nuevas**, más **18 pruebas** en la selección
+detalle/catálogo/resiliencia, todas aprobadas. `npm run check` aprobado en el
+árbol local con cambios paralelos: **183 tests**, cero fallos/omitidos, typecheck
+sin errores y las mismas 27 advertencias de lint fuera de esta unidad.
+`git diff --check` aprobado. **Build no ejecutado:** requiere lecturas remotas
+de columnas fuera de la autorización acotada actual. Las pruebas simuladas no
+certifican caché ISR real ni RLS. Sin commit, push ni publicación.
+
+**Pendiente de A3:** adaptador de materias, armado dinámico de consultas y las
+demás fronteras JSON. El detalle de carreras ya tiene validación de runtime;
+eso no sustituye las pruebas de integración pendientes.
 
 P1: siguiente intervención, antes de confiar en una nueva publicación. P2: siguiente ciclo de mantenimiento. P3: mejora opcional condicionada a mediciones. Esfuerzos orientativos para una persona familiarizada con el proyecto; incluyen pruebas, no son presupuestos.
 

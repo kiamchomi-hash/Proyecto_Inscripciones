@@ -43,7 +43,6 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso** para Teclab, Siglo 21, Identidad Argentina y clases de apoyo.
 - [ ] **11. Crear un folleto de carreras relevantes**.
 - [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
-- [ ] **13. Revisar la indexación y el rendimiento de las páginas**.
 - [ ] **14. Crear más mensajes de seguimiento que complementen al primero**. Segundo seguimiento de Siglo 21 implementado y verificado localmente el 03/10/2026, sin tocar las otras casas. El alcance global sigue abierto. [Evidencia](docs/historial-pendientes.md#mensajes-siglo21-2026-10-03).
 - [ ] **15. Permitir que una pregunta del buscador de carreras se responda combinando varias respuestas**, separadas por párrafos.
 - [ ] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas**.
@@ -51,19 +50,19 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
 - [ ] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram**, especialmente las de Estadística y Análisis Aplicado, que aparentemente tienen éxito.
-- [ ] **24. Incorporar newsletter y acceso al precio desde los slides**: agregar un checkbox al pedir el mail en formularios; poner el precio en el último slide con un botón «Ver precio» que abra una ventana con las opciones de iniciar sesión o hablar por WhatsApp.
 - [ ] **25. Ocultar preferentemente la ubicación en los slides de carreras**.
 - [ ] **26. Revisar los plugins de ChatGPT y Claude**.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
 - [ ] **31. Arreglar la alineación de las carreras en la sección del test vocacional**.
+- [ ] **35. Teclab: cambiar la vista previa (OG) del enlace personalizado** (`/inscripcion/<codigo>`) que se ve al compartirlo por WhatsApp.
 - [ ] **36. Activar el mail con el resumen del precio**: crear una API key en SMTP2GO, cargarla en Vercel como `SMTP2GO_API_KEY` (Sensitive) y redeployar; hasta entonces el sitio no manda mails. Sumar a `.env.example` la línea `SMTP2GO_API_KEY=` con su comentario (los permisos del proyecto no dejan que Claude lo lea). [Detalle](odd/tasks/mail-precio-teclab.md).
 - [ ] **37. Newsletter: mandar a cada suscripto un mail cada X días desde que se suscribe**, con la plantilla de `docs/mails/mail-inicio-teclab.html`. Falta definir X y cómo se da de baja. [Detalle](odd/tasks/mail-precio-teclab.md).
 
 ## Documentación de apoyo
 
-- [Rutinas de mantenimiento](docs/rutinas.md): contenido, bot, SEO, fuentes comerciales, leads y verificaciones de deploy.
+- [Rutinas de mantenimiento](docs/rutinas.md): contenido, bot, SEO, fuentes comerciales, leads y verificaciones de deploy. La revisión de indexación y rendimiento (antigua tarea 13) queda como seguimiento permanente, no como tarea cerrable.
 - [Detalle de pendientes abiertos](docs/pendientes-detalle.md): mediciones, restricciones, fuentes y pasos originales.
 - [Historial de pendientes cerrados](docs/historial-pendientes.md): tareas terminadas y registros anteriores, con su evidencia.
 - [Notas y procedimientos operativos](docs/notas-operativas.md): webhook, secretos, correo, incidentes y límites conocidos.
