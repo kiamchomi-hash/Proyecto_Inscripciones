@@ -876,6 +876,7 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
   const familiaTeclab = getFamiliaTeclab(carrera);
   const isTeclabCourse = esCursoTeclab(carrera);
   const tipoTeclab = familiaTeclab ? getTipoTeclab(carrera) : null;
+  const badgeInternoTeclab = (familiaTeclab || isTeclabCourse) && badge === 'Más buscada';
   const prefetched = useRef(false);
   const handlePrefetch = useCallback(() => {
     if (!prefetched.current) { prefetched.current = true; prefetchImages(carrera); }
@@ -903,7 +904,7 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
         onTouchStart={handlePrefetch}
         aria-label={`Ver detalles de ${carrera.nombre}`}
       >
-        {badge && (
+        {badge && !badgeInternoTeclab && (
           <span className={`career-badge ${carrera.proximamente ? 'career-badge--proximamente' : carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada'}`}>
             {badge}
           </span>
@@ -924,6 +925,11 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
               {carrera.duracion && carrera.duracion !== 'Consultar' ? carrera.duracion : 'Teclab'}
             </span>
             <span className="teclab-badge teclab-badge-tipo">Curso</span>
+          </div>
+        )}
+        {badgeInternoTeclab && (
+          <div className="teclab-card-popularidad">
+            <span className="career-badge career-badge--destacada">{badge}</span>
           </div>
         )}
         <div className="flex-grow relative min-w-0">

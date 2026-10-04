@@ -1126,6 +1126,22 @@ mark {
   top: -3px;
 }
 
+/* Más buscada ocupa su propia fila sin invadir la tarjeta anterior ni la cabecera. */
+.teclab-card-popularidad {
+  grid-column: 1 / -1;
+  margin-bottom: 0.5rem;
+}
+
+.teclab-card-popularidad .career-badge--destacada {
+  position: static;
+  display: inline-block;
+  transform: none;
+  background: var(--teclab-accent);
+  color: var(--teclab-on-accent);
+  border: 2px solid var(--teclab-ink);
+  border-radius: 5px;
+}
+
 /* ── Encabezado de seccion ── */
 /* Caja del encabezado, con el mismo filo que el titular del render */
 .teclab-section-badge {
