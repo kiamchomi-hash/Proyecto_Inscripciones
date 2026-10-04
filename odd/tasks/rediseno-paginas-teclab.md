@@ -30,3 +30,4 @@ Llevar las páginas de Teclab al sistema visual de `piezas_teclab` (paleta ofici
 - 04/10/2026: documento creado; T1 a T3 delegadas a un writer.
 - 04/10/2026: T1 y T2 hechas; T3 con estilos completos y el check frenado por el stub de `next/font/google` en el test de la página de inscripción.
 - 04/10/2026: T3 y T4 cerradas; commit de la unidad de trabajo.
+- 04/10/2026: el pedido real eran las fichas de cada carrera de Teclab (`/carreras/<slug>`), no estas páginas. Lo hecho queda publicado; las fichas siguen abiertas en el pendiente 38.

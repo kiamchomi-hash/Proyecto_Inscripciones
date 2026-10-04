@@ -4,38 +4,8 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "-p",
-        "3100"
-      ],
-      "port": 3100
-    },
-    {
-      "name": "prod",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "start",
-        "--",
-        "-p",
-        "3200"
-      ],
-      "port": 3200
-    },
-    {
-      "name": "pieza-teclab",
-      "runtimeExecutable": "python",
-      "runtimeArgs": [
-        "-m",
-        "http.server",
-        "8765",
-        "--directory",
-        "contenidos"
-      ],
-      "port": 8765
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
     }
   ]
 }

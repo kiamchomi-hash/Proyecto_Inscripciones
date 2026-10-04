@@ -411,6 +411,7 @@ export function PanelVerPrecio({
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
+          {slug && <a href={urlAutoinscripcion(slug)} className="vp-primario">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto="Consultar precio vigente" principal />
         </div>
       )}
