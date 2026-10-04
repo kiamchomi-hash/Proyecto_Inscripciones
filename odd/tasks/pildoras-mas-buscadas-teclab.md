@@ -1,11 +1,11 @@
 # Más buscadas y etiqueta Teclab
 
 ## Objetivo y alcance autorizado
-Marcar las once carreras del ranking 05/09–04/10/2026 como destacadas y ubicar Más buscada dentro de las tarjetas Teclab, en una fila propia sobre el título. Preservar Nueva roja y su prioridad, duración y tipo. No publicar Identidad Argentina en la home ni modificar su exclusión.
+Marcar las once carreras del ranking 05/09–04/10/2026 como destacadas y ubicar Más buscada dentro de las tarjetas Teclab, junto a la duración dentro de la misma cabecera. Preservar Nueva roja y su prioridad, duración y tipo. No publicar Identidad Argentina en la home ni modificar su exclusión.
 
 ## Tareas
 - [x] T1: Actualizar destacada en las once filas identificadas, preservando otros campos y verificar lectura posterior.
-- [x] T2: Integrar la etiqueta Teclab dentro de la tarjeta con acento familiar y verificar escritorio y celular.
+- [x] T2 (reabierta y verificada por pedido del usuario): Mover Más buscada junto a la duración en la cabecera Teclab y verificar escritorio y celular.
 
 ## Ruta y restricciones
 Ambas tareas delegadas a un único escritor: lectura preparatoria, cambio de componente/estilos y pruebas. Sin ramas ni PR, conforme a la regla específica del proyecto. Sin push ni deploy autorizados. Trabajo local sobre main; commits propios al cierre del trabajo sustancial, si las comprobaciones lo permiten.
@@ -26,3 +26,13 @@ Verificación observada: prueba de regresión RED antes del cambio (faltaba badg
 Servidor local existente puerto 3000, sin iniciar ni detener procesos ajenos. Capturas completas home-1280.png y home-375.png, detalles teclab-1280-0.png / teclab-1280-1.png / teclab-375-0.png / teclab-375-1.png en screenshots/pildoras-carreras/. Geometría de las cuatro tarjetas: badge dentro, debajo de cabecera, encima del título y position static. Navegación sin clics ni modales, sin eventos career_clicks.
 
 Referencias: referencias/2026-10-04-pildoras-carreras.md. Próximo paso: coordinador muestra capturas, sincroniza espejo Engram, revisa y registra commit propio. Sin commit, push ni deploy del escritor.
+
+
+## Ajuste solicitado: junto a la duración
+T2 reabierta el 04/10/2026: el usuario prefiere Más buscada al lado de 2 años, no una fila propia. Alcance exclusivamente local: componente, CSS y prueba; sin datos, commits, push ni publicación autorizados para este ajuste.
+
+Implementado grupo flexible duración + popularidad, con separación de 0.4rem y wrap sólo si no entra; tipo conserva alineación a la derecha. Misma lógica para cursos. Nueva y Próximamente sin cambios.
+
+Prueba determinística RED observada: faltaba teclab-card-meta en cabeceras. GREEN observado: 1/1. Capturas home completa y dos detalles Teclab por ancho en screenshots/pildoras-carreras-lado-duracion/. En 1280 y 375 px, Programación y Seguros mantienen duración y Más buscada en la misma fila. Separación duración/badge: 5 px; separación mínima badge/tipo: 65.86 px (375) y 101.52 px (1280). Ninguna colisión. Revisión visual del detalle móvil aprobada.
+
+Puerto 3000 inicialmente rechazaba conexiones: se inició servidor dev propio, sin detener procesos ajenos. Navegación sin abrir fichas ni modales y sin disparar career_clicks. npm run check exit 0: lint sin errores (27 advertencias), typecheck correcto y 337/337 pruebas. git diff --check correcto. Pendiente mostrar capturas al usuario y sincronizar espejo Engram; sin commit ni push del escritor.

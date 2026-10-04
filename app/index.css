@@ -1126,13 +1126,21 @@ mark {
   top: -3px;
 }
 
-/* Más buscada ocupa su propia fila sin invadir la tarjeta anterior ni la cabecera. */
-.teclab-card-popularidad {
-  grid-column: 1 / -1;
-  margin-bottom: 0.5rem;
+/* Duración y popularidad comparten la cabecera sin invadir el tipo. */
+.teclab-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
-.teclab-card-popularidad .career-badge--destacada {
+.teclab-card-meta .teclab-badge,
+.teclab-card-head > .teclab-badge-tipo {
+  flex-shrink: 0;
+}
+
+.teclab-card-meta .career-badge--destacada {
   position: static;
   display: inline-block;
   transform: none;

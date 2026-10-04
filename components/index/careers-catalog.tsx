@@ -912,7 +912,10 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
         {/* Teclab: cabecera de badges como el .folder-head del render */}
         {familiaTeclab && (
           <div className="teclab-card-head">
-            <span className="teclab-badge">{carrera.duracion || '2 años'}</span>
+            <div className="teclab-card-meta">
+              <span className="teclab-badge">{carrera.duracion || '2 años'}</span>
+              {badgeInternoTeclab && <span className="career-badge career-badge--destacada">{badge}</span>}
+            </div>
             {tipoTeclab && <span className="teclab-badge teclab-badge-tipo">{tipoTeclab}</span>}
           </div>
         )}
@@ -921,15 +924,13 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
             {/* La duracion decia "Consultar" mientras Teclab no publicaba la
                 ficha; ahi el badge mostraba el instituto, que en esta seccion ya
                 se sabe. Con el dato cargado vuelve a servir la duracion. */}
-            <span className="teclab-badge">
-              {carrera.duracion && carrera.duracion !== 'Consultar' ? carrera.duracion : 'Teclab'}
-            </span>
+            <div className="teclab-card-meta">
+              <span className="teclab-badge">
+                {carrera.duracion && carrera.duracion !== 'Consultar' ? carrera.duracion : 'Teclab'}
+              </span>
+              {badgeInternoTeclab && <span className="career-badge career-badge--destacada">{badge}</span>}
+            </div>
             <span className="teclab-badge teclab-badge-tipo">Curso</span>
-          </div>
-        )}
-        {badgeInternoTeclab && (
-          <div className="teclab-card-popularidad">
-            <span className="career-badge career-badge--destacada">{badge}</span>
           </div>
         )}
         <div className="flex-grow relative min-w-0">
