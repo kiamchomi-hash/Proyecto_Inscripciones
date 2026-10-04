@@ -50,16 +50,16 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
 - [ ] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram**, especialmente las de Estadística y Análisis Aplicado, que aparentemente tienen éxito.
-- [x] **25. Ocultar preferentemente la ubicación en los slides de carreras**. Resuelto el 04/10/2026: se sacó el botón «Guaminí 4876» de los modales de Siglo 21 (`carousel-modal.tsx`) e Identidad (`ia-modal.tsx`); Teclab ya no lo tenía.
+- [x] ~~**25. Ocultar preferentemente la ubicación en los slides de carreras**~~. Resuelto el 04/10/2026: se sacó el botón «Guaminí 4876» de los modales de Siglo 21 (`carousel-modal.tsx`) e Identidad (`ia-modal.tsx`); Teclab ya no lo tenía.
 - [ ] **26. Revisar los plugins de ChatGPT y Claude**.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
-- [x] **31. Arreglar la alineación de las carreras en la sección del test vocacional**. Resuelto el 04/10/2026 (`24ef0cd`): el nombre de la carrera elegida va a la izquierda en un renglón y, si no entra, corre como cinta dentro de su caja.
+- [x] ~~**31. Arreglar la alineación de las carreras en la sección del test vocacional**~~. Resuelto el 04/10/2026 (`24ef0cd`): el nombre de la carrera elegida va a la izquierda en un renglón y, si no entra, corre como cinta dentro de su caja.
 - [ ] **38. Rediseñar la página de cada carrera de Teclab (`/carreras/<slug>`) con el sistema de `piezas_teclab`** (paleta, Poppins, fotos y logo oficiales), sin cambiar la disposición ni los textos. El 04/10/2026 se rediseñaron por error `/teclab` y las de inscripción (`/teclab/inscripcion`, `/carreras/<slug>/inscripcion`, `/inscripcion/<codigo>`), commit `d73a904`, ya publicado; las fichas de carrera siguen pendientes. [Detalle](odd/tasks/rediseno-paginas-teclab.md).
-- [x] **35. Teclab: cambiar la vista previa (OG) del enlace personalizado** (`/inscripcion/<codigo>`) que se ve al compartirlo por WhatsApp. Resuelto el 03/10/2026: título, descripción e imagen propios de Teclab (`public/imagenes/og/default-teclab-inscripcion.jpg`), iguales para todos los códigos.
-- [x] **36. Activar el mail con el resumen del precio**. Resuelto el 03/10/2026: clave cargada en Vercel, redeploy hecho y mail recibido en la prueba; sale como «CAU Online». [Detalle](odd/tasks/mail-precio-teclab.md).
-- [x] **37. Newsletter: mandar a cada suscripto un mail cada X días desde que se suscribe**. Resuelto el 03/10/2026 para Teclab: cron diario a las 10:00, un mail cada 7 días por suscripción, baja de un clic. Siglo 21, Identidad y las suscripciones generales quedan para más adelante. [Detalle](odd/tasks/newsletter-teclab.md).
+- [x] ~~**35. Teclab: cambiar la vista previa (OG) del enlace personalizado**~~ (`/inscripcion/<codigo>`) que se ve al compartirlo por WhatsApp. Resuelto el 03/10/2026: título, descripción e imagen propios de Teclab (`public/imagenes/og/default-teclab-inscripcion.jpg`), iguales para todos los códigos.
+- [x] ~~**36. Activar el mail con el resumen del precio**~~. Resuelto el 03/10/2026: clave cargada en Vercel, redeploy hecho y mail recibido en la prueba; sale como «CAU Online». [Detalle](odd/tasks/mail-precio-teclab.md).
+- [x] ~~**37. Newsletter: mandar a cada suscripto un mail cada X días desde que se suscribe**~~. Resuelto el 03/10/2026 para Teclab: cron diario a las 10:00, un mail cada 7 días por suscripción, baja de un clic. Siglo 21, Identidad y las suscripciones generales quedan para más adelante. [Detalle](odd/tasks/newsletter-teclab.md).
 
 ## Documentación de apoyo
 
