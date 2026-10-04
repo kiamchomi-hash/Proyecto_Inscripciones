@@ -449,7 +449,7 @@ function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; d
 // cintas rotuladas, todo el contenido en un solo bloque centrado en el alto, y
 // el aire sobrante ocupado por la marca -alla la foto de la ficha, aca el
 // isotipo de la Academia, que es lo unico que hay-.
-function SlideCierre({ carrera }: { carrera: Carrera }) {
+function SlideCierre({ carrera, onInscribir }: { carrera: Carrera; onInscribir: () => void }) {
   const { modalidad, certificacion } = parseEnfoque(carrera.enfoque);
   // La cursada no entra: es una frase, no un dato de dos palabras. Queda en la
   // portada y en el slide del docente.
@@ -490,9 +490,9 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
           ancho y mas altos: a media pantalla cada uno quedaban chicos.
           Sin el enlace a identidadargentina.com.ar que iba al pie: el contacto
           pasa por WhatsApp o por el formulario del CAU, no por el sitio del
-          Centro Educativo. Tampoco va el botón con la dirección de la sede,
-          como en Teclab: se cursa a distancia y una dirección se lee como un
-          requisito de asistencia. */}
+          Centro Educativo. Al lado va la inscripción, donde antes estaba la
+          dirección de la sede: se sacó como en Teclab, porque se cursa a
+          distancia y una dirección se lee como un requisito de asistencia. */}
       <div className="relative flex-shrink-0 flex flex-col gap-2.5">
         <div className="flex flex-col sm:flex-row gap-2">
           <a
@@ -502,6 +502,14 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
             className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
           >
             Consultar precios
+          </a>
+          <a
+            href="#preinscripcion"
+            onClick={e => { e.preventDefault(); onInscribir(); }}
+            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
+            style={{ background: AZUL }}
+          >
+            Inscribite ya
           </a>
         </div>
       </div>
@@ -514,13 +522,16 @@ export default function IAModal({ carrera, onClose }: Props) {
   const modulos = useMemo(() => parsePlan(carrera.plan_estudios), [carrera.plan_estudios]);
   const docente = useMemo(() => parseDocente(carrera.seccion_modalidad), [carrera.seccion_modalidad]);
 
+  // El slide de cierre se arma antes que handleClose: llama por ref a la
+  // inscripción, que se completa en el efecto de abajo.
+  const inscribirRef = useRef(() => {});
   const slides = useMemo(() => {
     const s: { key: string; node: React.ReactNode }[] = [
       { key: 'portada', node: <SlidePortada carrera={carrera} /> },
     ];
     if (docente) s.push({ key: 'docente', node: <SlideDocente carrera={carrera} /> });
     if (modulos.length) s.push({ key: 'plan', node: <SlidePlan carrera={carrera} modulos={modulos} /> });
-    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} /> });
+    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} onInscribir={() => inscribirRef.current()} /> });
     return s;
   }, [carrera, docente, modulos]);
 
@@ -559,6 +570,17 @@ export default function IAModal({ carrera, onClose }: Props) {
     setClosing(true);
     setTimeout(onClose, 300);
   }, [onClose]);
+
+  useEffect(() => {
+    inscribirRef.current = () => {
+      // La carrera viaja con el clic: abajo el formulario la elige sola.
+      pedirCarreraEnFormulario(carrera.id);
+      handleClose();
+      setTimeout(() => {
+        document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
+      }, 350);
+    };
+  }, [carrera.id, handleClose]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

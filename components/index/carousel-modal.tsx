@@ -839,6 +839,14 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
     };
   }, []);
 
+  // La carrera viaja con el clic: abajo el formulario la elige sola, en vez
+  // de dejar al lead buscando lo que ya eligio.
+  const inscribir = () => {
+    pedirCarreraEnFormulario(carrera.id);
+    handleClose();
+    setTimeout(() => { document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' }); }, 350);
+  };
+
   const handleClose = useCallback(() => {
     setClosing(true);
     setTimeout(onClose, 300);
@@ -914,7 +922,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
           <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
               <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
-                {renderSlide(slide, carrera, si === slideIdx)}
+                {renderSlide(slide, carrera, si === slideIdx, inscribir)}
               </div>
             ))}
           </div>
@@ -952,7 +960,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
               </a>
               {/* La carrera viaja con el clic: abajo el formulario la elige
                   sola, en vez de dejar al lead buscando lo que ya eligio. */}
-              <a href="#preinscripcion" onClick={(e) => { e.preventDefault(); pedirCarreraEnFormulario(carrera.id); handleClose(); setTimeout(() => { const f = document.getElementById('preinscripcion'); if (f) f.scrollIntoView({ behavior: 'smooth' }); }, 350); }}
+              <a href="#preinscripcion" onClick={(e) => { e.preventDefault(); inscribir(); }}
                 className="w-36 flex items-center justify-center gap-2 py-2 bg-[#6c2381] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -977,13 +985,13 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
 }
 
 // ── Render individual slide by type ──
-function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean) {
+function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean, onInscribir: () => void) {
   switch (slide.type) {
     case 'portada': return <SlidePortadaView slide={slide} carrera={carrera} />;
     case 'modalidad': return <SlideModalidadView slide={slide} />;
     case 'evaluacion': return <SlideEvaluacionView slide={slide} />;
     case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} isVisible={isVisible} />;
-    case 'cierre': return <SlideCierreView slide={slide} carrera={carrera} />;
+    case 'cierre': return <SlideCierreView slide={slide} carrera={carrera} onInscribir={onInscribir} />;
     default: return null;
   }
 }
@@ -1186,7 +1194,7 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
   );
 }
 
-function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCierre; carrera?: Carrera }) {
+function SlideCierreView({ slide, carrera, onInscribir }: { slide: import('./types').SlideCierre; carrera?: Carrera; onInscribir: () => void }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden relative bg-[#011f17]">
       {/* Mobile top banner */}
@@ -1234,9 +1242,9 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
           ))}
         </div>
 
-        {/* Sólo WhatsApp. El botón con la dirección de la sede se sacó, como en
-            Teclab: la carrera se cursa a distancia y a un lead que vive lejos
-            una dirección le lee como un requisito de asistencia. */}
+        {/* WhatsApp + inscripción. Antes el segundo era la dirección de la sede:
+            se sacó como en Teclab, porque la carrera se cursa a distancia y a
+            un lead que vive lejos una dirección le lee como un requisito. */}
         <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
@@ -1252,6 +1260,16 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
               Consultar precios
             </a>
           )}
+          <a
+            href="#preinscripcion"
+            onClick={(e) => { e.preventDefault(); onInscribir(); }}
+            className="flex items-center justify-center gap-2 flex-[1_1_10rem] min-w-0 max-w-[min(100%,14rem)] px-2 py-2 md:py-2.5 bg-[#6c2381] hover:brightness-110 text-white text-center font-bold rounded-xl transition-all text-xs md:text-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            Inscribite ya
+          </a>
         </div>
         </div>
       </div>
