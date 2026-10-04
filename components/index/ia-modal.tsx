@@ -490,7 +490,9 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
           ancho y mas altos: a media pantalla cada uno quedaban chicos.
           Sin el enlace a identidadargentina.com.ar que iba al pie: el contacto
           pasa por WhatsApp o por el formulario del CAU, no por el sitio del
-          Centro Educativo. */}
+          Centro Educativo. Tampoco va el botón con la dirección de la sede,
+          como en Teclab: se cursa a distancia y una dirección se lee como un
+          requisito de asistencia. */}
       <div className="relative flex-shrink-0 flex flex-col gap-2.5">
         <div className="flex flex-col sm:flex-row gap-2">
           <a
@@ -500,17 +502,6 @@ function SlideCierre({ carrera }: { carrera: Carrera }) {
             className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg bg-[#25d366] text-white font-bold text-[0.95rem] sm:text-sm hover:brightness-110 transition-all"
           >
             Consultar precios
-          </a>
-          <a
-            href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 min-w-[10rem] flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg text-white font-bold text-[0.95rem] sm:text-sm transition-all"
-            // Relleno opaco, no translucido: el boton va sobre el isotipo grande
-            // del fondo y con el blanco al 8% se veia la letra por debajo.
-            style={{ background: 'color-mix(in srgb, #fff 9%, var(--ia-ink))', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
-          >
-            Guaminí 4876
           </a>
         </div>
       </div>

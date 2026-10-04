@@ -50,7 +50,7 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
 - [ ] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram**, especialmente las de Estadística y Análisis Aplicado, que aparentemente tienen éxito.
-- [ ] **25. Ocultar preferentemente la ubicación en los slides de carreras**.
+- [x] **25. Ocultar preferentemente la ubicación en los slides de carreras**. Resuelto el 04/10/2026: se sacó el botón «Guaminí 4876» de los modales de Siglo 21 (`carousel-modal.tsx`) e Identidad (`ia-modal.tsx`); Teclab ya no lo tenía.
 - [ ] **26. Revisar los plugins de ChatGPT y Claude**.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.

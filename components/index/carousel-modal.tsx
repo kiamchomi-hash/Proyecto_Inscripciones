@@ -1234,7 +1234,9 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
           ))}
         </div>
 
-        {/* Botones WhatsApp + Ubicación */}
+        {/* Sólo WhatsApp. El botón con la dirección de la sede se sacó, como en
+            Teclab: la carrera se cursa a distancia y a un lead que vive lejos
+            una dirección le lee como un requisito de asistencia. */}
         <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
           {carrera && (
             <a
@@ -1250,18 +1252,6 @@ function SlideCierreView({ slide, carrera }: { slide: import('./types').SlideCie
               Consultar precios
             </a>
           )}
-          <a
-            href="https://maps.google.com/?q=Guamini+4876+Villa+Lugano+Buenos+Aires"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 flex-[1_1_10rem] min-w-0 max-w-[min(100%,14rem)] px-2 py-2 md:py-2.5 bg-white/10 hover:bg-white/20 text-white text-center font-bold rounded-xl transition-all text-xs md:text-sm border border-white/20"
-          >
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-            </svg>
-            Guaminí 4876
-          </a>
         </div>
         </div>
       </div>
