@@ -55,7 +55,7 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
 - [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
-- [ ] **31. Arreglar la alineación de las carreras en la sección del test vocacional**.
+- [x] **31. Arreglar la alineación de las carreras en la sección del test vocacional**. Resuelto el 04/10/2026 (`24ef0cd`): el nombre de la carrera elegida va a la izquierda en un renglón y, si no entra, corre como cinta dentro de su caja.
 - [ ] **38. Rediseñar la página de cada carrera de Teclab (`/carreras/<slug>`) con el sistema de `piezas_teclab`** (paleta, Poppins, fotos y logo oficiales), sin cambiar la disposición ni los textos. El 04/10/2026 se rediseñaron por error `/teclab` y las de inscripción (`/teclab/inscripcion`, `/carreras/<slug>/inscripcion`, `/inscripcion/<codigo>`), commit `d73a904`, ya publicado; las fichas de carrera siguen pendientes. [Detalle](odd/tasks/rediseno-paginas-teclab.md).
 - [x] **35. Teclab: cambiar la vista previa (OG) del enlace personalizado** (`/inscripcion/<codigo>`) que se ve al compartirlo por WhatsApp. Resuelto el 03/10/2026: título, descripción e imagen propios de Teclab (`public/imagenes/og/default-teclab-inscripcion.jpg`), iguales para todos los códigos.
 - [x] **36. Activar el mail con el resumen del precio**. Resuelto el 03/10/2026: clave cargada en Vercel, redeploy hecho y mail recibido en la prueba; sale como «CAU Online». [Detalle](odd/tasks/mail-precio-teclab.md).
