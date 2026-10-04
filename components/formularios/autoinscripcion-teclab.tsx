@@ -22,7 +22,7 @@ import { WhatsAppIcon } from '@/components/icons';
 // entre por primera vez (cambio de contraseña y términos en el medio).
 export const PORTAL_ALUMNO_TECLAB = 'https://portalalumno.teclab.edu.ar/payments/select';
 
-const BOTON_PRINCIPAL = 'w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40';
+const BOTON_PRINCIPAL = 'w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 hover:shadow-[0_6px_18px_rgba(var(--catalogo-acento-rgb),0.35)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 disabled:hover:shadow-none';
 const ESTILO_PRINCIPAL = { background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' };
 const LINK_SECUNDARIO = 'w-full cursor-pointer py-1 text-sm font-bold text-[var(--catalogo-texto-suave)] underline underline-offset-2 transition-colors hover:text-white';
 

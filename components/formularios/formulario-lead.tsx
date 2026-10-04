@@ -37,7 +37,9 @@ type Valores = Partial<Record<CampoId, string | boolean>>;
 const ETIQUETA = 'block text-[10px] font-bold text-[var(--catalogo-etiqueta)] mb-0.5 uppercase tracking-wider';
 const CAMPO = 'form-field-focus w-full bg-[var(--catalogo-form-campo)] border rounded-lg px-3 py-1.5 text-sm text-white placeholder-[var(--catalogo-texto-suave)]/60 focus:outline-none transition-colors';
 const BORDE_OK = 'border-[var(--catalogo-acento)]/25 focus:border-[var(--catalogo-acento)]/60';
-const BORDE_MAL = '!border-red-400/60';
+// Un campo que frena el envío tiene que verse de un vistazo: borde pleno,
+// tinte de fondo y halo. Con el borde al 60% solo, pasaba desapercibido.
+const BORDE_MAL = '!border-red-400 !bg-red-500/10 ring-2 ring-red-400/30';
 
 const SPAN: Record<NonNullable<CampoDef['ancho']>, string> = {
   completo: 'col-span-6',
@@ -1583,7 +1585,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 ref={botonRef}
                 type="submit"
                 disabled={enviando || enFrio}
-                className="w-full rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 hover:shadow-[0_6px_18px_rgba(var(--catalogo-acento-rgb),0.35)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 disabled:hover:shadow-none"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
                 {enviando ? 'Enviando...' : flujoAuto ? 'Inscribirme' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
