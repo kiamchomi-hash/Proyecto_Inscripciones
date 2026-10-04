@@ -13,9 +13,8 @@
 import { NextResponse } from 'next/server';
 
 import { supabase } from '@/lib/supabase';
-import {
-  type Carrera, type CarreraDetalle, COLUMNAS_DETALLE, esCarreraVisible,
-} from '@/components/index/types';
+import { type CarreraDetalle, esCarreraVisible } from '@/components/index/types';
+import { carreraADetalle, COLUMNAS_FICHA_DETALLE, ErrorDetalleCarrera } from '@/lib/datos/carrera-detalle';
 
 // Igual que la home: la red de abajo es un día, lo que publica de verdad es la
 // revalidación on-demand.
@@ -24,27 +23,26 @@ export const revalidate = 86400;
 export async function GET() {
   const { data, error } = await supabase
     .from('carreras')
-    .select(`id, nivel, ${COLUMNAS_DETALLE.join(', ')}`)
+    .select(COLUMNAS_FICHA_DETALLE)
     .eq('activa', true);
 
   if (error) {
-    console.error('Error fetching detalle de carreras:', error.message);
+    console.error('No se pudo leer el detalle de carreras');
     return NextResponse.json({ error: 'no se pudo leer el detalle' }, { status: 502 });
   }
 
   // Mismo filtro de taxonomía que la home: una carrera que no se lista tampoco
   // necesita que le mandemos la ficha.
   const detalle: Record<number, CarreraDetalle> = {};
-  for (const fila of (data ?? []) as unknown as Carrera[]) {
-    if (!esCarreraVisible(fila)) continue;
-    detalle[fila.id] = {
-      slides: fila.slides,
-      plan_estudios: fila.plan_estudios,
-      seccion_modalidad: fila.seccion_modalidad,
-      seccion_duracion: fila.seccion_duracion,
-      descripcion: fila.descripcion,
-      enfoque: fila.enfoque,
-    };
+  try {
+    for (const fila of data ?? []) {
+      if (!esCarreraVisible(fila)) continue;
+      detalle[fila.id] = carreraADetalle(fila);
+    }
+  } catch (error) {
+    if (!(error instanceof ErrorDetalleCarrera)) throw error;
+    console.error('Detalle de carrera inválido:', { id: error.id, ruta: error.ruta });
+    return NextResponse.json({ error: 'no se pudo leer el detalle' }, { status: 502 });
   }
 
   return NextResponse.json(detalle, {

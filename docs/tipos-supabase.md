@@ -49,11 +49,43 @@ valores inválidos y argumentos incompletos sigan rechazados. Si el contrato
 pierde precisión, typecheck falla porque deja de existir el error esperado.
 Las pruebas del adaptador verifican normalización y exclusión del JSON pesado.
 
+## Detalle de carreras: JSON validado antes de publicar
+
+`lib/datos/carrera-detalle.ts` comparte la frontera de datos entre
+`/api/carreras-detalle` y `/carreras/[slug]`. Sus proyecciones literales permiten
+inferir las columnas consultadas. Los adaptadores reconstruyen exclusivamente
+los campos públicos; ni una fila completa ni claves extra del JSON pueden
+arrastrar `descuento_especial` u otros datos ajenos al contrato.
+
+La validación recorre las cinco variantes: portada, modalidad, evaluación,
+plan de estudios y cierre, con sus listas y objetos anidados. Conserva `slides`
+null y listas vacías. Normaliza los opcionales null a ausencia, no a un valor
+inventado. Las columnas anulables `descripcion`, `enfoque`, `duracion` y `titulo`
+se convierten en texto vacío, y `orden` en cero. Los demás campos anulables
+conservan null. No cambia los consumidores ni la presentación.
+
+La oferta oculta se filtra **antes** de validar. Un slide inválido de una carrera
+visible impide publicar toda la respuesta: API 502 sin `Cache-Control` público;
+página, metadata y parámetros estáticos propagan un error con id y ruta del
+campo. El registro de validación no incluye el contenido. No se omite la carrera
+corrupta para simular éxito parcial ni se cambia el reintento del cliente.
+
+La lectura remota autorizada del 02/10/2026 encontró 89 filas activas visibles
+compatibles: ocho `imagen_mobile: null` y una `paginas[1].derecha: null` se
+normalizan a ausencia; un `extras: null` en la raíz de un plan se descarta por
+ser una clave desconocida. No se modificó la base.
+
+`tests/carrera-detalle.test.mjs` ejecuta los adaptadores y los handlers reales
+con consultas simuladas. Cubre campos conocidos, proyección exacta, nulabilidad,
+errores anidados, filtro previo, caché y propagación de errores. Los contratos
+compilados comprueban además que una proyección incompleta o inválida no sirve
+para alimentar los adaptadores y que `Json` no es un arreglo de slides tipado.
+
 ## Alcance pendiente de A3
 
-Esta primera etapa no elimina todos los casts del proyecto. Siguen pendientes
-los adaptadores del detalle completo de carreras y de materias, el tipado del
-armado dinámico de la fila de consultas y la validación de sus campos JSON.
+Este avance no elimina todos los casts del proyecto. Siguen pendientes
+el adaptador de materias, el tipado del armado dinámico de la fila de consultas
+y las demás fronteras JSON fuera del detalle de carreras.
 `Carrera` sigue siendo un tipo de presentación manual; el tipo generado refleja
 las nulabilidades reales y no afirma que `slides` tenga un formato particular.
 No convertir `Json` a una estructura de slides con un cast y presentar eso como

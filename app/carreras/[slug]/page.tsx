@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
+import { carreraAPublica, COLUMNAS_CARRERA_PUBLICA } from '@/lib/datos/carrera-detalle';
 import { notFound, permanentRedirect } from 'next/navigation';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, carreraFullName, esCarreraVisible, getAreaForCarrera } from '@/components/index/types';
@@ -23,12 +24,12 @@ export const revalidate = 86400;
 async function getCarreras() {
   const { data } = await supabase
     .from('carreras')
-    .select('*')
+    .select(COLUMNAS_CARRERA_PUBLICA)
     .eq('activa', true)
     .order('orden', { ascending: true })
     .throwOnError();
   // Solo la oferta vigente: los niveles fuera del catalogo no tienen pagina.
-  return ((data || []) as Carrera[]).filter(esCarreraVisible);
+  return (data ?? []).filter(esCarreraVisible).map(carreraAPublica);
 }
 
 // Miniatura para compartir, una por familia. Ni Teclab ni las diplomaturas de
