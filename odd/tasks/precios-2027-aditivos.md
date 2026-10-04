@@ -39,3 +39,18 @@ Check final posterior: npm run check completó lint, typecheck y tests 325/325 s
 ## Límite del commit
 
 Este commit registra únicamente este documento de recuperación. Los extractores, regresiones comerciales, XLSX y snapshots de precios permanecen en las carpetas privadas ignoradas; no se fuerza su inclusión en el repositorio público. No incluye otros pendientes ni cambios paralelos. Revertir este documento no revierte los archivos privados. Comprobación de ejecución para este cambio documental: no aplica, no modifica comportamiento. El flujo integrado del descargador después del último ajuste sigue pendiente de verificación; la descarga y la extracción descriptas sí se observaron.
+
+## Integración aditiva en buscador
+
+- [x] T4 Integrar snapshot de lista 2027 en selectores existentes, sin alterar cotizaciones 2026.
+- [x] T5 Verificar regresiones y capturas de escritorio y celular.
+
+Ruta delegada por preparación de escritura. El snapshot descargado en T2 está verificado; no implica promociones ni financiación confirmadas. No publicación ni commit en esta unidad.
+
+## Resultado de integración local
+
+Snapshot incorporado exclusivamente como lista separada: 70 carreras del catálogo cruzadas en 1A y 70 en 1B. Las tres exclusiones por alias siguen intactas; Lic Producc Artística aparece únicamente en el diagnóstico de 1A y no se activa. Identidad del libro, CAU, modalidad, ingresantes, cotizable false, columnas e importes se validan antes de usarlo. Snapshot ausente permite regenerar 2026; fila sin datos conserva la carrera e informa falta de lista.
+
+RED observado: módulo de integración ausente. GREEN: 4/4 pruebas focales, incluyendo selectores del HTML offline, ambos períodos, copia final deshabilitada y retorno a tabla 2026 idéntica. Suite comercial final: 362/362. npm run check: 325/325, lint y typecheck sin errores. git diff --check limpio. El generador conserva aviso preexistente de 2A sin promoción publicada. No se tocaron fuentes de precios, corpus, contexto compartido, financiación ni datos de otras casas; entrenador no aplica.
+
+Capturas locales inspeccionadas: notas-locales/precios-2027-buscador-desktop.png (1280 px) y notas-locales/precios-2027-buscador-mobile.png (375 px). La tabla agregada muestra importes legibles y fecha en hora argentina, sin descuentos o cuotas inventados. El panel de mensajes existente presenta recorte lateral en estas capturas; no se modificó ese diseño. Comprobación independiente: 4/4 pruebas focales aprobadas. La integración permanece local, sin publicación. Se registra únicamente este documento en el commit solicitado; los cambios comerciales privados permanecen fuera del repositorio público.
