@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import * as taxonomia from '../components/index/types.ts';
 import * as inicio from '../components/index/inicio-teclab.ts';
@@ -122,7 +123,7 @@ test('los enlaces son absolutos: la ficha marcada desde el mail y WhatsApp de Te
   assert.match(html, />Quiero inscribirme</);
 
   const wa = `https://wa.me/${whatsapp.numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(`Hola, quiero consultar por la ${nombreCompleto}`)}`;
-  assert.equal(whatsapp.numeroWhatsAppDe('teclab'), '5491166522722');
+  assert.equal(whatsapp.numeroWhatsAppDe('teclab'), '5491132973801');
   assert.ok(texto.includes(wa), texto);
   assert.ok(html.includes(`href="${wa}"`));
   assert.match(html, />Consultar por WhatsApp</);
@@ -216,4 +217,18 @@ test('el id de la suscripción se valida como UUID', () => {
   for (const malo of ['', 'x', '6f1c2a4e1b2c4d3e8f90a1b2c3d4e5f6', '6f1c2a4e-1b2c-4d3e-8f90-a1b2c3d4e5f6 ', null, undefined, 7]) {
     assert.equal(esIdSuscripcion(malo), false, String(malo));
   }
+});
+
+// Restaurar Teclab no debe cambiar el destino de las otras casas.
+test('WhatsApp conserva los destinos de Identidad y Siglo 21', () => {
+  assert.equal(whatsapp.numeroWhatsAppDe('identidad'), '5491166522722');
+  for (const casa of ['siglo21', null, undefined]) {
+    assert.equal(whatsapp.numeroWhatsAppDe(casa), '5491132973801');
+  }
+});
+
+test('el mail de inicio de Teclab apunta al número oficial', () => {
+  const html = readFileSync(new URL('../docs/mails/mail-inicio-teclab.html', import.meta.url), 'utf8');
+  assert.match(html, /https:\/\/wa\.me\/5491132973801\?/);
+  assert.doesNotMatch(html, /5491166522722/);
 });

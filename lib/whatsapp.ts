@@ -19,14 +19,14 @@ import type { CasaId } from '@/components/formularios/casas';
 export const NUMERO_CAU = '5491132973801';
 
 /**
- * Teclab y Academia Identidad Argentina tienen su propio número. No pasa por el
+ * Academia Identidad Argentina conserva su propio número. No pasa por el
  * reparto: `whatsapp-reparto.tsx` sólo reescribe los enlaces a `NUMERO_CAU`.
  */
 export const NUMERO_TECLAB_IDENTIDAD = '5491166522722';
 
 /** El número que corresponde a la casa; sin casa, el del CAU. */
 export const numeroWhatsAppDe = (casa: CasaId | null | undefined): string =>
-  casa === 'teclab' || casa === 'identidad' ? NUMERO_TECLAB_IDENTIDAD : NUMERO_CAU;
+  casa === 'identidad' ? NUMERO_TECLAB_IDENTIDAD : NUMERO_CAU;
 
 /**
  * Entre quiénes se reparten las consultas que entran por WhatsApp. El primero
