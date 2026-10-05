@@ -42,7 +42,12 @@ export interface SlideCierre {
   beneficios: { icono: string; texto: string }[];
 }
 
-export type CarreraSlide = SlidePortada | SlideModalidad | SlideEvaluacion | SlidePlanEstudios | SlideCierre;
+export interface SlideFaq {
+  type: 'faq';
+  items: { pregunta: string; respuesta: string }[];
+}
+
+export type CarreraSlide = SlidePortada | SlideModalidad | SlideEvaluacion | SlidePlanEstudios | SlideCierre | SlideFaq;
 
 // ── Main carrera type ──
 

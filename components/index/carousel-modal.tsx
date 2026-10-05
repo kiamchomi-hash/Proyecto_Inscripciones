@@ -801,11 +801,12 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
 }
 
 // ── Main carousel modal ──
+export function slidesDelCarrusel(slides: CarreraSlide[] | null): CarreraSlide[] {
+  return (slides || []).filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion' && s.type !== 'faq');
+}
+
 export default function CarouselModal({ carrera, onClose, initiallyVisible = false }: Props) {
-  const slides = useMemo(() => {
-    return (carrera.slides || [])
-      .filter(s => s.type !== 'modalidad' && s.type !== 'evaluacion');
-  }, [carrera.slides]);
+  const slides = useMemo(() => slidesDelCarrusel(carrera.slides), [carrera.slides]);
 
   const [slideIdx, setSlideIdx] = useState(0);
   const [visible, setVisible] = useState(initiallyVisible);
@@ -1382,4 +1383,3 @@ function CareerCoverArt({ carrera }: { carrera: Carrera }) {
     </svg>
   );
 }
-

@@ -107,6 +107,17 @@ const cierre = objeto({
   beneficios: lista(objeto({ icono: texto, texto })),
 });
 
+const textoFaq: Lector<string> = (valor, ruta) =>
+  typeof valor === 'string' && valor.trim().length > 0 ? valor : invalido(ruta);
+const itemsFaq = lista(objeto({ pregunta: textoFaq, respuesta: textoFaq }));
+const faq = objeto({
+  type: literal('faq'),
+  items: (valor: unknown, ruta: string) => {
+    const items = itemsFaq(valor, ruta);
+    return items.length > 0 ? items : invalido(ruta);
+  },
+});
+
 const slide: Lector<CarreraSlide> = (valor, ruta) => {
   if (valor === null || typeof valor !== 'object' || Array.isArray(valor)) return invalido(ruta);
   switch (Reflect.get(valor, 'type')) {
@@ -115,6 +126,7 @@ const slide: Lector<CarreraSlide> = (valor, ruta) => {
     case 'evaluacion': return evaluacion(valor, ruta);
     case 'plan_estudios': return plan(valor, ruta);
     case 'cierre': return cierre(valor, ruta);
+    case 'faq': return faq(valor, ruta);
     default: return invalido(`${ruta}.type`);
   }
 };
@@ -123,7 +135,9 @@ const slide: Lector<CarreraSlide> = (valor, ruta) => {
 export function validarSlides(valor: Json | null, id: number): CarreraSlide[] | null {
   if (valor === null) return null;
   try {
-    return lista(slide)(valor, 'slides');
+    const slides = lista(slide)(valor, 'slides');
+    if (slides.filter(s => s.type === 'faq').length > 1) return invalido('slides');
+    return slides;
   } catch (error) {
     if (error instanceof ErrorFormatoSlide) throw new ErrorDetalleCarrera(id, error.message);
     throw error;

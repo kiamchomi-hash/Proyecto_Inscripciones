@@ -207,6 +207,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         ];
 
   const planSlide = getPlanSlide(carrera);
+  const faq = carrera.slides?.find(s => s.type === 'faq');
   const teclabCompetencias = conMaterialTeclab ? parseCompetenciasTeclab(carrera.seccion_modalidad) : [];
   const teclabSalida = conMaterialTeclab ? partirDescripcionTeclab(carrera.descripcion).salida : '';
   const teclabIntro = conMaterialTeclab ? partirDescripcionTeclab(carrera.descripcion).perfil : '';
@@ -592,6 +593,19 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               </a>
             </section>
           )}
+          {faq && (
+            <section id="preguntas-frecuentes" className="career-section career-faq" aria-labelledby="career-faq-heading">
+              <div className="career-section-heading">
+                <h2 id="career-faq-heading">Preguntas frecuentes</h2>
+              </div>
+              {faq.items.map((item, indice) => (
+                <details key={indice}>
+                  <summary>{item.pregunta}</summary>
+                  <p>{item.respuesta}</p>
+                </details>
+              ))}
+            </section>
+          )}
         </div>
 
         <aside className="career-aside" aria-label="Navegación y contacto">
@@ -602,6 +616,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               )}
               {cursada.length > 0 && <a href="#plan">Cómo se cursa</a>}
               {hasPlan && <a href="#plan">Plan de estudios</a>}
+              {faq && <a href="#preguntas-frecuentes">Preguntas frecuentes</a>}
               {inscripcionHref && (
                 <Link href={inscripcionHref} prefetch={false}>Cómo inscribirte</Link>
               )}

@@ -1338,3 +1338,35 @@
 /* El boton "Ver info" abre el mismo modal que el catalogo de la home */
 @import "../../components/index/modales.css";
 @import "../../components/formularios/formulario-lead.css";
+
+/* Las respuestas permanecen en el HTML; details funciona sin JavaScript. */
+.career-faq details {
+  margin-top: 12px;
+  border: 1px solid rgba(0, 199, 177, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.career-faq summary {
+  padding: 18px 20px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.career-faq summary::marker { color: var(--career-accent); }
+.career-faq summary:focus-visible {
+  outline: 2px solid var(--career-accent-bright);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.career-faq p {
+  margin: 0;
+  padding: 0 20px 20px;
+  color: var(--career-soft);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}

@@ -103,3 +103,32 @@ No ejecutar a ciegas. Leer las mismas tres filas y verificar que coincidan con e
 - Escritorio 1440×1000 y móvil 390×844: seis capturas viewport en notas-locales/seo-tres-fichas/capturas/, inspeccionadas visualmente y sin overflow horizontal. La captura fullPage falló en Chromium; el fallback viewport funcionó.
 - Respaldo posterior privado: notas-locales/seo-tres-fichas/estado-posterior.json. No hubo push.
 - Check final: primer intento terminado con exit 143 sin resumen; repetición acotada aprobada con exit 0. El check previo completo aprobó 342 pruebas.
+
+## Ajuste solicitado: introducción breve y FAQ (preparado, sin publicar)
+El usuario pidió trasladar las explicaciones extensas a preguntas frecuentes debajo. El soporte mantiene Supabase como fuente única: variante `faq` dentro de `slides`, con `items` de `pregunta` y `respuesta`. No añade columnas ni contenido académico por slug en código. El parser exige preguntas y respuestas no vacías, una lista con elementos y un único bloque FAQ; descarta propiedades extra como las variantes existentes.
+
+La sección se renderiza en servidor con details/summary nativos y texto escapado. Sólo aparece cuando existe FAQ y tiene enlace lateral condicional. Se excluye del carrusel para evitar pantallas vacías; Teclab conserva su modal. No se añade JSON-LD ni se promete un resultado enriquecido en Google.
+
+### Introducciones propuestas
+- Procurador: Estudiá Procurador a distancia y formate en gestión de expedientes y trámites judiciales.
+- Gestión Contable: Aprendé a registrar operaciones y gestionar información contable con herramientas digitales. Podés trabajar en estudios contables y áreas administrativas o contables de empresas.
+- Seguros: Aprendé a analizar riesgos y gestionar pólizas y siniestros. Podés trabajar en aseguradoras, brokers y oficinas de productores.
+
+Cada ficha incorpora tres preguntas breves. Procurador: funciones, diferencia con Abogacía y ámbitos laborales. Gestión Contable: aprendizaje, diferencia con Contador Público y continuidad con equivalencias evaluadas. Seguros: aprendizaje, trámite PAS sin examen de competencia y ausencia de matrícula automática. Las respuestas provienen de las fuentes ya verificadas arriba. Las competencias, planes, certificados, títulos, modalidades, duración y otros slides permanecen intactos.
+
+### Orden de publicación y protección
+1. Revisar y publicar el soporte de código; verificar que el deploy admite la variante FAQ.
+2. Sólo entonces aplicar sql/2026-10-05_faq_tres_carreras.sql. Está preparado, NO ejecutado.
+3. El SQL exige huellas completas, bloquea las filas y agrega la FAQ sin alterar bloques existentes; se detiene si ya existe FAQ. Cualquier discrepancia o conteo distinto de tres revierte todo.
+4. Comparar lectura posterior y HTML público; capturar presentación e interacción reales de producción.
+
+Respaldo previo privado: notas-locales/seo-tres-fichas/faq-estado-previo.json, tres filas completas y huellas PostgreSQL, con TLS verificado y permisos 0600. Conserva timestamps en la serialización original JSONB. Reversión: restaurar sólo descripcion y slides desde ese respaldo tras comparar el estado aplicado y verificar que no haya cambios concurrentes; nunca reemplazar toda la fila.
+
+### Evidencia local
+- RED: node --test tests/carreras-faq.test.mjs falló en tres pruebas por discriminante desconocido, ausencia de HTML FAQ y filtro del carrusel inexistente.
+- GREEN: node --test tests/carreras-faq.test.mjs tests/carrera-detalle.test.mjs tests/career-detail-performance.test.mjs aprobó 16 pruebas, cero fallas.
+- Propuestas SQL: parsers reales aprobados; Teclab conserva una oración de perfil y la última oración de salida laboral; tres preguntas por ficha y campos/bloques restantes preservados en simulación.
+- npm run build: exit 0, compilación y TypeScript aprobados, 161 páginas generadas. El build regeneró next-env.d.ts; sus dos imports generados fueron restaurados contra HEAD 08422ce tras el check final, con autorización del padre.
+- npm run check: exit 0 (lint, typecheck y suite completa).
+- Preview local: HTML del componente real con tres filas simuladas, dependencias visuales Next/client sustituidas para la vista estática, CSS local y recursos públicos. No es un deploy ni una captura de producción. Servidor cerrado al finalizar.
+- 18 capturas locales: página completa, hero y FAQ para cada ficha a 1280 y 375 px, guardadas en notas-locales/seo-tres-fichas/capturas-faq/. Teclado Enter abre/cierra details con JavaScript deshabilitado; sin overflow horizontal.
