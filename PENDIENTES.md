@@ -10,6 +10,8 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo** [Detalle](docs/pendientes-detalle.md#pendiente-16).
 
+- [ ] **Pulir el FAQ de las carreras modificadas (Procurador, Gestión Contable y Seguros) y revisar textos previos de la cabecera**. Revisar las preguntas y respuestas incorporadas y contrastar la introducción con los textos que tenían antes en la zona superior (`descripcion`) previo a los cambios del 05/10/2026 (respaldo en `notas-locales/seo-tres-fichas/estado-previo.json`).
+
 ## En espera de información externa
 
 Los pedidos ya redactados y el destino de cada dato están registrados en [las notas operativas](docs/notas-operativas.md). Confirmar que el pedido siga vigente antes de enviarlo.

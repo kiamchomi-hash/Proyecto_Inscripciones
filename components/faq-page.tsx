@@ -885,7 +885,7 @@ export default function FaqPage({ initialQuestions = [] }: { initialQuestions?: 
             <div className="flex-1 min-w-0">
               {/* Search */}
               <div className="mb-3">
-                <label htmlFor="faq-search" className="block mb-2 text-sm font-semibold text-[#d6efed]">Buscar una pregunta</label>
+                <label htmlFor="faq-search" className="sr-only">Buscar una pregunta</label>
                 <div className="relative">
                 <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none" style={{ color: 'var(--color-highlight)' }} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="m21 21-4.35-4.35" />
