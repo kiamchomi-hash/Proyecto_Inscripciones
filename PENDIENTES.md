@@ -6,7 +6,7 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 ## Revisión y trabajo propio
 
-- [ ] **Crear una copia completa y ensayar recuperación de Supabase en un destino separado**. Dashboard verificado el 01/10: plan gratuito sin respaldos automáticos ni PITR. Ensayo PostgreSQL ficticio aprobado; falta acceso para respaldo completo, custodia cifrada y restore real con integridad/permisos y RPO/RTO acordados y medidos. [Procedimiento](docs/recuperacion-supabase.md).
+- [ ] **Completar la recuperación de Supabase: Auth funcional, permisos/RLS, Vault y archivos de Storage**. Al 07/10/2026: respaldo diario cifrado activo en la PC de la sede y restauración real limitada aprobada en Docker aislado; no se verificó seguridad idéntica, porque el ensayo adaptó otorgantes de membresías y dueños de event triggers. Falta comparar con el inventario de origen, recuperar y probar los servicios indicados, guardar una copia cifrada fuera de esta PC y medir la recuperación completa. RPO objetivo de 24 h con interrupciones aceptadas durante días con la PC apagada; RTO objetivo de 4 h para recibir leads, aún no demostrado. [Procedimiento](docs/recuperacion-supabase.md).
 
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo** [Detalle](docs/pendientes-detalle.md#pendiente-16).
 
@@ -45,10 +45,11 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso** para Teclab, Siglo 21, Identidad Argentina y clases de apoyo.
 - [ ] **11. Crear un folleto de carreras relevantes**.
 - [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
-- [ ] **14. Crear más mensajes de seguimiento que complementen al primero**. Segundo seguimiento de Siglo 21 implementado y verificado localmente el 03/10/2026, sin tocar las otras casas. El alcance global sigue abierto. [Evidencia](docs/historial-pendientes.md#mensajes-siglo21-2026-10-03).
+- [ ] **14. Crear más mensajes de seguimiento que complementen al primero**. Siglo 21 cuenta con segundo seguimiento desde el 03/10/2026; Teclab ya tiene primero y segundo. El 07/10/2026 se incorporaron ambos a Academia Identidad Argentina y se regeneraron las dos páginas locales: 380/380 pruebas comerciales aprobadas. Sin publicación ni envío automático; la auditoría mantiene dos problemas previos de Teclab. [Evidencia de Identidad](odd/tasks/seguimientos-identidad.md) y [Siglo 21](docs/historial-pendientes.md#mensajes-siglo21-2026-10-03).
+- [ ] **39. Corregir las respuestas de inicio e inscripción de cursos de Teclab que señala la auditoría institucional**. Problemas preexistentes confirmados el 07/10/2026 en `cuando-empieza-teclab-curso` e `inscripcion-abierta-teclab-curso`; verificar datos y vigencia antes de corregir. Prioridad comercial: evitar respuestas incorrectas al atender consultas de cursos.
 - [ ] **15. Permitir que una pregunta del buscador de carreras se responda combinando varias respuestas**, separadas por párrafos.
 - [ ] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas**.
-- [ ] **18. Revisar las aperturas de las carreras**: algunas no arrancan a mediados de bimestre.
+- [ ] **18. Revisar las aperturas de las carreras — parcialmente hecho (07/10/2026)**. Verificados los ingresos nominales de marzo, mayo, agosto y octubre a distancia, sujetos a cupo ([fuente oficial](https://21.edu.ar/grado-y-pregrado)). La revisión trata de aperturas de cohortes, no de ingreso a mitad de bimestre. Según información del jefe, algunas carreras se postergan al año siguiente si no reúnen suficientes inscriptos; falta el listado o la circular de aperturas efectivas por carrera para confirmarlo. No se modificaron fechas ni respuestas del bot.
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
 - [ ] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram**, especialmente las de Estadística y Análisis Aplicado, que aparentemente tienen éxito.
