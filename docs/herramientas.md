@@ -99,3 +99,19 @@ commits pendientes con Gitleaks fijado y verificado. Preparar una vez con
 `npm run secretos:instalar`; revisión manual: `npm run secretos`. GitHub Actions
 usa el mismo control. Alcance, bloqueos, excepciones y límites en
 [Publicar sin secretos](publicacion-sin-secretos.md).
+
+### Actualización diaria desde Linux
+
+El flujo comercial `herramientas/ventas/actualizar-todo.mjs --auto` actualiza
+Siglo 21, Teclab e Identidad y publica el buscador. Publica también los precios
+privados de Teclab, sólo tras una extracción y regeneración exitosas de esa casa,
+aunque falle otra institución. `--sin-publicar` omite ambos destinos.
+
+`herramientas/ventas/programar-precios-linux.mjs --instalar` genera unidades
+systemd de usuario sin activar la tarea ni guardar secretos. Se activa con
+`systemctl --user enable --now cau-precios.timer`: 09:00 de Argentina y
+recuperación de una corrida pendiente al iniciar sesión (`Persistent=true`).
+No ejecuta con la máquina apagada ni sin sesión; no habilita linger. La prueba
+real explícita es `systemctl --user start cau-precios.service`; diagnóstico con
+`journalctl --user -u cau-precios.service --since today`. El instalador rechaza
+unidades distintas en vez de sobrescribirlas. Detalles en el LEER local de ventas.
