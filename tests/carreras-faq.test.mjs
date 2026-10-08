@@ -66,3 +66,14 @@ test('FAQ no suma pantallas vacías al carrusel ni cambia el modal Teclab', () =
   const c = { ...carrera, nivel: 'Teclab - Gestión' };
   assert.equal(modal({ carrera: c, onClose: vacio }).type, modal({ carrera: { ...c, slides: [faq] }, onClose: vacio }).type);
 });
+
+test('Gestión Contable informa equivalencias evaluadas sin cambiar otras articulaciones', () => {
+  const contable = { ...carrera, id: 227, nombre: 'Tecnicatura Superior en Gestión Contable', nivel: 'Teclab - Gestión' };
+  const html = renderToStaticMarkup(React.createElement(CareerDetail, { carrera: contable, relacionadas: [] }));
+  assert.match(html, /Las equivalencias se evalúan según tu trayectoria académica/);
+  assert.doesNotMatch(html, /no repetís ninguna|reconociendo todas/);
+  const otra = { ...contable, id: 226, nombre: 'Tecnicatura Superior en Programación' };
+  assert.match(renderToStaticMarkup(React.createElement(CareerDetail, { carrera: otra, relacionadas: [] })), /no repetís ninguna/);
+  const seguros = { ...contable, id: 228, nombre: 'Tecnicatura Superior en Seguros' };
+  assert.doesNotMatch(renderToStaticMarkup(React.createElement(CareerDetail, { carrera: seguros, relacionadas: [] })), /career-oficial-articulacion/);
+});

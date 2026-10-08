@@ -35,3 +35,13 @@ Pruebas: RED/GREEN del parser y render FAQ; npm run check y build antes de publi
 ## Evidencia del ajuste local
 T4 implementada con RED de tres pruebas seguido de GREEN 16/16. Soporte FAQ validado, SSR escapado, interacción nativa sin JS, carrusel y modal Teclab comprobados. T5: textos y SQL preparados, respaldo privado de tres filas con TLS; publicación y aplicación pendientes. npm run build: exit 0, 161 páginas. npm run check: exit 0. Preview local SSR mock: 18 capturas completas/hero/FAQ 1280/375, sin overflow y teclado aprobado; servidor cerrado. No commit, push ni UPDATE en este ajuste.
 Pronóstico observado del ajuste: 291 líneas propias añadidas/eliminadas antes de esta línea, incluyendo los archivos nuevos SQL (102) y pruebas (68); aproximadamente 292 líneas en total, por debajo de la heurística de 400. next-env.d.ts restaurado únicamente en sus dos imports generados contra HEAD 08422ce después del check final, con autorización expresa del padre.
+
+## Revisión FAQ autorizada el 07/10/2026
+T5/T6 se reconcilian parcialmente: commit 95ee65d contiene soporte y SQL; SELECT actual confirma introducciones cortas y FAQ presentes en las tres filas. No se da por verificada retrospectivamente la interacción ni las capturas.
+- [x] T7: Pulir preguntas SEO y aplicar sólo FAQ de ids 87, 227, 228 con respaldo privado, huellas y TLS verificado. Ruta delegada por preparación y escritura coordinada.
+- [x] T8: Corregir sólo la promesa de equivalencias de Gestión Contable, observar RED/GREEN y check. Código local pendiente de publicación, sin commit ni push en este ajuste.
+Previsión 150–250 líneas; sin prueba RED de ranking para copy, comprobación estructural y HTML público. Preservar todo campo y slide no FAQ.
+
+### Evidencia revisión 07/10/2026
+SELECT inicial, backup privado 0600 y parser real aprobados. SQL nuevo aplicado una vez con COMMIT confirmado mediante cau_editor y TLS verificado. Readback exacto FAQ y todos los demás campos/slides intactos, excepto updated_at actualizado por trigger. La primera comparación incluyó updated_at y falló; se corrigió sólo la verificación, no se repitió UPDATE. HTML público HTTP 200 contiene las nueve preguntas/respuestas actuales; capturas FAQ abiertas 1280 privadas de ids 87, 227 y 228 disponibles.
+Articulación Gestión Contable: RED observado por ausencia del texto condicionado; GREEN 4/4 tras corregir copy. Otra articulación y ausencia en Seguros preservadas. npm run check: exit 0, 348/348 pruebas; git diff --check: exit 0. Sin build por cambio exclusivo de copy sin API nueva. Sin commit ni push: articulación corregida sólo localmente, FAQ de Supabase ya visible públicamente; pendiente publicación autorizada y revisión coordinada por padre. No se atribuye mejora de ranking.

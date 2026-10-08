@@ -567,10 +567,12 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                   plan de estudios, que es cuando la pregunta aparece sola. */}
               {articula && (
                 <p className="career-oficial-articulacion">
-                  <strong>Después podés seguir en Universidad Siglo 21.</strong> El título
-                  articula con las licenciaturas de la universidad reconociendo todas las
-                  materias de la tecnicatura: no repetís ninguna. Mirá cuáles te
-                  corresponden en el{' '}
+                  <strong>Después podés seguir en Universidad Siglo 21.</strong>{' '}
+                  {carrera.id === 227 ? (
+                    <>Podés consultar la articulación con Contador Público. Las equivalencias se evalúan según tu trayectoria académica; no son automáticas. Consultá las opciones en el{' '}</>
+                  ) : (
+                    <>El título articula con las licenciaturas de la universidad reconociendo todas las materias de la tecnicatura: no repetís ninguna. Mirá cuáles te corresponden en el{' '}</>
+                  )}
                   {/* Unico enlace externo de la ficha, y es a un dominio de la
                       propia universidad -- no al sitio del instituto. Ahi se
                       carga el titulo previo y sale la lista de licenciaturas con
