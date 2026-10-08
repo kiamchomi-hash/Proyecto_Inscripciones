@@ -59,6 +59,10 @@ Se mantiene la numeración del pedido para poder referirse a cada tarea.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
 - [ ] **38. Rediseñar la página de cada carrera de Teclab (`/carreras/<slug>`) con el sistema de `piezas_teclab`** (paleta, Poppins, fotos y logo oficiales), sin cambiar la disposición ni los textos.`/carreras/<slug>/inscripcion`, `/inscripcion/<codigo>`), commit `d73a904`, ya publicado; las fichas de carrera siguen pendientes. [Detalle](odd/tasks/rediseno-paginas-teclab.md).
 
+## Verificaciones de inscripción
+
+- [ ] **Verificar si se está enviando el mail de Teclab con el acceso al portal del alumno**. Comprobar una solicitud de inscripción y confirmar la recepción del correo; no dar por enviado el mail sólo porque el formulario devuelve éxito.
+
 ## Documentación de apoyo
 
 - [Rutinas de mantenimiento](docs/rutinas.md): contenido, bot, SEO, fuentes comerciales, leads y verificaciones de deploy. La revisión de indexación y rendimiento (antigua tarea 13) queda como seguimiento permanente, no como tarea cerrable.

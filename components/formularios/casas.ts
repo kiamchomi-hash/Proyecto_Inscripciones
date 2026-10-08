@@ -58,25 +58,34 @@ export interface Campo {
   siempreOpcional?: boolean;
   tipo?: 'texto' | 'select' | 'checkbox' | 'fecha';
   opciones?: readonly string[];
+  /** Etiquetas visibles distintas del valor histórico que se guarda. */
+  etiquetasOpciones?: Readonly<Record<string, string>>;
   numerico?: boolean;
 }
 
 /**
- * Argentina primero porque es la respuesta de casi todos; después el resto en
- * orden alfabético. "Otra" al final: es preferible a que alguien no encuentre
- * la suya y abandone el formulario.
+ * Argentina primero por uso local. Después, población residente nacida en otro
+ * país (stock, no llegadas recientes): INDEC, Censo 2022, migraciones.
+ * https://biblioteca.indec.gob.ar/bases/minde/1c2022_7.pdf
+ * Desde Costa Rica, orden alfabético por país: sin cifras individuales verificadas.
  */
 const NACIONALIDADES = [
-  'Argentina',
-  'Alemana', 'Boliviana', 'Brasileña', 'Canadiense', 'Chilena', 'China',
-  'Colombiana', 'Coreana', 'Costarricense', 'Cubana', 'Dominicana',
-  'Ecuatoriana', 'Española', 'Estadounidense', 'Filipina', 'Francesa',
-  'Guatemalteca', 'Haitiana', 'Hondureña', 'India', 'Inglesa', 'Israelí',
-  'Italiana', 'Japonesa', 'Libanesa', 'Mexicana', 'Nicaragüense', 'Panameña',
-  'Paraguaya', 'Peruana', 'Polaca', 'Portuguesa', 'Rusa', 'Salvadoreña',
-  'Senegalesa', 'Siria', 'Sudafricana', 'Ucraniana', 'Uruguaya', 'Venezolana',
-  'Otra',
+  'Argentina', 'Paraguaya', 'Boliviana', 'Venezolana', 'Peruana', 'Chilena',
+  'Uruguaya', 'Brasileña', 'Española', 'Colombiana', 'Cubana',
+  'Costarricense', 'Ecuatoriana', 'Salvadoreña', 'Guatemalteca', 'Ecuatoguineana',
+  'Hondureña', 'Mexicana', 'Nicaragüense', 'Panameña', 'Dominicana', 'Otra',
 ] as const;
+
+// La etiqueta cambia, no el valor: los legajos anteriores siguen siendo válidos.
+const PAISES_NACIONALIDAD: Readonly<Record<string, string>> = {
+  Argentina: 'Argentina', Paraguaya: 'Paraguay', Boliviana: 'Bolivia',
+  Venezolana: 'Venezuela', Peruana: 'Perú', Chilena: 'Chile', Uruguaya: 'Uruguay',
+  Brasileña: 'Brasil', Española: 'España', Colombiana: 'Colombia', Cubana: 'Cuba',
+  Costarricense: 'Costa Rica', Ecuatoriana: 'Ecuador', Salvadoreña: 'El Salvador',
+  Guatemalteca: 'Guatemala', Ecuatoguineana: 'Guinea Ecuatorial', Hondureña: 'Honduras',
+  Mexicana: 'México', Nicaragüense: 'Nicaragua', Panameña: 'Panamá',
+  Dominicana: 'República Dominicana', Otra: 'Otro país',
+};
 
 export const CAMPOS: Record<CampoId, Campo> = {
   nombre:   { columna: 'nombre', grupo: 'personales',   label: 'Nombre',   placeholder: 'Nombre',   max: 100 },
@@ -98,7 +107,7 @@ export const CAMPOS: Record<CampoId, Campo> = {
   // OJO: la lista cubre los orígenes reales de la zona y las corrientes
   // migratorias del país, pero no está copiada del portal de Siglo 21.
   // Confirmar contra el portal antes de darla por buena.
-  nacionalidad: { columna: 'nacionalidad', grupo: 'personales', label: 'Nacionalidad', max: 80, tipo: 'select', opciones: NACIONALIDADES },
+  nacionalidad: { columna: 'nacionalidad', grupo: 'personales', label: 'Nacionalidad', max: 80, tipo: 'select', opciones: NACIONALIDADES, etiquetasOpciones: PAISES_NACIONALIDAD },
   estadoCivil:    { columna: 'estado_civil', grupo: 'personales',    label: 'Estado civil',      max: 40, tipo: 'select', opciones: ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro'] },
   paisResidencia: { columna: 'pais_residencia', grupo: 'personales', label: 'País de residencia', placeholder: 'Argentina', max: 80 },
 

@@ -30,6 +30,8 @@ interface Props {
    * baja desde "Quiero inscribirme" no tiene por qué volver a buscarla.
    */
   carreraInicial?: number;
+  /** Alinea únicamente las páginas dedicadas al ingresar. */
+  alinearAlLlegar?: boolean;
 }
 
 type Valores = Partial<Record<CampoId, string | boolean>>;
@@ -81,10 +83,12 @@ const acercaElBoton = (id: string): boolean => {
 };
 
 /** Lo que tapa la barra fija de arriba. Nada puede quedar debajo de eso. */
-const altoNavbar = () => Number.parseInt(
-  getComputedStyle(document.documentElement).getPropertyValue('--navbar-height'),
-  10,
-) || 60;
+const altoNavbar = () => {
+  const alto = Number.parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue('--navbar-height'),
+  );
+  return Number.isFinite(alto) ? alto : 60;
+};
 
 const suave = (): ScrollBehavior =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
@@ -250,11 +254,12 @@ function errorDeTelefono(valor: string) {
  * del campo, si lo tipeado deja una sola opción posible, se completa sola — así
  * "arg" termina en "Argentina" sin obligar a elegirla del listado.
  */
-function Desplegable({ id, valor, onChange, opciones, invalido }: {
+function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalido }: {
   id: string;
   valor: string;
   onChange: (valor: string) => void;
   opciones: readonly string[];
+  etiquetasOpciones?: Readonly<Record<string, string>>;
   invalido?: boolean;
 }) {
   const [abierto, setAbierto] = useState(false);
@@ -266,11 +271,20 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
   const [marcado, setMarcado] = useState(false);
   const cajaRef = useRef<HTMLDivElement>(null);
 
+  const etiquetaDe = useCallback((opcion: string) => etiquetasOpciones?.[opcion] ?? opcion, [etiquetasOpciones]);
+  // La búsqueda por país ignora tildes; el valor del legajo no se transforma.
+  const coincide = useCallback((opcion: string, texto: string) => {
+    const normalizar = (valor: string) => (etiquetasOpciones
+      ? valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      : valor).toLowerCase();
+    return normalizar(etiquetaDe(opcion)).includes(normalizar(texto));
+  }, [etiquetaDe, etiquetasOpciones]);
+
   const filtradas = useMemo(() => {
     const texto = (busqueda ?? '').trim().toLowerCase();
     if (!texto) return opciones;
-    return opciones.filter(opcion => opcion.toLowerCase().includes(texto));
-  }, [opciones, busqueda]);
+    return opciones.filter(opcion => coincide(opcion, texto));
+  }, [opciones, busqueda, coincide]);
 
   const cerrar = useCallback(() => {
     setAbierto(false);
@@ -279,12 +293,12 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
       // y el borde rojo se encarga de avisar.
       if (previa !== null && previa.trim()) {
         const texto = previa.trim().toLowerCase();
-        const posibles = opciones.filter(opcion => opcion.toLowerCase().includes(texto));
+        const posibles = opciones.filter(opcion => coincide(opcion, texto));
         if (posibles.length === 1) onChange(posibles[0]);
       }
       return null;
     });
-  }, [onChange, opciones]);
+  }, [onChange, opciones, coincide]);
 
   useEffect(() => {
     if (!abierto) return;
@@ -310,7 +324,7 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
         aria-controls={`${id}-lista`}
         aria-autocomplete="list"
         autoComplete="off"
-        value={busqueda ?? valor}
+        value={busqueda ?? etiquetaDe(valor)}
         placeholder="Sin especificar"
         onChange={evento => {
           setBusqueda(evento.target.value);
@@ -322,8 +336,8 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
         onKeyDown={evento => {
           if (evento.key !== 'Enter') return;
           evento.preventDefault();
-          const texto = (busqueda ?? valor).trim();
-          const posibles = opciones.filter(opcion => opcion.toLowerCase().includes(texto.toLowerCase()));
+          const texto = (busqueda ?? etiquetaDe(valor)).trim();
+          const posibles = opciones.filter(opcion => coincide(opcion, texto));
           // Enter con una sola candidata la elige; con cualquier otra cosa,
           // rojo. Es el momento en que el lead dice "ya está, esto puse".
           if (texto && posibles.length === 1) {
@@ -363,7 +377,7 @@ function Desplegable({ id, valor, onChange, opciones, invalido }: {
               onClick={() => { onChange(opcion); setBusqueda(null); setAbierto(false); }}
               className={`w-full border-b border-[var(--catalogo-acento)]/15 px-3 py-1.5 text-left text-sm transition-colors last:border-b-0 hover:bg-[var(--catalogo-acento)]/10 ${opcion === valor ? 'text-[var(--catalogo-acento)]' : 'text-white'}`}
             >
-              {opcion}
+              {etiquetaDe(opcion)}
             </button>
           ))}
         </div>
@@ -564,6 +578,7 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
           valor={typeof valor === 'string' ? valor : ''}
           onChange={onChange}
           opciones={campo.opciones ?? []}
+          etiquetasOpciones={campo.etiquetasOpciones}
           invalido={invalido}
         />
       </div>
@@ -602,13 +617,13 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
           desaparece sin mover el resto del formulario. Por eso los textos van
           cortos: tienen que entrar en una línea. */}
       {error !== undefined && (
-        <p className="mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{error}</p>
+        <p className="form-field-error mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{error}</p>
       )}
     </div>
   );
 }
 
-export default function FormularioLead({ carreras, modo, casa, origen = 'home', carreraInicial }: Props) {
+export default function FormularioLead({ carreras, modo, casa, origen = 'home', carreraInicial, alinearAlLlegar = false }: Props) {
   // La carrera con la que arranca, si la página la fijó. Es el valor inicial de
   // dos estados y nada más: después manda el estado, porque el lead la cambia.
   const nombreInicial = () => (carreraInicial != null
@@ -706,7 +721,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const conAutoinscripcion = esPreinscripcion && casaDeLaCarrera !== null
     && CASAS_CON_AUTOINSCRIPCION.includes(casaDeLaCarrera);
   // Entrada directa: datos y confirmación, con un solo envío desde los datos.
-  const flujoAuto = entradaAuto && conAutoinscripcion;
+  const solicitudDirecta = alinearAlLlegar && esPreinscripcion && casaActiva === 'teclab';
+  const flujoAuto = (entradaAuto || solicitudDirecta) && conAutoinscripcion;
   // Una preinscripción sin carrera elegida no tiene sentido: no se sabe a qué
   // se preinscribe nadie, ni qué datos hacen falta. Hasta que haya carrera se
   // muestra sólo el buscador. El contacto sí puede empezar en blanco: es una
@@ -809,6 +825,23 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     return () => window.removeEventListener(EVENTO_ELEGIR_CARRERA, alElegir);
   }, [carreras]);
 
+  // Un solo ajuste tras el montaje; nunca perseguir el scroll de la persona.
+  useEffect(() => {
+    if (!alinearAlLlegar) return;
+    const frame = requestAnimationFrame(() => {
+      const tarjeta = seccionRef.current?.querySelector<HTMLElement>('.form-card');
+      if (!tarjeta) return;
+      const rect = tarjeta.getBoundingClientRect();
+      const margen = 12;
+      const espacio = window.innerHeight - 2 * margen;
+      const inicio = rect.height <= espacio
+        ? (window.innerHeight - rect.height) / 2
+        : margen;
+      window.scrollTo({ top: Math.max(0, window.scrollY + rect.top - inicio), behavior: 'instant' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [alinearAlLlegar]);
+
   // Los CTA llegan por ancla y el navegador desplaza la sección, pero una
   // sección no recibe foco por sí sola. Cuando el formulario ya está montado,
   // o termina de montarse después del scroll diferido, enfocamos el primer
@@ -825,6 +858,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
         'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled])',
       );
       if (campo) {
+        // La carrera ya está elegida: enfocar el buscador abriría su lista.
+        if (alinearAlLlegar || carreraInicial != null) return;
         campo.focus({ preventScroll: true });
         return;
       }
@@ -845,7 +880,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       window.removeEventListener('hashchange', alCambiarHash);
       if (temporizador !== undefined) window.clearTimeout(temporizador);
     };
-  }, [idDestino]);
+  }, [idDestino, alinearAlLlegar, carreraInicial]);
 
   const poner = useCallback((id: CampoId, valor: string | boolean) => {
     setValores(previos => ({ ...previos, [id]: valor }));
@@ -881,9 +916,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       && !opciones!.includes(puesto);
   });
 
+  const errorDni = flujoAuto && !/^[0-9]{7,9}$/.test(texto('dni').replace(/[.\s]/g, ''))
+    ? 'Ingresá un DNI de 7 a 9 dígitos.' : '';
   const hayContacto = Boolean(email || telefono);
   const datosValidos = hayContacto && !errorEmail && !errorTelefono
-    && !faltanObligatorios.length && !malEscritos.length;
+    && !faltanObligatorios.length && !malEscritos.length && !errorDni;
   // En la entrada directa el paso 1 envía la autoinscripción, con el captcha
   // invisible; en las demás, con el de siempre. En los dos hace falta el token.
   const valido = datosValidos && Boolean(token);
@@ -1161,6 +1198,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       // opción de su lista, y el mail o el teléfono mal escritos —que no
       // entran en ninguna de las dos y quedaban sin señalar—.
       const problemas: CampoId[] = [...faltanObligatorios, ...malEscritos];
+      if (errorDni) problemas.push('dni');
       if (errorEmail || !hayContacto) problemas.push('email');
       if (errorTelefono || !hayContacto) problemas.push('telefono');
       irAlPrimerProblema(problemas);
@@ -1290,9 +1328,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // El encabezado es uno solo para todos los pasos y sólo cambia la bajada:
   // así no salta. Los textos son cortos para que no ocupen otra línea.
   const bajada = paso === 'confirmacion'
-    ? (preinscripcionEnviada ? 'Inscripción enviada.' : 'Paso 2 de 2: inscripción enviada.')
+    ? (solicitudDirecta ? 'Acceso y próximos pasos.' : preinscripcionEnviada ? 'Inscripción enviada.' : 'Paso 2 de 2: inscripción enviada.')
     : paso === 'gestionar' || paso === 'precio'
     ? 'Tu preinscripción ya fue enviada.'
+    : solicitudDirecta
+    ? 'Completá tus datos para solicitar tu inscripción.'
     : flujoAuto
     ? 'Paso 1 de 2: completá tus datos.'
     : esPreinscripcion
@@ -1506,6 +1546,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                             valor={valores[id]}
                             onChange={valor => poner(id, valor)}
                             opcional={esOpcional(id)}
+                            error={id === 'dni' && flujoAuto ? (intentado ? errorDni : '') : undefined}
                             invalido={intentado && (faltanObligatorios.includes(id) || malEscritos.includes(id))}
                           />
                         </div>
@@ -1520,7 +1561,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
             {/* Por dónde te contestamos. Va último para que el que abandona a
                 mitad ya lo haya dado. */}
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
-              <div className="space-y-1.5 rounded-lg p-2" style={{ border: '1.5px solid var(--catalogo-acento)' }}>
+              <div role="group" aria-label="Datos de contacto" className={`space-y-1.5 rounded-lg p-2 ${alinearAlLlegar ? 'form-contacto-compacto' : ''}`} style={{ border: '1.5px solid var(--catalogo-acento)' }}>
+                {!alinearAlLlegar && (
                 <p className="flex items-center gap-2 text-[12px] leading-snug text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
@@ -1540,6 +1582,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                     )}
                   </span>
                 </p>
+                )}
                 <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                   {enPantalla.filter(id => CAMPOS[id].grupo === 'contacto').map(id => (
                     <Campo
@@ -1602,9 +1645,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 className="w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 hover:shadow-[0_6px_18px_rgba(var(--catalogo-acento-rgb),0.35)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 disabled:hover:shadow-none"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
-                {enviando ? 'Enviando...' : flujoAuto ? 'Inscribirme' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
+                {enviando ? 'Enviando...' : solicitudDirecta ? 'Solicitar inscripción' : flujoAuto ? 'Inscribirme' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
               </button>
-              {flujoAuto && <AvisoSinPago />}
+              {flujoAuto && <AvisoSinPago solicitud={solicitudDirecta} />}
 
             </div>
 
@@ -1710,7 +1753,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
             inert={paso !== 'confirmacion'}
           >
           {montado('confirmacion') && (
-            <PasoListo dni={texto('dni')} waHref={`https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`} />
+            <PasoListo solicitud={solicitudDirecta} dni={texto('dni')} waHref={`https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`} />
           )}
           </div>
           </>)}

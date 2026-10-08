@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { esRutaPreinscripcion } from '@/lib/rutas-preinscripcion';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from './icons';
@@ -36,18 +37,24 @@ export default function Navbar() {
   // pegajosa se paraba un cachito mas abajo del navbar y quedaba una linea de
   // fondo entre los dos.
   useEffect(() => {
+    if (esRutaPreinscripcion(pathname)) {
+      document.documentElement.style.setProperty('--navbar-height', '0px');
+      return;
+    }
     const nav = navRef.current;
     if (!nav) return;
-    const ro = new ResizeObserver(() => {
+    const actualizarAlto = () => {
       const h = nav.getBoundingClientRect().height;
       document.documentElement.style.setProperty('--navbar-height', h + 'px');
-    });
+    };
+    actualizarAlto();
+    const ro = new ResizeObserver(actualizarAlto);
     ro.observe(nav);
     return () => ro.disconnect();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen || esRutaPreinscripcion(pathname)) return;
     const menu = menuRef.current;
     const background = Array.from(document.body.children)
       .filter((element) => !element.contains(navRef.current));
@@ -91,7 +98,7 @@ export default function Navbar() {
       window.clearTimeout(focusTimer);
       menuButton?.focus();
     };
-  }, [menuOpen, closeMenu]);
+  }, [menuOpen, closeMenu, pathname]);
 
   function isActive(href: string) {
     // El modal de carrera reescribe la URL a /carreras/{slug} (y esa es la misma
@@ -101,6 +108,8 @@ export default function Navbar() {
     if (href.startsWith('/novedades')) return pathname.startsWith('/novedades');
     return pathname === href;
   }
+
+  if (esRutaPreinscripcion(pathname)) return null;
 
   return (
     <nav ref={navRef} className="main-navbar">

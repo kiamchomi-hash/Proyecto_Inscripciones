@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { esRutaPreinscripcion } from '@/lib/rutas-preinscripcion';
 import { MARCA_MODAL } from '@/components/index/types';
 
 // Gestos que delatan que el scroll lo movio la persona y no el navegador.
@@ -58,6 +60,7 @@ export function ScrollResetOnLoad() {
 }
 
 export default function ScrollToTop() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -94,6 +97,8 @@ export default function ScrollToTop() {
       behavior: 'smooth',
     });
   };
+
+  if (esRutaPreinscripcion(pathname)) return null;
 
   return (
     <button

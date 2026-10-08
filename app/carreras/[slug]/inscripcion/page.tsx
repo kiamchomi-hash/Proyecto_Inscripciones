@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
-import Link from 'next/link';
 import { Poppins } from 'next/font/google';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -8,20 +7,15 @@ import type { Carrera } from '@/components/index/types';
 import { carreraFullName, carreraToSlug, esCarreraVisible } from '@/components/index/types';
 import { esCursoTeclab } from '@/components/index/teclab';
 import {
-  GuiaInscripcion,
-  PreguntasInscripcion,
   SITIO,
   conArticulo,
   descripcionInscripcion,
   ogInscripcion,
-  preguntasInscripcion,
   rutaInscripcion,
   tieneInscripcionPropia,
   tituloInscripcion,
 } from '@/components/carreras/inscripcion-carrera';
-import AvisoInicioTeclab from '@/components/index/aviso-inicio-teclab';
 import FormularioLead from '@/components/formularios/formulario-lead';
-import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import '../../career-detail.css';
 import './inscripcion.css';
@@ -90,14 +84,6 @@ export async function generateStaticParams() {
   return carreras.filter(tieneInscripcionPropia).map(c => ({ slug: carreraToSlug(c) }));
 }
 
-function ArrowIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
-  );
-}
-
 export default async function InscripcionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const { carreras, carrera } = await getCarreraConInscripcion(slug);
@@ -109,7 +95,6 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
   const nombreCompleto = carreraFullName(carrera);
   const fichaUrl = `/carreras/${carreraToSlug(carrera)}`;
   const curso = esCursoTeclab(carrera);
-  const preguntas = preguntasInscripcion(carrera);
 
   // Las tecnicaturas toman la paleta de Teclab que declara .inscripcion-teclab
   // (inscripcion.css). El curso conserva el ambar con el que se distingue en el
@@ -117,7 +102,6 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
   const estilo = curso
     ? ({ '--career-accent': '#f4aa22', '--career-accent-bright': '#ffc95e' } as CSSProperties)
     : undefined;
-  const accent = 'var(--career-accent)';
 
   // Toda la pagina es de Teclab, asi que el formulario va con la casa fija y solo
   // ofrece sus carreras, como en /teclab.
@@ -135,67 +119,33 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
     ],
   };
 
-  // Solo las preguntas que se ven en la pagina: un FAQPage con respuestas que no
-  // estan a la vista es de lo que Google penaliza.
-  const faqSchema = preguntas.length
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: preguntas.map(p => ({
-          '@type': 'Question',
-          name: p.pregunta,
-          acceptedAnswer: { '@type': 'Answer', text: p.respuesta },
-        })),
-      }
-    : null;
-
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbSchema) }} />
-      {faqSchema && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(faqSchema) }} />
-      )}
       <main className="flex-1">
         <article className={`career-page inscripcion-page inscripcion-teclab ${poppins.variable}`} style={estilo}>
-          {/* Arriba de todo, el formulario: la pagina existe para preinscribirse.
-              Antes del formulario va solo lo minimo: migas en una linea (llevan
-              a la ficha, que es el enlace interno que importa), el H1, que es lo
-              que Google lee como tema de la pagina, y la fecha de inicio. Sin
-              foto ni boton: empujaban el formulario fuera de la primera pantalla
-              del celular. */}
-          <header className="inscripcion-encabezado">
-            <nav aria-label="Migas de pan" className="inscripcion-migas">
-              <Link href="/" prefetch={false}>Inicio</Link>
-              <span aria-hidden="true">›</span>
-              <Link href={fichaUrl} prefetch={false}>{carrera.nombre_corto || carrera.nombre}</Link>
-              <span aria-hidden="true">›</span>
-              <span aria-current="page">Inscripción</span>
-            </nav>
-            <h1>Inscripción {conArticulo(carrera)}</h1>
-            <AvisoInicioTeclab carrera={carrera} acento={accent} className="inscripcion-aviso" />
-          </header>
+          <h1 className="sr-only">Inscripción {conArticulo(carrera)}</h1>
 
           <FormularioLead
             carreras={opcionesFormulario}
+            alinearAlLlegar
             modo="preinscripcion"
             casa="teclab"
             origen="teclab"
             carreraInicial={carrera.id}
           />
 
-          <div className="inscripcion-cuerpo">
-            <GuiaInscripcion />
-            <PreguntasInscripcion preguntas={preguntas} />
-            <p className="inscripcion-volver">
-              <Link href={fichaUrl} prefetch={false}>
-                Ver la carrera completa <ArrowIcon />
-              </Link>
-              <span>{curso ? 'Qué vas a aprender y cómo se cursa.' : 'Plan de estudios, competencias y título.'}</span>
-            </p>
-          </div>
+          <section className="inscripcion-proximos" aria-labelledby="proximos-pasos-titulo">
+            <div className="inscripcion-proximos-tarjeta">
+              <h2 id="proximos-pasos-titulo">Próximos pasos</h2>
+              <div className="inscripcion-proximos-contenido">
+                <p>Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.</p>
+              </div>
+            </div>
+          </section>
+
         </article>
       </main>
-      <SiteFooter casa="teclab" />
     </>
   );
 }

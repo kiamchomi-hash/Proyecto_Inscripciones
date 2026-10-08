@@ -30,7 +30,7 @@ const LINK_SECUNDARIO = 'w-full cursor-pointer py-1 text-sm font-bold text-[var(
 export const AVISO_TOKEN = 'Estamos verificando la conexión. Probá de nuevo en un segundo.';
 
 /** Lo que se muestra con el captcha visible: el pase no sirvió o no lo hubo. */
-export const AVISO_VERIFICAR = 'Completá la verificación de seguridad y volvé a tocar Inscribirme.';
+export const AVISO_VERIFICAR = 'Volvé a verificar la seguridad y enviá la solicitud.';
 
 /**
  * La confirmación de la autoinscripción: «Inscribirme», con el captcha
@@ -42,10 +42,12 @@ export const AVISO_VERIFICAR = 'Completá la verificación de seguridad y volvé
  * Inscribirse no cobra nada: el portal genera el ticket y la persona paga
  * después, en «Pagos en línea». Va debajo de cada botón «Inscribirme».
  */
-export function AvisoSinPago() {
+export function AvisoSinPago({ solicitud = false }: { solicitud?: boolean }) {
   return (
     <p className="text-center text-[11px] leading-snug text-[var(--catalogo-texto-suave)]">
-      Al tocar Inscribirme todavía no pagás nada. Se genera un ticket y lo pagás después desde el portal del alumno de Teclab.
+      {solicitud
+        ? 'Al enviar solicitás la gestión de tu inscripción. No se realiza ningún cobro: pagás después desde el portal del alumno de Teclab.'
+        : 'Al tocar Inscribirme todavía no pagás nada. Se genera un ticket y lo pagás después desde el portal del alumno de Teclab.'}
     </p>
   );
 }
@@ -166,7 +168,7 @@ export function PasoPrecio({ detalle, onContinuar, onSaltear }: {
   );
 }
 
-export function PasoListo({ waHref, dni }: { waHref: string; dni: string }) {
+export function PasoListo({ waHref, dni, solicitud = false }: { waHref: string; dni: string; solicitud?: boolean }) {
   const usuario = dni.replace(/\D/g, '');
   return (
     <div className="flex flex-col items-center gap-3 px-4 py-8 text-center" aria-live="polite">
@@ -182,8 +184,8 @@ export function PasoListo({ waHref, dni }: { waHref: string; dni: string }) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <p data-paso-foco tabIndex={-1} className="text-3xl font-black tracking-tight text-white focus:outline-none">¡Listo!</p>
-      {usuario ? (
+      <p data-paso-foco tabIndex={-1} className="text-3xl font-black tracking-tight text-white focus:outline-none">{solicitud ? 'Solicitud recibida' : '¡Listo!'}</p>
+      {!solicitud && usuario ? (
         <dl className="grid w-full max-w-xs grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 rounded-xl border border-white/15 bg-white/5 px-5 py-4 text-left">
           <dt className="text-xs font-bold uppercase leading-none tracking-wider text-[var(--catalogo-etiqueta)]">Usuario</dt>
           <dd className="text-right font-mono text-xl font-bold leading-none tabular-nums tracking-wider text-white">{usuario}</dd>
@@ -192,11 +194,13 @@ export function PasoListo({ waHref, dni }: { waHref: string; dni: string }) {
         </dl>
       ) : (
         <p className="max-w-md text-base leading-snug text-white">
-          Tu usuario y tu contraseña son <strong className="font-black">tu DNI, sin puntos</strong>.
+          {solicitud ? 'Una vez gestionada la inscripción, ingresás con ' : 'Tu usuario y tu contraseña son '}<strong className="font-black">tu DNI, sin puntos</strong>.
         </p>
       )}
       <p className="max-w-md text-[15px] leading-snug text-white/85">
-        A la brevedad te llega un mail de Teclab, «PAGO AUTOGESTIONADO!». Si no lo ves, revisá el correo no deseado.
+        {solicitud
+          ? 'Vamos a gestionar tu inscripción. Una vez gestionada, Teclab te envía por mail el acceso al portal para elegir el medio de pago y abonar.'
+          : 'A la brevedad te llega un mail de Teclab, «PAGO AUTOGESTIONADO!». Si no lo ves, revisá el correo no deseado.'}
       </p>
       <Desplegable titulo="Así se ve el mail">
         <Image

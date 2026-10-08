@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { CAMPOS, CASAS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, columnaDe, obligatoriosDe } from '../components/formularios/casas.ts';
+import { CAMPOS, CASAS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, columnaDe, obligatoriosDe, validarPayloadAutoinscripcion } from '../components/formularios/casas.ts';
 import { esCarreraVisible } from '../components/index/types.ts';
 
 // La oferta que el sitio publica hoy, segun getCategoryForCarrera().
@@ -244,5 +244,44 @@ test('piso, depto y torre son opcionales por lo que son, no por la casa', () => 
     for (const id of obligatoriosDe(casa, 'preinscripcion')) {
       assert.ok(!CAMPOS[id].siempreOpcional, `${casa} exige ${id}, que es siempre opcional`);
     }
+  }
+});
+
+test('las nacionalidades priorizan la región y conservan una opción para otras', () => {
+  const opciones = CAMPOS.nacionalidad.opciones;
+  assert.deepEqual(opciones, [
+    'Argentina', 'Paraguaya', 'Boliviana', 'Venezolana', 'Peruana', 'Chilena',
+    'Uruguaya', 'Brasileña', 'Española', 'Colombiana', 'Cubana', 'Costarricense',
+    'Ecuatoriana', 'Salvadoreña', 'Guatemalteca', 'Ecuatoguineana', 'Hondureña',
+    'Mexicana', 'Nicaragüense', 'Panameña', 'Dominicana', 'Otra',
+  ]);
+  assert.equal(new Set(opciones).size, opciones.length);
+  assert.equal(opciones.at(-1), 'Otra');
+  assert.equal(opciones.includes('Siria'), false);
+});
+
+test('Otra sigue siendo una nacionalidad válida para la autoinscripción', () => {
+  const payload = Object.fromEntries(obligatoriosDe('teclab', 'preinscripcion')
+    .map(id => [id, CAMPOS[id].opciones?.[0] ?? 'Dato']));
+  Object.assign(payload, {
+    carreraId: 2, nacionalidad: 'Otra', dni: '30111222',
+    email: 'persona@example.com', telefono: '1132973801',
+  });
+  assert.ok(validarPayloadAutoinscripcion(payload));
+});
+
+test('las etiquetas son países sin cambiar valores históricos del legajo', () => {
+  const etiquetas = CAMPOS.nacionalidad.etiquetasOpciones;
+  assert.equal(etiquetas.Boliviana, 'Bolivia');
+  assert.equal(etiquetas.Uruguaya, 'Uruguay');
+  assert.equal(etiquetas.Peruana, 'Perú');
+  assert.equal(etiquetas.Otra, 'Otro país');
+  for (const nacionalidad of ['Boliviana', 'Peruana', 'Otra']) {
+    const payload = Object.fromEntries(obligatoriosDe('teclab', 'preinscripcion')
+      .map(id => [id, CAMPOS[id].opciones?.[0] ?? 'Dato']));
+    Object.assign(payload, { carreraId: 2, nacionalidad, dni: '30111222',
+      email: 'persona@example.com', telefono: '1132973801' });
+    assert.ok(validarPayloadAutoinscripcion(payload));
+    assert.equal(armarPayload('teclab', 'preinscripcion', payload).nacionalidad, nacionalidad);
   }
 });

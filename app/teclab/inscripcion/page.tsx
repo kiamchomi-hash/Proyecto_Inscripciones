@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Poppins } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 import type { Carrera } from '@/components/index/types';
-import { GuiaInscripcion, SITIO, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
+import { SITIO, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 import FormularioLead from '@/components/formularios/formulario-lead';
-import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import '../../carreras/career-detail.css';
 import '../../carreras/[slug]/inscripcion/inscripcion.css';
@@ -62,14 +60,6 @@ async function getOpciones() {
     .map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion }));
 }
 
-function ArrowIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
-  );
-}
-
 export default async function InscripcionTeclabPage() {
   const opciones = await getOpciones();
 
@@ -90,33 +80,21 @@ export default async function InscripcionTeclabPage() {
         {/* Los colores son los de la inscripción de cada tecnicatura: la paleta de
             Teclab que declara .inscripcion-teclab en inscripcion.css. */}
         <article className={`career-page inscripcion-page inscripcion-teclab ${poppins.variable}`}>
-          {/* Como en la inscripción de cada carrera: arriba sólo migas y el H1,
-              así el formulario entra en la primera pantalla del celular. */}
-          <header className="inscripcion-encabezado">
-            <nav aria-label="Migas de pan" className="inscripcion-migas">
-              <Link href="/" prefetch={false}>Inicio</Link>
-              <span aria-hidden="true">›</span>
-              <Link href="/teclab" prefetch={false}>Teclab</Link>
-              <span aria-hidden="true">›</span>
-              <span aria-current="page">Inscripción</span>
-            </nav>
-            <h1>{TITULO}</h1>
-          </header>
+          <h1 className="sr-only">{TITULO}</h1>
 
-          <FormularioLead carreras={opciones} modo="preinscripcion" casa="teclab" origen="teclab" />
+          <FormularioLead alinearAlLlegar carreras={opciones} modo="preinscripcion" casa="teclab" origen="teclab" />
 
-          <div className="inscripcion-cuerpo">
-            <GuiaInscripcion />
-            <p className="inscripcion-volver">
-              <Link href="/teclab" prefetch={false}>
-                Ver todas las carreras de Teclab <ArrowIcon />
-              </Link>
-              <span>Tecnicaturas y cursos, con su plan de estudios.</span>
-            </p>
-          </div>
+          <section className="inscripcion-proximos" aria-labelledby="proximos-pasos-titulo">
+            <div className="inscripcion-proximos-tarjeta">
+              <h2 id="proximos-pasos-titulo">Próximos pasos</h2>
+              <div className="inscripcion-proximos-contenido">
+                <p>Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.</p>
+              </div>
+            </div>
+          </section>
+
         </article>
       </main>
-      <SiteFooter casa="teclab" />
     </>
   );
 }

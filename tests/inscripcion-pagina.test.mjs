@@ -53,7 +53,8 @@ const slugTeclab = [
   'curso-de-actualizacion-profesional-en-inteligencia-artificial',
 ];
 
-const jsx = { jsx: () => null, jsxs: () => null, Fragment: 'fragment' };
+const elemento = (type, props) => ({ type, props });
+const jsx = { jsx: elemento, jsxs: elemento, Fragment: 'fragment' };
 
 function cargarInscripcion() {
   return cargarTypescript('components/carreras/inscripcion-carrera.tsx', {
@@ -92,8 +93,8 @@ class Redireccion extends Error {
   constructor(destino) { super(`redirect ${destino}`); this.destino = destino; }
 }
 
-function cargarPagina() {
-  return cargarTypescript('app/carreras/[slug]/inscripcion/page.tsx', {
+function cargarPagina(archivo = 'app/carreras/[slug]/inscripcion/page.tsx') {
+  return cargarTypescript(archivo, {
     '@/lib/supabase': { supabase },
     '@/lib/json-ld': { jsonLdScript: JSON.stringify },
     '@/components/index/types': taxonomia,
@@ -198,15 +199,58 @@ test('la ficha de Teclab enlaza a su pagina de inscripcion', () => {
   assert.match(ficha, /Cómo inscribirte/);
 });
 
-test('el formulario va arriba de todo, solo con el H1 y la fecha antes', () => {
+test('el formulario encabeza la página dedicada sin contenido auxiliar extenso', () => {
   const pagina = readFileSync('app/carreras/[slug]/inscripcion/page.tsx', 'utf8');
-  const jsxPagina = pagina.slice(pagina.indexOf('return ('));
-  const h1 = jsxPagina.indexOf('<h1>');
-  const formulario = jsxPagina.indexOf('<FormularioLead');
-  assert.ok(h1 > 0 && formulario > h1, 'el H1 va antes del formulario');
-  // Entre el H1 y el formulario no se cuela nada que lo empuje hacia abajo.
-  assert.doesNotMatch(jsxPagina.slice(0, formulario), /career-hero|<Image|GuiaInscripcion|href="#preinscripcion"/);
-  assert.ok(jsxPagina.indexOf('<GuiaInscripcion') > formulario, 'la guia va despues del formulario');
-  // Las migas visibles se fueron a una linea, pero el dato estructurado sigue.
+  assert.match(pagina, /<h1 className="sr-only">/);
+  assert.match(pagina, /<FormularioLead/);
+  assert.doesNotMatch(pagina, /GuiaInscripcion|PreguntasInscripcion|SiteFooter/);
   assert.match(pagina, /'@type': 'BreadcrumbList'/);
+});
+
+test('ambas páginas explican los próximos pasos sin competir con el formulario', async () => {
+  const recorrer = nodo => {
+    if (!nodo || typeof nodo !== 'object') return [];
+    if (Array.isArray(nodo)) return nodo.flatMap(recorrer);
+    return [nodo, ...recorrer(nodo.props?.children)];
+  };
+  const texto = nodo => {
+    if (typeof nodo === 'string') return nodo;
+    if (Array.isArray(nodo)) return nodo.map(texto).join(' ');
+    return nodo && typeof nodo === 'object' ? texto(nodo.props?.children) : '';
+  };
+  for (const archivo of ['app/carreras/[slug]/inscripcion/page.tsx', 'app/teclab/inscripcion/page.tsx']) {
+    const arbol = await cargarPagina(archivo).default(params(slugTeclab[1]));
+    const nodos = recorrer(arbol);
+    const bloque = nodos.find(nodo => nodo.props?.className === 'inscripcion-proximos');
+    assert.ok(bloque, archivo);
+    assert.equal(texto(recorrer(bloque).find(nodo => nodo.type === 'h2')), 'Próximos pasos');
+    assert.doesNotMatch(texto(bloque), /Al enviar|solicitás la gestión|ningún cobro/);
+    assert.doesNotMatch(texto(bloque), /continuar con Inscribirme/);
+    assert.match(texto(bloque), /portal del alumno/);
+    const tarjeta = recorrer(bloque).find(nodo => nodo.props?.className === 'inscripcion-proximos-tarjeta');
+    assert.ok(tarjeta, 'el contenido queda en una tarjeta centrada');
+    const contenido = recorrer(tarjeta).find(nodo => nodo.props?.className === 'inscripcion-proximos-contenido');
+    assert.deepEqual(recorrer(contenido).filter(nodo => nodo.type === 'p').map(texto), [
+      'Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.',
+    ]);
+
+    assert.doesNotMatch(texto(bloque), /[¿?]|Lugano|CAU|sede|\d|horas|minutos/i);
+    assert.equal(recorrer(bloque).filter(nodo => ['a', 'button'].includes(nodo.type)).length, 0);
+    assert.equal(nodos.filter(nodo => ['nav', 'footer'].includes(nodo.type)).length, 0);
+    const formulario = nodos.find(nodo => nodo.props?.modo === 'preinscripcion');
+    assert.ok(formulario?.props.alinearAlLlegar);
+    assert.equal(formulario.props.casa, 'teclab');
+    assert.ok(nodos.indexOf(formulario) < nodos.indexOf(bloque));
+  }
+});
+
+test('el bloque de próximos pasos tiene una única columna de lectura centrada', () => {
+  const css = readFileSync('app/carreras/[slug]/inscripcion/inscripcion.css', 'utf8');
+  const bloque = css.slice(css.indexOf('.inscripcion-proximos-contenido'));
+  assert.match(bloque, /max-width: 48rem/);
+  assert.match(bloque, /margin-inline: auto/);
+  assert.match(bloque, /text-align: center/);
+  assert.doesNotMatch(bloque, /repeat\(2|p \+ p|border-left/);
+  const formulario = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
+  assert.match(formulario, /Al enviar solicitás la gestión de tu inscripción\. No se realiza ningún cobro/);
 });

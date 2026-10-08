@@ -280,3 +280,62 @@
     width: min(100% - 2.5rem, 1280px);
   }
 }
+
+/* La página dedicada no reserva espacio para navegación ni contenido auxiliar. */
+.inscripcion-page {
+  --navbar-height: 0px;
+  min-height: 100svh;
+}
+
+/* Sin reserva para un error inexistente: acerca la opción de novedades al mail.
+   Los mensajes reales conservan su espacio y legibilidad. */
+.inscripcion-page .form-contacto-compacto .form-field-error:empty {
+  display: none;
+}
+
+/* Orientación breve: alineación inspirada en la pieza propia de
+   Matías / Graphite (graphite.com/pricing), superficie de
+   Matías / Decagon (decagon.ai), agrupación de Matías / Antimetal (antimetal.com).
+   Sin halos ni interacciones: el formulario conserva la acción principal. */
+.inscripcion-proximos {
+  max-width: 2400px;
+  margin: 0 auto;
+  padding: 1rem 1rem 1.5rem;
+}
+
+.inscripcion-proximos-tarjeta {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(var(--catalogo-acento-rgb), .22);
+  border-radius: 1rem;
+  background: var(--catalogo-form-tarjeta);
+}
+
+.inscripcion-proximos h2 {
+  color: var(--tl-papel);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.inscripcion-proximos-contenido {
+  width: 100%;
+  max-width: 48rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.inscripcion-proximos p {
+  color: var(--tl-texto);
+  font-size: .875rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 640px) {
+  .inscripcion-proximos { padding-inline: 2rem; }
+}
+
+@media (min-width: 1280px) {
+  .inscripcion-proximos { padding-inline: 5rem; }
+}
