@@ -84,8 +84,8 @@ const SEO_ESPECIFICO: Record<string, { title: string; description: string }> = {
     description: 'Estudiá marketing digital, publicidad, contenidos, e-commerce y experiencia del cliente. Título oficial, 2 años y modalidad 100% online en Teclab.',
   },
   'Tecnicatura Superior en Cloud Administration': {
-    title: 'Tecnicatura en Cloud Administration | Teclab',
-    description: 'Aprendé infraestructura cloud, redes, seguridad y servicios en la nube. Tecnicatura oficial de 2 años, 100% online, con certificación de Teclab.',
+    title: 'Tecnicatura en Cloud Administration Online | Teclab',
+    description: 'Aprendé a administrar servicios en la nube con AWS, Azure y Google Cloud. Título oficial de Teclab en 2 años, 100% online. Conocé el plan de estudios.',
   },
   'Tecnicatura Superior en Gestión Contable': {
     title: 'Tecnicatura en Gestión Contable Online | Teclab',
