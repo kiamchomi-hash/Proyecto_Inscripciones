@@ -128,7 +128,9 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
   // preposición («Tecnicatura Superior en», «Curso de»). `carreraFullName`
   // arma el slug y simplifica el prefijo: dejaba «Tecnicatura en Programación».
   const prefijo = carrera.prefix?.trim() ?? '';
-  const nombre = /\s(en|de)$/i.test(prefijo)
+  const yaTienePrefijo = prefijo !== '' &&
+    carrera.nombre.toLowerCase().startsWith(`${prefijo.toLowerCase()} `);
+  const nombre = /\s(en|de)$/i.test(prefijo) && !yaTienePrefijo
     ? `${prefijo} ${carrera.nombre}`
     : carreraFullName({ nombre: carrera.nombre, prefix: carrera.prefix ?? null });
   const corto = carrera.nombre_corto?.trim() || carrera.nombre;

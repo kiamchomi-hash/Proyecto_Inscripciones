@@ -129,6 +129,21 @@ test('los enlaces son absolutos: la ficha marcada desde el mail y WhatsApp de Te
   assert.match(html, />Consultar por WhatsApp</);
 });
 
+test('WhatsApp no duplica el prefijo cuando Data Science ya tiene el nombre completo', () => {
+  const { html, texto } = armar({
+    carrera: {
+      ...carrera,
+      nombre: 'Tecnicatura Superior en Data Science',
+      nombre_corto: 'Data Science',
+    },
+  });
+  const enlace = texto.match(/Consultar por WhatsApp: (\S+)/)[1];
+  assert.equal(new URL(enlace).searchParams.get('text'),
+    'Hola, quiero consultar por la Tecnicatura Superior en Data Science');
+  assert.ok(html.includes(`href="${enlace}"`));
+  assert.ok(html.includes('>Tecnicatura Superior en Data Science</span>'));
+});
+
 test('el logo se pide por URL pública absoluta, nunca a un archivo local', () => {
   const { html } = armar();
   assert.ok(html.includes('src="https://www.siglo21sur.com/imagenes/teclab/mail/logo-teclab-blanco.png"'));
