@@ -20,7 +20,7 @@ Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se an
 
 ## Teclab
 
-Seguimientos de fondo. No se revisan cada vez que se trabaja en Teclab: se retoman cada tanto o cuando el usuario lo pide.
+Seguimientos de fondo. No se revisan cada vez que se trabaja en Teclab: se retoman cada tanto o cuando el usuario lo pide. Los recuerda por Telegram el cron `/api/recordatorio-teclab` los lunes a las 9:00, con la lista de fichas vigentes que todavía no tienen la intro nueva.
 
 - [ ] **Mejorar el diseño de las fichas de Teclab (`/carreras/<slug>`), antigua tarea 38.** Ya aplican el sistema de `piezas_teclab`: paleta, Poppins, hero, bloques de datos en color, plan, formularios, navbar, pie, scroll y flecha. Quedan mejoras que el usuario todavía no definió; preguntarle cuáles antes de tocar nada. `/teclab`, `/teclab/inscripcion`, `/carreras/<slug>/inscripcion` e `/inscripcion/<codigo>` ya están hechas (commit `d73a904`). [Detalle](../odd/tasks/rediseno-paginas-teclab.md). Última revisión: 09/10/2026.
 
