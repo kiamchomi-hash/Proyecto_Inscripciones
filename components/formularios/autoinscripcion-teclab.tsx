@@ -198,7 +198,7 @@ export function PasoListo({ waHref, dni, solicitud = false }: { waHref: string; 
       )}
       <p className="max-w-md text-[15px] leading-snug text-white/85">
         {solicitud
-          ? 'Vamos a gestionar tu inscripción. Una vez gestionada, Teclab te envía por mail el acceso al portal para elegir el medio de pago y abonar.'
+          ? 'Teclab te envía por mail el acceso al portal para elegir el medio de pago y abonar.'
           : 'A la brevedad te llega un mail de Teclab, «PAGO AUTOGESTIONADO!». Si no lo ves, revisá el correo no deseado.'}
       </p>
       <Desplegable titulo="Así se ve el mail">

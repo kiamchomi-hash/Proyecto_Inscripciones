@@ -74,6 +74,7 @@ test('el resultado dedicado confirma gestión pendiente sin ofrecer credenciales
   const confirmacion=texto(PasoListo({solicitud:true,dni:'30123456',waHref:'#'}));
   assert.match(confirmacion,/Solicitud recibida/);
   assert.match(confirmacion,/Una vez gestionada/);
+  assert.equal((confirmacion.match(/gestionad|gestionar/g)||[]).length,1);
   assert.doesNotMatch(confirmacion,/brevedad|cuenta creada|acceso listo/);
   assert.match(confirmacion,/Entrar al portal/);
   const nodos=n=>Array.isArray(n)?n.flatMap(nodos):n?.props?[n,...nodos(n.props.children)]:[];
