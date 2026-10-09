@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Poppins } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 import {
@@ -192,6 +193,18 @@ export default async function TeclabPage() {
 
         <section id="oferta-teclab" className="teclab-offer" aria-label="Oferta académica">
           <CareersCatalog carreras={carreras} />
+        </section>
+
+        {/* Para quien recorrio el catalogo y no se decide: el test recomienda
+            entre estas mismas carreras y termina en la ficha o en WhatsApp. */}
+        <section className="teclab-test" aria-labelledby="teclab-test-title">
+          <div>
+            <h2 id="teclab-test-title">¿No sabés cuál elegir?</h2>
+            <p>Respondé siete preguntas de un toque y te mostramos las carreras que más van con vos.</p>
+          </div>
+          <Link className="teclab-button teclab-button--ghost" href="/teclab/test-vocacional">
+            Hacer el test vocacional <span aria-hidden="true">→</span>
+          </Link>
         </section>
 
         <section className="teclab-continuity" aria-labelledby="teclab-continuity-title">

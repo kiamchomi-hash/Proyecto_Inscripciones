@@ -175,6 +175,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      url: `${baseUrl}/teclab/test-vocacional`,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
       url: `${baseUrl}/clases-apoyo`,
       changeFrequency: 'monthly',
       priority: 0.8,

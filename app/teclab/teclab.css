@@ -360,6 +360,37 @@
   background-size: 38% auto;
 }
 
+/* ── Test vocacional: franja entre el catalogo y la continuidad ── */
+
+.teclab-test {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  width: min(100% - 2.5rem, 1380px);
+  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+  padding: clamp(1.1rem, 2.5vw, 1.5rem) clamp(1.1rem, 2.5vw, 1.75rem);
+  border: 1px solid rgba(74, 226, 231, 0.28);
+  border-left: 4px solid var(--tl-cian);
+  border-radius: 0.6rem;
+  background: var(--tl-navy-claro);
+}
+
+.teclab-test h2 {
+  margin: 0;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 700;
+}
+
+.teclab-test p {
+  margin: 0.3rem 0 0;
+  color: var(--tl-texto);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 /* ── Continuidad: de la tecnicatura a la licenciatura ── */
 
 .teclab-continuity {
