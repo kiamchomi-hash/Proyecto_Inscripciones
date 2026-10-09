@@ -547,6 +547,12 @@
   filter: brightness(1.1);
 }
 
+/* El error del servidor, dentro del botón: mismo alto, otro color. */
+.vp-primario-error {
+  background: #f87171;
+  color: #1f0a0a;
+}
+
 .vp-primario:disabled {
   opacity: 0.6;
   cursor: wait;

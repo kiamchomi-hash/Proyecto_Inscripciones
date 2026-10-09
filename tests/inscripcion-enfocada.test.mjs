@@ -142,3 +142,14 @@ test('los CTA del slide de precio llevan a la pagina dedicada de inscripcion', a
   assert.equal(fuente.match(/href=\{`\/carreras\/\$\{slug\}\/inscripcion`\}/g)?.length, 2);
   assert.doesNotMatch(fuente, /urlAutoinscripcion/);
 });
+
+test('el error de Ver precio va en el boton y no corre el contenido', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const fuente = await readFile(new URL('../components/index/ver-precio-teclab.tsx', import.meta.url), 'utf8');
+  // Nada visible aparece debajo del botón: el mensaje entero queda para el
+  // lector de pantalla y el botón muestra la versión corta.
+  assert.doesNotMatch(fuente, /\{error && \(\s*<p id=\{errorId\} className="vp-aviso"/);
+  assert.match(fuente, /<p id=\{errorId\} className="sr-only" role="alert">/);
+  assert.match(fuente, /error\.corto/);
+  assert.match(fuente, /vp-primario-error/);
+});

@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Teclab — 09/10/2026
+
+- [x] **Verificar si se está enviando el mail de Teclab con el acceso al portal del alumno**. Confirmado por el usuario el 09/10/2026.
+
 ## Tareas del 02/10/2026 cerradas — 03 y 04/10/2026
 
 - [x] **25. Ocultar preferentemente la ubicación en los slides de carreras**. Resuelto el 04/10/2026: se sacó el botón «Guaminí 4876» de los modales de Siglo 21 (`carousel-modal.tsx`) e Identidad (`ia-modal.tsx`); Teclab ya no lo tenía.

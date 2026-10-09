@@ -64,11 +64,18 @@ function diaMes(fecha: string): string {
   return dia && mes ? `${dia}/${mes}` : fecha;
 }
 
-function mensajeDeError(status: number | null): string {
-  if (status === 429) return 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.';
-  if (status === 403) return 'No pudimos completar la verificación de seguridad. Probá de nuevo.';
-  if (status === 400) return 'Revisá el mail e intentá de nuevo.';
-  return 'No pudimos mostrar el precio en este momento. Probá de nuevo o escribinos por WhatsApp.';
+interface ErrorPrecio {
+  /** Lo que muestra el botón: corto, para que entre en un renglón y nada se corra. */
+  corto: string;
+  /** El mensaje entero, para el lector de pantalla. */
+  largo: string;
+}
+
+function mensajeDeError(status: number | null): ErrorPrecio {
+  if (status === 429) return { corto: 'Probá en unos minutos', largo: 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.' };
+  if (status === 403) return { corto: 'No se verificó, reintentá', largo: 'No pudimos completar la verificación de seguridad. Probá de nuevo.' };
+  if (status === 400) return { corto: 'Revisá el mail', largo: 'Revisá el mail e intentá de nuevo.' };
+  return { corto: 'No se pudo, reintentá', largo: 'No pudimos mostrar el precio en este momento. Probá de nuevo o escribinos por WhatsApp.' };
 }
 
 function IconoWhatsApp() {
@@ -285,7 +292,7 @@ export function PanelVerPrecio({
   const [esperandoToken, setEsperandoToken] = useState(false);
   // Si el token tarda, el aviso también va en el botón: nada aparece abajo.
   const [demorado, setDemorado] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<ErrorPrecio | null>(null);
   const [precio, setPrecio] = useState<PrecioVigente | null>(null);
 
   const resultadoRef = useRef<HTMLDivElement>(null);
@@ -310,7 +317,7 @@ export function PanelVerPrecio({
    */
   const pedirPrecio = async (conNewsletter: boolean) => {
     setIntentado(true);
-    setError('');
+    setError(null);
     const payload = validarPayloadPrecio({ carreraId, email, newsletter: conNewsletter && newsletter });
     if (!payload || enviando) return;
     if (!token) {
@@ -412,7 +419,10 @@ export function PanelVerPrecio({
             autoComplete="email"
             value={email}
             maxLength={CAMPOS.email.max}
-            onChange={e => setEmail(e.target.value)}
+            onChange={e => {
+              setEmail(e.target.value);
+              setError(null);
+            }}
             aria-invalid={intentado && !emailValido}
             aria-describedby={intentado && !emailValido ? `${emailId}-error` : undefined}
             className="vp-campo"
@@ -435,9 +445,12 @@ export function PanelVerPrecio({
             />
           )}
 
+          {/* El error del servidor también va en el botón, como la espera:
+              abajo corría el separador y WhatsApp. El mensaje entero queda
+              para el lector de pantalla, en un nodo que siempre está. */}
           <button
             type="submit"
-            className="vp-primario"
+            className={error ? 'vp-primario vp-primario-error' : 'vp-primario'}
             disabled={enviando || esperandoToken}
             aria-busy={enviando || esperandoToken}
             aria-describedby={error ? errorId : undefined}
@@ -447,14 +460,13 @@ export function PanelVerPrecio({
               ? 'Buscando el precio…'
               : esperandoToken
                 ? (demorado ? 'Esperá unos segundos…' : 'Verificando…')
-                : 'Ver precio'}
+                : error
+                  ? error.corto
+                  : 'Ver precio'}
           </button>
-
-          {error && (
-            <p id={errorId} className="vp-aviso" role="alert">
-              {error}
-            </p>
-          )}
+          <p id={errorId} className="sr-only" role="alert">
+            {error?.largo}
+          </p>
 
           <div className="vp-separador"><span>o</span></div>
           <EnlaceWhatsApp href={waHref} texto="Escribinos por WhatsApp" />
