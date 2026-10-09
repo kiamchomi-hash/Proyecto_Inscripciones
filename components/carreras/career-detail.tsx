@@ -355,7 +355,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 className="career-button career-button--primary"
                 data-career-primary-cta
               >
-                {carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'} <ArrowIcon />
+                {carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
               <a
                 href={waHref}
@@ -376,7 +376,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
 
       <StickyEnrollmentCta
         destino={carrera.proximamente ? '#formulario' : '#preinscripcion'}
-        texto={carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'}
+        texto={carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'}
       />
 
       <dl className="career-facts" aria-label={`Información principal ${isTeclabCourse ? 'del curso' : 'de la carrera'}`}>
@@ -683,7 +683,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 )}
               </strong>
               <a href={carrera.proximamente ? '#formulario' : '#preinscripcion'}>
-                {carrera.proximamente ? 'Avisame cuando abra' : 'Quiero inscribirme'} <ArrowIcon />
+                {carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
               <a
                 className="career-aside-whatsapp"

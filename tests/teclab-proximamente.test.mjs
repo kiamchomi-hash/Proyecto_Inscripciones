@@ -69,7 +69,7 @@ test('la ficha de una Teclab próximamente nombra a Teclab y no promete datos', 
   assert.doesNotMatch(html, /\bnull\b|undefined/);
   assert.doesNotMatch(html, /career-oficial-articulacion|Después podés seguir en Universidad Siglo 21/);
   assert.doesNotMatch(html, /AVISO-INICIO|Ver precio|teclab\.edu\.ar|id="plan"/);
-  assert.match(html, /Avisame cuando abra/);
+  assert.match(html, /Preinscribite/);
   // La última oración de la descripción es la salida laboral: tiene que verse
   // aunque la carrera no tenga competencias cargadas.
   assert.match(html, /La salida laboral está en fintechs/);
@@ -263,4 +263,18 @@ test('el slug provisorio de Energías Renovables redirige al del nombre oficial'
     tipos.carreraToSlug({ prefix: 'Tecnicatura Superior en', nombre: 'Tecnicatura Superior en Gestión de Energías Renovables', nombre_corto: 'Gestión de Energías Renovables', nivel: 'Teclab - Tecnología' }),
     'tecnicatura-superior-en-gestion-de-energias-renovables',
   );
+});
+
+test('el cierre del modal de una anunciada tiene foto, WhatsApp y el aviso a la vista', () => {
+  const modal = readFileSync(new URL('../components/index/teclab-modal.tsx', import.meta.url), 'utf8');
+  const cierre = modal.slice(modal.indexOf('function SlideCierre'), modal.indexOf('function SlideVerPrecio'));
+  // Sin ficha oficial, el fondo sale de la portada de stock de la anunciada.
+  assert.match(cierre, /ficha\?\.imagenCierre \?\? getPortadaTeclab\(carrera\)/);
+  // El cuerpo ofrece los dos contactos; el aviso lleva al formulario de
+  // contacto, que entra en `consultas` y avisa por Telegram.
+  assert.match(cierre, /carrera\.proximamente \? \(\s*<AccesoAviso/);
+  const precio = readFileSync(new URL('../components/index/ver-precio-teclab.tsx', import.meta.url), 'utf8');
+  const acceso = precio.slice(precio.indexOf('export function AccesoAviso'));
+  assert.match(acceso, /Preinscribite/);
+  assert.match(acceso, /<EnlaceWhatsApp/);
 });

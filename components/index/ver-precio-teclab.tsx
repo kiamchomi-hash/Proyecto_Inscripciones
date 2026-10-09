@@ -189,6 +189,38 @@ export function AccesoVerPrecio({
 }
 
 /**
+ * Los dos botones del cierre de una carrera anunciada, que no tiene precio:
+ * «Preinscribite», que lleva al formulario de contacto (entra en
+ * `consultas` y avisa por Telegram), y WhatsApp a la vista.
+ */
+export function AccesoAviso({
+  acento,
+  textoAcento,
+  waHref,
+  onAvisame,
+}: {
+  acento: string;
+  /** Color del texto sobre un relleno del acento */
+  textoAcento: string;
+  waHref: string;
+  onAvisame: () => void;
+}) {
+  return (
+    <>
+      <button
+        type="button"
+        onClick={onAvisame}
+        className="vp-boton"
+        style={{ '--vp-acento': acento, '--vp-texto-acento': textoAcento } as CSSProperties}
+      >
+        Preinscribite
+      </button>
+      <EnlaceWhatsApp href={waHref} texto="Consultar por WhatsApp" principal />
+    </>
+  );
+}
+
+/**
  * Formulario y resultado del precio, para ir dentro de un slide. El slide
  * queda montado mientras el modal esta abierto, asi que lo tipeado y el
  * precio ya mostrado sobreviven a ir y volver entre slides sin registrarse

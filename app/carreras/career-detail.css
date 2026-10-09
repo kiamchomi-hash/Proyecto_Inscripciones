@@ -282,7 +282,7 @@
 }
 
 /* Aviso de carrera anunciada sin inscripcion abierta. Va antes de los botones
-   para que se lea antes de tocar "Avisame cuando abra". */
+   para que se lea antes de tocar "Preinscribite". */
 .career-proximamente {
   border-left: 3px solid var(--color-gold);
   padding: .7rem 0 .7rem 1rem;

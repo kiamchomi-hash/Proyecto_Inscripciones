@@ -19,7 +19,7 @@ import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carrer
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 import AvisoInicioTeclab from './aviso-inicio-teclab';
-import { AccesoVerPrecio, PanelVerPrecio } from './ver-precio-teclab';
+import { AccesoAviso, AccesoVerPrecio, PanelVerPrecio } from './ver-precio-teclab';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 import {
@@ -841,13 +841,18 @@ function SlideCierre({
   acento,
   ficha,
   onVerPrecio,
+  onAvisame,
 }: {
   carrera: Carrera;
   acento: string;
   ficha: TeclabFicha | null;
   onVerPrecio: () => void;
+  onAvisame: () => void;
 }) {
   const { modalidad } = parseEnfoqueTeclab(carrera.enfoque);
+  // Una anunciada no tiene ficha oficial ni segunda foto: el fondo es su
+  // portada de stock, para que el cierre no quede como un cuadro vacío.
+  const fondo = ficha?.imagenCierre ?? getPortadaTeclab(carrera);
   // Los datos van como chips, igual que en la portada. Con cuadros rotulados
   // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
   // en medio de la nada. El titulo y el certificado ya estan en la portada.
@@ -856,10 +861,11 @@ function SlideCierre({
 
   return (
     <div className="teclab-slide teclab-cierre h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
-      {/* La segunda foto de la ficha, de fondo y bajo un velo tinta */}
-      {ficha && (
+      {/* La segunda foto de la ficha (o la portada de una anunciada), de fondo
+          y bajo un velo tinta */}
+      {fondo && (
         <div className="teclab-cierre-fondo" aria-hidden="true">
-          <Image src={ficha.imagenCierre} alt="" fill quality={90} sizes="(max-width: 768px) 100vw, 64rem" className="object-cover" />
+          <Image src={fondo} alt="" fill quality={90} sizes="(max-width: 768px) 100vw, 64rem" className="object-cover" />
           <div className="teclab-cierre-velo" />
         </div>
       )}
@@ -904,9 +910,16 @@ function SlideCierre({
             vive lejos una direccion le lee como un requisito de asistencia.
             El precio se ve a cambio del mail en el slide siguiente, al que
             lleva este boton; WhatsApp queda a la vista abajo. */}
-        {/* Una anunciada no tiene precio que mostrar: su unico CTA es el aviso
-            del pie, y WhatsApp ya esta ahi al lado. */}
-        {!carrera.proximamente && (
+        {/* Una anunciada no tiene precio que mostrar: en su lugar, el aviso de
+            apertura y WhatsApp, a la vista en el cuerpo y no sólo en el pie. */}
+        {carrera.proximamente ? (
+          <AccesoAviso
+            acento={acento}
+            textoAcento={textoSobreAcentoTeclab(acento)}
+            waHref={`https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`}
+            onAvisame={onAvisame}
+          />
+        ) : (
           <AccesoVerPrecio
             acento={acento}
             textoAcento={textoSobreAcentoTeclab(acento)}
@@ -1002,6 +1015,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const salida = useMemo(() => partirDescripcionTeclab(carrera.descripcion).salida, [carrera.descripcion]);
 
   const [idx, setIdx] = useState(0);
+  const [closing, setClosing] = useState(false);
   const precioRef = useRef<HTMLDivElement>(null);
 
   // Cuenta los toques de «Ver precio» del cierre. Con un mail ya recordado, el
@@ -1046,7 +1060,17 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       // slide de golpe, sin la transicion.
       precioRef.current?.focus({ preventScroll: true });
     };
-    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} onVerPrecio={irAPrecio} /> });
+    // Igual que «Preinscribite» del pie: la carrera viaja elegida al
+    // formulario de contacto y el modal se cierra.
+    const avisar = () => {
+      pedirCarreraEnFormulario(carrera.id);
+      setClosing(true);
+      setTimeout(onClose, 300);
+      setTimeout(() => {
+        document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' });
+      }, 350);
+    };
+    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} onVerPrecio={irAPrecio} onAvisame={avisar} /> });
     // Sin inscripcion abierta no hay precio vigente que pedir.
     if (!carrera.proximamente) {
       s.push({
@@ -1055,10 +1079,9 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       });
     }
     return s;
-  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio]);
+  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio, onClose]);
 
   const [visible, setVisible] = useState(false);
-  const [closing, setClosing] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -1300,7 +1323,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {carrera.proximamente ? 'Avisame cuando abra' : 'Inscribite ya'}
+              {carrera.proximamente ? 'Preinscribite' : 'Inscribite ya'}
             </a>
           </div>
 
