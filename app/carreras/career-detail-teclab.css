@@ -496,12 +496,64 @@
 
 /* ── CTA fijo en movil ────────────────────────────────── */
 @media (max-width: 900px) {
+  /* Los botones van antes que la foto y la presentación: con la foto arriba y
+     seis líneas de texto, "Quiero inscribirme" quedaba al fondo de la primera
+     pantalla. El contenedor y el bloque de texto se aplanan (display:contents)
+     para que la foto, que es hermana de ellos, pueda caer entre los botones y
+     el párrafo; el margen lateral que daba el contenedor pasa a cada hijo. */
   .career-page--teclab .career-hero {
+    --hero-margen: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 0;
     background: var(--teclab-navy);
   }
 
+  .career-page--teclab .career-hero-inner,
+  .career-page--teclab .career-hero-copy {
+    display: contents;
+  }
+
+  .career-page--teclab .career-hero-nav-row,
+  .career-page--teclab .career-kicker,
+  .career-page--teclab .career-hero h1,
+  .career-page--teclab .career-proximamente,
+  .career-page--teclab .career-hero-actions,
+  .career-page--teclab .career-hero-intro {
+    margin-left: var(--hero-margen);
+    margin-right: var(--hero-margen);
+  }
+
+  .career-page--teclab .career-hero-nav-row {
+    width: auto;
+    margin-top: 1.25rem;
+  }
+
+  .career-page--teclab .career-hero-media {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    order: 1;
+    height: 150px;
+    margin-top: 1.75rem;
+  }
+
+  .career-page--teclab .career-hero-intro {
+    order: 2;
+    margin-top: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
   .career-page--teclab .career-hero-shade {
-    background: linear-gradient(0deg, rgba(12, 24, 36, 0.42) 0%, transparent 70%);
+    display: none;
+  }
+
+  /* Mismo margen que career-detail.css le da al contenedor en teléfono. */
+  @media (max-width: 640px) {
+    .career-page--teclab .career-hero {
+      --hero-margen: 1.25rem;
+    }
   }
 
   .career-page--teclab .career-hero-media {

@@ -85,8 +85,21 @@ const HERO_ORIGINS: Record<string, string> = {
   'Tecnicatura en Administración y Gestión Tributaria': 'center center',
 };
 
+// En Teclab la foto móvil es una franja de 150 px: centrada, les cortaba la
+// cabeza a las personas. Se sube el encuadre para que entre la cara.
 const MOBILE_HERO_POSITIONS: Record<string, string> = {
   'Tecnicatura en Administración y Gestión Tributaria': 'center top',
+  'Tecnicatura Superior en Data Science': 'center 15%',
+  'Tecnicatura Superior en Cloud Administration': 'center 15%',
+  'Tecnicatura Superior en Seguridad Informática': 'center 15%',
+  'Tecnicatura Superior en Seguros': 'center 15%',
+  'Tecnicatura Superior en Gestión Agraria': 'center 15%',
+  'Tecnicatura Superior en Gestión Contable': 'center 15%',
+  'Tecnicatura Superior en Gestión Hotelera': 'center 15%',
+  'Tecnicatura Superior en Marketing Digital': 'center 15%',
+  'Tecnicatura Superior en Experiencia del Cliente': 'center 15%',
+  'Tecnicatura Superior en Relaciones Laborales': 'center 15%',
+  'Tecnicatura Superior en Planificación y Organización de Eventos': 'center 15%',
 };
 
 const MOBILE_HERO_ORIGINS: Record<string, string> = {
