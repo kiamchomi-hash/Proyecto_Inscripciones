@@ -65,6 +65,7 @@ const TIPOS: { match: string; tipo: string }[] = [
   { match: 'eventos', tipo: 'Servicios' },
   { match: 'acompañamiento terapéutico', tipo: 'Servicios' },
   { match: 'gestión de alimentos', tipo: 'Gestión' },
+  { match: 'proyectos mineros', tipo: 'Gestión' },
   { match: 'periodismo', tipo: 'Comunicación' },
 ];
 
@@ -331,6 +332,8 @@ const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
   { match: 'producto digital', imagen: '/imagenes/teclab/carreras/producto-digital.webp' },
   { match: 'gestión de alimentos', imagen: '/imagenes/teclab/carreras/gestion-de-alimentos.webp' },
   { match: 'energías renovables', imagen: '/imagenes/teclab/carreras/energias-renovables.webp' },
+  // Esta no es de Unsplash: Bingham Canyon (Utah), dominio público en Wikimedia Commons.
+  { match: 'proyectos mineros', imagen: '/imagenes/teclab/carreras/gestion-de-proyectos-mineros.webp' },
 ];
 
 /** Foto de portada de una carrera de Teclab: la de su ficha oficial o, si es anunciada, la de stock. */

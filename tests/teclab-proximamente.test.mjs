@@ -225,8 +225,10 @@ test('las cinco carreras anunciadas de Teclab entran en un filtro del catálogo'
   assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Gestión de Alimentos', nivel: 'Teclab - Gestión' }), 'Gestión');
 });
 
-test('Gestión de Alimentos entra en el área Ambiente y Agro', () => {
+test('Gestión de Alimentos y Proyectos Mineros entran en el área Ambiente y Agro', () => {
   assert.equal(tipos.getAreaForCarrera({ nombre: 'Tecnicatura Superior en Gestión de Alimentos' }), 'ambiente');
+  assert.equal(tipos.getAreaForCarrera({ nombre: 'Tecnicatura Superior en Gestión de Proyectos Mineros' }), 'ambiente');
+  assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Gestión de Proyectos Mineros', nivel: 'Teclab - Gestión' }), 'Gestión');
 });
 
 test('las carreras anunciadas de Teclab tienen portada propia y las demás conservan la de su ficha', () => {
@@ -236,6 +238,7 @@ test('las carreras anunciadas de Teclab tienen portada propia y las demás conse
     'Tecnicatura Superior en Producto Digital',
     'Tecnicatura Superior en Gestión de Alimentos',
     'Tecnicatura Superior en Energías Renovables',
+    'Tecnicatura Superior en Gestión de Proyectos Mineros',
   ]) {
     const portada = teclab.getPortadaTeclab({ nombre });
     assert.match(portada ?? '', /^\/imagenes\/teclab\/carreras\/.+\.webp$/, nombre);

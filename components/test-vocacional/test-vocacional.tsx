@@ -49,7 +49,7 @@ const PREGUNTAS: Pregunta[] = [
       { texto: 'Leyes, contratos y justicia', areas: { derecho: 4 }, terminos: ['abogacía', 'escribanía', 'jurídica', 'procurador', 'martillero', 'criminología', 'escena del crimen'] },
       { texto: 'Educación y desarrollo de personas', areas: { educacion: 3, rrhh: 2 }, terminos: ['educación', 'profesorado', 'psicopedagogía', 'recursos humanos', 'relaciones laborales', 'clima laboral', 'niñez', 'talento'] },
       { texto: 'Salud y acompañamiento', areas: { salud: 4 }, terminos: ['terapia', 'psicología', 'salud', 'gerontología', 'nutrición'] },
-      { texto: 'Comunicación, turismo o ambiente', areas: { comunicacion: 2, turismo: 2, ambiente: 2 }, terminos: ['comunicación', 'periodismo', 'publicidad', 'relaciones públicas', 'rrpp', 'diseño', 'moda', 'protocolo', 'eventos', 'turismo', 'turística', 'turísticos', 'hotelera', 'ambiente', 'ambiental', 'agraria', 'agro', 'alimentos', 'hidrocarburos', 'deportiva'] },
+      { texto: 'Comunicación, turismo o ambiente', areas: { comunicacion: 2, turismo: 2, ambiente: 2 }, terminos: ['comunicación', 'periodismo', 'publicidad', 'relaciones públicas', 'rrpp', 'diseño', 'moda', 'protocolo', 'eventos', 'turismo', 'turística', 'turísticos', 'hotelera', 'ambiente', 'ambiental', 'agraria', 'agro', 'alimentos', 'mineros', 'hidrocarburos', 'deportiva'] },
     ],
   },
   {

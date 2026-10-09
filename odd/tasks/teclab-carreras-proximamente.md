@@ -69,3 +69,9 @@ inventados.
   certificado intermedio, plan por año, competencias y cinco preguntas frecuentes. Área
   Ambiente y Agro y término del test vocacional. Sigue `proximamente`: faltan precio,
   fecha de inicio, `CARRERAS_HUBSPOT` y la ficha oficial en teclab.edu.ar.
+- 09/10/2026: las cinco anunciadas llevan «2 años» (confirmado por el usuario) y el
+  badge «Próximamente» va en la cabecera de la tarjeta, al lado de la duración.
+- 09/10/2026: alta de una sexta, Gestión de Proyectos Mineros, con los datos de la
+  capacitación de admisión (`sql/2026-10-09_teclab_gestion_proyectos_mineros.sql`):
+  tipo Gestión, área Ambiente y Agro, término del test vocacional y portada de dominio
+  público (Bingham Canyon, Wikimedia Commons). Mismos pendientes que Alimentos.
