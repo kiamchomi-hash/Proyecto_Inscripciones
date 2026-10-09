@@ -11,9 +11,15 @@ test('Hotelera activa no se redirige a la home ni a otra ficha', async () => {
 });
 
 test('se conservan exactamente las demás reglas de redirección', async () => {
-  // Energías Renovables (09/10/2026) se agregó después de tomar la huella y se
-  // prueba aparte, en teclab-proximamente.test.mjs.
-  const nuevas = new Set([hotelera, '/carreras/tecnicatura-superior-en-energias-renovables']);
+  // Las reglas de Teclab del 09/10/2026 se agregaron después de tomar la huella
+  // y se prueban aparte, en teclab-proximamente.test.mjs.
+  const nuevas = new Set([
+    hotelera,
+    '/carreras/tecnicatura-superior-en-energias-renovables',
+    '/carreras/tecnicatura-superior-en-fintech',
+    '/carreras/tecnicatura-superior-en-acompanamiento-terapeutico',
+    '/carreras/tecnicatura-superior-en-producto-digital',
+  ]);
   const redirects = (await config.redirects()).filter(regla => !nuevas.has(regla.source));
   // Huella de las 23 reglas anteriores: rutas, destinos, códigos y condiciones.
   const hash = createHash('sha256').update(JSON.stringify(redirects)).digest('hex');

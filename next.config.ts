@@ -122,6 +122,24 @@ const nextConfig: NextConfig = {
         destination: '/carreras/tecnicatura-superior-en-gestion-de-energias-renovables',
         permanent: true,
       },
+      // Fintech, Acompañamiento Terapéutico y Producto Digital se publicaron como
+      // «Próximamente» el 09/10/2026 por un anuncio del Dashboard Comercial de
+      // Teclab que no se confirmó: las carreras nuevas eran otras.
+      {
+        source: '/carreras/tecnicatura-superior-en-fintech',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/carreras/tecnicatura-superior-en-acompanamiento-terapeutico',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/carreras/tecnicatura-superior-en-producto-digital',
+        destination: '/',
+        permanent: true,
+      },
       // La materia dejo de ser "Fisico-Quimica" y paso a ser solo "Fisica"
       // (11/08/2026): el profesor no dicta quimica. La URL vieja estaba
       // indexada desde el 09/08, asi que va con 301 a la nueva — es la misma

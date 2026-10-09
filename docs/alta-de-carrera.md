@@ -156,10 +156,10 @@ Problemas que existen hoy, todavía sin corregir:
 1. **La skill `cargar_carrera` está vieja**: nombra `scripts/scrape-descuentos.mjs`,
    `NOMBRE_MAP`, `/admin/precios` y `precios_carreras`, que ya no existen. El precio vive en
    `precios_privados`. Además sólo cubre Siglo 21.
-2. **El test vocacional no mira `proximamente`**: puede recomendar Fintech o Administración
+2. **El test vocacional no mira `proximamente`**: puede recomendar una Teclab anunciada o Administración
    Pública, que no tienen inscripción abierta. Y su descripción habla sólo de Siglo 21,
    aunque también lista Teclab.
-3. **`CARRERAS_HUBSPOT` no tiene las cinco Teclab anunciadas**: cuando abran, sus leads
+3. **`CARRERAS_HUBSPOT` no tiene las cinco Teclab anunciadas** (Alimentos, Proyectos Mineros, Energías Renovables, Ambiental e Higiene y Seguridad): cuando abran, sus leads
    no van a llegar a la sede sin ningún aviso.
 4. **Los folletos están desactualizados**: les faltan las cinco altas de Siglo 21 del
    03/10 y las cinco de Teclab, e incluyen Administración Pública, que está `proximamente`.

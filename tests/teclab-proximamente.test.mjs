@@ -213,35 +213,38 @@ test('las cinco quedan con fichas y descriptions propias', async () => {
 });
 
 test('las cinco carreras anunciadas de Teclab entran en un filtro del catálogo', () => {
-  const casos = [
-    ['Tecnicatura Superior en Fintech', 'Teclab - Tecnología', 'Desarrollo'],
-    ['Tecnicatura Superior en Producto Digital', 'Teclab - Tecnología', 'Desarrollo'],
-    ['Tecnicatura Superior en Gestión de Energías Renovables', 'Teclab - Tecnología', 'Infraestructura'],
-  ];
-  for (const [nombre, nivel, categoria] of casos) {
-    assert.equal(teclab.getCategoriaTeclabTecnologia({ nombre, nivel }), categoria, nombre);
+  assert.equal(teclab.getCategoriaTeclabTecnologia({ nombre: 'Tecnicatura Superior en Gestión de Energías Renovables', nivel: 'Teclab - Tecnología' }), 'Infraestructura');
+  for (const nombre of [
+    'Tecnicatura Superior en Gestión de Alimentos',
+    'Tecnicatura Superior en Gestión de Proyectos Mineros',
+    'Tecnicatura Superior en Gestión Ambiental',
+    'Tecnicatura Superior en Higiene y Seguridad en el Trabajo',
+  ]) {
+    assert.equal(teclab.getTipoTeclab({ nombre, nivel: 'Teclab - Gestión' }), 'Gestión', nombre);
+    assert.equal(tipos.getAreaForCarrera({ nombre }), 'ambiente', nombre);
   }
-  assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Acompañamiento Terapéutico', nivel: 'Teclab - Gestión' }), 'Servicios');
-  assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Gestión de Alimentos', nivel: 'Teclab - Gestión' }), 'Gestión');
 });
 
-test('Gestión de Alimentos y Proyectos Mineros entran en el área Ambiente y Agro', () => {
-  assert.equal(tipos.getAreaForCarrera({ nombre: 'Tecnicatura Superior en Gestión de Alimentos' }), 'ambiente');
-  assert.equal(tipos.getAreaForCarrera({ nombre: 'Tecnicatura Superior en Gestión de Proyectos Mineros' }), 'ambiente');
-  assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Gestión de Proyectos Mineros', nivel: 'Teclab - Gestión' }), 'Gestión');
-  assert.equal(tipos.getAreaForCarrera({ nombre: 'Tecnicatura Superior en Gestión Ambiental' }), 'ambiente');
-  assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Gestión Ambiental', nivel: 'Teclab - Gestión' }), 'Gestión');
+test('Fintech, Acompañamiento Terapéutico y Producto Digital no son carreras de Teclab y redirigen a la home', async () => {
+  assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Acompañamiento Terapéutico', nivel: 'Teclab - Gestión' }), null);
+  assert.equal(teclab.getCategoriaTeclabTecnologia({ nombre: 'Tecnicatura Superior en Fintech', nivel: 'Teclab - Tecnología' }), null);
+  assert.equal(teclab.getCategoriaTeclabTecnologia({ nombre: 'Tecnicatura Superior en Producto Digital', nivel: 'Teclab - Tecnología' }), null);
+  const { default: config } = await import('../next.config.ts');
+  const redirects = await config.redirects();
+  for (const slug of ['fintech', 'acompanamiento-terapeutico', 'producto-digital']) {
+    const source = `/carreras/tecnicatura-superior-en-${slug}`;
+    assert.deepEqual(redirects.find(r => r.source === source), { source, destination: '/', permanent: true }, source);
+    assert.equal(teclab.getPortadaTeclab({ nombre: `Tecnicatura Superior en ${slug}` }), null);
+  }
 });
 
 test('las carreras anunciadas de Teclab tienen portada propia y las demás conservan la de su ficha', () => {
   for (const nombre of [
-    'Tecnicatura Superior en Fintech',
-    'Tecnicatura Superior en Acompañamiento Terapéutico',
-    'Tecnicatura Superior en Producto Digital',
     'Tecnicatura Superior en Gestión de Alimentos',
     'Tecnicatura Superior en Gestión de Energías Renovables',
     'Tecnicatura Superior en Gestión de Proyectos Mineros',
     'Tecnicatura Superior en Gestión Ambiental',
+    'Tecnicatura Superior en Higiene y Seguridad en el Trabajo',
   ]) {
     const portada = teclab.getPortadaTeclab({ nombre });
     assert.match(portada ?? '', /^\/imagenes\/teclab\/carreras\/.+\.webp$/, nombre);

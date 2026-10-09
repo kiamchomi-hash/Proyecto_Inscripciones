@@ -63,10 +63,10 @@ const TIPOS: { match: string; tipo: string }[] = [
   { match: 'relaciones laborales', tipo: 'Gestión' },
   { match: 'hotelera', tipo: 'Servicios' },
   { match: 'eventos', tipo: 'Servicios' },
-  { match: 'acompañamiento terapéutico', tipo: 'Servicios' },
   { match: 'gestión de alimentos', tipo: 'Gestión' },
   { match: 'proyectos mineros', tipo: 'Gestión' },
   { match: 'gestión ambiental', tipo: 'Gestión' },
+  { match: 'higiene y seguridad', tipo: 'Gestión' },
   { match: 'periodismo', tipo: 'Comunicación' },
 ];
 
@@ -97,7 +97,7 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
   if (nombre.includes('data science') || nombre.includes('inteligencia artificial')) return 'Datos e IA';
   if (nombre.includes('cloud administration') || nombre.includes('redes informáticas') || nombre.includes('energías renovables')) return 'Infraestructura';
   if (nombre.includes('seguridad informática')) return 'Ciberseguridad';
-  if (nombre.includes('programación') || nombre.includes('quality assurance') || nombre.includes('fintech') || nombre.includes('producto digital')) return 'Desarrollo';
+  if (nombre.includes('programación') || nombre.includes('quality assurance')) return 'Desarrollo';
   return null;
 }
 
@@ -328,15 +328,14 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
 // Hasta que Teclab la publique, la portada es una foto de stock de Unsplash
 // (licencia libre, sin atribucion obligatoria) elegida por el tema de la carrera.
 const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
-  { match: 'fintech', imagen: '/imagenes/teclab/carreras/fintech.webp' },
-  { match: 'acompañamiento terapéutico', imagen: '/imagenes/teclab/carreras/acompanamiento-terapeutico.webp' },
-  { match: 'producto digital', imagen: '/imagenes/teclab/carreras/producto-digital.webp' },
   { match: 'gestión de alimentos', imagen: '/imagenes/teclab/carreras/gestion-de-alimentos.webp' },
   { match: 'energías renovables', imagen: '/imagenes/teclab/carreras/energias-renovables.webp' },
   // Esta no es de Unsplash: Bingham Canyon (Utah), dominio público en Wikimedia Commons.
   { match: 'proyectos mineros', imagen: '/imagenes/teclab/carreras/gestion-de-proyectos-mineros.webp' },
   // Tampoco: muestreo de agua de la EPA, dominio público en Wikimedia Commons.
   { match: 'gestión ambiental', imagen: '/imagenes/teclab/carreras/gestion-ambiental.webp' },
+  // Inspectores de seguridad del BSEE, dominio público en Wikimedia Commons.
+  { match: 'higiene y seguridad', imagen: '/imagenes/teclab/carreras/higiene-y-seguridad-en-el-trabajo.webp' },
 ];
 
 /** Foto de portada de una carrera de Teclab: la de su ficha oficial o, si es anunciada, la de stock. */

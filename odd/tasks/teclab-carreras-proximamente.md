@@ -82,3 +82,9 @@ inventados.
 - 09/10/2026: alta de una séptima, Gestión Ambiental (`sql/2026-10-09_teclab_gestion_ambiental.sql`),
   con portada de dominio público (muestreo de agua de la EPA, Wikimedia Commons).
   Convive con la Licenciatura en Gestión Ambiental de Siglo 21: otro slug y otra casa.
+- 09/10/2026: el usuario aclara que las nuevas son Gestión de Alimentos, Gestión de
+  Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y
+  Seguridad en el Trabajo. Alta de Higiene (`sql/2026-10-09_teclab_higiene_y_bajas.sql`)
+  con portada de dominio público (BSEE, Wikimedia Commons). Fintech, Acompañamiento
+  Terapéutico y Producto Digital se desactivan (`activa = false`, no se borran), sus
+  slugs redirigen a la home y salen sus portadas y entradas de código.
