@@ -36,7 +36,7 @@ inventados.
   articulación toleran una Teclab `proximamente` sin duración, título ni plan. Aviso de
   «Próximamente» con la institución correcta. Tests.
 - [x] T2. SQL de alta de las cinco filas (`sql/2026-10-09_teclab_carreras_proximamente.sql`).
-- [ ] T3. Publicar: push (deploy), correr el SQL, verificar fichas en producción y en el
+- [x] T3. Publicar: push (deploy), correr el SQL, verificar fichas en producción y en el
   sitemap.
 
 ## Criterios de aceptación
@@ -59,3 +59,8 @@ inventados.
   inline). `npm run check`: 390/390 tests, lint sin errores. Tests nuevos en
   `tests/teclab-proximamente.test.mjs` (RED observado en 6 de 8 antes de implementar).
   Pendiente de decidir: foto de portada (cae en la genérica del sitio).
+- 09/10/2026: T3 hecho. Push `f521a9f` (deploy Ready), SQL corrido con `npm run db`
+  (ids 242-246). En producción las cinco fichas dan 200, muestran el aviso de Teclab y
+  «A confirmar», sin «null» ni el aviso de Siglo 21; están en el sitemap y
+  `/inscripcion` da 404. Siguiente: foto de portada propia y completar con el Knowledge
+  Pack cuando Teclab lo publique.
