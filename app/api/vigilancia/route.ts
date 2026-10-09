@@ -25,6 +25,8 @@ import {
   redirectsEsperados,
 } from '@/lib/vigilancia-esperado';
 import { enviarTelegram } from '@/lib/telegram';
+import { createSupabaseAdmin } from '@/lib/supabase-admin';
+import { autoinscripcionesDemoradas } from '@/lib/vigilancia-robot';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -76,6 +78,8 @@ function mensajeParaTelegram(fallo: string) {
   if (que === 'cabeceras de la home' || que === 'content-security-policy' || que === 'x-content-type-options' || que === 'referrer-policy' || que === 'permissions-policy' || que === 'strict-transport-security') {
     return 'La página principal no cumple una configuración de seguridad esperada. Revisar las cabeceras del sitio.';
   }
+
+  if (que === 'robot de autoinscripciones') return detalle;
 
   if (que.startsWith('/')) {
     return `La página ${que} no está disponible. Revisar el sitio publicado.`;
@@ -169,6 +173,21 @@ async function correrChequeos(base: string) {
     }
   } catch (e) {
     falla('/sitemap.xml', motivo(e));
+  }
+
+  // 6. Autoinscripciones de Teclab esperando al robot. No es una caida del
+  // sitio: es el robot, que corre en la PC de la sede y puede quedar parado sin
+  // avisar (ver lib/vigilancia-robot.ts).
+  try {
+    const { data, error } = await createSupabaseAdmin()
+      .from('robot_autoinscripciones')
+      .select('created_at')
+      .eq('estado', 'pendiente');
+    if (error) throw new Error(error.message);
+    const aviso = autoinscripcionesDemoradas(data ?? [], new Date());
+    if (aviso) falla('robot de autoinscripciones', aviso);
+  } catch (e) {
+    falla('robot de autoinscripciones', `No se pudo revisar la cola del robot de Teclab: ${motivo(e)}`);
   }
 
   return { fallos, urlsSitemap };
