@@ -1,0 +1,71 @@
+/* Pie de las páginas de Teclab: navy, azul y cian en lugar del verde del CAU.
+   El pie es el mismo componente para todo el sitio y sus colores están escritos
+   como valores sueltos en las clases, así que acá se reconocen por ese valor y
+   se pisan sólo cuando el pie es de Teclab (data-casa). Los inline llevan
+   !important porque el estilo en línea gana a cualquier hoja. */
+footer[data-casa="teclab"] {
+  background: linear-gradient(180deg, #0c1824 0%, #08111a 100%) !important;
+  border-top: 2px solid rgba(74, 226, 231, 0.4) !important;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+}
+
+/* Resplandor decorativo */
+footer[data-casa="teclab"] [style*="radial-gradient"] {
+  background: radial-gradient(ellipse, #0055f0, transparent 70%) !important;
+}
+
+/* Acento: títulos de columna, íconos y foco */
+footer[data-casa="teclab"] .text-\[\#00c7b1\] {
+  color: #4ae2e7;
+}
+
+footer[data-casa="teclab"] [class*="outline-[#00c7b1]"]:focus-visible {
+  outline-color: #4ae2e7;
+}
+
+/* Texto de lectura y texto suave, con contraste AA sobre navy */
+footer[data-casa="teclab"] .text-\[\#c0d5d0\] {
+  color: #c8d0dc;
+}
+
+footer[data-casa="teclab"] .text-\[\#48b3a4\],
+footer[data-casa="teclab"] .text-\[\#7ca19b\] {
+  color: #a4b1c2;
+}
+
+footer[data-casa="teclab"] [class*="text-[#7ca19b]/"] {
+  color: rgba(164, 177, 194, 0.85);
+}
+
+/* Filetes entre columnas y filas */
+footer[data-casa="teclab"] [class*="rgba(0,199,177"] {
+  border-color: rgba(0, 85, 240, 0.45);
+}
+
+footer[data-casa="teclab"] [class*="after:bg-[rgba(0,199,177"]::after {
+  background: rgba(0, 85, 240, 0.45);
+}
+
+/* Bloques con fondo: chip de los íconos, horarios y modalidad */
+footer[data-casa="teclab"] [style*="0, 199, 177, 0.1)"] {
+  background: rgba(74, 226, 231, 0.1) !important;
+  border-color: rgba(74, 226, 231, 0.25) !important;
+}
+
+footer[data-casa="teclab"] [style*="0, 199, 177, 0.05"] {
+  background: rgba(0, 85, 240, 0.12) !important;
+  border-color: rgba(0, 85, 240, 0.4) !important;
+}
+
+footer[data-casa="teclab"] [style*="0, 199, 177, 0.15"] {
+  background: rgba(74, 226, 231, 0.16) !important;
+}
+
+footer[data-casa="teclab"] [style*="0, 199, 177, 0.12"] {
+  border-color: rgba(0, 85, 240, 0.45) !important;
+}
+
+footer[data-casa="teclab"] [style*="0, 85, 135"] {
+  background: rgba(0, 85, 240, 0.16) !important;
+  border-color: rgba(0, 85, 240, 0.45) !important;
+}

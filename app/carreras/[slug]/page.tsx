@@ -549,7 +549,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         <CareerDetail carrera={carrera} relacionadas={relacionadas} />
         <DeferredEnrollmentForm carreras={opcionesFormulario} carreraInicial={carrera.id} />
       </main>
-      <SiteFooter />
+      <SiteFooter casa={conTeclab ? 'teclab' : 'cau'} fuente={conTeclab ? poppins.variable : ''} />
     </>
   );
 }

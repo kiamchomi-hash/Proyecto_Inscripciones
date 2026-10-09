@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { MAPS_URL } from '@/lib/sede';
+import './footer-teclab.css';
 
 /**
  * Pie unico del sitio. Hasta el 14/08/2026 habia dos: este, chico, en /faq,
@@ -55,12 +56,17 @@ const COLUMNA = 'py-7 border-t border-[rgba(0,199,177,0.12)] lg:py-0 lg:border-t
  * porque una direccion se lee como un requisito de asistencia y frena al lead
  * que vive lejos. Los canales de contacto (telefono y WhatsApp) son los mismos.
  */
-export default function SiteFooter({ casa = 'cau' }: { casa?: 'cau' | 'teclab' } = {}) {
+export default function SiteFooter({ casa = 'cau', fuente = '' }: {
+  casa?: 'cau' | 'teclab';
+  /** Clase que expone la tipografía de la casa (`--font-poppins` en Teclab). */
+  fuente?: string;
+} = {}) {
   const teclab = casa === 'teclab';
 
   return (
     <footer
-      className="relative overflow-hidden"
+      data-casa={casa}
+      className={`relative overflow-hidden ${fuente}`}
       style={{ background: 'linear-gradient(180deg, #06221f 0%, #071a18 100%)', borderTop: '2px solid rgba(0, 199, 177, 0.26)' }}
     >
       {/* Resplandor decorativo */}

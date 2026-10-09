@@ -358,3 +358,79 @@ html {
     text-align: left;
   }
 }
+
+/* ── Navbar en las páginas de Teclab ───────────────────── */
+/* Una página de Teclab es la que tiene /teclab (.teclab-page) o la ficha de una
+   de sus carreras (.ficha-teclab). El selector sale del propio HTML de la
+   página, así que el navbar —que vive en el layout— cambia sin saber de rutas
+   y sin esperar a hidratar. Paleta oficial: navy, azul y cian. */
+.marca-teclab { display: none; }
+
+body:has(.teclab-page, .ficha-teclab) .marca-cau { display: none; }
+body:has(.teclab-page, .ficha-teclab) .marca-teclab { display: block; }
+
+body:has(.teclab-page, .ficha-teclab) .main-navbar,
+body:has(.teclab-page, .ficha-teclab) .main-navbar::after {
+  background-color: #0c1824;
+}
+
+body:has(.teclab-page, .ficha-teclab) .main-navbar {
+  border-bottom-color: #4ae2e7;
+}
+
+body:has(.teclab-page, .ficha-teclab) .navbar-link {
+  color: #f0f0f6;
+}
+
+body:has(.teclab-page, .ficha-teclab) .navbar-link:hover {
+  background-color: #4ae2e7;
+  color: #0c1824;
+}
+
+body:has(.teclab-page, .ficha-teclab) .navbar-link.active {
+  background-color: #0055f0;
+  color: #fff;
+}
+
+@media (max-width: 1024px) {
+  body:has(.teclab-page, .ficha-teclab) .navbar-menu {
+    background-color: #0c1824;
+  }
+
+  body:has(.teclab-page, .ficha-teclab) .navbar-link {
+    border-bottom-color: rgba(74, 226, 231, 0.4);
+  }
+
+  body:has(.teclab-page, .ficha-teclab) .menu-header {
+    background: #08111a;
+    border-bottom-color: rgba(74, 226, 231, 0.3);
+  }
+}
+
+/* Scroll y botón de volver arriba en las páginas de Teclab */
+html:has(.teclab-page, .ficha-teclab) {
+  background-color: #08111a;
+  scrollbar-color: #4ae2e7 #08111a;
+}
+
+html:has(.teclab-page, .ficha-teclab)::-webkit-scrollbar-track {
+  background: #08111a;
+}
+
+html:has(.teclab-page, .ficha-teclab)::-webkit-scrollbar-thumb {
+  background: #4ae2e7;
+}
+
+html:has(.teclab-page, .ficha-teclab)::-webkit-scrollbar-thumb:hover {
+  background: #0055f0;
+}
+
+body:has(.teclab-page, .ficha-teclab) .scroll-to-top-button {
+  border-color: rgba(74, 226, 231, 0.45);
+  background-color: #0c1824;
+  color: #4ae2e7;
+}
+
+body:has(.teclab-page, .ficha-teclab) .scroll-to-top-button:hover {
+  box-shadow: 0 8px 24px rgba(0, 85, 240, 0.4);
+}

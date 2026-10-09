@@ -268,7 +268,7 @@ export default async function TeclabPage() {
           </div>
         </section>
       </main>
-      <SiteFooter casa="teclab" />
+      <SiteFooter casa="teclab" fuente={poppins.variable} />
     </>
   );
 }

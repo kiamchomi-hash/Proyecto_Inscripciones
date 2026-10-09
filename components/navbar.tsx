@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { esRutaPreinscripcion } from '@/lib/rutas-preinscripcion';
 import { usePathname } from 'next/navigation';
@@ -20,6 +21,19 @@ const SOCIALS = [
   { href: 'https://www.facebook.com/ceducativovillalugano/', label: 'Facebook', Icon: FacebookIcon, cssClass: 'social-facebook' },
   { href: 'https://www.instagram.com/centroeducativovillalugano/', label: 'Instagram', Icon: InstagramIcon, cssClass: 'social-instagram' },
 ];
+
+function TeclabMarca({ grande = false }: { grande?: boolean }) {
+  return (
+    <Image
+      className="marca-teclab"
+      src="/imagenes/teclab/logo-teclab.webp"
+      alt="Teclab"
+      width={296}
+      height={100}
+      style={{ height: grande ? '3rem' : '2.4rem', width: 'auto' }}
+    />
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -131,8 +145,14 @@ export default function Navbar() {
         </button>
 
         {/* Mobile branding */}
+        {/* En las páginas de Teclab firma Teclab y no el CAU. Las dos marcas
+            están en el HTML y el CSS elige una según la página (ver
+            `.marca-teclab` en navbar.css): así no hay parpadeo al hidratar. */}
         <span className="navbar-brand-mobile lg:hidden">
-          CAU <span style={{ color: '#00c7b1' }}>Siglo 21</span>
+          <span className="marca-cau">
+            CAU <span style={{ color: '#00c7b1' }}>Siglo 21</span>
+          </span>
+          <TeclabMarca />
         </span>
 
         {/* Menu */}
@@ -147,7 +167,10 @@ export default function Navbar() {
         >
           <div className="menu-header lg:hidden">
             <span style={{ fontFamily: "'Unbounded',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
-              CAU <span style={{ fontFamily: "'Unbounded',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
+              <span className="marca-cau">
+                CAU <span style={{ fontFamily: "'Unbounded',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
+              </span>
+              <TeclabMarca grande />
             </span>
             <button className="menu-close-btn" aria-label="Cerrar menu" onClick={closeMenu}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

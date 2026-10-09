@@ -365,7 +365,22 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         {metaItems.map((item) => (
           <div key={item.label}>
             <dt>{item.label}</dt>
-            <dd>{item.value}</dd>
+            <dd>
+              {conMaterialTeclab && item.label === 'Institución' ? (
+                <>
+                  <Image
+                    className="career-fact-logo"
+                    src="/imagenes/teclab/logo-teclab.webp"
+                    alt=""
+                    width={296}
+                    height={100}
+                  />
+                  <span className="sr-only">{item.value}</span>
+                </>
+              ) : (
+                item.value
+              )}
+            </dd>
           </div>
         ))}
       </dl>
