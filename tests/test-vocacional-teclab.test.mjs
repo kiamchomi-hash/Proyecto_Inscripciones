@@ -100,6 +100,28 @@ test('cada una de las 21 tecnicaturas puede salir primera con alguna combinació
   assert.deepEqual(faltan, []);
 });
 
+test('ninguna tecnicatura queda favorecida: cada una gana sola entre 3% y 6% y los empates no llegan al 10%', () => {
+  const total = PREGUNTAS.reduce((producto, pregunta) => producto * pregunta.opciones.length, 1);
+  const ganadas = new Map();
+  let empates = 0;
+  for (let n = 0; n < total; n++) {
+    let resto = n;
+    const respuestas = PREGUNTAS.map(pregunta => {
+      const indice = resto % pregunta.opciones.length;
+      resto = Math.floor(resto / pregunta.opciones.length);
+      return indice;
+    });
+    const [primera, segunda] = recomendar(CARRERAS, respuestas, 2);
+    if (primera.puntos === segunda.puntos) empates++;
+    else ganadas.set(primera.carrera.id, (ganadas.get(primera.carrera.id) ?? 0) + 1);
+  }
+  assert.ok(empates / total < 0.1, `empates: ${(100 * empates / total).toFixed(1)}%`);
+  for (const carrera of CARRERAS) {
+    const parte = (ganadas.get(carrera.id) ?? 0) / total;
+    assert.ok(parte >= 0.03 && parte <= 0.06, `${carrera.nombre_corto}: ${(100 * parte).toFixed(1)}%`);
+  }
+});
+
 test('el componente avanza con un toque, reserva el lugar y lleva a la ficha y a WhatsApp', () => {
   const componente = readFileSync(new URL('../components/test-vocacional-teclab/test-vocacional-teclab.tsx', import.meta.url), 'utf8');
   const estilos = readFileSync(new URL('../app/teclab/test-vocacional/test-vocacional-teclab.css', import.meta.url), 'utf8');
