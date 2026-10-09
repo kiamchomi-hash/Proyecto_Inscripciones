@@ -1675,9 +1675,9 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                 className="w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 hover:shadow-[0_6px_18px_rgba(var(--catalogo-acento-rgb),0.35)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 disabled:hover:shadow-none"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
-                {enviando ? 'Enviando...' : solicitudDirecta ? 'Solicitar inscripción' : flujoAuto ? 'Inscribirme' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
+                {enviando ? 'Enviando...' : flujoAuto ? 'Inscribirme' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
               </button>
-              {flujoAuto && <AvisoSinPago solicitud={solicitudDirecta} />}
+              {flujoAuto && !solicitudDirecta && <AvisoSinPago />}
 
             </div>
 

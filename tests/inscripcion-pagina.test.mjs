@@ -251,6 +251,13 @@ test('el bloque de próximos pasos tiene una única columna de lectura centrada'
   assert.match(bloque, /margin-inline: auto/);
   assert.match(bloque, /text-align: center/);
   assert.doesNotMatch(bloque, /repeat\(2|p \+ p|border-left/);
-  const formulario = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
-  assert.match(formulario, /Al enviar solicitás la gestión de tu inscripción\. No se realiza ningún cobro/);
+});
+
+test('la página dedicada envía con «Inscribirme» y sin nota debajo del botón', () => {
+  // Que no se cobra lo dicen los próximos pasos, debajo del formulario.
+  const formulario = readFileSync('components/formularios/formulario-lead.tsx', 'utf8');
+  assert.doesNotMatch(formulario, /Solicitar inscripción/);
+  assert.match(formulario, /\{flujoAuto && !solicitudDirecta && <AvisoSinPago \/>\}/);
+  const aviso = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
+  assert.doesNotMatch(aviso, /solicitás la gestión/);
 });

@@ -40,14 +40,13 @@ export const AVISO_VERIFICAR = 'Volvé a verificar la seguridad y enviá la soli
  */
 /**
  * Inscribirse no cobra nada: el portal genera el ticket y la persona paga
- * después, en «Pagos en línea». Va debajo de cada botón «Inscribirme».
+ * después, en «Pagos en línea». Va debajo de cada botón «Inscribirme», salvo
+ * en la página dedicada: ahí lo dicen los próximos pasos, debajo del formulario.
  */
-export function AvisoSinPago({ solicitud = false }: { solicitud?: boolean }) {
+export function AvisoSinPago() {
   return (
     <p className="text-center text-[11px] leading-snug text-[var(--catalogo-texto-suave)]">
-      {solicitud
-        ? 'Al enviar solicitás la gestión de tu inscripción. No se realiza ningún cobro: pagás después desde el portal del alumno de Teclab.'
-        : 'Al tocar Inscribirme todavía no pagás nada. Se genera un ticket y lo pagás después desde el portal del alumno de Teclab.'}
+      Al tocar Inscribirme todavía no pagás nada. Se genera un ticket y lo pagás después desde el portal del alumno de Teclab.
     </p>
   );
 }

@@ -79,8 +79,7 @@ test('el resultado dedicado confirma gestión pendiente sin ofrecer credenciales
   const nodos=n=>Array.isArray(n)?n.flatMap(nodos):n?.props?[n,...nodos(n.props.children)]:[];
   assert.ok(nodos(PasoListo({solicitud:true,dni:'30123456',waHref:'#'})).some(n=>n.type==='a'&&n.props.href==='https://portalalumno.teclab.edu.ar/payments/select'));
   assert.equal((confirmacion.match(/Solicitud recibida/g)||[]).length,1);
-  assert.match(texto(AvisoSinPago({solicitud:true})),/solicitás la gestión/);
-  assert.match(texto(AvisoSinPago({solicitud:false})),/Al tocar Inscribirme/);
+  assert.match(texto(AvisoSinPago()),/Al tocar Inscribirme/);
 });
 
 test('el error CAPTCHA indica reenvío sin nombrar un botón ajeno', () => {
