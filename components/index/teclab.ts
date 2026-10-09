@@ -322,6 +322,25 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
   },
 ];
 
+// Las carreras anunciadas todavia no tienen ficha oficial de la que sacar foto.
+// Hasta que Teclab la publique, la portada es una foto de stock de Unsplash
+// (licencia libre, sin atribucion obligatoria) elegida por el tema de la carrera.
+const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
+  { match: 'fintech', imagen: '/imagenes/teclab/carreras/fintech.webp' },
+  { match: 'acompañamiento terapéutico', imagen: '/imagenes/teclab/carreras/acompanamiento-terapeutico.webp' },
+  { match: 'producto digital', imagen: '/imagenes/teclab/carreras/producto-digital.webp' },
+  { match: 'gestión de alimentos', imagen: '/imagenes/teclab/carreras/gestion-de-alimentos.webp' },
+  { match: 'energías renovables', imagen: '/imagenes/teclab/carreras/energias-renovables.webp' },
+];
+
+/** Foto de portada de una carrera de Teclab: la de su ficha oficial o, si es anunciada, la de stock. */
+export function getPortadaTeclab(carrera: Pick<Carrera, 'nombre'> & Partial<Pick<Carrera, 'nombre_corto'>>): string | null {
+  const ficha = getFichaTeclab(carrera);
+  if (ficha) return ficha.imagen;
+  const nombre = `${carrera.nombre} ${carrera.nombre_corto ?? ''}`.toLowerCase();
+  return PORTADAS_ANUNCIADAS.find(p => nombre.includes(p.match))?.imagen ?? null;
+}
+
 export function getFichaTeclab(carrera: Pick<Carrera, 'nombre'> & Partial<Pick<Carrera, 'nombre_corto'>>): TeclabFicha | null {
   // Algunas fichas conservan la marca comercial en `nombre_corto`, aunque el
   // nombre académico de `nombre` esté traducido al español.

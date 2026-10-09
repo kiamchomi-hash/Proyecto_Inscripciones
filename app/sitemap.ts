@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
 import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, esCarreraVisible } from '@/components/index/types';
-import { esTeclab, getFichaTeclab } from '@/components/index/teclab';
+import { esTeclab, getPortadaTeclab } from '@/components/index/teclab';
 import { getPortada } from '@/components/carreras/career-content';
 import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 
@@ -25,8 +25,8 @@ type CarreraFila = Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'slides' | 'pro
 // pero sin su fallback generico: repetir la misma foto de archivo en decenas de
 // URLs no le dice nada a Google Imagenes.
 function imagenDeCarrera(c: CarreraFila): string | null {
-  const ficha = esTeclab(c) ? getFichaTeclab(c) : null;
-  if (ficha) return ficha.imagen;
+  const portadaTeclab = esTeclab(c) ? getPortadaTeclab(c) : null;
+  if (portadaTeclab) return portadaTeclab;
   const portada = getPortada(c);
   return portada?.imagen_desktop || portada?.imagen_mobile || null;
 }

@@ -15,6 +15,7 @@ import {
   esCursoTeclab,
   esTeclab,
   getFichaTeclab,
+  getPortadaTeclab,
   parseCompetenciasTeclab,
   parseEnfoqueTeclab,
   parsePlanTeclab,
@@ -145,7 +146,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   const nombreCompleto = carreraFullName(carrera);
   const portada = getPortada(carrera);
   const heroImage =
-    ficha?.imagen ||
+    (conMaterialTeclab ? getPortadaTeclab(carrera) : null) ||
     portada?.imagen_desktop ||
     portada?.imagen_mobile ||
     '/imagenes/gente/Header_1920x450-1.webp';

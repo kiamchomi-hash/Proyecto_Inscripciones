@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import * as tipos from '../components/index/types.ts';
@@ -223,4 +223,22 @@ test('las cinco carreras anunciadas de Teclab entran en un filtro del catálogo'
   }
   assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Acompañamiento Terapéutico', nivel: 'Teclab - Gestión' }), 'Servicios');
   assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Gestión de Alimentos', nivel: 'Teclab - Gestión' }), 'Gestión');
+});
+
+test('las carreras anunciadas de Teclab tienen portada propia y las demás conservan la de su ficha', () => {
+  for (const nombre of [
+    'Tecnicatura Superior en Fintech',
+    'Tecnicatura Superior en Acompañamiento Terapéutico',
+    'Tecnicatura Superior en Producto Digital',
+    'Tecnicatura Superior en Gestión de Alimentos',
+    'Tecnicatura Superior en Energías Renovables',
+  ]) {
+    const portada = teclab.getPortadaTeclab({ nombre });
+    assert.match(portada ?? '', /^\/imagenes\/teclab\/carreras\/.+\.webp$/, nombre);
+    assert.ok(existsSync(`public${portada}`), portada);
+  }
+  assert.equal(
+    teclab.getPortadaTeclab({ nombre: 'Tecnicatura Superior en Programación' }),
+    teclab.getFichaTeclab({ nombre: 'Tecnicatura Superior en Programación' }).imagen,
+  );
 });

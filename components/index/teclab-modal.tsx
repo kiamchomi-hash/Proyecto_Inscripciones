@@ -28,6 +28,7 @@ import {
   destacarCompetencias,
   esCursoTeclab,
   getFichaTeclab,
+  getPortadaTeclab,
   getMarcoTeclab,
   getTipoTeclab,
   parseCompetenciasTeclab,
@@ -238,14 +239,14 @@ function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: 
  * Foto de portada de la ficha oficial de Teclab. Decorativa: lo que informa es
  * el texto de al lado.
  */
-function FotoFicha({ ficha, acento, className = '' }: { ficha: TeclabFicha; acento: string; className?: string }) {
+function FotoFicha({ imagen, acento, className = '' }: { imagen: string; acento: string; className?: string }) {
   return (
     // Marco liso en el acento. La sombra dura desplazada de las tarjetas aca no
     // funciona: con las esquinas redondeadas asoma corrida y, al cambiar de
     // tamaño la foto, se lee como un borde mal alineado.
     <div className={`teclab-foto ${className}`} style={{ borderColor: acento }}>
       <Image
-        src={ficha.imagen}
+        src={imagen}
         alt=""
         fill
         quality={90}
@@ -379,6 +380,7 @@ function SlidePortada({
   const tipo = curso ? 'Curso' : getTipoTeclab(carrera);
   const nombre = carrera.nombre_corto || carrera.nombre;
   const { perfil } = partirDescripcionTeclab(carrera.descripcion);
+  const portada = getPortadaTeclab(carrera);
 
   return (
     // En desktop es una grilla: el texto a la izquierda y la foto a la derecha,
@@ -417,9 +419,9 @@ function SlidePortada({
         <span className="teclab-chip">{credencialTeclab(carrera)}</span>
       </div>
 
-      {ficha && (
+      {portada && (
         <div className="teclab-portada-foto">
-          <FotoFicha ficha={ficha} acento={acento} />
+          <FotoFicha imagen={portada} acento={acento} />
         </div>
       )}
 
