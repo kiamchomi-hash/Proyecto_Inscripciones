@@ -552,6 +552,31 @@
   cursor: wait;
 }
 
+/* Ocupado (verificando o buscando): se ve entero, con la rueda girando. */
+.vp-primario[aria-busy="true"] {
+  gap: 0.6rem;
+  opacity: 1;
+}
+
+.vp-rueda {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 3px solid currentColor;
+  border-right-color: transparent;
+  animation: vp-girar 0.7s linear infinite;
+}
+
+@keyframes vp-girar {
+  to { transform: rotate(360deg); }
+}
+
+/* Con movimiento reducido gira lento: sigue diciendo "estoy trabajando". */
+@media (prefers-reduced-motion: reduce) {
+  .vp-rueda { animation-duration: 2s; }
+}
+
 .vp-ayuda {
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.78);
@@ -644,10 +669,26 @@
   box-shadow: inset 0 0 0 2px #f87171;
 }
 
+/* Etiqueta y error comparten una fila de alto fijo: el error entra sin mover
+   nada. */
+.vp-fila-etiqueta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  height: 1rem;
+  margin-bottom: -0.35rem;
+}
+
+.vp-fila-etiqueta .vp-etiqueta {
+  margin-bottom: 0;
+  line-height: 1rem;
+}
+
 .vp-error-campo {
-  margin-top: -0.3rem;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
+  line-height: 1rem;
   color: #fca5a5;
 }
 

@@ -127,3 +127,16 @@ test('el contacto compacto sólo se activa en las páginas dedicadas', () => {
   const estilos = readFileSync('app/carreras/[slug]/inscripcion/inscripcion.css', 'utf8');
   assert.match(estilos, /\.inscripcion-page \.form-contacto-compacto \.form-field-error:empty\s*\{\s*display: none;/);
 });
+
+test('el CTA del modal de Teclab lleva a la pagina dedicada de inscripcion', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const fuente = await readFile(new URL('../components/index/teclab-modal.tsx', import.meta.url), 'utf8');
+  assert.match(fuente, /href=\{tieneInscripcionPropia\(carrera\) \? rutaInscripcion\(carrera\) : '#preinscripcion'\}/);
+});
+
+test('los CTA del slide de precio llevan a la pagina dedicada de inscripcion', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const fuente = await readFile(new URL('../components/index/ver-precio-teclab.tsx', import.meta.url), 'utf8');
+  assert.equal(fuente.match(/href=\{`\/carreras\/\$\{slug\}\/inscripcion`\}/g)?.length, 2);
+  assert.doesNotMatch(fuente, /urlAutoinscripcion/);
+});

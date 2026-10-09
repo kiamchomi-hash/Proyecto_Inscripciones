@@ -61,6 +61,11 @@ export interface Campo {
   /** Etiquetas visibles distintas del valor histórico que se guarda. */
   etiquetasOpciones?: Readonly<Record<string, string>>;
   numerico?: boolean;
+  /**
+   * Token de `autocomplete` para que el navegador llene el campo con lo que ya
+   * sabe. Sólo donde el dato que guarda coincide con el del token.
+   */
+  autocompletar?: string;
 }
 
 /**
@@ -88,8 +93,8 @@ const PAISES_NACIONALIDAD: Readonly<Record<string, string>> = {
 };
 
 export const CAMPOS: Record<CampoId, Campo> = {
-  nombre:   { columna: 'nombre', grupo: 'personales',   label: 'Nombre',   placeholder: 'Nombre',   max: 100 },
-  apellido: { columna: 'apellido', grupo: 'personales', label: 'Apellido', placeholder: 'Apellido', max: 100 },
+  nombre:   { columna: 'nombre', grupo: 'personales',   label: 'Nombre',   placeholder: 'Nombre',   max: 100, autocompletar: 'given-name' },
+  apellido: { columna: 'apellido', grupo: 'personales', label: 'Apellido', placeholder: 'Apellido', max: 100, autocompletar: 'family-name' },
   // El portal de Siglo 21 pide tipo y número por separado; `dni` es el número.
   // OJO: las opciones son las usuales del padrón argentino, no una lista
   // copiada del portal. Confirmar contra el portal antes de darlas por buenas.
@@ -109,7 +114,7 @@ export const CAMPOS: Record<CampoId, Campo> = {
   // Confirmar contra el portal antes de darla por buena.
   nacionalidad: { columna: 'nacionalidad', grupo: 'personales', label: 'Nacionalidad', max: 80, tipo: 'select', opciones: NACIONALIDADES, etiquetasOpciones: PAISES_NACIONALIDAD },
   estadoCivil:    { columna: 'estado_civil', grupo: 'personales',    label: 'Estado civil',      max: 40, tipo: 'select', opciones: ['Soltero/a', 'Casado/a', 'Divorciado/a', 'Viudo/a', 'Otro'] },
-  paisResidencia: { columna: 'pais_residencia', grupo: 'personales', label: 'País de residencia', placeholder: 'Argentina', max: 80 },
+  paisResidencia: { columna: 'pais_residencia', grupo: 'personales', label: 'País de residencia', placeholder: 'Argentina', max: 80, autocompletar: 'country-name' },
 
   // OJO: opciones inventadas, igual que las de tipoDocumento. Confirmar.
   tipoDomicilio: { columna: 'tipo_domicilio', grupo: 'domicilio', label: 'Tipo de domicilio', max: 40, tipo: 'select', opciones: ['Particular', 'Laboral'] },
@@ -120,17 +125,17 @@ export const CAMPOS: Record<CampoId, Campo> = {
   domicilioDepartamento: { columna: 'direccion_departamento', grupo: 'domicilio', siempreOpcional: true, ancho: 'tercio', label: 'Depto.',    placeholder: 'Depto.', max: 20 },
   torre:        { columna: 'torre', grupo: 'domicilio', siempreOpcional: true, ancho: 'tercio',         label: 'Torre',         placeholder: 'Torre', max: 20 },
   barrio:       { columna: 'barrio', grupo: 'domicilio', ancho: 'tercio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
-  codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', ancho: 'tercio', label: 'Código postal', placeholder: 'Código postal', max: 20 },
-  provincia:    { columna: 'provincia', grupo: 'domicilio', label: 'Provincia', placeholder: 'Provincia', max: 80 },
-  localidad:    { columna: 'localidad', grupo: 'domicilio', ancho: 'completo',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120 },
+  codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', ancho: 'tercio', label: 'Código postal', placeholder: 'Código postal', max: 20, autocompletar: 'postal-code' },
+  provincia:    { columna: 'provincia', grupo: 'domicilio', label: 'Provincia', placeholder: 'Provincia', max: 80, autocompletar: 'address-level1' },
+  localidad:    { columna: 'localidad', grupo: 'domicilio', ancho: 'completo',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120, autocompletar: 'address-level2' },
 
   nivelEstudios:    { columna: 'nivel_estudios', grupo: 'estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
   colegio:          { columna: 'colegio', grupo: 'estudios',           label: 'Colegio',               placeholder: 'Nombre del colegio', max: 160 },
   colegioLocalidad: { columna: 'colegio_localidad', grupo: 'estudios', label: 'Localidad del colegio', placeholder: 'Ciudad o localidad', max: 120 },
 
   equivalencias: { columna: 'equivalencias', grupo: 'consulta', ancho: 'completo', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
-  email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254 },
-  telefono:      { columna: 'telefono', grupo: 'contacto',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30 },
+  email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254, autocompletar: 'email' },
+  telefono:      { columna: 'telefono', grupo: 'contacto',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30, autocompletar: 'tel' },
 };
 
 export const columnaDe = (id: CampoId): keyof TablesInsert<'consultas'> => CAMPOS[id].columna;

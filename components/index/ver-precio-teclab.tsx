@@ -15,7 +15,10 @@ import TurnstileWidget from '@/components/turnstile-widget';
 import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type LineaPrecio } from '@/components/formularios/casas';
 import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
 import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
-import { urlAutoinscripcion } from '@/components/formularios/elegir-carrera';
+
+/** Desde cuándo «Verificando…» pasa a pedir unos segundos más. */
+const DEMORA_TOKEN_MS = 5000;
+
 
 type Vista = 'formulario' | 'precio' | 'vencido' | 'actualizando';
 
@@ -209,7 +212,7 @@ export function PanelVerPrecio({
   duracion?: string | null;
   /**
    * Slug de la ficha (`carreraToSlug(carrera)`). Con él, el precio vigente
-   * ofrece «Inscribite ya», que lleva al formulario en modo autoinscripción.
+   * ofrece «Inscribite ya», que lleva a la página dedicada de inscripción.
    * Se recibe hecho porque `nombreCarrera` puede ser el nombre corto, y con
    * ese el slug sale otro.
    */
@@ -244,6 +247,12 @@ export function PanelVerPrecio({
   if (activo && !visitado) setVisitado(true);
   const [intentado, setIntentado] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  // «Ver precio» tocado antes de que Turnstile entregue el token: el botón gira
+  // y el pedido sale solo cuando llega. Sin aviso de error: si Cloudflare pide
+  // un desafío, lo muestra su propio widget, arriba del botón.
+  const [esperandoToken, setEsperandoToken] = useState(false);
+  // Si el token tarda, el aviso también va en el botón: nada aparece abajo.
+  const [demorado, setDemorado] = useState(false);
   const [error, setError] = useState('');
   const [precio, setPrecio] = useState<PrecioVigente | null>(null);
 
@@ -271,7 +280,12 @@ export function PanelVerPrecio({
     setIntentado(true);
     setError('');
     const payload = validarPayloadPrecio({ carreraId, email, newsletter: conNewsletter && newsletter });
-    if (!payload || !token || enviando) return;
+    if (!payload || enviando) return;
+    if (!token) {
+      setEsperandoToken(true);
+      return;
+    }
+    setEsperandoToken(false);
 
     setEnviando(true);
     let status: number | null = null;
@@ -309,6 +323,19 @@ export function PanelVerPrecio({
   // El pedido automático: un toque nuevo de «Ver precio», el mail recordado
   // todavía en el campo y el token del captcha. Si el token tarda, espera a que
   // llegue. Un toque se atiende una sola vez, salga bien o mal.
+  useEffect(() => {
+    if (esperandoToken && token) void pedirPrecio(true);
+  });
+
+  useEffect(() => {
+    if (!esperandoToken) return;
+    const plazo = setTimeout(() => setDemorado(true), DEMORA_TOKEN_MS);
+    return () => {
+      clearTimeout(plazo);
+      setDemorado(false);
+    };
+  }, [esperandoToken]);
+
   const atendidoRef = useRef(pedido);
   useEffect(() => {
     if (pedido <= atendidoRef.current || enviando) return;
@@ -340,7 +367,12 @@ export function PanelVerPrecio({
 
       {vista === 'formulario' && (
         <form className="vp-cuerpo" onSubmit={enviar} noValidate>
-          <label htmlFor={emailId} className="vp-etiqueta">{CAMPOS.email.label}</label>
+          {/* El error va en la misma fila que la etiqueta: aparece sin correr
+              nada de lugar. */}
+          <div className="vp-fila-etiqueta">
+            <label htmlFor={emailId} className="vp-etiqueta">{CAMPOS.email.label}</label>
+            {intentado && !emailValido && <span id={`${emailId}-error`} className="vp-error-campo">Revisá el mail.</span>}
+          </div>
           <input
             id={emailId}
             type="email"
@@ -350,9 +382,9 @@ export function PanelVerPrecio({
             maxLength={CAMPOS.email.max}
             onChange={e => setEmail(e.target.value)}
             aria-invalid={intentado && !emailValido}
+            aria-describedby={intentado && !emailValido ? `${emailId}-error` : undefined}
             className="vp-campo"
           />
-          {intentado && !emailValido && <p className="vp-error-campo">Revisá el mail.</p>}
 
           <label className="vp-check">
             <input type="checkbox" checked={newsletter} onChange={e => setNewsletter(e.target.checked)} />
@@ -370,12 +402,20 @@ export function PanelVerPrecio({
               onExpire={() => setToken('')}
             />
           )}
-          {intentado && !token && !enviando && (
-            <p className="vp-error-campo">Completá la verificación de seguridad de arriba y volvé a tocar «Ver precio».</p>
-          )}
 
-          <button type="submit" className="vp-primario" disabled={enviando} aria-describedby={error ? errorId : undefined}>
-            {enviando ? 'Enviando…' : 'Ver precio'}
+          <button
+            type="submit"
+            className="vp-primario"
+            disabled={enviando || esperandoToken}
+            aria-busy={enviando || esperandoToken}
+            aria-describedby={error ? errorId : undefined}
+          >
+            {(enviando || esperandoToken) && <span className="vp-rueda" aria-hidden="true" />}
+            {enviando
+              ? 'Buscando el precio…'
+              : esperandoToken
+                ? (demorado ? 'Esperá unos segundos…' : 'Verificando…')
+                : 'Ver precio'}
           </button>
 
           {error && (
@@ -394,7 +434,7 @@ export function PanelVerPrecio({
           <DetallePrecio precio={precio} duracion={duracion} />
           {slug ? (
             <>
-              <a href={urlAutoinscripcion(slug)} className="vp-primario">Inscribite ya</a>
+              <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
               <EnlaceWhatsApp href={waHref} texto="Quiero inscribirme" />
             </>
           ) : <EnlaceWhatsApp href={waHref} texto="Quiero inscribirme" principal />}
@@ -411,7 +451,7 @@ export function PanelVerPrecio({
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
-          {slug && <a href={urlAutoinscripcion(slug)} className="vp-primario">Quiero inscribirme</a>}
+          {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto="Consultar precio vigente" principal />
         </div>
       )}

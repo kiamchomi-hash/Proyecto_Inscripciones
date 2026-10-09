@@ -606,6 +606,7 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
         type={id === 'email' ? 'email' : id === 'telefono' ? 'tel' : 'text'}
         id={htmlId}
         inputMode={campo.numerico ? 'numeric' : undefined}
+        autoComplete={campo.autocompletar}
         placeholder={campo.placeholder}
         value={typeof valor === 'string' ? valor : ''}
         onChange={event => onChange(event.target.value)}

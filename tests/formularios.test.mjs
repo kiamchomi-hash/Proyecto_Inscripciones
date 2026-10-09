@@ -285,3 +285,18 @@ test('las etiquetas son países sin cambiar valores históricos del legajo', () 
     assert.equal(armarPayload('teclab', 'preinscripcion', payload).nacionalidad, nacionalidad);
   }
 });
+
+test('los datos que el navegador ya tiene se autocompletan', () => {
+  // Con el token correcto, el celular llena estos campos con un toque.
+  const esperado = {
+    nombre: 'given-name', apellido: 'family-name', email: 'email', telefono: 'tel',
+    codigoPostal: 'postal-code', localidad: 'address-level2', provincia: 'address-level1',
+    paisResidencia: 'country-name',
+  };
+  for (const [id, token] of Object.entries(esperado)) {
+    assert.equal(CAMPOS[id].autocompletar, token, id);
+  }
+  // Calle va sin token: el navegador la llena con el número pegado y el
+  // legajo los pide por separado.
+  assert.equal(CAMPOS.domicilio.autocompletar, undefined);
+});

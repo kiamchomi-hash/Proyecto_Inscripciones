@@ -21,6 +21,7 @@ import IconoCompartir from './icono-compartir';
 import AvisoInicioTeclab from './aviso-inicio-teclab';
 import { AccesoVerPrecio, PanelVerPrecio } from './ver-precio-teclab';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
+import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 import {
   destacarCompetencias,
   esCursoTeclab,
@@ -932,7 +933,7 @@ function SlideVerPrecio({
     >
       <PanelVerPrecio
         carreraId={carrera.id}
-        slug={carreraToSlug(carrera)}
+        slug={tieneInscripcionPropia(carrera) ? carreraToSlug(carrera) : undefined}
         nombreCarrera={carrera.nombre_corto || carrera.nombre}
         duracion={carrera.duracion}
         acento={acento}
@@ -1242,8 +1243,12 @@ export default function TeclabModal({ carrera, onClose }: Props) {
               WhatsApp
             </a>
             <a
-              href="#preinscripcion"
+              href={tieneInscripcionPropia(carrera) ? rutaInscripcion(carrera) : '#preinscripcion'}
               onClick={e => {
+                // Con inscripcion abierta va a la pagina dedicada, que envia
+                // la solicitud en un paso; el formulario de abajo queda para
+                // las que no la tienen.
+                if (tieneInscripcionPropia(carrera)) return;
                 e.preventDefault();
                 // La carrera viaja con el clic: abajo el formulario la elige
                 // sola, en vez de dejar al lead buscando lo que ya eligio.
@@ -1253,7 +1258,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
                   document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
                 }, 350);
               }}
-              className="w-36 flex items-center justify-center gap-2 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"
+              className="flex-1 sm:flex-none sm:w-36 flex items-center justify-center gap-2 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"
               style={{ background: acento, color: textoAcento }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
