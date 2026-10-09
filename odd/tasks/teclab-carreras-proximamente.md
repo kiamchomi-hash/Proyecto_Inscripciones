@@ -79,3 +79,6 @@ inventados.
   Renovables, con los datos de la capacitación
   (`sql/2026-10-09_gestion_energias_renovables_datos_oficiales.sql`). El slug viejo
   redirige con un 301 desde `next.config.ts`.
+- 09/10/2026: alta de una séptima, Gestión Ambiental (`sql/2026-10-09_teclab_gestion_ambiental.sql`),
+  con portada de dominio público (muestreo de agua de la EPA, Wikimedia Commons).
+  Convive con la Licenciatura en Gestión Ambiental de Siglo 21: otro slug y otra casa.
