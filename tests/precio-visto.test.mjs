@@ -33,7 +33,7 @@ function fetchQueResponde(cuerpo, status = 200) {
 
 test('el WhatsApp del precio ya mostrado dice que la persona lo vio', () => {
   const mensaje = careerContent.mensajeWhatsAppPrecioVisto({ nombre: 'Tecnicatura Superior en Programación', prefix: null, nivel: 'Teclab Tecnología' });
-  assert.equal(mensaje, 'Hola, ya vi el precio de la carrera *TECNICATURA SUPERIOR EN PROGRAMACIÓN* y quiero avanzar con la inscripción');
+  assert.equal(mensaje, 'Hola, quiero inscribirme en la carrera *TECNICATURA SUPERIOR EN PROGRAMACIÓN*');
   // Se distingue del botón de precios de la ficha, que pregunta sin haberlo visto.
   assert.notEqual(mensaje, careerContent.mensajeWhatsAppPrecios({ nombre: 'Tecnicatura Superior en Programación', prefix: null, nivel: 'Teclab Tecnología' }));
 });

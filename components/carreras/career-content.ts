@@ -212,10 +212,11 @@ export function mensajeWhatsAppPrecios(carrera: CarreraEnMensaje): string {
 }
 
 /**
- * Boton de WhatsApp del panel «Ver precio», una vez mostrado el precio. Dice que
- * la persona ya lo vio para reconocerla en el chat: ya paso ese filtro y se
- * atiende primero.
+ * Boton de WhatsApp del panel «Ver precio», una vez mostrado el precio. Ningun
+ * otro boton dice «quiero inscribirme en»: esa frase identifica en el chat a
+ * quien ya vio el precio, que paso ese filtro y se atiende primero, sin que el
+ * mensaje suene a formulario.
  */
 export function mensajeWhatsAppPrecioVisto(carrera: CarreraEnMensaje): string {
-  return `Hola, ya vi el precio de ${nombreEnMensaje(carrera)} y quiero avanzar con la inscripción`;
+  return `Hola, quiero inscribirme en ${nombreEnMensaje(carrera)}`;
 }
