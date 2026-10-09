@@ -115,6 +115,13 @@ const nextConfig: NextConfig = {
         destination: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
         permanent: true,
       },
+      // Energías Renovables de Teclab se publicó como «Próximamente» con nombre
+      // provisorio (09/10/2026); el oficial agrega «Gestión de».
+      {
+        source: '/carreras/tecnicatura-superior-en-energias-renovables',
+        destination: '/carreras/tecnicatura-superior-en-gestion-de-energias-renovables',
+        permanent: true,
+      },
       // La materia dejo de ser "Fisico-Quimica" y paso a ser solo "Fisica"
       // (11/08/2026): el profesor no dicta quimica. La URL vieja estaba
       // indexada desde el 09/08, asi que va con 301 a la nueva — es la misma

@@ -75,3 +75,7 @@ inventados.
   capacitación de admisión (`sql/2026-10-09_teclab_gestion_proyectos_mineros.sql`):
   tipo Gestión, área Ambiente y Agro, término del test vocacional y portada de dominio
   público (Bingham Canyon, Wikimedia Commons). Mismos pendientes que Alimentos.
+- 09/10/2026: Energías Renovables pasa a su nombre oficial, Gestión de Energías
+  Renovables, con los datos de la capacitación
+  (`sql/2026-10-09_gestion_energias_renovables_datos_oficiales.sql`). El slug viejo
+  redirige con un 301 desde `next.config.ts`.

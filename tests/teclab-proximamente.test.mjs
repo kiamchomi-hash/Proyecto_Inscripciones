@@ -216,7 +216,7 @@ test('las cinco carreras anunciadas de Teclab entran en un filtro del catálogo'
   const casos = [
     ['Tecnicatura Superior en Fintech', 'Teclab - Tecnología', 'Desarrollo'],
     ['Tecnicatura Superior en Producto Digital', 'Teclab - Tecnología', 'Desarrollo'],
-    ['Tecnicatura Superior en Energías Renovables', 'Teclab - Tecnología', 'Infraestructura'],
+    ['Tecnicatura Superior en Gestión de Energías Renovables', 'Teclab - Tecnología', 'Infraestructura'],
   ];
   for (const [nombre, nivel, categoria] of casos) {
     assert.equal(teclab.getCategoriaTeclabTecnologia({ nombre, nivel }), categoria, nombre);
@@ -237,7 +237,7 @@ test('las carreras anunciadas de Teclab tienen portada propia y las demás conse
     'Tecnicatura Superior en Acompañamiento Terapéutico',
     'Tecnicatura Superior en Producto Digital',
     'Tecnicatura Superior en Gestión de Alimentos',
-    'Tecnicatura Superior en Energías Renovables',
+    'Tecnicatura Superior en Gestión de Energías Renovables',
     'Tecnicatura Superior en Gestión de Proyectos Mineros',
   ]) {
     const portada = teclab.getPortadaTeclab({ nombre });
@@ -247,5 +247,14 @@ test('las carreras anunciadas de Teclab tienen portada propia y las demás conse
   assert.equal(
     teclab.getPortadaTeclab({ nombre: 'Tecnicatura Superior en Programación' }),
     teclab.getFichaTeclab({ nombre: 'Tecnicatura Superior en Programación' }).imagen,
+  );
+});
+
+test('el slug provisorio de Energías Renovables redirige al del nombre oficial', () => {
+  const config = readFileSync(new URL('../next.config.ts', import.meta.url), 'utf8');
+  assert.match(config, /source: '\/carreras\/tecnicatura-superior-en-energias-renovables',\s*destination: '\/carreras\/tecnicatura-superior-en-gestion-de-energias-renovables',\s*permanent: true/);
+  assert.equal(
+    tipos.carreraToSlug({ prefix: 'Tecnicatura Superior en', nombre: 'Tecnicatura Superior en Gestión de Energías Renovables', nombre_corto: 'Gestión de Energías Renovables', nivel: 'Teclab - Tecnología' }),
+    'tecnicatura-superior-en-gestion-de-energias-renovables',
   );
 });
