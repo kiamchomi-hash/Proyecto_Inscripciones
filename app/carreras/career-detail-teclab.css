@@ -536,17 +536,25 @@
 /* Poppins Bold es más ancha que la Inter del resto del sitio: con el tamaño
    móvil compartido, "Programación" se salía de la pantalla a 375 px. */
 @media (max-width: 900px) {
+  /* La palabra mas larga del titulo (--career-palabra, en letras) tiene que
+     entrar entera: en Poppins Bold cada letra ocupa ~0,68 em. Con el tope de
+     13ch del h1, "Acompañamiento" (14) no entraba a ningun tamaño y se partia
+     a mitad de palabra. Se ensancha el h1 lo justo para esa palabra y se
+     achica la letra para que el ancho no pase la pantalla menos los margenes.
+     Hasta 12 letras ("Programación") el resultado es el mismo de antes. */
   .career-page--teclab .career-hero h1 {
-    font-size: clamp(2.1rem, 10.4vw, 4rem);
+    --palabra-cabe: calc((100vw - 3rem) / (var(--career-palabra, 1) * 0.68));
+    font-size: min(clamp(2.1rem, 10.4vw, 4rem), var(--palabra-cabe));
+    max-width: max(13ch, calc(var(--career-palabra, 1) * 0.68em));
     overflow-wrap: anywhere;
   }
 
   .career-page--teclab.career-page--title-long .career-hero h1 {
-    font-size: clamp(1.9rem, 8.6vw, 3.2rem);
+    font-size: min(clamp(1.9rem, 8.6vw, 3.2rem), var(--palabra-cabe));
   }
 
   .career-page--teclab.career-page--title-xl .career-hero h1 {
-    font-size: clamp(1.7rem, 7.6vw, 2.8rem);
+    font-size: min(clamp(1.7rem, 7.6vw, 2.8rem), var(--palabra-cabe));
   }
 }
 

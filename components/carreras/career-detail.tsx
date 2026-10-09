@@ -56,6 +56,7 @@ type CareerStyle = CSSProperties & {
   '--career-hero-scale': string;
   '--career-hero-origin': string;
   '--career-hero-origin-mobile': string;
+  '--career-palabra': string;
 };
 
 const HERO_POSITIONS: Record<string, string> = {
@@ -177,6 +178,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
       MOBILE_HERO_ORIGINS[nombreCompleto] ||
       HERO_ORIGINS[nombreCompleto] ||
       'center top',
+    // Letras de la palabra mas larga del titulo: el CSS movil achica el h1 para
+    // que entre entera en vez de cortarse a mitad ("Acompañamient-o").
+    '--career-palabra': String(Math.max(...cleanName.split(/\s+/).map(p => p.length))),
   };
 
   const iaMeta = isIA ? parseIAMeta(carrera.enfoque || '') : null;
