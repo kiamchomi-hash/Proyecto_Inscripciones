@@ -1140,14 +1140,17 @@ mark {
   flex-shrink: 0;
 }
 
-.teclab-card-meta .career-badge--destacada {
+.teclab-card-meta .career-badge {
   position: static;
   display: inline-block;
   transform: none;
-  background: var(--teclab-accent);
-  color: var(--teclab-on-accent);
   border: 2px solid var(--teclab-ink);
   border-radius: 5px;
+}
+
+.teclab-card-meta .career-badge--destacada {
+  background: var(--teclab-accent);
+  color: var(--teclab-on-accent);
 }
 
 /* ── Encabezado de seccion ── */
