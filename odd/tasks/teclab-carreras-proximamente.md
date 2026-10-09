@@ -64,3 +64,8 @@ inventados.
   «A confirmar», sin «null» ni el aviso de Siglo 21; están en el sitemap y
   `/inscripcion` da 404. Siguiente: foto de portada propia y completar con el Knowledge
   Pack cuando Teclab lo publique.
+- 09/10/2026: Gestión de Alimentos completada con la capacitación de admisión de Teclab
+  (`sql/2026-10-09_gestion_alimentos_datos_oficiales.sql`): duración, título,
+  certificado intermedio, plan por año, competencias y cinco preguntas frecuentes. Área
+  Ambiente y Agro y término del test vocacional. Sigue `proximamente`: faltan precio,
+  fecha de inicio, `CARRERAS_HUBSPOT` y la ficha oficial en teclab.edu.ar.

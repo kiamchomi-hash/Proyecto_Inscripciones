@@ -225,6 +225,10 @@ test('las cinco carreras anunciadas de Teclab entran en un filtro del catálogo'
   assert.equal(teclab.getTipoTeclab({ nombre: 'Tecnicatura Superior en Gestión de Alimentos', nivel: 'Teclab - Gestión' }), 'Gestión');
 });
 
+test('Gestión de Alimentos entra en el área Ambiente y Agro', () => {
+  assert.equal(tipos.getAreaForCarrera({ nombre: 'Tecnicatura Superior en Gestión de Alimentos' }), 'ambiente');
+});
+
 test('las carreras anunciadas de Teclab tienen portada propia y las demás conservan la de su ficha', () => {
   for (const nombre of [
     'Tecnicatura Superior en Fintech',

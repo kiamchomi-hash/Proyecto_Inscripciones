@@ -257,7 +257,7 @@ const AREA_KEYWORDS: Record<AreaId, string[]> = {
   salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas', 'mindfulness', 'bienestar integral', 'bioinformática'],
   educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia', 'matemática'],
   comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos', 'comercialización', 'videojuegos', 'marketing digital', 'inbound marketing'],
-  ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
+  ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'alimentos', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
   turismo: ['turística', 'turísticos', 'hotelera', 'turismo'],
   rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'oratoria', 'equipos de alto desempeño', 'rrhh'],
   deporte: ['deportiva', 'deportivo', 'nutrición deportiva', 'fútbol'],
