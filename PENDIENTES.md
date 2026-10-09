@@ -12,6 +12,7 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 - [ ] **Verificar si se está enviando el mail de Teclab con el acceso al portal del alumno**. Comprobar una solicitud de inscripción y confirmar la recepción del correo; no darlo por enviado sólo porque el formulario devuelve éxito.
 - [ ] **Crear un test vocacional para Teclab**.
 - [ ] **Empezar a revisar nuevas carreras de Teclab**.
+- [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas de Teclab** (Fintech, Acompañamiento Terapéutico, Producto Digital, Gestión de Alimentos y Energías Renovables). Publicadas el 09/10/2026 como «Próximamente»; faltan, entre otros, el precio, el lead a HubSpot, el test vocacional y los folletos. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 
 ### Folletos y redes
 
