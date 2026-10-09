@@ -18,6 +18,14 @@ Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se an
 
 - [ ] **Revisar producción después de cada deploy o cambio sensible.** Ejecutar `npm run smoke` y, cuando corresponda, `npm run seo`; comprobar rutas, redirects, cabeceras, noindex del admin, sitemap, formularios y panel. Si se toca CSP, secretos, triggers o Edge Functions, seguir además el procedimiento documentado y hacer la prueba manual correspondiente.
 
+## Teclab
+
+Seguimientos de fondo. No se revisan cada vez que se trabaja en Teclab: se retoman cada tanto o cuando el usuario lo pide.
+
+- [ ] **Mejorar el diseño de las fichas de Teclab (`/carreras/<slug>`), antigua tarea 38.** Ya aplican el sistema de `piezas_teclab`: paleta, Poppins, hero, bloques de datos en color, plan, formularios, navbar, pie, scroll y flecha. Quedan mejoras que el usuario todavía no definió; preguntarle cuáles antes de tocar nada. `/teclab`, `/teclab/inscripcion`, `/carreras/<slug>/inscripcion` e `/inscripcion/<codigo>` ya están hechas (commit `d73a904`). [Detalle](../odd/tasks/rediseno-paginas-teclab.md). Última revisión: 09/10/2026.
+
+- [ ] **Reescribir la intro de cada carrera nueva de Teclab a partir de su página oficial** (`teclab.edu.ar/carrera/<slug>/`). No se copian frases: se toman los datos y el vocabulario de búsqueda. La intro va en `descripcion`, abre con "Estudiá <tema> a distancia" y nombra temas y herramientas concretos. Su última oración es la salida laboral, porque `partirDescripcionTeclab` la separa. Última revisión: 09/10/2026, con las 16 vigentes reescritas; Seguros suma la matrícula de PAS sin examen. Venta Directa y el curso de IA quedaron afuera.
+
 ## Seguimiento permanente de indexación y rendimiento
 
 La antigua tarea 13 del backlog continúa acá: no se cierra con una revisión. Revisar tras altas de carreras o cambios de contenido y en las revisiones de mantenimiento; registrar la fecha, las URLs revisadas, los resultados y cualquier limitación de acceso o medición.
