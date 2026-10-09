@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { carreraToSlug, type Carrera } from '@/components/index/types';
-import { esCursoTeclab, getFamiliaTeclab } from '@/components/index/teclab';
+import { getFamiliaTeclab } from '@/components/index/teclab';
 import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { PREGUNTAS, recomendar } from './puntaje';
@@ -13,7 +13,6 @@ export type CarreraTestTeclab = Pick<Carrera, 'id' | 'nombre' | 'nombre_corto' |
 const LETRAS = 'ABCDEF';
 
 function familiaDe(carrera: CarreraTestTeclab): { clase: string; etiqueta: string } {
-  if (esCursoTeclab(carrera)) return { clase: 'curso', etiqueta: 'Curso' };
   return getFamiliaTeclab(carrera) === 'tecnologia'
     ? { clase: 'tecnologia', etiqueta: 'Tecnología' }
     : { clase: 'gestion', etiqueta: 'Gestión' };

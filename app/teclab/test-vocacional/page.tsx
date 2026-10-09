@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 import { esCarreraVisible } from '@/components/index/types';
-import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
+import { esTeclab } from '@/components/index/teclab';
 import TestVocacionalTeclab, { type CarreraTestTeclab } from '@/components/test-vocacional-teclab/test-vocacional-teclab';
 import './test-vocacional-teclab.css';
 
@@ -18,7 +18,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: { absolute: 'Test vocacional Teclab: qué tecnicatura va con vos' },
-  description: 'Siete preguntas de un toque y te mostramos las tecnicaturas y cursos Teclab que más van con vos. Sin registrarte, con asesoramiento por WhatsApp.',
+  description: 'Seis preguntas de un toque y te mostramos las tecnicaturas Teclab que más van con vos. Sin registrarte, con asesoramiento por WhatsApp.',
   alternates: { canonical: URL },
 };
 
@@ -31,13 +31,14 @@ async function getCarrerasTeclab(): Promise<CarreraTestTeclab[]> {
     .from('carreras')
     .select('id, nombre, nombre_corto, prefix, nivel, orden, proximamente')
     .eq('activa', true)
-    .in('nivel', ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'])
+    .in('nivel', ['Teclab - Tecnología', 'Teclab - Gestión'])
     .order('orden', { ascending: true })
     .throwOnError();
 
+  // Sólo tecnicaturas: el curso de IA quedó fuera del test a pedido (09/10/2026).
   // Una fila sin `orden` va al final: el desempate del test lo usa.
   return (data ?? [])
-    .filter(c => esCarreraVisible(c) && (esTeclab(c) || esCursoTeclab(c)))
+    .filter(c => esCarreraVisible(c) && esTeclab(c))
     .map(c => ({ ...c, orden: c.orden ?? Number.MAX_SAFE_INTEGER }));
 }
 
@@ -49,7 +50,7 @@ export default async function TestVocacionalTeclabPage() {
         <header className="tvt-header">
           <p className="tvt-eyebrow">Test vocacional Teclab</p>
           <h1>¿Qué carrera de Teclab va con vos?</h1>
-          <p className="tvt-lead">Siete preguntas, un toque cada una. Al final te mostramos las tres carreras que más se parecen a vos.</p>
+          <p className="tvt-lead">Seis preguntas, un toque cada una. Al final te mostramos las tres carreras que más se parecen a vos.</p>
         </header>
         <TestVocacionalTeclab carreras={carreras} />
       </div>

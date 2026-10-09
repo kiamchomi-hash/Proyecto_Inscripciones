@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PERFILES, PREGUNTAS, perfilDe, puntuar, recomendar } from '../components/test-vocacional-teclab/puntaje.ts';
 
-// Las 22 carreras activas de Teclab al 09/10/2026, tal como vienen de Supabase
+// Las 21 tecnicaturas activas de Teclab al 09/10/2026, tal como vienen de Supabase
 // (id, nombre, nombre_corto y orden). El test no es la fuente de datos: sirve
 // para probar que cada una tiene perfil y puede salir primera.
 const CARRERAS = [
@@ -23,7 +23,6 @@ const CARRERAS = [
   [231, 'Tecnicatura Superior en Gestión Hotelera', 'Gestión Hotelera', 1015],
   [232, 'Tecnicatura Superior en Planificación y Organización de Eventos', 'Planificación y Organización de Eventos', 1016],
   [233, 'Tecnicatura Superior en Periodismo y Nuevas Tecnologías', 'Periodismo y Nuevas Tecnologías', 1017],
-  [235, 'Actualización Profesional en Inteligencia Artificial', 'Actualización Profesional en Inteligencia Artificial', 1018],
   [246, 'Tecnicatura Superior en Gestión de Alimentos', 'Gestión de Alimentos', 1104],
   [242, 'Tecnicatura Superior en Gestión de Energías Renovables', 'Gestión de Energías Renovables', 1105],
   [247, 'Tecnicatura Superior en Gestión de Proyectos Mineros', 'Gestión de Proyectos Mineros', 1106],
@@ -38,10 +37,17 @@ test('cada carrera actual tiene un perfil propio, distinto del de las demás', (
   assert.equal(PERFILES.length, CARRERAS.length);
 });
 
+test('el curso de IA no entra en el test', () => {
+  const curso = { id: 235, nombre: 'Actualización Profesional en Inteligencia Artificial', nombre_corto: null, orden: 1018 };
+  assert.equal(perfilDe(curso), null);
+  const pagina = readFileSync(new URL('../app/teclab/test-vocacional/page.tsx', import.meta.url), 'utf8');
+  assert.doesNotMatch(pagina, /Teclab - Curso|esCursoTeclab/);
+});
+
 test('una carrera sin perfil no rompe nada y queda fuera del resultado', () => {
   const nueva = { id: 999, nombre: 'Tecnicatura Superior en Algo Nuevo', nombre_corto: null, orden: 1 };
   assert.equal(perfilDe(nueva), null);
-  const resultado = recomendar([nueva, ...CARRERAS], [0, 0, 0, 0, 0, 0, 0]);
+  const resultado = recomendar([nueva, ...CARRERAS], [0, 0, 0, 0, 0, 0]);
   assert.equal(resultado.length, 3);
   assert.ok(resultado.every(({ carrera }) => carrera.id !== 999));
   assert.deepEqual(recomendar([nueva], [0]), []);
@@ -69,13 +75,13 @@ test('el resultado es determinístico y el empate se resuelve por orden del cat�
   // Sin respuestas todas empatan en cero: manda el `orden`, después el `id`.
   const empate = recomendar([...CARRERAS].reverse(), []);
   assert.deepEqual(empate.map(({ carrera }) => carrera.id), [217, 218, 219]);
-  const respuestas = [1, 3, 0, 0, 1, 1, 1];
+  const respuestas = [1, 3, 0, 0, 1, 1];
   assert.deepEqual(recomendar(CARRERAS, respuestas), recomendar([...CARRERAS].reverse(), respuestas));
   const puntos = recomendar(CARRERAS, respuestas).map(({ puntos }) => puntos);
   assert.deepEqual(puntos, [...puntos].sort((a, b) => b - a));
 });
 
-test('cada una de las 22 carreras puede salir primera con alguna combinación', () => {
+test('cada una de las 21 tecnicaturas puede salir primera con alguna combinación', () => {
   const ganadoras = new Map();
   const total = PREGUNTAS.reduce((producto, pregunta) => producto * pregunta.opciones.length, 1);
   for (let n = 0; n < total; n++) {

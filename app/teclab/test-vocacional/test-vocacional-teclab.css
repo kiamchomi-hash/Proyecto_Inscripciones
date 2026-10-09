@@ -1,6 +1,6 @@
 /* Test vocacional de Teclab. Paleta de /teclab (navy, cian, azul) con los dos
-   acentos de familia: cian #2ee7d7 en Tecnologia, violeta #8e2cf2 en Gestion y
-   el ambar de los cursos. */
+   acentos de familia: cian #2ee7d7 en Tecnologia, violeta #8e2cf2 en Gestion. El ambar
+   marca las carreras que todavia no abrieron (Proximamente). */
 .tvt-page {
   --tvt-navy: #0c1824;
   --tvt-navy-claro: #112236;
@@ -218,7 +218,6 @@
 }
 
 .tvt-carrera--tecnologia { --tvt-acento: var(--tvt-cian); }
-.tvt-carrera--curso { --tvt-acento: var(--tvt-ambar); }
 .tvt-carrera.is-primera { background: #16304a; border-color: var(--tvt-acento); }
 
 .tvt-puesto {

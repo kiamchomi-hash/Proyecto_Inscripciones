@@ -15,7 +15,7 @@
 
 export type PerfilId =
   | 'programacion' | 'data-science' | 'quality-assurance' | 'redes' | 'seguridad-informatica'
-  | 'cloud' | 'ia' | 'energias-renovables' | 'marketing-digital' | 'inbound-marketing'
+  | 'cloud' | 'energias-renovables' | 'marketing-digital' | 'inbound-marketing'
   | 'experiencia-cliente' | 'contable' | 'seguros' | 'agraria' | 'alimentos' | 'mineria'
   | 'ambiental' | 'higiene-seguridad' | 'relaciones-laborales' | 'hotelera' | 'eventos' | 'periodismo';
 
@@ -36,7 +36,6 @@ export const PERFILES: { id: PerfilId; match: string[] }[] = [
   { id: 'redes', match: ['redes informaticas'] },
   { id: 'seguridad-informatica', match: ['seguridad informatica'] },
   { id: 'cloud', match: ['cloud'] },
-  { id: 'ia', match: ['inteligencia artificial'] },
   { id: 'energias-renovables', match: ['energias renovables'] },
   { id: 'marketing-digital', match: ['marketing digital'] },
   { id: 'inbound-marketing', match: ['inbound'] },
@@ -54,18 +53,12 @@ export const PERFILES: { id: PerfilId; match: string[] }[] = [
   { id: 'periodismo', match: ['periodismo'] },
 ];
 
-// La pregunta de duración separa el curso de IA de las tecnicaturas, que duran
-// lo mismo: elegir "dos años" le suma uno a todas menos al curso.
-const TECNICATURAS: Puntos = Object.fromEntries(
-  PERFILES.filter(perfil => perfil.id !== 'ia').map(perfil => [perfil.id, 1]),
-);
-
 export const PREGUNTAS: Pregunta[] = [
   {
     eje: 'Mundo',
     pregunta: '¿Qué mundo te atrae más?',
     opciones: [
-      { texto: 'Programas, apps y datos', puntos: { programacion: 2, 'quality-assurance': 2, 'data-science': 2, ia: 2 } },
+      { texto: 'Programas, apps y datos', puntos: { programacion: 2, 'quality-assurance': 2, 'data-science': 2 } },
       { texto: 'Redes, servidores y ciberseguridad', puntos: { redes: 2, cloud: 2, 'seguridad-informatica': 2 } },
       { texto: 'Marcas, ventas y clientes', puntos: { 'marketing-digital': 2, 'inbound-marketing': 2, 'experiencia-cliente': 2, seguros: 1 } },
       { texto: 'Empresas, números y equipos', puntos: { contable: 2, 'relaciones-laborales': 2, seguros: 2 } },
@@ -79,7 +72,7 @@ export const PREGUNTAS: Pregunta[] = [
     opciones: [
       { texto: 'Escribir código y crear aplicaciones', puntos: { programacion: 3, 'quality-assurance': 1 } },
       { texto: 'Probar sistemas y encontrar errores', puntos: { 'quality-assurance': 3, 'seguridad-informatica': 1 } },
-      { texto: 'Analizar datos para tomar decisiones', puntos: { 'data-science': 3, ia: 2, contable: 1 } },
+      { texto: 'Analizar datos para tomar decisiones', puntos: { 'data-science': 3, contable: 1 } },
       { texto: 'Configurar redes, servidores y la nube', puntos: { redes: 3, cloud: 3 } },
       { texto: 'Crear contenido y campañas', puntos: { 'marketing-digital': 3, 'inbound-marketing': 3, periodismo: 2 } },
       { texto: 'Atender y asesorar personas', puntos: { 'experiencia-cliente': 3, seguros: 3, hotelera: 2, 'relaciones-laborales': 1 } },
@@ -89,7 +82,7 @@ export const PREGUNTAS: Pregunta[] = [
     eje: 'Lugar',
     pregunta: '¿Dónde te imaginás trabajando?',
     opciones: [
-      { texto: 'Desde casa, frente a la compu', puntos: { programacion: 2, 'data-science': 2, 'quality-assurance': 2, cloud: 2, ia: 2, 'inbound-marketing': 2, 'marketing-digital': 1 } },
+      { texto: 'Desde casa, frente a la compu', puntos: { programacion: 2, 'data-science': 2, 'quality-assurance': 2, cloud: 2, 'inbound-marketing': 2, 'marketing-digital': 1 } },
       { texto: 'En una oficina, con un equipo', puntos: { contable: 2, 'relaciones-laborales': 2, seguros: 2, 'experiencia-cliente': 2, 'seguridad-informatica': 1, redes: 1 } },
       { texto: 'Al aire libre, en el campo', puntos: { agraria: 3, 'energias-renovables': 2, ambiental: 2, mineria: 1 } },
       { texto: 'En una planta, una fábrica o una obra', puntos: { alimentos: 3, 'higiene-seguridad': 3, mineria: 2 } },
@@ -106,7 +99,7 @@ export const PREGUNTAS: Pregunta[] = [
       { texto: 'Que la gente trabaje segura y cuidada', puntos: { 'higiene-seguridad': 3, 'relaciones-laborales': 2, seguros: 1 } },
       { texto: 'Producir más cuidando el planeta', puntos: { 'energias-renovables': 3, ambiental: 3, agraria: 2 } },
       { texto: 'Que una experiencia salga perfecta', puntos: { eventos: 3, hotelera: 2, 'experiencia-cliente': 2 } },
-      { texto: 'Automatizar tareas con inteligencia artificial', puntos: { ia: 3, 'data-science': 2, programacion: 1 } },
+      { texto: 'Descubrir patrones en los datos', puntos: { 'data-science': 3, programacion: 1 } },
     ],
   },
   {
@@ -125,21 +118,12 @@ export const PREGUNTAS: Pregunta[] = [
     eje: 'Tema',
     pregunta: '¿Qué tema te despierta más curiosidad?',
     opciones: [
-      { texto: 'Inteligencia artificial', puntos: { ia: 3, 'data-science': 1 } },
+      { texto: 'Turismo y viajes', puntos: { hotelera: 3, eventos: 1 } },
       { texto: 'Ciberseguridad', puntos: { 'seguridad-informatica': 3, redes: 1 } },
       { texto: 'Producción de alimentos y agro', puntos: { alimentos: 3, agraria: 2 } },
       { texto: 'Minería y energía', puntos: { mineria: 3, 'energias-renovables': 3 } },
       { texto: 'Finanzas y seguros', puntos: { seguros: 3, contable: 2 } },
       { texto: 'Cuidado del ambiente', puntos: { ambiental: 3, 'higiene-seguridad': 1 } },
-    ],
-  },
-  {
-    eje: 'Tiempo',
-    pregunta: '¿Cuánto tiempo querés dedicarle?',
-    opciones: [
-      { texto: 'Algo corto para actualizarme ya', puntos: { ia: 4 } },
-      { texto: 'Una tecnicatura de dos años con título', puntos: TECNICATURAS },
-      { texto: 'Todavía no lo sé', puntos: {} },
     ],
   },
 ];
