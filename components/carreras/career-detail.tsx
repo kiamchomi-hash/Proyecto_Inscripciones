@@ -11,6 +11,7 @@ import { getEscuelaIA } from '@/components/index/identidad-argentina';
 import IsotipoIA from '@/components/index/ia-isotipo';
 import {
   articulaConSiglo21,
+  datoTeclab,
   esCursoTeclab,
   esTeclab,
   getFichaTeclab,
@@ -189,17 +190,24 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
     : isTeclab
       ? [
           { label: 'Institución', value: 'Teclab · Instituto Técnico Superior' },
-          { label: 'Duración', value: carrera.duracion },
-          { label: 'Título', value: carrera.titulo },
-          { label: 'Certificado intermedio', value: teclabMeta!.certificado || 'Al finalizar el primer año' },
+          // Las anunciadas (`proximamente`) llegan sin duracion ni titulo:
+          // "A confirmar" y no un hueco vacio ni el dato de otra carrera.
+          { label: 'Duración', value: datoTeclab(carrera.duracion) },
+          { label: 'Título', value: datoTeclab(carrera.titulo) },
+          {
+            label: 'Certificado intermedio',
+            // "Al finalizar el primer año" vale para las 16 con plan publicado;
+            // en una anunciada seria inventar el plan.
+            value: teclabMeta!.certificado || (carrera.proximamente ? datoTeclab(null) : 'Al finalizar el primer año'),
+          },
         ]
       : isTeclabCourse
         ? [
             { label: 'Institución', value: 'Teclab · Instituto Técnico Superior' },
-            { label: 'Duración', value: carrera.duracion },
+            { label: 'Duración', value: datoTeclab(carrera.duracion) },
             { label: 'Modalidad', value: carrera.modalidad || 'Consultar' },
             // Un curso no entrega titulo: la columna guarda el certificado.
-            { label: 'Certificado', value: carrera.titulo },
+            { label: 'Certificado', value: datoTeclab(carrera.titulo) },
           ]
         : [
           { label: 'Nivel', value: carrera.nivel },
@@ -324,8 +332,13 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             )}
             {carrera.proximamente && (
               <p className="career-proximamente">
-                Universidad Siglo 21 anunció esta carrera, pero todavía no abrió la
-                inscripción. Dejanos tus datos y te avisamos apenas se habilite.
+                {/* Quien anuncia es quien la dicta: en Teclab (tecnicaturas y
+                    cursos) es el instituto, no la universidad. */}
+                {conMaterialTeclab
+                  ? `Teclab anunció ${isTeclabCourse ? 'este curso' : 'esta carrera'}`
+                  : 'Universidad Siglo 21 anunció esta carrera'}
+                , pero todavía no abrió la inscripción. Dejanos tus datos y te
+                avisamos apenas se habilite.
               </p>
             )}
             <div className="career-hero-actions">
@@ -422,9 +435,23 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             </section>
           )}
 
+          {/* Salida laboral sola: la ultima oracion de la descripcion se pinta
+              junto a las competencias, y una carrera anunciada todavia no las
+              tiene. Sin esto, el dato se perdia. */}
+          {teclabCompetencias.length === 0 && teclabSalida && (
+            <section id="perfil" className="career-section career-reveal">
+              <SectionHeading eyebrow="Salida laboral" />
+              <div className="career-salida">
+                <p>{teclabSalida}</p>
+              </div>
+            </section>
+          )}
+
           {/* Aviso de inicio de Teclab, justo arriba del plan (o de "Como se
-              cursa" en el curso): ahi se decide si anotarse, no en el hero. */}
-          {conMaterialTeclab && (
+              cursa" en el curso): ahi se decide si anotarse, no en el hero. Una
+              anunciada no tiene fecha de inicio: el aviso diria "todavia estas a
+              tiempo de inscribirte" en una carrera que no abrio. */}
+          {conMaterialTeclab && !carrera.proximamente && (
             <AvisoInicioTeclab carrera={carrera} acento={accent} className="career-aviso-inicio" />
           )}
 
@@ -633,6 +660,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               {((portada?.bullets.length ?? 0) > 0 || teclabCompetencias.length > 0) && (
                 <a href="#perfil">{isTeclabCourse ? 'Qué vas a aprender' : 'Perfil profesional'}</a>
               )}
+              {teclabCompetencias.length === 0 && teclabSalida && <a href="#perfil">Salida laboral</a>}
               {cursada.length > 0 && <a href="#plan">Cómo se cursa</a>}
               {hasPlan && <a href="#plan">Plan de estudios</a>}
               {faq && <a href="#preguntas-frecuentes">Preguntas frecuentes</a>}

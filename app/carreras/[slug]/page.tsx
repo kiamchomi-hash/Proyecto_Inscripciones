@@ -237,6 +237,19 @@ function descripcionSEO(carrera: Carrera): string {
     ]);
   }
 
+  // Una Teclab anunciada llega sin duracion, titulo ni enfoque: la plantilla de
+  // abajo armaba "Recibite de ... en , 100% online". Va el nombre corto, para
+  // que las anunciadas no queden con la description identica, y el cierre de
+  // proximamente. "A distancia" y no "100% online": es lo que dicen sus
+  // descripciones, y la modalidad de parseEnfoqueTeclab es un valor por defecto.
+  if ((esTeclab(carrera) || esCursoTeclab(carrera)) && carrera.proximamente) {
+    const programa = esCursoTeclab(carrera) ? 'nuevo curso' : 'nueva carrera';
+    return armarDescripcion([
+      `${carrera.nombre_corto || nombreCompleto}: ${programa} de Teclab, a distancia.`,
+      cierre,
+    ]);
+  }
+
   if (esCursoTeclab(carrera)) {
     const { modalidad } = parseEnfoqueTeclab(carrera.enfoque);
     return armarDescripcion([
@@ -451,8 +464,12 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
 
   // El formulario solo necesita id/nombre/nivel (y la duracion, para el precio
   // de Teclab): mandarle la fila entera metia todas las carreras completas en
-  // el HTML de cada pagina.
-  const opcionesFormulario = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion }));
+  // el HTML de cada pagina. `proximamente` viaja solo cuando es true: con eso la
+  // preinscripcion las saca de su lista y el contacto las conserva.
+  const opcionesFormulario = carreras.map(c => ({
+    id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion,
+    ...(c.proximamente ? { proximamente: true } : {}),
+  }));
 
   // Quien dicta cada programa. Ojo: esto no es texto de marketing sino un dato
   // estructurado, o sea la afirmacion mas fuerte que la pagina le hace a Google.
@@ -495,6 +512,8 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         ? `Estudia ${carrera.nombre} con la Academia Identidad Argentina. ${carrera.enfoque}.`
         : esCursoTeclabActual
           ? `Curso de ${carrera.nombre} dictado por Teclab. Consultá modalidad e inscripción.`
+          : conTeclab && carrera.proximamente
+            ? `${carrera.nombre}, carrera anunciada por Teclab Instituto Técnico Superior.`
           : conTeclab
             ? `${carrera.nombre}, carrera de Teclab Instituto Técnico Superior. Título oficial y cursado online.`
             : `Estudiá ${carrera.nombre} a distancia en Universidad Siglo 21. ${carrera.enfoque}.`

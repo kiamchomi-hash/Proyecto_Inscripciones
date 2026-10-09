@@ -913,7 +913,11 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
         {familiaTeclab && (
           <div className="teclab-card-head">
             <div className="teclab-card-meta">
-              <span className="teclab-badge">{carrera.duracion || '2 años'}</span>
+              {/* "2 años" es el relleno de las 16 con plan publicado. Una
+                  anunciada sin duracion no lo lleva: seria inventar el dato. */}
+              {(carrera.duracion || !carrera.proximamente) && (
+                <span className="teclab-badge">{carrera.duracion || '2 años'}</span>
+              )}
               {badgeInternoTeclab && <span className="career-badge career-badge--destacada">{badge}</span>}
             </div>
             {tipoTeclab && <span className="teclab-badge teclab-badge-tipo">{tipoTeclab}</span>}

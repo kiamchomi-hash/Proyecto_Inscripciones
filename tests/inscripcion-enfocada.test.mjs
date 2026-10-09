@@ -131,7 +131,9 @@ test('el contacto compacto sólo se activa en las páginas dedicadas', () => {
 test('el CTA del modal de Teclab lleva a la pagina dedicada de inscripcion', async () => {
   const { readFile } = await import('node:fs/promises');
   const fuente = await readFile(new URL('../components/index/teclab-modal.tsx', import.meta.url), 'utf8');
-  assert.match(fuente, /href=\{tieneInscripcionPropia\(carrera\) \? rutaInscripcion\(carrera\) : '#preinscripcion'\}/);
+  assert.match(fuente, /href=\{tieneInscripcionPropia\(carrera\) \? rutaInscripcion\(carrera\) : destinoFormulario\}/);
+  // Sin inscripcion abierta el CTA pide el aviso en el contacto, como la ficha.
+  assert.match(fuente, /const destinoFormulario = carrera\.proximamente \? '#formulario' : '#preinscripcion';/);
 });
 
 test('los CTA del slide de precio llevan a la pagina dedicada de inscripcion', async () => {

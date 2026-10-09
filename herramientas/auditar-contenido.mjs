@@ -111,7 +111,10 @@ for (const c of visibles) {
 
   for (const campo of ['duracion', 'titulo', 'descripcion']) {
     if (!c[campo] || !String(c[campo]).trim()) {
-      problema(`Carreras con "${campo}" vacio`, nombre);
+      // Una anunciada puede no tener duracion ni titulo confirmados todavia: la
+      // ficha muestra "A confirmar". Queda como aviso para completarla despues.
+      const pendiente = c.proximamente && campo !== 'descripcion';
+      (pendiente ? aviso : problema)(`Carreras con "${campo}" vacio`, nombre + (pendiente ? sufijo : ''));
     }
   }
 }

@@ -70,8 +70,9 @@ export interface Carrera {
   activa: boolean;
   destacada: boolean;
   nueva: boolean;
-  // Anunciada por Universidad Siglo 21 pero todavia sin inscripcion abierta. La
-  // ficha se publica igual (capta la busqueda) pero no ofrece inscribirse.
+  // Anunciada por la institucion (Universidad Siglo 21 o Teclab) pero todavia sin
+  // inscripcion abierta. La ficha se publica igual (capta la busqueda) pero no
+  // ofrece inscribirse.
   proximamente?: boolean;
 }
 
@@ -79,7 +80,22 @@ export interface Carrera {
 // fila completa metia todas las carreras enteras en el HTML de cada pagina.
 // `duracion` es opcional: la usa el precio de la autoinscripción de Teclab para
 // decir cuántos cuatrimestres tiene la carrera.
-export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'> & Partial<Pick<Carrera, 'duracion'>>;
+// `proximamente` tambien: la preinscripcion no ofrece una carrera que todavia
+// no abrio, pero el contacto si, porque es por donde se pide el aviso.
+export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'> & Partial<Pick<Carrera, 'duracion' | 'proximamente'>>;
+
+/**
+ * Las carreras que puede elegir cada formulario. La preinscripcion arma un
+ * legajo, y una carrera anunciada sin inscripcion abierta no tiene legajo que
+ * armar: sale de la lista. El contacto las conserva, porque ahi se deja el
+ * pedido de aviso.
+ */
+export function opcionesDelModo<T extends Partial<Pick<Carrera, 'proximamente'>>>(
+  carreras: T[],
+  modo: 'contacto' | 'preinscripcion',
+): T[] {
+  return modo === 'preinscripcion' ? carreras.filter(c => !c.proximamente) : carreras;
+}
 
 // ── El texto largo no viaja en el HTML de la home ──
 //

@@ -23,6 +23,8 @@ import { AccesoVerPrecio, PanelVerPrecio } from './ver-precio-teclab';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 import {
+  credencialTeclab,
+  datoTeclab,
   destacarCompetencias,
   esCursoTeclab,
   getFichaTeclab,
@@ -358,7 +360,18 @@ function BloqueDato({
 }
 
 // ── Slide 1: portada ──
-function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: string; ficha: TeclabFicha | null }) {
+function SlidePortada({
+  carrera,
+  acento,
+  ficha,
+  salida = '',
+}: {
+  carrera: Carrera;
+  acento: string;
+  ficha: TeclabFicha | null;
+  /** Solo cuando no hay slide de competencias que la muestre (una anunciada). */
+  salida?: string;
+}) {
   const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
   const curso = esCursoTeclab(carrera);
   // Un curso no entrega titulo: el chip y el cuadro hablan de certificado, como
@@ -399,8 +412,9 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
       <div className="teclab-portada-chips flex-shrink-0 flex flex-wrap gap-1.5">
         {tipo && <span className="teclab-chip teclab-chip-tipo">{tipo}</span>}
         <span className="teclab-chip">{modalidad}</span>
-        <span className="teclab-chip">{carrera.duracion}</span>
-        <span className="teclab-chip">{curso ? 'Certificado oficial' : 'Título oficial'}</span>
+        {/* Una anunciada no tiene duracion: el chip vacio se leia como error. */}
+        {carrera.duracion && <span className="teclab-chip">{carrera.duracion}</span>}
+        <span className="teclab-chip">{credencialTeclab(carrera)}</span>
       </div>
 
       {ficha && (
@@ -409,13 +423,16 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
         </div>
       )}
 
-      {(perfil || ficha?.partner) && (
+      {(perfil || salida || ficha?.partner) && (
         <div className="teclab-portada-perfil flex-shrink-0 flex flex-col gap-2">
           {perfil && (
             <>
               <Rotulo acento={acento}>Perfil profesional</Rotulo>
               <p className="text-[0.85rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
             </>
+          )}
+          {salida && (
+            <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug">{salida}</p>
           )}
           {ficha && <BloqueCocreacion ficha={ficha} acento={acento} className="mt-0.5" />}
         </div>
@@ -425,7 +442,7 @@ function SlidePortada({ carrera, acento, ficha }: { carrera: Carrera; acento: st
           estiran para igualarse, el del titulo queda enorme al lado de un
           certificado de dos lineas. */}
       <div className="teclab-portada-datos flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
-        <BloqueDato label={curso ? 'Certificado' : 'Título'} valor={carrera.titulo} acento={acento} principal />
+        <BloqueDato label={curso ? 'Certificado' : 'Título'} valor={datoTeclab(carrera.titulo)} acento={acento} principal />
         {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} />}
       </div>
     </div>
@@ -832,7 +849,7 @@ function SlideCierre({
   // Los datos van como chips, igual que en la portada. Con cuadros rotulados
   // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
   // en medio de la nada. El titulo y el certificado ya estan en la portada.
-  const chips = [modalidad, carrera.duracion, esCursoTeclab(carrera) ? 'Certificado oficial' : 'Título oficial'].filter(Boolean);
+  const chips = [modalidad, carrera.duracion, credencialTeclab(carrera)].filter(Boolean);
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
@@ -868,8 +885,10 @@ function SlideCierre({
         </div>
 
         {/* El aviso de inicio va en el cierre, donde sobra lugar y queda junto
-            a los botones de contacto. */}
-        <AvisoInicioTeclab carrera={carrera} acento={acento} className="teclab-aviso-inicio self-center" />
+            a los botones de contacto. Una anunciada no tiene fecha de inicio. */}
+        {!carrera.proximamente && (
+          <AvisoInicioTeclab carrera={carrera} acento={acento} className="teclab-aviso-inicio self-center" />
+        )}
       </div>
 
       {/* Bloque de contacto, pegado al titulo. En el telefono los botones van
@@ -883,12 +902,16 @@ function SlideCierre({
             vive lejos una direccion le lee como un requisito de asistencia.
             El precio se ve a cambio del mail en el slide siguiente, al que
             lleva este boton; WhatsApp queda a la vista abajo. */}
-        <AccesoVerPrecio
-          acento={acento}
-          textoAcento={textoSobreAcentoTeclab(acento)}
-          waHref={waHref}
-          onVerPrecio={onVerPrecio}
-        />
+        {/* Una anunciada no tiene precio que mostrar: su unico CTA es el aviso
+            del pie, y WhatsApp ya esta ahi al lado. */}
+        {!carrera.proximamente && (
+          <AccesoVerPrecio
+            acento={acento}
+            textoAcento={textoSobreAcentoTeclab(acento)}
+            waHref={waHref}
+            onVerPrecio={onVerPrecio}
+          />
+        )}
 
         {/* Lockup oficial: la carrera es de Teclab y articula con la Siglo 21 */}
         <Image
@@ -988,7 +1011,10 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   // vuelve a renderizar.
   const slides = useMemo(() => {
     const s: { key: string; node: React.ReactNode | ((activo: boolean) => React.ReactNode) }[] = [
-      { key: 'portada', node: <SlidePortada carrera={carrera} acento={acento} ficha={ficha} /> },
+      {
+        key: 'portada',
+        node: <SlidePortada carrera={carrera} acento={acento} ficha={ficha} salida={competencias.length ? '' : salida} />,
+      },
     ];
     if (competencias.length) {
       s.push({
@@ -1019,10 +1045,13 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       precioRef.current?.focus({ preventScroll: true });
     };
     s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} onVerPrecio={irAPrecio} /> });
-    s.push({
-      key: 'precio',
-      node: (activo: boolean) => <SlideVerPrecio ref={precioRef} carrera={carrera} acento={acento} activo={activo} pedido={pedidoPrecio} />,
-    });
+    // Sin inscripcion abierta no hay precio vigente que pedir.
+    if (!carrera.proximamente) {
+      s.push({
+        key: 'precio',
+        node: (activo: boolean) => <SlideVerPrecio ref={precioRef} carrera={carrera} acento={acento} activo={activo} pedido={pedidoPrecio} />,
+      });
+    }
     return s;
   }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio]);
 
@@ -1098,6 +1127,9 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   }, [handleClose, slides.length]);
 
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
+  // Sin inscripcion abierta, el CTA pide un aviso: va al formulario de
+  // contacto, como en la ficha de /carreras.
+  const destinoFormulario = carrera.proximamente ? '#formulario' : '#preinscripcion';
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}` : '';
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 
@@ -1243,7 +1275,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
               WhatsApp
             </a>
             <a
-              href={tieneInscripcionPropia(carrera) ? rutaInscripcion(carrera) : '#preinscripcion'}
+              href={tieneInscripcionPropia(carrera) ? rutaInscripcion(carrera) : destinoFormulario}
               onClick={e => {
                 // Con inscripcion abierta va a la pagina dedicada, que envia
                 // la solicitud en un paso; el formulario de abajo queda para
@@ -1251,11 +1283,13 @@ export default function TeclabModal({ carrera, onClose }: Props) {
                 if (tieneInscripcionPropia(carrera)) return;
                 e.preventDefault();
                 // La carrera viaja con el clic: abajo el formulario la elige
-                // sola, en vez de dejar al lead buscando lo que ya eligio.
+                // sola, en vez de dejar al lead buscando lo que ya eligio. Una
+                // anunciada solo la toma el contacto: la preinscripcion no la
+                // ofrece (opcionesDelModo).
                 pedirCarreraEnFormulario(carrera.id);
                 handleClose();
                 setTimeout(() => {
-                  document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById(destinoFormulario.slice(1))?.scrollIntoView({ behavior: 'smooth' });
                 }, 350);
               }}
               className="flex-1 sm:flex-none sm:w-36 flex items-center justify-center gap-2 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"
@@ -1264,7 +1298,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Inscribite ya
+              {carrera.proximamente ? 'Avisame cuando abra' : 'Inscribite ya'}
             </a>
           </div>
 

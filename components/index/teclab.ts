@@ -63,6 +63,8 @@ const TIPOS: { match: string; tipo: string }[] = [
   { match: 'relaciones laborales', tipo: 'Gestión' },
   { match: 'hotelera', tipo: 'Servicios' },
   { match: 'eventos', tipo: 'Servicios' },
+  { match: 'acompañamiento terapéutico', tipo: 'Servicios' },
+  { match: 'gestión de alimentos', tipo: 'Gestión' },
   { match: 'periodismo', tipo: 'Comunicación' },
 ];
 
@@ -91,16 +93,17 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
 
   const nombre = carrera.nombre.toLowerCase();
   if (nombre.includes('data science') || nombre.includes('inteligencia artificial')) return 'Datos e IA';
-  if (nombre.includes('cloud administration') || nombre.includes('redes informáticas')) return 'Infraestructura';
+  if (nombre.includes('cloud administration') || nombre.includes('redes informáticas') || nombre.includes('energías renovables')) return 'Infraestructura';
   if (nombre.includes('seguridad informática')) return 'Ciberseguridad';
-  if (nombre.includes('programación') || nombre.includes('quality assurance')) return 'Desarrollo';
+  if (nombre.includes('programación') || nombre.includes('quality assurance') || nombre.includes('fintech') || nombre.includes('producto digital')) return 'Desarrollo';
   return null;
 }
 
 /**
  * Si el titulo habilita a seguir despues en una licenciatura de Universidad
  * Siglo 21 reconociendo **todas** las materias de la tecnicatura. Es el corazon
- * del convenio y vale para las 16 menos Seguros, la unica sin continuidad.
+ * del convenio y vale para las 16 menos Seguros, la unica sin continuidad, y
+ * menos las anunciadas que todavia no abrieron (`proximamente`).
  *
  * Los cursos quedan afuera por definicion: no entregan titulo de tecnico, o sea
  * que no hay nada que articular.
@@ -110,9 +113,36 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
  * esta en el sitio a proposito, por lo mismo que no se enlaza la ficha oficial:
  * el contacto se hace por el formulario de esta pagina o por WhatsApp.
  */
-export function articulaConSiglo21(c: Pick<Carrera, 'nombre' | 'nivel'>): boolean {
+export function articulaConSiglo21(
+  c: Pick<Carrera, 'nombre' | 'nivel'> & Partial<Pick<Carrera, 'proximamente'>>,
+): boolean {
   if (!esTeclab(c)) return false;
+  // Una carrera anunciada sin inscripcion abierta todavia no tiene plan
+  // publicado: no hay nada que diga con que licenciatura articula.
+  if (c.proximamente) return false;
   return !c.nombre.toLowerCase().includes('seguros');
+}
+
+/**
+ * Lo que se muestra en lugar de un dato que la carrera todavia no tiene. Las
+ * carreras anunciadas (`proximamente`) llegan sin duracion ni titulo: un hueco
+ * vacio en la fila de datos se lee como un error, y rellenarlo con el valor de
+ * otra carrera seria inventarlo.
+ */
+export const A_CONFIRMAR = 'A confirmar';
+
+export function datoTeclab(valor: string | null | undefined): string {
+  const limpio = (valor ?? '').trim();
+  return limpio || A_CONFIRMAR;
+}
+
+/**
+ * El chip que dice que entrega el programa. Una `proximamente` no tiene titulo
+ * confirmado, asi que en su lugar se dice lo unico seguro: que todavia no abrio.
+ */
+export function credencialTeclab(c: Pick<Carrera, 'nivel'> & Partial<Pick<Carrera, 'proximamente'>>): string {
+  if (c.proximamente) return 'Próximamente';
+  return esCursoTeclab(c) ? 'Certificado oficial' : 'Título oficial';
 }
 
 // ── Ficha oficial de cada carrera en teclab.edu.ar ──
