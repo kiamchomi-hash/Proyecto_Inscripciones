@@ -89,6 +89,11 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   `proximamente`, `tieneInscripcionPropia`). **M** — `TITULO_ESPECIFICO`
   (`components/carreras/inscripcion-carrera.tsx`) si el título no entra. Siglo 21 e
   Identidad no tienen página propia.
+- [ ] **M** — **Buscar el precio de la carrera nueva** en la fuente de su casa y sumarla a
+  la extracción de precios, para que el bot, el buscador y «Ver precio» la coticen. Falta
+  documentar el paso a paso por casa. Pista para Teclab: el pipeline
+  (`ventas/fuentes/teclab/price-automation/update_teclab_prices.py`) arma la lista de
+  carreras a partir de las guías cortas numeradas y exige exactamente 18.
 - [ ] **M** — Precio («Ver precio» y mail de precio, hoy sólo Teclab): fila en
   `precios_privados`, que carga `herramientas/ventas/publicar-precios.mjs`. Empareja por
   nombre; si el del pipeline difiere, va en `SINONIMOS` (`casas.ts`). Sin fila el modal
