@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildConsultaMessage } from '../supabase/functions/notificar/mensajes.ts';
+import { buildConsultaMessage, formatDate } from '../supabase/functions/notificar/mensajes.ts';
 import { buildAperturasDirectasDigest } from '../lib/apertura-directa.ts';
 
 const base = { created_at: '2026-08-23T22:00:00Z', nombre: 'Ana', apellido: 'Diaz', email: 'ana@x.com' };
@@ -48,6 +48,26 @@ test('lo vacio no ensucia el aviso', () => {
   assert.ok(!mensaje.includes('Torre'));
   // Un contacto pelado no trae seccion de legajo.
   assert.ok(!mensaje.includes('Datos del legajo'));
+});
+
+test('el lead que ya vio el precio llega marcado, con la carrera y cuándo', () => {
+  const fila = { ...base, casa: 'teclab', tipo_formulario: 'preinscripcion', carrera: 'Tecnicatura en Programación' };
+  const precioVisto = { carrera: 'Tecnicatura en Programación', created_at: '2026-08-22T18:30:00Z' };
+  const mensaje = buildConsultaMessage(fila, { precioVisto });
+  const lineas = mensaje.split('\n');
+  assert.equal(lineas[0], '🔥 *YA VIO EL PRECIO*');
+  // La cabecera de siempre sigue ahí, abajo de la marca.
+  assert.equal(lineas[1], '📝 *PREINSCRIPCIÓN — Teclab*');
+  assert.ok(lineas.includes(`👀 *Vio el precio:* Tecnicatura en Programación el ${formatDate(precioVisto.created_at)}`), mensaje);
+});
+
+test('sin precio visto el aviso sale idéntico al de siempre', () => {
+  const fila = { ...base, casa: 'siglo21', tipo_formulario: 'contacto', carrera: 'Abogacía' };
+  const deSiempre = buildConsultaMessage(fila);
+  assert.equal(buildConsultaMessage(fila, { precioVisto: null }), deSiempre);
+  assert.equal(buildConsultaMessage(fila, {}), deSiempre);
+  assert.ok(!deSiempre.includes('YA VIO EL PRECIO'));
+  assert.ok(!deSiempre.includes('*Vio el precio:*'));
 });
 
 test('el aviso de aperturas directas agrupa y cuenta por carrera', () => {

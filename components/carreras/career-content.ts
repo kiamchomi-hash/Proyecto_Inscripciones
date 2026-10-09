@@ -210,3 +210,12 @@ export function mensajeWhatsAppInfo(carrera: CarreraEnMensaje): string {
 export function mensajeWhatsAppPrecios(carrera: CarreraEnMensaje): string {
   return `Hola, quiero consultar precios y fechas de ${nombreEnMensaje(carrera)}`;
 }
+
+/**
+ * Boton de WhatsApp del panel «Ver precio», una vez mostrado el precio. Dice que
+ * la persona ya lo vio para reconocerla en el chat: ya paso ese filtro y se
+ * atiende primero.
+ */
+export function mensajeWhatsAppPrecioVisto(carrera: CarreraEnMensaje): string {
+  return `Hola, ya vi el precio de ${nombreEnMensaje(carrera)} y quiero avanzar con la inscripción`;
+}

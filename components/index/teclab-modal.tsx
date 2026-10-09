@@ -15,7 +15,7 @@ import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import Image from 'next/image';
 import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
-import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
+import { mensajeWhatsAppInfo, mensajeWhatsAppPrecioVisto, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 import AvisoInicioTeclab from './aviso-inicio-teclab';
@@ -960,6 +960,8 @@ function SlideVerPrecio({
   ref: React.Ref<HTMLDivElement>;
 }) {
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
+  // Con el precio ya a la vista, el mensaje dice que lo vio (ver `mensajeWhatsAppPrecioVisto`).
+  const waHrefPrecioVisto = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppPrecioVisto(carrera))}`;
 
   return (
     // tabIndex -1: el boton «Ver precio» del cierre pasa el foco aca, y no al
@@ -978,6 +980,7 @@ function SlideVerPrecio({
         acentoClaro={CLARO[acento] ?? acento}
         textoAcento={textoSobreAcentoTeclab(acento)}
         waHref={waHref}
+        waHrefPrecioVisto={waHrefPrecioVisto}
         activo={activo}
         pedido={pedido}
       />

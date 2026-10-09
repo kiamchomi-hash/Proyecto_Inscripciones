@@ -240,6 +240,7 @@ export function PanelVerPrecio({
   acentoClaro,
   textoAcento,
   waHref,
+  waHrefPrecioVisto,
   slug,
   activo,
   duracion,
@@ -262,6 +263,11 @@ export function PanelVerPrecio({
   /** Color del texto sobre un relleno del acento */
   textoAcento: string;
   waHref: string;
+  /**
+   * WhatsApp para despues de mostrar el precio: el mensaje dice que la persona
+   * ya lo vio, para reconocerla en el chat. Sin el, va `waHref`.
+   */
+  waHrefPrecioVisto?: string;
   /** Si el slide esta a la vista. El captcha se monta recien en la primera visita. */
   activo: boolean;
   /**
@@ -479,9 +485,9 @@ export function PanelVerPrecio({
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
-              <EnlaceWhatsApp href={waHref} texto="Quiero inscribirme" />
+              <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" />
             </>
-          ) : <EnlaceWhatsApp href={waHref} texto="Quiero inscribirme" principal />}
+          ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
         </div>
       )}
 

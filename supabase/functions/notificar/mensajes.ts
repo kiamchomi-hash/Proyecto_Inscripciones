@@ -74,7 +74,13 @@ function cabecera(fila: Fila): string {
   return '📚 *Nueva consulta de carrera*';
 }
 
-export function buildConsultaMessage(fila: Fila): string {
+/** El «Ver precio» anterior del mismo mail, si lo hubo (ver precio-visto.ts). */
+export interface PrecioVistoAviso {
+  carrera: string | null;
+  created_at: string;
+}
+
+export function buildConsultaMessage(fila: Fila, { precioVisto = null }: { precioVisto?: PrecioVistoAviso | null } = {}): string {
   const fecha = fila.created_at ? formatDate(fila.created_at as string) : '—';
   const nombre = `${fila.nombre || '—'} ${fila.apellido || ''}`.trim();
 
@@ -85,8 +91,19 @@ export function buildConsultaMessage(fila: Fila): string {
       !EN_CABECERA.has(columna) && valor !== null && valor !== undefined && valor !== '')
     .map(([columna, valor]) => `${ETIQUETAS[columna] || `• *${columna}:*`} ${valor}`);
 
+  // Quien escribe después de ver cuánto sale ya pasó ese filtro: la marca va
+  // arriba de todo para atenderlo primero. Sin precio visto, el aviso es el de
+  // siempre, renglón por renglón.
+  const marca = precioVisto
+    ? [
+      `🔥 *YA VIO EL PRECIO*`,
+      cabecera(fila),
+      `👀 *Vio el precio:* ${precioVisto.carrera || 'carrera no especificada'} el ${formatDate(precioVisto.created_at)}`,
+    ]
+    : [cabecera(fila)];
+
   return [
-    cabecera(fila),
+    ...marca,
     ``,
     `👤 *Nombre:* ${nombre}`,
     `🎓 *Carrera:* ${fila.carrera || 'No especificada'}`,

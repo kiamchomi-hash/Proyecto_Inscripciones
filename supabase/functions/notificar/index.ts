@@ -7,6 +7,7 @@ import {
   buildSolicitudClaseMessage,
 } from "./mensajes.ts";
 import { agregarEnlace } from "./enlace.ts";
+import { buscarPrecioVisto } from "./precio-visto.ts";
 
 // Avisos de los tres formularios publicos. Telegram es el unico canal desde el
 // 01/08/2026: el mail salia del dominio compartido de pruebas de Resend, caia en
@@ -77,14 +78,21 @@ Deno.serve(async (req: Request) => {
     let texto: string;
 
     switch (table) {
-      case "consultas":
+      case "consultas": {
+        // Si el mismo mail pidió el precio antes, el aviso lo marca. Si la
+        // consulta falla o tarda, sale igual, sin la marca.
+        const precioVisto = await buscarPrecioVisto(record, {
+          supabaseUrl: SUPABASE_URL,
+          serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY,
+        });
         // Si el enlace no se puede crear, el aviso sale igual, sin él.
-        texto = await agregarEnlace(buildConsultaMessage(record), record, {
+        texto = await agregarEnlace(buildConsultaMessage(record, { precioVisto }), record, {
           supabaseUrl: SUPABASE_URL,
           serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY,
           sitioUrl: SITIO_URL,
         });
         break;
+      }
       case "solicitudes_clase":
         texto = buildSolicitudClaseMessage(record);
         break;
