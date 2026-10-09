@@ -13,7 +13,7 @@ Un test vocacional propio de Teclab, con su marca, que recomiende entre las tecn
 ## Alcance
 
 - Ruta `/teclab/test-vocacional`, con la marca de Teclab (Poppins, cian `#2ee7d7` en Tecnología, violeta `#8e2cf2` en Gestión).
-- Sólo carreras activas y visibles de los niveles `Teclab - Tecnología`, `Teclab - Gestión` y `Teclab - Curso`, leídas de Supabase (no una lista escrita a mano). Incluye las cinco «Próximamente» (22 en total al 09/10/2026); su resultado lo dice y lleva a la ficha, que pide el aviso.
+- Sólo carreras activas y visibles de los niveles `Teclab - Tecnología` y `Teclab - Gestión`, leídas de Supabase (no una lista escrita a mano). El curso de IA (`Teclab - Curso`) quedó fuera a pedido del usuario el 09/10/2026. Incluye las cinco «Próximamente» (21 tecnicaturas en total); su resultado lo dice y lleva a la ficha, que pide el aviso.
 - Preguntas propias de esa oferta; puntaje por carrera, no por las áreas de Siglo 21.
 - Resultado: las tres carreras con más afinidad, enlace a `/carreras/<slug>` y consulta por WhatsApp al número de Teclab.
 - Enlace desde `/teclab` y alta en el sitemap.
@@ -21,7 +21,8 @@ Un test vocacional propio de Teclab, con su marca, que recomiende entre las tecn
 
 ## Criterios de aceptación
 
-- Cada una de las 22 carreras puede salir primera con alguna combinación de respuestas.
+- Cada una de las 21 tecnicaturas puede salir primera con alguna combinación de respuestas.
+- Balance: sobre todas las combinaciones, cada tecnicatura gana sola entre el 3% y el 6% de las veces y los empates quedan por debajo del 10%.
 - El puntaje es determinístico y está cubierto por tests.
 - Nada salta de lugar al avanzar o al elegir opciones.
 
@@ -49,3 +50,5 @@ Documento creado el 09/10/2026. Estuvo en pausa hasta que se sumaron las cinco c
 
 
 T3 (09/10/2026): el padre sumó la ruta a `rutasA()` de `/api/revalidar`, la marca de Teclab en el navbar (`.tvt-page` en `app/navbar.css`) y el título absoluto. Recorrido completo a 375 px: las opciones quedan a 330 px en las siete preguntas (sin saltos) y el resultado muestra tres carreras con «Ver la carrera» y WhatsApp. `npm run check`: 408/408. Falta: push a `main` (decisión del usuario).
+
+Ajustes del 09/10/2026: se sacó el curso de IA y su pregunta de duración (`b9bf017`) y se reajustaron los pesos simulando las 46.656 combinaciones (`753fd20`): cada tecnicatura gana sola entre 3,5% y 5,1%, empates 9,97%. Revisión de Gentle AI aprobada (lineage `review-0281beff46434b8f`); sugerencias no bloqueantes R3-001 y R3-002 quedan para después. Falta: push a `main`.
