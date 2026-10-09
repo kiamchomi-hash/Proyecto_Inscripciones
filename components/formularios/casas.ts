@@ -77,7 +77,7 @@ export interface Campo {
 const NACIONALIDADES = [
   'Argentina', 'Paraguaya', 'Boliviana', 'Venezolana', 'Peruana', 'Chilena',
   'Uruguaya', 'Brasileña', 'Española', 'Colombiana', 'Cubana',
-  'Costarricense', 'Ecuatoriana', 'Salvadoreña', 'Guatemalteca', 'Ecuatoguineana',
+  'Costarricense', 'Ecuatoriana', 'Salvadoreña', 'Guatemalteca',
   'Hondureña', 'Mexicana', 'Nicaragüense', 'Panameña', 'Dominicana', 'Otra',
 ] as const;
 
@@ -87,7 +87,7 @@ const PAISES_NACIONALIDAD: Readonly<Record<string, string>> = {
   Venezolana: 'Venezuela', Peruana: 'Perú', Chilena: 'Chile', Uruguaya: 'Uruguay',
   Brasileña: 'Brasil', Española: 'España', Colombiana: 'Colombia', Cubana: 'Cuba',
   Costarricense: 'Costa Rica', Ecuatoriana: 'Ecuador', Salvadoreña: 'El Salvador',
-  Guatemalteca: 'Guatemala', Ecuatoguineana: 'Guinea Ecuatorial', Hondureña: 'Honduras',
+  Guatemalteca: 'Guatemala', Hondureña: 'Honduras',
   Mexicana: 'México', Nicaragüense: 'Nicaragua', Panameña: 'Panamá',
   Dominicana: 'República Dominicana', Otra: 'Otro país',
 };

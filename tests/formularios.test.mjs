@@ -252,7 +252,7 @@ test('las nacionalidades priorizan la región y conservan una opción para otras
   assert.deepEqual(opciones, [
     'Argentina', 'Paraguaya', 'Boliviana', 'Venezolana', 'Peruana', 'Chilena',
     'Uruguaya', 'Brasileña', 'Española', 'Colombiana', 'Cubana', 'Costarricense',
-    'Ecuatoriana', 'Salvadoreña', 'Guatemalteca', 'Ecuatoguineana', 'Hondureña',
+    'Ecuatoriana', 'Salvadoreña', 'Guatemalteca', 'Hondureña',
     'Mexicana', 'Nicaragüense', 'Panameña', 'Dominicana', 'Otra',
   ]);
   assert.equal(new Set(opciones).size, opciones.length);

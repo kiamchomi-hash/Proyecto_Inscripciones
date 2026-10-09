@@ -60,8 +60,7 @@ modificar la selección, la validación ni la apertura manual del buscador.
 Alcance autorizado: Argentina, Uruguay, los demás países limítrofes, Perú y
 los restantes países hispanohablantes. Se conservan gentilicios y Otra al final,
 sin cambios de campos, columnas, API ni elegibilidad de postulantes.
-Guinea Ecuatorial se incluye por su idioma oficial español, verificado en
-https://cvc.cervantes.es/lengua/anuario/anuario_24/bibang-larre/p03.htm.
+Guinea Ecuatorial no se incluye (usuario, 09/10/2026): sólo Ecuatoriana.
 - RED: la comparación exacta detectó el orden anterior y opciones fuera del alcance.
 - GREEN: node --test tests/formularios.test.mjs tests/formularios-api.test.mjs,
   27/27. Se verifica orden exacto, ausencia de duplicados y Siria, Otra al final
