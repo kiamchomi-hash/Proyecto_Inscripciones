@@ -134,10 +134,12 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   const conMaterialTeclab = isTeclab || isTeclabCourse;
   const ficha = conMaterialTeclab ? getFichaTeclab(carrera) : null;
   const articula = articulaConSiglo21(carrera);
-  const accent = isIA ? '#25a9db' : isTeclabCourse ? '#f4aa22' : '#00c7b1';
-  const accentBright = isIA ? '#f1cf1c' : isTeclabCourse ? '#ffc95e' : '#70f0dc';
-  const ink = isIA ? '#101820' : '#071d1b';
-  const soft = isIA ? '#b9d9e8' : '#b7d1cd';
+  // Teclab (tecnicaturas y cursos) usa la paleta oficial del instituto; el
+  // resto del diseno vive en career-detail-teclab.css bajo `career-page--teclab`.
+  const accent = isIA ? '#25a9db' : conMaterialTeclab ? '#4AE2E7' : '#00c7b1';
+  const accentBright = isIA ? '#f1cf1c' : conMaterialTeclab ? '#8DEEF1' : '#70f0dc';
+  const ink = isIA ? '#101820' : conMaterialTeclab ? '#0C1824' : '#071d1b';
+  const soft = isIA ? '#b9d9e8' : conMaterialTeclab ? '#A4B1C2' : '#b7d1cd';
   const { prefix, cleanName } = getCareerPrefix(carrera);
   const nombreCompleto = carreraFullName(carrera);
   const portada = getPortada(carrera);
@@ -235,7 +237,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
 
   return (
     <article
-      className={`career-page${isIA ? ' career-page--ia career-page--no-image' : ''}${titleLengthClass}`}
+      className={`career-page${isIA ? ' career-page--ia career-page--no-image' : ''}${conMaterialTeclab ? ' career-page--teclab' : ''}${titleLengthClass}`}
       style={careerStyle}
     >
       <header className="career-hero">

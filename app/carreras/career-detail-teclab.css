@@ -1,0 +1,526 @@
+/* Ficha de carrera o curso de Teclab con el sistema visual oficial del instituto
+   (skill piezas_teclab): azul #0055F0, navy #0C1824, cian #4AE2E7, blanco y
+   #F0F0F6, todo en Poppins. Se carga justo despues de career-detail.css y todo
+   cuelga de `.career-page--teclab`, asi que Siglo 21 e Identidad no cambian.
+
+   Los tokens --career-accent/-bright/-ink/-soft ya llegan en cian y navy desde
+   career-detail.tsx; aca se pisa lo que el CSS compartido fija a mano (verdes,
+   Unbounded/Inter, blancos con tinte verde).
+
+   El azul #0055F0 contrasta poco sobre navy (~2,7:1): va en bordes y filetes,
+   nunca en texto de lectura. */
+
+.career-page--teclab {
+  --teclab-azul: #0055f0;
+  --teclab-navy: #0c1824;
+  --teclab-navy-hondo: #08111a;
+  --teclab-navy-claro: #112236;
+  --teclab-papel: #f0f0f6;
+  --teclab-texto: #c8d0dc;
+  --teclab-esquina: 2.25rem 0.35rem 0.35rem 0.35rem;
+  --teclab-fuente: var(--font-poppins), 'Poppins', system-ui, sans-serif;
+
+  background: var(--teclab-navy);
+  color: var(--teclab-papel);
+  font-family: var(--teclab-fuente);
+}
+
+.career-page--teclab :is(h1, h2, h3, h4, p, li, dt, dd, span, a, summary, strong, em, button) {
+  font-family: var(--teclab-fuente);
+}
+
+/* ── Hero ─────────────────────────────────────────────── */
+.career-page--teclab .career-hero {
+  border-bottom: 1px solid var(--teclab-azul);
+}
+
+.career-page--teclab .career-hero-media::after {
+  background: linear-gradient(90deg, rgba(12, 24, 36, 0.18), transparent 65%);
+}
+
+.career-page--teclab .career-hero-shade {
+  background:
+    linear-gradient(90deg, rgba(12, 24, 36, 0.96) 0%, rgba(12, 24, 36, 0.78) 43%, rgba(12, 24, 36, 0.13) 78%),
+    linear-gradient(0deg, rgba(12, 24, 36, 0.92) 0%, transparent 55%);
+}
+
+.career-page--teclab .career-breadcrumb {
+  border-color: var(--teclab-azul);
+  border-radius: 999px;
+  background: rgba(12, 24, 36, 0.82);
+  box-shadow: none;
+  color: var(--teclab-texto);
+  font-weight: 600;
+}
+
+.career-page--teclab .career-all-careers {
+  border-color: var(--teclab-azul);
+  border-radius: 999px;
+  background: rgba(12, 24, 36, 0.82);
+  color: #fff;
+  font-weight: 600;
+}
+
+.career-page--teclab .career-all-careers:hover {
+  border-color: var(--career-accent);
+  background: var(--teclab-navy-claro);
+}
+
+.career-page--teclab .career-breadcrumb a:hover {
+  color: var(--career-accent);
+}
+
+.career-page--teclab .career-breadcrumb-separator {
+  color: var(--career-accent);
+}
+
+.career-page--teclab .career-breadcrumb-current {
+  border-radius: 999px;
+  background: rgba(74, 226, 231, 0.14);
+  color: var(--career-accent);
+}
+
+.career-page--teclab .career-hero-marca {
+  border-color: var(--teclab-azul);
+  border-radius: 1.1rem 0.25rem 0.25rem 0.25rem;
+  background: rgba(12, 24, 36, 0.78);
+}
+
+.career-page--teclab .career-hero-marca span {
+  border-left-color: var(--teclab-azul);
+  color: #fff;
+  font-weight: 600;
+}
+
+.career-page--teclab .career-kicker {
+  color: var(--career-accent);
+  font-size: clamp(0.72rem, 1vw, 0.86rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.career-page--teclab .career-hero h1 {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-shadow: 0 2px 28px rgba(8, 17, 26, 0.4);
+}
+
+.career-page--teclab .career-hero-intro {
+  color: var(--teclab-papel);
+  font-weight: 400;
+}
+
+.career-page--teclab .career-aviso-inicio {
+  border-left-color: var(--career-accent);
+  border-radius: 0.2rem 0.9rem 0.9rem 0.2rem;
+  background: rgba(12, 24, 36, 0.86);
+  box-shadow: inset 0 0 0 1px var(--teclab-azul);
+}
+
+.career-page--teclab .career-aviso-inicio .aviso-inicio-teclab-fecha {
+  color: var(--teclab-papel);
+  font-weight: 400;
+}
+
+.career-page--teclab .career-aviso-inicio .aviso-inicio-teclab-fecha time {
+  font-weight: 600;
+}
+
+.career-page--teclab .career-aviso-inicio .aviso-inicio-teclab-cta {
+  color: var(--career-accent);
+  font-weight: 600;
+}
+
+.career-page--teclab .career-proximamente {
+  border-left-color: var(--career-accent);
+  color: var(--teclab-papel);
+}
+
+/* ── Botones ──────────────────────────────────────────── */
+.career-page--teclab .career-button {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.career-page--teclab .career-button--primary {
+  background: var(--career-accent);
+  color: var(--teclab-navy);
+}
+
+.career-page--teclab .career-button--primary:hover {
+  background: var(--career-accent-bright);
+}
+
+.career-page--teclab .career-button--ghost,
+.career-page--teclab .career-button--info {
+  border-color: var(--teclab-azul);
+  background: rgba(12, 24, 36, 0.86);
+  color: #fff;
+}
+
+.career-page--teclab .career-button--ghost:hover,
+.career-page--teclab .career-button--info:hover {
+  border-color: var(--career-accent);
+  background: var(--teclab-navy-claro);
+  color: #fff;
+}
+
+.career-page--teclab .career-button.career-cta-titila {
+  outline-color: transparent;
+}
+
+/* ── Barra de datos ───────────────────────────────────── */
+.career-page--teclab .career-facts {
+  border-bottom-color: var(--teclab-azul);
+}
+
+.career-page--teclab .career-facts > div {
+  border-right-color: var(--teclab-azul);
+}
+
+.career-page--teclab .career-facts dt,
+.career-page--teclab .career-section-heading span,
+.career-page--teclab .career-related-heading span {
+  color: var(--career-accent);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.career-page--teclab .career-facts dd {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Titulos de seccion ───────────────────────────────── */
+.career-page--teclab .career-section-heading h2,
+.career-page--teclab .career-related-heading h2,
+.career-page--teclab .career-plan .career-section-heading h2,
+.career-page--teclab #perfil .career-section-heading h2 {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+}
+
+/* ── Listas con tilde (competencias, que vas a aprender, como se cursa) ── */
+.career-page--teclab .career-learning-list,
+.career-page--teclab .career-modules,
+.career-page--teclab .career-extras {
+  border-top-color: var(--teclab-azul);
+}
+
+.career-page--teclab .career-learning-list li {
+  border-bottom-color: rgba(0, 85, 240, 0.55);
+  color: var(--teclab-texto);
+  font-weight: 400;
+}
+
+.career-page--teclab .career-learning-list li > span {
+  border-color: var(--career-accent);
+  color: var(--career-accent);
+}
+
+.career-page--teclab .career-salida {
+  border-left-color: var(--career-accent);
+  border-radius: var(--teclab-esquina);
+  background: var(--teclab-navy-claro);
+  box-shadow: inset 0 0 0 1px var(--teclab-azul);
+}
+
+.career-page--teclab .career-salida p {
+  color: #fff;
+}
+
+/* ── Plan de estudios por año ─────────────────────────── */
+.career-page--teclab .career-year-title span {
+  color: var(--career-accent);
+  font-weight: 700;
+}
+
+.career-page--teclab .career-years > section {
+  border: 1px solid var(--teclab-azul);
+  border-radius: var(--teclab-esquina);
+  background: var(--teclab-navy-claro);
+}
+
+.career-page--teclab .career-years > section:hover {
+  border-color: var(--career-accent);
+}
+
+.career-page--teclab .career-year-title {
+  border-bottom-color: rgba(0, 85, 240, 0.7);
+}
+
+.career-page--teclab .career-year-title h3 {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.career-page--teclab .career-term h4 {
+  color: var(--career-accent);
+  font-weight: 600;
+}
+
+.career-page--teclab .career-term li,
+.career-page--teclab .career-extras li {
+  color: var(--teclab-texto);
+}
+
+.career-page--teclab .career-term li::before,
+.career-page--teclab .career-extras li::before {
+  background: var(--career-accent);
+}
+
+.career-page--teclab .career-extras h3 {
+  color: var(--career-accent);
+  font-weight: 600;
+}
+
+.career-page--teclab .career-extras p,
+.career-page--teclab .career-plain-plan {
+  color: var(--career-soft);
+}
+
+.career-page--teclab .career-plain-plan {
+  border-top-color: var(--teclab-azul);
+  border-bottom-color: var(--teclab-azul);
+}
+
+/* ── Franja de marca final ────────────────────────────── */
+.career-page--teclab .career-oficial {
+  border: 1px solid var(--teclab-azul);
+  border-radius: var(--teclab-esquina);
+  background: var(--teclab-navy-claro);
+}
+
+.career-page--teclab .career-oficial p {
+  color: var(--teclab-texto);
+}
+
+.career-page--teclab .career-oficial-articulacion {
+  border-left-color: var(--career-accent);
+}
+
+.career-page--teclab .career-oficial-articulacion strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.career-page--teclab .career-oficial a {
+  border-color: var(--career-accent);
+  border-radius: 999px;
+  color: var(--career-accent);
+  font-weight: 600;
+}
+
+.career-page--teclab .career-oficial a:hover {
+  border-color: var(--career-accent-bright);
+  background: rgba(74, 226, 231, 0.12);
+}
+
+.career-page--teclab .career-oficial .career-oficial-articulacion a {
+  border-radius: 0;
+  color: var(--career-accent);
+  text-decoration-color: rgba(74, 226, 231, 0.55);
+}
+
+.career-page--teclab .career-oficial .career-oficial-articulacion a:hover {
+  background: none;
+  text-decoration-color: var(--career-accent);
+}
+
+/* ── Preguntas frecuentes ─────────────────────────────── */
+.career-page--teclab .career-faq details {
+  border: 1px solid var(--teclab-azul);
+  border-radius: 0.9rem 0.3rem 0.3rem 0.3rem;
+  background: var(--teclab-navy-claro);
+}
+
+.career-page--teclab .career-faq summary {
+  color: #fff;
+  font-weight: 600;
+}
+
+.career-page--teclab .career-faq summary::marker {
+  color: var(--career-accent);
+}
+
+.career-page--teclab .career-faq summary:focus-visible {
+  outline-color: var(--career-accent);
+  border-radius: 0.5rem;
+}
+
+.career-page--teclab .career-faq p {
+  color: var(--teclab-texto);
+}
+
+/* ── Aside: navegacion y tarjeta de inscripcion ───────── */
+.career-page--teclab .career-aside nav a {
+  border-color: var(--teclab-azul);
+  border-radius: 999px;
+  color: var(--teclab-texto);
+  font-weight: 400;
+}
+
+.career-page--teclab .career-aside nav a:hover {
+  border-color: var(--career-accent);
+  background: var(--teclab-navy-claro);
+  color: var(--career-accent);
+}
+
+.career-page--teclab .career-aside-cta {
+  border: 1px solid var(--teclab-azul);
+  border-radius: var(--teclab-esquina);
+  background: var(--teclab-navy-claro);
+  box-shadow: none;
+}
+
+.career-page--teclab .career-aside-cta::before {
+  background: var(--teclab-azul);
+  opacity: 0.28;
+}
+
+.career-page--teclab .career-aside-cta > span {
+  border-color: var(--teclab-azul);
+  background: transparent;
+  color: var(--career-accent);
+  font-weight: 600;
+}
+
+.career-page--teclab .career-aside-cta strong {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.career-page--teclab .career-aside-cta strong em {
+  color: var(--career-accent);
+  font-style: italic;
+}
+
+.career-page--teclab .career-aside-cta a {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.career-page--teclab .career-aside-cta > a:first-of-type {
+  background: var(--career-accent);
+  color: var(--teclab-navy);
+  box-shadow: 0 4px 0 var(--teclab-azul);
+}
+
+/* El verde de WhatsApp se mantiene (es el de la plataforma). */
+
+/* ── Relacionadas ─────────────────────────────────────── */
+.career-page--teclab .career-related {
+  background: var(--teclab-navy-hondo);
+  box-shadow: 0 0 0 100vmax var(--teclab-navy-hondo);
+}
+
+.career-page--teclab .career-related-heading > a {
+  color: var(--career-accent);
+  font-weight: 600;
+}
+
+.career-page--teclab .career-related li > a {
+  border: 1px solid var(--teclab-azul);
+  border-radius: 0.9rem 0.3rem 0.3rem 0.3rem;
+  background: var(--teclab-navy-claro);
+  color: var(--teclab-texto);
+}
+
+.career-page--teclab .career-related li > a:hover {
+  border-color: var(--career-accent);
+  background: var(--teclab-navy-claro);
+  color: #fff;
+}
+
+.career-page--teclab .career-related li > a svg {
+  color: var(--career-accent);
+}
+
+/* ── CTA fijo en movil ────────────────────────────────── */
+@media (max-width: 900px) {
+  .career-page--teclab .career-hero {
+    background: var(--teclab-navy);
+  }
+
+  .career-page--teclab .career-hero-shade {
+    background: linear-gradient(0deg, rgba(12, 24, 36, 0.42) 0%, transparent 70%);
+  }
+
+  .career-page--teclab .career-hero-media {
+    border-top-left-radius: 0;
+  }
+
+  .career-page--teclab .career-mobile-cta {
+    border-top-color: var(--teclab-azul);
+    background: rgba(12, 24, 36, 0.94);
+  }
+
+  .career-page--teclab .career-mobile-cta a {
+    border-color: var(--career-accent);
+    border-radius: 999px;
+    background: var(--career-accent);
+    color: var(--teclab-navy);
+    box-shadow: none;
+    font-family: var(--teclab-fuente);
+    font-weight: 600;
+  }
+
+  .career-page--teclab .career-facts > div:first-child,
+  .career-page--teclab .career-facts > div:nth-child(2) {
+    border-bottom-color: var(--teclab-azul);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .career-page--teclab .career-years > section:hover,
+  .career-page--teclab .career-related li > a:hover,
+  .career-page--teclab .career-aside nav a:hover {
+    transform: none;
+  }
+}
+
+/* Poppins Bold es más ancha que la Inter del resto del sitio: con el tamaño
+   móvil compartido, "Programación" se salía de la pantalla a 375 px. */
+@media (max-width: 900px) {
+  .career-page--teclab .career-hero h1 {
+    font-size: clamp(2.1rem, 10.4vw, 4rem);
+    overflow-wrap: anywhere;
+  }
+
+  .career-page--teclab.career-page--title-long .career-hero h1 {
+    font-size: clamp(1.9rem, 8.6vw, 3.2rem);
+  }
+
+  .career-page--teclab.career-page--title-xl .career-hero h1 {
+    font-size: clamp(1.7rem, 7.6vw, 2.8rem);
+  }
+}
+
+/* El formulario de contacto y el de preinscripción van fuera del <article>,
+   como hermanos dentro de <main>. Son los mismos componentes de toda la casa
+   y se pintan con los tokens --catalogo-*: acá se redefinen para que firmen
+   en azul y cian de Teclab y no en el verde del CAU. */
+.ficha-teclab {
+  --catalogo-acento: #4ae2e7;
+  --catalogo-acento-vivo: #8deef1;
+  --catalogo-acento-suave: #3cc4c9;
+  --catalogo-acento-oscuro: #2aa9ae;
+  --catalogo-acento-tinta: #0c1824;
+  --catalogo-acento-rgb: 74, 226, 231;
+  --catalogo-tarjeta: #12243a;
+  --catalogo-tarjeta-hover: #0e1d2f;
+  --catalogo-barra: rgba(10, 20, 31, 0.97);
+  --catalogo-form-fondo: #0f1e30;
+  --catalogo-form-tarjeta: #14263c;
+  --catalogo-form-panel: #14263c;
+  --catalogo-form-campo: #0a1520;
+  --catalogo-texto-suave: #9dabbe;
+  --catalogo-etiqueta: #c3ccd9;
+}

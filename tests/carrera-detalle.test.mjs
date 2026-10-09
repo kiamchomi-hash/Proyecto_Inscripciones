@@ -37,7 +37,10 @@ function cargarApi(data, error = null) {
 function cargarPagina(data, error = null) {
   const { llamadas, modulos } = dependencias(data, error);
   return {
-    ...cargarTypescript('app/carreras/[slug]/page.tsx', modulos, () => ({})),
+    ...cargarTypescript('app/carreras/[slug]/page.tsx', {
+      ...modulos,
+      'next/font/google': { Poppins: () => ({ variable: '' }) },
+    }, () => ({})),
     llamadas,
   };
 }
