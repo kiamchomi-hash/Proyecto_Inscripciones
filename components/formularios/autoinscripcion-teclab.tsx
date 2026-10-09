@@ -184,13 +184,20 @@ export function PasoListo({ waHref, dni, solicitud = false }: { waHref: string; 
         </svg>
       </div>
       <p data-paso-foco tabIndex={-1} className="text-3xl font-black tracking-tight text-white focus:outline-none">{solicitud ? 'Solicitud recibida' : '¡Listo!'}</p>
-      {!solicitud && usuario ? (
-        <dl className="grid w-full max-w-xs grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 rounded-xl border border-white/15 bg-white/5 px-5 py-4 text-left">
-          <dt className="text-xs font-bold uppercase leading-none tracking-wider text-[var(--catalogo-etiqueta)]">Usuario</dt>
-          <dd className="text-right font-mono text-xl font-bold leading-none tabular-nums tracking-wider text-white">{usuario}</dd>
-          <dt className="text-xs font-bold uppercase leading-none tracking-wider text-[var(--catalogo-etiqueta)]">Contraseña</dt>
-          <dd className="text-right font-mono text-xl font-bold leading-none tabular-nums tracking-wider text-white">{usuario}</dd>
-        </dl>
+      {usuario ? (
+        // En la solicitud la cuenta todavía no existe: la tarjeta es la misma,
+        // con el aviso arriba de que sirve una vez gestionada.
+        <div className="flex w-full max-w-xs flex-col gap-2">
+          {solicitud && (
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--catalogo-etiqueta)]">Cuando esté gestionada, entrás con</p>
+          )}
+          <dl className="grid w-full max-w-xs grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 rounded-xl border border-white/15 bg-white/5 px-5 py-4 text-left">
+            <dt className="text-xs font-bold uppercase leading-none tracking-wider text-[var(--catalogo-etiqueta)]">Usuario</dt>
+            <dd className="text-right font-mono text-xl font-bold leading-none tabular-nums tracking-wider text-white">{usuario}</dd>
+            <dt className="text-xs font-bold uppercase leading-none tracking-wider text-[var(--catalogo-etiqueta)]">Contraseña</dt>
+            <dd className="text-right font-mono text-xl font-bold leading-none tabular-nums tracking-wider text-white">{usuario}</dd>
+          </dl>
+        </div>
       ) : (
         <p className="max-w-md text-base leading-snug text-white">
           {solicitud ? 'Una vez gestionada la inscripción, ingresás con ' : 'Tu usuario y tu contraseña son '}<strong className="font-black">tu DNI, sin puntos</strong>.
