@@ -11,6 +11,7 @@ import {
   obligatoriosDe,
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
 } from './casas';
+import { bloquesDe, ROTULO_GRUPO } from './bloques';
 import { EVENTO_ELEGIR_CARRERA, pideAutoinscripcion, type DetalleElegirCarrera } from './elegir-carrera';
 import { AVISO_TOKEN, AVISO_VERIFICAR, AvisoSinPago, PasoInscribirme, PasoListo, PasoPrecio } from './autoinscripcion-teclab';
 import { DetallePrecio, type PrecioVigente } from '@/components/index/ver-precio-teclab';
@@ -96,6 +97,10 @@ const suave = (): ScrollBehavior =>
 /** Cuánto ocupa cada campo en la grilla de seis de su columna. */
 const PESO = { completo: 6, medio: 3, tercio: 2 } as const;
 const pesoDe = (id: CampoId) => PESO[CAMPOS[id].ancho ?? 'medio'];
+const grupoDe = (id: CampoId) => CAMPOS[id].grupo;
+
+/** El rótulo de un bloque: chico, del color del acento y con una línea que lo separa del anterior. */
+const ROTULO_BLOQUE = 'text-[11px] font-black uppercase tracking-wider text-[var(--catalogo-acento)]';
 
 /**
  * El ancho real de cada campo de una columna, en sextos.
@@ -127,11 +132,10 @@ function anchosDeColumna(campos: CampoId[]): number[] {
  * En **contacto** manda el agrupamiento: son pocos campos y separar "lo que
  * consultás" de "tus datos" se lee bien.
  *
- * En **preinscripción** manda el equilibrio. Con el agrupamiento, Siglo 21
- * dejaba diez datos personales a la izquierda y sólo el domicilio a la derecha,
- * que ocupa la mitad de alto: la tarjeta quedaba coja. Como los rótulos de
- * columna ya no existen, las columnas no prometen un tema y repartir por peso
- * no engaña a nadie.
+ * En **preinscripción** manda el equilibrio, pero sólo se corta entre
+ * bloques: cada bloque lleva su rótulo (Tus datos, Domicilio, Estudios) y
+ * partir uno entre las dos columnas lo dejaría con dos títulos. Entre los
+ * cortes posibles gana el más parejo.
  *
  * El `12` del arranque es el buscador de carrera y su filtro, dos filas que
  * cuelgan siempre de la primera columna.
@@ -146,13 +150,16 @@ function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoI
 
   const pesos = campos.map(pesoDe);
   const total = pesos.reduce((suma, peso) => suma + peso, 0) + 12;
+  // Dónde termina cada bloque: los únicos lugares donde se puede cortar.
+  const cortes = [0];
+  for (const bloque of bloquesDe(campos, grupoDe)) cortes.push(cortes[cortes.length - 1] + bloque.campos.length);
 
   // Se prueban todos los cortes y gana el más parejo. Que la última fila de
   // cada columna quede completa no se resuelve acá —con cantidades impares no
   // siempre se puede— sino estirando el último campo al pintarlo.
   let mejor = 0;
   let mejorPuntaje = Infinity;
-  for (let corte = 0; corte <= campos.length; corte++) {
+  for (const corte of cortes) {
     const izq = pesos.slice(0, corte).reduce((suma, peso) => suma + peso, 12);
     const puntaje = Math.abs(izq - (total - izq));
     if (puntaje < mejorPuntaje) { mejorPuntaje = puntaje; mejor = corte; }
@@ -1530,8 +1537,21 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                 </div>
 
                     </>)}
+                    {/* En la preinscripción, un bloque por grupo con su rótulo;
+                        en el contacto, la grilla de siempre. Los anchos se
+                        calculan por bloque, así cada uno cierra sus filas. */}
+                    {(esPreinscripcion ? bloquesDe(suyos, grupoDe) : [{ grupo: null, campos: suyos }]).map((bloque, indiceBloque) => {
+                      const lista = bloque.campos;
+                      // La línea separa del bloque de arriba: en la columna 1 es el
+                      // buscador de carrera; la columna 2 arranca sin nada encima.
+                      const conLinea = columna === 1 || indiceBloque > 0;
+                      return (
+                        <div key={indiceBloque} className="space-y-1.5">
+                          {bloque.grupo && (
+                            <p className={conLinea ? `${ROTULO_BLOQUE} border-t border-[var(--catalogo-acento)]/15 pt-2` : ROTULO_BLOQUE}>{ROTULO_GRUPO[bloque.grupo]}</p>
+                          )}
                     <div className="grid grid-cols-6 gap-1.5">
-                      {suyos.map((id, indice, todos) => (
+                      {lista.map((id, indice, todos) => (
                         <div
                           key={id}
                           // Reservar el lugar es de desktop, donde la tarjeta es
@@ -1557,6 +1577,9 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                         </div>
                       ))}
                     </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               })}
@@ -1567,7 +1590,9 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                 mitad ya lo haya dado. */}
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <div role="group" aria-label="Datos de contacto" className={`space-y-1.5 rounded-lg p-2 ${alinearAlLlegar ? 'form-contacto-compacto' : ''}`} style={{ border: '1.5px solid var(--catalogo-acento)' }}>
-                {!alinearAlLlegar && (
+                {esPreinscripcion ? (
+                  <p className={ROTULO_BLOQUE}>{ROTULO_GRUPO.contacto}</p>
+                ) : !alinearAlLlegar && (
                 <p className="flex items-center gap-2 text-[12px] leading-snug text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                     <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
