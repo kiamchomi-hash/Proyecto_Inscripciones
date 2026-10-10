@@ -1064,13 +1064,13 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       precioRef.current?.focus({ preventScroll: true });
     };
     // Igual que «Preinscribite» del pie: la carrera viaja elegida al
-    // formulario de contacto y el modal se cierra.
+    // formulario de preinscripción y el modal se cierra.
     const avisar = () => {
       pedirCarreraEnFormulario(carrera.id);
       setClosing(true);
       setTimeout(onClose, 300);
       setTimeout(() => {
-        document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
       }, 350);
     };
     s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} onVerPrecio={irAPrecio} onAvisame={avisar} /> });
@@ -1155,9 +1155,10 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   }, [handleClose, slides.length]);
 
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
-  // Sin inscripcion abierta, el CTA pide un aviso: va al formulario de
-  // contacto, como en la ficha de /carreras.
-  const destinoFormulario = carrera.proximamente ? '#formulario' : '#preinscripcion';
+  // Abierta o anunciada, el CTA va a la preinscripción, como en la ficha de
+  // /carreras. Una anunciada termina ahí: se guarda y avisa por Telegram, sin
+  // precio ni autoinscripción.
+  const destinoFormulario = '#preinscripcion';
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}` : '';
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 
@@ -1311,9 +1312,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
                 if (tieneInscripcionPropia(carrera)) return;
                 e.preventDefault();
                 // La carrera viaja con el clic: abajo el formulario la elige
-                // sola, en vez de dejar al lead buscando lo que ya eligio. Una
-                // anunciada solo la toma el contacto: la preinscripcion no la
-                // ofrece (opcionesDelModo).
+                // sola, en vez de dejar al lead buscando lo que ya eligio.
                 pedirCarreraEnFormulario(carrera.id);
                 handleClose();
                 setTimeout(() => {

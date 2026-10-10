@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { WhatsAppIcon } from '@/components/icons';
-import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, opcionesDelModo, ordenarParaFormulario } from '@/components/index/types';
+import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackAbandonoFormulario, trackConsulta, trackFormularioVisto, trackInicioFormulario, trackIntentoFormulario, type OrigenConsulta } from '@/lib/analytics';
 import {
@@ -631,11 +631,7 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
   );
 }
 
-export default function FormularioLead({ carreras: todas, modo, casa, origen = 'home', carreraInicial, alinearAlLlegar = false }: Props) {
-  // La preinscripcion no ofrece las carreras que todavia no abrieron; el
-  // contacto si, porque es donde se pide el aviso. Todo lo de abajo -lista,
-  // carrera inicial, "Inscribite ya" del modal- lee de esta lista.
-  const carreras = useMemo(() => opcionesDelModo(todas, modo), [todas, modo]);
+export default function FormularioLead({ carreras, modo, casa, origen = 'home', carreraInicial, alinearAlLlegar = false }: Props) {
   // La carrera con la que arranca, si la página la fijó. Es el valor inicial de
   // dos estados y nada más: después manda el estado, porque el lead la cambia.
   const nombreInicial = () => (carreraInicial != null
@@ -730,7 +726,10 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
   // La autoinscripción necesita la carrera elegida, no sólo la casa: en
   // `/teclab` la casa viene fija y la carrera puede faltar.
   const casaDeLaCarrera = casaDeCarrera(carrera);
-  const conAutoinscripcion = esPreinscripcion && casaDeLaCarrera !== null
+  // Una anunciada (`proximamente`) todavía no está cargada en la casa: su
+  // preinscripción guarda la consulta, avisa por Telegram y termina en la
+  // confirmación simple, sin precio ni «Inscribirme».
+  const conAutoinscripcion = esPreinscripcion && !carrera?.proximamente && casaDeLaCarrera !== null
     && CASAS_CON_AUTOINSCRIPCION.includes(casaDeLaCarrera);
   // Entrada directa: datos y confirmación, con un solo envío desde los datos.
   const solicitudDirecta = alinearAlLlegar && esPreinscripcion && casaActiva === 'teclab';

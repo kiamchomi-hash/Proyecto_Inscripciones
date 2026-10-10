@@ -80,22 +80,9 @@ export interface Carrera {
 // fila completa metia todas las carreras enteras en el HTML de cada pagina.
 // `duracion` es opcional: la usa el precio de la autoinscripción de Teclab para
 // decir cuántos cuatrimestres tiene la carrera.
-// `proximamente` tambien: la preinscripcion no ofrece una carrera que todavia
-// no abrio, pero el contacto si, porque es por donde se pide el aviso.
+// `proximamente` tambien: la preinscripcion de una carrera que todavia no abrio
+// guarda la consulta y avisa por Telegram, sin precio ni autoinscripcion.
 export type CarreraOpcion = Pick<Carrera, 'id' | 'nombre' | 'nivel'> & Partial<Pick<Carrera, 'duracion' | 'proximamente'>>;
-
-/**
- * Las carreras que puede elegir cada formulario. La preinscripcion arma un
- * legajo, y una carrera anunciada sin inscripcion abierta no tiene legajo que
- * armar: sale de la lista. El contacto las conserva, porque ahi se deja el
- * pedido de aviso.
- */
-export function opcionesDelModo<T extends Partial<Pick<Carrera, 'proximamente'>>>(
-  carreras: T[],
-  modo: 'contacto' | 'preinscripcion',
-): T[] {
-  return modo === 'preinscripcion' ? carreras.filter(c => !c.proximamente) : carreras;
-}
 
 // ── El texto largo no viaja en el HTML de la home ──
 //

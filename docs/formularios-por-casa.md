@@ -112,6 +112,15 @@ Los tokens de Turnstile son de un solo uso, y la entrada normal envía dos veces
 
 La preinscripción de Teclab responde `{ "ok": true }`, como el resto de las consultas: hasta el 03/10/2026 sumaba el precio para ese panel, y «Ver precio» lo guardaba en el `sessionStorage` de la pestaña. Las dos cosas se sacaron con el paso del medio de pago. El único que devuelve precio es «Ver precio».
 
+### Carreras anunciadas (`proximamente`): sólo la preinscripción
+
+Una carrera con `proximamente = true` (desde el 10/10/2026, las cinco nuevas de Teclab) todavía no está cargada en la casa, pero acepta la preinscripción: el lead la elige en el formulario, la fila entra en `consultas` y el trigger `on_consulta_insert` avisa por Telegram. **Nada más.**
+
+- **Servidor**: `carreraConPrecio` y `carreraConAutoinscripcion` (`casas.ts`) descartan una anunciada, y todas las lecturas de `carreras` del endpoint que deciden precio, pase o autoinscripción traen `proximamente` de la base. La preinscripción responde sólo `{ ok: true }`: sin precio, sin mail del precio y sin pase. `kind: 'autoinscripcion'`, `kind: 'enlace'` y `kind: 'precio'` con una anunciada devuelven 400, sin escribir ni marcar el enlace usado; por lo tanto tampoco hay alta en HubSpot ni robot.
+- **Cliente**: los dos formularios reciben las mismas carreras (ya no hay filtro por modo). `formulario-lead.tsx` no considera `conAutoinscripcion` a una anunciada, así que el envío termina en el cartel «Preinscripción enviada», sin los pasos del precio ni de «Inscribirme». La ficha la manda a `#preinscripcion` con «Preinscribite»; las páginas de inscripción dedicadas no la ofrecen (`tieneInscripcionPropia`).
+- El aviso de Telegram de su preinscripción todavía suma el enlace de inscripción (lo arma `notificar`): ese enlace responde 400 hasta que la carrera se habilite.
+- `tests/preinscripcion-proximamente.test.mjs` lo cubre. Cuando la casa la habilite, se apaga `proximamente` y vuelve el flujo completo (`docs/alta-de-carrera.md`).
+
 ## Enlace de inscripción de Teclab: `kind: 'enlace'`
 
 Cada preinscripción de Teclab (`casa: 'teclab'`, `tipo_formulario: 'preinscripcion'`) trae al final del aviso de Telegram una línea «Enlace para inscribirse» con `https://www.siglo21sur.com/inscripcion/<codigo>`, lista para reenviarle a la persona. Al abrirla ve el precio vigente de su carrera, un resumen de sus datos y un botón «Inscribirme»; al confirmar queda creada la misma autoinscripción de arriba, sin volver a tipear nada.

@@ -229,14 +229,14 @@ async function suscribirDesdeFormulario(kind: string, payload: JsonRecord) {
 /**
  * La carrera, si su casa publica precio. La casa se valida contra el `nivel`
  * de la base, no contra lo que diga el navegador: por ahora sólo Teclab
- * publica precio. `carrera: null` es una carrera inexistente, inactiva o de
- * otra casa. Trae además lo que usa el mail del precio: prefijo, nombre corto
- * y duración.
+ * publica precio. `carrera: null` es una carrera inexistente, inactiva,
+ * anunciada (`proximamente`) o de otra casa. Trae además lo que usa el mail
+ * del precio: prefijo, nombre corto y duración.
  */
 async function buscarCarreraConPrecio(supabase: ClienteAdmin, carreraId: number) {
   const { data, error } = await supabase
     .from('carreras')
-    .select('id, nombre, nivel, activa, prefix, nombre_corto, duracion')
+    .select('id, nombre, nivel, activa, proximamente, prefix, nombre_corto, duracion')
     .eq('id', carreraId)
     .maybeSingle();
   if (error) return { carrera: null, error };
@@ -247,7 +247,9 @@ async function buscarCarreraConPrecio(supabase: ClienteAdmin, carreraId: number)
  * El precio que acompaña a la preinscripción de Teclab, para mostrarlo antes
  * de «Inscribirme». Corre con el lead ya guardado, así que nunca lo tumba: si
  * la carrera no se puede verificar, la respuesta es sólo el ok. El resto de las
- * consultas no lee precios.
+ * consultas no lee precios, y tampoco la preinscripción de una anunciada
+ * (`proximamente`): `buscarCarreraConPrecio` la descarta, así que no hay
+ * precio ni mail, sólo la fila y el aviso de Telegram.
  */
 async function precioDePreinscripcion(payload: JsonRecord) {
   const carreraId = carreraIdDe(payload);
@@ -281,7 +283,8 @@ const modPase = () => import('@/lib/pase-autoinscripcion');
  * segundo captcha (ver `lib/pase-autoinscripcion.ts`). Sólo con mail válido,
  * porque el pase se ata a él, y con la carrera verificada en la base: la casa
  * que diga el navegador no manda. Corre con el lead ya guardado y nunca lo
- * tumba: sin pase, el carrusel pide el captcha como antes.
+ * tumba: sin pase, el carrusel pide el captcha como antes. Una anunciada
+ * (`proximamente`) no tiene autoinscripción, así que tampoco pase.
  */
 async function paseDePreinscripcion(payload: JsonRecord) {
   const carreraId = carreraIdDe(payload);
@@ -291,7 +294,7 @@ async function paseDePreinscripcion(payload: JsonRecord) {
   try {
     const { data: carrera, error } = await createSupabaseAdmin()
       .from('carreras')
-      .select('id, nivel')
+      .select('id, nivel, proximamente')
       .eq('id', carreraId)
       .maybeSingle();
     if (error) {
@@ -482,7 +485,7 @@ async function registrarAutoinscripcion(payload: JsonRecord, paseIat: number | n
   const supabase = createSupabaseAdmin();
   const { data: carrera, error: errorCarrera } = await supabase
     .from('carreras')
-    .select('id, nombre, nivel')
+    .select('id, nombre, nivel, proximamente')
     .eq('id', datos.carreraId)
     .maybeSingle();
   if (errorCarrera) return { error: errorCarrera };
@@ -497,7 +500,7 @@ async function registrarAutoinscripcion(payload: JsonRecord, paseIat: number | n
   return insertarAutoinscripcion(supabase, carrera, datos, payload);
 }
 
-type CarreraAutoinscripcion = { id: number; nombre: string; nivel: string };
+type CarreraAutoinscripcion = { id: number; nombre: string; nivel: string; proximamente: boolean };
 
 /**
  * El armado y la escritura de la autoinscripción, compartidos por el
@@ -663,7 +666,7 @@ async function registrarPorEnlace(payload: JsonRecord) {
   const niveles = CASAS_CON_AUTOINSCRIPCION.flatMap(casa => CASAS[casa].niveles);
   const busqueda = await supabase
     .from('carreras')
-    .select('id, nombre, nivel')
+    .select('id, nombre, nivel, proximamente')
     .eq('nombre', consulta.carrera)
     .in('nivel', niveles)
     .limit(1)

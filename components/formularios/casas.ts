@@ -342,10 +342,15 @@ export function validarPayloadPrecio(payload: Record<string, unknown>): PayloadP
   return { carreraId, email, newsletter: payload.newsletter === true };
 }
 
-/** Si la carrera puede mostrar precio: activa y de una casa que lo publica. */
-export function carreraConPrecio(carrera: { nivel: string; activa: boolean }): boolean {
+/**
+ * Si la carrera puede mostrar precio: activa, ya abierta y de una casa que lo
+ * publica. Una anunciada (`proximamente`) todavía no tiene precio en la casa.
+ * `proximamente` es opcional sólo para el newsletter, que no lo lee; el
+ * endpoint de formularios lo trae siempre de la base.
+ */
+export function carreraConPrecio(carrera: { nivel: string; activa: boolean; proximamente?: boolean }): boolean {
   const casa = casaDeCarrera(carrera);
-  return carrera.activa === true && casa !== null && CASAS_CON_PRECIO.includes(casa);
+  return carrera.activa === true && carrera.proximamente !== true && casa !== null && CASAS_CON_PRECIO.includes(casa);
 }
 
 /**
@@ -529,10 +534,15 @@ export function legajoAutoinscripcionValido(payload: Record<string, unknown>): b
   return EMAIL_VALIDO.test(email) && TELEFONO_VALIDO.test(telefono);
 }
 
-/** Si la carrera admite autoinscripción: la casa sale del `nivel` de la base. */
-export function carreraConAutoinscripcion(carrera: { nivel: string }): boolean {
+/**
+ * Si la carrera admite autoinscripción: la casa sale del `nivel` de la base. Una
+ * anunciada (`proximamente`) no: todavía no está cargada en el portal de la
+ * casa, y su preinscripción termina en el aviso de Telegram. `proximamente` es
+ * obligatorio para que ninguna lectura de la base se olvide de traerlo.
+ */
+export function carreraConAutoinscripcion(carrera: { nivel: string; proximamente: boolean }): boolean {
   const casa = casaDeCarrera(carrera);
-  return casa !== null && CASAS_CON_AUTOINSCRIPCION.includes(casa);
+  return !carrera.proximamente && casa !== null && CASAS_CON_AUTOINSCRIPCION.includes(casa);
 }
 
 // ── Enlace de inscripción (Teclab) ──

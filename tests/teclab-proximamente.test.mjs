@@ -150,14 +150,14 @@ test('la salida laboral sale de la última oración de las cinco descripciones',
   }
 });
 
-test('la preinscripción no ofrece próximamente; el contacto sí, para pedir el aviso', () => {
-  const opciones = [
-    { id: 1, nombre: 'Tecnicatura Superior en Programación', nivel: 'Teclab - Tecnología' },
-    { id: 2, nombre: fintech.nombre, nivel: fintech.nivel, proximamente: true },
-    { id: 3, nombre: 'Agroinformática', nivel: 'Grado', proximamente: true },
-  ];
-  assert.deepEqual(tipos.opcionesDelModo(opciones, 'preinscripcion').map(o => o.id), [1]);
-  assert.deepEqual(tipos.opcionesDelModo(opciones, 'contacto').map(o => o.id), [1, 2, 3]);
+test('la preinscripción y el contacto ofrecen también las próximamente', () => {
+  // La preinscripción de una anunciada entra en `consultas` y avisa por
+  // Telegram, nada más (ver preinscripcion-proximamente.test.mjs). Ya no hay
+  // filtro por modo: los dos formularios reciben la misma lista.
+  assert.equal(tipos.opcionesDelModo, undefined);
+  const formulario = readFileSync('components/formularios/formulario-lead.tsx', 'utf8');
+  assert.doesNotMatch(formulario, /opcionesDelModo/);
+  assert.match(formulario, /export default function FormularioLead\(\{ carreras, modo,/);
 });
 
 // ── SQL de alta ──

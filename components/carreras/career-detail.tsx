@@ -361,10 +361,10 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             )}
             <div className="career-hero-actions">
               {/* Quien viene a inscribirse baja a la preinscripcion, que arma el
-                  legajo. La carrera que todavia no abrio no tiene legajo que
-                  armar: ese boton pide un aviso y va al formulario de contacto. */}
+                  legajo. La de una carrera que todavia no abrio solo guarda la
+                  consulta y avisa por Telegram: sin precio ni autoinscripcion. */}
               <a
-                href={carrera.proximamente ? '#formulario' : '#preinscripcion'}
+                href="#preinscripcion"
                 className="career-button career-button--primary"
                 data-career-primary-cta
               >
@@ -388,7 +388,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
       <ResaltarInscripcion />
 
       <StickyEnrollmentCta
-        destino={carrera.proximamente ? '#formulario' : '#preinscripcion'}
+        destino="#preinscripcion"
         texto={carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'}
       />
 
@@ -695,7 +695,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                   <>Empezá <em>ahora.</em></>
                 )}
               </strong>
-              <a href={carrera.proximamente ? '#formulario' : '#preinscripcion'}>
+              <a href="#preinscripcion">
                 {carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
               <a
