@@ -21,7 +21,6 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 ### Comercial
 
-- [ ] **39. Corregir las respuestas de inicio e inscripción de cursos de Teclab que señala la auditoría institucional**. Problemas preexistentes confirmados el 07/10/2026 en `cuando-empieza-teclab-curso` e `inscripcion-abierta-teclab-curso`; verificar datos y vigencia antes de corregir. Prioridad comercial: evitar respuestas incorrectas al atender consultas de cursos.
 - [ ] **Reunir en un archivo local todos los procesos de preinscripción de Teclab**. Documentar los pasos y requisitos; mantenerlo fuera del repositorio público si contiene información interna o comercial.
 
 ## Sitio y diseño
