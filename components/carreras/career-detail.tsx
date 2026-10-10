@@ -238,7 +238,12 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
   const faq = carrera.slides?.find(s => s.type === 'faq');
   const teclabCompetencias = conMaterialTeclab ? parseCompetenciasTeclab(carrera.seccion_modalidad) : [];
   const teclabSalida = conMaterialTeclab ? partirDescripcionTeclab(carrera.descripcion).salida : '';
-  const teclabIntro = conMaterialTeclab ? partirDescripcionTeclab(carrera.descripcion).perfil : '';
+  // El hero lleva solo la primera oracion del perfil: el perfil entero
+  // (350 a 450 caracteres) ocupaba siete lineas en desktop, y lo que sigue ya
+  // lo cuentan las competencias de abajo.
+  const teclabIntro = conMaterialTeclab
+    ? partirDescripcionTeclab(carrera.descripcion).perfil.split(/(?<=\.)\s+(?=[A-ZÁÉÍÓÚÑ¿])/)[0]
+    : '';
   // En un curso plan_estudios no es el temario sino como se cursa: una lista de
   // vinetas, igual que las competencias.
   const cursada = isTeclabCourse ? parseCompetenciasTeclab(carrera.plan_estudios) : [];

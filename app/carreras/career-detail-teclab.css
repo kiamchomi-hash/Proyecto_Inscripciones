@@ -30,8 +30,10 @@
 }
 
 /* ── Hero ─────────────────────────────────────────────── */
+/* Sin linea al pie: el hero ya se funde con el fondo y el borde de 1 px
+   quedaba como un corte suelto entre los botones y los datos. */
 .career-page--teclab .career-hero {
-  border-bottom: 1px solid var(--teclab-azul);
+  border-bottom: 0;
 }
 
 .career-page--teclab .career-hero-media::after {
