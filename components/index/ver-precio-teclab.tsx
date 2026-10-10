@@ -10,7 +10,7 @@
 // slide no necesita nada de eso: el modal ya cierra con Escape y no pasa de
 // slide con las flechas mientras se escribe en un campo.
 
-import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type LineaPrecio } from '@/components/formularios/casas';
 import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
@@ -109,9 +109,45 @@ function EnlaceWhatsApp({ href, texto, principal = false }: { href: string; text
  */
 function Financiacion() {
   const lineas = financiacionGeneral();
+  const detallesRef = useRef<HTMLDetailsElement>(null);
+
+  // El slide centra su contenido en vertical: al abrir, el bloque crecía y
+  // se recentraba, y todo subía la mitad de lo que crecía. Antes de abrir se
+  // fija la posición actual con padding y alineación arriba, así lo nuevo
+  // crece sólo hacia abajo y, si no entra, se llega con scroll.
+  const anclar = (slide: HTMLElement | null | undefined, contenido: HTMLElement | null | undefined) => {
+    if (!slide || !contenido) return;
+    const relleno = parseFloat(getComputedStyle(slide).paddingTop) || 0;
+    const hueco = contenido.getBoundingClientRect().top - slide.getBoundingClientRect().top - relleno;
+    if (hueco <= 0) return;
+    slide.style.paddingTop = `${relleno + hueco}px`;
+    slide.style.justifyContent = 'flex-start';
+  };
+  const soltar = useCallback(() => {
+    const slide = detallesRef.current?.closest<HTMLElement>('.vp-slide');
+    if (!slide) return;
+    slide.style.paddingTop = '';
+    slide.style.justifyContent = '';
+  }, []);
+
+  // Si el panel cambia de vista con la financiación abierta, el slide vuelve
+  // a centrar lo que muestre después.
+  useEffect(() => soltar, [soltar]);
+
   return (
-    <details className="vp-financiacion">
-      <summary className="vp-financiacion-rotulo">Ver financiación</summary>
+    <details
+      ref={detallesRef}
+      className="vp-financiacion"
+      onToggle={e => { if (!e.currentTarget.open) soltar(); }}
+    >
+      <summary
+        className="vp-financiacion-rotulo"
+        // El click llega antes de que el navegador abra el details.
+        onClick={e => {
+          const detalles = e.currentTarget.parentElement as HTMLDetailsElement;
+          if (!detalles.open) anclar(detalles.closest<HTMLElement>('.vp-slide'), detalles.closest<HTMLElement>('.vp-contenido'));
+        }}
+      >Ver financiación</summary>
       <ul className="vp-financiacion-lineas">
         {lineas.map((linea, i) => (
           <li key={linea.detalle}>
@@ -128,10 +164,12 @@ function Financiacion() {
  * El precio vigente: conceptos, total, qué cubre el pago, vigencia y
  * financiación plegada. Sin acciones: cada lugar que lo muestra pone las suyas
  * («Inscribite ya» acá, «Inscribirme» en el formulario de preinscripción).
+ * Con `financiacion={false}` la financiación queda afuera, para que el que lo
+ * muestra la ponga donde quiera: el modal la lleva debajo de los botones.
  * Toma los colores de `--vp-acento`, `--vp-acento-claro` y
  * `--vp-texto-acento`, que define el contenedor.
  */
-export function DetallePrecio({ precio, duracion, vencido = false }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean }) {
+export function DetallePrecio({ precio, duracion, vencido = false, financiacion = true }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean }) {
   // Qué cubre el pago, armado de los conceptos con los meses; si no hay
   // bimestres (curso de pago único), queda la nota de la base.
   const aclaracion = coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
@@ -158,7 +196,7 @@ export function DetallePrecio({ precio, duracion, vencido = false }: { precio: P
       </div>
       {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
       <p className="vp-vigencia">{vencido ? 'Promoción finalizada el' : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
-      {!vencido && <Financiacion />}
+      {!vencido && financiacion && <Financiacion />}
     </>
   );
 }
@@ -481,13 +519,16 @@ export function PanelVerPrecio({
 
       {vista === 'precio' && precio && (
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
-          <DetallePrecio precio={precio} duracion={duracion} />
+          {/* La financiación va debajo de los botones: abierta no los empuja
+              fuera de la vista. */}
+          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} />
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
+          <Financiacion />
         </div>
       )}
 
