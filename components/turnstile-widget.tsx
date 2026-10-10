@@ -59,13 +59,18 @@ const ESPERA_MAXIMA_MS = 10000;
 /**
  * Cloudflare no deja bajar el tamaño `flexible` de 300 px: en un celular
  * angosto el widget se salía de la tarjeta y la página scrolleaba de costado.
- * Debajo de ese ancho se usa `compact`, que mide 150 × 140.
+ * Debajo de ese ancho se usa `compact`, que mide 150 × 140. El tamaño no se
+ * puede cambiar en un widget ya dibujado: si el ancho cruza este límite, se
+ * vuelve a dibujar.
  */
 const ANCHO_MINIMO_FLEXIBLE = 300;
 
 export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21', invisible = false }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerRef = useRef<HTMLDivElement>(null);
+  // Lo que se mide es el envoltorio y no el contenedor: en modo compacto el
+  // envoltorio centra con flex y el contenedor se encoge al ancho del widget.
+  const envoltorioRef = useRef<HTMLDivElement>(null);
   // Mientras Cloudflare no pintó el iframe, su lugar reservado es un hueco
   // vacío que aleja al botón de los datos. El marcador lo ocupa hasta que el
   // iframe termina de cargar; recién entonces se revela el widget.
@@ -95,6 +100,8 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
     let widgetId: string | undefined;
     let cancelled = false;
     let observer: MutationObserver | undefined;
+    let medidor: ResizeObserver | undefined;
+    let compactoActual: boolean | undefined;
     let tope: ReturnType<typeof setTimeout> | undefined;
     let iframeEsperado: HTMLIFrameElement | null = null;
 
@@ -128,10 +135,14 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
       observer.observe(container, { childList: true, subtree: true });
     };
 
+    const medirCompacto = () =>
+      (envoltorioRef.current ?? container).clientWidth < ANCHO_MINIMO_FLEXIBLE;
+
     const renderWidget = () => {
       if (cancelled || widgetId || !turnstileWindow.turnstile) return;
 
-      const esCompacto = container.clientWidth < ANCHO_MINIMO_FLEXIBLE;
+      const esCompacto = medirCompacto();
+      compactoActual = esCompacto;
       setCompacto(esCompacto);
       widgetId = turnstileWindow.turnstile.render(container, {
         sitekey,
@@ -143,6 +154,28 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
       });
       esperarAlIframe();
     };
+
+    // El tamaño se elige al dibujar. Si la ventana cambia de ancho después
+    // (girar el celular, achicar el navegador) y cruza el límite, el widget
+    // quedaba trabado en el tamaño equivocado: compacto en un lugar ancho.
+    const redibujarSiCambio = () => {
+      if (cancelled || !widgetId || !turnstileWindow.turnstile) return;
+      if (medirCompacto() === compactoActual) return;
+      turnstileWindow.turnstile.remove(widgetId);
+      widgetId = undefined;
+      observer?.disconnect();
+      if (tope) clearTimeout(tope);
+      iframeEsperado?.removeEventListener('load', listo);
+      // El token del widget anterior se descarta con él.
+      onExpireRef.current?.();
+      setMontado(false);
+      renderWidget();
+    };
+
+    if (typeof ResizeObserver !== 'undefined') {
+      medidor = new ResizeObserver(redibujarSiCambio);
+      medidor.observe(envoltorioRef.current ?? container);
+    }
 
     let script = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
 
@@ -162,6 +195,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
 
     return () => {
       cancelled = true;
+      medidor?.disconnect();
       observer?.disconnect();
       if (tope) clearTimeout(tope);
       iframeEsperado?.removeEventListener('load', listo);
@@ -182,7 +216,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
   // sin reservar ese lugar, todo lo que está debajo salta cuando aparece. El
   // compacto mide 140 px y va centrado.
   return (
-    <div className={compacto ? 'relative flex min-h-[140px] justify-center' : 'relative min-h-[71px]'}>
+    <div ref={envoltorioRef} className={compacto ? 'relative flex min-h-[140px] justify-center' : 'relative min-h-[71px]'}>
       {!montado && (
         <div
           aria-hidden="true"

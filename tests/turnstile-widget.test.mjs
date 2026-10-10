@@ -19,6 +19,9 @@ function montar({ inmediato = true, ancho = 320, invisible = false } = {}) {
   let iframePresente = inmediato;
   let observar;
   let opciones;
+  let redimensionar;
+  let dibujos = 0;
+  let vencidos = 0;
   let removido = false;
   let desconectado = false;
   const iframe = {
@@ -41,18 +44,23 @@ function montar({ inmediato = true, ancho = 320, invisible = false } = {}) {
     exports,
     require: (nombre) => nombre === 'react' ? react : nombre === 'react/jsx-runtime' ? { jsx, jsxs: jsx } : { default: () => null },
     process: { env: { NEXT_PUBLIC_TURNSTILE_SITE_KEY: 'prueba' } },
-    window: { turnstile: { render: (_, config) => { opciones = config; return 'widget'; }, remove: () => { removido = true; } } },
+    window: { turnstile: { render: (_, config) => { opciones = config; dibujos++; return 'widget'; }, remove: () => { removido = true; } } },
     document: { getElementById: () => null },
     MutationObserver: class {
       constructor(fn) { observar = fn; }
       observe() {}
       disconnect() { desconectado = true; }
     },
+    ResizeObserver: class {
+      constructor(fn) { redimensionar = fn; }
+      observe() {}
+      disconnect() {}
+    },
     setTimeout: (fn) => { timers.set(1, fn); return 1; },
     clearTimeout: (id) => timers.delete(id),
   };
   vm.runInNewContext(codigo, contexto);
-  const render = () => { cursor = 0; efectos.length = 0; return exports.default({ onVerify() {}, invisible }); };
+  const render = () => { cursor = 0; efectos.length = 0; return exports.default({ onVerify() {}, onExpire() { vencidos++; }, invisible }); };
   const inicial = render();
   const limpiezas = efectos.map(fn => fn());
   return {
@@ -60,6 +68,9 @@ function montar({ inmediato = true, ancho = 320, invisible = false } = {}) {
     insertar: () => { iframePresente = true; observar(); },
     cargar: () => eventos.get('load')?.(),
     limpiar: () => limpiezas.forEach(fn => fn?.()),
+    redimensionar: (nuevo) => { contenedor.clientWidth = nuevo; redimensionar?.(); },
+    get dibujos() { return dibujos; },
+    get vencidos() { return vencidos; },
     get opciones() { return opciones; },
     get removido() { return removido; },
     get desconectado() { return desconectado; },
@@ -108,5 +119,25 @@ test('el modo invisible no oculta los desafíos interactivos ni reserva marcador
   assert.equal(caso.inicial.props.style, undefined);
   assert.equal(caso.inicial.props.children, undefined);
   assert.equal(caso.opciones.appearance, 'interaction-only');
+  caso.limpiar();
+});
+
+test('si el ancho cruza los 300 px después de dibujarse, el widget se vuelve a dibujar con el tamaño que corresponde', () => {
+  const caso = montar({ ancho: 250 });
+  assert.equal(caso.opciones.size, 'compact');
+  caso.redimensionar(338);
+  assert.equal(caso.removido, true);
+  assert.equal(caso.dibujos, 2);
+  assert.equal(caso.opciones.size, 'flexible');
+  // El token del widget anterior ya no sirve: se avisa para que no se envíe.
+  assert.equal(caso.vencidos, 1);
+  caso.limpiar();
+});
+
+test('un cambio de ancho que no cruza los 300 px no vuelve a dibujar el widget', () => {
+  const caso = montar({ ancho: 320 });
+  caso.redimensionar(338);
+  assert.equal(caso.dibujos, 1);
+  assert.equal(caso.vencidos, 0);
   caso.limpiar();
 });
