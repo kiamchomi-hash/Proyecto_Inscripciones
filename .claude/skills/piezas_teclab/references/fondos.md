@@ -18,6 +18,7 @@ Tecnología, con grano en overlay al 32%. Encima, una de estas luces.
 | Trama de puntos cian que se apaga desde la esquina superior derecha, con luz azul suave (UIverse `mias/tarjetas-tramadas-azules-replicate`) | Fichas de carrera, versión con el sistema de Siglo 21 en colores de Teclab, 09/10/2026 | abajo, en «CSS de referencia» |
 | Cuadrícula cian de 80 px que se apaga hacia los bordes, con brillo azul al centro (UIverse `mias/fondo-cuadricula-luminosa-xai-oscuro`) | Ficha Experiencia del Cliente, versión con el sistema de Siglo 21, 09/10/2026 | `en-curso/2026-10-09-fichas-carreras/experiencia-paso-1-fondo.html` |
 | Líneas de barrido cian (UIverse `mias/panel-hud-postura-seguridad-basedash`) con una constelación en dos capas, repartida con distancia mínima entre puntos y el centro atenuado (nodos de `mias/enjambre-nodos-hero-antimetal`) | Ficha Gestión Agraria, versión con el sistema de Siglo 21, 10/10/2026 | `en-curso/2026-10-09-fichas-carreras/agraria-paso-1-combinadas.html`, opción 3 |
+| Escalera de píxeles: cuadros de 50 px azules y cian que se apagan desde la esquina inferior derecha (UIverse `mias/fondo-escalera-pixeles-teclab`) | Posteo de presentación de teclab.villalugano, 10/10/2026 | `en-curso/2026-10-10-posteo-presentacion-ig/fondos.mjs`, `pixeles()` |
 | Luz a la derecha, detrás de la persona, con núcleo cian abajo; la izquierda queda limpia para el texto | Vista previa del enlace de inscripción (OG 1200×630), 03/10/2026 | `aprobados/2026-10-03-og-inscripcion-teclab/pieza.html` |
 
 ```css
@@ -32,6 +33,8 @@ Tecnología, con grano en overlay al 32%. Encima, una de estas luces.
 ## Guardados para próximas piezas
 
 Aprobados por el usuario y todavía sin usar. Al usar uno, pasarlo a «Usados».
+
+**Recorridos de subte a la Vignelli** (guardado el 10/10/2026, UIverse `mias/fondo-recorridos-vignelli-teclab`): líneas de 16 px que doblan sólo a 45° y 90°, en pares azul y cian, con estaciones de borde blanco, ancladas a los bordes.
 
 **Halo superior con malla** (guardado el 09/10/2026, sale de UIverse `mias/fondo-halo-superior-danielsun`): sol tapado arriba al centro, en azul Teclab, con una malla de 1 px que se apaga hacia abajo.
 
