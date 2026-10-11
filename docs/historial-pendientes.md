@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Herramientas — 11/10/2026
+
+- [x] **29. Revisar claude.dev y sus consejos para usar mejor Claude**. Revisado el 11/10/2026 (effort, Opus 5.5 y automatizaciones con agentes). Sin cambios en el repo: la vigilancia y `leads` ya informan las lecturas fallidas, y `digest-clicks` usa el día calendario. Quedan como hábitos al pedir: listar los estilos a evitar en diseño, implementar con effort bajo y verificar con effort alto.
+
 ## Teclab — 11/10/2026
 
 - [x] **Crear un test vocacional para Teclab**. Publicado en `/teclab/test-vocacional` (`ceba54b`; el curso de IA quedó afuera en `b9bf017`). Responde 200 en producción el 11/10/2026.

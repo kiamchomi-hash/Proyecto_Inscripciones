@@ -63,7 +63,6 @@ Las siguientes vienen de las [notas operativas](docs/notas-operativas.md); su es
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **26. Revisar los plugins de ChatGPT y Claude**.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
-- [ ] **29. Revisar claude.dev y sus consejos para usar mejor Claude**.
 - [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
 
 ## En espera de información externa
