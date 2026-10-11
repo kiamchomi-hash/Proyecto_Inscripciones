@@ -62,6 +62,11 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
   fuente?: string;
 } = {}) {
   const teclab = casa === 'teclab';
+  // La sede tiene cuenta propia de Teclab desde el 10/10/2026: en /teclab el
+  // ícono de Instagram lleva ahí y no a la cuenta del CAU.
+  const redes = teclab
+    ? REDES.map(red => red.label === 'Instagram' ? { ...red, href: 'https://www.instagram.com/teclab.villalugano/' } : red)
+    : REDES;
 
   return (
     <footer
@@ -209,7 +214,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
           </p>
 
           <div className="flex items-center gap-3 sm:gap-2.5">
-            {REDES.map(({ href, label, color, path }) => (
+            {redes.map(({ href, label, color, path }) => (
               <a
                 key={label}
                 href={href}
