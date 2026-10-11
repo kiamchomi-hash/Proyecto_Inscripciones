@@ -8,7 +8,6 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 ### Web y formularios
 
-- [ ] **Crear un test vocacional para Teclab**.
 - [ ] **Empezar a revisar nuevas carreras de Teclab**.
 - [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas de Teclab** (Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo). Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 
@@ -16,7 +15,6 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 - [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso** para Teclab, Siglo 21, Identidad Argentina y clases de apoyo. Empezar por Teclab.
 - [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
-- [ ] **Crear una cuenta de Instagram para Teclab Lugano**.
 
 ### Comercial
 

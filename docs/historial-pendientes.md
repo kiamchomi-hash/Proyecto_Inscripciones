@@ -4,6 +4,11 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Teclab — 11/10/2026
+
+- [x] **Crear un test vocacional para Teclab**. Publicado en `/teclab/test-vocacional` (`ceba54b`; el curso de IA quedó afuera en `b9bf017`). Responde 200 en producción el 11/10/2026.
+- [x] **Crear una cuenta de Instagram para Teclab Lugano**. Cuenta `teclab.villalugano` creada el 10/10/2026 y enlazada en el pie de `/teclab` (`eed0322`).
+
 ## Teclab — 09/10/2026
 
 - [x] **Verificar si se está enviando el mail de Teclab con el acceso al portal del alumno**. Confirmado por el usuario el 09/10/2026.
