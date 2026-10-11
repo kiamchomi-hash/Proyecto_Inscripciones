@@ -222,6 +222,15 @@
   animation: career-copy-in .7s .12s ease-out both;
 }
 
+/* Kicker dentro del H1 (fichas de Teclab): no hereda el tamaño ni el
+   interlineado del titulo, y no se anima porque el H1 es el LCP. */
+.career-hero h1 .career-kicker {
+  display: block;
+  line-height: normal;
+  text-shadow: none;
+  animation: none;
+}
+
 .career-hero h1 {
   max-width: 13ch;
   font-family: var(--font-inter), "Inter", sans-serif;

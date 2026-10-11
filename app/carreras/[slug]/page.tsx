@@ -168,7 +168,15 @@ function tituloSEO(carrera: Carrera): string {
 
   // Del nombre mas informativo al mas corto, sin repetir: en las carreras de una
   // sola palabra ("Abogacia") los dos son iguales.
-  const nombres = [nombreCompleto, carrera.nombre_corto]
+  // En Teclab hay un paso intermedio: "Tecnicatura en X". "Tecnicatura Superior
+  // en" se come 9 caracteres y con las dos marcas Redes, Seguridad Informatica y
+  // Relaciones Laborales se pasaban por uno o dos y caian al nombre pelado, sin
+  // la palabra que trae las consultas genericas ("tecnicatura en redes
+  // informaticas", posicion 18 al 11/10/2026).
+  const tecnicatura = conTeclab && nombreCompleto.startsWith('Tecnicatura Superior en ')
+    ? nombreCompleto.replace('Tecnicatura Superior en ', 'Tecnicatura en ')
+    : null;
+  const nombres = [nombreCompleto, tecnicatura, carrera.nombre_corto]
     .filter((n): n is string => Boolean(n))
     .filter((n, i, arr) => arr.indexOf(n) === i);
 

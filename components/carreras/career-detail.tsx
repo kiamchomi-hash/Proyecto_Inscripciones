@@ -342,8 +342,20 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
           </div>
 
           <div className="career-hero-copy">
-            <p className="career-kicker">{prefix || carrera.nivel}</p>
-            <h1>{cleanName}</h1>
+            {/* En Teclab el prefijo va dentro del H1: "Seguros" a secas no dice
+                que es una tecnicatura, y es lo que la gente busca. Se ve igual
+                que el kicker de las demas fichas. */}
+            {isTeclab && prefix ? (
+              <h1>
+                <span className="career-kicker">{prefix}</span>{' '}
+                {cleanName}
+              </h1>
+            ) : (
+              <>
+                <p className="career-kicker">{prefix || carrera.nivel}</p>
+                <h1>{cleanName}</h1>
+              </>
+            )}
             {!isIA && (
               <p className="career-hero-intro">
                 {teclabIntro ||
