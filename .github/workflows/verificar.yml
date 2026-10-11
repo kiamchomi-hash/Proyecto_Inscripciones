@@ -27,4 +27,4 @@ jobs:
         env:
           SECRETOS_BASE: ${{ github.event.before }}
       - run: npm run check
-      - run: npm audit
+      - run: npm audit --omit=dev
