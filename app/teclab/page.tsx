@@ -47,17 +47,17 @@ export const metadata: Metadata = {
     description: 'Tecnología, gestión y negocios. Explorá la oferta Teclab y recibí asesoramiento personalizado.',
     url: URL,
     images: [{
-      url: '/imagenes/teclab/carreras/marketing-digital.webp',
-      width: 1080,
-      height: 700,
-      alt: 'Estudiante de Teclab',
+      url: '/imagenes/og/default-teclab.jpg',
+      width: 1200,
+      height: 630,
+      alt: 'Tecnicaturas Teclab online: tecnología, gestión y negocios',
     }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Tecnicaturas Teclab Online',
     description: 'Explorá la oferta Teclab y recibí asesoramiento personalizado.',
-    images: ['/imagenes/teclab/carreras/marketing-digital.webp'],
+    images: ['/imagenes/og/default-teclab.jpg'],
   },
 };
 
