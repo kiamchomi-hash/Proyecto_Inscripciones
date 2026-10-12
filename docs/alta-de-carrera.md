@@ -28,7 +28,7 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   `titulo`, `modalidad`, `orden`, `activa`, `nueva`, `destacada`, `proximamente`, `slides`,
   `plan_estudios`, `enfoque`, `descripcion`. Se escribe con un SQL fechado en `sql/` y
   `npm run db -- --archivo <sql>` (rol `cau_editor`, [docs/rol-editor.md](rol-editor.md)).
-  Siglo 21: skill `cargar_carrera` (ojo, la parte de precios está vieja; ver abajo).
+  Siglo 21: skill `cargar_carrera` (slides de portada, plan y cierre).
 - [ ] **M** — Teclab: `descripcion` abre con «Estudiá <tema> a distancia» y la **última
   oración es la salida laboral** (`partirDescripcionTeclab` la separa). `enfoque` con el
   formato `Modalidad: / Duración: / Título: / Certificado intermedio: / Cocreación:`
@@ -153,17 +153,14 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
 
 Problemas que existen hoy, todavía sin corregir:
 
-1. **La skill `cargar_carrera` está vieja**: nombra `scripts/scrape-descuentos.mjs`,
-   `NOMBRE_MAP`, `/admin/precios` y `precios_carreras`, que ya no existen. El precio vive en
-   `precios_privados`. Además sólo cubre Siglo 21.
-2. **El test vocacional no mira `proximamente`**: puede recomendar una Teclab anunciada o Administración
+1. **El test vocacional no mira `proximamente`**: puede recomendar una Teclab anunciada o Administración
    Pública, que no tienen inscripción abierta. Y su descripción habla sólo de Siglo 21,
    aunque también lista Teclab.
-3. **`CARRERAS_HUBSPOT` no tiene las cinco Teclab anunciadas** (Alimentos, Proyectos Mineros, Energías Renovables, Ambiental e Higiene y Seguridad): cuando abran, sus leads
+2. **`CARRERAS_HUBSPOT` no tiene las cinco Teclab anunciadas** (Alimentos, Proyectos Mineros, Energías Renovables, Ambiental e Higiene y Seguridad): cuando abran, sus leads
    no van a llegar a la sede sin ningún aviso.
-4. **Los folletos están desactualizados**: les faltan las cinco altas de Siglo 21 del
+3. **Los folletos están desactualizados**: les faltan las cinco altas de Siglo 21 del
    03/10 y las cinco de Teclab, e incluyen Administración Pública, que está `proximamente`.
-5. **Áreas mal asignadas**: Antropología Organizacional no tiene área, y «Administración
+4. **Áreas mal asignadas**: Antropología Organizacional no tiene área, y «Administración
    de Infraestructura Tecnológica» cae en Negocios.
-6. **`IDENTIDAD_FUERA_DE_OFERTA`** descarta por subcadena («inteligencia artificial»,
+5. **`IDENTIDAD_FUERA_DE_OFERTA`** descarta por subcadena («inteligencia artificial»,
    «management hotelero»): una diplomatura nueva con esas palabras se descartaría sola.
