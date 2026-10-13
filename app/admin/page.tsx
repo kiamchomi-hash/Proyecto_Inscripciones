@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowser } from '@/lib/supabase-auth';
 
@@ -147,10 +148,10 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-bold text-white mb-6 text-center">¿Qué querés administrar?</h2>
           <div className="grid grid-cols-1 gap-4">
             {cards.map((card) => (
-              <button
+              <Link
                 key={card.href}
-                onClick={() => router.push(card.href)}
-                className="p-6 rounded-2xl border text-left transition-colors hover:bg-white/[0.03] cursor-pointer"
+                href={card.href}
+                className="p-6 rounded-2xl border text-left transition-colors hover:bg-white/[0.03] active:bg-white/[0.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--admin-accent)] touch-manipulation cursor-pointer"
                 style={{ background: 'var(--admin-card)', borderColor: 'var(--admin-border)' }}
               >
                 <div className="mb-4" style={{ color: 'var(--admin-accent)' }}>
@@ -158,7 +159,7 @@ export default function AdminDashboard() {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">{card.title}</h3>
                 <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>{card.description}</p>
-              </button>
+              </Link>
             ))}
           </div>
         </div>

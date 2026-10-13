@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createSupabaseBrowser } from '@/lib/supabase-auth';
@@ -31,7 +32,7 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-// Fixed icon column width — all items use this to stay centered
+// Columna fija para mantener los iconos centrados.
 const ICON_W = 48;
 const EXPANDED_W = 200;
 const COLLAPSED_W = ICON_W;
@@ -62,8 +63,12 @@ export default function AdminSidebar() {
         borderColor: 'var(--admin-border)',
         overflow: 'hidden',
       }}
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse' && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          setExpanded(true);
+        }
+      }}
+      onPointerLeave={() => setExpanded(false)}
     >
       {/* Logo row */}
       <div
@@ -94,12 +99,13 @@ export default function AdminSidebar() {
         {NAV_ITEMS.map(item => {
           const active = isActive(item.href);
           return (
-            <button
+            <Link
               key={item.href}
-              onClick={() => router.push(item.href)}
-              className="flex items-center cursor-pointer transition-colors duration-150 relative"
+              href={item.href}
+              aria-current={active ? 'page' : undefined}
+              className="flex items-center cursor-pointer transition-colors duration-150 relative focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--admin-accent)] touch-manipulation"
               style={{
-                height: 40,
+                height: 48,
                 color: active ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
                 background: active ? 'var(--admin-accent-glow)' : 'transparent',
               }}
@@ -126,7 +132,7 @@ export default function AdminSidebar() {
               >
                 {item.label}
               </span>
-            </button>
+            </Link>
           );
         })}
       </div>
@@ -135,8 +141,8 @@ export default function AdminSidebar() {
       <div className="border-t py-2" style={{ borderColor: 'var(--admin-border)' }}>
         <button
           onClick={logout}
-          className="flex items-center cursor-pointer transition-colors duration-150 w-full hover:text-red-400"
-          style={{ height: 40, color: 'var(--admin-text-dimmed)' }}
+          className="flex items-center cursor-pointer transition-colors duration-150 w-full hover:text-red-400 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--admin-accent)] touch-manipulation"
+          style={{ height: 48, color: 'var(--admin-text-dimmed)' }}
           title="Cerrar sesión"
         >
           <div
