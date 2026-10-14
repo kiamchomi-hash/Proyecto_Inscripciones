@@ -40,77 +40,87 @@ export default function TestVocacionalTeclab({ carreras }: { carreras: CarreraTe
     const pregunta = PREGUNTAS[paso];
     const avance = (paso / PREGUNTAS.length) * 100;
     return (
-      <section className="tvt-card" aria-label="Test vocacional">
-        <div className="tvt-progreso">
-          <div className="tvt-progreso-fila">
-            <span>Pregunta {paso + 1} de {PREGUNTAS.length}</span>
-            <span>{pregunta.eje}</span>
+      <>
+        <header className="tvt-header">
+          <p className="tvt-eyebrow">Test vocacional Teclab</p>
+          <h1 className="tvt-pregunta" id="tvt-pregunta" ref={preguntaRef} tabIndex={-1}>{pregunta.pregunta}</h1>
+        </header>
+        <section className="tvt-card" aria-label="Test vocacional">
+          <div className="tvt-progreso">
+            <div className="tvt-progreso-fila">
+              <span>Pregunta {paso + 1} de {PREGUNTAS.length}</span>
+              <span>{pregunta.eje}</span>
+            </div>
+            <div className="tvt-barra" aria-hidden="true"><span style={{ width: `${avance}%` }} /></div>
           </div>
-          <div className="tvt-barra" aria-hidden="true"><span style={{ width: `${avance}%` }} /></div>
-        </div>
-        <h2 className="tvt-pregunta" id="tvt-pregunta" ref={preguntaRef} tabIndex={-1}>{pregunta.pregunta}</h2>
-        <div className="tvt-opciones" role="group" aria-labelledby="tvt-pregunta">
-          {pregunta.opciones.map((opcion, indice) => (
-            <button
-              type="button"
-              className="tvt-opcion"
-              key={`${paso}-${indice}`}
-              onClick={() => setRespuestas(actuales => [...actuales.slice(0, paso), indice])}
-            >
-              <span className="tvt-letra" aria-hidden="true">{LETRAS[indice]}</span>
-              <span>{opcion.texto}</span>
+          <div className="tvt-opciones" role="group" aria-labelledby="tvt-pregunta">
+            {pregunta.opciones.map((opcion, indice) => (
+              <button
+                type="button"
+                className="tvt-opcion"
+                key={`${paso}-${indice}`}
+                onClick={() => setRespuestas(actuales => [...actuales.slice(0, paso), indice])}
+              >
+                <span className="tvt-letra" aria-hidden="true">{LETRAS[indice]}</span>
+                <span>{opcion.texto}</span>
+              </button>
+            ))}
+          </div>
+          <div className="tvt-nav">
+            <button type="button" className="tvt-volver" onClick={() => setRespuestas(actuales => actuales.slice(0, -1))} disabled={paso === 0}>
+              <span aria-hidden="true">←</span> Volver
             </button>
-          ))}
-        </div>
-        <div className="tvt-nav">
-          <button type="button" className="tvt-volver" onClick={() => setRespuestas(actuales => actuales.slice(0, -1))} disabled={paso === 0}>
-            <span aria-hidden="true">←</span> Volver
-          </button>
-        </div>
-      </section>
+          </div>
+        </section>
+      </>
     );
   }
 
   const resultado = recomendar(carreras, respuestas);
 
   return (
-    <section className="tvt-card tvt-resultado" aria-labelledby="tvt-resultado-titulo">
-      <p className="tvt-eyebrow">Tu resultado</p>
-      <h2 id="tvt-resultado-titulo" ref={preguntaRef} tabIndex={-1}>Las carreras que más van con vos</h2>
-      {resultado.length > 0 ? (
-        <ol className="tvt-lista">
-          {resultado.map(({ carrera }, indice) => {
-            const familia = familiaDe(carrera);
-            return (
-              <li className={`tvt-carrera tvt-carrera--${familia.clase}${indice === 0 ? ' is-primera' : ''}`} key={carrera.id}>
-                <span className="tvt-puesto" aria-hidden="true">{indice + 1}</span>
-                <div className="tvt-carrera-info">
-                  <div className="tvt-chips">
-                    <span className="tvt-chip">{familia.etiqueta}</span>
-                    {indice === 0 && <span className="tvt-chip tvt-chip--top">Mayor afinidad</span>}
-                    {carrera.proximamente && <span className="tvt-chip tvt-chip--pronto">Próximamente</span>}
+    <>
+      <header className="tvt-header">
+        <p className="tvt-eyebrow">Test vocacional Teclab</p>
+      </header>
+      <section className="tvt-card tvt-resultado" aria-labelledby="tvt-resultado-titulo">
+        <p className="tvt-eyebrow">Tu resultado</p>
+        <h1 id="tvt-resultado-titulo" ref={preguntaRef} tabIndex={-1}>Las carreras que más van con vos</h1>
+        {resultado.length > 0 ? (
+          <ol className="tvt-lista">
+            {resultado.map(({ carrera }, indice) => {
+              const familia = familiaDe(carrera);
+              return (
+                <li className={`tvt-carrera tvt-carrera--${familia.clase}${indice === 0 ? ' is-primera' : ''}`} key={carrera.id}>
+                  <span className="tvt-puesto" aria-hidden="true">{indice + 1}</span>
+                  <div className="tvt-carrera-info">
+                    <div className="tvt-chips">
+                      <span className="tvt-chip">{familia.etiqueta}</span>
+                      {indice === 0 && <span className="tvt-chip tvt-chip--top">Mayor afinidad</span>}
+                      {carrera.proximamente && <span className="tvt-chip tvt-chip--pronto">Próximamente</span>}
+                    </div>
+                    <strong>{carrera.nombre_corto ?? carrera.nombre}</strong>
                   </div>
-                  <strong>{carrera.nombre_corto ?? carrera.nombre}</strong>
-                </div>
-                <div className="tvt-acciones">
-                  <Link className="tvt-boton tvt-boton--ficha" href={`/carreras/${carreraToSlug(carrera)}`}>
-                    Ver la carrera <span aria-hidden="true">→</span>
-                  </Link>
-                  <a className="tvt-boton tvt-boton--wa" href={enlaceWhatsApp(carrera)} target="_blank" rel="noopener nofollow">
-                    Consultar por WhatsApp
-                  </a>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-      ) : (
-        <p className="tvt-vacio">En este momento no pudimos cargar las carreras. Miralas todas en la página de Teclab.</p>
-      )}
-      <div className="tvt-final">
-        <button type="button" className="tvt-volver" onClick={reiniciar}>Hacer el test de nuevo</button>
-        <Link className="tvt-enlace" href="/teclab#oferta-teclab">Ver todas las carreras <span aria-hidden="true">→</span></Link>
-      </div>
-    </section>
+                  <div className="tvt-acciones">
+                    <Link className="tvt-boton tvt-boton--ficha" href={`/carreras/${carreraToSlug(carrera)}`}>
+                      Ver la carrera <span aria-hidden="true">→</span>
+                    </Link>
+                    <a className="tvt-boton tvt-boton--wa" href={enlaceWhatsApp(carrera)} target="_blank" rel="noopener nofollow">
+                      Consultar por WhatsApp
+                    </a>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        ) : (
+          <p className="tvt-vacio">En este momento no pudimos cargar las carreras. Miralas todas en la página de Teclab.</p>
+        )}
+        <div className="tvt-final">
+          <button type="button" className="tvt-volver" onClick={reiniciar}>Hacer el test de nuevo</button>
+          <Link className="tvt-enlace" href="/teclab#oferta-teclab">Ver todas las carreras <span aria-hidden="true">→</span></Link>
+        </div>
+      </section>
+    </>
   );
 }

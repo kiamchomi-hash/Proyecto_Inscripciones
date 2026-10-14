@@ -47,11 +47,6 @@ export default async function TestVocacionalTeclabPage() {
   return (
     <main className={`tvt-page ${poppins.variable}`}>
       <div className="tvt-shell">
-        <header className="tvt-header">
-          <p className="tvt-eyebrow">Test vocacional Teclab</p>
-          <h1>¿Qué carrera de Teclab va con vos?</h1>
-          <p className="tvt-lead">Seis preguntas, un toque cada una. Al final te mostramos las tres carreras que más se parecen a vos.</p>
-        </header>
         <TestVocacionalTeclab carreras={carreras} />
       </div>
     </main>
