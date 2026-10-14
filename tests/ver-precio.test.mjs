@@ -99,12 +99,12 @@ test('los conceptos mal formados se descartan en vez de romper la respuesta', ()
   assert.deepEqual(resultadoPrecio({ ...fila, conceptos: 'no es lista' }, '2026-10-01').precio.conceptos, []);
 });
 
-test('sólo las carreras activas de Teclab tienen «ver precio»', () => {
+test('Teclab y Siglo 21 permiten ver precios de carreras activas', () => {
   assert.equal(carreraConPrecio({ nivel: 'Teclab - Tecnología', activa: true }), true);
   assert.equal(carreraConPrecio({ nivel: 'Teclab - Gestión', activa: true }), true);
   assert.equal(carreraConPrecio({ nivel: 'Teclab - Curso', activa: true }), true);
   assert.equal(carreraConPrecio({ nivel: 'Teclab - Gestión', activa: false }), false);
-  assert.equal(carreraConPrecio({ nivel: 'Grado', activa: true }), false);
+  assert.equal(carreraConPrecio({ nivel: 'Grado', activa: true }), true);
   assert.equal(carreraConPrecio({ nivel: 'Identidad Argentina', activa: true }), false);
   assert.equal(carreraConPrecio({ nivel: 'Posgrado', activa: true }), false);
 });
@@ -234,7 +234,7 @@ const pedido = { carreraId: 7, email: 'ana@example.test', newsletter: false };
 test('el endpoint rechaza payloads inválidos y carreras sin «ver precio» sin escribir nada', async t => {
   const { estado, enviar } = montarEndpoint(t);
   assert.equal((await enviar({ ...pedido, email: 'mal' })).status, 400);
-  assert.equal((await enviar({ ...pedido, carreraId: 8 })).status, 400, 'Siglo 21 todavía no');
+
   assert.equal((await enviar({ ...pedido, carreraId: 999 })).status, 400, 'carrera inexistente');
   estado.carreras.set(9, { id: 9, nombre: 'Tecnicatura en Venta Directa', nivel: 'Teclab - Gestión', activa: false });
   assert.equal((await enviar({ ...pedido, carreraId: 9 })).status, 400, 'carrera inactiva');
@@ -376,8 +376,6 @@ test('el resto de las consultas responde sólo el ok, sin leer precios', async t
     { ...preinscripcion, casa: 'siglo21', carreraId: 8 },
     { ...preinscripcion, casa: 'identidad' },
     { ...preinscripcion, carreraId: null },
-    // La casa del navegador no alcanza: la carrera 8 es de Siglo 21 en la base.
-    { ...preinscripcion, carreraId: 8 },
   ]) {
     const { status, cuerpo } = await enviar(payload, 'consulta');
     assert.equal(status, 201, JSON.stringify(payload));
@@ -509,4 +507,9 @@ test('el aviso de actualización puntual se retira a las 8 h de Argentina', () =
   assert.equal(casas.avisoActualizacionPrecio(new Date('2026-10-05T10:59:59Z')), 'Actualización prevista: 5 de octubre, alrededor de las 8 h.');
   assert.equal(casas.avisoActualizacionPrecio(new Date('2026-10-05T11:00:00Z')), null);
   assert.equal(casas.avisoActualizacionPrecio(new Date('2026-10-06T10:00:00Z')), null);
+});
+
+test('Siglo 21 permite consultar precios sin habilitar la autoinscripción', () => {
+  assert.equal(carreraConPrecio({ nivel: 'Grado', activa: true }), true);
+  assert.equal(carreraConPrecio({ nivel: 'Grado', activa: true, proximamente: true }), false);
 });

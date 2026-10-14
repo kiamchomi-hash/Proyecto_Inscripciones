@@ -15,6 +15,7 @@ import {
   tieneInscripcionPropia,
   tituloInscripcion,
 } from '@/components/carreras/inscripcion-carrera';
+import { casaDeCarrera } from '@/components/formularios/casas';
 import FormularioLead from '@/components/formularios/formulario-lead';
 import { jsonLdScript } from '@/lib/json-ld';
 import '../../career-detail.css';
@@ -95,6 +96,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
   const nombreCompleto = carreraFullName(carrera);
   const fichaUrl = `/carreras/${carreraToSlug(carrera)}`;
   const curso = esCursoTeclab(carrera);
+  const casa = casaDeCarrera(carrera) === 'siglo21' ? 'siglo21' : 'teclab';
 
   // Las tecnicaturas toman la paleta de Teclab que declara .inscripcion-teclab
   // (inscripcion.css). El curso conserva el ambar con el que se distingue en el
@@ -106,7 +108,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
   // Toda la pagina es de Teclab, asi que el formulario va con la casa fija y solo
   // ofrece sus carreras, como en /teclab.
   const opcionesFormulario = carreras
-    .filter(c => tieneInscripcionPropia(c))
+    .filter(c => tieneInscripcionPropia(c) && casaDeCarrera(c) === casa)
     .map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion }));
 
   const breadcrumbSchema = {
@@ -123,15 +125,15 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbSchema) }} />
       <main className="flex-1">
-        <article className={`career-page inscripcion-page inscripcion-teclab ${poppins.variable}`} style={estilo}>
+        <article className={`career-page inscripcion-page ${casa === 'teclab' ? `inscripcion-teclab ${poppins.variable}` : 'inscripcion-siglo21'}`} style={estilo}>
           <h1 className="sr-only">Inscripción {conArticulo(carrera)}</h1>
 
           <FormularioLead
             carreras={opcionesFormulario}
             alinearAlLlegar
             modo="preinscripcion"
-            casa="teclab"
-            origen="teclab"
+            casa={casa}
+            origen={casa === 'teclab' ? 'teclab' : 'home'}
             carreraInicial={carrera.id}
           />
 
@@ -139,7 +141,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
             <div className="inscripcion-proximos-tarjeta">
               <h2 id="proximos-pasos-titulo">Próximos pasos</h2>
               <div className="inscripcion-proximos-contenido">
-                <p>Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.</p>
+                <p>{casa === 'teclab' ? 'Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.' : 'Te contactamos para continuar con tu inscripción a Universidad Siglo 21.'}</p>
               </div>
             </div>
           </section>

@@ -133,6 +133,8 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
   const nombre = /\s(en|de)$/i.test(prefijo) && !yaTienePrefijo
     ? `${prefijo} ${carrera.nombre}`
     : carreraFullName({ nombre: carrera.nombre, prefix: carrera.prefix ?? null });
+  const siglo21 = !carrera.nivel.startsWith('Teclab');
+  if (siglo21) return armarMailSiglo21({ carrera, precio, hoy, tipo, bajaUrl });
   const corto = carrera.nombre_corto?.trim() || carrera.nombre;
   const titular = titularDe(carrera, hoy);
   const esNewsletter = tipo === 'newsletter';
@@ -280,6 +282,37 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
 </body>
 </html>`;
 
+  return { asunto, html, texto };
+}
+
+
+/** Lista de Siglo 21: no reutiliza promociones, financiación ni calendario de Teclab. */
+function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: CarreraDelMail; precio: PrecioDelMail; hoy: Date; tipo?: 'resumen' | 'newsletter'; bajaUrl?: string }): MailPrecio {
+  const nombre = carreraFullName({ nombre: carrera.nombre, prefix: carrera.prefix ?? null });
+  const corto = carrera.nombre_corto?.trim() || carrera.nombre;
+  const asunto = `${tipo === 'newsletter' ? 'Precios y novedades' : 'Precios'} de ${corto} en Universidad Siglo 21`;
+  const inscripcion = `${BASE_PROD}/carreras/${carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null })}/inscripcion`;
+  const whatsapp = `https://wa.me/${numeroWhatsAppDe('siglo21')}?text=${encodeURIComponent(`Hola, quiero consultar por ${nombre}`)}`;
+  const pie = tipo === 'newsletter' ? 'Te escribimos porque pediste novedades de esta carrera en siglo21sur.com.' : PIE;
+  const texto = [nombre, '', 'Aranceles 2027', ...precio.conceptos.map(l => `${l.concepto}: ${l.monto}`),
+    `Total: ${precio.total}`, `Precio vigente hasta el ${diaMes(precio.vigenteHasta)}`,
+    ...(precio.nota ? [precio.nota] : []), '', `Preinscribirme: ${inscripcion}`,
+    `Consultar por WhatsApp: ${whatsapp}`, '', pie,
+    ...(tipo === 'newsletter' ? [`${BAJA}: ${bajaUrl}`] : [])].join('\n');
+  const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapar(asunto)}</title></head>
+<body style="margin:0;background:#003838;color:#F2F0F7;font-family:'DM Sans',Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#0A3839;border-radius:24px;"><tr><td style="padding:28px;">
+<img src="${BASE_PROD}/imagenes/imagenes_cau/logoSiglo21.png" alt="Universidad Siglo 21" width="160" style="max-width:100%;height:auto;">
+<h1 style="font-size:24px;font-weight:500;">${escapar(nombre)}</h1>
+<h2 style="color:#00C3B3;font-size:18px;">Aranceles 2027</h2>
+<table width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;">${precio.conceptos.map(l => `<tr><td style="padding:12px 0;border-bottom:1px solid #00C3B3;">${escapar(l.concepto)}</td><td align="right" style="font-weight:700;">${escapar(l.monto)}</td></tr>`).join('')}
+<tr><td style="padding:16px 0;font-weight:700;">Total</td><td align="right" style="font-weight:700;font-size:22px;">${escapar(precio.total)}</td></tr></table>
+<p>Precio vigente hasta el ${escapar(diaMes(precio.vigenteHasta))}</p>${precio.nota ? `<p>${escapar(precio.nota)}</p>` : ''}
+<a href="${escapar(inscripcion)}" style="display:block;text-align:center;background:#5D4594;color:#F2F0F7;padding:16px;border-radius:999px;text-decoration:none;font-weight:700;">Preinscribirme</a>
+<a href="${escapar(whatsapp)}" style="display:block;text-align:center;border:2px solid #25D366;color:#F2F0F7;padding:14px;margin-top:12px;border-radius:999px;text-decoration:none;">Consultar por WhatsApp</a>
+</td></tr></table><p style="max-width:560px;font-size:12px;line-height:1.6;">${escapar(pie)}${tipo === 'newsletter' ? `<br><a style="color:#F2F0F7;" href="${escapar(bajaUrl ?? '')}">${BAJA}</a>` : ''}</p>
+</td></tr></table></body></html>`;
   return { asunto, html, texto };
 }
 

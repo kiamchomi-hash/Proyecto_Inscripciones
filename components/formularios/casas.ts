@@ -312,8 +312,8 @@ export const TIPO_PRECIO = 'Ver precio';
 // sólo quería ver cuánto sale. `consultas.nombre` admite null.
 export const CAMPOS_PRECIO = ['email'] as const satisfies readonly CampoId[];
 
-/** Las casas que ya publican precio. Siglo 21 e Identidad, todavía no. */
-export const CASAS_CON_PRECIO: CasaId[] = ['teclab'];
+/** Las casas que permiten consultar precios; Identidad todavía no. */
+export const CASAS_CON_PRECIO: CasaId[] = ['teclab', 'siglo21'];
 
 /** Tabla privada de precios: sin acceso para `anon` ni `authenticated`. */
 export const TABLA_PRECIOS = 'precios_privados';

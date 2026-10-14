@@ -6,6 +6,8 @@ import { getEscuelaIA } from './identidad-argentina';
 import { esCursoTeclab } from './teclab';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
+import { PanelVerPrecio } from './ver-precio-teclab';
+import { carreraConPrecio, casaDeCarrera } from '@/components/formularios/casas';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import {
   getCareerPrefix,
@@ -28,6 +30,8 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const { prefix, cleanName } = getCareerPrefix(carrera);
+  const [precioAbierto, setPrecioAbierto] = useState(false);
+  const conPrecio = carreraConPrecio(carrera);
   const isIA = carrera.nivel === 'Identidad Argentina';
   const isTeclabCourse = esCursoTeclab(carrera);
 
@@ -250,7 +254,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
         </div>
 
         {/* Content */}
-        <div className="p-5 sm:p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0">
+        <div className="p-5 sm:p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0" hidden={precioAbierto}>
           {isIA ? (
             /* ── Identidad Argentina layout ── */
             <div className="space-y-6">
@@ -411,11 +415,17 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
           )}
         </div>
 
+        {precioAbierto && conPrecio && <div className="vp-slide overflow-y-auto p-6 flex-1 min-h-0">
+          <PanelVerPrecio carreraId={carrera.id} nombreCarrera={cleanName} casa={casaDeCarrera(carrera) ?? 'siglo21'}
+            acento={accent} acentoClaro={accentLight} textoAcento="#013729" waHref={waHref}
+            slug={carreraToSlug(carrera)} duracion={carrera.duracion} activo={precioAbierto} />
+        </div>}
         {/* Footer */}
         <div
           className="flex-shrink-0 p-4 border-t flex flex-wrap gap-2 items-center"
           style={{ background: headerBg, borderColor: accentBorder }}
         >
+          {conPrecio && <button type="button" onClick={() => setPrecioAbierto(v => !v)} className="vp-boton" style={{ background: accent, color: '#013729' }}>Ver precios</button>}
           {/* WhatsApp + Form buttons */}
           <div className="order-1 sm:order-2 w-full sm:w-auto flex items-center gap-2 justify-end sm:flex-shrink-0">
             <a
@@ -430,8 +440,9 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
               WhatsApp
             </a>
             <a
-              href="#preinscripcion"
+              href={conPrecio ? `/carreras/${carreraToSlug(carrera)}/inscripcion` : "#preinscripcion"}
               onClick={(e) => {
+                if (conPrecio) return;
                 e.preventDefault();
                 // La carrera viaja con el clic: abajo el formulario la elige
                 // sola, en vez de dejar al lead buscando lo que ya eligio.

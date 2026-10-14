@@ -23,6 +23,7 @@ const mailPrecio = cargarTypescript('components/formularios/mail-precio.ts', {
   '@/components/index/inicio-teclab': inicio,
   '@/lib/whatsapp': whatsapp,
   '@/lib/vigilancia-esperado': vigilancia,
+    '@/components/index/types': taxonomia,
 });
 
 const SMTP2GO = 'https://api.smtp2go.com/v3/email/send';
@@ -132,7 +133,7 @@ function montar(t) {
       ],
       [TABLA_PRECIOS]: [
         { carrera_id: 7, ...precioVigente },
-        { carrera_id: 8, ...precioVigente },
+        { carrera_id: 8, ...precioVigente, vigente_hasta: '2000-01-01' },
         { carrera_id: 9, ...precioVigente },
         { carrera_id: 10, ...precioVigente, vigente_hasta: '2000-01-01' },
       ],
@@ -158,6 +159,7 @@ function montar(t) {
     '@/components/formularios/casas': casas,
     '@/components/formularios/mail-precio': mailPrecio,
     '@/lib/vigilancia-esperado': vigilancia,
+    '@/components/index/types': taxonomia,
   };
   const { GET } = cargarTypescript('app/api/newsletter/route.ts', deps);
   const { POST } = cargarTypescript('app/api/newsletter/baja/route.ts', deps);
@@ -361,4 +363,15 @@ test('con listo=1 confirma la baja; sin id válido no ofrece el botón', async (
 
 test('la página no se indexa', () => {
   assert.deepEqual(metadata.robots, { index: false, follow: false });
+});
+
+
+test('el newsletter de Siglo 21 usa su marca y la página de preinscripción', async t => {
+  const { correr, estado, mails, fila } = montar(t);
+  estado.tablas[TABLA_PRECIOS].find(p => p.carrera_id === 8).vigente_hasta = '2999-12-31';
+  assert.equal((await correr()).cuerpo.enviados, 4);
+  const mail = mails.find(m => m.cuerpo.to[0] === fila(ID.siglo).email).cuerpo;
+  assert.match(mail.subject, /Universidad Siglo 21/);
+  assert.match(mail.html_body, /\/carreras\/licenciatura-en-administracion\/inscripcion/);
+  assert.doesNotMatch(mail.html_body, /Teclab|Promo/);
 });

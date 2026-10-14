@@ -9,7 +9,7 @@
 // sitemap, que es un Route Handler.
 
 import type { Carrera } from '@/components/index/types';
-import { carreraFullName, carreraToSlug, esCarreraVisible } from '@/components/index/types';
+import { carreraFullName, carreraToSlug, esCarreraVisible, getCategoryForCarrera } from '@/components/index/types';
 import { esCursoTeclab, esTeclab, getFamiliaTeclab, parseEnfoqueTeclab } from '@/components/index/teclab';
 
 export const SITIO = 'https://www.siglo21sur.com';
@@ -19,7 +19,7 @@ export const SITIO = 'https://www.siglo21sur.com';
  * tramite que explicar: su ficha ya pide un aviso y nada mas.
  */
 export function tieneInscripcionPropia(c: Pick<Carrera, 'nivel'> & Partial<Pick<Carrera, 'proximamente'>>): boolean {
-  return esCarreraVisible(c) && (esTeclab(c) || esCursoTeclab(c)) && !c.proximamente;
+  return esCarreraVisible(c) && (esTeclab(c) || esCursoTeclab(c) || ['licenciaturas', 'tecnicaturas'].includes(getCategoryForCarrera(c))) && !c.proximamente;
 }
 
 /** Sale del slug canonico de la ficha, asi las dos URLs no se separan nunca. */
@@ -52,6 +52,7 @@ const TITULO_ESPECIFICO: Record<string, string> = {
  */
 export function tituloInscripcion(c: Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'nombre_corto'>): string {
   const completo = carreraFullName(c);
+  if (['licenciaturas', 'tecnicaturas'].includes(getCategoryForCarrera(c))) return `Preinscripción a ${c.nombre_corto || c.nombre} | Siglo 21`;
   const especifico = TITULO_ESPECIFICO[completo];
   if (especifico) return especifico;
 
@@ -75,6 +76,7 @@ export function tituloInscripcion(c: Pick<Carrera, 'nombre' | 'prefix' | 'nivel'
  */
 export function descripcionInscripcion(c: Pick<Carrera, 'nombre' | 'prefix' | 'nivel' | 'duracion' | 'enfoque'>): string {
   const completo = carreraFullName(c);
+  if (['licenciaturas', 'tecnicaturas'].includes(getCategoryForCarrera(c))) return `Completá el formulario de preinscripción a ${completo} de Universidad Siglo 21. Te contactamos para continuar con la inscripción.`;
   const tramites = [
     'Completás la preinscripción online y te llega por mail el acceso al portal del alumno.',
     'Preinscripción online y acceso al portal del alumno por mail.',

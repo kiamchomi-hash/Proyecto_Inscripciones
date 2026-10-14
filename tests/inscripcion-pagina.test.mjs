@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as taxonomia from '../components/index/types.ts';
+import * as casas from '../components/formularios/casas.ts';
 import * as teclab from '../components/index/teclab.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
@@ -59,6 +60,7 @@ const jsx = { jsx: elemento, jsxs: elemento, Fragment: 'fragment' };
 function cargarInscripcion() {
   return cargarTypescript('components/carreras/inscripcion-carrera.tsx', {
     '@/components/index/types': taxonomia,
+    '@/components/formularios/casas': casas,
     '@/components/index/teclab': teclab,
     'react/jsx-runtime': jsx,
   }, () => ({}));
@@ -78,11 +80,13 @@ const supabase = { from: tabla => consultaDe(tabla === 'carreras' ? filas : []) 
 function cargarSitemap() {
   const careerContent = cargarTypescript('components/carreras/career-content.ts', {
     '@/components/index/types': taxonomia,
+    '@/components/formularios/casas': casas,
     '@/components/index/teclab': teclab,
   });
   return cargarTypescript('app/sitemap.ts', {
     '@/lib/supabase': { supabase },
     '@/components/index/types': taxonomia,
+    '@/components/formularios/casas': casas,
     '@/components/index/teclab': teclab,
     '@/components/carreras/career-content': careerContent,
     '@/components/carreras/inscripcion-carrera': cargarInscripcion(),
@@ -98,6 +102,7 @@ function cargarPagina(archivo = 'app/carreras/[slug]/inscripcion/page.tsx') {
     '@/lib/supabase': { supabase },
     '@/lib/json-ld': { jsonLdScript: JSON.stringify },
     '@/components/index/types': taxonomia,
+    '@/components/formularios/casas': casas,
     '@/components/index/teclab': teclab,
     '@/components/carreras/inscripcion-carrera': cargarInscripcion(),
     'next/navigation': {
@@ -114,7 +119,7 @@ const params = slug => ({ params: Promise.resolve({ slug }) });
 test('el sitemap publica la inscripcion solo de las carreras de Teclab con inscripcion abierta', async () => {
   const entradas = await cargarSitemap().default();
   const inscripciones = entradas.map(e => e.url).filter(url => url.startsWith(`${BASE}/carreras/`) && url.endsWith('/inscripcion'));
-  assert.deepEqual(inscripciones.sort(), slugTeclab.map(s => `${BASE}/carreras/${s}/inscripcion`).sort());
+  assert.deepEqual(inscripciones.sort(), [...slugTeclab, 'abogacia'].map(s => `${BASE}/carreras/${s}/inscripcion`).sort());
   // La inscripción genérica de Teclab, con el selector de todas sus carreras.
   assert.ok(entradas.some(e => e.url === `${BASE}/teclab/inscripcion`));
   // La ficha sigue publicada aparte: la inscripcion no la reemplaza.
@@ -124,12 +129,12 @@ test('el sitemap publica la inscripcion solo de las carreras de Teclab con inscr
 test('la ruta de inscripcion parte del slug canonico de la ficha', () => {
   const { rutaInscripcion, tieneInscripcionPropia } = cargarInscripcion();
   assert.equal(rutaInscripcion(filas[0]), `/carreras/${slugTeclab[0]}/inscripcion`);
-  assert.deepEqual(filas.filter(tieneInscripcionPropia).map(f => f.id), [1, 2, 3]);
+  assert.deepEqual(filas.filter(tieneInscripcionPropia).map(f => f.id), [1, 2, 3, 4]);
 });
 
 test('solo se pre-generan las paginas de Teclab', async () => {
   const slugs = (await cargarPagina().generateStaticParams()).map(p => p.slug);
-  assert.deepEqual(slugs.sort(), [...slugTeclab].sort());
+  assert.deepEqual(slugs.sort(), [...slugTeclab, 'abogacia'].sort());
 });
 
 test('la metadata es propia, entra en el resultado de Google y se declara canonica', async () => {
@@ -159,7 +164,7 @@ test('la metadata es propia, entra en el resultado de Google y se declara canoni
 
 test('otra casa da 404 y un slug viejo redirige a la inscripcion canonica', async () => {
   const pagina = cargarPagina();
-  await assert.rejects(pagina.default(params('abogacia')), /404/);
+  await assert.rejects(pagina.default(params('diplomatura-en-oratoria')), /404/);
   await assert.rejects(pagina.default(params('tecnicatura-superior-en-seguros')), /404/);
   await assert.rejects(pagina.default(params('Tecnicatura_Superior_en_Programacion')), err => (
     err instanceof Redireccion && err.destino === `/carreras/${slugTeclab[0]}/inscripcion`
@@ -261,4 +266,13 @@ test('la página dedicada envía con «Preinscribirme» y sin nota debajo del bo
   assert.match(formulario, /\{flujoAuto && !solicitudDirecta && <AvisoSinPago \/>\}/);
   const aviso = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
   assert.doesNotMatch(aviso, /solicitás la gestión/);
+});
+
+
+test('Siglo 21 muestra el formulario propio sin prometer acceso automático al portal', async () => {
+  const arbol = await cargarPagina().default(params('abogacia'));
+  const texto = JSON.stringify(arbol);
+  assert.match(texto, /"casa":"siglo21"/);
+  assert.match(texto, /Te contactamos para continuar/);
+  assert.doesNotMatch(texto, /portal del alumno|inscripcion-teclab/);
 });

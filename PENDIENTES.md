@@ -1,5 +1,7 @@
 # Pendientes
 
+- [ ] Siglo 21: retomar la autoinscripción la tarde del 14/10/2026; por ahora sólo precios, newsletter y formulario de preinscripción.
+
 Actualizado el 09/10/2026: la lista se ordenó por tema, con Teclab primero según la prioridad vigente (web y formularios, diseño, folletos). Los números de los pedidos del 02/10/2026 se conservan para poder referirse a cada tarea; las tareas sin número llegaron después.
 
 Lista de trabajo para una sola persona. No hace falta trasladarla a otra herramienta. Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; las revisiones repetibles van en rutinas.
@@ -36,6 +38,8 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo** [Detalle](docs/pendientes-detalle.md#pendiente-16).
 
 ## Comercial y contenido
+
+- [ ] **Confirmar la fecha de vigencia de los precios 2027 de Siglo 21 esta tarde (14/10/2026)**. Revisar la celda del Excel correspondiente al CAU VLG01 antes de preparar y publicar los precios privados del sitio; no asumir que el vencimiento de una promoción es el de la lista. La carga de precios sigue pendiente de autorización; el deploy del flujo web fue autorizado. [Avance](odd/tasks/siglo21-ver-precios-newsletter.md).
 
 - [ ] **3. Mejorar el mensaje de aranceles**.
 - [ ] **4. Extraer los precios 2027 de Universidad Siglo 21**.

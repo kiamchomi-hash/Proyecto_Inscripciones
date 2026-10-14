@@ -165,3 +165,14 @@ Rate limit: RPC `check_form_rate_limit(p_key, p_max_requests, p_window_seconds)`
 Turnstile se verifica en `lib/turnstile.ts`, que además compara el `hostname` que devuelve Cloudflare contra `TURNSTILE_EXPECTED_HOSTNAME` (normaliza `www.`). Sin `TURNSTILE_SECRET_KEY`, el endpoint devuelve 503, salvo en desarrollo con `NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL=1`: sólo ahí acepta `rate-limit-only`. El widget emite ese token únicamente en ese modo y sin site key. **No saltea el rate limit ni la credencial de escritura**: sin `SUPABASE_SERVICE_ROLE_KEY`, un envío que llega a consultar la cuota devuelve 503. Las claves de prueba de Cloudflare son la alternativa para comprobar la integración completa del captcha.
 
 El JSON mal formado y los sobres nulos, arrays o sin discriminadores válidos devuelven 400 antes de consultar captcha o base. `tests/formularios-api.test.mjs` ejecuta el handler con dependencias simuladas y cubre sobre inválido, captcha rechazado, cuota agotada, error de escritura, éxito y aislamiento del modo local.
+
+
+## Siglo 21: precios 2027 y preinscripción
+
+El catálogo permite consultar el precio con mail y suscripción opcional al newsletter, reutilizando el flujo de Teclab. Los conceptos son matrícula, bimestre 1 y bimestre 2 de 2027. Los importes nunca viajan en el catálogo ni se versionan: se leen de `precios_privados` después de guardar el lead.
+
+El resumen transaccional y el newsletter usan la marca de Universidad Siglo 21 y enlazan a `/carreras/<slug>/inscripcion`, con su formulario de preinscripción. No incluyen financiación ni promociones de Teclab. La autoinscripción de Siglo 21 queda pendiente: el formulario sólo registra la solicitud y la atención continúa manualmente.
+
+La preparación privada local se hace con `herramientas/ventas/publicar-precios-siglo21.mjs --carreras <export-local.json>`, usando el módulo de lista 2027 existente y los alias de carreras. No conecta a la base ni lee credenciales. Genera `ventas/precios/2027/precios-siglo21-web.json`, ignorado por git. `cotizable: false` identifica la lista; no invalida los importes extraídos. No se aplican descuentos ni promociones al export web.
+
+La lista no declara fecha de caducidad y el esquema exige `vigente_hasta NOT NULL`: sin `--vigente-hasta AAAA-MM-DD` confirmado, el export queda marcado como no publicable. No se inventa una vigencia anual. La carga privada y el deploy requieren autorización remota; no se ejecutaron en este trabajo local.

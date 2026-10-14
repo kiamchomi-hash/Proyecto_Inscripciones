@@ -6,6 +6,8 @@ import { sanitizeContent } from '@/lib/sanitize-content';
 import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
+import { PanelVerPrecio, AccesoVerPrecio } from './ver-precio-teclab';
+import { carreraConPrecio, casaDeCarrera } from '@/components/formularios/casas';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 
 interface Props {
@@ -814,7 +816,10 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
-  const totalSlides = slides.length;
+  const conPrecio = carreraConPrecio(carrera);
+  const [pedidoPrecio, setPedidoPrecio] = useState(0);
+  const verPrecio = () => { setSlideIdx(slides.length); setPedidoPrecio(n => n + 1); };
+  const totalSlides = slides.length + (conPrecio ? 1 : 0);
   const { cleanName } = getCleanName(carrera);
 
   useEffect(() => {
@@ -923,9 +928,14 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
           <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
               <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
-                {renderSlide(slide, carrera, si === slideIdx, inscribir)}
+                {renderSlide(slide, carrera, si === slideIdx, inscribir, conPrecio ? verPrecio : undefined)}
               </div>
             ))}
+            {conPrecio && <div className="vp-slide flex-shrink-0 w-full h-full overflow-y-auto flex flex-col justify-center p-6">
+              <PanelVerPrecio carreraId={carrera.id} nombreCarrera={cleanName} casa={casaDeCarrera(carrera) ?? 'siglo21'}
+                acento="#00c7b1" acentoClaro="#00ffe1" textoAcento="#013729" waHref={waHref}
+                slug={carreraToSlug(carrera)} duracion={carrera.duracion} activo={slideIdx === slides.length} pedido={pedidoPrecio} />
+            </div>}
           </div>
         </div>
 
@@ -937,7 +947,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
             <span className="hidden min-[360px]:inline">Anterior</span>
           </button>
           <div className="flex justify-center items-center gap-1.5 sm:gap-2.5">
-            {slides.map((_, i) => (
+            {Array.from({ length: totalSlides }, (_, i) => (
               <button key={i} onClick={() => setSlideIdx(i)} className={`carousel-dot ${slideIdx === i ? 'active' : ''}`} aria-label={`Ir a slide ${i + 1}`} aria-current={slideIdx === i ? 'step' : undefined} />
             ))}
           </div>
@@ -961,7 +971,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
               </a>
               {/* La carrera viaja con el clic: abajo el formulario la elige
                   sola, en vez de dejar al lead buscando lo que ya eligio. */}
-              <a href="#preinscripcion" onClick={(e) => { e.preventDefault(); inscribir(); }}
+              <a href={conPrecio ? `/carreras/${carreraToSlug(carrera)}/inscripcion` : "#preinscripcion"} onClick={(e) => { if (conPrecio) return; e.preventDefault(); inscribir(); }}
                 className="w-36 flex items-center justify-center gap-2 py-2 bg-[#6c2381] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -986,13 +996,13 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
 }
 
 // ── Render individual slide by type ──
-function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean, onInscribir: () => void) {
+function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean, onInscribir: () => void, onVerPrecio?: () => void) {
   switch (slide.type) {
     case 'portada': return <SlidePortadaView slide={slide} carrera={carrera} />;
     case 'modalidad': return <SlideModalidadView slide={slide} />;
     case 'evaluacion': return <SlideEvaluacionView slide={slide} />;
     case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} isVisible={isVisible} />;
-    case 'cierre': return <SlideCierreView slide={slide} carrera={carrera} onInscribir={onInscribir} />;
+    case 'cierre': return <SlideCierreView slide={slide} carrera={carrera} onInscribir={onInscribir} onVerPrecio={onVerPrecio} />;
     default: return null;
   }
 }
@@ -1195,7 +1205,7 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
   );
 }
 
-function SlideCierreView({ slide, carrera, onInscribir }: { slide: import('./types').SlideCierre; carrera?: Carrera; onInscribir: () => void }) {
+function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { slide: import('./types').SlideCierre; carrera?: Carrera; onInscribir: () => void; onVerPrecio?: () => void }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden relative bg-[#011f17]">
       {/* Mobile top banner */}
@@ -1247,30 +1257,12 @@ function SlideCierreView({ slide, carrera, onInscribir }: { slide: import('./typ
             se sacó como en Teclab, porque la carrera se cursa a distancia y a
             un lead que vive lejos una dirección le lee como un requisito. */}
         <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
-          {carrera && (
-            <a
-              href={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 flex-[1_1_10rem] min-w-0 max-w-[min(100%,14rem)] px-2 py-2 md:py-2.5 bg-[#25d366] hover:bg-[#1ebe57] text-white text-center font-bold rounded-xl transition-all text-xs md:text-sm"
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.504 3.935 1.395 5.608L.054 23.395a.5.5 0 0 0 .611.611l5.787-1.341A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.94 9.94 0 0 1-5.39-1.583l-.386-.232-3.437.797.813-3.437-.232-.386A9.94 9.94 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
-              </svg>
-              Consultar precios
-            </a>
-          )}
-          <a
-            href="#preinscripcion"
-            onClick={(e) => { e.preventDefault(); onInscribir(); }}
-            className="flex items-center justify-center gap-2 flex-[1_1_10rem] min-w-0 max-w-[min(100%,14rem)] px-2 py-2 md:py-2.5 bg-[#6c2381] hover:brightness-110 text-white text-center font-bold rounded-xl transition-all text-xs md:text-sm"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            Inscribite ya
-          </a>
+          {carrera && onVerPrecio ? (
+            <AccesoVerPrecio acento="#00c7b1" textoAcento="#013729"
+              waHref={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
+              onVerPrecio={onVerPrecio} />
+          ) : <a href="#preinscripcion" onClick={e => { e.preventDefault(); onInscribir(); }} className="vp-boton">Preinscribite</a>}
+
         </div>
         </div>
       </div>

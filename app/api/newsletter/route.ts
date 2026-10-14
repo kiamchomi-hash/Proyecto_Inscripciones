@@ -1,12 +1,12 @@
-// Newsletter de Teclab: cron de Vercel, una vez por día (vercel.json).
+// Newsletter de Teclab y Siglo 21: cron de Vercel, una vez por día (vercel.json).
 //
 // A cada suscripción activa a una carrera de Teclab le manda, cada 7 días, el
 // mail de la plantilla aprobada (`armarMailPrecio` con `tipo: 'newsletter'`)
 // con el precio vigente de su carrera. Quien nunca recibió el precio (se
 // suscribió cuando no había o estaba vencido) lo recibe en la primera corrida
 // con precio vigente; después, cada 7 días desde el último envío. El mail de
-// resumen de «Ver precio» cuenta como envío (lo marca /api/formularios). Siglo 21, Identidad
-// y las suscripciones generales quedan afuera: la plantilla es de Teclab.
+// resumen de «Ver precio» cuenta como envío (lo marca /api/formularios). Identidad
+// y las suscripciones generales quedan afuera; cada casa tiene su plantilla.
 //
 // `ultimo_envio_at` se escribe recién cuando SMTP2GO confirma el envío: un
 // mail rechazado vuelve a salir en la corrida siguiente. Los registros llevan
@@ -18,12 +18,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
 import {
-  CASAS, TABLA_NEWSLETTER, TABLA_PRECIOS,
+  CASAS, CASAS_CON_PRECIO, TABLA_NEWSLETTER, TABLA_PRECIOS,
   carreraConPrecio, fechaArgentina, resultadoPrecio, type FilaPrecio,
 } from '@/components/formularios/casas';
 import {
   armarMailPrecio, mandarPorSmtp2go, type CarreraDelMail, type PrecioDelMail,
 } from '@/components/formularios/mail-precio';
+import { esCarreraVisible } from '@/components/index/types';
 import { BASE_PROD } from '@/lib/vigilancia-esperado';
 
 export const dynamic = 'force-dynamic';
@@ -54,11 +55,11 @@ type CarreraNewsletter = CarreraDelMail & { id: number; activa: boolean };
 async function carrerasConPrecioVigente(supabase: ReturnType<typeof createSupabaseAdmin>, hoy: Date) {
   const carreras = await supabase
     .from('carreras')
-    .select('id, nombre, nivel, activa, prefix, nombre_corto, duracion')
-    .in('nivel', CASAS.teclab.niveles)
+    .select('id, nombre, nivel, activa, proximamente, prefix, nombre_corto, duracion')
+    .in('nivel', CASAS_CON_PRECIO.flatMap(casa => CASAS[casa].niveles))
     .eq('activa', true);
   if (carreras.error) return { error: carreras.error, vigentes: null };
-  const conPrecio = (carreras.data as CarreraNewsletter[]).filter(c => carreraConPrecio(c));
+  const conPrecio = (carreras.data as CarreraNewsletter[]).filter(c => esCarreraVisible(c) && carreraConPrecio(c));
   if (!conPrecio.length) return { error: null, vigentes: new Map() };
 
   const precios = await supabase

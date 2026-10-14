@@ -56,6 +56,7 @@ test('FAQ no suma pantallas vacías al carrusel ni cambia el modal Teclab', () =
   const carousel = cargarTypescript('components/index/carousel-modal.tsx', {
     './types': tipos, '@/lib/sanitize-content': {}, '@/components/carreras/career-content': {},
     './use-compartir': {}, './icono-compartir': {}, '@/components/formularios/elegir-carrera': {},
+    './ver-precio-teclab': {}, '@/components/formularios/casas': {},
   });
   const portada = { type: 'portada', bullets: [] };
   assert.deepEqual(carousel.slidesDelCarrusel([portada, faq, { type: 'modalidad' }, { type: 'evaluacion' }]), [portada]);

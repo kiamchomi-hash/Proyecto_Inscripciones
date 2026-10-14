@@ -12,7 +12,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
-import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type LineaPrecio } from '@/components/formularios/casas';
+import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type CasaId, type LineaPrecio } from '@/components/formularios/casas';
 import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
 import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
 
@@ -169,10 +169,10 @@ function Financiacion() {
  * Toma los colores de `--vp-acento`, `--vp-acento-claro` y
  * `--vp-texto-acento`, que define el contenedor.
  */
-export function DetallePrecio({ precio, duracion, vencido = false, financiacion = true }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean }) {
+export function DetallePrecio({ precio, duracion, vencido = false, financiacion = true, casa = 'teclab' }: { casa?: CasaId; precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean }) {
   // Qué cubre el pago, armado de los conceptos con los meses; si no hay
   // bimestres (curso de pago único), queda la nota de la base.
-  const aclaracion = coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
+  const aclaracion = casa === 'siglo21' ? precio.nota : coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
   return (
     <>
       {precio.conceptos.length > 0 && (
@@ -195,8 +195,8 @@ export function DetallePrecio({ precio, duracion, vencido = false, financiacion 
         <span className="vp-total-monto">{precio.total}</span>
       </div>
       {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
-      <p className="vp-vigencia">{vencido ? 'Promoción finalizada el' : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
-      {!vencido && financiacion && <Financiacion />}
+      <p className="vp-vigencia">{vencido ? (casa === 'siglo21' ? 'Precios vigentes hasta el' : 'Promoción finalizada el') : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
+      {!vencido && financiacion && casa === 'teclab' && <Financiacion />}
     </>
   );
 }
@@ -283,7 +283,9 @@ export function PanelVerPrecio({
   activo,
   duracion,
   pedido = 0,
+  casa = 'teclab',
 }: {
+  casa?: CasaId;
   carreraId: number;
   nombreCarrera: string;
   /** `carrera.duracion` («2 años»): con ella la aclaración dice cuántos cuatrimestres se pagan. */
@@ -483,7 +485,7 @@ export function PanelVerPrecio({
           {visitado && (
             <TurnstileWidget
               key={captchaKey}
-              marca="teclab"
+              marca={casa}
               onVerify={nuevo => setToken(nuevo)}
               onExpire={() => setToken('')}
             />
@@ -521,24 +523,24 @@ export function PanelVerPrecio({
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
           {/* La financiación va debajo de los botones: abierta no los empuja
               fuera de la vista. */}
-          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} />
+          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} />
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
-          <Financiacion />
+          {casa === 'teclab' && <Financiacion />}
         </div>
       )}
 
       {vista === 'vencido' && precio && (
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
           <p className="vp-aviso">
-            <strong>Promoción vencida</strong><br />
+            <strong>{casa === 'siglo21' ? 'Precios vencidos' : 'Promoción vencida'}</strong><br />
             Estos valores son sólo de referencia. Consultá el precio vigente antes de inscribirte.
           </p>
-          <DetallePrecio precio={precio} duracion={duracion} vencido />
+          <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} />
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}

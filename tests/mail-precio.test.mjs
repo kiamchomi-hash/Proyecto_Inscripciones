@@ -247,3 +247,17 @@ test('el mail de inicio de Teclab apunta al número oficial', () => {
   assert.match(html, /https:\/\/wa\.me\/5491132973801\?/);
   assert.doesNotMatch(html, /5491166522722/);
 });
+
+test('Siglo 21 muestra lista 2027 y enlaza la preinscripción sin mensajes de Teclab', () => {
+  const mail = armar({ carrera: { nombre: 'Abogacía', nivel: 'Grado' }, precio: { ...precio, nota: 'Precios de lista 2027.', conceptos: [
+    { concepto: 'Matrícula 2027', monto: '$ 100', descuento: null },
+    { concepto: 'Bimestre 1 2027', monto: '$ 200', descuento: null },
+    { concepto: 'Bimestre 2 2027', monto: '$ 300', descuento: null },
+  ] } });
+  assert.match(mail.asunto, /Universidad Siglo 21/);
+  for (const contenido of [mail.html, mail.texto]) {
+    assert.match(contenido, /\/carreras\/abogacia\/inscripcion/);
+    assert.doesNotMatch(contenido, /Teclab|Promo|imprescindible|cuatrimestre/);
+    assert.match(contenido, /Bimestre 2 2027/);
+  }
+});
