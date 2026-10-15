@@ -538,14 +538,14 @@ export function PanelVerPrecio({
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
           <p className="vp-aviso">
             <strong>{casa === 'siglo21' ? 'Precios vencidos' : 'Promoción vencida'}</strong><br />
-            Estos valores son sólo de referencia. Consultá el precio vigente antes de inscribirte.
+            {casa === 'siglo21' ? 'Valores de referencia.' : 'Estos valores son sólo de referencia. Consultá el precio vigente antes de inscribirte.'}
           </p>
           <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} />
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
           {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Quiero inscribirme</a>}
-          <EnlaceWhatsApp href={waHref} texto="Consultar precio vigente" principal />
+          <EnlaceWhatsApp href={waHref} texto={casa === 'siglo21' ? 'Consultar por WhatsApp' : 'Consultar precio vigente'} principal />
         </div>
       )}
 

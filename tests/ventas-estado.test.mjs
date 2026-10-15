@@ -40,3 +40,11 @@ test('snapshot remoto toma estado del HTML aunque el JSON lateral sea legado, co
     assert.equal(snapshot.validarSnapshot(html.replace(/,"actualizacion2027":[\s\S]*<\/script>/, '}</script>')).actualizacion2027, null);
   }
 });
+
+test('las advertencias informan referencias sin imponer verificación comercial', () => {
+  assert.equal(estadoActualizacion2027(null, ahora).titulo, 'Precios de referencia');
+  assert.equal(estadoActualizacion2027(estado('incompleta'), ahora).titulo, 'Actualización incompleta');
+  for (const valor of [null, estado('incompleta'), estado('en_curso'), estado('completa', '2026-10-14T12:00:00Z')]) {
+    assert.equal(estadoActualizacion2027(valor, ahora).detalle, 'Valores de referencia.');
+  }
+});

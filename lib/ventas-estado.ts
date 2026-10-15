@@ -22,13 +22,13 @@ export function estadoActualizacion2027(valor: unknown, ahora = new Date()) {
   // Autocontenida: también se incorpora al HTML portátil con toString().
   const dato = valor as Actualizacion2027 | null;
   const advertencia = (titulo: string) => ({ nivel: 'advertencia', titulo,
-    detalle: 'Siglo 21 · 1A 2027: confirmá los aranceles antes de cotizar. La publicación no verifica los precios.' });
-  if (!dato || dato.version !== 1 || dato.periodo !== '1A' || !dato.ultimoIntento) return advertencia('Actualización sin verificar');
+    detalle: 'Valores de referencia.' });
+  if (!dato || dato.version !== 1 || dato.periodo !== '1A' || !dato.ultimoIntento) return advertencia('Precios de referencia');
   if (dato.ultimoIntento.estado === 'incompleta') return advertencia('Actualización incompleta');
   if (dato.ultimoIntento.estado !== 'completa') return advertencia('Actualización sin completar');
   const fecha = Date.parse(dato.ultimoIntento.fecha);
   const dia = (valor: number) => new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Argentina/Buenos_Aires' }).format(valor);
-  if (!Number.isFinite(fecha) || fecha > ahora.getTime() || dato.ultimoExito !== dato.ultimoIntento.fecha) return advertencia('Actualización sin verificar');
+  if (!Number.isFinite(fecha) || fecha > ahora.getTime() || dato.ultimoExito !== dato.ultimoIntento.fecha) return advertencia('Precios de referencia');
   if (dia(fecha) !== dia(ahora.getTime())) return advertencia('Actualización diaria pendiente');
   return { nivel: 'ok', titulo: 'Actualización diaria completa', detalle: 'Siglo 21 · 1A 2027: relevamiento completo del día.' };
 }

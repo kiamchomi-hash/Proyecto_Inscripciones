@@ -513,3 +513,10 @@ test('Siglo 21 permite consultar precios sin habilitar la autoinscripción', () 
   assert.equal(carreraConPrecio({ nivel: 'Grado', activa: true }), true);
   assert.equal(carreraConPrecio({ nivel: 'Grado', activa: true, proximamente: true }), false);
 });
+
+test('Siglo 21 muestra referencias sin exigir confirmar precios y conserva el texto de Teclab', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const fuente = await readFile('components/index/ver-precio-teclab.tsx', 'utf8');
+  assert.match(fuente, /casa === 'siglo21' \? 'Valores de referencia\.' : 'Estos valores son sólo de referencia\. Consultá el precio vigente antes de inscribirte\.'/);
+  assert.match(fuente, /texto=\{casa === 'siglo21' \? 'Consultar por WhatsApp' : 'Consultar precio vigente'\}/);
+});
