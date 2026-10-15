@@ -195,6 +195,11 @@ export default async function TeclabPage() {
           <CareersCatalog carreras={carreras} />
         </section>
 
+        {/* Toda la oferta de esta página es de una casa, así que acá la casa
+            va fija y no hay nada dinámico: los campos son siempre los de Teclab. */}
+        <FormularioLead carreras={carreras} modo="contacto" casa="teclab" origen="teclab" />
+        <FormularioLead carreras={carreras} modo="preinscripcion" casa="teclab" origen="teclab" />
+
         {/* Para quien recorrio el catalogo y no se decide: el test recomienda
             entre estas mismas carreras y termina en la ficha o en WhatsApp. */}
         <section className="teclab-test" aria-labelledby="teclab-test-title">
@@ -258,11 +263,6 @@ export default async function TeclabPage() {
             <p className="teclab-ruta-pie">Te asesoramos y hacemos la inscripción con vos, 100% online</p>
           </div>
         </section>
-
-        {/* Toda la oferta de esta página es de una casa, así que acá la casa
-            va fija y no hay nada dinámico: los campos son siempre los de Teclab. */}
-        <FormularioLead carreras={carreras} modo="contacto" casa="teclab" origen="teclab" />
-        <FormularioLead carreras={carreras} modo="preinscripcion" casa="teclab" origen="teclab" />
 
         <section className="teclab-proof" aria-label="Características de la propuesta Teclab">
           <div className="teclab-proof-inner">

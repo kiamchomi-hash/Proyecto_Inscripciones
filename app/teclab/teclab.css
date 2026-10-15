@@ -360,7 +360,7 @@
   background-size: 38% auto;
 }
 
-/* ── Test vocacional: franja entre el catalogo y la continuidad ── */
+/* ── Test vocacional: después de los formularios, antes de la continuidad ── */
 
 .teclab-test {
   display: flex;
@@ -375,6 +375,22 @@
   border-left: 4px solid var(--tl-cian);
   border-radius: 0.6rem;
   background: var(--tl-navy-claro);
+}
+
+.teclab-test > div,
+.teclab-test > .teclab-button,
+.teclab-continuity > * {
+  min-width: 0;
+}
+
+.teclab-test,
+.teclab-continuity {
+  overflow-wrap: anywhere;
+}
+
+.teclab-test > .teclab-button {
+  max-width: 100%;
+  text-align: center;
 }
 
 .teclab-test h2 {
@@ -395,7 +411,7 @@
 
 .teclab-continuity {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   /* Arriba y no al medio: centrado, el texto flotaba en el hueco que dejaba el
      panel, que es mucho mas alto. Arrancando los dos en la misma linea la
      columna izquierda tiene de donde colgar. */
@@ -461,6 +477,7 @@
 .teclab-ruta {
   display: grid;
   justify-items: start;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
   padding: clamp(1.5rem, 2.4vw, 2rem);
   border: 3px solid rgba(255, 255, 255, 0.14);
@@ -552,6 +569,8 @@
 .teclab-brutal-button {
   position: relative;
   display: inline-flex;
+  max-width: 100%;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.7rem;
   overflow: hidden;
@@ -635,6 +654,7 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   line-height: 1.2;
   text-align: left;
   transition: transform 0.2s ease-out;
@@ -749,7 +769,7 @@
   }
 
   .teclab-continuity {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 2.25rem;
     padding-block: clamp(2.75rem, 9vw, 4rem);
   }
