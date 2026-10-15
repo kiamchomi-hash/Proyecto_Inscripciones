@@ -47,7 +47,29 @@
 
 .cp img { display: block; image-rendering: pixelated; }
 
-/* ── Título ── */
+/* ── Título y regreso compacto ── */
+.cp-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.cp-encabezado .cp-volver {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--cp-pixel);
+}
+
+.cp-encabezado .cp-h1 { min-width: 0; }
+.cp-reserva .rc-horarios { padding-bottom: 1rem; }
+
 .cp-h1 {
   display: flex;
   align-items: center;
@@ -224,9 +246,8 @@
 
 /* ── Sobre las clases: el texto de la base en una ventana ── */
 .cp-texto {
-  /* El mismo ancho útil que el resto de la página (1100px menos su gutter). */
-  width: min(100% - 32px, 1068px);
-  margin: 0 auto clamp(3rem, 6vw, 4.5rem);
+  width: 100%;
+  margin: 0;
   padding: var(--cp-borde) calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) var(--cp-borde);
 }
 
@@ -261,6 +282,7 @@
 }
 
 @media (max-width: 520px) {
+  .cp-encabezado { align-items: flex-start; }
   .cp-h1 { align-items: flex-start; }
   .cp-h1-icono { width: 40px; height: 37px; margin-top: 4px; }
   .cp-barra-titulo { font-size: 0.7rem; letter-spacing: 0.12em; }
@@ -281,6 +303,18 @@
 .hr {
   margin: var(--cp-borde) calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) var(--cp-borde);
 }
+
+/* Programación conserva las ventanas y fichas de las herramientas. */
+.pg-logo { object-fit: contain; }
+.pg-disponible {
+  width: fit-content;
+  padding: 0.15rem 0.5rem;
+  background: var(--cp-pixel);
+  color: var(--cp-contorno);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.pg-estado { color: var(--cp-texto); font-size: 0.75rem; }
 
 /* ── Escena ── */
 /* La columna de Clawd está siempre reservada: con o sin mascota, la ficha
@@ -411,6 +445,7 @@
 /* ── Inventario ── */
 .hr-inventario {
   display: grid;
+  grid-auto-rows: 1fr;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   margin: 0;

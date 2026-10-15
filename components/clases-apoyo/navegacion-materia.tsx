@@ -5,13 +5,13 @@ import type { MateriaNav } from '@/components/clases-apoyo/tipos';
 // Navegación de las páginas de materia. Cada materia es una página propia, así
 // que se navega como en cualquier otra: apila historial y sube al tope.
 
-export function VolverAClases() {
+export function VolverAClases({ compacto = false }: { compacto?: boolean }) {
   return (
-    <Link href="/clases-apoyo" className="ca-volver">
+    <Link href="/clases-apoyo" className={`ca-volver${compacto ? ' cp-volver' : ''}`} aria-label={compacto ? 'Volver a clases de apoyo' : undefined}>
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
       </svg>
-      Volver a clases de apoyo
+      <span className={compacto ? 'sr-only' : undefined}>Volver a clases de apoyo</span>
     </Link>
   );
 }

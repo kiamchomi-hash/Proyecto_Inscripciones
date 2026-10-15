@@ -2,11 +2,12 @@ import Image from 'next/image';
 import Carousel from '@/components/clases-apoyo/carrusel-materia';
 import WhatsappClase from '@/components/clases-apoyo/whatsapp-clase';
 import ReservaClase from '@/components/clases-apoyo/reserva/reserva-clase';
+import { VolverAClases } from '@/components/clases-apoyo/navegacion-materia';
 import TextoMateria from '@/components/clases-apoyo/texto-materia';
 import type { MateriaDB } from '@/components/clases-apoyo/tipos';
 import BarraVentana from './barra-ventana';
 import { fuentePixel } from './fuente';
-import Herramientas from './herramientas';
+import Herramientas, { Programacion } from './herramientas';
 
 /* Computación: fotos, reserva y WhatsApp de la fila de `materias`, vestidos con
    el lenguaje del folleto pixel aprobado
@@ -52,19 +53,37 @@ type MateriaComputacion = Pick<
   'id' | 'slug' | 'label' | 'nombre_profesor' | 'whatsapp' | 'telefono_display' | 'imagenes' | 'en_construccion' | 'modo_manana' | 'dias_bloqueados' | 'horarios_bloqueados'
 >;
 
-export default function ComputacionPixel({ materia }: { materia: MateriaComputacion }) {
+export default function ComputacionPixel({ materia, parrafos }: { materia: MateriaComputacion; parrafos: string[] | null }) {
   const conFotos = (materia.imagenes?.length ?? 0) > 0;
 
   return (
     <div className={`cp ${fuentePixel.variable}`}>
       {/* El h1 de todas las materias, completo y a la vista. Sólo el nombre
           de la materia va en letra pixel: una palabra, no una frase. */}
-      <h1 className="cp-h1">
-        <Image src="/imagenes/clases-apoyo/computacion/computadora.svg" alt="" width={27} height={25} unoptimized className="cp-h1-icono" />
-        <span>
-          Clases particulares de <strong><NombrePixel texto={materia.label} /></strong> en Villa Lugano
-        </span>
-      </h1>
+      <header className="cp-encabezado">
+        <VolverAClases compacto />
+        <h1 className="cp-h1">
+          <Image src="/imagenes/clases-apoyo/computacion/computadora.svg" alt="" width={27} height={25} unoptimized className="cp-h1-icono" />
+          <span>
+            Clases particulares de <strong><NombrePixel texto={materia.label} /></strong> en Villa Lugano
+          </span>
+        </h1>
+      </header>
+
+      <div className="cp-contacto">
+        <span className="cp-contacto-rotulo">Consultas por WhatsApp</span>
+        <WhatsappClase
+          slug={materia.slug}
+          whatsapp={materia.whatsapp}
+          telefono={materia.telefono_display}
+          profesor={materia.nombre_profesor}
+          enConstruccion={materia.en_construccion}
+          className="cp-whatsapp"
+        />
+      </div>
+
+      <Herramientas />
+      <Programacion />
 
       {/* Al cliente viaja sólo lo que la reserva usa, no la ficha entera. */}
       <ReservaClase
@@ -88,26 +107,12 @@ export default function ComputacionPixel({ materia }: { materia: MateriaComputac
         encabezadoHorarios={<BarraVentana titulo="Elegí el horario" />}
       />
 
-      <Herramientas />
-
-      <div className="cp-contacto">
-        <span className="cp-contacto-rotulo">Consultas por WhatsApp</span>
-        <WhatsappClase
-          slug={materia.slug}
-          whatsapp={materia.whatsapp}
-          telefono={materia.telefono_display}
-          profesor={materia.nombre_profesor}
-          enConstruccion={materia.en_construccion}
-          className="cp-whatsapp"
-        />
-      </div>
+      <ComputacionTexto label={materia.label} parrafos={parrafos} />
     </div>
   );
 }
 
-/* "Sobre las clases de Computación" con el mismo diseño: el texto de la base
-   dentro de una ventana pixel. Va aparte porque en la página se ubica más
-   abajo, después de "Otras materias", igual que en las demás. */
+/* El texto existente de la base sigue a la reserva completa de día y horario. */
 export function ComputacionTexto({ label, parrafos }: { label: string; parrafos: string[] | null }) {
   if (!parrafos?.length) return null;
   return (
