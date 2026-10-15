@@ -48,14 +48,16 @@ test('los cambios de carreras revalidan también la landing Teclab', async () =>
   assert.match(route, /\['\/teclab', 'page'\]/);
 });
 
-test('el test y la articulación quedan después de los dos formularios', async () => {
+test('el test sigue al catálogo y la articulación queda después de los formularios', async () => {
   const page = await leer('app/teclab/page.tsx');
+  const catalogo = page.indexOf('<section id="oferta-teclab"');
   const contacto = page.indexOf('modo="contacto"');
   const preinscripcion = page.indexOf('modo="preinscripcion"');
   const testVocacional = page.indexOf('<section className="teclab-test"');
   const articulacion = page.indexOf('<section className="teclab-continuity"');
 
   assert.ok(contacto >= 0 && contacto < preinscripcion);
-  assert.ok(preinscripcion < testVocacional);
-  assert.ok(testVocacional < articulacion);
+  assert.ok(catalogo >= 0 && catalogo < testVocacional);
+  assert.ok(testVocacional < contacto);
+  assert.ok(preinscripcion < articulacion);
 });

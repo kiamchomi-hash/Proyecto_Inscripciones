@@ -1,7 +1,7 @@
 # Teclab: orden y adaptación de bloques
 
 ## Objetivo
-Ubicar test vocacional y articulación después de preinscripción y evitar recortes al ampliar la página, sin cambiar contenido ni formularios.
+Ubicar el test vocacional inmediatamente después del catálogo y conservar la articulación después de preinscripción; evitar recortes al ampliar la página, sin cambiar contenido ni formularios.
 
 ## Alcance
 app/teclab/page.tsx, app/teclab/teclab.css, tests/teclab-landing.test.mjs. Preservar cambios ajenos. Sin push ni deploy. Trabajo en main según regla específica del proyecto; commit pendiente de autorización.
@@ -11,7 +11,7 @@ app/teclab/page.tsx, app/teclab/teclab.css, tests/teclab-landing.test.mjs. Prese
 - [ ] T2: Prueba focal, npm run check, layout 1280/768/640/375/320 y zoom 200/400%; capturas 1280 y 375 visibles en chat.
 
 ## Aceptación
-Ambos bloques después de preinscripción; contenido y CTA sin recorte; anclas conservadas. No enviar leads.
+Orden catálogo → test → contacto → preinscripción → articulación; contenido y CTA sin recorte; anclas conservadas. No enviar leads.
 
 ## Estrategia
 ask-on-risk; previsión inferior a 200 líneas. Sin PR. RDD activo por defecto; revisar candidato normalizado antes del cierre.
@@ -35,3 +35,12 @@ Implementado y capturas entregadas. T2 parcial: falta zoom nativo; reflow equiva
 
 ## Comprobación principal
 Prueba focal repetida: salida 0. Verificación independiente sin hallazgos bloqueantes. Capturas entregadas. Preflight RDD falló antes de mutación: operation_failed, read-only file system. Pendiente zoom nativo y revisión nativa.
+
+## Ajuste solicitado posteriormente
+- El usuario pidió devolver solamente el test inmediatamente debajo del catálogo; articulación permanece debajo de ambos formularios. Se conserva como historia el orden anterior registrado en T1.
+- Nueva regresión de orden: RED observado 4/5, falla `testVocacional < contacto`; GREEN5/5 tras mover el bloque. Sin cambios de CSS ni copy.
+- `npm run check` intentado: falla en lint con ENOENT al recorrer .aws inexistente del entorno; no ejecutó sus pasos siguientes. No se creó ni inspeccionó ese directorio.
+- `git diff --check`: aprobado. Assess: high/unassessable por inventario untracked no declarado, review_due true; no iniciada lifecycle.
+- Sin commit, push ni deploy.
+- Controles independientes tras fallo de check: `npx eslint app/teclab/page.tsx tests/teclab-landing.test.mjs` y `npm run typecheck` aprobados. Suite completa no repetida porque el comando solicitado falló antes de tests; prueba focal5/5 sí ejecutada.
+- Navegador1280/375: catálogo antes de test, test antes de preinscripción, preinscripción antes de articulación; prueba fuente verifica contacto también. Capturas completas nuevas `/tmp/teclab-test-orden/teclab-1280.png` y `/tmp/teclab-test-orden/teclab-375.png`, inspección visual correcta. Servidor3000 existente reutilizado.

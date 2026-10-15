@@ -195,11 +195,6 @@ export default async function TeclabPage() {
           <CareersCatalog carreras={carreras} />
         </section>
 
-        {/* Toda la oferta de esta página es de una casa, así que acá la casa
-            va fija y no hay nada dinámico: los campos son siempre los de Teclab. */}
-        <FormularioLead carreras={carreras} modo="contacto" casa="teclab" origen="teclab" />
-        <FormularioLead carreras={carreras} modo="preinscripcion" casa="teclab" origen="teclab" />
-
         {/* Para quien recorrio el catalogo y no se decide: el test recomienda
             entre estas mismas carreras y termina en la ficha o en WhatsApp. */}
         <section className="teclab-test" aria-labelledby="teclab-test-title">
@@ -211,6 +206,11 @@ export default async function TeclabPage() {
             Hacer el test vocacional <span aria-hidden="true">→</span>
           </Link>
         </section>
+
+        {/* Toda la oferta de esta página es de una casa, así que acá la casa
+            va fija y no hay nada dinámico: los campos son siempre los de Teclab. */}
+        <FormularioLead carreras={carreras} modo="contacto" casa="teclab" origen="teclab" />
+        <FormularioLead carreras={carreras} modo="preinscripcion" casa="teclab" origen="teclab" />
 
         <section className="teclab-continuity" aria-labelledby="teclab-continuity-title">
           <div className="teclab-continuity-copy">
