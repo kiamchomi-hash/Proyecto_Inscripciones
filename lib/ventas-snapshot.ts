@@ -3,6 +3,7 @@ import 'server-only';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 
+import { normalizarActualizacion2027, type Actualizacion2027 } from '@/lib/ventas-estado';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
 
 const BUCKET = process.env.VENTAS_STORAGE_BUCKET ?? 'ventas-privadas';
@@ -20,6 +21,7 @@ export interface VentasSnapshotMeta {
   periodo: string | null;
   promoHasta: string | null;
   bytes: number;
+  actualizacion2027: Actualizacion2027 | null;
 }
 
 export interface VentasSnapshot {
@@ -84,6 +86,7 @@ export function validarSnapshot(html: string): VentasSnapshotMeta {
     periodo: typeof datos.periodo === 'string' ? datos.periodo : null,
     promoHasta: typeof datos.promoHasta === 'string' ? datos.promoHasta : null,
     bytes,
+    actualizacion2027: normalizarActualizacion2027(datos.actualizacion2027),
   };
 }
 
@@ -97,9 +100,17 @@ async function leerDeSupabase(): Promise<VentasSnapshot | null> {
 
     if (htmlError || !htmlBlob) return null;
     const html = await htmlBlob.text();
-    const meta = metaError || !metaBlob
-      ? validarSnapshot(html)
-      : JSON.parse(await metaBlob.text()) as VentasSnapshotMeta;
+    // El HTML es la unidad publicada: un JSON lateral legado o atrasado no
+    // puede convertir un relevamiento incompleto en verde.
+    const meta = validarSnapshot(html);
+    if (!metaError && metaBlob) {
+      try {
+        const lateral = JSON.parse(await metaBlob.text()) as Partial<VentasSnapshotMeta>;
+        if (typeof lateral.actualizado === 'string' && Number.isFinite(Date.parse(lateral.actualizado))) {
+          meta.actualizado = lateral.actualizado;
+        }
+      } catch { /* Se conserva el estado embebido aunque el lateral esté dañado. */ }
+    }
 
     return { html, meta, source: 'supabase' };
   } catch {

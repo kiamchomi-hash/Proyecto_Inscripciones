@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { estadoActualizacion2027, promocionVencida } from '@/lib/ventas-estado';
 import type { VentasSnapshotMeta } from '@/lib/ventas-snapshot';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -32,6 +33,17 @@ export default function BuscadorWorkspace({ html, meta, source }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [standalone, setStandalone] = useState(false);
+  const [ahora, setAhora] = useState<Date | undefined>();
+  const estado = estadoActualizacion2027(meta?.actualizacion2027, ahora);
+  const vencida = promocionVencida(meta?.promoHasta, ahora);
+
+  useEffect(() => {
+    const actualizar = () => setAhora(new Date());
+    actualizar();
+    const reloj = window.setInterval(actualizar, 60000);
+    window.addEventListener('focus', actualizar);
+    return () => { window.clearInterval(reloj); window.removeEventListener('focus', actualizar); };
+  }, []);
 
   useEffect(() => {
     setStandalone(window.matchMedia('(display-mode: standalone)').matches);
@@ -91,12 +103,12 @@ export default function BuscadorWorkspace({ html, meta, source }: Props) {
         </div>
 
         <div className="buscador-app__status" aria-live="polite">
-          <span className={`buscador-app__dot ${html ? 'is-ready' : 'is-empty'}`} />
+          <span className={`buscador-app__dot ${html && estado.nivel === 'ok' && !vencida ? 'is-ready' : 'is-empty'}`} />
           <div>
-            <strong>{html ? `${meta?.carreras ?? '—'} carreras disponibles` : 'Falta publicar el buscador'}</strong>
+            <strong>{html ? (estado.nivel === 'ok' && vencida ? 'Promoción vencida' : estado.titulo) : 'Falta publicar el buscador'}</strong>
             <span>
               {html
-                ? `Actualizado ${fechaVisible(meta?.actualizado)}${meta?.periodo ? ` · Período ${meta.periodo}` : ''}`
+                ? `Publicado ${fechaVisible(meta?.actualizado)}${meta?.periodo ? ` · Período ${meta.periodo}` : ''}`
                 : 'Elegí el HTML generado en esta computadora'}
             </span>
           </div>
@@ -128,6 +140,14 @@ export default function BuscadorWorkspace({ html, meta, source }: Props) {
           </button>
         </div>
       </header>
+
+      {html && estado.nivel !== 'ok' && (
+        <div className="buscador-app__notice is-warning" role="status">{estado.detalle}</div>
+      )}
+
+      {html && vencida && (
+        <div className="buscador-app__notice is-warning" role="status">Promoción vencida: confirmá las condiciones comerciales antes de cotizar.</div>
+      )}
 
       {message && (
         <div className="buscador-app__notice" role="status">
