@@ -888,3 +888,33 @@
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.9);
 }
+
+
+/* Cierre de Siglo 21: dos acciones del mismo ancho sin cambiar el panel de precio
+   ni los modales de las otras casas. Conserva los botones y sus estados de foco. */
+.siglo21-cierre-acciones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .625rem;
+  width: 100%;
+}
+
+.siglo21-cierre-acciones > .vp-boton,
+.siglo21-cierre-acciones > .vp-whatsapp {
+  width: 100%;
+  min-height: 44px;
+  min-width: 0;
+  text-align: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .siglo21-cierre-foto {
+    width: 100%;
+    height: 46%;
+  }
+
+  .siglo21-cierre-acciones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

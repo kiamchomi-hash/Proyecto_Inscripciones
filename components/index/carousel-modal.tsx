@@ -1205,21 +1205,25 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
   );
 }
 
-function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { slide: import('./types').SlideCierre; carrera?: Carrera; onInscribir: () => void; onVerPrecio?: () => void }) {
+export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { slide: import('./types').SlideCierre; carrera?: Carrera; onInscribir: () => void; onVerPrecio?: () => void }) {
+  const esSiglo21 = carrera ? casaDeCarrera(carrera) === 'siglo21' : false;
+  // El cierre de las carreras a distancia muestra estudio online, no la fachada de una sede.
+  const imagen = esSiglo21 ? '/imagenes/novedades/carreras-de-grado-a-distancia.jpg' : slide.imagen;
+  const altImagen = esSiglo21 ? 'Estudiante con una computadora portátil y un cuaderno' : 'Instituto';
   return (
-    <div className="h-full flex flex-col md:flex-row overflow-hidden relative bg-[#011f17]">
+    <div className={`h-full flex flex-col ${esSiglo21 ? "md:flex-col" : "md:flex-row"} overflow-hidden relative bg-[#011f17]`}>
       {/* Mobile top banner */}
-      {slide.imagen && (
+      {imagen && (
         <div className="md:hidden relative h-[24vh] shrink-0 overflow-hidden">
-          <img src={encodeImagePath(slide.imagen!)} alt="Instituto" className="absolute inset-0 w-full h-full object-cover object-center" />
+          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-center" style={esSiglo21 ? { objectPosition: 'center 65%' } : undefined} />
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 55%, #011f17 100%)' }} />
         </div>
       )}
       {/* Desktop side image */}
-      {slide.imagen && (
-        <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
-          <img src={encodeImagePath(slide.imagen!)} alt="Instituto" className="absolute inset-0 w-full h-full object-cover object-left-bottom" />
-          <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
+      {imagen && (
+        <div className={esSiglo21 ? "siglo21-cierre-foto hidden md:block shrink-0 relative overflow-hidden bg-[#011f17] z-10" : "hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10"}>
+          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-left-bottom" style={esSiglo21 ? { objectFit: 'contain', objectPosition: 'center' } : undefined} />
+          {!esSiglo21 && <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />}
         </div>
       )}
       {/* Los márgenes automáticos centran sólo cuando sobra alto; al ampliar
@@ -1256,7 +1260,7 @@ function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { slide: 
         {/* WhatsApp + inscripción. Antes el segundo era la dirección de la sede:
             se sacó como en Teclab, porque la carrera se cursa a distancia y a
             un lead que vive lejos una dirección le lee como un requisito. */}
-        <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full">
+        <div className={esSiglo21 ? "siglo21-cierre-acciones" : "flex flex-wrap justify-center md:justify-start gap-2 md:gap-2.5 w-full"}>
           {carrera && onVerPrecio ? (
             <AccesoVerPrecio acento="#00c7b1" textoAcento="#013729"
               waHref={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}

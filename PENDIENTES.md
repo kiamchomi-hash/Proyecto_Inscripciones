@@ -39,7 +39,7 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 ## Comercial y contenido
 
-- [ ] **Confirmar la fecha de vigencia de los precios 2027 de Siglo 21 esta tarde (14/10/2026)**. Revisar la celda del Excel correspondiente al CAU VLG01 antes de preparar y publicar los precios privados del sitio; no asumir que el vencimiento de una promoción es el de la lista. La carga de precios sigue pendiente de autorización; el deploy del flujo web fue autorizado. [Avance](odd/tasks/siglo21-ver-precios-newsletter.md).
+- [ ] **Completar la actualización diaria y publicación de aranceles 2027 de Siglo 21**. Consultas CASA de toda la oferta y carga privada por cau_editor autorizadas. Verificar cobertura y vigencia original antes de publicar; no prolongar fechas vencidas. Integración local al script diario realizada, ejecución y publicación todavía en comprobación. [Avance](odd/tasks/siglo21-ver-precios-newsletter.md).
 
 - [ ] **3. Mejorar el mensaje de aranceles**.
 - [ ] **4. Extraer los precios 2027 de Universidad Siglo 21**.
