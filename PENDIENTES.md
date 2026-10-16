@@ -18,7 +18,7 @@ Completado el 16/10/2026: límite de correos de «Ver precio», con concurrencia
 
 - [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción** (para más adelante). Hoy «Quiero inscribirme» (modales, ficha y mail) lleva directo al formulario sin pasar por el precio. La idea es que uno de los pasos del formulario muestre el precio de la carrera elegida, como los pasos que ya tiene Teclab. En los modales están bien los dos botones, «Ver precio» y WhatsApp; eso no se toca (aclarado el 16/10/2026).
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
-- [ ] **Reducir el formulario de preinscripción de Siglo 21**.
+- [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
 ## 4. Teclab
 
