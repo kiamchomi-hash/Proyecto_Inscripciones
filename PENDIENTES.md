@@ -15,8 +15,7 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 3. Urgente: leads y precios
 
-- [ ] **Siglo 21: retomar la autoinscripción**. Estaba prevista para la tarde del 14/10/2026 y quedó atrasada; por ahora sólo funcionan precios, newsletter y formulario de preinscripción.
-- [ ] **Ver que llegue el mail de Teclab**. Los precios vencieron el 15/10/2026 y el robot no publica una promoción vencida (`ventas/fuentes/teclab/price-automation/README.md`). Falta que Teclab cargue la promoción del siguiente período; revisar el log de la corrida de las 9:00 (`logs/precios_AAAA-MM-DD.log`) y después probar un envío real.
+- [ ] **Ver que llegue el mail de Teclab**. Al 16/10/2026 los 17 precios de Teclab en `precios_privados` vuelven a estar vigentes (hasta el 16/10, cargados a las 9:48 tras la corrida de las 9:00, 18 programas OK). Falta un envío real: pedir «Ver precio» de una carrera de Teclab con un mail propio y confirmar que llega. Lo hace el usuario, porque el formulario tiene Turnstile y el mail llega a su bandeja.
 - [ ] **Arreglar los precios que se muestran en los modales de carreras de Siglo 21**.
 - [ ] **Mostrar los precios antes de derivar a WhatsApp siempre que se pueda**, para que la persona llegue al chat con el precio ya visto.
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
@@ -49,6 +48,7 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 5. Siglo 21
 
+- [ ] **Autoinscripción de Siglo 21: postergada el 16/10/2026**. Hoy el formulario sólo registra la solicitud y la atención sigue a mano. Antes de retomarla, definir si se hace con un robot en el portal de Siglo 21 (como en Teclab) o con un enlace personalizado.
 - [ ] **Publicar las cinco altas de carreras de la home** (`altas-cinco-carreras-home-siglo21` T2): payloads preparados; falta la transacción remota, comprobar las cinco páginas y las capturas.
 - [ ] **Pulir el FAQ de Procurador, Gestión Contable y Seguros y revisar los textos de la cabecera** (`seo-tres-fichas` T5 y T6). Contrastar la introducción con la `descripcion` previa al 05/10/2026 (respaldo en `notas-locales/seo-tres-fichas/estado-previo.json`).
 - [ ] **3. Mejorar el mensaje de aranceles**.
