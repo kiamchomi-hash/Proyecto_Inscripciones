@@ -557,7 +557,7 @@ export function PanelVerPrecio({
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
-          {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Quiero inscribirme</a>}
+          {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-violeta">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto={casa === 'siglo21' ? 'Consultar por WhatsApp' : 'Consultar precio vigente'} principal />
           <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />
         </div>

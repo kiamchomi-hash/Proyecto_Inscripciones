@@ -553,7 +553,7 @@ test('Teclab vencido: aviso de una línea y aclaraciones debajo de WhatsApp',asy
   assert.match(html,/Promoción vencida 16\/10 - Valores de referencia/);
   assert.doesNotMatch(html,/Estos valores son sólo|Promoción finalizada/);
   assert.doesNotMatch(html,/vp-vigencia/);
-});
+  assert.match(html,/class="vp-total"/);});
 test('Teclab conserva nombre de carrera y aclaraciones antes de WhatsApp',async()=>{
   const html=await pintarPanelPrecio('teclab');
   assert.match(html,/>Abogacía<|vp-rotulo/);

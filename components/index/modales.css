@@ -518,6 +518,25 @@
   filter: brightness(1.1);
 }
 
+/* «Quiero inscribirme» del precio vencido: violeta de Teclab Gestión, fijo y
+   no del acento de la carrera, para que se distinga del total. */
+.vp-violeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: #8e2cf2;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  transition: filter 0.15s;
+}
+
+.vp-violeta:hover {
+  filter: brightness(1.1);
+}
+
 /* El error del servidor, dentro del botón: mismo alto, otro color. */
 .vp-primario-error {
   background: #f87171;
@@ -745,8 +764,10 @@
   /* Mismo margen lateral que las filas: el total cierra en el mismo borde. */
   padding: 0.6rem 0.65rem;
   border-radius: 4px;
-  background: var(--vp-acento);
-  color: var(--vp-texto-acento);
+  /* Azul de marca con texto blanco, en todas las vistas: no depende del acento
+     de la carrera, que puede ser violeta como el botón Quiero inscribirme. */
+  background: var(--cau-brand-blue);
+  color: #fff;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 
