@@ -11,22 +11,10 @@ export type Database = {
   // Permite instanciar createClient con las opciones correctas
   // en lugar de createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
-      reservas_mail_precio: {
-        Row: { email: string; carrera_id: number; reservado_at: string }
-        Insert: { email: string; carrera_id: number; reservado_at?: string }
-        Update: { email?: string; carrera_id?: number; reservado_at?: string }
-        Relationships: [{
-          foreignKeyName: "reservas_mail_precio_carrera_id_fkey"
-          columns: ["carrera_id"]
-          isOneToOne: false
-          referencedRelation: "carreras"
-          referencedColumns: ["id"]
-        }]
-      }
       career_clicks: {
         Row: {
           carrera: string
@@ -675,6 +663,32 @@ export type Database = {
           },
         ]
       }
+      reservas_mail_precio: {
+        Row: {
+          carrera_id: number
+          email: string
+          reservado_at: string
+        }
+        Insert: {
+          carrera_id: number
+          email: string
+          reservado_at?: string
+        }
+        Update: {
+          carrera_id?: number
+          email?: string
+          reservado_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservas_mail_precio_carrera_id_fkey"
+            columns: ["carrera_id"]
+            isOneToOne: false
+            referencedRelation: "carreras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       robot_autoinscripciones: {
         Row: {
           consulta_id: number
@@ -803,10 +817,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      reservar_mail_precio: {
-        Args: { p_email: string; p_carrera_id: number }
-        Returns: boolean
-      }
       check_form_rate_limit: {
         Args: {
           p_key: string
@@ -818,6 +828,10 @@ export type Database = {
       registrar_click_carrera: {
         Args: { p_carrera: string; p_origen?: string }
         Returns: undefined
+      }
+      reservar_mail_precio: {
+        Args: { p_carrera_id: number; p_email: string }
+        Returns: boolean
       }
     }
     Enums: {
