@@ -14,7 +14,7 @@ import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, ty
 import TurnstileWidget from '@/components/turnstile-widget';
 import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type CasaId, type LineaPrecio } from '@/components/formularios/casas';
 import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
-import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
+import { COBERTURA_SIGLO21, coberturaDelPago } from '@/components/formularios/cobertura-pago';
 
 /** Desde cuándo «Verificando…» pasa a pedir unos segundos más. */
 const DEMORA_TOKEN_MS = 5000;
@@ -533,10 +533,12 @@ export function PanelVerPrecio({
               fuera de la vista. */}
           {casa === 'siglo21' && <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>}
           <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={casa !== 'siglo21'} />
+          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
-              <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" />
+              {/* En Siglo 21 va lleno: con contorno, sobre el fondo verde, no se leía como WhatsApp. */}
+              <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal={casa === 'siglo21'} />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
           {casa === 'teclab' && <Financiacion />}
@@ -549,11 +551,12 @@ export function PanelVerPrecio({
             <strong>{`${casa === 'siglo21' ? 'Precio vencido' : 'Promoción vencida'} ${diaMes(precio.vigenteHasta)} - Valores de referencia`}</strong>
           </p>
           <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} aclaraciones={false} />
+          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
           {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-violeta">Quiero inscribirme</a>}
-          <EnlaceWhatsApp href={waHref} texto={casa === 'siglo21' ? 'Consultar por WhatsApp' : 'Consultar precio vigente'} principal />
+          <EnlaceWhatsApp href={waHref} texto="Consultar por WhatsApp" principal />
           {/* Siglo 21: la fecha ya va en el aviso y la nota de la promoción no se muestra. */}
           {casa !== 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />}
         </div>

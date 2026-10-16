@@ -518,7 +518,7 @@ test('Siglo 21 muestra referencias sin exigir confirmar precios y conserva el te
   const { readFile } = await import('node:fs/promises');
   const fuente = await readFile('components/index/ver-precio-teclab.tsx', 'utf8');
   assert.match(fuente, /'Precio vencido' : 'Promoción vencida'\} \$\{diaMes\(precio\.vigenteHasta\)\} - Valores de referencia/);
-  assert.match(fuente, /texto=\{casa === 'siglo21' \? 'Consultar por WhatsApp' : 'Consultar precio vigente'\}/);
+  assert.doesNotMatch(fuente, /Consultar precio vigente/);
 });
 
 async function pintarPanelPrecio(casa, vista = 'precio') {
@@ -545,6 +545,8 @@ test('Siglo21 pone la vigencia arriba en un contenedor y no muestra la nota de l
     const arriba=html.indexOf(vigencia);
     assert.ok(arriba>=0 && arriba<html.indexOf('class="vp-total"'));
     assert.doesNotMatch(html,/Aranceles 2027 con promoción|vp-vigencia/);
+    assert.match(html,/Se paga por cuatrimestre: la matrícula y los tickets de cada bimestre\./);
+    assert.match(html,/vp-whatsapp-lleno/);
   }
 });
 test('Teclab vencido: aviso de una línea y aclaraciones debajo de WhatsApp',async()=>{

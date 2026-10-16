@@ -244,7 +244,7 @@ test('Siglo 21 muestra lista 2027 y enlaza la preinscripción sin mensajes de Te
 
 test('el mail de Siglo 21 dice qué cubre el pago, igual que el de Teclab, con un solo texto', () => {
   const carreraSiglo = { nombre: 'Administración', prefix: 'Licenciatura en', nombre_corto: 'Administración', duracion: '4 años', nivel: 'Licenciaturas' };
-  const aclaracion = 'Cubre la matrícula y los bimestres que cursás desde tu inscripción. La carrera tiene 8 cuatrimestres (16 bimestres), y cada uno se paga aparte: matrícula y bimestres.';
+  const aclaracion = 'Cubre la matrícula y los bimestres que cursás desde tu inscripción. Se paga por cuatrimestre: la matrícula y los tickets de cada bimestre.';
   for (const hoy of ['2026-10-03', '2026-11-10']) {
     const mail = armar({ carrera: carreraSiglo, hoy: dia(hoy) });
     assert.ok(mail.html.includes(aclaracion), mail.html);
