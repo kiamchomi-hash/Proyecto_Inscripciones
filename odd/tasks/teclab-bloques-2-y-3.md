@@ -40,7 +40,7 @@ la fecha de inicio y la opción de HubSpot. Va a haber un bloque 4.
   general y de Teclab, tests.
 - [x] T2. SQL de alta de las nueve filas (`sql/2026-10-16_teclab_bloques_2_y_3.sql`).
 - [x] T3. `npm run check` y commit.
-- [ ] T4. Publicar (push, decisión del usuario) y correr el SQL.
+- [x] T4. Publicar (push, decisión del usuario) y correr el SQL.
 
 ## Pendientes fuera de este repo o sin dato
 
@@ -91,3 +91,6 @@ carreras de Siglo 21 no cambian de área (comparado sobre las 99 activas).
 - 16/10/2026: las nueve no muestran fecha de inicio (`SIN_FECHA_CONFIRMADA` en
   `components/index/inicio-teclab.ts`) hasta que Teclab publique su bimestre; meta del
   test de Teclab pasa a «Siete preguntas». `npm run check`: 488/488.
+- 16/10/2026: T4 hecho. Push `343d476` (deploy Ready), SQL corrido (ids 250-258). En
+  producción las nueve fichas y sus `/inscripcion` dan 200, sin «null», y están en el
+  sitemap.
