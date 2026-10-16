@@ -6,6 +6,8 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 ## Sitio y diseño — 16/10/2026
 
+- [x] **Corregir el autoscroll al formulario de preinscripción**. Resuelto el 16/10/2026 (`b6dee87`): el enlace del mail de «ver precio» lleva a la página dedicada `/carreras/<slug>/inscripcion` en lugar de la ficha con `?desde=mail`. Lo cubre `tests/mail-precio.test.mjs`.
+
 - [x] **Mejorar la estética del modal de carreras de Siglo 21**. Resuelto el 16/10/2026 en el slide de precio, aprobado por el usuario: fondo rayado sobre verde muy oscuro, superficies sólidas sin transparencias, total con borde y monto en cian, vigencia arriba en un contenedor, «Quiero inscribirme» en verde de WhatsApp y la aclaración de pago debajo (`404f08a`, `8b17323`, `8bd1c5a`, `fb856ec`, `d18632e`). El último commit llevó al slide de Teclab la misma vigencia, aclaración y superficies sólidas.
 
 ## Herramientas — 11/10/2026

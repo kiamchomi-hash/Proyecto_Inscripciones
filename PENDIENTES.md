@@ -42,7 +42,6 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 - [ ] **Corregir el modal de carreras de Teclab**.
 - [ ] **Corregir las páginas de Computación**.
 - [x] **Corregir la web de Teclab** (15/10/2026). Test vocacional debajo de las carreras, articulación después de los formularios y ajustes responsive. Publicado mediante los commits `3bb9355` y `0d28969`; [comprobaciones y limitaciones](odd/tasks/teclab-responsive-formulario.md).
-- [ ] **Corregir el autoscroll al formulario de preinscripción**. Cuando la carrera se inscribe por mail, el enlace debe llevar a la página dedicada de inscripción, no a la de la carrera.
 - [x] **Arreglar la estética de los mails de Siglo 21 y de Teclab** (commit `46cc8fc`). Ver el mail de Teclab en la bandeja queda como pendiente aparte.
 - [ ] **Revisar el flujo de inscripción**.
 
