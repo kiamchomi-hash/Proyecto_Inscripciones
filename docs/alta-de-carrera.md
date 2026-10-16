@@ -57,8 +57,9 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
     bajan con `scripts/descargar-assets-teclab.mjs`. Una anunciada va en
     `PORTADAS_ANUNCIADAS` hasta que tenga ficha oficial.
   - [ ] **M, opcional** — `DESTACADAS` (las tres competencias del modal).
-  - [ ] **A** — `articulaConSiglo21` (todas menos Seguros y las `proximamente`). Si la
-    nueva no articula, agregarla a mano.
+  - [ ] **M** — `articulaConSiglo21`: articulan todas menos las `proximamente` y las de
+    `SIN_ARTICULACION_CONFIRMADA` (Seguros y las altas del 16/10/2026). Si la fuente no
+    dice con qué licenciatura sigue, la nueva va en esa lista.
   - [ ] **M** — `/teclab`: `PARTNERS` y `MOSAICO` (`app/teclab/page.tsx`), en sincronía
     con `FICHAS.partner`.
 - [ ] **M** — Identidad: `ESCUELAS` (`components/index/identidad-argentina.ts`); sin
@@ -113,8 +114,11 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   `PREGUNTAS[].terminos` (`components/test-vocacional/test-vocacional.tsx`). Si falta,
   en desarrollo la consola avisa «Carreras sin una ruta específica». Probar con
   `tests/test-vocacional.test.mjs`.
-- [ ] **M** — Test vocacional de Teclab: todavía no existe ([tarea](../odd/tasks/test-vocacional-teclab.md)).
-  Cuando exista, cada alta de Teclab va a necesitar su puntaje.
+- [ ] **M** — Test vocacional de Teclab (`/teclab/test-vocacional`): cada alta de Teclab
+  necesita su perfil en `PERFILES` y puntos en `PREGUNTAS`
+  (`components/test-vocacional-teclab/puntaje.ts`). Sin perfil queda fuera del
+  resultado. `tests/test-vocacional-teclab.test.mjs` exige que todas puedan salir
+  primeras y que ninguna quede favorecida: al sumar una hay que rebalancear los pesos.
 
 ## 6. Bot de WhatsApp y material comercial (carpetas gitignoradas)
 

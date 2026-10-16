@@ -23,6 +23,20 @@ const EDICIONES_CURSO = [
 const NIVELES_TECNICATURA = ['Teclab - Tecnología', 'Teclab - Gestión'];
 const NIVEL_CURSO = 'Teclab - Curso';
 
+// Altas de los bloques 2 y 3 (16/10/2026): abiertas, pero sin fecha de inicio
+// confirmada. Sacarlas de aca cuando Teclab publique su bimestre.
+const SIN_FECHA_CONFIRMADA = new Set([
+  'Tecnicatura Superior en Administración de Empresas',
+  'Tecnicatura Superior en Administración de Negocios Digitales Financieros',
+  'Tecnicatura Superior en Logística',
+  'Tecnicatura Superior en Comercio Exterior',
+  'Tecnicatura Superior en Administración de Riesgos Empresariales',
+  'Tecnicatura Superior en Diseño de Producto Digital',
+  'Tecnicatura Superior en Diseño de Experiencia de Usuario (User Experience)',
+  'Tecnicatura Superior en Gestión de Equipos Ágiles (Agile Coaching)',
+  'Tecnicatura Superior en Recursos Humanos',
+]);
+
 const MESES = [
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
@@ -74,8 +88,12 @@ function resultado(inicio: string, hasta: string, hoy: string): InicioTeclab {
  * Teclab o no hay inscripcion abierta. Las fechas se comparan como texto
  * YYYY-MM-DD, que ordena igual que el calendario.
  */
-export function inicioTeclab(carrera: Pick<Carrera, 'nivel'>, ahora: Date): InicioTeclab | null {
+export function inicioTeclab(
+  carrera: Pick<Carrera, 'nivel'> & Partial<Pick<Carrera, 'nombre'>>,
+  ahora: Date,
+): InicioTeclab | null {
   const hoy = fechaArgentina(ahora);
+  if (carrera.nombre && SIN_FECHA_CONFIRMADA.has(carrera.nombre)) return null;
 
   if (carrera.nivel === NIVEL_CURSO) {
     const edicion = EDICIONES_CURSO.find(e => e.ventaDesde <= hoy && hoy <= e.ventaHasta);

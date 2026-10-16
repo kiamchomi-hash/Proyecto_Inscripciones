@@ -15,16 +15,16 @@ export default function AvisoInicioTeclab({
   acento,
   className = '',
 }: {
-  carrera: Pick<Carrera, 'nivel'>;
+  carrera: Pick<Carrera, 'nivel' | 'nombre'>;
   acento: string;
   className?: string;
 }) {
   const [inicio, setInicio] = useState<InicioTeclab | null>(null);
-  const { nivel } = carrera;
+  const { nivel, nombre } = carrera;
 
   useEffect(() => {
-    setInicio(inicioTeclab({ nivel }, new Date()));
-  }, [nivel]);
+    setInicio(inicioTeclab({ nivel, nombre }, new Date()));
+  }, [nivel, nombre]);
 
   if (!inicio) return null;
 

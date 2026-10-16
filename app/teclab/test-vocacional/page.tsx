@@ -18,7 +18,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: { absolute: 'Test vocacional Teclab: qué tecnicatura va con vos' },
-  description: 'Seis preguntas de un toque y te mostramos las tecnicaturas Teclab que más van con vos. Sin registrarte, con asesoramiento por WhatsApp.',
+  description: 'Siete preguntas de un toque y te mostramos las tecnicaturas Teclab que más van con vos. Sin registrarte, con asesoramiento por WhatsApp.',
   alternates: { canonical: URL },
 };
 

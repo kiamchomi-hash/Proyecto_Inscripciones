@@ -67,6 +67,13 @@ const TIPOS: { match: string; tipo: string }[] = [
   { match: 'proyectos mineros', tipo: 'Gestión' },
   { match: 'gestión ambiental', tipo: 'Gestión' },
   { match: 'higiene y seguridad', tipo: 'Gestión' },
+  { match: 'administración de empresas', tipo: 'Negocios' },
+  { match: 'negocios digitales financieros', tipo: 'Negocios' },
+  { match: 'logística', tipo: 'Gestión' },
+  { match: 'comercio exterior', tipo: 'Negocios' },
+  { match: 'riesgos empresariales', tipo: 'Gestión' },
+  { match: 'equipos ágiles', tipo: 'Gestión' },
+  { match: 'recursos humanos', tipo: 'Gestión' },
   { match: 'periodismo', tipo: 'Comunicación' },
 ];
 
@@ -97,7 +104,11 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
   if (nombre.includes('data science') || nombre.includes('inteligencia artificial')) return 'Datos e IA';
   if (nombre.includes('cloud administration') || nombre.includes('redes informáticas') || nombre.includes('energías renovables')) return 'Infraestructura';
   if (nombre.includes('seguridad informática')) return 'Ciberseguridad';
-  if (nombre.includes('programación') || nombre.includes('quality assurance')) return 'Desarrollo';
+  // Diseño de Producto Digital y Diseño UX van en Desarrollo: son parte del
+  // equipo que construye la aplicación. No se matchea 'producto digital' a secas
+  // para no revivir la anunciada de baja (id 245).
+  if (nombre.includes('programación') || nombre.includes('quality assurance')
+    || nombre.includes('diseño de producto digital') || nombre.includes('experiencia de usuario')) return 'Desarrollo';
   return null;
 }
 
@@ -115,6 +126,22 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
  * esta en el sitio a proposito, por lo mismo que no se enlaza la ficha oficial:
  * el contacto se hace por el formulario de esta pagina o por WhatsApp.
  */
+// Seguros no articula. Las altas del 16/10/2026 (bloques 2 y 3) abrieron con
+// la capacitacion de admision, que no dice con que licenciatura siguen: hasta
+// que Teclab lo confirme no se promete la continuidad.
+const SIN_ARTICULACION_CONFIRMADA = [
+  'seguros',
+  'administración de empresas',
+  'negocios digitales financieros',
+  'logística',
+  'comercio exterior',
+  'riesgos empresariales',
+  'diseño de producto digital',
+  'experiencia de usuario',
+  'equipos ágiles',
+  'recursos humanos',
+];
+
 export function articulaConSiglo21(
   c: Pick<Carrera, 'nombre' | 'nivel'> & Partial<Pick<Carrera, 'proximamente'>>,
 ): boolean {
@@ -122,7 +149,8 @@ export function articulaConSiglo21(
   // Una carrera anunciada sin inscripcion abierta todavia no tiene plan
   // publicado: no hay nada que diga con que licenciatura articula.
   if (c.proximamente) return false;
-  return !c.nombre.toLowerCase().includes('seguros');
+  const nombre = c.nombre.toLowerCase();
+  return !SIN_ARTICULACION_CONFIRMADA.some(match => nombre.includes(match));
 }
 
 /**
@@ -324,8 +352,8 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
   },
 ];
 
-// Las carreras anunciadas todavia no tienen ficha oficial de la que sacar foto.
-// Hasta que Teclab la publique, la portada es una foto de stock de Unsplash
+// Las carreras sin ficha oficial (las anunciadas y las altas nuevas) no tienen de
+// donde sacar foto. Hasta que Teclab la publique, la portada es una foto de stock de Unsplash
 // (licencia libre, sin atribucion obligatoria) elegida por el tema de la carrera.
 const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
   { match: 'gestión de alimentos', imagen: '/imagenes/teclab/carreras/gestion-de-alimentos.webp' },
@@ -336,9 +364,29 @@ const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
   { match: 'gestión ambiental', imagen: '/imagenes/teclab/carreras/gestion-ambiental.webp' },
   // Inspectores de seguridad del BSEE, dominio público en Wikimedia Commons.
   { match: 'higiene y seguridad', imagen: '/imagenes/teclab/carreras/higiene-y-seguridad-en-el-trabajo.webp' },
+  // Bloques 2 y 3 (16/10/2026): abrieron sin ficha oficial en teclab.edu.ar.
+  // Todas de Wikimedia Commons, en dominio público o CC0:
+  // «Discussing business strategy (Unsplash)», rawpixel, CC0.
+  { match: 'administración de empresas', imagen: '/imagenes/teclab/carreras/administracion-de-empresas.webp' },
+  // «Card Payment (176811287)», Mañico, CC0.
+  { match: 'negocios digitales financieros', imagen: '/imagenes/teclab/carreras/negocios-digitales-financieros.webp' },
+  // «FEMA - 37931 - Meals Ready to Eat being moved by fork lift in a Texas warehouse», FEMA, dominio público.
+  { match: 'logística', imagen: '/imagenes/teclab/carreras/logistica.webp' },
+  // «Port of Algeciras 2023 and BF CARODA ship», Melenn14, CC0.
+  { match: 'comercio exterior', imagen: '/imagenes/teclab/carreras/comercio-exterior.webp' },
+  // «Financial Risk Dice On Newspaper», freeGraphicToday, CC0.
+  { match: 'riesgos empresariales', imagen: '/imagenes/teclab/carreras/administracion-de-riesgos-empresariales.webp' },
+  // «Brainstorming over paper (Unsplash)», Helloquence, CC0.
+  { match: 'diseño de producto digital', imagen: '/imagenes/teclab/carreras/diseno-de-producto-digital.webp' },
+  // «Designer sketching Wireframes (Unsplash)», Green Chameleon, CC0.
+  { match: 'experiencia de usuario', imagen: '/imagenes/teclab/carreras/diseno-de-experiencia-de-usuario.webp' },
+  // «People in small discussion group meeting», U.S. Fish and Wildlife Service, dominio público.
+  { match: 'equipos ágiles', imagen: '/imagenes/teclab/carreras/gestion-de-equipos-agiles.webp' },
+  // «Rawpixel.com 2017-06-02 (Unsplash)», rawpixel, CC0.
+  { match: 'recursos humanos', imagen: '/imagenes/teclab/carreras/recursos-humanos.webp' },
 ];
 
-/** Foto de portada de una carrera de Teclab: la de su ficha oficial o, si es anunciada, la de stock. */
+/** Foto de portada de una carrera de Teclab: la de su ficha oficial o, si no la tiene, la de stock. */
 export function getPortadaTeclab(carrera: Pick<Carrera, 'nombre'> & Partial<Pick<Carrera, 'nombre_corto'>>): string | null {
   const ficha = getFichaTeclab(carrera);
   if (ficha) return ficha.imagen;

@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PERFILES, PREGUNTAS, perfilDe, puntuar, recomendar } from '../components/test-vocacional-teclab/puntaje.ts';
 
-// Las 21 tecnicaturas activas de Teclab al 09/10/2026, tal como vienen de Supabase
+// Las 30 tecnicaturas activas de Teclab al 16/10/2026, tal como vienen de Supabase
 // (id, nombre, nombre_corto y orden). El test no es la fuente de datos: sirve
-// para probar que cada una tiene perfil y puede salir primera.
+// para probar que cada una tiene perfil y puede salir primera. Las nueve de los
+// bloques 2 y 3 (orden 1109 a 1117) llevan ids provisorios hasta que corra
+// sql/2026-10-16_teclab_bloques_2_y_3.sql.
 const CARRERAS = [
   [217, 'Tecnicatura Superior en Programación', 'Programación', 1001],
   [218, 'Tecnicatura Superior en Data Science', 'Data Science', 1002],
@@ -28,6 +30,15 @@ const CARRERAS = [
   [247, 'Tecnicatura Superior en Gestión de Proyectos Mineros', 'Gestión de Proyectos Mineros', 1106],
   [248, 'Tecnicatura Superior en Gestión Ambiental', 'Gestión Ambiental', 1107],
   [249, 'Tecnicatura Superior en Higiene y Seguridad en el Trabajo', 'Higiene y Seguridad en el Trabajo', 1108],
+  [250, 'Tecnicatura Superior en Administración de Empresas', 'Administración de Empresas', 1109],
+  [251, 'Tecnicatura Superior en Administración de Negocios Digitales Financieros', 'Administración de Negocios Digitales Financieros', 1110],
+  [252, 'Tecnicatura Superior en Logística', 'Logística', 1111],
+  [253, 'Tecnicatura Superior en Comercio Exterior', 'Comercio Exterior', 1112],
+  [254, 'Tecnicatura Superior en Administración de Riesgos Empresariales', 'Administración de Riesgos Empresariales', 1113],
+  [255, 'Tecnicatura Superior en Diseño de Producto Digital', 'Diseño de Producto Digital', 1114],
+  [256, 'Tecnicatura Superior en Diseño de Experiencia de Usuario (User Experience)', 'Diseño de Experiencia de Usuario (UX)', 1115],
+  [257, 'Tecnicatura Superior en Gestión de Equipos Ágiles (Agile Coaching)', 'Gestión de Equipos Ágiles (Agile Coaching)', 1116],
+  [258, 'Tecnicatura Superior en Recursos Humanos', 'Recursos Humanos', 1117],
 ].map(([id, nombre, nombre_corto, orden]) => ({ id, nombre, nombre_corto, orden }));
 
 test('cada carrera actual tiene un perfil propio, distinto del de las demás', () => {
@@ -81,7 +92,10 @@ test('el resultado es determinístico y el empate se resuelve por orden del cat�
   assert.deepEqual(puntos, [...puntos].sort((a, b) => b - a));
 });
 
-test('cada una de las 21 tecnicaturas puede salir primera con alguna combinación', () => {
+test('cada una de las 30 tecnicaturas puede salir primera con alguna combinación', () => {
+  // La búsqueda va con `puntuar` (recorrerla con `recomendar` tarda medio
+  // minuto); cada combinación hallada se confirma después con `recomendar`.
+  const perfiles = CARRERAS.map(carrera => [carrera.id, perfilDe(carrera)]);
   const ganadoras = new Map();
   const total = PREGUNTAS.reduce((producto, pregunta) => producto * pregunta.opciones.length, 1);
   for (let n = 0; n < total; n++) {
@@ -91,17 +105,33 @@ test('cada una de las 21 tecnicaturas puede salir primera con alguna combinació
       resto = Math.floor(resto / pregunta.opciones.length);
       return indice;
     });
-    // Primera por puntos, sin ayuda del desempate por orden.
-    const [primera, segunda] = recomendar(CARRERAS, respuestas, 2);
-    if (primera.puntos > segunda.puntos && !ganadoras.has(primera.carrera.id)) ganadoras.set(primera.carrera.id, respuestas);
+    const puntos = puntuar(respuestas);
+    let primera = -1, segunda = -1, ganadora = null;
+    for (const [id, perfil] of perfiles) {
+      const p = puntos[perfil] ?? 0;
+      if (p > primera) { segunda = primera; primera = p; ganadora = id; } else if (p > segunda) segunda = p;
+    }
+    if (primera > segunda && !ganadoras.has(ganadora)) ganadoras.set(ganadora, respuestas);
     if (ganadoras.size === CARRERAS.length) break;
   }
   const faltan = CARRERAS.filter(carrera => !ganadoras.has(carrera.id)).map(carrera => carrera.nombre_corto);
   assert.deepEqual(faltan, []);
+  for (const [id, respuestas] of ganadoras) {
+    // Primera por puntos, sin ayuda del desempate por orden.
+    const [primera, segunda] = recomendar(CARRERAS, respuestas, 2);
+    assert.equal(primera.carrera.id, id);
+    assert.ok(primera.puntos > segunda.puntos);
+  }
 });
 
-test('ninguna tecnicatura queda favorecida: cada una gana sola entre 3% y 6% y los empates no llegan al 10%', () => {
+test('ninguna tecnicatura queda favorecida: cada una gana sola entre 2,1% y 4,2% y los empates no llegan al 10%', () => {
+  // Con 30 carreras el reparto parejo es 1/30 (3,3%) menos los empates; la banda
+  // es la misma proporción que la de 3% a 6% con 21. Se recorren las 279.936
+  // combinaciones con `puntuar` y el perfil de cada carrera calculado una vez:
+  // hacerlo con `recomendar` tarda diez veces más y decide lo mismo (primera y
+  // segunda por puntos).
   const total = PREGUNTAS.reduce((producto, pregunta) => producto * pregunta.opciones.length, 1);
+  const perfiles = CARRERAS.map(carrera => [carrera.id, perfilDe(carrera)]);
   const ganadas = new Map();
   let empates = 0;
   for (let n = 0; n < total; n++) {
@@ -111,14 +141,19 @@ test('ninguna tecnicatura queda favorecida: cada una gana sola entre 3% y 6% y l
       resto = Math.floor(resto / pregunta.opciones.length);
       return indice;
     });
-    const [primera, segunda] = recomendar(CARRERAS, respuestas, 2);
-    if (primera.puntos === segunda.puntos) empates++;
-    else ganadas.set(primera.carrera.id, (ganadas.get(primera.carrera.id) ?? 0) + 1);
+    const puntos = puntuar(respuestas);
+    let primera = -1, segunda = -1, ganadora = null;
+    for (const [id, perfil] of perfiles) {
+      const p = puntos[perfil] ?? 0;
+      if (p > primera) { segunda = primera; primera = p; ganadora = id; } else if (p > segunda) segunda = p;
+    }
+    if (primera === segunda) empates++;
+    else ganadas.set(ganadora, (ganadas.get(ganadora) ?? 0) + 1);
   }
   assert.ok(empates / total < 0.1, `empates: ${(100 * empates / total).toFixed(1)}%`);
   for (const carrera of CARRERAS) {
     const parte = (ganadas.get(carrera.id) ?? 0) / total;
-    assert.ok(parte >= 0.03 && parte <= 0.06, `${carrera.nombre_corto}: ${(100 * parte).toFixed(1)}%`);
+    assert.ok(parte >= 0.021 && parte <= 0.042, `${carrera.nombre_corto}: ${(100 * parte).toFixed(1)}%`);
   }
 });
 

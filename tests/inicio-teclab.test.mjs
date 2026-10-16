@@ -88,3 +88,10 @@ test('nunca se muestra un codigo de periodo', () => {
     assert.doesNotMatch(r.inicioTexto, /\d[AB]\b|bimestre/i);
   }
 });
+
+test('una carrera nueva sin fecha confirmada no muestra inicio', () => {
+  const nueva = { nivel: 'Teclab - Gestión', nombre: 'Tecnicatura Superior en Logística' };
+  assert.equal(inicioTeclab(nueva, dia('2026-10-20')), null);
+  const conFecha = { nivel: 'Teclab - Gestión', nombre: 'Tecnicatura Superior en Seguros' };
+  assert.equal(inicioTeclab(conFecha, dia('2026-10-20'))?.inicio, '2026-10-14');
+});

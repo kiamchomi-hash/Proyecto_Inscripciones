@@ -237,16 +237,16 @@ export type AreaId = (typeof AREAS)[number]['id'];
 // que es el de la lista del filtro.
 const AREA_KEYWORDS: Record<AreaId, string[]> = {
   derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense', 'constitución de sociedades', 'martillero', 'corredor'],
-  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'ciencia de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad'],
+  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'ciencia de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad', 'producto digital', 'experiencia de usuario'],
   exactas: ['estadística'],
   gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
-  negocios: ['administración', 'finanzas', 'negocios digitales', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'customer experience', 'experiencia del cliente', 'seguros', 'logística', 'marketing para emprendedores', 'compliance', 'management hotelero'],
+  negocios: ['administración', 'finanzas', 'negocios digitales', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'customer experience', 'experiencia del cliente', 'seguros', 'logística', 'comercio exterior', 'marketing para emprendedores', 'compliance', 'management hotelero'],
   salud: ['nutrición', 'gerontología', 'terapia ocupacional', 'servicios de salud', 'coaching nutricional', 'personas mayores', 'láser', 'tecnologías médicas', 'mindfulness', 'bienestar integral', 'bioinformática'],
   educacion: ['educación', 'psicopedagogía', 'profesorado', 'innovación educativa', 'niñez', 'adolescencia', 'matemática'],
   comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos', 'comercialización', 'videojuegos', 'marketing digital', 'inbound marketing'],
   ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'alimentos', 'mineros', 'minera', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
   turismo: ['turística', 'turísticos', 'hotelera', 'turismo'],
-  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'oratoria', 'equipos de alto desempeño', 'rrhh'],
+  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'oratoria', 'equipos de alto desempeño', 'equipos ágiles', 'rrhh'],
   deporte: ['deportiva', 'deportivo', 'nutrición deportiva', 'fútbol'],
 };
 

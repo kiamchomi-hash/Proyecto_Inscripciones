@@ -200,7 +200,7 @@ export default async function TeclabPage() {
         <section className="teclab-test" aria-labelledby="teclab-test-title">
           <div>
             <h2 id="teclab-test-title">¿Qué carrera elegir?</h2>
-            <p>Respondé seis preguntas y conocé las carreras más afines a tus intereses.</p>
+            <p>Respondé siete preguntas y conocé las carreras más afines a tus intereses.</p>
           </div>
           <Link className="teclab-button teclab-button--ghost" href="/teclab/test-vocacional">
             Hacer el test vocacional <span aria-hidden="true">→</span>

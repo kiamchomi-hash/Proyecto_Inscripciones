@@ -39,9 +39,11 @@ const TOLERANCIA_TITULO = 66;
 const MAX_DESCRIPCION = 165;
 
 // El curso tiene el nombre mas largo de la oferta: ni con el nombre corto entra
-// con la marca. Se lo nombra por el tema, que es lo que se busca.
+// con la marca. Se lo nombra por el tema, que es lo que se busca. Negocios
+// Digitales Financieros tampoco entra con "Administración de" adelante.
 const TITULO_ESPECIFICO: Record<string, string> = {
   'Curso de Actualización Profesional en Inteligencia Artificial': 'Inscripción al Curso de Inteligencia Artificial | Teclab',
+  'Tecnicatura Superior en Administración de Negocios Digitales Financieros': 'Inscripción a Negocios Digitales Financieros | Teclab',
 };
 
 /**

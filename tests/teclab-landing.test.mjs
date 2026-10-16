@@ -65,7 +65,7 @@ test('el test sigue al catálogo y la articulación queda después de los formul
 test('el llamado al test usa lenguaje profesional y una separación breve del catálogo', async () => {
   const [page, css] = await Promise.all([leer('app/teclab/page.tsx'), leer('app/teclab/teclab.css')]);
   assert.match(page, /¿Qué carrera elegir\?/);
-  assert.match(page, /Respondé seis preguntas y conocé las carreras más afines a tus intereses\./);
+  assert.match(page, /Respondé siete preguntas y conocé las carreras más afines a tus intereses\./);
   assert.doesNotMatch(page, /de un toque|más van con vos/);
   const separacion = css.match(/\.teclab-page \[data-testid="careers-catalog"\] \{([^}]+)\}/)?.[1];
   assert.match(separacion, /padding-bottom: clamp\(1\.5rem, 3vw, 2\.5rem\)/);
