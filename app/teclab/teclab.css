@@ -350,7 +350,12 @@
 }
 
 .teclab-page [data-testid="careers-catalog"] {
-  padding-bottom: clamp(3rem, 7vw, 7rem);
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* La última familia ya tiene la separación del contenedor del catálogo. */
+.teclab-page .main-grid > div > :last-child {
+  margin-bottom: 0;
 }
 
 /* El panel que acompaña al formulario a partir de 1600px trae la marca de
@@ -360,7 +365,7 @@
   background-size: 38% auto;
 }
 
-/* ── Test vocacional: después de los formularios, antes de la continuidad ── */
+/* ── Test vocacional: después del catálogo ── */
 
 .teclab-test {
   display: flex;

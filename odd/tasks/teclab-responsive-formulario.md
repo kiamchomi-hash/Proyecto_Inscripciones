@@ -44,3 +44,13 @@ Prueba focal repetida: salida 0. Verificación independiente sin hallazgos bloqu
 - Sin commit, push ni deploy.
 - Controles independientes tras fallo de check: `npx eslint app/teclab/page.tsx tests/teclab-landing.test.mjs` y `npm run typecheck` aprobados. Suite completa no repetida porque el comando solicitado falló antes de tests; prueba focal5/5 sí ejecutada.
 - Navegador1280/375: catálogo antes de test, test antes de preinscripción, preinscripción antes de articulación; prueba fuente verifica contacto también. Capturas completas nuevas `/tmp/teclab-test-orden/teclab-1280.png` y `/tmp/teclab-test-orden/teclab-375.png`, inspección visual correcta. Servidor3000 existente reutilizado.
+
+## Corrección de tono y espacio solicitada
+- El usuario rechazó «de un toque» y «más van con vos», y señaló aire excesivo entre carreras y test. CTA ahora: «¿Qué carrera elegir?» y «Respondé seis preguntas y conocé las carreras más afines a tus intereses.». Se verificó `PREGUNTAS.length === 6` en el módulo real.
+- Causa del aire: padding inferior local `clamp(3rem,7vw,7rem)` del catálogo más margen inferior de la última familia. Reducido a `clamp(1.5rem,3vw,2.5rem)` y eliminado únicamente el margen de la última familia dentro de `.teclab-page .main-grid`; sin margen negativo ni ocultamiento.
+- Medición con estilos asentados:1280px, separación122.09→52px;375px,71.5→39px. Sin overflow en descendientes del CTA en ambos tamaños.
+- Regresión determinística: RED5/6 por título anterior; GREEN6/6 con copy nuevo y padding acotado. ESLint focal y typecheck aprobados; diff-check aprobado.
+- Capturas completas nuevas y detalles legibles: `teclab-1280.png`, `teclab-375.png`, `catalogo-test-1280.png`, `catalogo-test-375.png`. Sin envíos. Servidor local3000 disponible.
+- Assess continúa high/unassessable por inventario untracked no declarado; no se inició lifecycle. Sin commit, push ni deploy.
+- Estado reabierto por corrección solicitada; falta cierre visual del principal y conservar limitaciones de zoom nativo/revisión nativa anteriores.
+- `npm run check` esta vez completó con salida0: lint sin errores (warnings preexistentes), typecheck aprobado y456/456 tests. La falla ENOENT anterior no reprodujo en esta corrida. Capturas de detalle revisadas: últimos programas y CTA legibles, espacio reducido.
