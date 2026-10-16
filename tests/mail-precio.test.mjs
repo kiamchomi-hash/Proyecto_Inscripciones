@@ -112,12 +112,11 @@ test('dice qué cubre el pago con la duración; sin bimestres, la nota', () => {
   assert.match(curso.texto, /Ese pago cubre un bimestre de cursada\./);
 });
 
-// «Quiero inscribirme» lleva a la ficha marcada con `desde=mail`: ahí titila
-// el botón de inscripción (components/carreras/resaltar-inscripcion.tsx).
-test('los enlaces son absolutos: la ficha marcada desde el mail y WhatsApp de Teclab', () => {
+// «Quiero inscribirme» lleva a la página dedicada de inscripción de la carrera.
+test('los enlaces son absolutos: la inscripción dedicada y WhatsApp de Teclab', () => {
   const { html, texto } = armar();
   const slug = taxonomia.carreraToSlug(carrera);
-  const inscripcion = `https://www.siglo21sur.com/carreras/${slug}?desde=mail`;
+  const inscripcion = `https://www.siglo21sur.com/carreras/${slug}/inscripcion`;
   assert.ok(texto.includes(inscripcion), texto);
   assert.ok(html.includes(`href="${inscripcion}"`));
   assert.match(html, />Quiero inscribirme</);

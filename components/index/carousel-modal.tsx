@@ -1211,19 +1211,19 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
   const imagen = esSiglo21 ? '/imagenes/novedades/carreras-de-grado-a-distancia.jpg' : slide.imagen;
   const altImagen = esSiglo21 ? 'Estudiante con una computadora portátil y un cuaderno' : 'Instituto';
   return (
-    <div className={`h-full flex flex-col ${esSiglo21 ? "md:flex-col" : "md:flex-row"} overflow-hidden relative bg-[#011f17]`}>
+    <div className="h-full flex flex-col md:flex-row overflow-hidden relative bg-[#011f17]">
       {/* Mobile top banner */}
       {imagen && (
         <div className="md:hidden relative h-[24vh] shrink-0 overflow-hidden">
-          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-center" style={esSiglo21 ? { objectPosition: 'center 65%' } : undefined} />
+          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-center" />
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 55%, #011f17 100%)' }} />
         </div>
       )}
       {/* Desktop side image */}
       {imagen && (
-        <div className={esSiglo21 ? "siglo21-cierre-foto hidden md:block shrink-0 relative overflow-hidden bg-[#011f17] z-10" : "hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10"}>
-          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-left-bottom" style={esSiglo21 ? { objectFit: 'contain', objectPosition: 'center' } : undefined} />
-          {!esSiglo21 && <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />}
+        <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
+          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-left-bottom" style={esSiglo21 ? { objectPosition: 'center' } : undefined} />
+          <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}
       {/* Los márgenes automáticos centran sólo cuando sobra alto; al ampliar

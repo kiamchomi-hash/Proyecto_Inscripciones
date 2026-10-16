@@ -28,8 +28,13 @@ test('el cierre de Siglo 21 muestra estudio a distancia en ambos encuadres', () 
   assert.equal((html.match(/src="\/imagenes\/novedades\/carreras-de-grado-a-distancia.jpg"/g) || []).length, 2);
   assert.equal((html.match(/alt="Estudiante con una computadora portátil y un cuaderno"/g) || []).length, 2);
   assert.match(html, /siglo21-cierre-acciones/);
-  assert.match(html, /siglo21-cierre-foto/);
-  assert.match(html, /object-fit:contain/);
+  assert.match(html, /h-full flex flex-col md:flex-row/);
+  assert.match(html, /hidden md:block w-\[42%\]/);
+  assert.match(html, /md:hidden relative h-\[24vh\]/);
+  assert.match(html, /object-cover object-left-bottom/);
+  assert.match(html, /object-position:center/);
+  assert.match(html, /linear-gradient\(to right, transparent 60%, #011f17 100%\)/);
+  assert.doesNotMatch(html, /object-fit:contain|siglo21-cierre-foto/);
   assert.doesNotMatch(html, /src="\/imagenes\/sede.jpg"/);
 });
 
@@ -37,7 +42,7 @@ test('otras casas conservan la imagen y el contenedor originales', () => {
   for (const nivel of ['Teclab - Gestión', 'Identidad Argentina']) {
     const html = pintar(nivel);
     assert.equal((html.match(/src="\/imagenes\/sede.jpg"/g) || []).length, 2);
-    assert.doesNotMatch(html, /siglo21-cierre-acciones|siglo21-cierre-foto|carreras-de-grado-a-distancia/);
+    assert.doesNotMatch(html, /siglo21-cierre-acciones|siglo21-cierre-foto|carreras-de-grado-a-distancia|object-position:center/);
   }
 });
 

@@ -16,7 +16,6 @@
 // que los convierte en signos de pregunta.
 
 import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
-import { PARAMETRO_DESDE, VALOR_DESDE_MAIL } from '@/components/formularios/elegir-carrera';
 import { carreraFullName, carreraToSlug } from '@/components/index/types';
 import { inicioTeclab } from '@/components/index/inicio-teclab';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
@@ -142,9 +141,9 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
   const pie = esNewsletter ? PIE_NEWSLETTER : PIE;
   const promo = `Promo hasta el ${diaMes(precio.vigenteHasta)}`;
   const cobertura = coberturaDelPago(precio.conceptos, carrera.duracion) ?? precio.nota;
-  // A la ficha y no al formulario: con `desde=mail` el botón «Quiero
-  // inscribirme» de la ficha titila (components/carreras/resaltar-inscripcion.tsx).
-  const inscripcion = `${BASE_PROD}/carreras/${carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null })}?${PARAMETRO_DESDE}=${VALOR_DESDE_MAIL}`;
+  // A la página dedicada de inscripción: quien llega desde el mail ya viene a
+  // inscribirse y no tiene que volver a buscar el formulario en la ficha.
+  const inscripcion = `${BASE_PROD}/carreras/${carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null })}/inscripcion`;
   const whatsapp = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(`Hola, quiero consultar por la ${nombre}`)}`;
 
   const texto = [

@@ -909,11 +909,6 @@
 }
 
 @media (min-width: 768px) {
-  .siglo21-cierre-foto {
-    width: 100%;
-    height: 46%;
-  }
-
   .siglo21-cierre-acciones {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

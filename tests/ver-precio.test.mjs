@@ -520,3 +520,35 @@ test('Siglo 21 muestra referencias sin exigir confirmar precios y conserva el te
   assert.match(fuente, /casa === 'siglo21' \? 'Valores de referencia\.' : 'Estos valores son sólo de referencia\. Consultá el precio vigente antes de inscribirte\.'/);
   assert.match(fuente, /texto=\{casa === 'siglo21' \? 'Consultar por WhatsApp' : 'Consultar precio vigente'\}/);
 });
+
+async function pintarPanelPrecio(casa, vista = 'precio') {
+  const React = await import('react');
+  const {renderToStaticMarkup} = await import('react-dom/server');
+  const precio = {conceptos:[{concepto:'Matrícula 2027',monto:'$ 100',descuento:null}],total:'$ 100',nota:'Aranceles 2027 con promoción y Amigo Referido aplicados.',vigenteHasta:'2026-10-16'};
+  let indice = 0;
+  const react = {...React,useState:inicial=>{ const i=indice++;return [i===0?vista:i===11?precio:typeof inicial==='function'?inicial():inicial,()=>{}]; }};
+  const {PanelVerPrecio}=cargarTypescript('components/index/ver-precio-teclab.tsx',{
+    react,'@/components/turnstile-widget':{default:()=>null},
+    '@/components/formularios/casas':casas,
+    '@/components/formularios/financiacion-teclab':{financiacionGeneral:()=>[]},
+    '@/components/formularios/cobertura-pago':cobertura,
+  });
+  return renderToStaticMarkup(React.createElement(PanelVerPrecio,{casa,carreraId:2,nombreCarrera:'Abogacía',activo:false,acento:'#00c7b1',acentoClaro:'#00ffe1',textoAcento:'#013729',waHref:'https://wa.me/123'}));
+}
+
+test('Siglo21 omite nombre repetido y ubica nota y vigencia después de WhatsApp',async()=>{
+  for (const vista of ['precio','vencido']) {
+    const html=await pintarPanelPrecio('siglo21',vista);
+    assert.doesNotMatch(html,/>Abogacía<|vp-rotulo/);
+    assert.match(html,/<h3[^>]*>Precio<\/h3>/);
+    const whatsapp=html.indexOf('href="https://wa.me/123"');
+    assert.ok(whatsapp>=0);
+    assert.ok(html.indexOf('Aranceles 2027 con promoción')>whatsapp);
+    assert.ok(html.indexOf('vp-vigencia')>whatsapp);
+  }
+});
+test('Teclab conserva nombre de carrera y aclaraciones antes de WhatsApp',async()=>{
+  const html=await pintarPanelPrecio('teclab');
+  assert.match(html,/>Abogacía<|vp-rotulo/);
+  assert.ok(html.indexOf('vp-vigencia')<html.indexOf('href="https://wa.me/123"'));
+});

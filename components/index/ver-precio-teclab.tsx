@@ -160,6 +160,16 @@ function Financiacion() {
   );
 }
 
+function AclaracionesPrecio({ precio, duracion, vencido = false, casa }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean; casa: CasaId }) {
+  // Qué cubre el pago, armado de los conceptos con los meses; si no hay
+  // bimestres (curso de pago único), queda la nota de la base.
+  const aclaracion = casa === 'siglo21' ? precio.nota : coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
+  return <>
+    {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
+    <p className="vp-vigencia">{vencido ? (casa === 'siglo21' ? 'Precios vigentes hasta el' : 'Promoción finalizada el') : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
+  </>;
+}
+
 /**
  * El precio vigente: conceptos, total, qué cubre el pago, vigencia y
  * financiación plegada. Sin acciones: cada lugar que lo muestra pone las suyas
@@ -169,10 +179,7 @@ function Financiacion() {
  * Toma los colores de `--vp-acento`, `--vp-acento-claro` y
  * `--vp-texto-acento`, que define el contenedor.
  */
-export function DetallePrecio({ precio, duracion, vencido = false, financiacion = true, casa = 'teclab' }: { casa?: CasaId; precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean }) {
-  // Qué cubre el pago, armado de los conceptos con los meses; si no hay
-  // bimestres (curso de pago único), queda la nota de la base.
-  const aclaracion = casa === 'siglo21' ? precio.nota : coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
+export function DetallePrecio({ precio, duracion, vencido = false, financiacion = true, aclaraciones = true, casa = 'teclab' }: { casa?: CasaId; precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean; aclaraciones?: boolean }) {
   return (
     <>
       {precio.conceptos.length > 0 && (
@@ -194,8 +201,7 @@ export function DetallePrecio({ precio, duracion, vencido = false, financiacion 
         <span className="vp-total-rotulo">{vencido ? 'Total de referencia' : 'Total'}</span>
         <span className="vp-total-monto">{precio.total}</span>
       </div>
-      {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
-      <p className="vp-vigencia">{vencido ? (casa === 'siglo21' ? 'Precios vigentes hasta el' : 'Promoción finalizada el') : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
+      {aclaraciones && <AclaracionesPrecio precio={precio} duracion={duracion} vencido={vencido} casa={casa} />}
       {!vencido && financiacion && casa === 'teclab' && <Financiacion />}
     </>
   );
@@ -446,8 +452,8 @@ export function PanelVerPrecio({
   return (
     <section className="vp-contenido" style={estilos} aria-labelledby={tituloId}>
       <div className="vp-encabezado">
-        <p className="vp-rotulo">Precio</p>
-        <h3 id={tituloId} className="vp-titulo">{nombreCarrera}</h3>
+        {casa !== 'siglo21' && <p className="vp-rotulo">Precio</p>}
+        <h3 id={tituloId} className="vp-titulo">{casa === 'siglo21' ? 'Precio' : nombreCarrera}</h3>
       </div>
 
       {vista === 'formulario' && (
@@ -523,13 +529,14 @@ export function PanelVerPrecio({
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
           {/* La financiación va debajo de los botones: abierta no los empuja
               fuera de la vista. */}
-          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} />
+          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={casa !== 'siglo21'} />
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
+          {casa === 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} casa={casa} />}
           {casa === 'teclab' && <Financiacion />}
         </div>
       )}
@@ -540,12 +547,13 @@ export function PanelVerPrecio({
             <strong>{casa === 'siglo21' ? 'Precios vencidos' : 'Promoción vencida'}</strong><br />
             {casa === 'siglo21' ? 'Valores de referencia.' : 'Estos valores son sólo de referencia. Consultá el precio vigente antes de inscribirte.'}
           </p>
-          <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} />
+          <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} aclaraciones={casa !== 'siglo21'} />
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
           {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto={casa === 'siglo21' ? 'Consultar por WhatsApp' : 'Consultar precio vigente'} principal />
+          {casa === 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />}
         </div>
       )}
 
