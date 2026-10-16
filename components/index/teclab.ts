@@ -380,8 +380,9 @@ const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
   { match: 'diseño de producto digital', imagen: '/imagenes/teclab/carreras/diseno-de-producto-digital.webp' },
   // «Designer sketching Wireframes (Unsplash)», Green Chameleon, CC0.
   { match: 'experiencia de usuario', imagen: '/imagenes/teclab/carreras/diseno-de-experiencia-de-usuario.webp' },
-  // «People in small discussion group meeting», U.S. Fish and Wildlife Service, dominio público.
-  { match: 'agile coaching', imagen: '/imagenes/teclab/carreras/gestion-de-equipos-agiles.webp' },
+  // «Sticky Notes on a Whiteboard at a Climate Change Training for Joshua Tree
+  // Interpretive Rangers», National Park Service, dominio público (Wikimedia Commons).
+  { match: 'agile coaching', imagen: '/imagenes/teclab/carreras/agile-coaching.webp' },
   // «Rawpixel.com 2017-06-02 (Unsplash)», rawpixel, CC0.
   { match: 'recursos humanos', imagen: '/imagenes/teclab/carreras/recursos-humanos.webp' },
 ];
