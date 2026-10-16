@@ -49,9 +49,9 @@ const armar = (extra = {}) => armarMailPrecio({ carrera, precio, hoy: HOY, ...ex
 const nombreCompleto = 'Tecnicatura Superior en Programación';
 
 test('el asunto nombra la carrera corta y la casa, sin puntuación decorativa', () => {
-  assert.equal(armar().asunto, 'Precio de Programación en Teclab');
+  assert.equal(armar().asunto, 'Precios - Programación - Teclab');
   const sinCorto = armar({ carrera: { ...carrera, nombre: 'Redes', nombre_corto: '  ' } });
-  assert.equal(sinCorto.asunto, 'Precio de Redes en Teclab');
+  assert.equal(sinCorto.asunto, 'Precios - Redes - Teclab');
 });
 
 test('la píldora lleva el nombre completo de la carrera', () => {
@@ -60,45 +60,29 @@ test('la píldora lleva el nombre completo de la carrera', () => {
   assert.ok(texto.includes(nombreCompleto));
 });
 
-// El cuerpo no lleva titular grande (ocupaba demasiado alto): queda sólo la
-// línea chica bajo la píldora. La fecha sigue en el asunto del newsletter.
-test('antes del 14/10 no hay titular, sólo la línea de que todavía está a tiempo', () => {
-  const { html, texto } = armar({ hoy: dia('2026-10-03') });
-  for (const cuerpo of [html, texto]) assert.doesNotMatch(cuerpo, /Las clases arrancan/);
-  assert.match(texto, /Todavía estás a tiempo de inscribirte\./);
-  assert.match(html, /Todavía estás a tiempo de inscribirte\./);
-});
-
-test('entre el 14/10 y el 3/11 queda la línea de que las clases empezaron', () => {
-  const { html, texto } = armar({ hoy: dia('2026-10-20') });
-  for (const cuerpo of [html, texto]) assert.doesNotMatch(cuerpo, /Tenés tiempo hasta/);
-  assert.match(texto, /Las clases empezaron el 14 de octubre\./);
-  assert.match(html, /Las clases empezaron el 14 de octubre\./);
-});
-
-test('cerrada la inscripción no hay titular ni línea de fechas', () => {
-  const { html, texto } = armar({ hoy: dia('2026-11-10') });
-  for (const cuerpo of [html, texto]) {
-    assert.doesNotMatch(cuerpo, /El precio de tu carrera|arrancan|Tenés tiempo|a tiempo de inscribirte|empezaron/);
+// El cuerpo no lleva línea de fechas ni de inicio: la fecha queda en el aviso de
+// la ficha, no en el mail.
+test('el mail de Teclab no tiene línea de fechas, con o sin inscripción abierta', () => {
+  for (const hoy of ['2026-10-03', '2026-10-20', '2026-11-10']) {
+    const { html, texto } = armar({ hoy: dia(hoy) });
+    for (const cuerpo of [html, texto]) {
+      assert.doesNotMatch(cuerpo, /Todavía estás a tiempo|Las clases empezaron|Las clases arrancan|Tenés tiempo hasta|El precio de tu carrera/);
+    }
   }
 });
 
-test('trae cada concepto, sus descuentos, el total y la promo DD/MM', () => {
+test('trae cada concepto, el total y la vigencia DD/MM, sin descuentos', () => {
   const { html, texto } = armar();
   for (const cuerpo of [html, texto]) {
     assert.match(cuerpo, /Matrícula/);
-    assert.match(cuerpo, /Bimestre \(diciembre-enero\)/);
+    assert.match(cuerpo, /Bimestre 2 \(diciembre-enero\)/);
     assert.match(cuerpo, /\$ 64\.227,75/);
     assert.match(cuerpo, /\$ 488\.131,28/);
-    assert.match(cuerpo, /-75%/);
-    assert.match(cuerpo, /-24%/);
+    assert.doesNotMatch(cuerpo, /-75%|-24%|Descuento/);
     assert.match(cuerpo, /Total/);
     assert.match(cuerpo, /\$ 552\.359,03/);
-    assert.match(cuerpo, /Promo hasta el 07\/10/);
+    assert.match(cuerpo, /Precio vigente hasta el 07\/10/);
   }
-  // Sin descuento no hay porcentaje inventado: hay exactamente dos.
-  assert.equal(texto.match(/-\d+%/g).length, 2);
-  assert.equal(html.match(/-\d+%<\/span>/g).length, 2);
 });
 
 test('dice qué cubre el pago con la duración; sin bimestres, la nota', () => {
@@ -152,10 +136,9 @@ test('el logo se pide por URL pública absoluta, nunca a un archivo local', () =
 test('es un resumen transaccional: sin enlace de baja ni enlaces muertos', () => {
   const { html, texto } = armar();
   assert.equal(html.includes('href="#"'), false);
-  assert.doesNotMatch(html, /Dejar de recibir/);
+  assert.doesNotMatch(html, /Anular suscripción/);
   for (const cuerpo of [html, texto]) {
     assert.match(cuerpo, /Te escribimos porque pediste el precio de esta carrera en siglo21sur\.com\./);
-    assert.match(cuerpo, /Para lo que viene sos/);
   }
 });
 
@@ -188,15 +171,14 @@ const newsletter = (extra = {}) => armar({ tipo: 'newsletter', bajaUrl: BAJA, ..
 test('sin tipo, el mail sigue siendo el resumen del precio', () => {
   const porDefecto = armar();
   assert.deepEqual(armar({ tipo: 'resumen' }), porDefecto);
-  assert.equal(porDefecto.asunto, 'Precio de Programación en Teclab');
+  assert.equal(porDefecto.asunto, 'Precios - Programación - Teclab');
 });
 
-test('el asunto del newsletter es la carrera corta, la casa y el titular en minúscula', () => {
-  assert.equal(newsletter({ hoy: dia('2026-10-03') }).asunto, 'Programación en Teclab: las clases arrancan el 14 de octubre');
-  assert.equal(newsletter({ hoy: dia('2026-10-20') }).asunto, 'Programación en Teclab: tenés tiempo hasta el 3 de noviembre');
-  assert.equal(newsletter({ hoy: dia('2026-11-10') }).asunto, 'Programación en Teclab: el precio de esta semana');
+test('el newsletter usa el mismo asunto que el resumen, sin la fecha de inicio', () => {
   for (const hoy of ['2026-10-03', '2026-10-20', '2026-11-10']) {
-    assert.equal(/[—–·•]/.test(newsletter({ hoy: dia(hoy) }).asunto), false);
+    const { asunto } = newsletter({ hoy: dia(hoy) });
+    assert.equal(asunto, 'Precios - Programación - Teclab');
+    assert.equal(/[—–·•]/.test(asunto), false);
   }
 });
 
@@ -207,20 +189,19 @@ test('el pie del newsletter explica el envío y tiene una baja real, escapada', 
   assert.match(texto, pie);
   assert.doesNotMatch(html, /pediste el precio/);
   assert.ok(html.includes(`href="${BAJA}"`), html);
-  assert.match(html, />Dejar de recibir novedades<\/a>/);
-  assert.ok(texto.includes(`Dejar de recibir novedades: ${BAJA}`), texto);
+  assert.match(html, />Anular suscripción<\/a>/);
+  assert.ok(texto.includes(`Anular suscripción: ${BAJA}`), texto);
   assert.equal(html.includes('href="#"'), false);
 
   const conComillas = newsletter({ bajaUrl: 'https://www.siglo21sur.com/newsletter/baja?id=x"&y=<z>' });
   assert.ok(conComillas.html.includes('href="https://www.siglo21sur.com/newsletter/baja?id=x&quot;&amp;y=&lt;z&gt;"'));
 });
 
-test('el newsletter conserva el precio, los accesos y el remate de la plantilla', () => {
+test('el newsletter conserva el precio y los accesos de la plantilla', () => {
   const { html, texto } = newsletter();
   for (const cuerpo of [html, texto]) {
     assert.match(cuerpo, /\$ 552\.359,03/);
     assert.match(cuerpo, /Quiero inscribirme/);
-    assert.match(cuerpo, /Para lo que viene sos/);
   }
   assert.equal(/<\/?[a-z][^>]*>/i.test(texto), false);
 });
@@ -256,7 +237,33 @@ test('Siglo 21 muestra lista 2027 y enlaza la preinscripción sin mensajes de Te
   assert.match(mail.asunto, /Universidad Siglo 21/);
   for (const contenido of [mail.html, mail.texto]) {
     assert.match(contenido, /\/carreras\/abogacia\/inscripcion/);
-    assert.doesNotMatch(contenido, /Teclab|Promo|imprescindible|cuatrimestre/);
+    assert.doesNotMatch(contenido, /Teclab|Promo|imprescindible/);
     assert.match(contenido, /Bimestre 2 2027/);
+  }
+});
+
+test('el mail de Siglo 21 dice qué cubre el pago, igual que el de Teclab, con un solo texto', () => {
+  const carreraSiglo = { nombre: 'Administración', prefix: 'Licenciatura en', nombre_corto: 'Administración', duracion: '4 años', nivel: 'Licenciaturas' };
+  const aclaracion = 'Cubre la matrícula y los bimestres que cursás desde tu inscripción. La carrera tiene 8 cuatrimestres (16 bimestres), y cada uno se paga aparte: matrícula y bimestres.';
+  for (const hoy of ['2026-10-03', '2026-11-10']) {
+    const mail = armar({ carrera: carreraSiglo, hoy: dia(hoy) });
+    assert.ok(mail.html.includes(aclaracion), mail.html);
+    assert.ok(mail.texto.includes(aclaracion), mail.texto);
+  }
+});
+
+test('en Siglo 21 las cuotas se muestran como bimestres numerados, igual que en Teclab', () => {
+  const mail = armar({
+    carrera: { nombre: 'Administración', prefix: 'Licenciatura en', nombre_corto: 'Administración', duracion: '4 años', nivel: 'Licenciaturas' },
+    precio: { ...precio, conceptos: [
+      { concepto: 'Matrícula', monto: '$ 50.000,00', descuento: null },
+      { concepto: 'Cuota mensual', monto: '$ 120.000,00', descuento: null },
+      { concepto: 'Cuota mensual', monto: '$ 120.000,00', descuento: null },
+    ] },
+  });
+  for (const cuerpo of [mail.html, mail.texto]) {
+    assert.match(cuerpo, /Bimestre 1/);
+    assert.match(cuerpo, /Bimestre 2/);
+    assert.doesNotMatch(cuerpo, /Cuota mensual/);
   }
 });

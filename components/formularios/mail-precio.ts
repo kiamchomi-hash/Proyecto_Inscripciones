@@ -15,9 +15,8 @@
 // Sin guiones largos ni viñetas decorativas: el texto se copia por una consola
 // que los convierte en signos de pregunta.
 
-import { coberturaDelPago } from '@/components/formularios/cobertura-pago';
+import { coberturaDelPago, coberturaSiglo21 } from '@/components/formularios/cobertura-pago';
 import { carreraFullName, carreraToSlug } from '@/components/index/types';
-import { inicioTeclab } from '@/components/index/inicio-teclab';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { BASE_PROD } from '@/lib/vigilancia-esperado';
 import type { LineaPrecio } from '@/components/formularios/casas';
@@ -55,7 +54,9 @@ const SUAVE = '#9fb0c2';
 const CLARO = '#F0F0F6';
 const PIE = 'Te escribimos porque pediste el precio de esta carrera en siglo21sur.com.';
 const PIE_NEWSLETTER = 'Te escribimos desde el CAU porque pediste novedades de esta carrera en siglo21sur.com.';
-const BAJA = 'Dejar de recibir novedades';
+const BAJA = 'Anular suscripción';
+// Botón de baja: contorno sutil, para que se vea sin competir con la inscripción.
+const BOTON_BAJA = `display:inline-block;border:1px solid ${SUAVE};color:${CLARO};font-size:13px;padding:8px 18px;border-radius:999px;text-decoration:none;`;
 
 /** El id de una suscripción al newsletter: es lo que identifica la baja. */
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -76,33 +77,36 @@ function diaMes(fecha: string): string {
   return dia && mes ? `${dia}/${mes}` : fecha;
 }
 
-/**
- * Titular y bajada, con la misma lógica que el aviso de la ficha
- * (`aviso-inicio-teclab.tsx`): antes del inicio, la fecha de inicio; con las
- * clases empezadas, el cierre de inscripción. Sin inscripción abierta, un
- * titular neutro y sin bajada. `fecha` es la parte que no se corta de línea.
- */
-function titularDe(carrera: CarreraDelMail, hoy: Date) {
-  const inicio = inicioTeclab({ nivel: carrera.nivel }, hoy);
-  if (!inicio) return { antes: 'El precio de tu carrera', fecha: '', bajada: null };
-  return inicio.empezo
-    ? { antes: 'Tenés tiempo hasta el ', fecha: inicio.hastaTexto, bajada: `Las clases empezaron el ${inicio.inicioTexto}.` }
-    : { antes: 'Las clases arrancan el ', fecha: inicio.inicioTexto, bajada: 'Todavía estás a tiempo de inscribirte.' };
-}
 
 const PILDORA = `display:inline-block;background:${CIAN};color:${TARJETA};font-weight:700;border-radius:999px;`;
 const ENCABEZADO = `padding:0 0 10px;font-size:11px;font-weight:600;color:${SUAVE};text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid ${LINEA};`;
 const CELDA = `padding:14px 0;border-bottom:1px solid ${LINEA};`;
 
+/**
+ * Numera los bimestres en el orden del precio, como en Siglo 21: «Bimestre 1
+ * (octubre-noviembre)», «Bimestre 2». Una «cuota» es un bimestre: la
+ * matrícula y dos bimestres es el cuatrimestre completo. Sólo cambia el rótulo
+ * que se muestra; la cobertura sigue usando los conceptos originales.
+ */
+function numerarBimestres(conceptos: LineaPrecio[]): LineaPrecio[] {
+  let numero = 0;
+  return conceptos.map(linea => {
+    const texto = linea.concepto.trim();
+    const m = texto.match(/^(bimestre|cuota)\b\s*(\(.*\))?/i);
+    if (!m) return linea;
+    numero += 1;
+    // Si ya viene numerado («Bimestre 2 2027»), se deja como está.
+    if (/^bimestre\s+\d/i.test(texto)) return linea;
+    const resto = m[2] ? ` ${m[2]}` : '';
+    return { ...linea, concepto: `Bimestre ${numero}${resto}` };
+  });
+}
+
 function filaHtml(linea: LineaPrecio): string {
-  const descuento = linea.descuento
-    ? `<span style="${PILDORA}font-size:13px;padding:2px 10px;">-${escapar(String(linea.descuento))}%</span>`
-    : '';
   return `
                       <tr>
-                        <td style="${CELDA}color:#ffffff;">${escapar(linea.concepto)}</td>
+                        <td style="${CELDA}padding-right:12px;color:#ffffff;">${escapar(linea.concepto)}</td>
                         <td align="right" style="${CELDA}color:#ffffff;white-space:nowrap;">${escapar(linea.monto)}</td>
-                        <td align="right" style="${CELDA}">${descuento}</td>
                       </tr>`;
 }
 
@@ -111,16 +115,6 @@ export type OpcionesMail = { carrera: CarreraDelMail; precio: PrecioDelMail; hoy
   | { tipo?: 'resumen'; bajaUrl?: undefined }
   | { tipo: 'newsletter'; bajaUrl: string }
 );
-
-/**
- * El asunto del newsletter: la carrera, la casa y el titular del mail. Con la
- * inscripción cerrada el titular neutro («El precio de tu carrera») no dice
- * nada en la bandeja, así que se nombra la semana.
- */
-function asuntoNewsletter(corto: string, titular: { antes: string; fecha: string }) {
-  const frase = titular.fecha ? `${titular.antes}${titular.fecha}` : 'El precio de esta semana';
-  return `${corto} en Teclab: ${frase.charAt(0).toLowerCase()}${frase.slice(1)}`;
-}
 
 export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: OpcionesMail): MailPrecio {
   // El nombre como lo muestra la ficha: el prefijo de la base ya trae la
@@ -135,11 +129,11 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
   const siglo21 = !carrera.nivel.startsWith('Teclab');
   if (siglo21) return armarMailSiglo21({ carrera, precio, hoy, tipo, bajaUrl });
   const corto = carrera.nombre_corto?.trim() || carrera.nombre;
-  const titular = titularDe(carrera, hoy);
   const esNewsletter = tipo === 'newsletter';
-  const asunto = esNewsletter ? asuntoNewsletter(corto, titular) : `Precio de ${corto} en Teclab`;
+  // Mismo asunto para el resumen y el newsletter: la carrera y la casa, sin la fecha.
+  const asunto = `Precios - ${corto} - Teclab`;
   const pie = esNewsletter ? PIE_NEWSLETTER : PIE;
-  const promo = `Promo hasta el ${diaMes(precio.vigenteHasta)}`;
+  const promo = `Precio vigente hasta el ${diaMes(precio.vigenteHasta)}`;
   const cobertura = coberturaDelPago(precio.conceptos, carrera.duracion) ?? precio.nota;
   // A la página dedicada de inscripción: quien llega desde el mail ya viene a
   // inscribirse y no tiene que volver a buscar el formulario en la ficha.
@@ -148,34 +142,18 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
 
   const texto = [
     nombre,
-    // Sin titular grande en el cuerpo: ocupaba demasiado alto. La fecha queda
-    // en el asunto del newsletter y en esta línea.
-    ...(titular.bajada ? [titular.bajada] : []),
     '',
-    `Precio (${promo})`,
-    ...precio.conceptos.map(l => `${l.concepto}: ${l.monto}${l.descuento ? ` (-${l.descuento}%)` : ''}`),
+    promo,
+    ...numerarBimestres(precio.conceptos).map(l => `${l.concepto}: ${l.monto}`),
     `Total: ${precio.total}`,
     ...(cobertura ? [cobertura] : []),
     '',
     `Quiero inscribirme: ${inscripcion}`,
     `Consultar por WhatsApp: ${whatsapp}`,
     '',
-    'Para lo que viene sos imprescindible',
-    '',
     pie,
     ...(esNewsletter ? [`${BAJA}: ${bajaUrl}`] : []),
   ].join('\n');
-
-  const bajadaHtml = titular.bajada
-    ? `\n              <div style="font-size:15px;line-height:1.45;color:${CLARO};margin-top:12px;">${escapar(titular.bajada)}</div>`
-    : '';
-  const coberturaHtml = cobertura
-    ? `
-                <tr>
-                  <td style="padding:6px 20px 20px;font-size:13px;line-height:1.5;color:${SUAVE};">${escapar(cobertura)}</td>
-                </tr>`
-    : `
-                <tr><td style="padding:0 0 14px;"></td></tr>`;
 
   const html = `<!doctype html>
 <html lang="es">
@@ -193,17 +171,10 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
       <td align="center" style="padding:24px 12px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:${TARJETA};border:1.5px solid ${AZUL};border-radius:24px;">
 
-          <!-- Logo -->
-          <tr>
-            <td align="center" style="padding:28px 28px 0;">
-              <img src="${LOGO_TECLAB_MAIL}" width="140" alt="Teclab, Instituto Técnico Superior" style="display:block;width:140px;height:auto;border:0;margin:0 auto;">
-            </td>
-          </tr>
-
           <!-- Carrera, fecha y aviso -->
           <tr>
-            <td align="center" style="padding:24px 28px 0;text-align:center;">
-              <span style="${PILDORA}font-size:14px;padding:6px 16px;">${escapar(nombre)}</span>${bajadaHtml}
+            <td align="center" style="padding:32px 28px 0;text-align:center;">
+              <span style="${PILDORA}font-size:14px;padding:6px 16px;">${escapar(nombre)}</span>
             </td>
           </tr>
 
@@ -215,8 +186,7 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
                   <td style="padding:20px 20px 6px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="font-size:18px;font-weight:700;color:#ffffff;">Precio</td>
-                        <td align="right"><span style="${PILDORA}font-size:12px;padding:5px 12px;white-space:nowrap;">${escapar(promo)}</span></td>
+                        <td align="center"><span style="display:inline-block;background:#5D4594;color:#F2F0F7;font-weight:700;border-radius:999px;font-size:12px;padding:5px 12px;white-space:nowrap;">${escapar(promo)}</span></td>
                       </tr>
                     </table>
                   </td>
@@ -227,8 +197,7 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
                       <tr>
                         <th align="left" style="${ENCABEZADO}">Concepto</th>
                         <th align="right" style="${ENCABEZADO}">Precio</th>
-                        <th align="right" style="${ENCABEZADO}">Descuento</th>
-                      </tr>${precio.conceptos.map(filaHtml).join('')}
+                      </tr>${numerarBimestres(precio.conceptos).map(filaHtml).join('')}
                     </table>
                   </td>
                 </tr>
@@ -241,7 +210,8 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
                       </tr>
                     </table>
                   </td>
-                </tr>${coberturaHtml}
+                </tr>
+                <tr><td style="padding:0 0 14px;"></td></tr>
               </table>
             </td>
           </tr>
@@ -258,10 +228,10 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
             </td>
           </tr>
 
-          <!-- Remate -->
+          <!-- Logo, al pie de la tarjeta -->
           <tr>
-            <td align="center" style="padding:28px 28px 28px;text-align:center;">
-              <div style="font-size:16px;font-weight:600;color:#ffffff;">Para lo que viene sos <em style="font-style:italic;">imprescindible</em></div>
+            <td align="center" style="padding:28px 28px 28px;">
+              <img src="${LOGO_TECLAB_MAIL}" width="140" height="47" alt="Teclab, Instituto Técnico Superior" style="display:block;width:140px;height:47px;border:0;margin:0 auto;">
             </td>
           </tr>
         </table>
@@ -269,9 +239,8 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
         <!-- Pie -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
           <tr>
-            <td style="padding:18px 8px;font-size:12px;line-height:1.6;color:#7f90a2;text-align:center;">${escapar(pie)}${esNewsletter
-    ? `<br>
-              <a href="${escapar(bajaUrl)}" style="color:#9fb0c2;">${BAJA}</a>`
+            <td style="padding:18px 8px;font-size:12px;line-height:1.6;color:#7f90a2;text-align:center;">${escapar(pie)}${cobertura ? `<p style="margin:14px 0 0;font-size:12px;line-height:1.6;color:#7f90a2;">${escapar(cobertura)}</p>` : ''}${esNewsletter
+    ? `<div style="padding-top:14px;"><a href="${escapar(bajaUrl)}" style="${BOTON_BAJA}">${BAJA}</a></div>`
     : ''}</td>
           </tr>
         </table>
@@ -285,6 +254,20 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
 }
 
 
+// Paleta medida sobre las piezas aprobadas de Siglo 21 (carpeta
+// contenidos/siglo21/aprobados, cuentagotas): fondo verde muy oscuro, tarjetas
+// un tono más claras, cian como acento y como acción principal con texto
+// oscuro, y el logo blanco directo sobre el fondo, sin placa.
+const SIGLO_FONDO = '#0D2119';
+const SIGLO_TARJETA = '#192C24';
+const SIGLO_CELDA = '#0F2D27';
+const SIGLO_CIAN = '#00C7B1';
+const SIGLO_TEXTO = '#F2F0F7';
+const SIGLO_SUAVE = '#9FB9B2';
+const SIGLO_LINEA = '#24453A';
+/** Logo blanco de Siglo 21 en PNG transparente: el SVG de public/ no llega a todos los clientes de correo. */
+const SIGLO_LOGO_BLANCO_MAIL = `${BASE_PROD}/imagenes/imagenes_cau/siglo21-marca-blanco-mail.png`;
+
 /** Lista de Siglo 21: no reutiliza promociones, financiación ni calendario de Teclab. */
 function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: CarreraDelMail; precio: PrecioDelMail; hoy: Date; tipo?: 'resumen' | 'newsletter'; bajaUrl?: string }): MailPrecio {
   const nombre = carreraFullName({ nombre: carrera.nombre, prefix: carrera.prefix ?? null });
@@ -293,25 +276,105 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
   const inscripcion = `${BASE_PROD}/carreras/${carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null })}/inscripcion`;
   const whatsapp = `https://wa.me/${numeroWhatsAppDe('siglo21')}?text=${encodeURIComponent(`Hola, quiero consultar por ${nombre}`)}`;
   const pie = tipo === 'newsletter' ? 'Te escribimos porque pediste novedades de esta carrera en siglo21sur.com.' : PIE;
-  const texto = [nombre, '', 'Aranceles 2027', ...precio.conceptos.map(l => `${l.concepto}: ${l.monto}`),
+  const cobertura = coberturaSiglo21(carrera.duracion);
+  const texto = [nombre, '', 'Aranceles vigentes', ...numerarBimestres(precio.conceptos).map(l => `${l.concepto}: ${l.monto}`),
     `Total: ${precio.total}`, `Precio vigente hasta el ${diaMes(precio.vigenteHasta)}`,
-    ...(precio.nota ? [precio.nota] : []), '', `Preinscribirme: ${inscripcion}`,
+    cobertura, ...(precio.nota ? [precio.nota] : []), '', `Preinscribirme: ${inscripcion}`,
     `Consultar por WhatsApp: ${whatsapp}`, '', pie,
     ...(tipo === 'newsletter' ? [`${BAJA}: ${bajaUrl}`] : [])].join('\n');
-  const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapar(asunto)}</title></head>
-<body style="margin:0;background:#003838;color:#F2F0F7;font-family:'DM Sans',Arial,sans-serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#0A3839;border-radius:24px;"><tr><td style="padding:28px;">
-<img src="${BASE_PROD}/imagenes/imagenes_cau/logoSiglo21.png" alt="Universidad Siglo 21" width="160" style="max-width:100%;height:auto;">
-<h1 style="font-size:24px;font-weight:500;">${escapar(nombre)}</h1>
-<h2 style="color:#00C3B3;font-size:18px;">Aranceles 2027</h2>
-<table width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;">${precio.conceptos.map(l => `<tr><td style="padding:12px 0;border-bottom:1px solid #00C3B3;">${escapar(l.concepto)}</td><td align="right" style="font-weight:700;">${escapar(l.monto)}</td></tr>`).join('')}
-<tr><td style="padding:16px 0;font-weight:700;">Total</td><td align="right" style="font-weight:700;font-size:22px;">${escapar(precio.total)}</td></tr></table>
-<p>Precio vigente hasta el ${escapar(diaMes(precio.vigenteHasta))}</p>${precio.nota ? `<p>${escapar(precio.nota)}</p>` : ''}
-<a href="${escapar(inscripcion)}" style="display:block;text-align:center;background:#5D4594;color:#F2F0F7;padding:16px;border-radius:999px;text-decoration:none;font-weight:700;">Preinscribirme</a>
-<a href="${escapar(whatsapp)}" style="display:block;text-align:center;border:2px solid #25D366;color:#F2F0F7;padding:14px;margin-top:12px;border-radius:999px;text-decoration:none;">Consultar por WhatsApp</a>
-</td></tr></table><p style="max-width:560px;font-size:12px;line-height:1.6;">${escapar(pie)}${tipo === 'newsletter' ? `<br><a style="color:#F2F0F7;" href="${escapar(bajaUrl ?? '')}">${BAJA}</a>` : ''}</p>
-</td></tr></table></body></html>`;
+
+  const filasPrecio = numerarBimestres(precio.conceptos).map(l => `
+                  <tr>
+                    <td style="padding:12px 16px 12px 0;border-bottom:1px solid ${SIGLO_LINEA};color:${SIGLO_TEXTO};font-size:15px;">${escapar(l.concepto)}</td>
+                    <td align="right" style="padding:12px 0;border-bottom:1px solid ${SIGLO_LINEA};color:${SIGLO_TEXTO};font-size:15px;font-weight:700;white-space:nowrap;">${escapar(l.monto)}</td>
+                  </tr>`).join('');
+  const html = `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<title>${escapar(asunto)}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background:${SIGLO_FONDO};font-family:'DM Sans',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${SIGLO_FONDO};">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;border-collapse:separate;">
+
+          <!-- Cabecera: rótulo y carrera centrados, sin caja -->
+          <tr>
+            <td align="center" style="padding:8px 28px 14px;background:${SIGLO_FONDO};">
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${SIGLO_CIAN};">Aranceles vigentes</div>
+              <h1 style="margin:8px 0 0;font-size:20px;line-height:1.25;font-weight:700;color:#FFFFFF;">${escapar(nombre)}</h1>
+            </td>
+          </tr>
+
+          <tr><td style="height:12px;line-height:12px;font-size:0;">&nbsp;</td></tr>
+
+          <!-- Tarjeta de precios -->
+          <tr>
+            <td style="padding:22px 28px 28px;background:${SIGLO_TARJETA};border-radius:28px;">
+              <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:0 auto 14px;">
+                <tr>
+                  <td align="center" style="background:#5D4594;border-radius:999px;padding:10px 18px;color:${SIGLO_TEXTO};font-size:14px;font-weight:700;">Precio vigente hasta el ${escapar(diaMes(precio.vigenteHasta))}</td>
+                </tr>
+              </table>
+
+              <!-- Bloque de conceptos y total -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${SIGLO_CELDA};border:1px solid ${SIGLO_LINEA};border-radius:22px;margin-top:14px;">
+                <tr>
+                  <td style="padding:6px 20px 16px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${filasPrecio}
+                      <tr>
+                        <td style="padding:16px 16px 4px 0;color:${SIGLO_CIAN};font-size:16px;font-weight:700;">Total</td>
+                        <td align="right" style="padding:16px 0 4px;color:${SIGLO_CIAN};font-size:24px;font-weight:700;white-space:nowrap;">${escapar(precio.total)}</td>
+                      </tr>
+                    </table>
+                    ${precio.nota ? `<p style="margin:10px 0 0;font-size:13px;line-height:1.5;color:${SIGLO_SUAVE};">${escapar(precio.nota)}</p>` : ''}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Acciones: cian como acción principal, como en las piezas aprobadas -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
+                <tr>
+                  <td>
+                    <a href="${escapar(inscripcion)}" style="display:block;text-align:center;background:${SIGLO_CIAN};color:${SIGLO_FONDO};font-weight:700;font-size:16px;text-decoration:none;padding:15px 20px;border-radius:999px;">Preinscribirme</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-top:12px;">
+                    <a href="${escapar(whatsapp)}" style="display:block;text-align:center;background:#25D366;color:${SIGLO_FONDO};font-weight:700;font-size:16px;text-decoration:none;padding:15px 20px;border-radius:999px;">Consultar por WhatsApp</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr><td style="height:12px;line-height:12px;font-size:0;">&nbsp;</td></tr>
+
+          <!-- Pie: logo blanco centrado, sin placa -->
+          <tr>
+            <td align="center" style="padding:24px 28px 8px;background:${SIGLO_FONDO};">
+              <img src="${SIGLO_LOGO_BLANCO_MAIL}" width="130" height="47" alt="Universidad Siglo 21" style="display:block;width:130px;height:47px;border:0;margin:0 auto;">
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:14px 28px 22px;background:${SIGLO_FONDO};">
+              <p style="margin:0;font-size:12px;line-height:1.6;color:${SIGLO_SUAVE};">${escapar(cobertura)}</p>
+              <p style="margin:14px 0 0;font-size:12px;line-height:1.6;color:${SIGLO_SUAVE};">${escapar(pie)}</p>
+              ${tipo === 'newsletter' ? `<div style="padding-top:14px;"><a href="${escapar(bajaUrl ?? '')}" style="${BOTON_BAJA}">${BAJA}</a></div>` : ''}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
   return { asunto, html, texto };
 }
 

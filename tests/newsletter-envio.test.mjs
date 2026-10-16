@@ -218,7 +218,7 @@ test('el mail es el newsletter de la plantilla, con la baja de un clic en los en
   const mail = mails.find(m => m.cuerpo.to[0] === fila(ID.vieja).email);
   assert.equal(mail.headers['X-Smtp2go-Api-Key'], CLAVE);
   assert.equal(mail.cuerpo.sender, 'CAU Online <inscripciones@siglo21sur.com>');
-  assert.match(mail.cuerpo.subject, /^Programación en Teclab: /);
+  assert.equal(mail.cuerpo.subject, 'Precios - Programación - Teclab');
   assert.match(mail.cuerpo.html_body, /\$ 64\.227,75/);
   assert.match(mail.cuerpo.html_body, /pediste novedades de esta carrera/);
   assert.ok(mail.cuerpo.html_body.includes(`href="https://www.siglo21sur.com/newsletter/baja?id=${ID.vieja}"`));
@@ -350,7 +350,7 @@ test('la página no da de baja al abrirla: muestra un botón que hace el POST', 
   assert.match(html, /<form[^>]*method="post"/i);
   assert.match(html, /action="\/api\/newsletter\/baja"/);
   assert.ok(html.includes(`name="id" value="${ID.vieja}"`));
-  assert.match(html, /Dejar de recibir novedades/);
+  assert.match(html, /Anular suscripción/);
 });
 
 test('con listo=1 confirma la baja; sin id válido no ofrece el botón', async () => {

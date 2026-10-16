@@ -68,3 +68,12 @@ export function coberturaDelPago(conceptos: Concepto[], duracion?: string | null
   const desde = primero && ultimo ? `, de ${primero[0]} a ${ultimo[1]}` : '';
   return `${inicio} el cuatrimestre completo${desde}. ${cierre(duracion)}`;
 }
+
+/**
+ * Siglo 21 cobra como Teclab: matrícula y bimestres por cuatrimestre. Un solo
+ * texto para todos los casos: sirve para entrar al inicio o a mitad de
+ * cuatrimestre, porque dice cuántos bimestres se cursan desde la inscripción.
+ */
+export function coberturaSiglo21(duracion?: string | null): string {
+  return `Cubre la matrícula y los bimestres que cursás desde tu inscripción. ${cierre(duracion)}`;
+}

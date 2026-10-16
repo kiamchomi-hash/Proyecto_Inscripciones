@@ -405,9 +405,9 @@ test('con precio vigente, «Ver precio» manda un mail por SMTP2GO después de r
   assert.equal(mail.headers['Content-Type'], 'application/json');
   assert.deepEqual(mail.cuerpo.to, ['ana@example.test']);
   assert.equal(mail.cuerpo.sender, 'CAU Online <inscripciones@siglo21sur.com>');
-  assert.equal(mail.cuerpo.subject, 'Precio de Tecnicatura Superior en Programación en Teclab');
+  assert.equal(mail.cuerpo.subject, 'Precios - Tecnicatura Superior en Programación - Teclab');
   assert.match(mail.cuerpo.html_body, /\$ 552\.359,03/);
-  assert.match(mail.cuerpo.text_body, /Promo hasta el 31\/12/);
+  assert.match(mail.cuerpo.text_body, /Precio vigente hasta el 31\/12/);
 
   // El resumen cuenta como primer envío del newsletter: el cron no lo repite.
   const marca = estado.escrituras.find(e => e.op === 'update' && e.tabla === casas.TABLA_NEWSLETTER);
@@ -430,7 +430,7 @@ test('la preinscripción de Teclab con precio vigente también manda el mail', a
   await correrPendientes();
   assert.equal(mails.length, 1);
   assert.deepEqual(mails[0].cuerpo.to, ['ana@example.test']);
-  assert.equal(mails[0].cuerpo.subject, 'Precio de Programación en Teclab');
+  assert.equal(mails[0].cuerpo.subject, 'Precios - Programación - Teclab');
   // La carrera se lee con lo que el mail necesita.
   const lectura = estado.lecturas.find(l => l.tabla === 'carreras');
   for (const columna of ['prefix', 'nombre_corto', 'duracion']) assert.match(lectura.columnas, new RegExp(columna));
