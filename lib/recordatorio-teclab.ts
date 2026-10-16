@@ -28,6 +28,13 @@ export function mensajeRecordatorioTeclab(fichas: FichaTeclab[] | null): string 
     '',
     '1. Mejorar el diseño de las fichas de Teclab: quedan mejoras por definir.',
     '2. Cada carrera nueva de Teclab lleva su intro reescrita a partir de la página oficial.',
+    '3. Verificar en producción las preinscripciones de Teclab:',
+    'Formulario de la home y de /teclab.',
+    'Páginas /teclab/inscripcion y /carreras/<carrera>/inscripcion.',
+    'Después de enviar: el precio, el paso Inscribirme sin captcha y el mail del precio.',
+    'Ver precio desde el modal de la carrera.',
+    'Enlace /inscripcion/<código> y su aviso de enlace vencido.',
+    'Las carreras Próximamente no muestran precio ni mandan mail, y mientras sigan vencidos los precios del 15/10 tampoco las demás.',
     '',
     estadoIntros,
   ].join('\n');

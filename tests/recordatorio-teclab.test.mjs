@@ -33,6 +33,16 @@ test('sin lectura de la base, el mensaje avisa que no se pudo revisar', () => {
   assert.match(mensajeRecordatorioTeclab(null), /no se pudo/i);
 });
 
+test('recuerda verificar en producción las preinscripciones de Teclab', () => {
+  for (const fichas of [[conIntro], null]) {
+    const texto = mensajeRecordatorioTeclab(fichas);
+    assert.match(texto, /Verificar en producción las preinscripciones de Teclab/);
+    assert.match(texto, /\/teclab\/inscripcion/);
+    assert.match(texto, /\/inscripcion\/<código>/);
+    assert.match(texto, /Próximamente no muestran precio/);
+  }
+});
+
 test('el cron semanal está declarado en vercel.json', () => {
   const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
   assert.ok(config.crons.some(c => c.path === '/api/recordatorio-teclab' && c.schedule === '0 12 * * 1'));
