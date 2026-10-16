@@ -12,6 +12,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 - [x] **Corregir el modal de carreras de Teclab**. Confirmado por el usuario el 16/10/2026 tras los ajustes de «Ver precio» y financiación. El mismo día se quitó «CAU Villa Lugano» del slide de cierre de cinco carreras de Siglo 21 (ids 18, 63, 77, 240 y 241).
 - [x] **Financiación por banco y tarjeta en la preinscripción** (`ver-precio-teclab` T9): descartada el 16/10/2026, porque el formulario ya no pide medio de pago desde el 03/10/2026.
+- [x] **Revisar la newsletter con el usuario** (16/10/2026): queda la casilla tildada de entrada; la cadencia de 7 días y la baja de un clic ya estaban hechas.
 - [x] **25. Ocultar la ubicación en los slides**. Ningún modal muestra la dirección ni el enlace a Maps; verificado el 16/10/2026 en el código y en los slides de la base.
 - [x] **Arreglar los precios que se muestran en los modales de carreras de Siglo 21**. Resuelto con los cambios del 16/10/2026 (`404f08a`, `8b17323`, `8bd1c5a`, `fb856ec`, `d18632e`); confirmado por el usuario.
 - [x] **Ver que llegue el mail de Teclab**. Precios de Teclab vigentes otra vez tras la corrida de las 9:00 (17 en `precios_privados`, hasta el 16/10). El usuario pidió «Ver precio» con su mail y el correo llegó bien, ya con el límite semanal publicado (`1349acc`).
