@@ -1,26 +1,30 @@
-// Financiación de Teclab: la placa «Opciones de financiación» del período,
-// vuelta datos. Es la única fuente del sitio y la usa «Ver precio» (las
-// opciones generales). La autoinscripción ya no pregunta banco ni tarjeta: el
-// portal del alumno los toma solo.
+// Financiación de Teclab: lo que muestra el Simulador de Precios del Portal
+// Administrativo, vuelto datos. Es la única fuente del sitio y la usa «Ver
+// precio» (las opciones generales). La autoinscripción ya no pregunta banco ni
+// tarjeta: el portal del alumno los toma solo.
 //
-// Fuente: ventas/fuentes/teclab/conocimiento-hermes/financiacion_teclab.md
-// (placa oficial del período 2B), vigente desde el 26/08/2026. Hay que
-// actualizar este archivo con cada placa nueva: las tasas y los CFT cambian
-// por período. El volcado del simulador de Teclab (`financiacion_teclab.json`)
-// contradice la placa y no se usa.
+// Fuente: el simulador, relevado en vivo el 16/10/2026 (decisión del usuario:
+// manda el portal, no la placa ni el Dashboard Comercial, que decían «1 o 3
+// cuotas sin interés» y Plan Z). El mismo relevamiento alimenta al bot y al
+// buscador desde ventas/fuentes/teclab/conocimiento-hermes/financiacion_teclab.json.
+// Hoy no hay cuotas sin interés con ninguna tarjeta. Si el portal cambia, se
+// vuelve a relevar y se actualizan los dos lados.
 //
 // Autocontenido a propósito: sin imports, para que lo puedan importar los
 // componentes del navegador sin arrastrar nada más.
 
-// Porcentajes tal como figuran en la placa.
-const TASA_PREFERENCIAL = { interes: 6.15, cft: 43.34 };
-const TASA_RESTO = { interes: 7.41, cft: 53.95 };
+// Porcentajes tal como figuran en el simulador.
+const PREFERENCIAL = { tres: { interes: 6.15, cft: 43.34 }, seis: { interes: 12.48, cft: 50.54 } };
+const RESTO = { tres: { interes: 7.41, cft: 53.95 }, seis: { interes: 12.99, cft: 52.96 } };
 
 const porcentaje = (valor: number) =>
   `${valor.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 
 const condicionTasa = (tasa: { interes: number; cft: number }) =>
   `${porcentaje(tasa.interes)} de interés, CFT ${porcentaje(tasa.cft)}`;
+
+const cuotas = (grupo: typeof PREFERENCIAL) =>
+  `3 cuotas: ${condicionTasa(grupo.tres)}; 6 cuotas: ${condicionTasa(grupo.seis)}`;
 
 export interface LineaFinanciacion {
   medio: string;
@@ -34,13 +38,12 @@ export interface LineaFinanciacion {
  */
 export function financiacionGeneral(): LineaFinanciacion[] {
   return [
+    { medio: 'Cualquier tarjeta', detalle: '1 pago sin recargo' },
     {
       medio: 'Visa y Mastercard',
-      detalle: `3 cuotas con Santander, Galicia, BBVA, Nación, Macro o Naranja: ${condicionTasa(TASA_PREFERENCIAL)}`,
+      detalle: `Galicia, Nación, Santander y Macro (en Visa también Patagonia y Supervielle; en Mastercard, BBVA). ${cuotas(PREFERENCIAL)}`,
     },
-    { medio: 'Visa y Mastercard', detalle: `3 cuotas con otros bancos: ${condicionTasa(TASA_RESTO)}` },
-    { medio: 'Naranja X', detalle: '1 pago o Plan Z en 3 cuotas sin interés' },
-    { medio: 'GoCuotas y WiBond', detalle: 'hasta 6 cuotas sin interés' },
-    { medio: 'American Express', detalle: '1 o 3 cuotas si la emite Santander o American Express; si no, 1 pago' },
+    { medio: 'Otros bancos', detalle: `Visa, Mastercard, American Express, Cabal, Diners, Argencard y Sucrédito. ${cuotas(RESTO)}` },
+    { medio: 'Sólo 1 pago', detalle: 'Naranja X, y American Express de Galicia, Patagonia o Macro' },
   ];
 }
