@@ -36,11 +36,17 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 - [ ] **Medir en qué punto se abandona el test vocacional y mejorarlo**. Identificar los pasos con mayor abandono y usar la medición para orientar y comprobar las mejoras.
 - [ ] **Pulir el FAQ de las carreras modificadas (Procurador, Gestión Contable y Seguros) y revisar textos previos de la cabecera**. Contrastar la introducción con los textos que tenían antes en `descripcion`, previos a los cambios del 05/10/2026 (respaldo en `notas-locales/seo-tres-fichas/estado-previo.json`).
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo** [Detalle](docs/pendientes-detalle.md#pendiente-16).
+- [ ] **Arreglar los precios que se muestran en los modales de carreras de Siglo 21**.
+- [ ] **Corregir las páginas de Computación**.
+- [x] **Corregir la web de Teclab** (15/10/2026). Test vocacional debajo de las carreras, articulación después de los formularios y ajustes responsive. Publicado mediante los commits `3bb9355` y `0d28969`; [comprobaciones y limitaciones](odd/tasks/teclab-responsive-formulario.md).
+- [ ] **Corregir el autoscroll al formulario de preinscripción**. Cuando la carrera se inscribe por mail, el enlace debe llevar a la página dedicada de inscripción, no a la de la carrera.
 
 ## Comercial y contenido
 
 - [ ] **Completar la actualización diaria y publicación de aranceles 2027 de Siglo 21**. Consultas CASA de toda la oferta y carga privada por cau_editor autorizadas. Verificar cobertura y vigencia original antes de publicar; no prolongar fechas vencidas. Circuito diario integrado y probado localmente; la fuente original del 15/10/2026 no ofrece una ventana vigente y devuelve guiones en promociones/finales. Carga privada bloqueada hasta que CASA publique vigencia válida; no reutilizar la del 14/10. [Avance](odd/tasks/siglo21-ver-precios-newsletter.md).
 
+- [ ] **Sumar al corpus del bot las dudas de los leads**. Cualquier pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
+- [ ] **Automatizar HubSpot**.
 - [ ] **3. Mejorar el mensaje de aranceles**.
 - [ ] **4. Extraer los precios 2027 de Universidad Siglo 21**.
 - [ ] **14. Crear más mensajes de seguimiento que complementen al primero**. Siglo 21 cuenta con segundo seguimiento desde el 03/10/2026; Teclab ya tiene primero y segundo. El 07/10/2026 se incorporaron ambos a Academia Identidad Argentina y se regeneraron las dos páginas locales: 380/380 pruebas comerciales aprobadas. Sin publicación ni envío automático; la auditoría mantiene dos problemas previos de Teclab (ver 39). [Evidencia de Identidad](odd/tasks/seguimientos-identidad.md) y [Siglo 21](docs/historial-pendientes.md#mensajes-siglo21-2026-10-03).
@@ -64,6 +70,7 @@ Las siguientes vienen de las [notas operativas](docs/notas-operativas.md); su es
 
 ## Herramientas e inspiración
 
+- [ ] **Crear una herramienta de procesos del CAU**, distinta del buscador de carreras, para consultar los trámites y procesos de la sede.
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **26. Revisar los plugins de ChatGPT y Claude**.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
