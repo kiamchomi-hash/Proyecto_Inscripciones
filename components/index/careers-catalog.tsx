@@ -877,9 +877,9 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
   const isTeclabCourse = esCursoTeclab(carrera);
   const tipoTeclab = familiaTeclab ? getTipoTeclab(carrera) : null;
   const badgeClase = carrera.proximamente ? 'career-badge--proximamente' : carrera.nueva ? 'career-badge--nueva' : 'career-badge--destacada';
-  // En Teclab, "Más buscada" y "Próximamente" van en la cabecera, al lado de la
-  // duración, en vez de colgar del borde de la tarjeta.
-  const badgeInternoTeclab = (familiaTeclab || isTeclabCourse) && (badge === 'Más buscada' || badge === 'Próximamente');
+  // En Teclab todos los badges van en la cabecera, al lado de la duración, en
+  // vez de colgar del borde de la tarjeta como en Siglo 21.
+  const badgeInternoTeclab = Boolean(familiaTeclab || isTeclabCourse) && badge !== null;
   const prefetched = useRef(false);
   const handlePrefetch = useCallback(() => {
     if (!prefetched.current) { prefetched.current = true; prefetchImages(carrera); }

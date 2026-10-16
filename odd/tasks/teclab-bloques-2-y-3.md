@@ -94,3 +94,7 @@ carreras de Siglo 21 no cambian de área (comparado sobre las 99 activas).
 - 16/10/2026: T4 hecho. Push `343d476` (deploy Ready), SQL corrido (ids 250-258). En
   producción las nueve fichas y sus `/inscripcion` dan 200, sin «null», y están en el
   sitemap.
+- 16/10/2026: el usuario pide que las nueve vayan como «Próximamente» de verdad
+  (`sql/2026-10-16_teclab_bloques_2_y_3_proximamente.sql`): sin `/inscripcion` hasta
+  tener precio, fecha y HubSpot. En el catálogo, el badge «Nueva» de Teclab pasa a la
+  cabecera, al lado de la duración, como los demás badges de la casa.
