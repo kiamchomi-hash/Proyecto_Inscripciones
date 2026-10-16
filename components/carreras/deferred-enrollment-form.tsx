@@ -79,6 +79,26 @@ export default function DeferredEnrollmentForm({ carreras, carreraInicial }: Pro
     return () => observer.disconnect();
   }, [Form, loadForm]);
 
+  // Un toque en «Quiero inscribirme» salta al hueco antes de que el formulario
+  // baje. Al crecer, el contacto empuja la preinscripción y el salto queda a
+  // mitad de camino: se carga al tocar y se vuelve a saltar cuando ya está.
+  useEffect(() => {
+    if (Form) return;
+    const alTocar = (event: MouseEvent) => {
+      const enlace = (event.target as Element | null)?.closest?.('a[href="#formulario"], a[href="#preinscripcion"]');
+      if (enlace) loadForm();
+    };
+    document.addEventListener('click', alTocar, true);
+    return () => document.removeEventListener('click', alTocar, true);
+  }, [Form, loadForm]);
+
+  useEffect(() => {
+    if (!Form) return;
+    const destino = window.location.hash;
+    if (destino !== '#formulario' && destino !== '#preinscripcion') return;
+    document.getElementById(destino.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+  }, [Form]);
+
   // Los dos, igual que en la home: el contacto es la puerta general y la
   // preinscripción arma el legajo. "Quiero inscribirme" baja a la segunda.
   if (Form) {
