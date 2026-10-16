@@ -269,3 +269,8 @@ Cerrado: encontrada la página oficial de la Tecnicatura en Responsabilidad y Ge
 - [x] **Tarea 32: achicar el último slide del modal de Teclab.** El scroll aparecía con el precio a la vista en teléfonos bajos (375x667: 67 px de más) por el bloque de financiación. Va plegado («Ver financiación»). Commit `a094245`.
 - [x] **Tarea 33: dejar claro qué cubre el pago.** «Ver precio» y el enlace personalizado arman la aclaración desde los conceptos: qué meses cubre, cuántos cuatrimestres tiene la carrera y que cada cuatrimestre se paga matrícula y bimestres (Reglamento Institucional de Teclab, 4.1). El robot de precios rotula los bimestres según el período. Commits `1db22d3` y `0676aeb`. [Detalle](../odd/tasks/cobertura-pago-teclab.md).
 - [x] **Tarea 34: precio en la autoinscripción.** La preinscripción de Teclab devuelve el precio y el formulario lo muestra como paso propio del carrusel antes de «Inscribirme». Commit `2f3cc9c`. [Detalle](../odd/tasks/precio-en-autoinscripcion-teclab.md).
+## aviso-teclab-telegram-2026-10-16
+
+- [x] **Comprobar el enlace de inscripción y la marca de «vio el precio» en Telegram.** Prueba autorizada en producción con las consultas ficticias 155 (precio) y 156 (preinscripción), identificadas como «PRUEBA AVISO IGNORAR». Las respuestas del webhook 439 y 440 devolvieron HTTP 200 y `telegram: true`; se generó el enlace para la consulta 156. El usuario confirmó visualmente ambos elementos en el segundo aviso el 16/10/2026.
+- No se enviaron correos ni se ejecutó el robot de inscripción. Los dos registros ficticios permanecen en la base; no se borraron datos.
+- Pruebas locales aprobadas: `node --test tests/avisos.test.mjs tests/precio-visto.test.mjs tests/enlace-inscripcion.test.mjs`.

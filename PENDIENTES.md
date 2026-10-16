@@ -4,21 +4,14 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas de [`odd/tasks/`](odd/tasks/) y el [detalle de pendientes](docs/pendientes-detalle.md). El orden es: primero lo que ya está hecho y falta publicar o marcar; después lo que hace perder leads o muestra un dato equivocado; después Teclab (prioridad vigente), Siglo 21 y el resto. Los números de los pedidos del 02/10/2026 se conservan para poder referirse a cada tarea.
 
-## 1. Seguimiento de lo publicado
-
-- [ ] **23/10/2026: primera revisión del embudo del test vocacional** (general y Teclab). Publicado el 16/10/2026 (`e239bc9`). Si hay pocos intentos, ampliar la observación antes de sacar conclusiones; después, mejorar los pasos con mayor caída. [Cómo leerlo](docs/medicion-test-vocacional.md).
-
 ## 2. Comprobaciones que quedan de tareas ya hechas
 
 Completado el 16/10/2026: límite de correos de «Ver precio», con concurrencia real verificada en dos sesiones y limpieza de la reserva ficticia confirmada. [Evidencia](docs/limite-mails-precio.md#pruebas).
 
-- [ ] **Mirar un aviso real de Teclab en Telegram**: que traiga el enlace de inscripción y la marca de «vio el precio». `notificar` está desplegada desde el 09/10/2026; sólo falta verlo con un lead real. [Enlace](odd/tasks/autoinscripcion-teclab.md), [marca](odd/tasks/priorizar-leads-que-vieron-precio.md).
+Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficticios; el usuario confirmó en Telegram el enlace de inscripción y la marca de «vio el precio». [Evidencia](docs/historial-pendientes.md#aviso-teclab-telegram-2026-10-16).
 
 ## 3. Urgente: leads y precios
 
-- [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción** (para más adelante). Hoy «Quiero inscribirme» (modales, ficha y mail) lleva directo al formulario sin pasar por el precio. La idea es que uno de los pasos del formulario muestre el precio de la carrera elegida, como los pasos que ya tiene Teclab. En los modales están bien los dos botones, «Ver precio» y WhatsApp; eso no se toca (aclarado el 16/10/2026).
-- [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
-- [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
 ## 4. Teclab
 
@@ -104,6 +97,18 @@ Los pedidos ya redactados y el destino de cada dato están en [las notas operati
 - [ ] **Confirmar medios de pago del curso de IA de Teclab**. Arancel individual registrado con vigencia hasta el 30/09; no es un precio permanente. [Detalle](docs/pendientes-detalle.md#pendiente-08).
 - [ ] **Confirmar becas, doble carrera y las dudas restantes de requisitos**, que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 - [ ] Revisar las decisiones pendientes sobre los módulos de Bienestar Integral y Mindfulness, si siguen dentro del alcance del convenio. *(Notas operativas; estado sin confirmar.)*
+
+## Al fondo de la cola
+
+Postergado por el usuario el 16/10/2026; se retoma después de los pendientes anteriores.
+
+- [ ] **23/10/2026: primera revisión del embudo del test vocacional** (general y Teclab). Publicado el 16/10/2026 (`e239bc9`). Si hay pocos intentos, ampliar la observación antes de sacar conclusiones; después, mejorar los pasos con mayor caída. [Cómo leerlo](docs/medicion-test-vocacional.md).
+
+- [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción** (para más adelante). Hoy «Quiero inscribirme» (modales, ficha y mail) lleva directo al formulario sin pasar por el precio. La idea es que uno de los pasos del formulario muestre el precio de la carrera elegida, como los pasos que ya tiene Teclab. En los modales están bien los dos botones, «Ver precio» y WhatsApp; eso no se toca (aclarado el 16/10/2026).
+
+- [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
+
+- [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
 ## Documentación de apoyo
 
