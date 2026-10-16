@@ -899,6 +899,30 @@
   color: #00ffe1;
 }
 
+/* La vigencia va arriba del precio, en el mismo contenedor que el aviso de
+   precio vencido pero en cian. */
+.vp-siglo21 .vp-vigente {
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.4rem;
+  border-left: 3px solid #00c7b1;
+  background: #163a31;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.vp-siglo21 .vp-aviso {
+  background: #3b1f22;
+}
+
+.vp-siglo21 .vp-whatsapp:not(.vp-whatsapp-lleno) {
+  background: #163a31;
+}
+
+.vp-siglo21 .vp-whatsapp:not(.vp-whatsapp-lleno):hover {
+  background: #1d4a3e;
+}
+
 /* Cierre de Siglo 21: dos acciones del mismo ancho sin cambiar el panel de precio
    ni los modales de las otras casas. Conserva los botones y sus estados de foco. */
 .siglo21-cierre-acciones {

@@ -517,8 +517,7 @@ test('Siglo 21 permite consultar precios sin habilitar la autoinscripción', () 
 test('Siglo 21 muestra referencias sin exigir confirmar precios y conserva el texto de Teclab', async () => {
   const { readFile } = await import('node:fs/promises');
   const fuente = await readFile('components/index/ver-precio-teclab.tsx', 'utf8');
-  assert.match(fuente, /Promoción vencida \$\{diaMes\(precio\.vigenteHasta\)\} - Valores de referencia/);
-  assert.match(fuente, /Valores de referencia\./);
+  assert.match(fuente, /'Precio vencido' : 'Promoción vencida'\} \$\{diaMes\(precio\.vigenteHasta\)\} - Valores de referencia/);
   assert.match(fuente, /texto=\{casa === 'siglo21' \? 'Consultar por WhatsApp' : 'Consultar precio vigente'\}/);
 });
 
@@ -537,15 +536,15 @@ async function pintarPanelPrecio(casa, vista = 'precio') {
   return renderToStaticMarkup(React.createElement(PanelVerPrecio,{casa,carreraId:2,nombreCarrera:'Abogacía',activo:false,acento:'#00c7b1',acentoClaro:'#00ffe1',textoAcento:'#013729',waHref:'https://wa.me/123'}));
 }
 
-test('Siglo21 omite nombre repetido y ubica nota y vigencia después de WhatsApp',async()=>{
-  for (const vista of ['precio','vencido']) {
+test('Siglo21 pone la vigencia arriba en un contenedor y no muestra la nota de la promoción',async()=>{
+  for (const [vista,vigencia] of [['precio','Precio vigente hasta el 16/10'],['vencido','Precio vencido 16/10 - Valores de referencia']]) {
     const html=await pintarPanelPrecio('siglo21',vista);
     assert.doesNotMatch(html,/>Abogacía<|vp-rotulo|vp-separador|vp-encabezado/);
     assert.match(html,/<h3[^>]*>Precio<\/h3>/);
-    const whatsapp=html.indexOf('href="https://wa.me/123"');
-    assert.ok(whatsapp>=0);
-    assert.ok(html.indexOf('Aranceles 2027 con promoción')>whatsapp);
-    assert.ok(html.indexOf('vp-vigencia')>whatsapp);
+    assert.ok(html.indexOf('href="https://wa.me/123"')>=0);
+    const arriba=html.indexOf(vigencia);
+    assert.ok(arriba>=0 && arriba<html.indexOf('class="vp-total"'));
+    assert.doesNotMatch(html,/Aranceles 2027 con promoción|vp-vigencia/);
   }
 });
 test('Teclab vencido: aviso de una línea y aclaraciones debajo de WhatsApp',async()=>{

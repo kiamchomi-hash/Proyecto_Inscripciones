@@ -448,7 +448,9 @@ export function PanelVerPrecio({
     '--vp-texto-acento': textoAcento,
     // El marcador del widget de Turnstile lee estas variables del catalogo.
     '--catalogo-acento': acento,
-    '--catalogo-form-campo': 'rgba(255,255,255,0.06)',
+    // Sólido, sin transparencias: en Teclab es el 6% de blanco que tenía,
+    // resuelto sobre el fondo tinta #071822; en Siglo 21, el de sus filas.
+    '--catalogo-form-campo': casa === 'siglo21' ? '#163a31' : '#16262f',
     '--catalogo-etiqueta': acentoClaro,
   } as CSSProperties;
 
@@ -529,6 +531,7 @@ export function PanelVerPrecio({
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
           {/* La financiación va debajo de los botones: abierta no los empuja
               fuera de la vista. */}
+          {casa === 'siglo21' && <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>}
           <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={casa !== 'siglo21'} />
           {slug ? (
             <>
@@ -536,7 +539,6 @@ export function PanelVerPrecio({
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
-          {casa === 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} casa={casa} />}
           {casa === 'teclab' && <Financiacion />}
         </div>
       )}
@@ -544,14 +546,7 @@ export function PanelVerPrecio({
       {vista === 'vencido' && precio && (
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
           <p className="vp-aviso">
-            {casa === 'siglo21' ? (
-              <>
-                <strong>Precios vencidos</strong><br />
-                Valores de referencia.
-              </>
-            ) : (
-              <strong>{`Promoción vencida ${diaMes(precio.vigenteHasta)} - Valores de referencia`}</strong>
-            )}
+            <strong>{`${casa === 'siglo21' ? 'Precio vencido' : 'Promoción vencida'} ${diaMes(precio.vigenteHasta)} - Valores de referencia`}</strong>
           </p>
           <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} aclaraciones={false} />
           {avisoActualizacionPrecio(new Date()) ? (
@@ -559,7 +554,8 @@ export function PanelVerPrecio({
           ) : null}
           {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-violeta">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto={casa === 'siglo21' ? 'Consultar por WhatsApp' : 'Consultar precio vigente'} principal />
-          <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />
+          {/* Siglo 21: la fecha ya va en el aviso y la nota de la promoción no se muestra. */}
+          {casa !== 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />}
         </div>
       )}
 
