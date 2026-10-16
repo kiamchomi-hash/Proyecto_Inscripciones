@@ -10,6 +10,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 ## Comercial — mail de Teclab, 16/10/2026
 
+- [x] **Arreglar los precios que se muestran en los modales de carreras de Siglo 21**. Resuelto con los cambios del 16/10/2026 (`404f08a`, `8b17323`, `8bd1c5a`, `fb856ec`, `d18632e`); confirmado por el usuario.
 - [x] **Ver que llegue el mail de Teclab**. Precios de Teclab vigentes otra vez tras la corrida de las 9:00 (17 en `precios_privados`, hasta el 16/10). El usuario pidió «Ver precio» con su mail y el correo llegó bien, ya con el límite semanal publicado (`1349acc`).
 
 ## Tareas de `odd/tasks/` cerradas con evidencia — 16/10/2026

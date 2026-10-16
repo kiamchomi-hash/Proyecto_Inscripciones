@@ -14,7 +14,6 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 3. Urgente: leads y precios
 
-- [ ] **Arreglar los precios que se muestran en los modales de carreras de Siglo 21**.
 - [ ] **Mostrar los precios antes de derivar a WhatsApp siempre que se pueda**, para que la persona llegue al chat con el precio ya visto.
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
 - [ ] **Reducir el formulario de preinscripción de Siglo 21**.
