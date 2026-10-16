@@ -32,7 +32,10 @@ ni usar `--debug` para compartir salidas de autenticación.
 ## Separar esquema y presentación
 
 `FaqPregunta` es un `Pick` del tipo generado: sólo las columnas publicables.
-`Campo.columna` y `columnaDe()` se limitan a las claves del insert de `consultas`;
+`Campo` correlaciona el control con las columnas del insert de `consultas`:
+checkbox sólo admite booleanos, y texto/select/fecha sólo columnas de texto.
+El id generado (`never`) se excluye explícitamente. `columnaDe()` conserva la
+columna literal al recibir un id y el tipo estrechado al recibir una definición.
 `casas.ts` sigue declarando qué pide cada formulario. No se agregaron campos ni
 cambiaron payloads. Una columna nueva requiere actualizar el esquema, regenerar
 los tipos y verificar la base real según `docs/formularios-por-casa.md`.
@@ -48,6 +51,29 @@ de Identidad Argentina en la home.
 valores inválidos y argumentos incompletos sigan rechazados. Si el contrato
 pierde precisión, typecheck falla porque deja de existir el error esperado.
 Las pruebas del adaptador verifican normalización y exclusión del JSON pesado.
+
+## Consultas: filas dinámicas con el contrato de escritura
+
+Las filas de consulta, precio y autoinscripción, además de `completarBooleanos`,
+usan `TablesInsert<'consultas'>`. El payload entrante sigue siendo desconocido:
+se convierte antes de asignarlo, sin `any`, casts al insert ni setters que
+permitan combinar una columna y un valor incompatibles.
+
+`CAMPOS_DECLARADOS` es la única declaración de columnas y metadatos. `CAMPOS`
+expone ese mismo objeto con las columnas literales por id y los metadatos
+opcionales disponibles para los consumidores. El endpoint estrecha la definición
+según `tipo` y recién entonces escribe mediante `columnaDe()`.
+
+El tipado no endurece las reglas comerciales: se mantienen las tres casas y
+los dos modos, la unión de campos para clientes sin discriminadores, DNI y
+opciones inválidos guardados en null, sólo `true` booleano para activar un
+checkbox y false cuando no corresponde al formulario. Las claves ajenas no
+se copian. Precio sigue tomando sólo el email declarado, y autoinscripción
+mantiene su validación estricta previa y la casa de la carrera verificada.
+
+Los contratos negativos compilados rechazan checkbox/email, texto/equivalencias,
+id y asignaciones incompatibles. Las pruebas del handler caracterizan las filas
+exactas sin red; no reemplazan pruebas reales de RLS, triggers ni notificaciones.
 
 ## Detalle de carreras: JSON validado antes de publicar
 
@@ -84,8 +110,7 @@ para alimentar los adaptadores y que `Json` no es un arreglo de slides tipado.
 ## Alcance pendiente de A3
 
 Este avance no elimina todos los casts del proyecto. Siguen pendientes
-el adaptador de materias, el tipado del armado dinámico de la fila de consultas
-y las demás fronteras JSON fuera del detalle de carreras.
+el adaptador de materias y las demás fronteras JSON fuera del detalle de carreras.
 `Carrera` sigue siendo un tipo de presentación manual; el tipo generado refleja
 las nulabilidades reales y no afirma que `slides` tenga un formato particular.
 No convertir `Json` a una estructura de slides con un cast y presentar eso como

@@ -102,9 +102,52 @@ sin errores y las mismas 27 advertencias de lint fuera de esta unidad.
 de columnas fuera de la autorización acotada actual. Las pruebas simuladas no
 certifican caché ISR real ni RLS. Sin commit, push ni publicación.
 
-**Pendiente de A3:** adaptador de materias, armado dinámico de consultas y las
+**Pendiente de A3 al cierre del 02/10:** adaptador de materias, armado dinámico de consultas y las
 demás fronteras JSON. El detalle de carreras ya tiene validación de runtime;
 eso no sustituye las pruebas de integración pendientes.
+
+### Continuación A3-C1 del 13/10/2026 (Linux)
+
+Se tiparon las tres filas dinámicas de `consultas`: consulta, precio y
+autoinscripción. `Campo` correlaciona checkbox con columnas booleanas y los
+demás controles con columnas textuales, derivadas del esquema generado y con
+exclusión explícita de `never`. `CAMPOS` conserva las columnas literales y
+`columnaDe()` mantiene esa información; no se duplicaron nombres de columna.
+Las filas y `completarBooleanos` usan `TablesInsert<'consultas'>`, sin `any`,
+cast al insert ni setter genérico que oculte incompatibilidades.
+
+RED observado antes de modificar fuentes: `npm run typecheck` dio exactamente
+tres TS2578 por expectativas negativas no usadas para checkbox/email,
+texto/equivalencias e id. Tras la corrección, esas expectativas y las pruebas
+de asignación estrechada pasan. El cambio es de contrato estático, no de reglas
+de negocio: las pruebas runtime son de caracterización, no un RED inventado.
+
+Cuatro casos nuevos ejecutan el handler real con dependencias simuladas: filas
+exactas para tres casas y dos modos, legado sin discriminadores, tolerancia de
+DNI/opciones, booleanos estrictos y omitidos, claves ajenas y los caminos de
+precio/autoinscripción. Sin nuevas columnas, campos, opciones, UI, permisos,
+consultas remotas, regeneración del esquema, build, commit ni publicación.
+
+**Pendiente de A3:** adaptador de materias y demás fronteras JSON. El contrato
+de las filas no certifica RLS real ni efectos externos de los formularios.
+
+Verificación independiente posterior: typecheck y los cinco casos directos de
+`tests/formularios-api.test.mjs` aprobados; selección de ocho archivos aprobada.
+`npm run check` terminó con código 1: lint sin errores y 28 advertencias, pero
+sólo 53 de 57 archivos de prueba aprobados. Los fallos estuvieron en herramientas
+fuera del diff: fixtures de deploy con `spawnSync git EPERM`, pre-push al consultar
+`core.hooksPath`, secretos sin Gitleaks 8.30.1 y supabase-local-safety con stderr
+vacío donde esperaba `override Docker`. No se atribuyen al cambio de formularios,
+pero el check global sigue sin aprobarse. Este runner resume archivos, no casos.
+Evaluación nativa local del diff: riesgo medium, `review_due: false`,
+`under_budget` (seis archivos, 282 líneas); no equivale a revisión aprobada.
+
+Diagnóstico posterior: Gitleaks 8.30.1 estaba instalado; el sandbox impedía
+ejecutar subprocessos con normalidad. Con escalación local aprobada pasaron
+secretos 14/14, pre-push 9/9, supabase-local-safety 7/7 y deploy 21/21 casos.
+El check íntegro aún no se repitió. En deploy el filtro intentado no se aplicó:
+se ejecutaron tres npm ci temporales y no puede certificarse ausencia de
+consulta al registry. Se detuvo la ejecución para aclarar ese alcance.
 
 P1: siguiente intervención, antes de confiar en una nueva publicación. P2: siguiente ciclo de mantenimiento. P3: mejora opcional condicionada a mediciones. Esfuerzos orientativos para una persona familiarizada con el proyecto; incluyen pruebas, no son presupuestos.
 

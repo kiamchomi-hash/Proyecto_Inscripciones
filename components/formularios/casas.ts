@@ -35,9 +35,14 @@ export type CampoId =
   | 'nivelEstudios' | 'colegio' | 'colegioLocalidad'
   | 'equivalencias' | 'email' | 'telefono';
 
-export interface Campo {
-  /** Columna de `consultas` donde se guarda. */
-  columna: keyof TablesInsert<'consultas'>;
+type InsertConsulta = TablesInsert<'consultas'>;
+type ColumnasDeTipo<T> = {
+  [K in keyof InsertConsulta]-?: [NonNullable<InsertConsulta[K]>] extends [never]
+    ? never
+    : NonNullable<InsertConsulta[K]> extends T ? K : never;
+}[keyof InsertConsulta];
+
+interface CampoBase {
   /** Bloque del formulario donde se pinta. Ordena la pantalla sola. */
   grupo: Grupo;
   /**
@@ -56,7 +61,6 @@ export interface Campo {
    * demás es obligatorio.
    */
   siempreOpcional?: boolean;
-  tipo?: 'texto' | 'select' | 'checkbox' | 'fecha';
   opciones?: readonly string[];
   /** Etiquetas visibles distintas del valor histórico que se guarda. */
   etiquetasOpciones?: Readonly<Record<string, string>>;
@@ -67,6 +71,12 @@ export interface Campo {
    */
   autocompletar?: string;
 }
+
+/** Tipo de control y columna compatible; excluye el id generado (never). */
+export type Campo = CampoBase & (
+  | { tipo: 'checkbox'; columna: ColumnasDeTipo<boolean> }
+  | { tipo?: 'texto' | 'select' | 'fecha'; columna: ColumnasDeTipo<string> }
+);
 
 /**
  * Argentina primero por uso local. Después, población residente nacida en otro
@@ -92,7 +102,7 @@ const PAISES_NACIONALIDAD: Readonly<Record<string, string>> = {
   Dominicana: 'República Dominicana', Otra: 'Otro país',
 };
 
-export const CAMPOS: Record<CampoId, Campo> = {
+const CAMPOS_DECLARADOS = {
   nombre:   { columna: 'nombre', grupo: 'personales',   label: 'Nombre',   placeholder: 'Nombre',   max: 100, autocompletar: 'given-name' },
   apellido: { columna: 'apellido', grupo: 'personales', label: 'Apellido', placeholder: 'Apellido', max: 100, autocompletar: 'family-name' },
   // El portal de Siglo 21 pide tipo y número por separado; `dni` es el número.
@@ -136,9 +146,19 @@ export const CAMPOS: Record<CampoId, Campo> = {
   equivalencias: { columna: 'equivalencias', grupo: 'consulta', ancho: 'completo', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
   email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254, autocompletar: 'email' },
   telefono:      { columna: 'telefono', grupo: 'contacto',      label: 'Teléfono',  placeholder: 'Ejemplo: 11 1234-5678', max: 30, autocompletar: 'tel' },
-};
+} satisfies Record<CampoId, Campo>;
 
-export const columnaDe = (id: CampoId): keyof TablesInsert<'consultas'> => CAMPOS[id].columna;
+// Conserva la columna literal por id, pero expone los metadatos opcionales del
+// contrato a todos los consumidores. No copia ni transforma la declaración.
+export const CAMPOS: {
+  [K in CampoId]: Campo & { columna: (typeof CAMPOS_DECLARADOS)[K]['columna'] }
+} = CAMPOS_DECLARADOS;
+
+export function columnaDe<K extends CampoId>(id: K): (typeof CAMPOS)[K]['columna'];
+export function columnaDe<C extends Campo>(campo: C): C['columna'];
+export function columnaDe(campo: CampoId | Campo): Campo['columna'] {
+  return typeof campo === 'string' ? CAMPOS[campo].columna : campo.columna;
+}
 
 // ── Las casas ──
 

@@ -14,6 +14,7 @@ import {
   type CampoId, type CasaId, type FilaEnlace, type FilaPrecio, type Modo, type ResultadoPrecio,
 } from '@/components/formularios/casas';
 import type { CarreraDelMail } from '@/components/formularios/mail-precio';
+import type { TablesInsert } from '@/lib/database.types';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -80,15 +81,6 @@ function camposAceptados(casa: CasaId | null, modo: Modo | null): CampoId[] {
   return [...new Set(todos)];
 }
 
-/** El valor que va a la columna, según cómo esté declarado el campo. */
-function valorDe(campo: CampoId, payload: JsonRecord) {
-  const definicion = CAMPOS[campo];
-  if (definicion.tipo === 'checkbox') return payload[campo] === true;
-  if (definicion.opciones) return unaOpcionDe(payload[campo], definicion.opciones);
-  if (campo === 'dni') return soloDni(payload[campo]);
-  return nullableText(payload[campo], definicion.max);
-}
-
 async function insertConsulta(payload: JsonRecord) {
   const email = text(payload.email, 254);
   const telefono = text(payload.telefono, 30);
@@ -105,7 +97,7 @@ async function insertConsulta(payload: JsonRecord) {
   // La fila se arma desde la declaración de casas.ts: acá no hay ni un nombre
   // de columna escrito a mano. Es la regla que faltaba el 23/08, cuando el
   // INSERT apuntó a nueve columnas inexistentes y tumbó todos los formularios.
-  const fila: JsonRecord = {
+  const fila: TablesInsert<'consultas'> = {
     carrera: nullableText(payload.carrera, 160),
     tipo: nullableText(payload.tipo, 80),
     casa,
@@ -113,7 +105,7 @@ async function insertConsulta(payload: JsonRecord) {
   };
   const aceptados = camposAceptados(casa, modo);
   for (const campo of aceptados) {
-    fila[columnaDe(campo)] = valorDe(campo, payload);
+    asignarCampo(fila, campo, payload);
   }
 
   completarBooleanos(fila, aceptados);
@@ -121,15 +113,28 @@ async function insertConsulta(payload: JsonRecord) {
   return createSupabaseAdmin().from('consultas').insert(fila);
 }
 
+/** Mantiene unidos control, columna y conversión antes de escribir en la fila. */
+function asignarCampo(fila: TablesInsert<'consultas'>, campo: CampoId, payload: JsonRecord) {
+  const definicion = CAMPOS[campo];
+  if (definicion.tipo === 'checkbox') {
+    fila[columnaDe(definicion)] = payload[campo] === true;
+  } else {
+    fila[columnaDe(definicion)] = definicion.opciones
+      ? unaOpcionDe(payload[campo], definicion.opciones)
+      : campo === 'dni' ? soloDni(payload[campo]) : nullableText(payload[campo], definicion.max);
+  }
+}
+
 /**
  * Los booleanos van siempre, valgan o no para este formulario: si la columna es
  * NOT NULL, omitirla rompe el INSERT entero. Un `false` es además lo que
  * corresponde — Teclab no acredita equivalencias, así que no las pidió.
  */
-function completarBooleanos(fila: JsonRecord, aceptados: readonly CampoId[]) {
+function completarBooleanos(fila: TablesInsert<'consultas'>, aceptados: readonly CampoId[]) {
   for (const campo of Object.keys(CAMPOS) as CampoId[]) {
-    if (CAMPOS[campo].tipo === 'checkbox' && !aceptados.includes(campo)) {
-      fila[columnaDe(campo)] = false;
+    const definicion = CAMPOS[campo];
+    if (definicion.tipo === 'checkbox' && !aceptados.includes(campo)) {
+      fila[columnaDe(definicion)] = false;
     }
   }
 }
@@ -356,7 +361,7 @@ async function registrarPrecio(payload: JsonRecord) {
 
   // Las columnas salen de casas.ts, igual que en la consulta. Hoy es sólo el
   // mail: `nombre` no viaja y queda en null.
-  const fila: JsonRecord = {
+  const fila: TablesInsert<'consultas'> = {
     carrera: carrera.nombre,
     tipo: TIPO_PRECIO,
     casa: casaDeCarrera(carrera),
@@ -515,7 +520,7 @@ async function insertarAutoinscripcion(
   payload: JsonRecord,
 ) {
   const casa = casaDeCarrera(carrera) as CasaId;
-  const fila: JsonRecord = {
+  const fila: TablesInsert<'consultas'> = {
     carrera: carrera.nombre,
     tipo: TIPO_AUTOINSCRIPCION,
     casa,
@@ -523,7 +528,7 @@ async function insertarAutoinscripcion(
   };
   const campos = camposDe(casa, 'preinscripcion');
   for (const campo of campos) {
-    fila[columnaDe(campo)] = valorDe(campo, payload);
+    asignarCampo(fila, campo, payload);
   }
   completarBooleanos(fila, campos);
 
