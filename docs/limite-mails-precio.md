@@ -69,8 +69,17 @@ reservas de prueba. Se verificaron RLS activo, `EXECUTE` denegado a `anon` y
 restricciones del sandbox. Los fallos iniciales eran del entorno restringido,
 no requirieron cambios de código ni omitir hooks.
 
-El mock no demuestra bloqueos reales de PostgreSQL. La concurrencia de dos
-sesiones reales sobre el mismo correo/carrera no se ejecutó; queda pendiente
-verificar que obtengan exactamente un `true`. La prueba SQL sólo debe reservar
-filas dentro de una transacción revertida, sin SMTP ni consultas al endpoint
-público con correos reales.
+El 16/10/2026 se verificó la concurrencia en dos sesiones reales de PostgreSQL,
+sobre la misma clave sintética de correo/carrera. La sesión A (PID 615056)
+obtuvo `true` a las 14:04:24.877678 UTC, mantuvo la transacción abierta durante
+25 segundos y confirmó con `COMMIT` a las 14:04:49.905630 UTC. La sesión B
+(PID 615057), iniciada a las 14:04:33.651470 UTC, esperó 16.264719 segundos y
+obtuvo `false` a las 14:04:49.916189 UTC; sus aserciones de rechazo y espera
+mayor a un segundo pasaron, y terminó con `ROLLBACK`.
+
+Esta prueba tuvo autorización explícita para confirmar una reserva ficticia y
+borrarla después: si A se revierte, B puede obtener legítimamente `true` y no
+se demuestra la exclusión de reservas confirmadas. Se usó una dirección
+`@example.invalid`, sin SMTP ni llamadas al endpoint público. La limpieza de
+la clave exacta quedó verificada con cero reservas ficticias restantes.
+La verificación multisesión está completada.
