@@ -517,7 +517,8 @@ test('Siglo 21 permite consultar precios sin habilitar la autoinscripción', () 
 test('Siglo 21 muestra referencias sin exigir confirmar precios y conserva el texto de Teclab', async () => {
   const { readFile } = await import('node:fs/promises');
   const fuente = await readFile('components/index/ver-precio-teclab.tsx', 'utf8');
-  assert.match(fuente, /casa === 'siglo21' \? 'Valores de referencia\.' : 'Estos valores son sólo de referencia\. Consultá el precio vigente antes de inscribirte\.'/);
+  assert.match(fuente, /Promoción vencida \$\{diaMes\(precio\.vigenteHasta\)\} - Valores de referencia/);
+  assert.match(fuente, /Valores de referencia\./);
   assert.match(fuente, /texto=\{casa === 'siglo21' \? 'Consultar por WhatsApp' : 'Consultar precio vigente'\}/);
 });
 
@@ -546,6 +547,12 @@ test('Siglo21 omite nombre repetido y ubica nota y vigencia después de WhatsApp
     assert.ok(html.indexOf('Aranceles 2027 con promoción')>whatsapp);
     assert.ok(html.indexOf('vp-vigencia')>whatsapp);
   }
+});
+test('Teclab vencido: aviso de una línea y aclaraciones debajo de WhatsApp',async()=>{
+  const html=await pintarPanelPrecio('teclab','vencido');
+  assert.match(html,/Promoción vencida 16\/10 - Valores de referencia/);
+  assert.doesNotMatch(html,/Estos valores son sólo|Promoción finalizada/);
+  assert.doesNotMatch(html,/vp-vigencia/);
 });
 test('Teclab conserva nombre de carrera y aclaraciones antes de WhatsApp',async()=>{
   const html=await pintarPanelPrecio('teclab');

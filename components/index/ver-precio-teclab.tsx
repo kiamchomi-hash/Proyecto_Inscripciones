@@ -166,7 +166,10 @@ function AclaracionesPrecio({ precio, duracion, vencido = false, casa }: { preci
   const aclaracion = casa === 'siglo21' ? precio.nota : coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
   return <>
     {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
-    <p className="vp-vigencia">{vencido ? (casa === 'siglo21' ? 'Precios vigentes hasta el' : 'Promoción finalizada el') : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
+    {/* Teclab vencido: la fecha ya va en el aviso de arriba. */}
+    {!(vencido && casa === 'teclab') && (
+      <p className="vp-vigencia">{vencido ? 'Precios vigentes hasta el' : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
+    )}
   </>;
 }
 
@@ -541,16 +544,22 @@ export function PanelVerPrecio({
       {vista === 'vencido' && precio && (
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
           <p className="vp-aviso">
-            <strong>{casa === 'siglo21' ? 'Precios vencidos' : 'Promoción vencida'}</strong><br />
-            {casa === 'siglo21' ? 'Valores de referencia.' : 'Estos valores son sólo de referencia. Consultá el precio vigente antes de inscribirte.'}
+            {casa === 'siglo21' ? (
+              <>
+                <strong>Precios vencidos</strong><br />
+                Valores de referencia.
+              </>
+            ) : (
+              <strong>{`Promoción vencida ${diaMes(precio.vigenteHasta)} - Valores de referencia`}</strong>
+            )}
           </p>
-          <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} aclaraciones={casa !== 'siglo21'} />
+          <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} aclaraciones={false} />
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
           {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto={casa === 'siglo21' ? 'Consultar por WhatsApp' : 'Consultar precio vigente'} principal />
-          {casa === 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />}
+          <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />
         </div>
       )}
 
