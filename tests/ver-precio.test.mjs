@@ -539,7 +539,7 @@ async function pintarPanelPrecio(casa, vista = 'precio') {
 test('Siglo21 omite nombre repetido y ubica nota y vigencia después de WhatsApp',async()=>{
   for (const vista of ['precio','vencido']) {
     const html=await pintarPanelPrecio('siglo21',vista);
-    assert.doesNotMatch(html,/>Abogacía<|vp-rotulo/);
+    assert.doesNotMatch(html,/>Abogacía<|vp-rotulo|vp-separador|vp-encabezado/);
     assert.match(html,/<h3[^>]*>Precio<\/h3>/);
     const whatsapp=html.indexOf('href="https://wa.me/123"');
     assert.ok(whatsapp>=0);
@@ -550,5 +550,6 @@ test('Siglo21 omite nombre repetido y ubica nota y vigencia después de WhatsApp
 test('Teclab conserva nombre de carrera y aclaraciones antes de WhatsApp',async()=>{
   const html=await pintarPanelPrecio('teclab');
   assert.match(html,/>Abogacía<|vp-rotulo/);
+  assert.doesNotMatch(html,/vp-separador|vp-encabezado/);
   assert.ok(html.indexOf('vp-vigencia')<html.indexOf('href="https://wa.me/123"'));
 });

@@ -451,10 +451,8 @@ export function PanelVerPrecio({
 
   return (
     <section className="vp-contenido" style={estilos} aria-labelledby={tituloId}>
-      <div className="vp-encabezado">
-        {casa !== 'siglo21' && <p className="vp-rotulo">Precio</p>}
-        <h3 id={tituloId} className="vp-titulo">{casa === 'siglo21' ? 'Precio' : nombreCarrera}</h3>
-      </div>
+      {/* Sólo para el lector de pantalla: el panel arranca directo en el formulario. */}
+      <h3 id={tituloId} className="sr-only">{casa === 'siglo21' ? 'Precio' : nombreCarrera}</h3>
 
       {vista === 'formulario' && (
         <form className="vp-cuerpo" onSubmit={enviar} noValidate>
@@ -520,7 +518,6 @@ export function PanelVerPrecio({
             {error?.largo}
           </p>
 
-          <div className="vp-separador"><span>o</span></div>
           <EnlaceWhatsApp href={waHref} texto="Escribinos por WhatsApp" />
         </form>
       )}
