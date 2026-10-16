@@ -8,7 +8,7 @@ app/teclab/page.tsx, app/teclab/teclab.css, tests/teclab-landing.test.mjs. Prese
 
 ## Tareas
 - [x] T1: Reproducir desborde, prueba de orden RED y corregir orden y estilos. Ruta delegada por preparación y dos archivos no triviales.
-- [ ] T2: Prueba focal, npm run check, layout 1280/768/640/375/320 y zoom 200/400%; capturas 1280 y 375 visibles en chat.
+- [x] T2: Prueba focal, npm run check, layout 1280/768/640/375/320 y zoom 200/400%; capturas 1280 y 375 visibles en chat. **Cerrada el 16/10/2026:** publicado en `3bb9355`, `0d28969` y `4521ca9`. En producción, a 1280 y 375: catálogo, test, formularios y articulación en ese orden, sin scroll horizontal; capturas en `.playwright-mcp/teclab-test-1280.png` y `teclab-test-375.png`.
 
 ## Aceptación
 Orden catálogo → test → contacto → preinscripción → articulación; contenido y CTA sin recorte; anclas conservadas. No enviar leads.

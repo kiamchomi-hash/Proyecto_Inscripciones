@@ -16,7 +16,7 @@ Las fuentes, fórmulas, condiciones comerciales y evidencias detalladas se conse
 - [x] T2 — Aplicar el cálculo sucesivo sólo con condiciones completas, confiables y vigentes, sin duplicar beneficios.
 - [x] T3 — Cubrir extracción, descuentos, adicionales, expiración e información no confiable con pruebas deterministas.
 - [x] T4 — Revisar las fuentes locales sin red y mantener bloqueada la cotización cuando no se acredita vigencia.
-- [ ] T5 — Resolver una superficie segura de revisión nativa para la implementación comercial ignorada, sin exponerla al repositorio público.
+- [x] T5 — Resolver una superficie segura de revisión nativa para la implementación comercial ignorada, sin exponerla al repositorio público. **Descartada el 16/10/2026:** la revisión nativa (RDD) está apagada a nivel global por decisión del usuario, así que no hace falta una superficie de revisión.
 - [x] T6 — Regenerar las salidas locales desde la fuente previamente descargada, preservando el contenido ajeno y sin habilitar promociones no comprobadas.
 
 ## Criterios de aceptación

@@ -8,6 +8,14 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 - [x] **Completar la actualización diaria y publicación de aranceles 2027 de Siglo 21**. Resuelto el 16/10/2026: `precios_privados` tiene 67 precios de Siglo 21 cargados por la corrida diaria, vigentes hasta el 16/10/2026. Desde `0688241` la vigilancia avisa por Telegram si los precios de una institución pasan más de un día vencidos. [Avance](../odd/tasks/siglo21-ver-precios-newsletter.md).
 
+## Tareas de `odd/tasks/` cerradas con evidencia — 16/10/2026
+
+- [x] **Ver precio de Teclab**: SQL de precios y newsletter corridos (las tablas existen), «Ver precio» como slide y financiación con CFT (`ver-precio-teclab` T1, T5, T7 y T8).
+- [x] **Autoinscripción de Teclab**: SQL de enlaces, `notificar` desplegada el 09/10/2026 y página de preinscripción por carrera con el formulario arriba (T6 y T7).
+- [x] **SMTP2GO**: clave cargada en Vercel desde el 04/10/2026 (`mail-precio-teclab` T4, `newsletter-teclab` T6).
+- [x] **Web de Teclab**: inicio de clases commiteado (`41089c4`) y orden y responsive comprobados en producción a 1280 y 375 (`inicio-teclab` T3, `teclab-responsive-formulario` T2).
+- [x] **Precios 2027 de Siglo 21**: corrida real 70/70, carga de 67, buscador regenerado y referencias históricas publicadas (`estado-actualizacion-precios-2027`, `descuentos-precios-2027`, `siglo21-ver-precios-newsletter` S1, S3, S6 y S8). La superficie de revisión de `descuentos-siglo21-2027` T5 se descartó porque RDD está apagado.
+
 ## Sitio y diseño — 16/10/2026
 
 - [x] **Medir en qué punto se abandona el test vocacional** (general y Teclab). Publicado el 16/10/2026 en `e239bc9`; smoke de producción verde. La revisión de datos y las mejoras siguen en la lista. [Tarea](../odd/tasks/medicion-abandono-vocacional.md).

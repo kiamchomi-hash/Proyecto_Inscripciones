@@ -9,18 +9,10 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 - [ ] **23/10/2026: primera revisión del embudo del test vocacional** (general y Teclab). Publicado el 16/10/2026 (`e239bc9`). Si hay pocos intentos, ampliar la observación antes de sacar conclusiones; después, mejorar los pasos con mayor caída. [Cómo leerlo](docs/medicion-test-vocacional.md).
 - [ ] **Confirmar con un lead real que «Ver precio» no repite el mail de la misma carrera en la semana**. Publicado el 16/10/2026 (`1349acc`); no se probó en producción para no mandar mails reales. [Procedimiento](docs/limite-mails-precio.md).
 
-## 2. Ya hecho, falta marcarlo en su tarea
+## 2. Comprobaciones que quedan de tareas ya hechas
 
-Verificado el 16/10/2026 contra la base, Vercel y Supabase. Cerrar cada ítem en su documento de `odd/tasks/` y pasar el detalle al historial.
-
-- [ ] `ver-precio-teclab` T1 y T5: las tablas `precios_privados` y `suscripciones_newsletter` existen, o sea que los dos SQL ya corrieron.
-- [ ] `autoinscripcion-teclab` T6: `enlaces_inscripcion` existe y `notificar` se desplegó el 09/10/2026 (versión 26). Falta sólo confirmar que el enlace llega en un aviso real.
-- [ ] `priorizar-leads-que-vieron-precio` T2: `notificar` desplegada el 09/10/2026; falta mirar un aviso real con la marca de «vio el precio».
-- [ ] `mail-precio-teclab` T4 y `newsletter-teclab` T6: `SMTP2GO_API_KEY` está cargada en Vercel desde el 04/10/2026.
-- [ ] `autoinscripcion-teclab` T7: la página `/teclab/inscripcion` existe; confirmar que quedó con el formulario arriba de todo.
-- [ ] `teclab-responsive-formulario` T2 e `inicio-teclab` T3: la web de Teclab está publicada (`3bb9355`, `0d28969`, `4521ca9`); falta la captura de cierre.
-- [ ] **4. Precios 2027 de Siglo 21**: la carga diaria ya funciona (67 precios en `precios_privados`, cerrado en el [historial](docs/historial-pendientes.md) el 16/10/2026), pero sus tres tareas siguen con ítems abiertos. Revisar cuáles quedaron cubiertos y cuáles siguen vigentes (selección en CASA, cotizaciones históricas, fallo de Antropología, descuentos y el fallo ajeno de taxonomía de la suite privada). [Pipeline](odd/tasks/estado-actualizacion-precios-2027.md), [descuentos](odd/tasks/descuentos-precios-2027.md), [ver precios](odd/tasks/siglo21-ver-precios-newsletter.md).
-- [ ] `ver-precio-teclab` T7 y T8: «Ver precio» ya es un slide (`d18632e`) y la financiación se muestra debajo de WhatsApp (`31eb3ad`); confirmar que cubre lo pedido, CFT incluido.
+- [ ] **Mirar un aviso real de Teclab en Telegram**: que traiga el enlace de inscripción y la marca de «vio el precio». `notificar` está desplegada desde el 09/10/2026; sólo falta verlo con un lead real. [Enlace](odd/tasks/autoinscripcion-teclab.md), [marca](odd/tasks/priorizar-leads-que-vieron-precio.md).
+- [ ] **Arreglar la suite comercial privada** (441/447 al 16/10/2026): `areas-siglo21` no tiene las claves `alimentos`, `mineros` y `minera` de las carreras nuevas de Teclab, y cinco casos de `entorno-linux` copian el coordinador sin `estado-actualizacion-2027.mjs`. [Detalle](odd/tasks/siglo21-ver-precios-newsletter.md).
 
 ## 3. Urgente: leads y precios
 

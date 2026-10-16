@@ -25,7 +25,7 @@ Fuera de alcance: cambiar el aviso de «Vio el precio» en sí, el bot de respue
 ## Tareas
 
 - [x] T1. Marca en el aviso de Telegram y mensaje de WhatsApp del panel, con tests (ruta: delegada; disparador: 2+ archivos no triviales).
-- [ ] T2. Desplegar la Edge Function `notificar` y verificar un aviso real (ruta: inline; requiere confirmación del usuario).
+- [ ] T2. Desplegar la Edge Function `notificar` y verificar un aviso real (ruta: inline; requiere confirmación del usuario). Al 16/10/2026: `notificar` desplegada el 09/10/2026 (versión 26); falta sólo ver un aviso real con la marca.
 
 ## Verificación
 

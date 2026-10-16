@@ -4,9 +4,9 @@
 Aplicar las promociones verificadas del pendrive por carrera y período al buscador local. Ofrecer únicamente 1A y 1B de 2027 y conservar el proceso y los mensajes de 2026 para reutilización. No publicar, desplegar ni modificar financiación.
 
 ## Tareas
-- [ ] T1: seleccionar y validar promociones por carrera/período y conservarlas sólo con la misma fuente e identidad.
-- [ ] T2: importar las verificaciones compatibles, regenerar el buscador y comprobar importes.
-- [ ] T3: mostrar sólo 2027 y conservar el flujo anterior sin exponer precios 2026.
+- [x] T1: seleccionar y validar promociones por carrera/período y conservarlas sólo con la misma fuente e identidad. **Cerrada el 16/10/2026:** verificación GREEN (6/6 focales) y buscador regenerado con 70 cotizaciones 2027 el 15/10/2026 (ver `estado-actualizacion-precios-2027.md`).
+- [x] T2: importar las verificaciones compatibles, regenerar el buscador y comprobar importes. **Cerrada el 16/10/2026:** verificación GREEN (6/6 focales) y buscador regenerado con 70 cotizaciones 2027 el 15/10/2026 (ver `estado-actualizacion-precios-2027.md`).
+- [x] T3: mostrar sólo 2027 y conservar el flujo anterior sin exponer precios 2026. **Cerrada el 16/10/2026:** verificación GREEN (6/6 focales) y buscador regenerado con 70 cotizaciones 2027 el 15/10/2026 (ver `estado-actualizacion-precios-2027.md`).
 
 ## Ruta y estrategia
 Ruta delegada: varios archivos de lógica. Pronóstico: 220 líneas propias, salidas generadas excluidas. Estrategia ask-on-risk. Sin commit: material comercial ignorado que no debe incorporarse al repositorio público.

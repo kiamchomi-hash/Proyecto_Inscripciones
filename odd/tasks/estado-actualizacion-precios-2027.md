@@ -4,9 +4,9 @@
 Corregir la selección de carreras y mostrar cuando el relevamiento diario falla o queda incompleto, distinguiendo vigencia de promoción y fecha de publicación. Autorizado por el usuario: «sí corregilo». Trabajo local, sin publicación ni uso de sesiones remotas.
 
 ## Tareas
-- [ ] T1 Corregir selección CASA con confirmación robusta y pruebas de regresión.
+- [x] T1 Corregir selección CASA con confirmación robusta y pruebas de regresión. **Cerrada el 16/10/2026:** la corrida real del 15/10/2026 completó 70/70 cotizaciones sin fallos (ver «Carga y publicación completas verificadas»).
 - [x] T2 Persistir resultado de actualización y mostrar advertencia en HTML y panel, con compatibilidad de snapshots anteriores y pruebas.
-- [ ] T3 Verificar checks y presentación local, dejando limitaciones explícitas.
+- [x] T3 Verificar checks y presentación local, dejando limitaciones explícitas. **Cerrada el 16/10/2026:** publicación confirmada el 15/10/2026 y `npm run check` 475/475 el 16/10/2026.
 
 ## Ruta y controles
 Delegada: lógica en varios archivos y preparación para escritura. RED/GREEN cuando haya prueba determinista; no ejecutar cotizaciones autenticadas sin autorización específica. npm run check y pruebas focales comerciales; generación local sin red, revisión visual. Las carpetas comerciales son privadas e ignoradas: nunca agregarlas a git. Otros cambios existentes no se tocan. Main según política del proyecto, sin ramas ni PR. Sin commit automático por política específica de commit sólo a pedido. RDD activo: normalizar antes de preflight; consentimiento nativo si corresponde. Pronóstico 300 líneas propias, generados excluidos; estrategia ask-on-risk.
@@ -52,8 +52,8 @@ Usuario autorizó explícitamente publicar también el commit previo de Computac
 
 ## Ampliación autorizada: referencias vencidas
 Usuario pidió mismo trato que Teclab: conservar valores vencidos como referenciales y cargar nuevos tras script exitoso. Exploración comprobó sólo dos finales históricos completos (Matemática, consulta validada; Gerontología, captura usuario), vencidos14/10. El extractor elimina vencidos del snapshot activo; UI pública ya soporta estado vencido y newsletter excluye caducados. No generalizar verificación a toda la oferta.
-- [ ] T4 Conservar cotizaciones históricas estructuralmente válidas como referencias separadas, sin promover vigencia ni mezclar nuevas listas.
-- [ ] T5 Consumir referencias explícitas en buscador/preparación web y comprobar publicación automática sólo tras éxito; no enviar newsletter ni usar CASA en esta unidad.
+- [x] T4 Conservar cotizaciones históricas estructuralmente válidas como referencias separadas, sin promover vigencia ni mezclar nuevas listas. **Cerrada el 16/10/2026:** marcada más abajo en este documento con su evidencia.
+- [x] T5 Consumir referencias explícitas en buscador/preparación web y comprobar publicación automática sólo tras éxito; no enviar newsletter ni usar CASA en esta unidad. **Cerrada el 16/10/2026:** marcada más abajo en este documento con su evidencia.
 Ruta delegada por lógica privada multiarchivo. Pruebas RED/GREEN sobre vencimiento/preservación/identidad/no promoción de históricos. Material comercial no se versiona. Preparación local autorizada; no ejecutar consultas remotas adicionales ni cargar tablas durante la implementación. El circuito diario exitoso usa el publicador existente. Comprobar permisos/alcance antes de cualquier carga manual.
 
 ## Referencias vencidas implementadas localmente (15/10/2026)
@@ -86,8 +86,8 @@ El usuario considera verificados los precios existentes y rechazó imponer una v
 
 ## Antropología: corrección inmediata autorizada
 Usuario pidió resolver ahora el error y confirmar las demás carreras. Checkpoint actual sólo Abogacía/Actuario15:28/15:31Argentina; última corrida los reutilizó. Antropología tercera aborta antes de otras67; no afirmar éxito del resto. Nombre exacto oficial Antropol. Organizac. existe en Desplegables!AU5 del rango GradoNueva; no renombrar alias arbitrariamente. Fallback consultar-precio-siglo21 oculta error original elegirDeLista con fallo posterior escribir.
-- [ ] T6 Preservar causa y reproducir selectivamente Antropología con perfil dedicado autorizado; reparar causa observada con regresión.
-- [ ] T7 Reanudar lote diario sólo tras prueba real exitosa, informar cobertura/carga y límites honestos.
+- [x] T6 Preservar causa y reproducir selectivamente Antropología con perfil dedicado autorizado; reparar causa observada con regresión. **Cerrada el 16/10/2026:** marcada más abajo en este documento con su evidencia.
+- [x] T7 Reanudar lote diario sólo tras prueba real exitosa, informar cobertura/carga y límites honestos. **Cerrada el 16/10/2026:** marcada más abajo en este documento con su evidencia.
 Autorización remota: mismo script/perfil CASA dedicado y credenciales configuradas de la fuente original, selectores carrera/nivel/período/beneficio/CAU; no fórmulas, listas, fechas o porcentajes forzados ni otros perfiles. Publicación por circuito existente previamente autorizada; no newsletter. Sin capturar claves ni hoja completa. Ruta delegada multiarchivo/diagnóstico real; evidencia sanitizada y pruebas RED/GREEN.
 
 ### T6 diagnóstico real de Antropología

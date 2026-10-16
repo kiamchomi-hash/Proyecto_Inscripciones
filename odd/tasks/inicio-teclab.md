@@ -21,7 +21,7 @@ Mostrar en las carreras de Teclab la fecha de inicio de clases y el mensaje «To
 
 - [x] T1. Módulo puro con las fechas y la función que decide qué mostrar, con tests (ruta: delegada, 2+ archivos no triviales).
 - [x] T2. Aviso en el último slide del modal de Teclab, en el hero de `/teclab` y en la ficha `/carreras/[slug]` de Teclab. A pedido del usuario se sacó de la portada del modal. El 03/10/2026 también se sacó del hero de `/teclab`, a pedido del usuario.
-- [ ] T3. `npm run check`, revisión visual y commit.
+- [x] T3. `npm run check`, revisión visual y commit. **Cerrada el 16/10/2026:** commiteado en `41089c4` (03/10/2026); `npm run check` 475/475 el 16/10/2026.
 
 ## Verificación
 

@@ -13,12 +13,12 @@ Replicar el flujo de Teclab para consultar matrícula, bimestre 1 y bimestre 2 d
 - Política específica del proyecto: main, sin ramas/PR; no commit ni push sin pedido explícito.
 
 ## Tareas
-- [ ] S6 Consumir y persistir finales observados en el snapshot privado existente. Implementación y pruebas enfocadas completas; suite privada con un fallo ajeno de taxonomía. Publicación y cobertura total no completadas.
+- [x] S6 Consumir y persistir finales observados en el snapshot privado existente. Implementación y pruebas enfocadas completas; suite privada con un fallo ajeno de taxonomía. Publicación y cobertura total no completadas. **Cerrada el 16/10/2026:** el lote del 15/10/2026 completó la cobertura (70/70) y la publicación. La suite privada sigue abierta como ítem aparte.
 - [x] S5 Corregir lectura de celda activa del helper Excel y verificar Matemática en libro original 1 2027, sólo con selectores autorizados. Ruta delegada: bugfix privado y pruebas deterministas antes de consulta serializada. Sin modificar fórmulas/precios/promociones/fechas.
 - [x] S4 Corregir distribución de botones del cierre Siglo 21 y reemplazar foto de sede por estudiante con notebook. Ruta delegada: componente y CSS, lectura preparatoria. No publicar este ajuste sin nuevo pedido. Comprobar escritorio/celular, teclado y regresión Teclab.
-- [ ] S1 Integrar consulta de precios y preparación privada local de los tres aranceles 2027. Ruta delegada: lectura preparatoria y varios archivos no triviales.
+- [x] S1 Integrar consulta de precios y preparación privada local de los tres aranceles 2027. Ruta delegada: lectura preparatoria y varios archivos no triviales. **Cerrada el 16/10/2026:** flujo publicado y verificado en producción el 14/10/2026; 67 precios cargados en `precios_privados`.
 - [x] S2 Integrar newsletter, correos por casa y página de preinscripción sin autoinscripción. Ruta delegada: varios archivos no triviales.
-- [ ] S3 Verificar pruebas y capturas escritorio/celular; registrar limitaciones de publicación. Ruta delegada: ejecución de checks.
+- [x] S3 Verificar pruebas y capturas escritorio/celular; registrar limitaciones de publicación. Ruta delegada: ejecución de checks. **Cerrada el 16/10/2026:** ver «Producción verificada» en este documento.
 
 ## Aceptación y comprobaciones
 Pruebas deterministas RED/GREEN cuando corresponda; pruebas de precio, mail, newsletter y página; npm run check. Capturas a 1280 y 375 px sin envíos reales. Teclab no debe sufrir regresiones. Publicación de precios privados y deploy pendientes de autorización remota.
@@ -102,7 +102,7 @@ El usuario autorizó commit de los cambios propios en main y push a origin main 
 - [x] Ingestión general en el snapshot privado existente: identidad, selección, procedencia, vigencia y finales observados; sin nuevo registro ni sustitución por cálculo.
 - [x] Consulta bajo demanda persiste el resultado validado y consumidores priorizan finales sin reaplicar descuentos. Listas y verificaciones históricas se conservan separadas.
 - [x] Regresión RED/GREEN de identidad, total, vigencia, beneficio, caducidad y preparación parcial.
-- [ ] Suite privada completa sin fallos: pendiente ajeno de taxonomía, detallado abajo.
+- [ ] Suite privada completa sin fallos: pendiente ajeno de taxonomía, detallado abajo. Al 16/10/2026: 441/447. Fallan `areas-siglo21` (faltan las claves `alimentos`, `mineros` y `minera` de las carreras nuevas de Teclab) y cinco casos de `entorno-linux` (la copia temporal del coordinador no incluye `estado-actualizacion-2027.mjs`).
 - Ruta delegada: cambio de lógica en integrador, consulta y dos consumidores. Sólo preparación local; sin commit, publicación, mails ni nueva consulta remota. Cobertura inicial limitada a evidencia S5 de Matemática y captura del usuario de Gerontología; no se extrapola vigencia al resto.
 
 - Contrato general dentro de `precios-lista-2027.mjs`: `registrarCotizacion2027` conserva lista y registros históricos, guarda finales exactos por carrera/período en `verificados.cotizaciones` y valida libro/CAU/selección/beneficio, correspondencia con lista, suma y vigencia. `cotizacionVerificada2027` revalida al consumir y rechaza caducados. No calcula un final sustituto ni usa columnas de financiación.
@@ -116,7 +116,7 @@ El usuario autorizó commit de los cambios propios en main y push a origin main 
 
 ### S7/S8: actualización diaria y publicación (autorizados, en curso)
 - [x] S7 Integrar el recorrido2027 en actualizar-todo y conservar verificaciones compatibles al refrescar; lote sólo de la oferta visible, persistencia general de finales/fechas y checkpoint diario sin mezclar fuentes.
-- [ ] S8 Ejecutar extracción/lote autorizado con perfil CASA dedicado para toda la oferta2027 y publicación transaccional por cau_editor en precios_privados; leer de vuelta y desplegar sólo los cambios propios del sitio tras check del candidato separado.
+- [x] S8 Ejecutar extracción/lote autorizado con perfil CASA dedicado para toda la oferta2027 y publicación transaccional por cau_editor en precios_privados; leer de vuelta y desplegar sólo los cambios propios del sitio tras check del candidato separado. **Cerrada el 16/10/2026:** lote 70/70, carga pública de 67 con lectura transaccional y snapshot admin publicado (ver `estado-actualizacion-precios-2027.md`).
 - Autorización humana ampliada: consultas originales de todas las carreras2027, selectores y clave configurada del perfil dedicado, carga Siglo21 por cau_editor/EDITOR_DATABASE_URL y commit/push main mediante sesión Git configurada. Sin otros perfiles/credenciales, fórmulas, fechas o porcentajes forzados, sin leads ni mails de prueba.
 - La fecha actual avanzó al15/10/2026: no se congela al14 ni se prolongan vigencias caducadas. Si CASA sigue indicando14/10 se conserva evidencia y se bloquea publicar como vigente. La oferta visible es el alcance, no las147combinaciones de la lista privada.
 - Ruta delegada: integración multiarchivo con pruebas RED/GREEN; respaldo privado previo a refresco y preservación de archivos ajenos. Sin scheduler ni segundo circuito manual.

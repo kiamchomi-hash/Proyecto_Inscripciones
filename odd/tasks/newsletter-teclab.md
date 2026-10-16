@@ -23,7 +23,7 @@ A cada suscripción activa a una carrera de Teclab, mandarle cada 7 días el mai
 - [x] T3. Cron `/api/newsletter`: suscripciones activas de Teclab con 7 días desde el último envío (o el consentimiento), precio vigente, envío por SMTP2GO con `List-Unsubscribe` y `List-Unsubscribe-Post`, y `ultimo_envio_at` recién con el envío confirmado. Ruta: delegada (mismo writer).
 - [x] T4. Baja: página `/newsletter/baja?id=…` con botón, y `POST /api/newsletter/baja` que pone `activo = false` (también la usa el clic de Gmail). Ruta: delegada (mismo writer).
 - [x] T5. Documentación y tests. Ruta: delegada (mismo writer).
-- [ ] T6. El usuario corre el SQL y activa SMTP2GO (pendiente 36).
+- [x] T6. El usuario corre el SQL y activa SMTP2GO (pendiente 36). **Cerrada el 16/10/2026:** `suscripciones_newsletter` existe y `SMTP2GO_API_KEY` está en Vercel desde el 04/10/2026.
 
 ## Progreso
 
