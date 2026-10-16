@@ -365,17 +365,6 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                     : `Formate en ${nombreCompleto} con el acompañamiento del CAU Villa Lugano.`)}
               </p>
             )}
-            {carrera.proximamente && (
-              <p className="career-proximamente">
-                {/* Quien anuncia es quien la dicta: en Teclab (tecnicaturas y
-                    cursos) es el instituto, no la universidad. */}
-                {conMaterialTeclab
-                  ? `Teclab anunció ${isTeclabCourse ? 'este curso' : 'esta carrera'}`
-                  : 'Universidad Siglo 21 anunció esta carrera'}
-                , pero todavía no abrió la inscripción. Dejanos tus datos y te
-                avisamos apenas se habilite.
-              </p>
-            )}
             <div className="career-hero-actions">
               {/* Quien viene a inscribirse baja a la preinscripcion, que arma el
                   legajo. La de una carrera que todavia no abrio solo guarda la
@@ -397,6 +386,18 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               </a>
               <CareerInfoButton carrera={carrera} />
             </div>
+            {/* Debajo de los botones: arriba alejaba la preinscripcion del texto. */}
+            {carrera.proximamente && (
+              <p className="career-proximamente">
+                {/* Quien anuncia es quien la dicta: en Teclab (tecnicaturas y
+                    cursos) es el instituto, no la universidad. */}
+                {conMaterialTeclab
+                  ? `Teclab anunció ${isTeclabCourse ? 'este curso' : 'esta carrera'}`
+                  : 'Universidad Siglo 21 anunció esta carrera'}
+                , pero todavía no abrió la inscripción. Dejanos tus datos y te
+                avisamos apenas se habilite.
+              </p>
+            )}
           </div>
         </div>
       </header>

@@ -25,9 +25,15 @@ const NUEVAS = [
   ['Tecnicatura Superior en Administración de Riesgos Empresariales', 'Teclab - Gestión', 'negocios', 'Gestión'],
   ['Tecnicatura Superior en Diseño de Producto Digital', 'Teclab - Tecnología', 'tecnologia', 'Desarrollo'],
   ['Tecnicatura Superior en Diseño de Experiencia de Usuario (User Experience)', 'Teclab - Tecnología', 'tecnologia', 'Desarrollo'],
-  ['Tecnicatura Superior en Gestión de Equipos Ágiles (Agile Coaching)', 'Teclab - Gestión', 'rrhh', 'Gestión'],
+  ['Tecnicatura Superior en Agile Coaching', 'Teclab - Gestión', 'rrhh', 'Gestión'],
   ['Tecnicatura Superior en Recursos Humanos', 'Teclab - Gestión', 'rrhh', 'Gestión'],
 ].map(([nombre, nivel, area, grupo]) => ({ nombre, nivel, area, grupo }));
+
+// Renombres posteriores al alta: el SQL del alta queda como se corrió.
+const RENOMBRES = new Map([
+  ['Tecnicatura Superior en Gestión de Equipos Ágiles (Agile Coaching)', 'Tecnicatura Superior en Agile Coaching'],
+]);
+const nombreActual = nombre => RENOMBRES.get(nombre) ?? nombre;
 
 // ── Taxonomía ──
 
@@ -133,7 +139,7 @@ test('el SQL da de alta las nueve con inscripción abierta, sin duplicar', () =>
   const sql = readFileSync(SQL, 'utf8');
   assert.doesNotMatch(sql.replace(/^--.*$/gm, ''), /\b(update|drop|truncate|alter)\b|^\s*delete\b/im);
   const filas = filasDelSql();
-  assert.deepEqual(filas.map(f => f.nombre), NUEVAS.map(n => n.nombre));
+  assert.deepEqual(filas.map(f => nombreActual(f.nombre)), NUEVAS.map(n => n.nombre));
   assert.deepEqual(filas.map(f => f.orden), [1109, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1117]);
   for (const [i, fila] of filas.entries()) {
     assert.equal(fila.nivel, NUEVAS[i].nivel, fila.nombre);
@@ -177,7 +183,7 @@ test('ningún redirect de next.config.ts tapa los slugs nuevos', async () => {
   const fuentes = new Set((await config.redirects()).map(r => r.source));
   const slugs = new Set();
   for (const fila of filasDelSql()) {
-    const slug = tipos.carreraToSlug(fila);
+    const slug = tipos.carreraToSlug({ ...fila, nombre: nombreActual(fila.nombre) });
     assert.ok(!fuentes.has(`/carreras/${slug}`), slug);
     assert.ok(!fuentes.has(`/carreras/${slug}/inscripcion`), slug);
     slugs.add(slug);
@@ -222,4 +228,10 @@ test('cada una tiene página de inscripción con un título que entra', () => {
     assert.ok(titulo.length <= 66, titulo);
     assert.match(titulo, /\| Teclab$/, titulo);
   }
+});
+
+test('el slug largo de Agile Coaching redirige al corto', async () => {
+  const { readFileSync } = await import('node:fs');
+  const config = readFileSync(new URL('../next.config.ts', import.meta.url), 'utf8');
+  assert.match(config, /source: '\/carreras\/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',\s*destination: '\/carreras\/tecnicatura-superior-en-agile-coaching'/);
 });

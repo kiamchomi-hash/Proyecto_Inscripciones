@@ -33,7 +33,7 @@ const SIN_FECHA_CONFIRMADA = new Set([
   'Tecnicatura Superior en Administración de Riesgos Empresariales',
   'Tecnicatura Superior en Diseño de Producto Digital',
   'Tecnicatura Superior en Diseño de Experiencia de Usuario (User Experience)',
-  'Tecnicatura Superior en Gestión de Equipos Ágiles (Agile Coaching)',
+  'Tecnicatura Superior en Agile Coaching',
   'Tecnicatura Superior en Recursos Humanos',
 ]);
 

@@ -19,6 +19,8 @@ test('se conservan exactamente las demás reglas de redirección', async () => {
     '/carreras/tecnicatura-superior-en-fintech',
     '/carreras/tecnicatura-superior-en-acompanamiento-terapeutico',
     '/carreras/tecnicatura-superior-en-producto-digital',
+    // Agile Coaching (16/10/2026), probada en teclab-bloques-2-y-3.test.mjs.
+    '/carreras/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',
   ]);
   const redirects = (await config.redirects()).filter(regla => !nuevas.has(regla.source));
   // Huella de las 23 reglas anteriores: rutas, destinos, códigos y condiciones.

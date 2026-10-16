@@ -140,6 +140,14 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      // Agile Coaching se publico el 16/10/2026 con el nombre largo de la
+      // capacitacion, «Gestion de Equipos Agiles (Agile Coaching)», y se acorto
+      // porque el titulo de la ficha ocupaba tres lineas.
+      {
+        source: '/carreras/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',
+        destination: '/carreras/tecnicatura-superior-en-agile-coaching',
+        permanent: true,
+      },
       // La materia dejo de ser "Fisico-Quimica" y paso a ser solo "Fisica"
       // (11/08/2026): el profesor no dicta quimica. La URL vieja estaba
       // indexada desde el 09/08, asi que va con 301 a la nueva — es la misma

@@ -37,7 +37,7 @@ const CARRERAS = [
   [254, 'Tecnicatura Superior en Administración de Riesgos Empresariales', 'Administración de Riesgos Empresariales', 1113],
   [255, 'Tecnicatura Superior en Diseño de Producto Digital', 'Diseño de Producto Digital', 1114],
   [256, 'Tecnicatura Superior en Diseño de Experiencia de Usuario (User Experience)', 'Diseño de Experiencia de Usuario (UX)', 1115],
-  [257, 'Tecnicatura Superior en Gestión de Equipos Ágiles (Agile Coaching)', 'Gestión de Equipos Ágiles (Agile Coaching)', 1116],
+  [257, 'Tecnicatura Superior en Agile Coaching', 'Agile Coaching', 1116],
   [258, 'Tecnicatura Superior en Recursos Humanos', 'Recursos Humanos', 1117],
 ].map(([id, nombre, nombre_corto, orden]) => ({ id, nombre, nombre_corto, orden }));
 

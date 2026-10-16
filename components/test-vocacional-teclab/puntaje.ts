@@ -61,7 +61,7 @@ export const PERFILES: { id: PerfilId; match: string[] }[] = [
   // No 'producto digital' a secas: es el nombre de la anunciada de baja (id 245).
   { id: 'producto-digital', match: ['diseno de producto digital'] },
   { id: 'experiencia-usuario', match: ['experiencia de usuario'] },
-  { id: 'equipos-agiles', match: ['equipos agiles'] },
+  { id: 'equipos-agiles', match: ['equipos agiles', 'agile coaching'] },
   { id: 'recursos-humanos', match: ['recursos humanos'] },
 ];
 

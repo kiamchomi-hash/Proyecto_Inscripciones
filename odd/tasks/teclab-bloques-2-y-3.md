@@ -98,3 +98,7 @@ carreras de Siglo 21 no cambian de área (comparado sobre las 99 activas).
   (`sql/2026-10-16_teclab_bloques_2_y_3_proximamente.sql`): sin `/inscripcion` hasta
   tener precio, fecha y HubSpot. En el catálogo, el badge «Nueva» de Teclab pasa a la
   cabecera, al lado de la duración, como los demás badges de la casa.
+- 16/10/2026: «Gestión de Equipos Ágiles (Agile Coaching)» pasa a «Agile Coaching»
+  (el H1 ocupaba tres líneas); el título oficial no cambia y el slug viejo redirige.
+  En las fichas «Próximamente», el aviso de Teclab o Siglo 21 baja debajo de los
+  botones para no alejar la preinscripción.

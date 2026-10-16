@@ -72,7 +72,7 @@ const TIPOS: { match: string; tipo: string }[] = [
   { match: 'logística', tipo: 'Gestión' },
   { match: 'comercio exterior', tipo: 'Negocios' },
   { match: 'riesgos empresariales', tipo: 'Gestión' },
-  { match: 'equipos ágiles', tipo: 'Gestión' },
+  { match: 'agile coaching', tipo: 'Gestión' },
   { match: 'recursos humanos', tipo: 'Gestión' },
   { match: 'periodismo', tipo: 'Comunicación' },
 ];
@@ -138,7 +138,7 @@ const SIN_ARTICULACION_CONFIRMADA = [
   'riesgos empresariales',
   'diseño de producto digital',
   'experiencia de usuario',
-  'equipos ágiles',
+  'agile coaching',
   'recursos humanos',
 ];
 
@@ -381,7 +381,7 @@ const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
   // «Designer sketching Wireframes (Unsplash)», Green Chameleon, CC0.
   { match: 'experiencia de usuario', imagen: '/imagenes/teclab/carreras/diseno-de-experiencia-de-usuario.webp' },
   // «People in small discussion group meeting», U.S. Fish and Wildlife Service, dominio público.
-  { match: 'equipos ágiles', imagen: '/imagenes/teclab/carreras/gestion-de-equipos-agiles.webp' },
+  { match: 'agile coaching', imagen: '/imagenes/teclab/carreras/gestion-de-equipos-agiles.webp' },
   // «Rawpixel.com 2017-06-02 (Unsplash)», rawpixel, CC0.
   { match: 'recursos humanos', imagen: '/imagenes/teclab/carreras/recursos-humanos.webp' },
 ];

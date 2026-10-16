@@ -246,7 +246,7 @@ const AREA_KEYWORDS: Record<AreaId, string[]> = {
   comunicacion: ['periodismo', 'publicidad', 'relaciones públicas', 'social media', 'diseño y animación', 'moda', 'protocolo', 'eventos', 'comercialización', 'videojuegos', 'marketing digital', 'inbound marketing'],
   ambiente: ['ambiental', 'agraria', 'agroecológicos', 'hidrocarburos', 'geociencias', 'energías renovables', 'alimentos', 'mineros', 'minera', 'higiene', 'seguridad laboral', 'auditorías ambientales'],
   turismo: ['turística', 'turísticos', 'hotelera', 'turismo'],
-  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'oratoria', 'equipos de alto desempeño', 'equipos ágiles', 'rrhh'],
+  rrhh: ['recursos humanos', 'relaciones laborales', 'clima laboral', 'liderazgo', 'responsabilidad', 'gestión social', 'oratoria', 'equipos de alto desempeño', 'equipos ágiles', 'agile coaching', 'rrhh'],
   deporte: ['deportiva', 'deportivo', 'nutrición deportiva', 'fútbol'],
 };
 
