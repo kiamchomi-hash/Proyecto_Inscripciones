@@ -15,7 +15,6 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 3. Urgente: leads y precios
 
-- [ ] **Ver que llegue el mail de Teclab**. Al 16/10/2026 los 17 precios de Teclab en `precios_privados` vuelven a estar vigentes (hasta el 16/10, cargados a las 9:48 tras la corrida de las 9:00, 18 programas OK). Falta un envío real: pedir «Ver precio» de una carrera de Teclab con un mail propio y confirmar que llega. Lo hace el usuario, porque el formulario tiene Turnstile y el mail llega a su bandeja.
 - [ ] **Arreglar los precios que se muestran en los modales de carreras de Siglo 21**.
 - [ ] **Mostrar los precios antes de derivar a WhatsApp siempre que se pueda**, para que la persona llegue al chat con el precio ya visto.
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.

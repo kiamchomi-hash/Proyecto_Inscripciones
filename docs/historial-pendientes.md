@@ -8,6 +8,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 - [x] **Completar la actualización diaria y publicación de aranceles 2027 de Siglo 21**. Resuelto el 16/10/2026: `precios_privados` tiene 67 precios de Siglo 21 cargados por la corrida diaria, vigentes hasta el 16/10/2026. Desde `0688241` la vigilancia avisa por Telegram si los precios de una institución pasan más de un día vencidos. [Avance](../odd/tasks/siglo21-ver-precios-newsletter.md).
 
+## Comercial — mail de Teclab, 16/10/2026
+
+- [x] **Ver que llegue el mail de Teclab**. Precios de Teclab vigentes otra vez tras la corrida de las 9:00 (17 en `precios_privados`, hasta el 16/10). El usuario pidió «Ver precio» con su mail y el correo llegó bien, ya con el límite semanal publicado (`1349acc`).
+
 ## Tareas de `odd/tasks/` cerradas con evidencia — 16/10/2026
 
 - [x] **Ver precio de Teclab**: SQL de precios y newsletter corridos (las tablas existen), «Ver precio» como slide y financiación con CFT (`ver-precio-teclab` T1, T5, T7 y T8).
