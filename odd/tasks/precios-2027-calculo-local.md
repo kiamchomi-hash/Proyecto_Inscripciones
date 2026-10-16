@@ -31,5 +31,5 @@ Pruebas focales de `herramientas/ventas/tests` (RED/GREEN), suite comercial, `np
 16/10/2026: diagnóstico y comparación 100/100 hechos; documento creado.
 - T1 (delegada): paso nuevo `calcular-precios-2027.mjs`, procedencia `calculo_libro`, control por muestra de 2 carreras rotando por fecha. RED 7/14, GREEN 20/20 focales. Suite comercial 485/486; la falla restante (palabras clave de áreas contra `components/index/types.ts`) es ajena a este cambio.
 - T2: `actualizar-todo.mjs --solo-siglo21-2027 --sin-publicar` en 2 min 33 s, 70/70 finales, estado `completa`, buscador local regenerado. El cálculo local da los finales de CASA al centavo en las 70 cotizaciones observadas.
-- El control contra CASA no llegó a comparar: Excel Online no cargó en 60 s en las dos carreras de la muestra y quedó como aviso, según lo diseñado. Pendiente: publicación online, que corre con el próximo intento programado o a mano.
+- El control contra CASA no llegó a comparar: Excel Online no cargó en 60 s en las dos carreras de la muestra y quedó como aviso, según lo diseñado. Publicado a mano el 16/10/2026: 67 precios privados (3 excluidas por estar fuera de la oferta pública) y el buscador online con estado completa.
 - Espejo en Engram: pendiente.
