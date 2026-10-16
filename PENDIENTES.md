@@ -7,7 +7,6 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 ## 1. Seguimiento de lo publicado
 
 - [ ] **23/10/2026: primera revisión del embudo del test vocacional** (general y Teclab). Publicado el 16/10/2026 (`e239bc9`). Si hay pocos intentos, ampliar la observación antes de sacar conclusiones; después, mejorar los pasos con mayor caída. [Cómo leerlo](docs/medicion-test-vocacional.md).
-- [ ] **Confirmar con un lead real que «Ver precio» no repite el mail de la misma carrera en la semana**. Publicado el 16/10/2026 (`1349acc`); no se probó en producción para no mandar mails reales. [Procedimiento](docs/limite-mails-precio.md).
 
 ## 2. Comprobaciones que quedan de tareas ya hechas
 

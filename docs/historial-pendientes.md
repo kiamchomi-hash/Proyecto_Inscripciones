@@ -24,7 +24,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 ## Sitio y diseño — 16/10/2026
 
 - [x] **Medir en qué punto se abandona el test vocacional** (general y Teclab). Publicado el 16/10/2026 en `e239bc9`; smoke de producción verde. La revisión de datos y las mejoras siguen en la lista. [Tarea](../odd/tasks/medicion-abandono-vocacional.md).
-- [x] **Limitar «Ver precio» a un mail por carrera y semana**. SQL aplicado y backend publicado el 16/10/2026 en `1349acc`; tipos regenerados desde el esquema. [Tarea](../odd/tasks/limitar-mails-precio.md).
+- [x] **Limitar «Ver precio» a un mail por carrera y semana**. SQL aplicado y backend publicado el 16/10/2026 en `1349acc`; tipos regenerados desde el esquema. [Tarea](../odd/tasks/limitar-mails-precio.md). Prueba real del 16/10/2026: el segundo pedido en la misma carrera mostró el precio sin mandar otro mail.
 
 - [x] **Corregir la web de Teclab** (15/10/2026). Test vocacional debajo de las carreras, articulación después de los formularios y ajustes responsive. Publicado en `3bb9355` y `0d28969`; [comprobaciones y limitaciones](../odd/tasks/teclab-responsive-formulario.md).
 - [x] **Arreglar la estética de los mails de Siglo 21 y de Teclab** (`46cc8fc`). Ver el mail de Teclab en la bandeja quedó como pendiente aparte.
