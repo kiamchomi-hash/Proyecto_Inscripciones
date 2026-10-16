@@ -14,7 +14,7 @@ Reserva atómica persistente previa al envío, independiente de suscripciones. C
 Delegada: lectura preparatoria, backend + SQL + pruebas. Ejecutar pruebas enfocadas y npm run check. Concurrencia multisesión real pendiente. No tocar cambios ajenos. No commit ni push sin pedido explícito, por regla específica del proyecto. Se trabaja en main.
 
 ## Entrega
-Estimación 250-350 líneas, estrategia ask-on-risk. Publicación autorizada y en curso.
+Estimación 250-350 líneas, estrategia ask-on-risk. Publicado el 16/10/2026.
 
 ## Estado
 T1 y T2 completadas. SQL aplicado el 16/10/2026 en el proyecto Supabase verificado contra la configuración del sitio. Backend en proceso de publicación por el padre; este worker no realizó commit/push.
@@ -29,5 +29,6 @@ T1 y T2 completadas. SQL aplicado el 16/10/2026 en el proyecto Supabase verifica
 - No se ejecutó concurrencia multisesión real: la cobertura concurrente del mock no prueba los bloqueos PostgreSQL.
 - Contrato nuevo agregado a `lib/database.types.ts` con ampliación de superficie autorizada; regenerar después de aplicar SQL.
 - T2: revisión independiente sin hallazgos accionables; 33/33 pruebas enfocadas aprobadas por verificador. Spot check del padre: `node --test tests/ver-precio.test.mjs` aprobado. RDD desactivado; assessment no evaluable por archivos no rastreados, tratado como alto y cubierto por verificación independiente.
-- Próximo paso: completar la publicación autorizada del backend y verificar su despliegue. Concurrencia multisesión real y regeneración de tipos desde esquema quedan explícitamente pendientes.
+- Publicación 16/10/2026: commit `1349acc`, deploy `dpl_2xxbhzgWkGfb9di64a224HEh7FBB` en Ready; `npm run smoke` verde (rutas, cabeceras, redirects y 213 URLs del sitemap). Tipos regenerados con `npm run db:tipos`: mismo contrato, sólo formato y `PostgrestVersion` 14.1; typecheck aprobado.
+- Sin verificar: dos pedidos reales seguidos en producción (mandaría mails reales) y concurrencia multisesión. Se comprueba con el próximo lead que repita «Ver precio».
 - Cambio estimado final: aproximadamente 270 líneas incluyendo SQL/documentación; no se modificaron cambios preexistentes de otros trabajos.

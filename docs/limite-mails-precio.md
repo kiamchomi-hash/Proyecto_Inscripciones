@@ -28,7 +28,9 @@ La tabla tiene RLS, sin acceso directo para los roles de aplicación. Sólo
    revisar que coincidan con el contrato incorporado para este cambio.
 
 El 16/10/2026 se aplicó el SQL en el dashboard del proyecto Supabase verificado
-contra la configuración del sitio. El despliegue del backend está en curso.
+contra la configuración del sitio. El backend se publicó el mismo día (`1349acc`,
+deploy `dpl_2xxbhzgWkGfb9di64a224HEh7FBB`) y los tipos se regeneraron desde el
+esquema real sin diferencias de contrato.
 Los archivos de `sql/` no son migraciones automáticas.
 
 ## Fallos y recuperación

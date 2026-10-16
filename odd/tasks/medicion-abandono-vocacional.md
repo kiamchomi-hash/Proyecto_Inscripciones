@@ -42,3 +42,7 @@ lib/analytics.ts; lib/vocacional-analytics.ts; components/test-vocacional/use-an
 Spot check del coordinador tras la corrección: eslint del test, 8/8 casos directos y `git diff --check` aprobados. Evaluación de riesgo no clasificable por archivos nuevos, tratada como alta para exigir verificación independiente; no se inició RDD porque está desactivado.
 
 Implementación y documentación locales terminadas. Pendiente resolver o verificar fuera de este entorno los cuatro fallos del check global antes de publicar; después del deploy, reunir datos reales antes de proponer cambios al contenido del test. No se marca terminado el pendiente general de mejorar el test, ni se modifican cambios ajenos del backlog.
+
+## Publicación
+
+16/10/2026: commit `e239bc9`, deploy `dpl_2xxbhzgWkGfb9di64a224HEh7FBB` en Ready. `npm run check` aprobado en Linux (475/475): los cuatro fallos anteriores eran del entorno de la otra máquina. `npm run smoke` verde; `/test-vocacional` y `/teclab/test-vocacional` responden 200. No se dispararon eventos contra producción. Primera revisión de datos: 23/10/2026.
