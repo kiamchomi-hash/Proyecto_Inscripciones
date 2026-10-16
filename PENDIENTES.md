@@ -39,7 +39,6 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 - [ ] **Pulir el FAQ de las carreras modificadas (Procurador, Gestión Contable y Seguros) y revisar textos previos de la cabecera**. Contrastar la introducción con los textos que tenían antes en `descripcion`, previos a los cambios del 05/10/2026 (respaldo en `notas-locales/seo-tres-fichas/estado-previo.json`).
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo** [Detalle](docs/pendientes-detalle.md#pendiente-16).
 - [ ] **Arreglar los precios que se muestran en los modales de carreras de Siglo 21**.
-- [ ] **Mejorar la estética del modal de carreras de Siglo 21**.
 - [ ] **Corregir el modal de carreras de Teclab**.
 - [ ] **Corregir las páginas de Computación**.
 - [x] **Corregir la web de Teclab** (15/10/2026). Test vocacional debajo de las carreras, articulación después de los formularios y ajustes responsive. Publicado mediante los commits `3bb9355` y `0d28969`; [comprobaciones y limitaciones](odd/tasks/teclab-responsive-formulario.md).

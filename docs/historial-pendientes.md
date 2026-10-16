@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Sitio y diseño — 16/10/2026
+
+- [x] **Mejorar la estética del modal de carreras de Siglo 21**. Resuelto el 16/10/2026 en el slide de precio, aprobado por el usuario: fondo rayado sobre verde muy oscuro, superficies sólidas sin transparencias, total con borde y monto en cian, vigencia arriba en un contenedor, «Quiero inscribirme» en verde de WhatsApp y la aclaración de pago debajo (`404f08a`, `8b17323`, `8bd1c5a`, `fb856ec`, `d18632e`). El último commit llevó al slide de Teclab la misma vigencia, aclaración y superficies sólidas.
+
 ## Herramientas — 11/10/2026
 
 - [x] **29. Revisar claude.dev y sus consejos para usar mejor Claude**. Revisado el 11/10/2026 (effort, Opus 5.5 y automatizaciones con agentes). Sin cambios en el repo: la vigilancia y `leads` ya informan las lecturas fallidas, y `digest-clicks` usa el día calendario. Quedan como hábitos al pedir: listar los estilos a evitar en diseño, implementar con effort bajo y verificar con effort alto.
