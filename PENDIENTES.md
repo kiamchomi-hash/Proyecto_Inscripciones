@@ -24,7 +24,7 @@ Completado el 16/10/2026: límite de correos de «Ver precio», con concurrencia
 
 ### Web y formularios
 
-- [ ] **Corregir el modal de carreras de Teclab**. Incluye ocultar la ubicación en los slides (pedido 25, `ver-precio-teclab` T6).
+- [ ] **Corregir el modal de carreras de Teclab**. Falta definir qué se corrige. La ubicación en los slides (pedido 25) ya estaba sacada y se cerró el 16/10/2026.
 - [ ] **Financiación por banco y tarjeta en la preinscripción** (`ver-precio-teclab` T9). Antes de mostrar cifras, resolver la contradicción entre la placa oficial (3 cuotas con interés) y el texto del panel (1 y 3 cuotas sin interés).
 - [ ] **Revisar con el usuario la newsletter**: qué se guarda, el consentimiento y la casilla marcada por defecto (`ver-precio-teclab` T10). Después, definir cada cuántos días sale y cómo es la baja (`mail-precio-teclab` T5).
 - [ ] **Robot de autoinscripción**: modo de prueba sin tocar el portal, prueba real autorizada con cuenta nueva y aviso por Telegram si falla (`autoinscripcion-teclab` T4, T4c, T5 y T10). [Detalle](odd/tasks/autoinscripcion-teclab.md).
