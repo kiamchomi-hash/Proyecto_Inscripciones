@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Comercial — 16/10/2026
+
+- [x] **Completar la actualización diaria y publicación de aranceles 2027 de Siglo 21**. Resuelto el 16/10/2026: `precios_privados` tiene 67 precios de Siglo 21 cargados por la corrida diaria, vigentes hasta el 16/10/2026. Desde `0688241` la vigilancia avisa por Telegram si los precios de una institución pasan más de un día vencidos. [Avance](../odd/tasks/siglo21-ver-precios-newsletter.md).
+
 ## Sitio y diseño — 16/10/2026
 
 - [x] **Corregir el autoscroll al formulario de preinscripción**. Resuelto el 16/10/2026 (`b6dee87`): el enlace del mail de «ver precio» lleva a la página dedicada `/carreras/<slug>/inscripcion` en lugar de la ficha con `?desde=mail`. Lo cubre `tests/mail-precio.test.mjs`.

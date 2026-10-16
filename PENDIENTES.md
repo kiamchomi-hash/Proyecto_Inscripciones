@@ -47,7 +47,6 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 ## Comercial y contenido
 
-- [ ] **Completar la actualización diaria y publicación de aranceles 2027 de Siglo 21**. Consultas CASA de toda la oferta y carga privada por cau_editor autorizadas. Verificar cobertura y vigencia original antes de publicar; no prolongar fechas vencidas. Circuito diario integrado y probado localmente; la fuente original del 15/10/2026 no ofrece una ventana vigente y devuelve guiones en promociones/finales. Carga privada bloqueada hasta que CASA publique vigencia válida; no reutilizar la del 14/10. [Avance](odd/tasks/siglo21-ver-precios-newsletter.md).
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Cualquier pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
 - [ ] **Automatizar HubSpot**.
