@@ -6,6 +6,7 @@ import { carreraToSlug, type Carrera } from '@/components/index/types';
 import { getFamiliaTeclab } from '@/components/index/teclab';
 import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
+import { useAnalyticsVocacional } from '@/components/test-vocacional/use-analytics-vocacional';
 import { PREGUNTAS, recomendar } from './puntaje';
 
 export type CarreraTestTeclab = Pick<Carrera, 'id' | 'nombre' | 'nombre_corto' | 'prefix' | 'nivel' | 'orden' | 'proximamente'>;
@@ -24,6 +25,7 @@ const enlaceWhatsApp = (carrera: CarreraTestTeclab) =>
   `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
 
 export default function TestVocacionalTeclab({ carreras }: { carreras: CarreraTestTeclab[] }) {
+  const medicion = useAnalyticsVocacional('teclab', PREGUNTAS.length);
   const [respuestas, setRespuestas] = useState<number[]>([]);
   const preguntaRef = useRef<HTMLHeadingElement>(null);
   const paso = respuestas.length;
@@ -34,7 +36,7 @@ export default function TestVocacionalTeclab({ carreras }: { carreras: CarreraTe
     if (paso > 0) preguntaRef.current?.focus({ preventScroll: true });
   }, [paso]);
 
-  const reiniciar = () => setRespuestas([]);
+  const reiniciar = () => { medicion.reiniciar(); setRespuestas([]); };
 
   if (paso < PREGUNTAS.length) {
     const pregunta = PREGUNTAS[paso];
@@ -59,7 +61,7 @@ export default function TestVocacionalTeclab({ carreras }: { carreras: CarreraTe
                 type="button"
                 className="tvt-opcion"
                 key={`${paso}-${indice}`}
-                onClick={() => setRespuestas(actuales => [...actuales.slice(0, paso), indice])}
+                onClick={() => { medicion.avanzar(paso + 1); setRespuestas(actuales => [...actuales.slice(0, paso), indice]); }}
               >
                 <span className="tvt-letra" aria-hidden="true">{LETRAS[indice]}</span>
                 <span>{opcion.texto}</span>
@@ -67,7 +69,7 @@ export default function TestVocacionalTeclab({ carreras }: { carreras: CarreraTe
             ))}
           </div>
           <div className="tvt-nav">
-            <button type="button" className="tvt-volver" onClick={() => setRespuestas(actuales => actuales.slice(0, -1))} disabled={paso === 0}>
+            <button type="button" className="tvt-volver" onClick={() => { medicion.volver(paso - 1); setRespuestas(actuales => actuales.slice(0, -1)); }} disabled={paso === 0}>
               <span aria-hidden="true">←</span> Volver
             </button>
           </div>
@@ -102,10 +104,10 @@ export default function TestVocacionalTeclab({ carreras }: { carreras: CarreraTe
                     <strong>{carrera.nombre_corto ?? carrera.nombre}</strong>
                   </div>
                   <div className="tvt-acciones">
-                    <Link className="tvt-boton tvt-boton--ficha" href={`/carreras/${carreraToSlug(carrera)}`}>
+                    <Link className="tvt-boton tvt-boton--ficha" onClick={() => medicion.cta('carrera')} href={`/carreras/${carreraToSlug(carrera)}`}>
                       Ver la carrera <span aria-hidden="true">→</span>
                     </Link>
-                    <a className="tvt-boton tvt-boton--wa" href={enlaceWhatsApp(carrera)} target="_blank" rel="noopener nofollow">
+                    <a className="tvt-boton tvt-boton--wa" onClick={() => medicion.cta('whatsapp')} href={enlaceWhatsApp(carrera)} target="_blank" rel="noopener nofollow">
                       Consultar por WhatsApp
                     </a>
                   </div>
@@ -118,7 +120,7 @@ export default function TestVocacionalTeclab({ carreras }: { carreras: CarreraTe
         )}
         <div className="tvt-final">
           <button type="button" className="tvt-volver" onClick={reiniciar}>Hacer el test de nuevo</button>
-          <Link className="tvt-enlace" href="/teclab#oferta-teclab">Ver todas las carreras <span aria-hidden="true">→</span></Link>
+          <Link className="tvt-enlace" onClick={() => medicion.cta('oferta')} href="/teclab#oferta-teclab">Ver todas las carreras <span aria-hidden="true">→</span></Link>
         </div>
       </section>
     </>

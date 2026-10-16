@@ -35,6 +35,9 @@ export function mensajeRecordatorioTeclab(fichas: FichaTeclab[] | null): string 
     'Ver precio desde el modal de la carrera.',
     'Enlace /inscripcion/<código> y su aviso de enlace vencido.',
     'Las carreras Próximamente no muestran precio ni mandan mail, y mientras sigan vencidos los precios del 15/10 tampoco las demás.',
+    '4. Seguimiento de los tests vocacionales general y Teclab:',
+    'Medición del embudo publicada el 16/10/2026.',
+    'Primera revisión de datos: 23/10/2026. Si hay pocos intentos, ampliar la observación antes de decidir mejoras.',
     '',
     estadoIntros,
   ].join('\n');

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { carreraToSlug, getAreaForCarrera, type AreaId } from '@/components/index/types';
 import { mensajeWhatsAppInfo } from '@/components/carreras/career-content';
+import { useAnalyticsVocacional } from './use-analytics-vocacional';
 import TextoDesplazable from './texto-desplazable';
 import { casaDeCarrera } from '@/components/formularios/casas';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
@@ -196,6 +197,7 @@ function nombreVisible(carrera: CarreraTest) {
 }
 
 export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }) {
+  const medicion = useAnalyticsVocacional('general', PREGUNTAS.length);
   const [paso, setPaso] = useState(-1);
   const [respuestas, setRespuestas] = useState<number[][]>([]);
   const [seleccion, setSeleccion] = useState<number[]>([]);
@@ -227,6 +229,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
   const recomendaciones = grupos.flatMap(grupo => grupo.carreras.map(carrera => ({ carrera, area: grupo.area }))).slice(0, 5);
 
   function avanzar(indices: number[]) {
+    medicion.avanzar(paso + 1);
     const siguientes = avanzarRespuestas(respuestas, paso, indices);
     setRespuestas(siguientes);
     setSeleccion(siguientes[paso + 1] ?? []);
@@ -235,6 +238,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
 
   function volver() {
     if (paso <= 0) return;
+    medicion.volver(paso - 1);
     const anterior = respuestas[paso - 1] ?? [];
     setRespuestas(avanzarRespuestas(respuestas, paso, seleccion));
     setSeleccion(anterior);
@@ -248,7 +252,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
           <h1>¿Qué <span className="vocacional-title-highlight">carrera</span> va con vos?</h1>
           <p className="vocacional-lead">Descubrí las <span className="vocacional-lead-underline">áreas</span> que mejor combinan con tus intereses y conocé <span className="vocacional-lead-underline">carreras</span> para empezar a explorarlas.</p>
           <div className="vocacional-meta"><span>3 minutos</span><span>Sin registrarte</span></div>
-          <button className="vocacional-button" onClick={() => setPaso(0)}>Empezar el test <span aria-hidden="true">→</span></button>
+          <button className="vocacional-button" onClick={() => { medicion.iniciar(); setPaso(0); }}>Empezar el test <span aria-hidden="true">→</span></button>
         </div>
         <div className={`vocacional-intro-signal vocacional-intro-signal--${marca}`} aria-hidden="true">
           <div className="vocacional-signal-top"><span>CARRERAS</span><span>ONLINE</span></div>
@@ -277,7 +281,7 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
         </div>
         <aside className="vocacional-live" aria-live="polite">
           <div className="vocacional-live-heading"><span>CARRERAS</span><span className="vocacional-live-dot" aria-label="Actualizado" /></div>
-          {respuestas.length > 0 && <div className="vocacional-live-list">{recomendaciones.map(({ carrera, area }, indice) => <Link className="vocacional-live-career" href={`/carreras/${carreraToSlug(carrera)}`} key={carrera.id}><span className="vocacional-live-index">0{indice + 1}</span><span className="vocacional-live-name"><strong>{nombreVisible(carrera)}</strong><small>{area ? AREA_LABELS[area] : 'Para descubrir'}</small></span><span className="vocacional-live-arrow" aria-hidden="true">↗</span></Link>)}</div>}
+          {respuestas.length > 0 && <div className="vocacional-live-list">{recomendaciones.map(({ carrera, area }, indice) => <Link className="vocacional-live-career" onClick={() => medicion.cta('carrera')} href={`/carreras/${carreraToSlug(carrera)}`} key={carrera.id}><span className="vocacional-live-index">0{indice + 1}</span><span className="vocacional-live-name"><strong>{nombreVisible(carrera)}</strong><small>{area ? AREA_LABELS[area] : 'Para descubrir'}</small></span><span className="vocacional-live-arrow" aria-hidden="true">↗</span></Link>)}</div>}
         </aside>
       </section>
     );
@@ -290,8 +294,8 @@ export default function TestVocacional({ carreras }: { carreras: CarreraTest[] }
       <div className="vocacional-area-nav" role="group" aria-label="Elegir área">{grupos.map(({ area }) => <button type="button" aria-pressed={areaActiva === area} className={areaActiva === area ? 'is-active' : ''} onClick={() => { setAreaSeleccionada(area); setCarreraPrincipalId(null); }} key={area}>{AREA_LABELS[area]}</button>)}</div>
       <div className="vocacional-careers-heading"><span>Carreras</span></div>
       <div className="vocacional-careers" key={areaActiva}>{resultados.map(carrera => <button type="button" aria-pressed={carrera.id === carreraParaAccion?.id} className={`vocacional-career${carrera.id === carreraParaAccion?.id ? ' is-primary' : ''}`} onClick={() => setCarreraPrincipalId(carrera.id)} key={carrera.id}><span>{nombreVisible(carrera)}</span><span aria-hidden="true">→</span></button>)}</div>
-      {carreraParaAccion && <div className="vocacional-career-actions" key={carreraParaAccion.id}><strong><TextoDesplazable>{nombreVisible(carreraParaAccion)}</TextoDesplazable></strong><div><a href={`https://wa.me/${numeroWhatsAppDe(casaDeCarrera(carreraParaAccion))}?text=${encodeURIComponent(mensajeWhatsAppInfo(carreraParaAccion))}`} target="_blank" rel="noopener nofollow">Consultar por WhatsApp</a><Link href={`/carreras/${carreraToSlug(carreraParaAccion)}#preinscripcion`}>Quiero inscribirme</Link></div></div>}
-      <div className="vocacional-actions"><Link className="vocacional-button" href="/"><span aria-hidden="true">←</span> Volver</Link><button className="vocacional-restart" onClick={() => { setPaso(-1); setRespuestas([]); setSeleccion([]); setAreaSeleccionada(null); setCarreraPrincipalId(null); }}>Hacerlo de nuevo</button></div>
+      {carreraParaAccion && <div className="vocacional-career-actions" key={carreraParaAccion.id}><strong><TextoDesplazable>{nombreVisible(carreraParaAccion)}</TextoDesplazable></strong><div><a onClick={() => medicion.cta('whatsapp')} href={`https://wa.me/${numeroWhatsAppDe(casaDeCarrera(carreraParaAccion))}?text=${encodeURIComponent(mensajeWhatsAppInfo(carreraParaAccion))}`} target="_blank" rel="noopener nofollow">Consultar por WhatsApp</a><Link onClick={() => medicion.cta('inscripcion')} href={`/carreras/${carreraToSlug(carreraParaAccion)}#preinscripcion`}>Quiero inscribirme</Link></div></div>}
+      <div className="vocacional-actions"><Link className="vocacional-button" onClick={() => medicion.cta('inicio')} href="/"><span aria-hidden="true">←</span> Volver</Link><button className="vocacional-restart" onClick={() => { medicion.reiniciar(); setPaso(-1); setRespuestas([]); setSeleccion([]); setAreaSeleccionada(null); setCarreraPrincipalId(null); }}>Hacerlo de nuevo</button></div>
     </section>
   );
 }

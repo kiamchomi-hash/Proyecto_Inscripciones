@@ -43,6 +43,16 @@ test('recuerda verificar en producción las preinscripciones de Teclab', () => {
   }
 });
 
+test('recuerda la revisión de datos de ambos tests vocacionales', () => {
+  for (const fichas of [[conIntro], null]) {
+    const texto = mensajeRecordatorioTeclab(fichas);
+    assert.match(texto, /tests vocacionales general y Teclab/);
+    assert.match(texto, /publicada el 16\/10\/2026/);
+    assert.match(texto, /Primera revisión de datos: 23\/10\/2026/);
+    assert.match(texto, /pocos intentos, ampliar la observación/);
+  }
+});
+
 test('el cron semanal está declarado en vercel.json', () => {
   const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
   assert.ok(config.crons.some(c => c.path === '/api/recordatorio-teclab' && c.schedule === '0 12 * * 1'));

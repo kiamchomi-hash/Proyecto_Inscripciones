@@ -185,3 +185,16 @@ export function trackWhatsapp(origen: string) {
   track('whatsapp', { origen });
   if (esDispositivoMovil()) avisarTelegram('whatsapp', { origen });
 }
+
+/** Embudo vocacional sin respuestas ni avisos de Telegram. */
+export function trackVocacional(
+  evento: import('./vocacional-analytics').EventoVocacional,
+  datos: import('./vocacional-analytics').DatosVocacional,
+) {
+  const { test, pregunta, respondidas, total, destino, etapa } = datos;
+  track(evento, {
+    test, pregunta, respondidas, total,
+    ...(destino ? { destino } : {}),
+    ...(etapa ? { etapa } : {}),
+  });
+}
