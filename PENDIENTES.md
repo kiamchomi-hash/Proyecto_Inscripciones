@@ -12,6 +12,8 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ## 3. Urgente: leads y precios
 
+- [ ] **Corregir la financiación de Teclab publicada y terminar su relevamiento mensual** (pausado el 16/10/2026). Lo publicado dice que no hay cuotas sin interés, y Naranja X tiene 6 sin interés y Plan Z; Sucrédito no tiene 6 cuotas. El script de relevamiento existe pero lee menús viejos del portal. Punto exacto para retomar en [la tarea](odd/tasks/relevamiento-financiacion-teclab.md#punto-de-pausa-16102026-a-pedido-del-usuario).
+
 
 ## 4. Teclab
 

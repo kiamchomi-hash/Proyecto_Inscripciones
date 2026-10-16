@@ -117,3 +117,38 @@ No ejecuta con la máquina apagada ni sin sesión; no habilita linger. La prueba
 real explícita es `systemctl --user start cau-precios.service`; diagnóstico con
 `journalctl --user -u cau-precios.service --since today`. El instalador rechaza
 unidades distintas en vez de sobrescribirlas. Detalles en el LEER local de ventas.
+
+### Relevamiento mensual de la financiación de Teclab
+
+`herramientas/ventas/relevar-financiacion-teclab.mjs` entra al Simulador de
+Precios del Portal Administrativo de Teclab, elige una carrera de referencia y
+lee lo que ofrece hoy: formas de pago, tarjetas, bancos, cuotas con su CFT y las
+opciones de la suscripción. No recorre una lista fija y nunca toca los botones
+que crean o envían algo. Toma las credenciales del portal de `.env.local` y no
+las escribe en ningún lado.
+
+Compara lo leído con la fuente privada de financiación y decide:
+
+| Resultado | Qué hace | Salida |
+|---|---|---|
+| Sin diferencias | no toca nada; avisa por Telegram en una línea que sigue igual | 0 |
+| Cambio conocido (tasas, CFT, bancos que cambian de grupo, aparecen o desaparecen, totales) | reescribe la fuente, regenera bot y buscador, publica el buscador y avisa con el resumen | 0 |
+| Estructura nueva (forma de pago, tarjeta, cuotas fuera de 1, 3 y 6, opciones de suscripción) o lectura incompleta | no escribe ni publica; deja lo leído en un archivo de revisión privado y avisa con los motivos | 2 |
+| Error | igual que el anterior, con el error | 1 |
+
+Si cambiaron tasas o bancos, el aviso recuerda que el modal «Ver precio»
+(`components/formularios/financiacion-teclab.ts`) repite esos datos y necesita
+su propio commit y deploy: el script no toca el sitio.
+
+```bash
+node herramientas/ventas/relevar-financiacion-teclab.mjs --sin-publicar   # releva y compara, sin escribir, publicar ni avisar
+node herramientas/ventas/relevar-financiacion-teclab.mjs --visible        # con ventana, para depurar
+node herramientas/ventas/relevar-financiacion-teclab.mjs --carrera <nombre>
+```
+
+Lo corre una vez por mes un timer de systemd de usuario (día 1, 10:00 de
+Argentina, `Persistent=true`). Las unidades viven junto al script en
+`herramientas/ventas/systemd/` y no se instalan solas: el comando de
+instalación está en el encabezado del `.timer`. Las funciones de lectura,
+armado y comparación están cubiertas por
+`herramientas/ventas/tests/relevar-financiacion-teclab.test.mjs`.
