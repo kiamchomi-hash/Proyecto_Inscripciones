@@ -10,11 +10,13 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 2. Comprobaciones que quedan de tareas ya hechas
 
+Completado el 16/10/2026: límite de correos de «Ver precio», con concurrencia real verificada en dos sesiones y limpieza de la reserva ficticia confirmada. [Evidencia](docs/limite-mails-precio.md#pruebas).
+
 - [ ] **Mirar un aviso real de Teclab en Telegram**: que traiga el enlace de inscripción y la marca de «vio el precio». `notificar` está desplegada desde el 09/10/2026; sólo falta verlo con un lead real. [Enlace](odd/tasks/autoinscripcion-teclab.md), [marca](odd/tasks/priorizar-leads-que-vieron-precio.md).
 
 ## 3. Urgente: leads y precios
 
-- [ ] **Mostrar los precios antes de derivar a WhatsApp siempre que se pueda**, para que la persona llegue al chat con el precio ya visto.
+- [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción** (para más adelante). Hoy «Quiero inscribirme» (modales, ficha y mail) lleva directo al formulario sin pasar por el precio. La idea es que uno de los pasos del formulario muestre el precio de la carrera elegida, como los pasos que ya tiene Teclab. En los modales están bien los dos botones, «Ver precio» y WhatsApp; eso no se toca (aclarado el 16/10/2026).
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
 - [ ] **Reducir el formulario de preinscripción de Siglo 21**.
 
