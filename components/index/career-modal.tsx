@@ -415,7 +415,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
           )}
         </div>
 
-        {precioAbierto && conPrecio && <div className="vp-slide overflow-y-auto p-6 flex-1 min-h-0">
+        {precioAbierto && conPrecio && <div className="vp-slide vp-siglo21 overflow-y-auto p-6 flex-1 min-h-0">
           <PanelVerPrecio carreraId={carrera.id} nombreCarrera={cleanName} casa={casaDeCarrera(carrera) ?? 'siglo21'}
             acento={accent} acentoClaro={accentLight} textoAcento="#013729" waHref={waHref}
             slug={carreraToSlug(carrera)} duracion={carrera.duracion} activo={precioAbierto} />

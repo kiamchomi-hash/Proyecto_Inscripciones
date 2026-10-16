@@ -931,7 +931,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
                 {renderSlide(slide, carrera, si === slideIdx, inscribir, conPrecio ? verPrecio : undefined)}
               </div>
             ))}
-            {conPrecio && <div className="vp-slide flex-shrink-0 w-full h-full overflow-y-auto flex flex-col justify-center p-6">
+            {conPrecio && <div className="vp-slide vp-siglo21 flex-shrink-0 w-full h-full overflow-y-auto flex flex-col justify-center p-6">
               <PanelVerPrecio carreraId={carrera.id} nombreCarrera={cleanName} casa={casaDeCarrera(carrera) ?? 'siglo21'}
                 acento="#00c7b1" acentoClaro="#00ffe1" textoAcento="#013729" waHref={waHref}
                 slug={carreraToSlug(carrera)} duracion={carrera.duracion} activo={slideIdx === slides.length} pedido={pedidoPrecio} />

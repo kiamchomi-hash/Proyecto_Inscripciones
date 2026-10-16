@@ -864,6 +864,41 @@
 }
 
 
+/* Slide de precio de Siglo 21: rayado diagonal sobre verde muy oscuro y
+   superficies sólidas, sin transparencias. El total va sin relleno, con borde
+   y monto en cian, en vez del azul de marca que comparte con Teclab. */
+.vp-siglo21 {
+  background-color: #0d2119;
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 9px);
+}
+
+.vp-siglo21 .vp-linea,
+.vp-siglo21 .vp-campo {
+  background: #163a31;
+  box-shadow: none;
+}
+
+.vp-siglo21 .vp-campo:focus {
+  box-shadow: inset 0 0 0 2px var(--vp-acento);
+}
+
+.vp-siglo21 .vp-campo[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 2px #f87171;
+}
+
+.vp-siglo21 .vp-total {
+  background: #0d2119;
+  box-shadow: inset 0 0 0 1.5px #00c7b1;
+}
+
+.vp-siglo21 .vp-total-rotulo {
+  color: #00c7b1;
+}
+
+.vp-siglo21 .vp-total-monto {
+  color: #00ffe1;
+}
+
 /* Cierre de Siglo 21: dos acciones del mismo ancho sin cambiar el panel de precio
    ni los modales de las otras casas. Conserva los botones y sus estados de foco. */
 .siglo21-cierre-acciones {
