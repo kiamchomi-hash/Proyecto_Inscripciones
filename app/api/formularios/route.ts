@@ -381,7 +381,7 @@ async function registrarPrecio(payload: JsonRecord) {
   }
 
   const resultado = await leerPrecio(supabase, carrera.id);
-  enviarMailPrecio(datos.email, carrera, resultado);
+  enviarMailPrecio(datos.email, carrera, resultado, true);
   return { error: null, resultado };
 }
 
@@ -417,7 +417,20 @@ async function marcarEnvioNewsletter(email: string, carreraId: number) {
   }
 }
 
-function enviarMailPrecio(email: string, carrera: CarreraDelMail & { id: number }, resultado: ResultadoPrecio) {
+/** Reserva persistente antes de SMTP: ante incertidumbre se prioriza no duplicar. */
+async function reservarMailPrecio(email: string, carreraId: number): Promise<boolean> {
+  const { data, error } = await createSupabaseAdmin().rpc('reservar_mail_precio', {
+    p_email: email.trim().toLowerCase(),
+    p_carrera_id: carreraId,
+  });
+  if (error) {
+    console.error('[formularios] Mail del precio omitido: falló la reserva', { code: error.code });
+    return false;
+  }
+  return data === true;
+}
+
+function enviarMailPrecio(email: string, carrera: CarreraDelMail & { id: number }, resultado: ResultadoPrecio, limitar = false) {
   if (resultado.estado !== 'vigente') return;
   const clave = process.env.SMTP2GO_API_KEY;
   if (!clave) {
@@ -428,6 +441,8 @@ function enviarMailPrecio(email: string, carrera: CarreraDelMail & { id: number 
   try {
     after(async () => {
       try {
+        // Sólo «Ver precio»: preinscripción y newsletter mantienen su política.
+        if (limitar && !await reservarMailPrecio(email, carrera.id)) return;
         const { armarMailPrecio, mandarPorSmtp2go } = await import('@/components/formularios/mail-precio');
         const mail = armarMailPrecio({ carrera, precio, hoy: new Date() });
         const envio = await mandarPorSmtp2go({ clave, para: email, mail });

@@ -160,7 +160,7 @@ function montarEndpoint(t) {
   // con la respuesta ya armada.
   const pendientes = [];
   const correrPendientes = async () => {
-    while (pendientes.length) await pendientes.shift()();
+    await Promise.all(pendientes.splice(0).map(tarea => tarea()));
   };
 
   const estado = {
@@ -173,10 +173,27 @@ function montarEndpoint(t) {
     escrituras: [],
     lecturas: [],
     claves: [],
+    reservas: new Map(),
+    ahora: Date.parse('2026-10-16T12:00:00Z'),
+    reservasPedidas: [],
   };
 
   const supabase = {
-    rpc: async (_nombre, args) => { estado.claves.push(args.p_key); return { data: true, error: null }; },
+    rpc: async (nombre, args) => {
+      if (nombre === 'check_form_rate_limit') {
+        estado.claves.push(args.p_key);
+        return { data: true, error: null };
+      }
+      assert.equal(nombre, 'reservar_mail_precio');
+      estado.reservasPedidas.push(args);
+      if (estado.errores.reserva instanceof Error) throw estado.errores.reserva;
+      if (estado.errores.reserva) return { data: null, error: estado.errores.reserva };
+      const clave = `${args.p_email.trim().toLowerCase()}:${args.p_carrera_id}`;
+      const anterior = estado.reservas.get(clave);
+      const permitido = anterior === undefined || estado.ahora - anterior >= 168 * 3600_000;
+      if (permitido) estado.reservas.set(clave, estado.ahora);
+      return { data: permitido, error: null };
+    },
     from: tabla => ({
       insert: async fila => {
         estado.escrituras.push({ tabla, op: 'insert', fila });
@@ -406,6 +423,7 @@ test('con precio vigente, «Ver precio» manda un mail por SMTP2GO después de r
   assert.deepEqual(mail.cuerpo.to, ['ana@example.test']);
   assert.equal(mail.cuerpo.sender, 'CAU Online <inscripciones@siglo21sur.com>');
   assert.equal(mail.cuerpo.subject, 'Precios - Tecnicatura Superior en Programación - Teclab');
+  assert.deepEqual(estado.reservasPedidas, [{ p_email: pedido.email, p_carrera_id: 7 }]);
   assert.match(mail.cuerpo.html_body, /\$ 552\.359,03/);
   assert.match(mail.cuerpo.text_body, /Precio vigente hasta el 31\/12/);
 
@@ -414,6 +432,88 @@ test('con precio vigente, «Ver precio» manda un mail por SMTP2GO después de r
   assert.ok(marca, 'marca el envío en la suscripción');
   assert.ok(!Number.isNaN(Date.parse(marca.valores.ultimo_envio_at)));
   assert.deepEqual(marca.filtros, { email: 'ana@example.test', carrera_id: 7 });
+});
+
+test('repetir «Ver precio» conserva precio y leads pero manda un solo mail', async t => {
+  const { estado, enviar, mails, correrPendientes } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  const primero = await enviar(pedido);
+  await correrPendientes();
+  const segundo = await enviar({ ...pedido, email: '  Ana@Example.Test  ' });
+  await correrPendientes();
+  assert.equal(segundo.status, 201);
+  assert.deepEqual(segundo.cuerpo, primero.cuerpo);
+  assert.equal(estado.escrituras.filter(e => e.tabla === 'consultas').length, 2);
+  assert.equal(mails.length, 1);
+  assert.equal(estado.escrituras.some(e => e.op === 'upsert'), false, 'no crea suscripciones');
+});
+
+test('la reserva distingue correo y carrera y habilita exactamente a las 168 horas', async t => {
+  const { estado, enviar, mails, correrPendientes } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  for (const id of [7, 8]) estado.precios.set(id, { ...fila, vigente_hasta: '2999-12-31' });
+  await enviar(pedido);
+  await enviar({ ...pedido, carreraId: 8 });
+  await enviar({ ...pedido, email: 'otra@example.test' });
+  await correrPendientes();
+  assert.equal(mails.length, 3);
+  estado.ahora += 168 * 3600_000 - 1;
+  await enviar(pedido);
+  await correrPendientes();
+  assert.equal(mails.length, 3, 'un milisegundo antes sigue reservado');
+  estado.ahora++;
+  await enviar(pedido);
+  await correrPendientes();
+  assert.equal(mails.length, 4);
+});
+
+test('dos pedidos y tareas concurrentes obtienen una sola reserva', async t => {
+  const { estado, enviar, mails, correrPendientes } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  const respuestas = await Promise.all([enviar(pedido), enviar(pedido)]);
+  assert.ok(respuestas.every(r => r.status === 201 && r.cuerpo.estado === 'vigente'));
+  await correrPendientes();
+  assert.equal(estado.reservasPedidas.length, 2);
+  assert.equal(mails.length, 1, 'el mock modela una adquisición atómica, no prueba Postgres');
+});
+
+test('fallos de reserva omiten el correo sin cambiar precio ni filtrar datos', async t => {
+  const { estado, enviar, mails, registros, correrPendientes } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  for (const error of [{ code: 'PGRST202' }, new Error('fallo simulado')]) {
+    estado.errores.reserva = error;
+    const respuesta = await enviar(pedido);
+    assert.equal(respuesta.status, 201);
+    assert.equal(respuesta.cuerpo.estado, 'vigente');
+    await correrPendientes();
+  }
+  assert.equal(mails.length, 0);
+  assert.equal(estado.escrituras.filter(e => e.tabla === 'consultas').length, 2);
+  const salida = JSON.stringify(registros);
+  assert.equal(salida.includes(pedido.email), false);
+  assert.equal(salida.includes(CLAVE), false);
+});
+
+test('SMTP rechazado o incierto conserva la reserva durante la semana', async t => {
+  const { estado, enviar, mails, correrPendientes, contestarMail } = montarEndpoint(t);
+  process.env.SMTP2GO_API_KEY = CLAVE;
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  contestarMail(() => { throw new TypeError('fetch failed'); });
+  await enviar(pedido);
+  await correrPendientes();
+  await enviar(pedido);
+  await correrPendientes();
+  assert.equal(mails.length, 1);
+  estado.ahora += 168 * 3600_000;
+  contestarMail(() => new Response('{}', { status: 500 }));
+  await enviar(pedido);
+  await correrPendientes();
+  await enviar(pedido);
+  await correrPendientes();
+  assert.equal(mails.length, 2);
 });
 
 test('la preinscripción de Teclab con precio vigente también manda el mail', async t => {
@@ -431,6 +531,10 @@ test('la preinscripción de Teclab con precio vigente también manda el mail', a
   assert.equal(mails.length, 1);
   assert.deepEqual(mails[0].cuerpo.to, ['ana@example.test']);
   assert.equal(mails[0].cuerpo.subject, 'Precios - Programación - Teclab');
+  await enviar(preinscripcion, 'consulta');
+  await correrPendientes();
+  assert.equal(mails.length, 2, 'preinscripción no comparte el límite');
+  assert.equal(estado.reservasPedidas.length, 0);
   // La carrera se lee con lo que el mail necesita.
   const lectura = estado.lecturas.find(l => l.tabla === 'carreras');
   for (const columna of ['prefix', 'nombre_corto', 'duracion']) assert.match(lectura.columnas, new RegExp(columna));
@@ -471,6 +575,7 @@ test('si SMTP2GO falla o no responde, el lead y el precio salen igual y nada fil
   const esperado = (await enviar(pedido)).cuerpo;
   await correrPendientes();
 
+  estado.ahora += 168 * 3600_000;
   contestarMail(() => new Response(
     JSON.stringify({ data: { error_code: 'E_ApiResponseCodes.API_EXCEPTION', error: 'falló' } }),
     { status: 500 },
@@ -480,6 +585,7 @@ test('si SMTP2GO falla o no responde, el lead y el precio salen igual y nada fil
   assert.deepEqual(conError.cuerpo, esperado);
   await correrPendientes();
 
+  estado.ahora += 168 * 3600_000;
   contestarMail(() => { throw new TypeError('fetch failed'); });
   const caido = await enviar(pedido);
   assert.equal(caido.status, 201);

@@ -15,6 +15,18 @@ export type Database = {
   }
   public: {
     Tables: {
+      reservas_mail_precio: {
+        Row: { email: string; carrera_id: number; reservado_at: string }
+        Insert: { email: string; carrera_id: number; reservado_at?: string }
+        Update: { email?: string; carrera_id?: number; reservado_at?: string }
+        Relationships: [{
+          foreignKeyName: "reservas_mail_precio_carrera_id_fkey"
+          columns: ["carrera_id"]
+          isOneToOne: false
+          referencedRelation: "carreras"
+          referencedColumns: ["id"]
+        }]
+      }
       career_clicks: {
         Row: {
           carrera: string
@@ -791,6 +803,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      reservar_mail_precio: {
+        Args: { p_email: string; p_carrera_id: number }
+        Returns: boolean
+      }
       check_form_rate_limit: {
         Args: {
           p_key: string
