@@ -12,7 +12,6 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 ## 2. Comprobaciones que quedan de tareas ya hechas
 
 - [ ] **Mirar un aviso real de Teclab en Telegram**: que traiga el enlace de inscripción y la marca de «vio el precio». `notificar` está desplegada desde el 09/10/2026; sólo falta verlo con un lead real. [Enlace](odd/tasks/autoinscripcion-teclab.md), [marca](odd/tasks/priorizar-leads-que-vieron-precio.md).
-- [ ] **Arreglar la suite comercial privada** (441/447 al 16/10/2026): `areas-siglo21` no tiene las claves `alimentos`, `mineros` y `minera` de las carreras nuevas de Teclab, y cinco casos de `entorno-linux` copian el coordinador sin `estado-actualizacion-2027.mjs`. [Detalle](odd/tasks/siglo21-ver-precios-newsletter.md).
 
 ## 3. Urgente: leads y precios
 

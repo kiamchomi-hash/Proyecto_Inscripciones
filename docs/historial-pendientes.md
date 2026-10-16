@@ -15,6 +15,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 - [x] **SMTP2GO**: clave cargada en Vercel desde el 04/10/2026 (`mail-precio-teclab` T4, `newsletter-teclab` T6).
 - [x] **Web de Teclab**: inicio de clases commiteado (`41089c4`) y orden y responsive comprobados en producción a 1280 y 375 (`inicio-teclab` T3, `teclab-responsive-formulario` T2).
 - [x] **Precios 2027 de Siglo 21**: corrida real 70/70, carga de 67, buscador regenerado y referencias históricas publicadas (`estado-actualizacion-precios-2027`, `descuentos-precios-2027`, `siglo21-ver-precios-newsletter` S1, S3, S6 y S8). La superficie de revisión de `descuentos-siglo21-2027` T5 se descartó porque RDD está apagado.
+- [x] **Suite comercial privada en verde**: 447/447 desde la raíz del proyecto, con las palabras clave de las carreras nuevas de Teclab en el espejo de áreas y el stub del estado 2027 en la prueba del coordinador.
 
 ## Sitio y diseño — 16/10/2026
 
