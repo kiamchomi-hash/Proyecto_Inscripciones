@@ -27,6 +27,7 @@ import {
 import { enviarTelegram } from '@/lib/telegram';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
 import { autoinscripcionesDemoradas } from '@/lib/vigilancia-robot';
+import { preciosVencidos } from '@/lib/vigilancia-precios';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -79,7 +80,7 @@ function mensajeParaTelegram(fallo: string) {
     return 'La página principal no cumple una configuración de seguridad esperada. Revisar las cabeceras del sitio.';
   }
 
-  if (que === 'robot de autoinscripciones') return detalle;
+  if (que === 'robot de autoinscripciones' || que === 'precios vencidos') return detalle;
 
   if (que.startsWith('/')) {
     return `La página ${que} no está disponible. Revisar el sitio publicado.`;
@@ -188,6 +189,19 @@ async function correrChequeos(base: string) {
     if (aviso) falla('robot de autoinscripciones', aviso);
   } catch (e) {
     falla('robot de autoinscripciones', `No se pudo revisar la cola del robot de Teclab: ${motivo(e)}`);
+  }
+
+  // 7. Precios vencidos hace más de un día: la corrida diaria dejó de
+  // renovarlos (ver lib/vigilancia-precios.ts).
+  try {
+    const { data, error } = await createSupabaseAdmin()
+      .from('precios_privados')
+      .select('institucion, vigente_hasta');
+    if (error) throw new Error(error.message);
+    const aviso = preciosVencidos(data ?? [], new Date());
+    if (aviso) falla('precios vencidos', aviso);
+  } catch (e) {
+    falla('precios vencidos', `No se pudo revisar la vigencia de los precios: ${motivo(e)}`);
   }
 
   return { fallos, urlsSitemap };

@@ -73,10 +73,12 @@ están en [Herramientas, sección 5](../herramientas/LEER.md#5--subir-cambios).
 |---|---|---|
 | Cuándo | cada 6 horas, declarado en `vercel.json` | cuando lo dispara el Programador de tareas |
 | Dónde | en la nube, con la máquina apagada | en la máquina de casa |
-| Qué mira | rutas, cabeceras, noindex, redirects y el sitemap entero | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
+| Qué mira | rutas, cabeceras, noindex, redirects, el sitemap entero, la cola del robot de Teclab y los precios vencidos hace más de un día | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
 | Cómo avisa | Telegram | archivo `REVISAR-SITIO.txt` en el escritorio + Telegram |
 
 El de Vercel es el que cubre las caídas de verdad, porque no depende de que la PC esté prendida. Se autentica con `CRON_SECRET` y **con `?prueba=1` manda un aviso de prueba sin correr los chequeos**, que es la forma de confirmar que el canal de Telegram sigue vivo sin esperar a que algo se rompa. No mide el peso comprimido del HTML a propósito: eso necesita leer los bytes del socket sin descomprimir y `fetch` descomprime solo, así que ese chequeo vive únicamente en `smoke.mjs`.
+
+Los precios de `precios_privados` vencen a la medianoche y la corrida diaria de la mañana los renueva, así que un vencimiento de unas horas no es un problema. El cron avisa sólo cuando el precio más nuevo de una institución lleva **más de 24 h** vencido, porque eso significa que la corrida falló más de un día seguido (`lib/vigilancia-precios.ts`). Igual que el resto de sus chequeos, repite el aviso en cada corrida mientras siga vencido.
 
 El local avisa por Telegram **sólo en los cambios de estado** (`ok → problema` y `problema → ok`), no en cada corrida: un chequeo diario que falla una semana tiene que ser un mensaje, no siete. Su chequeo `smoke` lleva `avisaVercel: true` y queda fuera del aviso, porque el cron ya manda ese mensaje — sin eso, una caída llegaría dos veces. Necesita `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` en `.env.local`; si faltan, el aviso queda sólo en el escritorio y el chequeo no se rompe.
 
