@@ -14,7 +14,7 @@ import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, ty
 import TurnstileWidget from '@/components/turnstile-widget';
 import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type CasaId, type LineaPrecio } from '@/components/formularios/casas';
 import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
-import { COBERTURA_SIGLO21, coberturaDelPago } from '@/components/formularios/cobertura-pago';
+import { COBERTURA_PAGO, coberturaDelPago } from '@/components/formularios/cobertura-pago';
 
 /** Desde cuándo «Verificando…» pasa a pedir unos segundos más. */
 const DEMORA_TOKEN_MS = 5000;
@@ -160,10 +160,10 @@ function Financiacion() {
   );
 }
 
-function AclaracionesPrecio({ precio, duracion, vencido = false, casa }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean; casa: CasaId }) {
-  // Qué cubre el pago, armado de los conceptos con los meses; si no hay
-  // bimestres (curso de pago único), queda la nota de la base.
-  const aclaracion = casa === 'siglo21' ? precio.nota : coberturaDelPago(precio.conceptos, duracion) ?? precio.nota;
+function AclaracionesPrecio({ precio, vencido = false, casa }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean; casa: CasaId }) {
+  // Qué cubre el pago; si no hay bimestres (curso de pago único), queda la
+  // nota de la base.
+  const aclaracion = casa === 'siglo21' ? precio.nota : coberturaDelPago(precio.conceptos) ?? precio.nota;
   return <>
     {aclaracion ? <p className="vp-nota">{aclaracion}</p> : null}
     {/* Teclab vencido: la fecha ya va en el aviso de arriba. */}
@@ -171,6 +171,16 @@ function AclaracionesPrecio({ precio, duracion, vencido = false, casa }: { preci
       <p className="vp-vigencia">{vencido ? 'Precios vigentes hasta el' : 'Precio vigente hasta el'} {diaMes(precio.vigenteHasta)}</p>
     )}
   </>;
+}
+
+/**
+ * Qué cubre el pago, debajo de todo en el slide. En Siglo 21 va siempre: la
+ * nota de su base es la de la promoción, que no se muestra. En Teclab, sin
+ * bimestres (curso de pago único), queda la nota de la base.
+ */
+function NotaCobertura({ precio, casa }: { precio: PrecioVigente; casa: CasaId }) {
+  const nota = casa === 'siglo21' ? COBERTURA_PAGO : coberturaDelPago(precio.conceptos) ?? precio.nota;
+  return nota ? <p className="vp-nota">{nota}</p> : null;
 }
 
 /**
@@ -529,10 +539,10 @@ export function PanelVerPrecio({
 
       {vista === 'precio' && precio && (
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
-          {/* La financiación va debajo de los botones: abierta no los empuja
-              fuera de la vista. */}
-          {casa === 'siglo21' && <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>}
-          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={casa !== 'siglo21'} />
+          {/* La vigencia arriba; la financiación y qué cubre el pago van
+              debajo de los botones: abiertos no los empujan fuera de la vista. */}
+          <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
+          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={false} />
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
@@ -540,8 +550,8 @@ export function PanelVerPrecio({
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal={casa === 'siglo21'} />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
-          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
           {casa === 'teclab' && <Financiacion />}
+          <NotaCobertura precio={precio} casa={casa} />
         </div>
       )}
 
@@ -556,9 +566,8 @@ export function PanelVerPrecio({
           ) : null}
           {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-violeta">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto="Consultar por WhatsApp" principal />
-          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
-          {/* Siglo 21: la fecha ya va en el aviso y la nota de la promoción no se muestra. */}
-          {casa !== 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />}
+          {/* La fecha ya va en el aviso de arriba. */}
+          <NotaCobertura precio={precio} casa={casa} />
         </div>
       )}
 

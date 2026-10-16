@@ -48,7 +48,7 @@ const FILA: CSSProperties = {
 };
 const A_LA_DERECHA: CSSProperties = { justifySelf: 'end', textAlign: 'right' };
 
-function Precio({ precio, carrera, duracion }: Pick<PropsInscripcionEnlace, 'precio'> & { carrera: string; duracion: string | null }) {
+function Precio({ precio, carrera }: Pick<PropsInscripcionEnlace, 'precio'> & { carrera: string; duracion: string | null }) {
   if (precio.estado !== 'vigente') {
     return (
       <div className="ie-precio">
@@ -58,8 +58,8 @@ function Precio({ precio, carrera, duracion }: Pick<PropsInscripcionEnlace, 'pre
     );
   }
   const { conceptos, total, vigenteHasta } = precio.precio;
-  // Qué cubre, con los meses; sin bimestres queda la nota de la base.
-  const nota = coberturaDelPago(conceptos, duracion) ?? precio.precio.nota;
+  // Qué cubre el pago; sin bimestres queda la nota de la base.
+  const nota = coberturaDelPago(conceptos) ?? precio.precio.nota;
   return (
     <div className="ie-precio">
       {conceptos.length > 0 && (

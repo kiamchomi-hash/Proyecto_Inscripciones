@@ -545,9 +545,9 @@ test('Siglo21 pone la vigencia arriba en un contenedor y no muestra la nota de l
     const arriba=html.indexOf(vigencia);
     assert.ok(arriba>=0 && arriba<html.indexOf('class="vp-total"'));
     assert.doesNotMatch(html,/Aranceles 2027 con promoción|vp-vigencia/);
-    assert.match(html,/Se paga por cuatrimestre: la matrícula y los tickets de cada bimestre\./);
+    assert.match(html,/Este pago cubre la matrícula y los bimestres detallados\. El cuatrimestre siguiente requiere un nuevo pago de matrícula y bimestres\./);
     assert.match(html,/vp-whatsapp-lleno/);
-    assert.ok(html.indexOf('Se paga por cuatrimestre')>html.indexOf('href="https://wa.me/123"'));
+    assert.ok(html.indexOf('Este pago cubre la matrícula y los bimestres detallados')>html.indexOf('href="https://wa.me/123"'));
   }
 });
 test('Teclab vencido: aviso de una línea y aclaraciones debajo de WhatsApp',async()=>{
@@ -556,9 +556,12 @@ test('Teclab vencido: aviso de una línea y aclaraciones debajo de WhatsApp',asy
   assert.doesNotMatch(html,/Estos valores son sólo|Promoción finalizada/);
   assert.doesNotMatch(html,/vp-vigencia/);
   assert.match(html,/class="vp-total"/);});
-test('Teclab conserva nombre de carrera y aclaraciones antes de WhatsApp',async()=>{
+test('Teclab pone la vigencia arriba y qué cubre el pago debajo de la financiación',async()=>{
   const html=await pintarPanelPrecio('teclab');
-  assert.match(html,/>Abogacía<|vp-rotulo/);
-  assert.doesNotMatch(html,/vp-separador|vp-encabezado/);
-  assert.ok(html.indexOf('vp-vigencia')<html.indexOf('href="https://wa.me/123"'));
+  assert.doesNotMatch(html,/vp-separador|vp-encabezado|vp-vigencia/);
+  const vigencia=html.indexOf('Precio vigente hasta el 16/10');
+  assert.ok(vigencia>=0 && vigencia<html.indexOf('class="vp-total"'));
+  const financiacion=html.indexOf('Ver financiación');
+  assert.ok(financiacion>html.indexOf('href="https://wa.me/123"'));
+  assert.ok(html.indexOf('Aranceles 2027 con promoción')>financiacion);
 });

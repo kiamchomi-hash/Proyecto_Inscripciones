@@ -85,9 +85,9 @@ test('trae cada concepto, el total y la vigencia DD/MM, sin descuentos', () => {
   }
 });
 
-test('dice qué cubre el pago con la duración; sin bimestres, la nota', () => {
+test('dice qué cubre el pago y que el cuatrimestre siguiente se vuelve a pagar; sin bimestres, la nota', () => {
   const { html, texto } = armar();
-  for (const cuerpo of [html, texto]) assert.match(cuerpo, /4 cuatrimestres \(8 bimestres\)/);
+  for (const cuerpo of [html, texto]) assert.match(cuerpo, /El cuatrimestre siguiente requiere un nuevo pago de matrícula y bimestres\./);
 
   const curso = armar({
     carrera: { ...carrera, duracion: '4 semanas', nivel: 'Teclab - Curso' },
@@ -244,7 +244,7 @@ test('Siglo 21 muestra lista 2027 y enlaza la preinscripción sin mensajes de Te
 
 test('el mail de Siglo 21 dice qué cubre el pago, igual que el de Teclab, con un solo texto', () => {
   const carreraSiglo = { nombre: 'Administración', prefix: 'Licenciatura en', nombre_corto: 'Administración', duracion: '4 años', nivel: 'Licenciaturas' };
-  const aclaracion = 'Cubre la matrícula y los bimestres que cursás desde tu inscripción. Se paga por cuatrimestre: la matrícula y los tickets de cada bimestre.';
+  const aclaracion = 'Este pago cubre la matrícula y los bimestres detallados. El cuatrimestre siguiente requiere un nuevo pago de matrícula y bimestres.';
   for (const hoy of ['2026-10-03', '2026-11-10']) {
     const mail = armar({ carrera: carreraSiglo, hoy: dia(hoy) });
     assert.ok(mail.html.includes(aclaracion), mail.html);

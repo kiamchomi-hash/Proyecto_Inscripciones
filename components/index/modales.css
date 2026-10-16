@@ -864,6 +864,40 @@
 }
 
 
+/* Slide de precio, en Teclab: superficies sólidas, sin transparencias. #16262f
+   es el 6% de blanco que tenían, resuelto sobre el fondo tinta #071822.
+   Siglo 21 las vuelve a pintar abajo, con su verde. */
+.vp-slide .vp-linea,
+.vp-slide .vp-campo,
+.vp-slide .vp-whatsapp:not(.vp-whatsapp-lleno) {
+  background: #16262f;
+}
+
+.vp-slide .vp-linea {
+  box-shadow: none;
+}
+
+/* El rojo al 10% que tenía, resuelto sobre el fondo tinta. */
+.vp-slide .vp-aviso {
+  background: #1f212a;
+}
+
+.vp-slide .vp-whatsapp:not(.vp-whatsapp-lleno):hover {
+  background: #1d3a3a;
+}
+
+/* La vigencia va arriba del precio, en el mismo contenedor que el aviso de
+   precio vencido pero con el acento. */
+.vp-vigente {
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.4rem;
+  border-left: 3px solid var(--vp-acento);
+  background: #16262f;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+}
+
 /* Slide de precio de Siglo 21: rayado diagonal sobre verde muy oscuro y
    superficies sólidas, sin transparencias. El total va sin relleno, con borde
    y monto en cian, en vez del azul de marca que comparte con Teclab. */
@@ -899,16 +933,9 @@
   color: #00ffe1;
 }
 
-/* La vigencia va arriba del precio, en el mismo contenedor que el aviso de
-   precio vencido pero en cian. */
 .vp-siglo21 .vp-vigente {
-  padding: 0.65rem 0.75rem;
-  border-radius: 0.4rem;
-  border-left: 3px solid #00c7b1;
+  border-left-color: #00c7b1;
   background: #163a31;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #fff;
 }
 
 .vp-siglo21 .vp-aviso {

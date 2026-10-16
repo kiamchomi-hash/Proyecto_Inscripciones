@@ -15,7 +15,7 @@
 // Sin guiones largos ni viñetas decorativas: el texto se copia por una consola
 // que los convierte en signos de pregunta.
 
-import { COBERTURA_SIGLO21, coberturaDelPago } from '@/components/formularios/cobertura-pago';
+import { COBERTURA_PAGO, coberturaDelPago } from '@/components/formularios/cobertura-pago';
 import { carreraFullName, carreraToSlug } from '@/components/index/types';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { BASE_PROD } from '@/lib/vigilancia-esperado';
@@ -134,7 +134,7 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
   const asunto = `Precios - ${corto} - Teclab`;
   const pie = esNewsletter ? PIE_NEWSLETTER : PIE;
   const promo = `Precio vigente hasta el ${diaMes(precio.vigenteHasta)}`;
-  const cobertura = coberturaDelPago(precio.conceptos, carrera.duracion) ?? precio.nota;
+  const cobertura = coberturaDelPago(precio.conceptos) ?? precio.nota;
   // A la página dedicada de inscripción: quien llega desde el mail ya viene a
   // inscribirse y no tiene que volver a buscar el formulario en la ficha.
   const inscripcion = `${BASE_PROD}/carreras/${carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null })}/inscripcion`;
@@ -276,7 +276,7 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
   const inscripcion = `${BASE_PROD}/carreras/${carreraToSlug({ nombre: carrera.nombre, prefix: carrera.prefix ?? null })}/inscripcion`;
   const whatsapp = `https://wa.me/${numeroWhatsAppDe('siglo21')}?text=${encodeURIComponent(`Hola, quiero consultar por ${nombre}`)}`;
   const pie = tipo === 'newsletter' ? 'Te escribimos porque pediste novedades de esta carrera en siglo21sur.com.' : PIE;
-  const cobertura = COBERTURA_SIGLO21;
+  const cobertura = COBERTURA_PAGO;
   const texto = [nombre, '', ...numerarBimestres(precio.conceptos).map(l => `${l.concepto}: ${l.monto}`),
     `Total: ${precio.total}`, `Precio vigente hasta el ${diaMes(precio.vigenteHasta)}`,
     cobertura, '', `Preinscribirme: ${inscripcion}`,
