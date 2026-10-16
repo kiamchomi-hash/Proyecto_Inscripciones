@@ -71,7 +71,7 @@ export default function ComputacionPixel({ materia, parrafos }: { materia: Mater
       </header>
 
       <div className="cp-contacto">
-        <span className="cp-contacto-rotulo">Consultas por WhatsApp</span>
+        <span className="cp-contacto-rotulo">Consultar por WhatsApp</span>
         <WhatsappClase
           slug={materia.slug}
           whatsapp={materia.whatsapp}
