@@ -277,9 +277,9 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
   const whatsapp = `https://wa.me/${numeroWhatsAppDe('siglo21')}?text=${encodeURIComponent(`Hola, quiero consultar por ${nombre}`)}`;
   const pie = tipo === 'newsletter' ? 'Te escribimos porque pediste novedades de esta carrera en siglo21sur.com.' : PIE;
   const cobertura = coberturaSiglo21(carrera.duracion);
-  const texto = [nombre, '', 'Aranceles vigentes', ...numerarBimestres(precio.conceptos).map(l => `${l.concepto}: ${l.monto}`),
+  const texto = [nombre, '', ...numerarBimestres(precio.conceptos).map(l => `${l.concepto}: ${l.monto}`),
     `Total: ${precio.total}`, `Precio vigente hasta el ${diaMes(precio.vigenteHasta)}`,
-    cobertura, ...(precio.nota ? [precio.nota] : []), '', `Preinscribirme: ${inscripcion}`,
+    cobertura, '', `Preinscribirme: ${inscripcion}`,
     `Consultar por WhatsApp: ${whatsapp}`, '', pie,
     ...(tipo === 'newsletter' ? [`${BAJA}: ${bajaUrl}`] : [])].join('\n');
 
@@ -307,8 +307,13 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
           <!-- Cabecera: rótulo y carrera centrados, sin caja -->
           <tr>
             <td align="center" style="padding:8px 28px 14px;background:${SIGLO_FONDO};">
-              <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${SIGLO_CIAN};">Aranceles vigentes</div>
-              <h1 style="margin:8px 0 0;font-size:20px;line-height:1.25;font-weight:700;color:#FFFFFF;">${escapar(nombre)}</h1>
+              <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td align="center" style="background:${SIGLO_TARJETA};border-radius:999px;padding:12px 24px;">
+                    <h1 style="margin:0;font-size:20px;line-height:1.25;font-weight:700;color:#FFFFFF;">${escapar(nombre)}</h1>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
@@ -329,11 +334,10 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
                   <td style="padding:6px 20px 16px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${filasPrecio}
                       <tr>
-                        <td style="padding:16px 16px 4px 0;color:${SIGLO_CIAN};font-size:16px;font-weight:700;">Total</td>
-                        <td align="right" style="padding:16px 0 4px;color:${SIGLO_CIAN};font-size:24px;font-weight:700;white-space:nowrap;">${escapar(precio.total)}</td>
+                        <td style="padding:16px 16px 4px 0;color:${SIGLO_TEXTO};font-size:16px;font-weight:700;">Total</td>
+                        <td align="right" style="padding:16px 0 4px;color:${SIGLO_TEXTO};font-size:24px;font-weight:700;white-space:nowrap;">${escapar(precio.total)}</td>
                       </tr>
                     </table>
-                    ${precio.nota ? `<p style="margin:10px 0 0;font-size:13px;line-height:1.5;color:${SIGLO_SUAVE};">${escapar(precio.nota)}</p>` : ''}
                   </td>
                 </tr>
               </table>

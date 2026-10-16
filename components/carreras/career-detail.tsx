@@ -624,7 +624,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                         lo pintaria como un segundo boton al lado de "Solicitar
                         informacion", que es el que tiene que ganar. */}
                     <Link
-                      href={inscripcionHref}
+                      href="#preinscripcion"
                       prefetch={false}
                       style={{
                         display: 'inline',
@@ -700,7 +700,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               {hasPlan && <a href="#plan">Plan de estudios</a>}
               {faq && <a href="#preguntas-frecuentes">Preguntas frecuentes</a>}
               {inscripcionHref && (
-                <Link href={inscripcionHref} prefetch={false}>Cómo inscribirte</Link>
+                <a href="#preinscripcion">Cómo inscribirte</a>
               )}
             </nav>
             <div className="career-aside-cta">

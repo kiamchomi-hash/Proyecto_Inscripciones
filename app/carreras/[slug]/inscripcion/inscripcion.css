@@ -49,6 +49,47 @@
   font-family: var(--font-poppins), "Poppins", sans-serif;
 }
 
+/* ── Marca Siglo 21 ── Misma estructura, paleta de las piezas aprobadas de
+   Siglo 21 (fondo verde muy oscuro, tarjetas un tono mas claras, cian como
+   accion principal con texto oscuro). Se declara en la clase raiz y no en
+   :root, igual que la marca Teclab. */
+.inscripcion-siglo21 {
+  --tl-azul: #00c7b1;
+  --tl-navy: #0d2119;
+  --tl-navy-claro: #192c24;
+  --tl-cian: #00c7b1;
+  --tl-cian-vivo: #3fe0d0;
+  --tl-papel: #f2f0f7;
+  /* Texto secundario sobre el fondo: alto contraste (WCAG AA). */
+  --tl-texto: #c9d8d2;
+
+  --career-accent: var(--tl-cian);
+  --career-accent-bright: var(--tl-cian-vivo);
+  --career-ink: var(--tl-navy);
+  --career-soft: var(--tl-texto);
+
+  --catalogo-acento: var(--tl-cian);
+  --catalogo-acento-vivo: var(--tl-cian-vivo);
+  --catalogo-acento-suave: #00b09e;
+  --catalogo-acento-oscuro: #009f8f;
+  --catalogo-acento-tinta: var(--tl-navy);
+  --catalogo-acento-rgb: 0, 199, 177;
+  --catalogo-tarjeta: #192c24;
+  --catalogo-tarjeta-hover: #0f2d27;
+  --catalogo-barra: rgba(13, 33, 25, 0.97);
+  --catalogo-form-fondo: #0d2119;
+  --catalogo-form-tarjeta: #192c24;
+  --catalogo-form-panel: #192c24;
+  --catalogo-form-campo: #0a1a14;
+  --catalogo-texto-suave: #9fb9b2;
+  --catalogo-etiqueta: #c9d8d2;
+
+  background:
+    radial-gradient(circle at 82% 8%, rgba(0, 199, 177, 0.12), transparent 28rem),
+    var(--tl-navy);
+  color: var(--tl-papel);
+}
+
 /* ── Encabezado ── El formulario va arriba de todo, asi que antes de el solo
    queda una linea de migas, el H1 a tamaño de titulo de seccion (no de hero:
    "Inscripción a la Tecnicatura Superior en ..." a tamaño de portada ocupaba

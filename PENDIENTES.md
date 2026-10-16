@@ -10,6 +10,8 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 
 ### Web y formularios
 
+- [ ] **Ver que llegue el mail de Teclab**. Los precios vencieron el 15/10/2026 y el robot no publica una promoción vencida (`ventas/fuentes/teclab/price-automation/README.md`). Falta que Teclab cargue la promoción del siguiente período; revisar el log de la corrida diaria de las 9:00 (`logs/precios_AAAA-MM-DD.log`) y después probar un envío real.
+
 - [ ] **Empezar a revisar nuevas carreras de Teclab**.
 - [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas de Teclab** (Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo). Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 
@@ -42,7 +44,7 @@ Lista de trabajo para una sola persona. No hace falta trasladarla a otra herrami
 - [ ] **Corregir las páginas de Computación**.
 - [x] **Corregir la web de Teclab** (15/10/2026). Test vocacional debajo de las carreras, articulación después de los formularios y ajustes responsive. Publicado mediante los commits `3bb9355` y `0d28969`; [comprobaciones y limitaciones](odd/tasks/teclab-responsive-formulario.md).
 - [ ] **Corregir el autoscroll al formulario de preinscripción**. Cuando la carrera se inscribe por mail, el enlace debe llevar a la página dedicada de inscripción, no a la de la carrera.
-- [ ] **Arreglar la estética de los mails de Siglo 21 y de Teclab**.
+- [x] **Arreglar la estética de los mails de Siglo 21 y de Teclab** (commit `46cc8fc`). Ver el mail de Teclab en la bandeja queda como pendiente aparte.
 - [ ] **Revisar el flujo de inscripción**.
 
 ## Comercial y contenido
