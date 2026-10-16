@@ -533,7 +533,6 @@ export function PanelVerPrecio({
               fuera de la vista. */}
           {casa === 'siglo21' && <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>}
           <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={casa !== 'siglo21'} />
-          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
@@ -541,6 +540,7 @@ export function PanelVerPrecio({
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal={casa === 'siglo21'} />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
+          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
           {casa === 'teclab' && <Financiacion />}
         </div>
       )}
@@ -551,12 +551,12 @@ export function PanelVerPrecio({
             <strong>{`${casa === 'siglo21' ? 'Precio vencido' : 'Promoción vencida'} ${diaMes(precio.vigenteHasta)} - Valores de referencia`}</strong>
           </p>
           <DetallePrecio precio={precio} duracion={duracion} vencido casa={casa} aclaraciones={false} />
-          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
           {avisoActualizacionPrecio(new Date()) ? (
             <p className="vp-nota">{avisoActualizacionPrecio(new Date())}</p>
           ) : null}
           {slug && <a href={`/carreras/${slug}/inscripcion`} className="vp-violeta">Quiero inscribirme</a>}
           <EnlaceWhatsApp href={waHref} texto="Consultar por WhatsApp" principal />
+          {casa === 'siglo21' && <p className="vp-nota">{COBERTURA_SIGLO21}</p>}
           {/* Siglo 21: la fecha ya va en el aviso y la nota de la promoción no se muestra. */}
           {casa !== 'siglo21' && <AclaracionesPrecio precio={precio} duracion={duracion} vencido casa={casa} />}
         </div>

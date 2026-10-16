@@ -547,6 +547,7 @@ test('Siglo21 pone la vigencia arriba en un contenedor y no muestra la nota de l
     assert.doesNotMatch(html,/Aranceles 2027 con promoción|vp-vigencia/);
     assert.match(html,/Se paga por cuatrimestre: la matrícula y los tickets de cada bimestre\./);
     assert.match(html,/vp-whatsapp-lleno/);
+    assert.ok(html.indexOf('Se paga por cuatrimestre')>html.indexOf('href="https://wa.me/123"'));
   }
 });
 test('Teclab vencido: aviso de una línea y aclaraciones debajo de WhatsApp',async()=>{
