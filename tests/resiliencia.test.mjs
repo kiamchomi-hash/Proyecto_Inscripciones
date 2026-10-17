@@ -40,7 +40,7 @@ function cargarPagina(archivo, fallaEn = 1, persistente = false) {
     '@/components/index/types': taxonomia,
     'next/navigation': { notFound: () => { throw new Error('404 incorrecto'); } },
     'next/dynamic': { default: () => () => null },
-    'next/font/google': { Poppins: () => ({ variable: '' }) },
+    'next/font/google': { Poppins: () => ({ variable: '' }), DM_Sans: () => ({ variable: '' }) },
     'react/jsx-runtime': { jsx: () => null, jsxs: () => null },
   }, () => ({}));
 }

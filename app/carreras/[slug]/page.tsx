@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Poppins } from 'next/font/google';
+import { DM_Sans, Poppins } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 import { carreraAPublica, COLUMNAS_CARRERA_PUBLICA } from '@/lib/datos/carrera-detalle';
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -16,6 +16,7 @@ import { POSTAL_ADDRESS } from '@/lib/sede';
 import { duracionISO } from '@/lib/duracion-iso';
 import '../career-detail.css';
 import '../career-detail-teclab.css';
+import '../career-detail-siglo21.css';
 
 // Poppins es la fuente de marca de Teclab. Sin preload: las fichas de Siglo 21
 // no la usan y no tienen que pagar una precarga. Se aplica solo a las de Teclab.
@@ -25,6 +26,15 @@ const poppins = Poppins({
   variable: '--font-poppins',
   display: 'swap',
   preload: false,
+});
+
+// DM Sans es la tipografia del Visual System 2025 de Siglo 21: titula las
+// fichas de la universidad. Con precarga porque el H1 es el LCP de la mayoria
+// de las fichas; Teclab e Identidad no la aplican.
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  display: 'swap',
 });
 
 // 24 h, no 1 h: son ~96 paginas y cada regeneracion es un ISR Write de Vercel.
@@ -569,7 +579,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbSchema) }}
       />
-      <main className={conTeclab ? `flex-1 ficha-teclab ${poppins.variable}` : 'flex-1'}>
+      <main className={conTeclab ? `flex-1 ficha-teclab ${poppins.variable}` : carrera.nivel === 'Identidad Argentina' ? 'flex-1' : `flex-1 ${dmSans.variable}`}>
         <DirectCareerOpenTracker
           carrera={carreraFullName(carrera)}
         />

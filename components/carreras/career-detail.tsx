@@ -265,7 +265,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
 
   return (
     <article
-      className={`career-page${isIA ? ' career-page--ia career-page--no-image' : ''}${conMaterialTeclab ? ' career-page--teclab' : ''}${titleLengthClass}`}
+      className={`career-page${isIA ? ' career-page--ia career-page--no-image' : ''}${conMaterialTeclab ? ' career-page--teclab' : ''}${!isIA && !conMaterialTeclab ? ' career-page--siglo21' : ''}${titleLengthClass}`}
       style={careerStyle}
     >
       <header className="career-hero">

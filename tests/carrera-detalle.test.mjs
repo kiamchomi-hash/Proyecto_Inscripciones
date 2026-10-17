@@ -39,7 +39,7 @@ function cargarPagina(data, error = null) {
   return {
     ...cargarTypescript('app/carreras/[slug]/page.tsx', {
       ...modulos,
-      'next/font/google': { Poppins: () => ({ variable: '' }) },
+      'next/font/google': { Poppins: () => ({ variable: '' }), DM_Sans: () => ({ variable: '' }) },
     }, () => ({})),
     llamadas,
   };

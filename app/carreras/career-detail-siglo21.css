@@ -1,0 +1,300 @@
+/* Fichas de Universidad Siglo 21 con el Visual System 2025 de la universidad
+   (skill piezas_siglo21). Solo cambia el estilo: la disposicion es la de
+   career-detail.css. Teclab e Identidad no llevan `career-page--siglo21`.
+
+   Paleta acotada a pedido del usuario (17/10/2026): el cian solo en los
+   botones. La franja de datos sigue con el estilo del sitio: el mosaico de
+   bloques de color se probo y quedo descartado. */
+
+.career-page--siglo21 {
+  --s21-petroleo: #003838;
+  --s21-petroleo-hondo: #002B2B;
+  --s21-petroleo-claro: #0E4A48;
+  --s21-lila: #F2F0F7;
+  --s21-pildora: #2FC1B0;
+  --s21-pildora-circulo: #279383;
+  --s21-tarjeta: #0A3839;
+  --s21-violeta: #5D4594;
+  --s21-violeta-claro: #7560AE;
+  --s21-fuente: var(--font-dm-sans), "DM Sans", var(--font-inter), sans-serif;
+}
+
+/* Hero: sombra en petroleo hondo en vez del verde casi negro del sitio. */
+.career-page--siglo21 .career-hero-shade {
+  background:
+    linear-gradient(90deg, rgba(0, 43, 43, .96) 0%, rgba(0, 43, 43, .74) 43%, rgba(0, 43, 43, .1) 78%),
+    linear-gradient(0deg, rgba(0, 43, 43, .94) 0%, transparent 55%);
+}
+
+/* El sistema titula liviano: DM Sans Medium, sin la negra del sitio. */
+.career-page--siglo21 .career-hero h1 {
+  font-family: var(--s21-fuente);
+  font-weight: 500;
+  letter-spacing: -.035em;
+  line-height: 1;
+  color: var(--s21-lila);
+}
+
+.career-page--siglo21 .career-kicker {
+  color: rgba(242, 240, 247, .78);
+  font-family: var(--s21-fuente);
+  font-size: clamp(.78rem, 1.1vw, .95rem);
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+.career-page--siglo21 .career-hero-intro {
+  font-family: var(--s21-fuente);
+  color: rgba(242, 240, 247, .86);
+}
+
+/* Botones en pildora. La accion principal es la pildora «Inscribite» del
+   sistema: rellena, con el circulo a la izquierda y el texto en petroleo
+   (blanco sobre este cian da 2:1). */
+.career-page--siglo21 .career-button {
+  border-radius: 999px;
+  font-family: var(--s21-fuente);
+  font-weight: 700;
+}
+
+.career-page--siglo21 .career-button--primary {
+  flex-direction: row-reverse;
+  gap: .7rem;
+  padding: .45rem 1.4rem .45rem .45rem;
+  background: var(--s21-pildora);
+  color: var(--s21-petroleo);
+}
+
+.career-page--siglo21 .career-button--primary svg {
+  box-sizing: content-box;
+  width: 1.05rem;
+  height: 1.05rem;
+  padding: .6rem;
+  border-radius: 50%;
+  background: var(--s21-pildora-circulo);
+  color: var(--s21-lila);
+}
+
+.career-page--siglo21 .career-button--ghost,
+.career-page--siglo21 .career-button--info {
+  border-color: rgba(242, 240, 247, .45);
+  background: rgba(0, 43, 43, .72);
+  color: var(--s21-lila);
+}
+
+.career-page--siglo21 .career-button--ghost:hover,
+.career-page--siglo21 .career-button--info:hover {
+  border-color: var(--s21-lila);
+  background: var(--s21-petroleo-claro);
+  color: var(--s21-lila);
+}
+
+/* Franja de datos: mismo estilo del sitio, con el texto de cada celda
+   centrado en horizontal (pedido del usuario, 17/10/2026); arriba en vertical
+   para que las etiquetas de una fila queden alineadas aunque el titulo ocupe
+   dos renglones. Sin el padding izquierdo en cero
+   de la primera y la tercera, que descentraba esas celdas. */
+.career-page--siglo21 .career-facts > div {
+  text-align: center;
+}
+
+.career-page--siglo21 .career-facts > div:first-child,
+.career-page--siglo21 .career-facts > div:nth-child(3) {
+  padding-left: clamp(1rem, 2.5vw, 2rem);
+}
+
+/* Plan de estudios. Misma disposicion; el color sale de la paleta acotada:
+   tarjetas en petroleo tarjeta, el numero de anio en una pildora violeta y
+   el resto en lila. Nada de cian fuera de los botones. */
+/* Encabezados de todas las secciones: rotulo en lila apagado y titulo en DM
+   Sans Medium, igual que el hero. */
+.career-page--siglo21 .career-section-heading > span,
+.career-page--siglo21 .career-related-heading span {
+  color: rgba(242, 240, 247, .72);
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-section-heading h2,
+.career-page--siglo21 #perfil .career-section-heading h2,
+.career-page--siglo21 .career-related-heading h2 {
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+  font-weight: 500;
+  letter-spacing: -.03em;
+}
+
+.career-page--siglo21 .career-years > section {
+  border-color: rgba(242, 240, 247, .1);
+  border-radius: 1rem;
+  background: var(--s21-tarjeta);
+}
+
+.career-page--siglo21 .career-years > section:hover {
+  border-color: rgba(242, 240, 247, .32);
+}
+
+.career-page--siglo21 .career-year-title {
+  align-items: center;
+  border-bottom-color: rgba(242, 240, 247, .12);
+}
+
+/* Lila sobre violeta base: par medido en la skill. */
+.career-page--siglo21 .career-year-title span {
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  background: var(--s21-violeta);
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+  font-size: .78rem;
+}
+
+.career-page--siglo21 .career-year-title h3 {
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.career-page--siglo21 .career-term h4 {
+  color: rgba(242, 240, 247, .66);
+  font-family: var(--s21-fuente);
+  font-weight: 700;
+}
+
+.career-page--siglo21 .career-plan .career-term li,
+.career-page--siglo21 .career-plan .career-extras li {
+  color: rgba(242, 240, 247, .84);
+  font-family: var(--s21-fuente);
+}
+
+/* Punto decorativo, no texto: el violeta claro no necesita contraste de lectura. */
+.career-page--siglo21 .career-plan .career-term li::before,
+.career-page--siglo21 .career-plan .career-extras li::before {
+  background: var(--s21-violeta-claro);
+}
+
+.career-page--siglo21 .career-plan .career-extras h3 {
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+  font-weight: 700;
+}
+
+/* Lo que vas a aprender y salida laboral. */
+.career-page--siglo21 .career-learning-list li {
+  color: rgba(242, 240, 247, .84);
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-learning-list li > span {
+  border-color: var(--s21-violeta-claro);
+  background: color-mix(in srgb, var(--s21-violeta) 22%, transparent);
+  color: var(--s21-lila);
+}
+
+.career-page--siglo21 .career-salida {
+  border-left-color: var(--s21-violeta-claro);
+  border-radius: 0 .75rem .75rem 0;
+  background: var(--s21-tarjeta);
+}
+
+.career-page--siglo21 .career-salida h3 {
+  color: rgba(242, 240, 247, .66);
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-salida p {
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+}
+
+/* Columna lateral: indice y caja de accion. */
+.career-page--siglo21 .career-aside nav a {
+  border-color: rgba(242, 240, 247, .16);
+  border-radius: .6rem;
+  color: rgba(242, 240, 247, .8);
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-aside nav a:hover {
+  border-color: rgba(242, 240, 247, .45);
+  background: var(--s21-tarjeta);
+  color: var(--s21-lila);
+}
+
+.career-page--siglo21 .career-aside-cta {
+  background:
+    linear-gradient(155deg, var(--s21-petroleo-claro), var(--s21-tarjeta) 68%) padding-box,
+    linear-gradient(135deg, var(--s21-violeta-claro), rgba(242, 240, 247, .22) 45%, rgba(242, 240, 247, .08) 66%, var(--s21-violeta)) border-box;
+  box-shadow: 0 20px 46px rgba(0, 0, 0, .42);
+}
+
+.career-page--siglo21 .career-aside-cta::before {
+  background: var(--s21-violeta);
+  opacity: .45;
+}
+
+/* Lila sobre violeta base: par medido en la skill. */
+.career-page--siglo21 .career-aside-cta > span {
+  border-color: transparent;
+  background: var(--s21-violeta);
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-aside-cta strong {
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+  font-weight: 500;
+  letter-spacing: -.035em;
+  line-height: 1.02;
+}
+
+.career-page--siglo21 .career-aside-cta strong em {
+  color: var(--s21-lila);
+  font-weight: 700;
+}
+
+.career-page--siglo21 .career-aside-cta a {
+  border-radius: 999px;
+  font-family: var(--s21-fuente);
+  font-weight: 700;
+}
+
+.career-page--siglo21 .career-aside-cta > a:first-of-type {
+  background: var(--s21-pildora);
+  color: var(--s21-petroleo);
+  box-shadow: none;
+}
+
+/* Preguntas frecuentes. */
+.career-page--siglo21 .career-faq summary {
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-faq summary::marker {
+  color: var(--s21-violeta-claro);
+}
+
+/* Otras carreras: tarjetas en petroleo tarjeta, flecha en lila. */
+.career-page--siglo21 .career-related-heading > a {
+  color: var(--s21-lila);
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-related li > a {
+  border-color: rgba(242, 240, 247, .12);
+  border-radius: .75rem;
+  background: var(--s21-tarjeta);
+  color: rgba(242, 240, 247, .84);
+  font-family: var(--s21-fuente);
+}
+
+.career-page--siglo21 .career-related li > a:hover {
+  border-color: rgba(242, 240, 247, .45);
+  background: var(--s21-petroleo-claro);
+  color: var(--s21-lila);
+}
+
+.career-page--siglo21 .career-related li > a svg {
+  color: var(--s21-violeta-claro);
+}

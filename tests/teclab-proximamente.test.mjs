@@ -103,7 +103,7 @@ function cargarPagina(filas) {
     '@/components/index/teclab': teclab,
     '@/lib/datos/carrera-detalle': adaptadores,
     '@/components/carreras/career-content': dependencias['./career-content'],
-    'next/font/google': { Poppins: () => ({ variable: '' }) },
+    'next/font/google': { Poppins: () => ({ variable: '' }), DM_Sans: () => ({ variable: '' }) },
   }, () => ({}));
 }
 
