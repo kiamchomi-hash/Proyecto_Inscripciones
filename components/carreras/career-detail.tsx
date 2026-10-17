@@ -62,7 +62,6 @@ type CareerStyle = CSSProperties & {
 const HERO_POSITIONS: Record<string, string> = {
   Abogacía: 'center top',
   'Licenciatura en Administración': 'center top',
-  'Licenciatura en Administración Hotelera': 'left top',
   'Licenciatura en Administración Pública': 'center top',
   'Licenciatura en Comercio Internacional': 'center top',
   'Licenciatura en Educación (CCC)': 'center top',
@@ -76,12 +75,10 @@ const HERO_POSITIONS: Record<string, string> = {
 };
 
 const HERO_SCALES: Record<string, string> = {
-  'Licenciatura en Administración Hotelera': '1.35',
   'Tecnicatura en Administración y Gestión Tributaria': '1.15',
 };
 
 const HERO_ORIGINS: Record<string, string> = {
-  'Licenciatura en Administración Hotelera': 'left top',
   'Tecnicatura en Administración y Gestión Tributaria': 'center center',
 };
 
