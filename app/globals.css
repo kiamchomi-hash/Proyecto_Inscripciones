@@ -207,3 +207,19 @@ body::after {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(4px); }
 }
+
+/* Con un modal abierto la barra de la página sigue visible, pero el navegador
+   la dibuja fuera del documento y ningún fondo la tapa: se oscurece a mano con
+   la misma mezcla del velo del modal (80% de tinta). */
+html:has([role="dialog"][aria-modal="true"]) {
+  scrollbar-color: color-mix(in srgb, #00c7b1 20%, #011a14) color-mix(in srgb, #061716 20%, #011a14);
+}
+html:has([role="dialog"][aria-modal="true"])::-webkit-scrollbar-track {
+  background: color-mix(in srgb, #061716 20%, #011a14);
+}
+html:has([role="dialog"][aria-modal="true"])::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, #00c7b1 20%, #011a14);
+}
+html:has(.teclab-page, .ficha-teclab, .tvt-page):has([role="dialog"][aria-modal="true"]) {
+  scrollbar-color: color-mix(in srgb, #4ae2e7 20%, #0c1824) color-mix(in srgb, #08111a 20%, #0c1824);
+}

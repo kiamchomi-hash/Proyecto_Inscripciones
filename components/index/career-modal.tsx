@@ -69,9 +69,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
     }
     requestAnimationFrame(() => setVisible(true));
     closeBtnRef.current?.focus();
-    document.documentElement.style.overflow = 'hidden';
     return () => {
-      document.documentElement.style.overflow = '';
       inerted.forEach((element) => element.removeAttribute('inert'));
       openerRef.current?.focus();
     };
@@ -157,7 +155,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   return (
     <div
       ref={dialogRef}
-      className="fixed inset-0 z-[5000] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[5000] flex items-center justify-center p-4 overflow-y-auto overscroll-contain"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
