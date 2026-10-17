@@ -12,6 +12,8 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ## 3. Urgente: leads y precios
 
+- [ ] **Imagen de calendario de pagos para mandar a los leads**, agregado el 17/10/2026: qué período cubre cada cuota y cuántas materias entran en cada uno.
+- [ ] **Imagen de la financiación de Teclab para mandar a los leads**, agregado el 17/10/2026.
 
 
 ## 5. Siglo 21
