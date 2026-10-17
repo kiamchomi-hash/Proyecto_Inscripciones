@@ -2,7 +2,7 @@
 
 Lista de trabajo para una sola persona. No hace falta trasladarla a otra herramienta. Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; las revisiones repetibles van en rutinas.
 
-Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas de [`odd/tasks/`](odd/tasks/) y el [detalle de pendientes](docs/pendientes-detalle.md). El orden es: primero lo que ya está hecho y falta publicar o marcar; después lo que hace perder leads o muestra un dato equivocado; después Teclab (prioridad vigente), Siglo 21 y el resto. Los números de los pedidos del 02/10/2026 se conservan para poder referirse a cada tarea.
+Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas de [`odd/tasks/`](odd/tasks/) y el [detalle de pendientes](docs/pendientes-detalle.md). El orden es: primero lo que ya está hecho y falta publicar o marcar; después lo que hace perder leads o muestra un dato equivocado; después el resto; Teclab ya no tiene prioridad especial (16/10/2026). Los números de los pedidos del 02/10/2026 se conservan para poder referirse a cada tarea.
 
 ## 2. Comprobaciones que quedan de tareas ya hechas
 
@@ -16,19 +16,8 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ## 4. Teclab
 
-### Web y formularios
 
 
-### Carreras
-
-- [ ] **Empezar a revisar nuevas carreras de Teclab**.
-- [ ] **Bloque 4 de carreras nuevas de Teclab**: cuando llegue su capacitación de admisión, darlas de alta como los bloques 2 y 3 (16/10/2026). [Detalle](odd/tasks/teclab-bloques-2-y-3.md).
-
-### Folletos y piezas
-
-- [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso**. Empezar por Teclab; después Siglo 21, Identidad Argentina y clases de apoyo.
-- [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
-- [ ] **Fichas de carreras de Teclab**: las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
 
 ### Comercial
 
@@ -112,6 +101,16 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **Robot de autoinscripción de Teclab: cierres que dependen del usuario** (bajado al fondo el 16/10/2026). El robot ya carga en producción (99000006 y 99000007). Falta: primer login de una cuenta nueva por `/payments/select` (99000003 a 99000005), pedir a Teclab la baja de las cargas 99000001 a 99000007, relevar el aviso que confirma «Enviar link de pago» con una carga autorizada y revisar el primer aviso real en `net._http_response` (`autoinscripcion-teclab` T4, T4c, T5 y T10). [Detalle](odd/tasks/autoinscripcion-teclab.md).
 
 - [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo). Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. Bajado al fondo el 16/10/2026: las carreras todavía no están validadas. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
+
+- [ ] **Empezar a revisar nuevas carreras de Teclab**.
+
+- [ ] **Bloque 4 de carreras nuevas de Teclab**: cuando llegue su capacitación de admisión, darlas de alta como los bloques 2 y 3 (16/10/2026). [Detalle](odd/tasks/teclab-bloques-2-y-3.md).
+
+- [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso**. Empezar por Teclab; después Siglo 21, Identidad Argentina y clases de apoyo.
+
+- [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
+
+- [ ] **Fichas de carreras de Teclab**: las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
 
 ## Documentación de apoyo
 
