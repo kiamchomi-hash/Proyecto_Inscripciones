@@ -163,7 +163,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
     (conMaterialTeclab ? getPortadaTeclab(carrera) : null) ||
     portada?.imagen_desktop ||
     portada?.imagen_mobile ||
-    '/imagenes/gente/Header_1920x450-1.webp';
+    '/imagenes/imagenes_cau/edificio_siglo21_campus2.webp';
   const heroPosition =
     HERO_POSITIONS[nombreCompleto] ||
     portada?.imagen_desktop_position ||

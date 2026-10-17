@@ -72,6 +72,18 @@ reales, tira de logos, un patrón en CSS—. Alto: alrededor de la mitad del
 viewport. El material casi siempre ya existe en `public/imagenes/`: mirar antes de
 inventar.
 
+### El banner «Estudiar es un acto de rebeldía» no se usa más
+
+`public/imagenes/gente/Header_1920x450-1.webp` (el banner de Siglo 21 con la
+chica de pelo verde, el chico de rulos, texto y logo) quedó prohibido el
+17/10/2026: era la foto de reserva de las fichas sin imagen propia y en el hero
+se veía recortado, con el texto cortado. No va como portada, ni como reserva,
+ni en ninguna pieza. Una carrera sin foto propia lleva una foto nueva en
+`public/imagenes/imagenes_carreras/<slug>.webp` (1200 px de ancho, sin texto
+encima), sacada de un banco libre como Unsplash o generada con IA (Gemini);
+las dos opciones valen. Un test de `tests/imagenes-prohibidas.test.mjs` falla
+si vuelve a aparecer en el código o en un payload nuevo.
+
 ### Las zonas vacías se llenan con gráfica, no con más texto
 
 Cuando una escena queda bien de contenido pero «se siente vacía», el pedido no es
