@@ -14,10 +14,6 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 
 
-## 4. Teclab
-
-- [ ] **Reunir en un archivo local todos los procesos de preinscripción de Teclab**, con pasos y requisitos. Fuera del repositorio público si tiene información interna.
-
 ## 5. Siglo 21
 
 - [ ] **Autoinscripción de Siglo 21: postergada el 16/10/2026**. Hoy el formulario sólo registra la solicitud y la atención sigue a mano. Antes de retomarla, definir si se hace con un robot en el portal de Siglo 21 (como en Teclab) o con un enlace personalizado.

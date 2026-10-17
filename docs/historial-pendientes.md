@@ -5,6 +5,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 [Volver a los pendientes](../PENDIENTES.md).
 
 
+## Teclab — procesos de preinscripción, 17/10/2026
+
+- [x] **Reunir en un archivo local todos los procesos de preinscripción de Teclab**. Armado en `carreras/teclab/procesos-preinscripcion.md` (gitignorado): 15 secciones con fuente por dato, 6 contradicciones entre capacitaciones, bot y portal, y 12 huecos abiertos. Además, modo demo de formularios de sólo desarrollo (`NEXT_PUBLIC_FORMULARIOS_DEMO=1`) para recorrer el frontend de la preinscripción sin captcha y sin escribir (`41c942e`). [Tarea](../odd/tasks/modo-demo-formularios.md).
+
 ## Teclab — variables de entorno, 16/10/2026
 
 - [x] **Completar `.env.example` con las variables de mail** (`mail-precio-teclab` T3). Pegadas por el usuario el 16/10/2026: `SMTP2GO_API_KEY` y, de paso, las tres del robot (`ROBOT_SECRET`, `ROBOT_GITHUB_TOKEN`, `ROBOT_GITHUB_REPO`), que faltaban desde T4a. [Tarea](../odd/tasks/mail-precio-teclab.md).
