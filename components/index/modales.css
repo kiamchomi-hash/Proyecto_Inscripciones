@@ -399,6 +399,30 @@
   }
 }
 
+/* Competencias en una pantalla baja: el texto de arriba se come el alto y el
+   marco quedaba en una ranura de 77 px, con un renglon por tarjeta. Ahi el
+   marco toma su alto natural y el que scrollea es el slide entero, asi hay una
+   sola zona de scroll y la flecha del armazon la marca. Con el panel ancho -el
+   telefono acostado- las tarjetas van en columnas, que es lo que sobra.
+   Le gana a las utilidades de Tailwind por no tener capa. */
+@media (max-height: 500px) {
+  .teclab-slide-competencias {
+    overflow-y: auto;
+  }
+
+  .teclab-competencias {
+    flex: none;
+    overflow: visible;
+    grid-auto-rows: auto;
+  }
+
+  @container modal (min-width: 36rem) {
+    .teclab-competencias {
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+  }
+}
+
 /* Cierre: la segunda foto de la ficha, de fondo y bajo un velo tinta */
 .teclab-cierre-fondo {
   position: absolute;

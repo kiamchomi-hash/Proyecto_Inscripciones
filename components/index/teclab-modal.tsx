@@ -15,7 +15,7 @@ import { useFocoModal } from './use-foco-modal';
 
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import Image from 'next/image';
-import { useEffect, useLayoutEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { mensajeWhatsAppInfo, mensajeWhatsAppPrecioVisto, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
@@ -54,166 +54,6 @@ const CLARO: Record<string, string> = {
   '#8e2cf2': '#c9a0ff',
   '#f4aa22': '#ffd48a',
 };
-
-// Grilla de una tanda de competencias (y de la copia que se usa para medir):
-// las dos tienen que maquetar igual para que la cuenta valga.
-const CLASES_TANDA = 'p-2 sm:p-2.5 grid grid-cols-1 gap-2 content-start';
-
-const rango = (desde: number, hasta: number) => Array.from({ length: hasta - desde }, (_, i) => desde + i);
-
-/**
- * Reparte tarjetas -por su alto- en tandas que entren en `disponible`. Primero
- * cuenta el minimo de tandas necesarias y despues, entre todos los cortes que
- * dan ese mismo numero, se queda con el que no crece y, entre esos, el mas parejo.
- */
-function repartir(altos: number[], disponible: number, separacion: number): number[][] {
-  const n = altos.length;
-  const alto = (desde: number, hasta: number) =>
-    altos.slice(desde, hasta).reduce((a, b) => a + b, 0) + separacion * Math.max(0, hasta - desde - 1);
-
-  // Llenado a tope: da el minimo de tandas y ademas es el plan B, porque nunca
-  // deja un grupo mas grande de lo que entra (salvo que una sola tarjeta no
-  // entre, y ahi no hay reparto posible).
-  const aTope: number[][] = [];
-  for (let i = 0; i < n; ) {
-    let j = i;
-    while (j < n && alto(i, j + 1) <= disponible) j++;
-    if (j === i) j = i + 1; // una tarjeta mas alta que el marco va sola igual
-    aTope.push(rango(i, j));
-    i = j;
-  }
-  if (aTope.length <= 1) return aTope;
-
-  // Antes de lo parejo en pixeles va el orden: se prefiere que ninguna tanda
-  // tenga mas tarjetas que la anterior. Con tres competencias en dos tandas,
-  // 2+1 y no 1+2; si la primera era larga, 1+2 salia mas parejo y la primera
-  // pantalla quedaba con una sola tarjeta. Si solo entran repartos que crecen
-  // (las dos primeras no caben juntas), se usa el mas parejo de esos.
-  let mejor: number[][] | null = null;
-  let mejorCrece = true;
-  let mejorDiferencia = Infinity;
-  const buscar = (desde: number, faltan: number, acumulado: number[][]) => {
-    if (faltan === 1) {
-      if (alto(desde, n) > disponible) return;
-      const grupos = [...acumulado, rango(desde, n)];
-      const crece = grupos.some((g, i) => i > 0 && g.length > grupos[i - 1].length);
-      const suyos = grupos.map(g => alto(g[0], g[g.length - 1] + 1));
-      const diferencia = Math.max(...suyos) - Math.min(...suyos);
-      if ((mejorCrece && !crece) || (crece === mejorCrece && diferencia < mejorDiferencia)) {
-        mejorCrece = crece;
-        mejorDiferencia = diferencia;
-        mejor = grupos;
-      }
-      return;
-    }
-    for (let corte = desde + 1; corte <= n - (faltan - 1); corte++) {
-      if (alto(desde, corte) > disponible) break;
-      buscar(corte, faltan - 1, [...acumulado, rango(desde, corte)]);
-    }
-  };
-  buscar(0, aTope.length, []);
-
-  // Sin reparto parejo posible -pasa cuando ni una tarjeta sola entra- vale el
-  // llenado a tope. Devolver todas juntas, como se hacia antes, apretaba las
-  // filas hasta que los textos se montaban unos sobre otros.
-  return mejor ?? aTope;
-}
-
-/**
- * Normalmente las tres competencias entran en el marco y esto devuelve una sola
- * tanda. Si la ventana es muy baja -un portatil chico, el telefono acostado- no
- * entran, y ahi se parten en dos para que ninguna quede cortada. Los altos
- * salen de una copia invisible de la lista, con la misma maqueta.
- */
-function useTandas(items: string[]) {
-  const marcoRef = useRef<HTMLDivElement>(null);
-  const medidorRef = useRef<HTMLDivElement>(null);
-  const [tandas, setTandas] = useState<number[][]>(() => [items.map((_, i) => i)]);
-
-  useLayoutEffect(() => {
-    const calcular = () => {
-      const marco = marcoRef.current;
-      const medidor = medidorRef.current;
-      if (!marco || !medidor) return;
-      const estilo = getComputedStyle(medidor);
-      const relleno = parseFloat(estilo.paddingTop) || 0;
-      const separacion = parseFloat(estilo.rowGap) || 0;
-      const disponible = marco.clientHeight - relleno * 2;
-      const tarjetas = Array.from(medidor.children) as HTMLElement[];
-      if (!tarjetas.length || disponible <= 0) return;
-
-      const armadas = repartir(tarjetas.map(t => t.offsetHeight), disponible, separacion);
-      setTandas(previas =>
-        previas.length === armadas.length && previas.every((p, i) => p.length === armadas[i].length)
-          ? previas
-          : armadas,
-      );
-    };
-
-    calcular();
-    const ro = new ResizeObserver(calcular);
-    if (marcoRef.current) ro.observe(marcoRef.current);
-    if (medidorRef.current) ro.observe(medidorRef.current);
-    return () => ro.disconnect();
-  }, [items]);
-
-  return { marcoRef, medidorRef, tandas };
-}
-
-/**
- * Arrastre horizontal, para pasar de tanda con el dedo. Se ignora si el gesto
- * fue mas vertical que horizontal o si apenas se movio: eso es un clic.
- */
-function useArrastre(siguiente: () => void, anterior: () => void) {
-  const inicio = useRef<{ x: number; y: number } | null>(null);
-  return {
-    onPointerDown: (e: React.PointerEvent) => {
-      inicio.current = { x: e.clientX, y: e.clientY };
-    },
-    onPointerUp: (e: React.PointerEvent) => {
-      const p = inicio.current;
-      inicio.current = null;
-      if (!p) return;
-      const dx = e.clientX - p.x;
-      const dy = e.clientY - p.y;
-      if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
-      if (dx < 0) siguiente();
-      else anterior();
-    },
-    onPointerCancel: () => {
-      inicio.current = null;
-    },
-  };
-}
-
-/** Flecha chica para pasar de tanda dentro del marco */
-function FlechaTanda({
-  acento,
-  rotulo,
-  sentido,
-  disabled,
-  onClick,
-}: {
-  acento: string;
-  rotulo: string;
-  sentido: 'anterior' | 'siguiente';
-  disabled: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={`${rotulo}: ${sentido === 'anterior' ? 'anteriores' : 'siguientes'}`}
-      className="w-6 h-6 flex items-center justify-center rounded transition-all cursor-pointer disabled:opacity-25 disabled:pointer-events-none"
-      style={{ color: CLARO[acento], boxShadow: `inset 0 0 0 1px ${acento}59` }}
-    >
-      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d={sentido === 'anterior' ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'} />
-      </svg>
-    </button>
-  );
-}
 
 /** Una competencia: numero en el acento y el texto de la ficha */
 function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: number; acento: string }) {
@@ -456,8 +296,11 @@ function SlidePortada({
 // ── Slide 2: competencias y salida laboral ──
 // Solo las tres competencias principales de la ficha (la seleccion esta en
 // DESTACADAS, en ./teclab); la lista completa queda en la pagina de la carrera.
-// Las tres entran de una: el contador y las flechas aparecen unicamente si la
-// ventana es tan baja que no entran, para que ninguna quede cortada.
+// Normalmente las tres entran de una. Si la ventana es tan baja que no entran,
+// la lista se scrollea hacia abajo y la flecha de scroll del armazon
+// (FlechasDeScroll) avisa que hay mas; en una pantalla ancha y baja -el
+// telefono acostado- van en columnas (.teclab-competencias, en modales.css).
+// Todo por CSS: nada se mide con JS, asi que no hay saltos al redimensionar.
 //
 // El mismo slide sirve para el "como se cursa" de los cursos: es otra lista
 // corta con un rotulo distinto y sin destacado arriba.
@@ -472,32 +315,10 @@ function SlideCompetencias({
   salida: string;
   acento: string;
 }) {
-  const { marcoRef, medidorRef, tandas } = useTandas(competencias);
-  const [tanda, setTanda] = useState(0);
-  useEffect(() => setTanda(t => Math.min(t, tandas.length - 1)), [tandas.length]);
-
-  const irA = useCallback((i: number) => setTanda(Math.max(0, Math.min(tandas.length - 1, i))), [tandas.length]);
-  const arrastre = useArrastre(
-    useCallback(() => irA(tanda + 1), [irA, tanda]),
-    useCallback(() => irA(tanda - 1), [irA, tanda]),
-  );
-
   return (
-    <div className="teclab-slide h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-6 overflow-hidden">
-      {/* Alto fijo aunque no haya contador: si la fila creciera al aparecer,
-          el marco se achicaria, entrarian menos tarjetas y el contador podria
-          aparecer y desaparecer solo, temblando. */}
-      <div className="flex-shrink-0 h-6 flex items-center justify-between gap-3">
+    <div className="teclab-slide teclab-slide-competencias h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-6 overflow-hidden">
+      <div className="flex-shrink-0 h-6 flex items-center">
         <Rotulo acento={acento}>{rotulo}</Rotulo>
-        {tandas.length > 1 && (
-          <div className="flex items-center gap-1.5">
-            <FlechaTanda acento={acento} rotulo={rotulo} sentido="anterior" disabled={tanda === 0} onClick={() => irA(tanda - 1)} />
-            <span className="text-[0.55rem] font-black tabular-nums tracking-[0.12em] text-white/50">
-              {tanda + 1}/{tandas.length}
-            </span>
-            <FlechaTanda acento={acento} rotulo={rotulo} sentido="siguiente" disabled={tanda === tandas.length - 1} onClick={() => irA(tanda + 1)} />
-          </div>
-        )}
       </div>
 
       {/* La salida laboral va arriba. Sin rotulo: el texto ya dice de que se
@@ -511,35 +332,18 @@ function SlideCompetencias({
         </div>
       )}
 
+      {/* Filas de minmax(min-content, 1fr): si entran, las tarjetas se reparten
+          el alto del marco y no queda media caja vacia abajo; si no, cada fila
+          toma el alto de su tarjeta y el marco se scrollea. Con auto-rows-fr
+          solo, las filas quedaban parejas por debajo del texto y la tarjeta
+          mas larga se salia un par de pixeles: un scroll que no llevaba a nada. */}
       <div
-        ref={marcoRef}
-        className="relative flex-1 min-h-0 overflow-hidden rounded-lg touch-pan-y"
+        className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5 grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
-        {...arrastre}
       >
-        {/* Copia invisible: de aca salen los altos reales para saber si entran */}
-        <div ref={medidorRef} aria-hidden="true" className={`${CLASES_TANDA} invisible pointer-events-none absolute inset-x-0 top-0`}>
-          {competencias.map((texto, i) => (
-            <TarjetaCompetencia key={i} texto={texto} numero={i + 1} acento={acento} />
-          ))}
-        </div>
-
-        <div
-          className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]"
-          style={{ transform: `translateX(-${tanda * 100}%)` }}
-        >
-          {tandas.map((indices, t) => (
-            // auto-rows-fr: las tarjetas se reparten el alto del marco, asi no
-            // queda media caja vacia abajo. El overflow es la ultima red: si la
-            // ventana es tan baja que ni una tarjeta entra, se scrollea en vez
-            // de recortar el texto.
-            <div key={t} className={`${CLASES_TANDA} auto-rows-fr flex-shrink-0 w-full h-full overflow-y-auto custom-scrollbar`}>
-              {indices.map(i => (
-                <TarjetaCompetencia key={i} texto={competencias[i]} numero={i + 1} acento={acento} />
-              ))}
-            </div>
-          ))}
-        </div>
+        {competencias.map((texto, i) => (
+          <TarjetaCompetencia key={i} texto={texto} numero={i + 1} acento={acento} />
+        ))}
       </div>
     </div>
   );
