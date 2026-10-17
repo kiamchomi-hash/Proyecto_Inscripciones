@@ -1,6 +1,7 @@
 'use client';
 
-import FlechasDeScroll from './flechas-de-scroll';
+import ModalShell from './modal-shell';
+import { useFocoModal } from './use-foco-modal';
 // Modal de las tecnicaturas de Teclab. Mismo formato de slides que el modal de
 // convenio (ia-modal), pero con el lenguaje visual del render de Remotion
 // (Desktop\Teclab Info\remotion-teclab-carreras): fondo tinta #071822, tarjetas
@@ -1019,7 +1020,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const salida = useMemo(() => partirDescripcionTeclab(carrera.descripcion).salida, [carrera.descripcion]);
 
   const [idx, setIdx] = useState(0);
-  const [closing, setClosing] = useState(false);
+  const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose });
   const precioRef = useRef<HTMLDivElement>(null);
 
   // Cuenta los toques de «Ver precio» del cierre. Con un mail ya recordado, el
@@ -1068,8 +1069,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     // formulario de preinscripción y el modal se cierra.
     const avisar = () => {
       pedirCarreraEnFormulario(carrera.id);
-      setClosing(true);
-      setTimeout(onClose, 300);
+      handleClose();
       setTimeout(() => {
         document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
       }, 350);
@@ -1083,46 +1083,13 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       });
     }
     return s;
-  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio, onClose]);
+  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio, handleClose]);
 
-  const [visible, setVisible] = useState(false);
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const openerRef = useRef<HTMLElement | null>(null);
   const nombre = carrera.nombre_corto || carrera.nombre;
 
-  useEffect(() => {
-    openerRef.current = document.activeElement as HTMLElement | null;
-    const inerted: Element[] = [];
-    let current: Element | null = dialogRef.current;
-    while (current?.parentElement) {
-      for (const sibling of Array.from(current.parentElement.children)) {
-        if (sibling !== current && !sibling.hasAttribute('inert')) {
-          sibling.setAttribute('inert', '');
-          inerted.push(sibling);
-        }
-      }
-      current = current.parentElement;
-    }
-    requestAnimationFrame(() => setVisible(true));
-    closeBtnRef.current?.focus();
-    return () => {
-      inerted.forEach(el => el.removeAttribute('inert'));
-      openerRef.current?.focus();
-    };
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setClosing(true);
-    setTimeout(onClose, 300);
-  }, [onClose]);
-
+  // Escape y Tab los maneja useFocoModal; las flechas pasan de slide.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-        return;
-      }
       if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && esCampoEditable(e.target)) return;
       if (e.key === 'ArrowRight') {
         setIdx(i => Math.min(slides.length - 1, i + 1));
@@ -1130,28 +1097,11 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       }
       if (e.key === 'ArrowLeft') {
         setIdx(i => Math.max(0, i - 1));
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const items = Array.from(
-        dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ) ?? [],
-      );
-      if (!items.length) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [handleClose, slides.length]);
+  }, [slides.length]);
 
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
   // Abierta o anunciada, el CTA va a la preinscripción, como en la ficha de
@@ -1162,32 +1112,20 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 
   return (
-    <div
-      ref={dialogRef}
-      className="fixed inset-0 z-[5000] flex items-center justify-center p-4 overflow-y-auto overscroll-contain"
-      role="dialog"
-      aria-modal="true"
+    <ModalShell
+      dialogRef={dialogRef}
+      abierto={abierto}
+      onCerrar={handleClose}
       aria-label={`Detalles de ${carrera.nombre}`}
+      colorVelo="rgba(3,10,16,0.86)"
+      className={clase}
+      datos={{ 'data-teclab-caja': '' }}
+      style={{
+        background: '#071822',
+        border: `2px solid ${acento}`,
+        boxShadow: `0 0 50px ${acento}40`,
+      }}
     >
-      <FlechasDeScroll raiz={dialogRef} />
-      <div
-        className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
-        style={{ background: 'rgba(3,10,16,0.86)' }}
-        onClick={handleClose}
-      />
-
-      {/* El tope en rem evita que en pantallas altas (tablet vertical) el modal
-          se estire mucho mas de lo que el contenido necesita y queden huecos. */}
-      <div
-        data-teclab-caja
-        className={`${clase} relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
-          h-[88dvh] sm:h-[min(92vh,52rem)] max-h-[88dvh] sm:max-h-[min(92vh,52rem)] overflow-hidden flex flex-col`}
-        style={{
-          background: '#071822',
-          border: `2px solid ${acento}`,
-          boxShadow: `0 0 50px ${acento}40`,
-        }}
-      >
         {/* Encabezado: la marca del instituto vive aca, no en cada slide */}
         <div
           className="teclab-modal-header flex-shrink-0 px-4 py-2.5 sm:px-6 sm:py-3 border-b"
@@ -1350,7 +1288,6 @@ export default function TeclabModal({ carrera, onClose }: Props) {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }

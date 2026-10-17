@@ -1,6 +1,7 @@
 'use client';
 
-import FlechasDeScroll from './flechas-de-scroll';
+import ModalShell from './modal-shell';
+import { useFocoModal } from './use-foco-modal';
 // Modal de las diplomaturas de Academia Identidad Argentina.
 // Mismo formato de slides que los modales de Siglo 21 (carousel-modal), pero con
 // el lenguaje visual de la Academia: fondo tinta #101820 con lavados
@@ -8,7 +9,7 @@ import FlechasDeScroll from './flechas-de-scroll';
 // isotipo de la academia. Referencias: identidadargentina.com.ar y el render de
 // Remotion histórico de diplomaturas (no es necesario para ejecutar el sitio).
 
-import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import Isotipo from './ia-isotipo';
@@ -537,38 +538,8 @@ export default function IAModal({ carrera, onClose }: Props) {
   }, [carrera, docente, modulos]);
 
   const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(false);
-  const [closing, setClosing] = useState(false);
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const openerRef = useRef<HTMLElement | null>(null);
+  const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose });
   const nombre = carrera.nombre_corto || carrera.nombre;
-
-  useEffect(() => {
-    openerRef.current = document.activeElement as HTMLElement | null;
-    const inerted: Element[] = [];
-    let current: Element | null = dialogRef.current;
-    while (current?.parentElement) {
-      for (const sibling of Array.from(current.parentElement.children)) {
-        if (sibling !== current && !sibling.hasAttribute('inert')) {
-          sibling.setAttribute('inert', '');
-          inerted.push(sibling);
-        }
-      }
-      current = current.parentElement;
-    }
-    requestAnimationFrame(() => setVisible(true));
-    closeBtnRef.current?.focus();
-    return () => {
-      inerted.forEach(el => el.removeAttribute('inert'));
-      openerRef.current?.focus();
-    };
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setClosing(true);
-    setTimeout(onClose, 300);
-  }, [onClose]);
 
   useEffect(() => {
     inscribirRef.current = () => {
@@ -581,71 +552,39 @@ export default function IAModal({ carrera, onClose }: Props) {
     };
   }, [carrera.id, handleClose]);
 
+  // Escape y Tab los maneja useFocoModal; las flechas pasan de slide.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-        return;
-      }
       if (e.key === 'ArrowRight') {
         setIdx(i => Math.min(slides.length - 1, i + 1));
         return;
       }
       if (e.key === 'ArrowLeft') {
         setIdx(i => Math.max(0, i - 1));
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const items = Array.from(
-        dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ) ?? [],
-      );
-      if (!items.length) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [handleClose, slides.length]);
+  }, [slides.length]);
 
   const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppInfo(carrera))}`;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/carreras/${carreraToSlug(carrera)}` : '';
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 
   return (
-    <div
-      ref={dialogRef}
-      className="fixed inset-0 z-[5000] flex items-center justify-center p-4 overflow-y-auto overscroll-contain"
-      role="dialog"
-      aria-modal="true"
+    <ModalShell
+      dialogRef={dialogRef}
+      abierto={abierto}
+      onCerrar={handleClose}
       aria-label={`Detalles de ${carrera.nombre}`}
+      colorVelo="rgba(5,15,25,0.85)"
+      className="ia-modal"
+      style={{
+        background: '#101820',
+        border: `2px solid ${AZUL}`,
+        boxShadow: '0 0 50px rgba(0,144,193,0.3)',
+      }}
     >
-      <FlechasDeScroll raiz={dialogRef} />
-      <div
-        className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
-        style={{ background: 'rgba(5,15,25,0.85)' }}
-        onClick={handleClose}
-      />
-
-      {/* El tope en rem evita que en pantallas altas (tablet vertical) el modal
-          se estire mucho mas de lo que el contenido necesita y queden huecos. */}
-      <div
-        className="ia-modal relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
-          h-[88dvh] sm:h-[min(92vh,52rem)] max-h-[88dvh] sm:max-h-[min(92vh,52rem)] overflow-hidden flex flex-col"
-        style={{
-          background: '#101820',
-          border: `2px solid ${AZUL}`,
-          boxShadow: '0 0 50px rgba(0,144,193,0.3)',
-        }}
-      >
         {/* Encabezado: la marca de la Academia vive aca, no en cada slide */}
         <div className="ia-modal-header flex-shrink-0 px-4 py-2.5 sm:px-6 sm:py-3 border-b" style={{ background: '#0a1219', borderColor: 'rgba(0,144,193,0.35)' }}>
           <div className="relative flex justify-between items-center gap-3">
@@ -800,7 +739,6 @@ export default function IAModal({ carrera, onClose }: Props) {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }

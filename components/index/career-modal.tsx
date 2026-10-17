@@ -1,7 +1,8 @@
 'use client';
 
-import FlechasDeScroll from './flechas-de-scroll';
-import { useEffect, useCallback, useRef, useState } from 'react';
+import ModalShell from './modal-shell';
+import { useFocoModal } from './use-foco-modal';
+import { useState } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import { esCursoTeclab } from './teclab';
@@ -25,11 +26,7 @@ interface Props {
 }
 
 export default function CareerModal({ carrera, onClose, initiallyVisible = false }: Props) {
-  const [visible, setVisible] = useState(initiallyVisible);
-  const [closing, setClosing] = useState(false);
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const openerRef = useRef<HTMLElement | null>(null);
+  const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose, initiallyVisible });
   const { prefix, cleanName } = getCareerPrefix(carrera);
   const [precioAbierto, setPrecioAbierto] = useState(false);
   const conPrecio = carreraConPrecio(carrera);
@@ -53,60 +50,6 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
       : 'rgba(0,199,177,0.3)';
   const panelBg = isIA ? '#101820' : '#1c2f31';
   const headerBg = isIA ? '#0a1219' : isTeclabCourse ? '#1d1608' : '#051a1a';
-
-  useEffect(() => {
-    openerRef.current = document.activeElement as HTMLElement | null;
-    const inerted: Element[] = [];
-    let current: Element | null = dialogRef.current;
-    while (current?.parentElement) {
-      for (const sibling of Array.from(current.parentElement.children)) {
-        if (sibling !== current && !sibling.hasAttribute('inert')) {
-          sibling.setAttribute('inert', '');
-          inerted.push(sibling);
-        }
-      }
-      current = current.parentElement;
-    }
-    requestAnimationFrame(() => setVisible(true));
-    closeBtnRef.current?.focus();
-    return () => {
-      inerted.forEach((element) => element.removeAttribute('inert'));
-      openerRef.current?.focus();
-    };
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setClosing(true);
-    setTimeout(() => {
-      onClose();
-    }, 300);
-  }, [onClose]);
-
-  // Close on Escape
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const items = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      ) ?? []);
-      if (!items.length) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [handleClose]);
 
   // WhatsApp link
   const waMsg = mensajeWhatsAppInfo(carrera);
@@ -153,32 +96,18 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
   const iaModulos = isIA && carrera.plan_estudios ? parsePlanModulos(carrera.plan_estudios) : null;
 
   return (
-    <div
-      ref={dialogRef}
-      className="fixed inset-0 z-[5000] flex items-center justify-center p-4 overflow-y-auto overscroll-contain"
-      role="dialog"
-      aria-modal="true"
+    <ModalShell
+      dialogRef={dialogRef}
+      abierto={abierto}
+      onCerrar={handleClose}
       aria-labelledby="modal-title"
+      colorVelo={isIA ? 'rgba(5,15,25,0.85)' : 'rgba(1,26,20,0.8)'}
+      style={{
+        background: panelBg,
+        border: `2px solid ${accent}`,
+        boxShadow: `0 0 50px ${accentGlow}`,
+      }}
     >
-      <FlechasDeScroll raiz={dialogRef} />
-      {/* Backdrop */}
-      <div
-        className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300
-          ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
-        style={{ background: isIA ? 'rgba(5,15,25,0.85)' : 'rgba(1,26,20,0.8)' }}
-        onClick={handleClose}
-      />
-
-      {/* Panel */}
-      <div
-        className="relative z-10 rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
-          h-[88dvh] sm:h-[92vh] max-h-[88dvh] sm:max-h-[92vh] overflow-hidden flex flex-col"
-        style={{
-          background: panelBg,
-          border: `2px solid ${accent}`,
-          boxShadow: `0 0 50px ${accentGlow}`,
-        }}
-      >
         {/* Header */}
         <div
           className={`flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b ${isIA ? 'ia-modal-header' : ''}`}
@@ -493,7 +422,6 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }

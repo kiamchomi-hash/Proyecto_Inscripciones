@@ -1,6 +1,7 @@
 'use client';
 
-import FlechasDeScroll from './flechas-de-scroll';
+import ModalShell from './modal-shell';
+import { useFocoModal } from './use-foco-modal';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
 import { sanitizeContent } from '@/lib/sanitize-content';
@@ -812,37 +813,12 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
   const slides = useMemo(() => slidesDelCarrusel(carrera.slides), [carrera.slides]);
 
   const [slideIdx, setSlideIdx] = useState(0);
-  const [visible, setVisible] = useState(initiallyVisible);
-  const [closing, setClosing] = useState(false);
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const openerRef = useRef<HTMLElement | null>(null);
+  const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose, initiallyVisible });
   const conPrecio = carreraConPrecio(carrera);
   const [pedidoPrecio, setPedidoPrecio] = useState(0);
   const verPrecio = () => { setSlideIdx(slides.length); setPedidoPrecio(n => n + 1); };
   const totalSlides = slides.length + (conPrecio ? 1 : 0);
   const { cleanName } = getCleanName(carrera);
-
-  useEffect(() => {
-    openerRef.current = document.activeElement as HTMLElement | null;
-    const inerted: Element[] = [];
-    let current: Element | null = dialogRef.current;
-    while (current?.parentElement) {
-      for (const sibling of Array.from(current.parentElement.children)) {
-        if (sibling !== current && !sibling.hasAttribute('inert')) {
-          sibling.setAttribute('inert', '');
-          inerted.push(sibling);
-        }
-      }
-      current = current.parentElement;
-    }
-    requestAnimationFrame(() => setVisible(true));
-    closeBtnRef.current?.focus();
-    return () => {
-      inerted.forEach((element) => element.removeAttribute('inert'));
-      openerRef.current?.focus();
-    };
-  }, []);
 
   // La carrera viaja con el clic: abajo el formulario la elige sola, en vez
   // de dejar al lead buscando lo que ya eligio.
@@ -852,36 +828,6 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
     setTimeout(() => { document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' }); }, 350);
   };
 
-  const handleClose = useCallback(() => {
-    setClosing(true);
-    setTimeout(onClose, 300);
-  }, [onClose]);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const items = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      ) ?? []);
-      if (!items.length) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [handleClose]);
-
   const waMsg = mensajeWhatsAppInfo(carrera);
   const waHref = `https://wa.me/5491132973801?text=${encodeURIComponent(waMsg)}`;
   const shareUrl = typeof window !== 'undefined'
@@ -890,20 +836,14 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
   const { compartir, estado: estadoCompartir } = useCompartir(shareUrl, carrera.nombre);
 
   return (
-    <div
-      ref={dialogRef}
-      className="fixed inset-0 z-[5000] flex items-center justify-center p-4 overflow-y-auto overscroll-contain"
-      role="dialog"
-      aria-modal="true"
+    <ModalShell
+      dialogRef={dialogRef}
+      abierto={abierto}
+      onCerrar={handleClose}
       aria-label={`Detalles de ${carrera.nombre}`}
+      colorVelo="rgba(1,26,20,0.8)"
+      className="bg-[#1c2f31] border-2 border-[#00c7b1] shadow-[0_0_50px_rgba(0,199,177,0.3)]"
     >
-      <FlechasDeScroll raiz={dialogRef} />
-      <div className={`absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`} onClick={handleClose} />
-
-      {/* Panel */}
-      <div className={`relative z-10 bg-[#1c2f31] border-2 border-[#00c7b1] rounded-2xl w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl md:w-[min(64rem,75vw)]
-        h-[90vh] sm:h-[92vh] max-h-[90vh] sm:max-h-[92vh] overflow-hidden flex flex-col
-        shadow-[0_0_50px_rgba(0,199,177,0.3)]`}>
 
         {/* Header */}
         <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
@@ -990,8 +930,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }
 
