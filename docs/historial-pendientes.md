@@ -5,6 +5,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 [Volver a los pendientes](../PENDIENTES.md).
 
 
+## Siglo 21 y Teclab — cabecera de tres fichas, 17/10/2026
+
+- [x] **Pulir el FAQ y revisar la cabecera de Procurador, Gestión Contable y Seguros**. El FAQ ya estaba pulido desde el 07/10/2026 (T7). La cabecera se contrastó con la `descripcion` previa al 05/10/2026 y se corrigieron tres cosas. Seguros prometía la matrícula como automática; ahora dice que se pide ante la SSN sin rendir el examen (Res. SSN 253/2019 y [trámite oficial](https://www.argentina.gob.ar/servicio/obtener-matricula-de-productores-asesores-de-seguros-aspirantes)). Gestión Contable presentaba como título el certificado intermedio. Procurador había perdido «junto a abogados» y «tribunales». En Teclab sólo se reemplazó la primera oración, que es la que muestra el hero, y se conservó la salida laboral. Aplicado con `cau_editor` por el pooler, con precondición sobre el texto anterior; comparación posterior sin otros campos cambiados y hero público verificado en las tres fichas. [Tarea](../odd/tasks/seo-tres-fichas.md).
+
 ## Siglo 21 — cinco altas de la home, 17/10/2026
 
 - [x] **Publicar las cinco altas de carreras de la home**: Antropología Organizacional, Administración Hotelera, Ambiente y Energías Renovables, Hidrocarburos y Geociencias y Administración de Infraestructura Tecnológica. Cargadas con `cau_editor` y la redirección vieja de Hotelera retirada (`bb1ecec`); el 17/10/2026 las cinco fichas y sus preinscripciones responden 200 y se revisaron capturas de escritorio y móvil. [Tarea](../odd/tasks/altas-cinco-carreras-home-siglo21.md).
