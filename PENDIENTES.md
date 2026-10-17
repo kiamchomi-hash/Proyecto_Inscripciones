@@ -28,6 +28,7 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 - [ ] **Corregir las páginas de Computación**.
 - [ ] **15. Permitir que una pregunta del buscador de carreras se responda combinando varias respuestas**, separadas por párrafos.
 - [ ] **9. Dar imágenes a todas las carreras**.
+- [ ] **Imagen OG propia por carrera**. Hoy las fichas comparten la genérica de su categoría: por ejemplo, [Tecnicatura Superior en Seguros](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-seguros) usa `/imagenes/og/default-teclab-gestion.jpg` (verificado el 17/10/2026).
 - [ ] **1. Incorporar más imágenes de personas**.
 - [ ] **6. Mejorar con IA las imágenes de algunos modales de carreras**.
 - [ ] **2. Mejorar las páginas de clases y crear sus folletos e imágenes**.
