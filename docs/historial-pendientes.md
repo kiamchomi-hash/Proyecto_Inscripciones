@@ -5,6 +5,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 [Volver a los pendientes](../PENDIENTES.md).
 
 
+## Siglo 21 — cinco altas de la home, 17/10/2026
+
+- [x] **Publicar las cinco altas de carreras de la home**: Antropología Organizacional, Administración Hotelera, Ambiente y Energías Renovables, Hidrocarburos y Geociencias y Administración de Infraestructura Tecnológica. Cargadas con `cau_editor` y la redirección vieja de Hotelera retirada (`bb1ecec`); el 17/10/2026 las cinco fichas y sus preinscripciones responden 200 y se revisaron capturas de escritorio y móvil. [Tarea](../odd/tasks/altas-cinco-carreras-home-siglo21.md).
+
 ## Teclab — procesos de preinscripción, 17/10/2026
 
 - [x] **Reunir en un archivo local todos los procesos de preinscripción de Teclab**. Armado en `carreras/teclab/procesos-preinscripcion.md` (gitignorado): 15 secciones con fuente por dato, 6 contradicciones entre capacitaciones, bot y portal, y 12 huecos abiertos. Además, modo demo de formularios de sólo desarrollo (`NEXT_PUBLIC_FORMULARIOS_DEMO=1`) para recorrer el frontend de la preinscripción sin captcha y sin escribir (`41c942e`). [Tarea](../odd/tasks/modo-demo-formularios.md).

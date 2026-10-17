@@ -16,7 +16,6 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ## 5. Siglo 21
 
-- [ ] **Publicar las cinco altas de carreras de la home** (`altas-cinco-carreras-home-siglo21` T2): payloads preparados; falta la transacción remota, comprobar las cinco páginas y las capturas.
 - [ ] **Pulir el FAQ de Procurador, Gestión Contable y Seguros y revisar los textos de la cabecera** (`seo-tres-fichas` T5 y T6). Contrastar la introducción con la `descripcion` previa al 05/10/2026 (respaldo en `notas-locales/seo-tres-fichas/estado-previo.json`).
 - [ ] **3. Mejorar el mensaje de aranceles**.
 - [ ] **18. Revisar las aperturas de las carreras**, parcialmente hecho el 07/10/2026. Verificados los ingresos nominales de marzo, mayo, agosto y octubre a distancia, sujetos a cupo ([fuente oficial](https://21.edu.ar/grado-y-pregrado)). Falta el listado o la circular de aperturas efectivas por carrera, porque algunas se postergan al año siguiente si no reúnen inscriptos.

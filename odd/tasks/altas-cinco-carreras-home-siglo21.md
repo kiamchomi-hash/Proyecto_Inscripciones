@@ -11,7 +11,7 @@ Usuario autorizó consultar y cargar únicamente estas cinco en el Supabase de s
 ## Tareas
 
 - [x] T1: preparar payloads oficiales con tres slides, validar planes, slugs, títulos e imágenes.
-- [ ] T2: aplicar transacción limitada, comprobar cinco filas y páginas públicas, y entregar capturas escritorio/móvil.
+- [x] T2: aplicar transacción limitada, comprobar cinco filas y páginas públicas, y entregar capturas escritorio/móvil.
 - [x] T3: retirar la redirección antigua de Hotelera, publicar únicamente esa corrección y comprobar las cinco páginas directas.
 
 T2 aplicada en Supabase: COMMIT confirmado del SQL corregido, cinco payloads activos coincidentes (77, 63, 18, 240 y 241). Home y sitemap contienen las cinco. La comprobación inicial encontró cuatro páginas con 200 directo y Hotelera con 301 a la home por next.config.ts. La corrección aislada de Hotelera fue publicada en el commit bb1ececaa3abd5ab128c42dd3ffe40f18969b99f y la página responde 200 directo. Capturas pendientes; no se repite la carga SQL.
@@ -70,3 +70,7 @@ Se reemplazan únicamente los tres timestamps esperados del SQL y fixture por up
 SQL anterior fallido SHA256 7185d63735d6ee451fb5280428b1b65311e42992a42d10ddbcf4f50691d4768b se conserva como evidencia histórica. Candidato corregido SQL SHA256 908ceeb9649ffcbe0c64d1b71f32dc122bd4f1512068e2bef2721add8429d60f; fixture SHA256 aaae4187c1f3fab235d3b3b2a5566908b1cd43fb4b2b67e0bb745a012eb0bc3e. Semántica fuera de baseline idéntica, comprobada normalizando sólo esas tres fechas; SHA256 del payload público serializado con claves ordenadas 445107e7aafb37fd464673d96fea0d612426b80e7e4a27c7a6e0fcf21676af8d.
 
 Verificación de corrección: npm run check aprobado, lint 0 errores/27 avisos fuera alcance, typecheck aprobado, 274/274 tests sin skips; git diff --check de cinco superficies aprobado. Nueva evaluación y autorización de aplicación quedan a cargo del padre; no se aplicó el SQL corregido.
+
+### Cierre de T2, 17/10/2026
+
+Comprobación en producción: las cinco fichas y sus `/inscripcion` responden 200 directo con su `<title>`; la tecnicatura de Hidrocarburos (ID97) sigue publicada. Capturas de escritorio y móvil tomadas con `npm run capturas -- --viewport` (screenshots/20261017-0750, fuera de git). Observación sin corregir: en móvil, las fichas con el banner genérico de reserva muestran recortado el texto que trae la imagen.
