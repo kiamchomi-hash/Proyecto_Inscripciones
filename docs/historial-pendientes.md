@@ -5,6 +5,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 [Volver a los pendientes](../PENDIENTES.md).
 
 
+## Teclab — variables de entorno, 16/10/2026
+
+- [x] **Completar `.env.example` con las variables de mail** (`mail-precio-teclab` T3). Pegadas por el usuario el 16/10/2026: `SMTP2GO_API_KEY` y, de paso, las tres del robot (`ROBOT_SECRET`, `ROBOT_GITHUB_TOKEN`, `ROBOT_GITHUB_REPO`), que faltaban desde T4a. [Tarea](../odd/tasks/mail-precio-teclab.md).
+
 ## Comercial — financiación de Teclab, 17/10/2026
 
 - [x] **Corregir la financiación de Teclab publicada y automatizar su relevamiento mensual**. Relevamiento limpio del Simulador de Precios del Portal Administrativo: Naranja X tiene 6 cuotas sin interés y Plan Z; Sucrédito, sólo 3 cuotas; Visa y Mastercard de Galicia, Nación, Santander, BBVA y Macro con la tasa preferencial. Bot, buscador y modal del sitio corregidos; timer mensual instalado (próxima corrida 01/11/2026). [Tarea](../odd/tasks/relevamiento-financiacion-teclab.md).

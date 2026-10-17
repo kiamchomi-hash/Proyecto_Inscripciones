@@ -27,8 +27,8 @@ El mail usa el diseño ya aprobado el 02/10 en la sesión «Pendientes que afect
 ## Tareas
 
 - [x] T1. Armado puro del mail (asunto, HTML y texto) con test. Ruta: delegada (writer).
-- [x] T2. Envío por SMTP2GO desde `/api/formularios`, después de responder (`after()`), sin cambiar la respuesta ni tumbarla si falla; sin clave configurada no manda y lo registra. Tests. Ruta: delegada (mismo writer).
-- [ ] T3. Documentación (falta sólo `.env.example`): `.env.example`, `docs/variables-de-entorno.md`, `docs/formularios-por-casa.md`. Ruta: delegada (mismo writer).
+- [x] T2. Envío por SMTP2GO desde `/api/formularios`, después de responder (`after()`), sin cambiar la respuesta ni tumbarla si falla; sin clave configurada no manda y lo registra. Tests. Ruta: delegada (mismo writer). **Cerrada el 16/10/2026:** el usuario pegó en `.env.example` `SMTP2GO_API_KEY` y las tres `ROBOT_*` (los permisos no dejan leer ese archivo).
+- [x] T3. Documentación (falta sólo `.env.example`): `.env.example`, `docs/variables-de-entorno.md`, `docs/formularios-por-casa.md`. Ruta: delegada (mismo writer).
 - [x] T5. Newsletter: a quien se suscribe, un mail con la misma plantilla cada X días (no por inicio de clases). Tarea aparte; falta definir X y la baja. Ruta: pendiente. **Cerrada el 16/10/2026:** cron diario `GET /api/newsletter`, un mail cada 7 días con el precio vigente, baja en `/newsletter/baja` y `List-Unsubscribe` de un clic (ver `docs/formularios-por-casa.md`, *Newsletter de Teclab*).
 - [x] T4. El usuario crea la clave de API en SMTP2GO y la carga en Vercel como `SMTP2GO_API_KEY` (Sensitive), y después redeploy. Ruta: usuario. **Cerrada el 16/10/2026:** `SMTP2GO_API_KEY` está en Vercel (Production, Secret) desde el 04/10/2026 y los mails salen (`46cc8fc`).
 

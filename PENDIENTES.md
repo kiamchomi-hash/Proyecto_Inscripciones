@@ -18,7 +18,6 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ### Web y formularios
 
-- [ ] **Completar `.env.example`** con las variables de mail (`mail-precio-teclab` T3).
 
 ### Carreras
 
