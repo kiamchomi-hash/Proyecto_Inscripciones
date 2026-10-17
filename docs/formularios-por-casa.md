@@ -166,6 +166,21 @@ Turnstile se verifica en `lib/turnstile.ts`, que además compara el `hostname` q
 
 El JSON mal formado y los sobres nulos, arrays o sin discriminadores válidos devuelven 400 antes de consultar captcha o base. `tests/formularios-api.test.mjs` ejecuta el handler con dependencias simuladas y cubre sobre inválido, captcha rechazado, cuota agotada, error de escritura, éxito y aislamiento del modo local.
 
+## Modo demo (sólo desarrollo)
+
+Para recorrer en local todo el frontend de la preinscripción («Ver precio», la preinscripción, «¿Querés gestionar tu inscripción?» con «Inscribirme», la autoinscripción directa y «¡Listo!») sin resolver el captcha y sin escribir nada:
+
+1. Sumar `NEXT_PUBLIC_FORMULARIOS_DEMO=1` a `.env.local`.
+2. Levantar `npm run dev` (reiniciarlo si ya estaba corriendo: las `NEXT_PUBLIC_` se leen al arrancar).
+
+El chequeo vive en `lib/formularios-demo.ts` y exige además `NODE_ENV=development`: en producción la bandera no cambia nada aunque esté en `1`. Con el modo activo:
+
+- `components/turnstile-widget.tsx` no carga Cloudflare (aunque haya site key), no pinta nada y entrega el token `demo`.
+- `POST /api/formularios` valida el sobre y el payload igual que en real (lo inválido sigue dando 400) y responde 201 con la misma forma, sin tocar la base, la cuota, Turnstile, SMTP2GO, HubSpot, el robot ni el newsletter. Deja un `console.info` de una línea por envío, sin datos de la persona.
+- «Ver precio» y la preinscripción de Teclab devuelven un precio ficticio, fijo y rotulado «(demo)», vigente por 30 días; no se lee `precios_privados`. La preinscripción de Teclab con mail válido trae además un `pase` de demo, así que «Inscribirme» sigue sin otro captcha. El resto de los envíos devuelve sólo `{ ok: true }`.
+- La casa sale de lo que manda el navegador, no de la base: el modo demo no verifica la carrera.
+
+Queda fuera el enlace personalizado `/inscripcion/<código>`: su página lee la base con la service role. `tests/formularios-demo.test.mjs` cubre el 201 por cada `kind` sin llamadas a Supabase ni a la red, el 400 de los payloads inválidos y que fuera de desarrollo todo siga igual.
 
 ## Siglo 21: precios 2027 y preinscripción
 

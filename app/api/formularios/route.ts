@@ -82,6 +82,14 @@ function camposAceptados(casa: CasaId | null, modo: Modo | null): CampoId[] {
 }
 
 async function insertConsulta(payload: JsonRecord) {
+  return createSupabaseAdmin().from('consultas').insert(filaConsulta(payload));
+}
+
+/**
+ * La fila de la consulta, validada. Un contacto inválido lanza `TypeError`
+ * (400). La usa también el modo demo, que valida igual y no escribe.
+ */
+function filaConsulta(payload: JsonRecord): TablesInsert<'consultas'> {
   const email = text(payload.email, 254);
   const telefono = text(payload.telefono, 30);
   if ((!email && !telefono) || (email && !EMAIL.test(email)) || (telefono && !PHONE.test(telefono))) {
@@ -109,8 +117,7 @@ async function insertConsulta(payload: JsonRecord) {
   }
 
   completarBooleanos(fila, aceptados);
-
-  return createSupabaseAdmin().from('consultas').insert(fila);
+  return fila;
 }
 
 /** Mantiene unidos control, columna y conversión antes de escribir en la fila. */
@@ -140,26 +147,36 @@ function completarBooleanos(fila: TablesInsert<'consultas'>, aceptados: readonly
 }
 
 async function insertFaq(payload: JsonRecord) {
+  return createSupabaseAdmin().from('faq_preguntas').insert(filaFaq(payload));
+}
+
+/** La pregunta validada; inválida lanza `TypeError`. La usa también el modo demo. */
+function filaFaq(payload: JsonRecord): TablesInsert<'faq_preguntas'> {
   const titulo = text(payload.titulo, 120);
   const contacto = text(payload.contacto, 200);
   const modo = payload.modo === 'privada' ? 'privada' : 'publica';
   if (titulo.length < 5 || !contacto) throw new TypeError('Pregunta inválida');
 
-  return createSupabaseAdmin().from('faq_preguntas').insert({
+  return {
     titulo,
     descripcion: nullableText(payload.descripcion, 500),
     modo,
     contacto,
     nombre_contacto: modo === 'privada' ? nullableText(payload.nombre_contacto, 80) : null,
-  });
+  };
 }
 
 async function insertClase(payload: JsonRecord) {
+  return createSupabaseAdmin().from('solicitudes_clase').insert(filasClase(payload));
+}
+
+/** Las filas de la solicitud, validadas; inválidas lanzan `TypeError`. La usa también el modo demo. */
+function filasClase(payload: JsonRecord): TablesInsert<'solicitudes_clase'>[] {
   if (!Array.isArray(payload.rows) || payload.rows.length < 1 || payload.rows.length > 7) {
     throw new TypeError('Solicitud inválida');
   }
 
-  const rows = payload.rows.map((raw) => {
+  return payload.rows.map((raw) => {
     if (!esRegistro(raw)) throw new TypeError('Solicitud inválida');
     const row = raw;
     const materiaId = text(row.materia_id, 36);
@@ -184,8 +201,6 @@ async function insertClase(payload: JsonRecord) {
       bloqueo_semanal: row.bloqueo_semanal === true,
     };
   });
-
-  return createSupabaseAdmin().from('solicitudes_clase').insert(rows);
 }
 
 type ClienteAdmin = ReturnType<typeof createSupabaseAdmin>;
@@ -282,6 +297,15 @@ async function precioDePreinscripcion(payload: JsonRecord) {
  * tests de los otros envíos cargan el endpoint sin él.
  */
 const modPase = () => import('@/lib/pase-autoinscripcion');
+
+/**
+ * El helper del modo demo, igual que el del pase, se importa sólo con la
+ * bandera puesta: los tests de los otros envíos cargan el endpoint sin él. Si
+ * la bandera vale o no (sólo en desarrollo) lo decide el helper, no este
+ * atajo.
+ */
+const modDemo = () =>
+  process.env.NEXT_PUBLIC_FORMULARIOS_DEMO === '1' ? import('@/lib/formularios-demo') : null;
 
 /**
  * El pase que deja a la preinscripción de Teclab seguir a «Inscribirme» sin un
@@ -650,6 +674,67 @@ function despacharRobot(consultaId: number) {
 
 const ENLACE_INVALIDO = 'El enlace ya no es válido';
 
+type PrecioDemo = Extract<ResultadoPrecio, { estado: 'vigente' }>;
+
+/**
+ * El precio del modo demo: ficticio, fijo y rotulado como de demo, para que
+ * nadie lo confunda con uno real. No lee `precios_privados`. Lleva un
+ * bimestre para que se vea la misma aclaración de cobertura que en Teclab, y
+ * vence dentro de 30 días para que siempre esté vigente.
+ */
+function precioDemo(): PrecioDemo {
+  const vence = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  return {
+    estado: 'vigente',
+    precio: {
+      conceptos: [
+        { concepto: 'Matrícula (demo)', monto: '$ 10.000,00', descuento: 50 },
+        { concepto: 'Primer bimestre (demo)', monto: '$ 20.000,00', descuento: 20 },
+      ],
+      total: '$ 30.000,00',
+      nota: 'Precio de demostración: no es un precio real.',
+      vigenteHasta: fechaArgentina(vence),
+    },
+  };
+}
+
+/**
+ * Modo demo (sólo desarrollo, ver `lib/formularios-demo.ts`): valida el
+ * payload con los mismos validadores que el envío real, así un payload
+ * inválido sigue dando 400, y responde con la misma forma, sin tocar la base,
+ * la cuota, Turnstile, SMTP2GO, HubSpot ni el robot. La casa se toma de lo que
+ * manda el navegador: en real se verifica contra la base, que acá no se lee.
+ */
+function respuestaDemo(kind: string, payload: JsonRecord, paseDemo: string): JsonRecord {
+  switch (kind) {
+    case 'consulta': {
+      filaConsulta(payload);
+      // Como en real: precio y pase sólo en la preinscripción de Teclab, y el
+      // pase sólo con un mail válido, porque se ata a él.
+      if (payload.casa !== 'teclab' || payload.tipoFormulario !== 'preinscripcion' || !carreraIdDe(payload)) {
+        return { ok: true };
+      }
+      const conPase = EMAIL.test(text(payload.email, 254));
+      return { ok: true, ...precioDemo(), ...(conPase ? { pase: paseDemo } : {}) };
+    }
+    case 'faq':
+      filaFaq(payload);
+      return { ok: true };
+    case 'clase':
+      filasClase(payload);
+      return { ok: true };
+    case 'precio':
+      if (!validarPayloadPrecio(payload)) throw new TypeError('Datos inválidos');
+      return { ok: true, ...precioDemo() };
+    case 'autoinscripcion':
+      if (!validarPayloadAutoinscripcion(payload)) throw new TypeError('Datos inválidos');
+      return { ok: true };
+    default:
+      if (!validarPayloadEnlace(payload)) throw new TypeError('Datos inválidos');
+      return { ok: true };
+  }
+}
+
 /**
  * Autoinscripción desde el enlace que trae el aviso de Telegram
  * (`/inscripcion/<codigo>`). El navegador manda sólo el código: el legajo
@@ -740,6 +825,15 @@ export async function POST(request: NextRequest) {
 
     if (!['consulta', 'faq', 'clase', 'precio', 'autoinscripcion', 'enlace'].includes(kind) || !(token || pase) || !esRegistro(payload)) {
       return NextResponse.json({ error: 'Solicitud inválida' }, { status: 400 });
+    }
+
+    // Modo demo: antes del captcha y de la cuota, y nunca fuera de desarrollo.
+    // Un payload inválido lanza `TypeError` y sale por el 400 de abajo.
+    const demo = await modDemo();
+    if (demo?.formulariosDemoActivo()) {
+      const respuesta = respuestaDemo(kind, payload, demo.TOKEN_DEMO);
+      console.info(`[formularios] Envío de demo (${kind}): no se guardó ni se avisó nada`);
+      return NextResponse.json(respuesta, { status: 201 });
     }
 
     const captchaConfigured = Boolean(process.env.TURNSTILE_SECRET_KEY);

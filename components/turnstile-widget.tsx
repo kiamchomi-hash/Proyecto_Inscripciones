@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import IsotipoIA from '@/components/index/ia-isotipo';
+import formulariosDemoActivo, { TOKEN_DEMO } from '@/lib/formularios-demo';
 
 type TurnstileWidgetProps = {
   onVerify: (token: string) => void;
@@ -67,6 +68,10 @@ const ANCHO_MINIMO_FLEXIBLE = 300;
 
 export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21', invisible = false }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  // Modo demo (sólo desarrollo): no se carga Cloudflare aunque haya site key,
+  // y el token sale solo. No se pinta nada, así que tampoco hay lugar
+  // reservado que después salte.
+  const demo = formulariosDemoActivo();
   const containerRef = useRef<HTMLDivElement>(null);
   // Lo que se mide es el envoltorio y no el contenedor: en modo compacto el
   // envoltorio centra con flex y el contenedor se encoge al ancho del widget.
@@ -85,6 +90,10 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
   }, [onExpire, onVerify]);
 
   useEffect(() => {
+    if (demo) {
+      onVerifyRef.current(TOKEN_DEMO);
+      return;
+    }
     if (!sitekey) {
       if (process.env.NODE_ENV === 'development' &&
           process.env.NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL === '1') {
@@ -204,9 +213,9 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
         turnstileWindow.turnstile.remove(widgetId);
       }
     };
-  }, [sitekey, invisible]);
+  }, [demo, sitekey, invisible]);
 
-  if (!sitekey) return null;
+  if (demo || !sitekey) return null;
 
   // Invisible: el contenedor queda vacio y solo crece si Cloudflare tiene que
   // mostrar el desafio.
