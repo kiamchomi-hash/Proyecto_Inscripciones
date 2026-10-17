@@ -5,6 +5,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 [Volver a los pendientes](../PENDIENTES.md).
 
 
+## Siglo 21 — calendario de pagos, 17/10/2026
+
+- [x] **Imagen de calendario de pagos para mandar a los leads**. Aprobada por el usuario el 17/10/2026, para WhatsApp, en 1350×1080 y en 2x. Responde «¿Qué cubre mi pago?» con los doce meses pintados por bimestre, en siete vistas: anual, primer y segundo cuatrimestre, y una por bimestre de ingreso. No lleva la cantidad de materias de cada período: el usuario definió la pieza sin ese dato. Está en `contenidos/siglo21/aprobados/generales/whatsapp/`, con la fuente y la `ficha.md` en `2026-10-17-calendario-pagos/`; `contenidos/` está fuera de git.
+
 ## Siglo 21 — mensaje de aranceles, 17/10/2026
 
 - [x] **3. Mejorar el mensaje de aranceles**. En las 15 respuestas de precio del corpus del bot (`ventas/corpus/siglo21.json`, gitignorado) se reemplazó la advertencia «Ojo: ese total no es el de la carrera completa…» por «Este pago cubre sólo la matrícula y los bimestres detallados arriba. La matrícula se abona cada cuatrimestre, junto con los bimestres que vayas a cursar.», que vale tanto para quien entra al inicio como a mitad de cuatrimestre; en `cuotas`, sin desglose, dice «los bimestres de tu ingreso». `pago-anual` aclara que el año tiene dos cuatrimestres y responde «hay tres cuatrimestres» sin pisar a `ritmo`. Buscador y entrenador regenerados.
