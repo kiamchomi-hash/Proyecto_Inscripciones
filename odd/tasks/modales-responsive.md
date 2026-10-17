@@ -20,7 +20,7 @@ Los cuatro modales, `components/index/modales.css` y los archivos nuevos que hag
 
 ## Tareas
 - [x] T1: `ModalShell` compartido más el hook de foco. Un solo tamaño de panel (`min(92dvh, 52rem)`, un solo ancho, `container-type`), con los cuatro modales usándolo.
-- [ ] T2: el modal de Siglo 21 sin `vh` en la tipografía ni en los espacios (unidades del contenedor) y sin lecturas de `innerWidth`.
+- [x] T2: el modal de Siglo 21 sin `vh` en la tipografía ni en los espacios (unidades del contenedor) y sin lecturas de `innerWidth`.
 - [ ] T3: el de Teclab, con el reparto de tarjetas en tandas resuelto por CSS en lugar de `repartir`/`useTandas`.
 - [ ] T4: tokens para los tamaños de etiqueta, el tracking y el color de marca, que reemplacen los valores arbitrarios más repetidos.
 
@@ -31,3 +31,4 @@ Por tarea: `npm run typecheck`, `npm run lint` y `npm test`. Las 2 fallas previa
 
 ## Progreso
 - T1 (delegada): `ModalShell` y `useFocoModal` creados; los cuatro modales los usan (86 líneas agregadas y 321 borradas). Panel único `min(92dvh, 52rem, 100dvh - 2rem)` con `container-type: inline-size`. Medido: 375x667, 349x614; 812x375, 771x345; 1366x650, 845x598; sin scroll del velo en ninguno. typecheck y lint ok; npm test 506/507 (solo falla `siglo21-cierre`, ajena). `tests/carreras-faq` venía roto desde d1c7d28 (faltaba simular `./flechas-de-scroll`) y se arregló en esta tarea. `career-modal` (carreras sin slides) no se probó en el navegador: no se encontró una carrera visible que lo use.
+- T2 (delegada): el carrusel de Siglo 21 ya no lee `innerWidth` (usa `matchMedia` en efectos y clics; se borró `showFloatingNav`, que no se usaba) ni usa `vh`: la tipografía mide contra `--alto-tipo` y las fotos contra `--alto-modal`, las dos variables del panel. Se agregó un bloque `@media (max-height: 500px)` que compacta cabecera, navegación y pie. Medido a 812x375: foto de portada de 321x230 y sin scroll del velo. A 375x667, «5° Año» queda arriba del plan (11 px del borde). typecheck y lint ok; npm test 506/507 (solo falla `siglo21-cierre`).

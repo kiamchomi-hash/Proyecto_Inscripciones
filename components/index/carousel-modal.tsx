@@ -224,6 +224,11 @@ async function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
   doc.save(`Plan de Estudios - ${carreraNombre}.pdf`);
 }
 
+// El mismo corte que el `md:` de Tailwind. Se consulta en el momento (efecto o
+// clic), nunca durante el render: ahí no hay `window` en el servidor y el
+// resultado no seguiría un cambio de tamaño.
+const esEscritorio = () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches;
+
 // ── Plan panels: left=year buttons, right=content ──
 function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanEstudios['paginas']; carreraNombre: string; isVisible?: boolean }) {
   const requisito = paginas.flatMap(p => p.extras || []).find(e => e.titulo.toLowerCase().includes('requisito'));
@@ -233,7 +238,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
 
   useEffect(() => {
     // Solo en desktop (>= 768px) arranca en Plan Completo (-1)
-    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+    if (esEscritorio()) {
       setActive(-1);
     }
   }, []);
@@ -268,7 +273,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
       cuatGracePeriod.current = false;
       if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
       cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 5000);
-      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+      if (esEscritorio()) {
         setActive(-1);
       } else {
         setActive(0);
@@ -384,9 +389,6 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
   const hasNext = nextIdx >= 0 && nextIdx < panels.length;
   const nextPanel = hasNext ? panels[nextIdx] : null;
   const nextLabel = nextPanel ? nextPanel.año : null;
-
-  // Floating button: show "Volver al inicio" when at bottom, otherwise "Ver X"
-  const showFloatingNav = showAll || (typeof window !== 'undefined' && window.innerWidth < 768);
 
   // ── Cuatrimestre-level navigation (mobile only) ──
   const allCuatLabels = useMemo(() => panels.flatMap(p => p.cuatrimestres.map(c => c.label)), [panels]);
@@ -508,7 +510,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
           const isMobileActive = i === currentVisibleIdx;
           const label = panel.año;
           const handleClick = () => {
-            if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            if (!esEscritorio()) {
               scrollToPanel(i);
             } else {
               setActive(i);
@@ -601,8 +603,10 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
               acc.cuatAcc += panel.cuatrimestres.length;
               return acc;
             }, { elements: [], cuatAcc: 0 }).elements}
-            {/* Botón Volver al inicio para Mobile con margen inferior para el scroll */}
-            <div className="mt-12 mb-[30vh] flex justify-center">
+            {/* Botón Volver al inicio para Mobile. El margen de abajo deja lugar para
+                que el último año pueda subir hasta arriba al tocar "Ver X año"; es un
+                tercio del alto del panel, no de la ventana. */}
+            <div className="mt-12 mb-[calc(var(--alto-modal)*0.33)] flex justify-center">
               <button
                 onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#00c7b1]/10 border border-[#00c7b1]/30 text-[#00c7b1] font-bold uppercase tracking-widest hover:bg-[#00c7b1]/20 transition-all cursor-pointer group"
@@ -651,7 +655,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                 }, { elements: [], cuatAcc: 0 }).elements}
 
                 {/* Botón Volver al inicio para Desktop Plan Completo con margen inferior para el scroll */}
-                <div className="mt-12 mb-[30vh] flex justify-center">
+                <div className="mt-12 mb-[calc(var(--alto-modal)*0.33)] flex justify-center">
                   <button
                     onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
                     className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#00c7b1]/10 border border-[#00c7b1]/30 text-[#00c7b1] font-bold uppercase tracking-widest hover:bg-[#00c7b1]/20 transition-all cursor-pointer group"
@@ -846,7 +850,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
     >
 
         {/* Header */}
-        <div className="flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
+        <div className="s21-cabecera flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
           <div className="flex justify-between items-center gap-3">
             <h3 className={`text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0 ${slideIdx === 0 ? 'invisible' : ''}`}>
               {cleanName}
@@ -880,7 +884,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
         </div>
 
         {/* Carousel nav */}
-        <div className="flex-shrink-0 flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-4 bg-[#011a14] border-t border-[#00c7b1]/15">
+        <div className="s21-navegacion flex-shrink-0 flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-4 bg-[#011a14] border-t border-[#00c7b1]/15">
           <button onClick={() => setSlideIdx(i => Math.max(0, i - 1))} disabled={slideIdx === 0} aria-label="Slide anterior"
             className="flex items-center gap-1 sm:gap-2 text-[#00c7b1] text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded border border-[#00c7b1]/30 hover:bg-[#00c7b1]/10 disabled:opacity-30 disabled:pointer-events-none transition-all">
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
@@ -899,7 +903,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 border-t border-[#00c7b1]/20 bg-[#051a1a]">
+        <div className="s21-pie flex-shrink-0 border-t border-[#00c7b1]/20 bg-[#051a1a]">
           <div className="p-3 flex flex-wrap gap-2 items-center">
             <div className="order-1 sm:order-2 w-full sm:w-auto flex items-center gap-2 justify-end sm:flex-shrink-0">
               <a href={waHref} target="_blank" rel="noopener nofollow"
@@ -946,6 +950,10 @@ function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean, 
   }
 }
 
+// La portada escala con el panel y no con la ventana: el ancho en `cqi` (el
+// contenedor es `.modal-panel`) y el alto con `--alto-tipo`, que vale el alto
+// del panel salvo en pantallas bajas (ver modales.css). Los factores traducen
+// los `vh` de antes: el panel mide el 92% del alto, así que 2vh = 2.17%.
 function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePortada; carrera: Carrera }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
@@ -953,16 +961,16 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {/* Mobile: two zones - content (grows, centers children) + image/badges (fixed bottom) */}
         {/* Desktop: all sequential with justify-start */}
 
-        <div className="flex-shrink-0 flex items-center justify-between flex-wrap gap-x-[clamp(0.4rem,2vw,1rem)] gap-y-2 text-left w-full">
-          <div className="flex items-center gap-[clamp(0.6rem,2.2vw,1.2rem)]">
-            <img src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" className="h-[clamp(1.4rem,2.8vh,1.8rem)] w-auto rounded-sm block shadow-sm" />
-            <p className="text-[clamp(0.62rem,1.6vh,0.78rem)] font-black tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
+        <div className="flex-shrink-0 flex items-center justify-between flex-wrap gap-x-[clamp(0.4rem,2.2cqi,1rem)] gap-y-2 text-left w-full">
+          <div className="flex items-center gap-[clamp(0.6rem,2.4cqi,1.2rem)]">
+            <img src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" className="h-[clamp(1.4rem,calc(var(--alto-tipo)*0.0304),1.8rem)] w-auto rounded-sm block shadow-sm" />
+            <p className="text-[length:clamp(0.62rem,calc(var(--alto-tipo)*0.0174),0.78rem)] font-black tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
               <span>Nivel: {carrera.nivel}</span>
               <span className="block text-white">Duración: {carrera.duracion}</span>
             </p>
           </div>
           <div className="flex-shrink-0 flex items-center bg-[#00c7b1]/12 border border-[#00c7b1]/35 rounded px-2.5 py-1">
-            <span className="text-[clamp(0.55rem,1.6vw,0.72rem)] font-black text-white uppercase tracking-wider leading-none">
+            <span className="text-[clamp(0.55rem,1.75cqi,0.72rem)] font-black text-white uppercase tracking-wider leading-none">
               Modalidad: <span className="text-[#00c7b1]">Virtual</span>
             </span>
           </div>
@@ -971,7 +979,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         {/* Línea independiente para quedar pegada al header */}
         <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
 
-        <div className="flex-shrink-0 flex justify-start pt-3 md:pt-[clamp(0.5rem,2vh,1rem)] mt-0 md:mt-0 gap-2.5">
+        <div className="flex-shrink-0 flex justify-start pt-3 md:pt-[clamp(0.5rem,calc(var(--alto-tipo)*0.0217),1rem)] mt-0 md:mt-0 gap-2.5">
           {(() => { const { prefix, cleanName } = getCleanName(carrera);
             const cccMatch = cleanName.match(/\s*\(CCC\)\s*$/i);
             const displayName = cccMatch ? cleanName.replace(cccMatch[0], '') : cleanName;
@@ -979,8 +987,8 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
             <div className="flex min-w-0 gap-2.5">
               <div className="w-[3px] bg-[#00c7b1] rounded-sm flex-shrink-0 self-stretch" />
               <div className="min-w-0">
-                {prefix && <p className="text-[clamp(0.55rem,2vw,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-left">{prefix}</p>}
-                <h2 className={`font-black text-white leading-[1] md:leading-[1.05] uppercase tracking-tighter ${displayName.length > 40 ? 'text-[clamp(0.9rem,min(5vw,3vh),1.4rem)] md:text-[clamp(1.2rem,min(2.5vw,3vh),1.8rem)]' : displayName.length > 25 ? 'text-[clamp(1rem,min(6vw,4vh),1.7rem)] md:text-[clamp(1.4rem,min(3vw,4vh),2.2rem)]' : 'text-[clamp(1.2rem,min(7.5vw,5vh),2rem)] md:text-[clamp(1.8rem,min(3.5vw,5vh),3rem)]'}`}>{displayName.toUpperCase()}</h2>
+                {prefix && <p className="text-[clamp(0.55rem,2.2cqi,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-left">{prefix}</p>}
+                <h2 className={`font-black text-white leading-[1] md:leading-[1.05] uppercase tracking-tighter ${displayName.length > 40 ? 'text-[length:clamp(0.9rem,min(5.4cqi,calc(var(--alto-tipo)*0.0326)),1.4rem)] md:text-[length:clamp(1.2rem,min(2.6cqi,calc(var(--alto-tipo)*0.0326)),1.8rem)]' : displayName.length > 25 ? 'text-[length:clamp(1rem,min(6.5cqi,calc(var(--alto-tipo)*0.0435)),1.7rem)] md:text-[length:clamp(1.4rem,min(3.1cqi,calc(var(--alto-tipo)*0.0435)),2.2rem)]' : 'text-[length:clamp(1.2rem,min(8.2cqi,calc(var(--alto-tipo)*0.0543)),2rem)] md:text-[length:clamp(1.8rem,min(3.7cqi,calc(var(--alto-tipo)*0.0543)),3rem)]'}`}>{displayName.toUpperCase()}</h2>
                 {cccMatch && <p className="text-[0.6rem] md:text-xs font-bold text-[#7ca19b] uppercase tracking-widest mt-0.5">Ciclo de Complementación Curricular</p>}
               </div>
             </div>
@@ -988,7 +996,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         </div>
 
         {/* Mobile: banner bajo el título — foto mobile si existe, si no cover generado */}
-        <div className="md:hidden flex-shrink-0 relative w-full h-[22vh] rounded-xl overflow-hidden border border-[#00c7b1]/15 mt-3">
+        <div className="md:hidden flex-shrink-0 relative w-full h-[max(7rem,calc(var(--alto-modal)*0.24))] rounded-xl overflow-hidden border border-[#00c7b1]/15 mt-3">
           {slide.imagen_mobile ? (
             <>
               <img
@@ -1003,9 +1011,9 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           )}
         </div>
 
-        <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,2vh,1rem)] md:gap-[clamp(0.25rem,1.5vh,0.5rem)]">
+        <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,calc(var(--alto-tipo)*0.0217),1rem)] md:gap-[clamp(0.25rem,calc(var(--alto-tipo)*0.0163),0.5rem)]">
           {slide.bullets.map((b, i) => (
-            <p key={i} className="text-[clamp(0.8rem,2.5vw,0.95rem)] md:text-[clamp(0.9rem,2vh,1.25rem)] text-[#e0f0ed] leading-snug font-medium">
+            <p key={i} className="text-[clamp(0.8rem,2.7cqi,0.95rem)] md:text-[length:clamp(0.9rem,calc(var(--alto-tipo)*0.0217),1.25rem)] text-[#e0f0ed] leading-snug font-medium">
               <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
             </p>
           ))}
@@ -1045,7 +1053,7 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
       {slide.imagen && (
-        <div className="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,18vh,12rem)] md:h-full">
+        <div className="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,calc(var(--alto-modal)*0.2),12rem)] md:h-full">
           <img src={encodeImagePath(slide.imagen!)} alt="Modalidad" className="absolute inset-0 w-full h-full object-cover object-[center_15%]" />
           <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent z-20 pointer-events-none" />
         </div>
@@ -1104,7 +1112,7 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
   const panels = flattenPaginas(slide.paginas);
 
   return (
-    <div className="h-full flex flex-col p-4 sm:p-6 gap-3 overflow-hidden" style={{
+    <div className="s21-plan h-full flex flex-col p-4 sm:p-6 gap-3 overflow-hidden" style={{
       background: 'linear-gradient(170deg, #041211 0%, #071d1b 30%, #082422 60%, #061716 100%)',
       backfaceVisibility: 'hidden',
       transform: 'translateZ(0)',
@@ -1153,7 +1161,7 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
     <div className="h-full flex flex-col md:flex-row overflow-hidden relative bg-[#011f17]">
       {/* Mobile top banner */}
       {imagen && (
-        <div className="md:hidden relative h-[24vh] shrink-0 overflow-hidden">
+        <div className="md:hidden relative h-[calc(var(--alto-modal)*0.26)] shrink-0 overflow-hidden">
           <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-center" />
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 55%, #011f17 100%)' }} />
         </div>
