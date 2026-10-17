@@ -27,7 +27,7 @@ El 16/10/2026 se relevó a mano el simulador del portal: no hay cuotas sin inter
 
 - [x] T1. Script de relevamiento, comparación y clasificación, con pruebas deterministas de la comparación (ruta: delegada; disparador: varios archivos no triviales y lectura previa del flujo de ventas).
 - [x] T2. Integración: regenerar, publicar y avisar por Telegram; timer mensual (ruta: delegada, mismo writer).
-- [ ] T3. Corrida real autorizada y verificación del resultado (ruta: inline).
+- [x] T3. Corrida real autorizada y verificación del resultado (ruta: inline). Cerrada el 17/10/2026, ver «Cierre».
 
 ## Verificación
 
@@ -73,3 +73,16 @@ Para retomar:
 2. Lograr una corrida `--sin-publicar` limpia (~20 min) y compararla con la fuente.
 3. Con esos datos: escribir la fuente, regenerar bot y buscador y publicarlo; ajustar `marcadoresDeFinanciacionTeclab`, el corpus (hoy hay un test que prohíbe «sin interés» en Teclab y deja de ser verdad para Naranja X) y `components/formularios/financiacion-teclab.ts` con su test; commit y deploy.
 4. Instalar el timer mensual.
+
+### Avance fuera de la sesión original (16/10/2026, noche)
+
+- La lectura por `aria-owns` ya estaba completa. Se agregó en `relevarEnPortal` una espera a que los radios de forma de pago se estabilicen (aparecen de a uno y la primera lectura veía sólo «Tarjeta»).
+- Corrida real `--sin-publicar --solo-tarjetas "Naranja,Sucredito"` (el nombre en el portal es «Naranja», no «Naranja X»): Naranja → 6 cuotas 0,00% y Plan Z; Sucrédito → sólo 3 cuotas; suscripción con sus dos opciones de Efectivo ($ 770.733,48). Coincide con la verificación manual. Archivo: `ventas/fuentes/teclab/revision-financiacion/sin-publicar-2026-10-16T23-16-29-518Z.json`.
+- La corrida completa se lanzó y se detuvo a pedido del usuario, sin resultado. Sigue pendiente el paso 2 de «Para retomar».
+
+### Cierre (17/10/2026)
+
+- Faltaba otra carrera de tiempo: tras elegir un banco, la lista de Cuotas vieja se leía dos veces, parecía estable y quedaba atribuida al banco siguiente (BBVA y BESTCARD de Visa, Cocos y CencoPay de Mastercard cambiaban entre corridas; el primer banco de cada tarjeta a veces salía «sólo 1 pago»). Ahora espera la respuesta de `api.teclab.edu.ar`, comprueba que el campo Banco muestre el banco elegido y exige dos lecturas iguales separadas por 1,5 s. Cuatro pasadas de Visa y Mastercard después del cambio dieron exactamente lo mismo.
+- Adaptación a cuotas sin interés y Plan Z (writer delegado): marcadores del bot, corpus con variantes `requiere`/`ausente` sobre `tarjetasSinInteres`, sección de formas de pago del buscador y modal del sitio. Suite privada 495/495; sitio 489/489; lint sin errores; typecheck limpio.
+- Corrida real en modo normal: escribió la fuente, regeneró bot y buscador y publicó el buscador (salida 0). Resultado: 1 pago sin recargo con cualquier tarjeta; Naranja X en 6 cuotas sin interés o Plan Z; Visa y Mastercard de Galicia, Nación, Santander, BBVA y Macro al 6,15% (3c) y 12,48% (6c); el resto al 7,41% y 12,99%; Sucrédito sólo 3 cuotas; AMEX de Galicia, Patagonia, Macro y Reba sólo 1 pago. El modal del sitio coincide con esa fuente.
+- Timer `cau-financiacion-teclab` instalado y habilitado; próxima corrida 01/11/2026 10:00.

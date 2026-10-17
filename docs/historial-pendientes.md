@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+
+## Comercial — financiación de Teclab, 17/10/2026
+
+- [x] **Corregir la financiación de Teclab publicada y automatizar su relevamiento mensual**. Relevamiento limpio del Simulador de Precios del Portal Administrativo: Naranja X tiene 6 cuotas sin interés y Plan Z; Sucrédito, sólo 3 cuotas; Visa y Mastercard de Galicia, Nación, Santander, BBVA y Macro con la tasa preferencial. Bot, buscador y modal del sitio corregidos; timer mensual instalado (próxima corrida 01/11/2026). [Tarea](../odd/tasks/relevamiento-financiacion-teclab.md).
 ## Comercial — 16/10/2026
 
 - [x] **Completar la actualización diaria y publicación de aranceles 2027 de Siglo 21**. Resuelto el 16/10/2026: `precios_privados` tiene 67 precios de Siglo 21 cargados por la corrida diaria, vigentes hasta el 16/10/2026. Desde `0688241` la vigilancia avisa por Telegram si los precios de una institución pasan más de un día vencidos. [Avance](../odd/tasks/siglo21-ver-precios-newsletter.md).
