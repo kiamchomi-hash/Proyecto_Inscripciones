@@ -16,7 +16,6 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ## 5. Siglo 21
 
-- [ ] **Autoinscripción de Siglo 21: postergada el 16/10/2026**. Hoy el formulario sólo registra la solicitud y la atención sigue a mano. Antes de retomarla, definir si se hace con un robot en el portal de Siglo 21 (como en Teclab) o con un enlace personalizado.
 - [ ] **Publicar las cinco altas de carreras de la home** (`altas-cinco-carreras-home-siglo21` T2): payloads preparados; falta la transacción remota, comprobar las cinco páginas y las capturas.
 - [ ] **Pulir el FAQ de Procurador, Gestión Contable y Seguros y revisar los textos de la cabecera** (`seo-tres-fichas` T5 y T6). Contrastar la introducción con la `descripcion` previa al 05/10/2026 (respaldo en `notas-locales/seo-tres-fichas/estado-previo.json`).
 - [ ] **3. Mejorar el mensaje de aranceles**.
@@ -102,6 +101,8 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
 
 - [ ] **Fichas de carreras de Teclab**: las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
+
+- [ ] **Autoinscripción de Siglo 21: postergada el 16/10/2026**; bajada al fondo el 17/10/2026. Hoy el formulario sólo registra la solicitud y la atención sigue a mano. Antes de retomarla, definir si se hace con un robot en el portal de Siglo 21 (como en Teclab) o con un enlace personalizado.
 
 ## Documentación de apoyo
 
