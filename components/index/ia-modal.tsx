@@ -1,5 +1,6 @@
 'use client';
 
+import FlechasDeScroll from './flechas-de-scroll';
 // Modal de las diplomaturas de Academia Identidad Argentina.
 // Mismo formato de slides que los modales de Siglo 21 (carousel-modal), pero con
 // el lenguaje visual de la Academia: fondo tinta #101820 con lavados
@@ -629,6 +630,7 @@ export default function IAModal({ carrera, onClose }: Props) {
       aria-modal="true"
       aria-label={`Detalles de ${carrera.nombre}`}
     >
+      <FlechasDeScroll raiz={dialogRef} />
       <div
         className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
         style={{ background: 'rgba(5,15,25,0.85)' }}

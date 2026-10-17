@@ -1,5 +1,6 @@
 'use client';
 
+import FlechasDeScroll from './flechas-de-scroll';
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
@@ -161,6 +162,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
       aria-modal="true"
       aria-labelledby="modal-title"
     >
+      <FlechasDeScroll raiz={dialogRef} />
       {/* Backdrop */}
       <div
         className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300

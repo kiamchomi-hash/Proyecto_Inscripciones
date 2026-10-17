@@ -1,5 +1,6 @@
 'use client';
 
+import FlechasDeScroll from './flechas-de-scroll';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
 import { sanitizeContent } from '@/lib/sanitize-content';
@@ -574,7 +575,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
         </div>
 
         {/* Scrollable content */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10 pb-20 md:pb-10">
+        <div ref={scrollContainerRef} data-sin-flecha className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10 pb-20 md:pb-10">
           {/* Mobile: all panels with requisito on top */}
           <div className="md:hidden flex flex-col gap-2">
             {requisito && (<>
@@ -898,6 +899,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
       aria-modal="true"
       aria-label={`Detalles de ${carrera.nombre}`}
     >
+      <FlechasDeScroll raiz={dialogRef} />
       <div className={`absolute inset-0 bg-[#011a14]/80 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`} onClick={handleClose} />
 
       {/* Panel */}

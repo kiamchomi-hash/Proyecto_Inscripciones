@@ -1,5 +1,6 @@
 'use client';
 
+import FlechasDeScroll from './flechas-de-scroll';
 // Modal de las tecnicaturas de Teclab. Mismo formato de slides que el modal de
 // convenio (ia-modal), pero con el lenguaje visual del render de Remotion
 // (Desktop\Teclab Info\remotion-teclab-carreras): fondo tinta #071822, tarjetas
@@ -1170,6 +1171,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       aria-modal="true"
       aria-label={`Detalles de ${carrera.nombre}`}
     >
+      <FlechasDeScroll raiz={dialogRef} />
       <div
         className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
         style={{ background: 'rgba(3,10,16,0.86)' }}
