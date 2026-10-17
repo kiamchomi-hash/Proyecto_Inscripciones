@@ -21,7 +21,6 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ### Carreras
 
-- [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo). Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 - [ ] **Empezar a revisar nuevas carreras de Teclab**.
 - [ ] **Bloque 4 de carreras nuevas de Teclab**: cuando llegue su capacitación de admisión, darlas de alta como los bloques 2 y 3 (16/10/2026). [Detalle](odd/tasks/teclab-bloques-2-y-3.md).
 
@@ -111,6 +110,8 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
 - [ ] **Robot de autoinscripción de Teclab: cierres que dependen del usuario** (bajado al fondo el 16/10/2026). El robot ya carga en producción (99000006 y 99000007). Falta: primer login de una cuenta nueva por `/payments/select` (99000003 a 99000005), pedir a Teclab la baja de las cargas 99000001 a 99000007, relevar el aviso que confirma «Enviar link de pago» con una carga autorizada y revisar el primer aviso real en `net._http_response` (`autoinscripcion-teclab` T4, T4c, T5 y T10). [Detalle](odd/tasks/autoinscripcion-teclab.md).
+
+- [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo). Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. Bajado al fondo el 16/10/2026: las carreras todavía no están validadas. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 
 ## Documentación de apoyo
 
