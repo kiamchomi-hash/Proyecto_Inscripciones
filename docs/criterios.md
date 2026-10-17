@@ -81,7 +81,10 @@ se veía recortado, con el texto cortado. No va como portada, ni como reserva,
 ni en ninguna pieza. Una carrera sin foto propia lleva una foto nueva en
 `public/imagenes/imagenes_carreras/<slug>.webp` (1200 px de ancho, sin texto
 encima), sacada de un banco libre como Unsplash o generada con IA (Gemini);
-las dos opciones valen. Un test de `tests/imagenes-prohibidas.test.mjs` falla
+las dos opciones valen. La gente de la foto tiene que parecerse al público
+del CAU, que es de Buenos Aires: rasgos locales, sin personas afro como
+protagonistas ni de fondo (17/10/2026: se descartaron por eso las primeras fotos de
+Antropología, Hotelera e Infraestructura). Un test de `tests/imagenes-prohibidas.test.mjs` falla
 si vuelve a aparecer en el código o en un payload nuevo.
 
 ### Las zonas vacías se llenan con gráfica, no con más texto
