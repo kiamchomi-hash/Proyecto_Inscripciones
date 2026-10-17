@@ -74,3 +74,7 @@ Verificación de corrección: npm run check aprobado, lint 0 errores/27 avisos f
 ### Cierre de T2, 17/10/2026
 
 Comprobación en producción: las cinco fichas y sus `/inscripcion` responden 200 directo con su `<title>`; la tecnicatura de Hidrocarburos (ID97) sigue publicada. Capturas de escritorio y móvil tomadas con `npm run capturas -- --viewport` (screenshots/20261017-0750, fuera de git). Observación sin corregir: en móvil, las fichas con el banner genérico de reserva muestran recortado el texto que trae la imagen.
+
+### Fotos propias, 17/10/2026
+
+A pedido del usuario se retiró `Header_1920x450-1.webp` (banner con texto y logo) de las cuatro portadas que lo usaban y de la reserva del código, que pasa a `imagenes_cau/edificio_siglo21_campus2.webp`. Antropología, Hotelera e Infraestructura llevan fotos libres de Unsplash (1573497701240, 1758519289714 y 1573166755916) en `imagenes_carreras/<slug>.webp`; Ambiente usa la foto propia que ya existía. Código y fotos en `532c16c` (push), después UPDATE de las cuatro portadas por el pooler con guarda de que no quede ninguna fila con el banner. Regla en `docs/criterios.md` y test `tests/imagenes-prohibidas.test.mjs` (RED sin el cambio, GREEN con él; check 499/499). Capturas en screenshots/20261017-0803.
