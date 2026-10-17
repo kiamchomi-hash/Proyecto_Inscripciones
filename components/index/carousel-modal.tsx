@@ -117,11 +117,11 @@ function PanelContent({ panel, showTitle, cuatStartIdx }: { panel: Panel; showTi
             {ci > 0 && (
               <div className="my-3 h-[2px] rounded-full md:hidden" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.35) 0%, rgba(0,199,177,0.08) 60%, transparent 100%)' }} />
             )}
-            <p className="text-[0.6rem] md:text-[0.75rem] font-bold uppercase tracking-[0.1em] mb-1 text-[#00c7b1]">{c.label}</p>
+            <p className="text-3xs md:text-[0.75rem] font-bold uppercase tracking-[0.1em] mb-1 text-s21">{c.label}</p>
             <div className="flex flex-col gap-0.5">
               {c.materias.map((m, mi) => (
                 <div key={mi} className="flex items-start gap-2">
-                  <span className="w-1 h-1 rounded-full mt-[0.45rem] md:mt-[0.55rem] flex-shrink-0 bg-[#00c7b1]/40" />
+                  <span className="w-1 h-1 rounded-full mt-[0.45rem] md:mt-[0.55rem] flex-shrink-0 bg-s21/40" />
                   <p className="text-[0.78rem] md:text-[0.95rem] text-[#c8d8d4] leading-relaxed">{m}</p>
                 </div>
               ))}
@@ -447,11 +447,11 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
   const nextCuatLabel = hasNextCuat ? allCuatLabels[nextCuatIdx] : null;
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row gap-0 min-h-0 overflow-hidden md:rounded-xl md:border md:border-[#00c7b1]/20" style={{
+    <div className="flex-1 flex flex-col md:flex-row gap-0 min-h-0 overflow-hidden md:rounded-xl md:border md:border-s21/20" style={{
       background: 'linear-gradient(160deg, rgba(18,46,46,0.4) 0%, rgba(10,30,28,0.6) 100%)',
     }}>
       {/* Year buttons — horizontal on mobile, vertical sidebar on desktop */}
-      <div className="flex-shrink-0 flex flex-row items-center md:items-stretch md:flex-col gap-1 md:gap-0.5 w-full max-w-full min-w-0 md:w-[160px] md:py-1.5 md:px-1.5 md:overflow-hidden md:border-r md:border-[#00c7b1]/12 px-1.5 py-1.5 overflow-x-auto md:overflow-x-hidden" style={{
+      <div className="flex-shrink-0 flex flex-row items-center md:items-stretch md:flex-col gap-1 md:gap-0.5 w-full max-w-full min-w-0 md:w-[160px] md:py-1.5 md:px-1.5 md:overflow-hidden md:border-r md:border-s21/12 px-1.5 py-1.5 overflow-x-auto md:overflow-x-hidden" style={{
         background: 'linear-gradient(180deg, rgba(1,42,31,0.35) 0%, rgba(6,28,26,0.5) 100%)',
       }}>
         {/* Ver plan completo — desktop only */}
@@ -486,8 +486,8 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
               border: '1px solid rgba(220,60,60,0.5)',
             }}
           >
-            <span className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-red-600 text-[0.5rem] font-black leading-none" style={{ background: '#e69b05' }}>!</span>
-            <span className="text-[0.55rem] leading-none font-bold uppercase tracking-wider whitespace-nowrap text-white">Requisitos</span>
+            <span className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-red-600 text-5xs font-black leading-none" style={{ background: '#e69b05' }}>!</span>
+            <span className="text-4xs leading-none font-bold uppercase tracking-wider whitespace-nowrap text-white">Requisitos</span>
           </button>
           {/* Desktop */}
           <button
@@ -498,8 +498,8 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
               border: '1px solid rgba(220,60,60,0.5)',
             }}
           >
-            <span className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-red-600 text-[0.5rem] font-black leading-none" style={{ background: '#e69b05' }}>!</span>
-            <span className="text-[0.6rem] font-bold uppercase tracking-[0.06em] whitespace-nowrap text-white">Requisitos</span>
+            <span className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-red-600 text-5xs font-black leading-none" style={{ background: '#e69b05' }}>!</span>
+            <span className="text-3xs font-bold uppercase tracking-[0.06em] whitespace-nowrap text-white">Requisitos</span>
           </button>
           <div className="hidden md:block mx-1.5 my-px h-px" style={{ background: 'linear-gradient(90deg, rgba(220,60,60,0.15) 0%, transparent 80%)' }} />
         </>)}
@@ -521,8 +521,8 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
               {/* Mobile button */}
               <button
                 onClick={handleClick}
-                className={`md:hidden px-3 py-2.5 min-h-[44px] rounded flex flex-1 items-center justify-center cursor-pointer transition-all duration-200 border border-[#00c7b1]/30 ${
-                  isMobileActive ? 'bg-[#00c7b1]/10 border-[#00c7b1]/60 shadow-[0_0_8px_rgba(0,199,177,0.2)]' : ''
+                className={`md:hidden px-3 py-2.5 min-h-[44px] rounded flex flex-1 items-center justify-center cursor-pointer transition-all duration-200 border border-s21/30 ${
+                  isMobileActive ? 'bg-s21/10 border-s21/60 shadow-[0_0_8px_rgba(0,199,177,0.2)]' : ''
                 }`}
                 style={isMobileActive ? {
                   background: 'linear-gradient(135deg, #008c7d, #006c5b)',
@@ -530,8 +530,8 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                   boxShadow: '0 2px 8px rgba(0,199,177,0.2)',
                 } : undefined}
               >
-                <span className={`text-[0.55rem] leading-none font-bold uppercase tracking-wider whitespace-nowrap ${
-                  isMobileActive ? 'text-white' : 'text-[#00c7b1]'
+                <span className={`text-4xs leading-none font-bold uppercase tracking-wider whitespace-nowrap ${
+                  isMobileActive ? 'text-white' : 'text-s21'
                 }`}>
                   {label}
                 </span>
@@ -540,7 +540,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
               <button
                 onClick={handleClick}
                 className={`hidden md:block px-2 py-1.5 rounded-lg text-center cursor-pointer transition-all duration-200 flex-shrink-0 ${
-                  isDesktopActive ? '' : 'border border-[#00c7b1]/30 hover:bg-[#00c7b1]/15 hover:border-[#00c7b1]/50'
+                  isDesktopActive ? '' : 'border border-s21/30 hover:bg-s21/15 hover:border-s21/50'
                 }`}
                 style={isDesktopActive ? {
                   background: 'linear-gradient(135deg, #008c7d, #006c5b)',
@@ -548,8 +548,8 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                   boxShadow: '0 2px 10px rgba(0,199,177,0.2)',
                 } : undefined}
               >
-                <span className={`text-[0.6rem] font-bold uppercase tracking-[0.06em] whitespace-nowrap ${
-                  isDesktopActive ? 'text-white' : 'text-[#00c7b1]'
+                <span className={`text-3xs font-bold uppercase tracking-[0.06em] whitespace-nowrap ${
+                  isDesktopActive ? 'text-white' : 'text-s21'
                 }`}>
                   {label}
                 </span>
@@ -562,7 +562,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
       </div>
 
       {/* Right: content area */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-xl md:rounded-none border border-[#00c7b1]/15 md:border-0 relative" style={{
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-xl md:rounded-none border border-s21/15 md:border-0 relative" style={{
         background: 'linear-gradient(160deg, rgba(18,46,46,0.3) 0%, rgba(10,30,28,0.5) 100%)',
       }}>
         <div className="absolute inset-0 pointer-events-none" style={{
@@ -573,7 +573,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
           background: 'linear-gradient(135deg, rgba(1,42,31,0.5) 0%, rgba(13,48,64,0.3) 100%)',
           borderBottom: '1px solid rgba(0,199,177,0.12)',
         }}>
-          <p className="text-sm font-extrabold text-white uppercase tracking-[0.08em]">{activeLabel}</p>
+          <p className="text-sm font-extrabold text-white uppercase tracking-amplio">{activeLabel}</p>
           <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.15) 0%, transparent 80%)' }} />
         </div>
 
@@ -585,9 +585,9 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
               <div data-requisito className="flex items-start gap-2.5 py-2.5 rounded-lg border border-[#e69b05]/40 px-2" style={{ background: 'rgba(230,155,5,0.08)' }}>
                 <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-red-600 text-xs font-black leading-none" style={{ background: '#e69b05' }}>!</span>
                 <div className="min-w-0">
-                  <p className="text-[0.6rem] font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
+                  <p className="text-3xs font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
                   {requisito.items.map((item, i) => (
-                    <p key={i} className="text-[0.65rem] text-[#e0d8c8] leading-snug">{item}</p>
+                    <p key={i} className="text-2xs text-[#e0d8c8] leading-snug">{item}</p>
                   ))}
                 </div>
               </div>
@@ -609,7 +609,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
             <div className="mt-12 mb-[calc(var(--alto-modal)*0.33)] flex justify-center">
               <button
                 onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#00c7b1]/10 border border-[#00c7b1]/30 text-[#00c7b1] font-bold uppercase tracking-widest hover:bg-[#00c7b1]/20 transition-all cursor-pointer group"
+                className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-s21/10 border border-s21/30 text-s21 font-bold uppercase tracking-widest hover:bg-s21/20 transition-all cursor-pointer group"
               >
                 <svg className="w-4 h-4 transition-transform group-hover:-translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
@@ -636,7 +636,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                   <div data-requisito className="flex items-start gap-2.5 py-2.5 rounded-lg border border-[#e69b05]/40 mb-3 px-2" style={{ background: 'rgba(230,155,5,0.08)' }}>
                     <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-red-600 text-xs font-black leading-none" style={{ background: '#e69b05' }}>!</span>
                     <div className="min-w-0">
-                      <p className="text-[0.65rem] font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
+                      <p className="text-2xs font-black uppercase tracking-widest text-[#e69b05] mb-0.5">Requisito obligatorio</p>
                       {requisito.items.map((item, i) => (
                         <p key={i} className="text-xs text-[#e0d8c8] leading-snug">{item}</p>
                       ))}
@@ -658,7 +658,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                 <div className="mt-12 mb-[calc(var(--alto-modal)*0.33)] flex justify-center">
                   <button
                     onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#00c7b1]/10 border border-[#00c7b1]/30 text-[#00c7b1] font-bold uppercase tracking-widest hover:bg-[#00c7b1]/20 transition-all cursor-pointer group"
+                    className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-s21/10 border border-s21/30 text-s21 font-bold uppercase tracking-widest hover:bg-s21/20 transition-all cursor-pointer group"
                   >
                     <svg className="w-4 h-4 transition-transform group-hover:-translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
@@ -706,7 +706,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
             }}
           >
             <span
-              className="text-[0.5rem] font-bold uppercase tracking-wider text-[#b4e8dd] whitespace-nowrap"
+              className="text-5xs font-bold uppercase tracking-wider text-[#b4e8dd] whitespace-nowrap"
               style={{
                 opacity: cuatBtnVisible ? 1 : 0,
                 maxWidth: cuatBtnVisible ? 160 : 0,
@@ -753,11 +753,11 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                 <svg className="w-3.5 h-3.5 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                 </svg>
-                <span className="text-[0.6rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Inicio</span>
+                <span className="text-3xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Inicio</span>
               </>
             ) : (
               <>
-                <span className="text-[0.6rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
+                <span className="text-3xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
                   Ver {nextLabel}
                 </span>
                 <svg className="w-3.5 h-3.5 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -789,11 +789,11 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                 <svg className="w-4 h-4 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                 </svg>
-                <span className="text-[0.65rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Volver al inicio</span>
+                <span className="text-2xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Volver al inicio</span>
               </>
             ) : (
               <>
-                <span className="text-[0.65rem] font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
+                <span className="text-2xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
                   Ver {nextLabel}
                 </span>
                 <svg className="w-4 h-4 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -846,11 +846,11 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
       onCerrar={handleClose}
       aria-label={`Detalles de ${carrera.nombre}`}
       colorVelo="rgba(1,26,20,0.8)"
-      className="bg-[#1c2f31] border-2 border-[#00c7b1] shadow-[0_0_50px_rgba(0,199,177,0.3)]"
+      className="bg-[#1c2f31] border-2 border-s21 shadow-[0_0_50px_rgba(0,199,177,0.3)]"
     >
 
         {/* Header */}
-        <div className="s21-cabecera flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-[#00c7b1]/20 bg-[#051a1a]">
+        <div className="s21-cabecera flex-shrink-0 px-5 py-3 sm:px-6 sm:py-4 border-b border-s21/20 bg-[#051a1a]">
           <div className="flex justify-between items-center gap-3">
             <h3 className={`text-xl sm:text-2xl font-black text-white uppercase tracking-tighter leading-tight truncate min-w-0 ${slideIdx === 0 ? 'invisible' : ''}`}>
               {cleanName}
@@ -884,9 +884,9 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
         </div>
 
         {/* Carousel nav */}
-        <div className="s21-navegacion flex-shrink-0 flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-4 bg-[#011a14] border-t border-[#00c7b1]/15">
+        <div className="s21-navegacion flex-shrink-0 flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-4 bg-[#011a14] border-t border-s21/15">
           <button onClick={() => setSlideIdx(i => Math.max(0, i - 1))} disabled={slideIdx === 0} aria-label="Slide anterior"
-            className="flex items-center gap-1 sm:gap-2 text-[#00c7b1] text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded border border-[#00c7b1]/30 hover:bg-[#00c7b1]/10 disabled:opacity-30 disabled:pointer-events-none transition-all">
+            className="flex items-center gap-1 sm:gap-2 text-s21 text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded border border-s21/30 hover:bg-s21/10 disabled:opacity-30 disabled:pointer-events-none transition-all">
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
             <span className="hidden min-[360px]:inline">Anterior</span>
           </button>
@@ -896,14 +896,14 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
             ))}
           </div>
           <button onClick={() => setSlideIdx(i => Math.min(totalSlides - 1, i + 1))} disabled={slideIdx === totalSlides - 1} aria-label="Slide siguiente"
-            className="flex items-center gap-1 sm:gap-2 text-[#00c7b1] text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded bg-[#00c7b1]/10 border border-[#00c7b1]/50 hover:bg-[#00c7b1]/20 disabled:opacity-30 disabled:pointer-events-none transition-all">
+            className="flex items-center gap-1 sm:gap-2 text-s21 text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded bg-s21/10 border border-s21/50 hover:bg-s21/20 disabled:opacity-30 disabled:pointer-events-none transition-all">
             <span className="hidden min-[360px]:inline">Siguiente</span>
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
           </button>
         </div>
 
         {/* Footer */}
-        <div className="s21-pie flex-shrink-0 border-t border-[#00c7b1]/20 bg-[#051a1a]">
+        <div className="s21-pie flex-shrink-0 border-t border-s21/20 bg-[#051a1a]">
           <div className="p-3 flex flex-wrap gap-2 items-center">
             <div className="order-1 sm:order-2 w-full sm:w-auto flex items-center gap-2 justify-end sm:flex-shrink-0">
               <a href={waHref} target="_blank" rel="noopener nofollow"
@@ -925,9 +925,9 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
             </div>
             <div className="order-2 sm:order-1 w-full sm:flex-1 flex items-center gap-1.5 min-w-0">
               <input type="text" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()}
-                className="flex-1 min-w-0 px-3 py-2 bg-[#013729] border border-[#00c7b1]/20 rounded-lg text-[#7ca19b] text-[11px] font-mono focus:outline-none focus:border-[#00c7b1]/50 cursor-text transition-colors truncate" />
+                className="flex-1 min-w-0 px-3 py-2 bg-[#013729] border border-s21/20 rounded-lg text-[#7ca19b] text-[11px] font-mono focus:outline-none focus:border-s21/50 cursor-text transition-colors truncate" />
               <button onClick={compartir} title="Compartir enlace" aria-live="polite"
-                className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 bg-[#00c7b1] text-[#013729] font-bold rounded-lg hover:brightness-110 transition-colors text-sm">
+                className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 bg-s21 text-[#013729] font-bold rounded-lg hover:brightness-110 transition-colors text-sm">
                 <IconoCompartir estado={estadoCompartir} />
                 <span>{textoCompartir(estadoCompartir)}</span>
               </button>
@@ -964,20 +964,20 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         <div className="flex-shrink-0 flex items-center justify-between flex-wrap gap-x-[clamp(0.4rem,2.2cqi,1rem)] gap-y-2 text-left w-full">
           <div className="flex items-center gap-[clamp(0.6rem,2.4cqi,1.2rem)]">
             <img src="/imagenes/Modales/Abogac%C3%ADa/9KPyxWIc_400x400.jpg" alt="Siglo 21" className="h-[clamp(1.4rem,calc(var(--alto-tipo)*0.0304),1.8rem)] w-auto rounded-sm block shadow-sm" />
-            <p className="text-[length:clamp(0.62rem,calc(var(--alto-tipo)*0.0174),0.78rem)] font-black tracking-widest text-[#00c7b1] uppercase m-0 leading-tight">
+            <p className="text-[length:clamp(0.62rem,calc(var(--alto-tipo)*0.0174),0.78rem)] font-black tracking-widest text-s21 uppercase m-0 leading-tight">
               <span>Nivel: {carrera.nivel}</span>
               <span className="block text-white">Duración: {carrera.duracion}</span>
             </p>
           </div>
-          <div className="flex-shrink-0 flex items-center bg-[#00c7b1]/12 border border-[#00c7b1]/35 rounded px-2.5 py-1">
+          <div className="flex-shrink-0 flex items-center bg-s21/12 border border-s21/35 rounded px-2.5 py-1">
             <span className="text-[clamp(0.55rem,1.75cqi,0.72rem)] font-black text-white uppercase tracking-wider leading-none">
-              Modalidad: <span className="text-[#00c7b1]">Virtual</span>
+              Modalidad: <span className="text-s21">Virtual</span>
             </span>
           </div>
         </div>
 
         {/* Línea independiente para quedar pegada al header */}
-        <div className="flex-shrink-0 border-t border-[#00c7b1]/20 w-full mt-1.5 md:mt-1" />
+        <div className="flex-shrink-0 border-t border-s21/20 w-full mt-1.5 md:mt-1" />
 
         <div className="flex-shrink-0 flex justify-start pt-3 md:pt-[clamp(0.5rem,calc(var(--alto-tipo)*0.0217),1rem)] mt-0 md:mt-0 gap-2.5">
           {(() => { const { prefix, cleanName } = getCleanName(carrera);
@@ -985,18 +985,18 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
             const displayName = cccMatch ? cleanName.replace(cccMatch[0], '') : cleanName;
             return (<>
             <div className="flex min-w-0 gap-2.5">
-              <div className="w-[3px] bg-[#00c7b1] rounded-sm flex-shrink-0 self-stretch" />
+              <div className="w-[3px] bg-s21 rounded-sm flex-shrink-0 self-stretch" />
               <div className="min-w-0">
-                {prefix && <p className="text-[clamp(0.55rem,2.2cqi,0.75rem)] font-bold text-[#00c7b1] uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-left">{prefix}</p>}
+                {prefix && <p className="text-[clamp(0.55rem,2.2cqi,0.75rem)] font-bold text-s21 uppercase tracking-widest leading-none mb-1.5 md:mb-1 text-left">{prefix}</p>}
                 <h2 className={`font-black text-white leading-[1] md:leading-[1.05] uppercase tracking-tighter ${displayName.length > 40 ? 'text-[length:clamp(0.9rem,min(5.4cqi,calc(var(--alto-tipo)*0.0326)),1.4rem)] md:text-[length:clamp(1.2rem,min(2.6cqi,calc(var(--alto-tipo)*0.0326)),1.8rem)]' : displayName.length > 25 ? 'text-[length:clamp(1rem,min(6.5cqi,calc(var(--alto-tipo)*0.0435)),1.7rem)] md:text-[length:clamp(1.4rem,min(3.1cqi,calc(var(--alto-tipo)*0.0435)),2.2rem)]' : 'text-[length:clamp(1.2rem,min(8.2cqi,calc(var(--alto-tipo)*0.0543)),2rem)] md:text-[length:clamp(1.8rem,min(3.7cqi,calc(var(--alto-tipo)*0.0543)),3rem)]'}`}>{displayName.toUpperCase()}</h2>
-                {cccMatch && <p className="text-[0.6rem] md:text-xs font-bold text-[#7ca19b] uppercase tracking-widest mt-0.5">Ciclo de Complementación Curricular</p>}
+                {cccMatch && <p className="text-3xs md:text-xs font-bold text-[#7ca19b] uppercase tracking-widest mt-0.5">Ciclo de Complementación Curricular</p>}
               </div>
             </div>
           </>); })()}
         </div>
 
         {/* Mobile: banner bajo el título — foto mobile si existe, si no cover generado */}
-        <div className="md:hidden flex-shrink-0 relative w-full h-[max(7rem,calc(var(--alto-modal)*0.24))] rounded-xl overflow-hidden border border-[#00c7b1]/15 mt-3">
+        <div className="md:hidden flex-shrink-0 relative w-full h-[max(7rem,calc(var(--alto-modal)*0.24))] rounded-xl overflow-hidden border border-s21/15 mt-3">
           {slide.imagen_mobile ? (
             <>
               <img
@@ -1014,26 +1014,26 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,calc(var(--alto-tipo)*0.0217),1rem)] md:gap-[clamp(0.25rem,calc(var(--alto-tipo)*0.0163),0.5rem)]">
           {slide.bullets.map((b, i) => (
             <p key={i} className="text-[clamp(0.8rem,2.7cqi,0.95rem)] md:text-[length:clamp(0.9rem,calc(var(--alto-tipo)*0.0217),1.25rem)] text-[#e0f0ed] leading-snug font-medium">
-              <span className="text-[#00c7b1] font-bold mr-1">&bull;</span> {b}
+              <span className="text-s21 font-bold mr-1">&bull;</span> {b}
             </p>
           ))}
         </div>
 
         {slide.badges && (
-          <div className="md:hidden mt-auto flex-shrink-0 grid grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2">
+          <div className="md:hidden mt-auto flex-shrink-0 grid grid-cols-2 gap-2 border-t border-s21/20 pt-2">
             {slide.badges.map((badge, i) => (
-              <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-center items-center text-center">
-                <span className="block text-[0.45rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
-                <span className={`block text-white font-extrabold mt-0.5 ${badge.value.length > 35 ? 'text-[0.6rem]' : 'text-xs'}`}>{badge.value}</span>
+              <div key={i} className="bg-s21/5 border border-s21/20 rounded p-1.5 flex flex-col justify-center items-center text-center">
+                <span className="block text-6xs font-bold uppercase tracking-widest text-s21">{badge.label}</span>
+                <span className={`block text-white font-extrabold mt-0.5 ${badge.value.length > 35 ? 'text-3xs' : 'text-xs'}`}>{badge.value}</span>
               </div>
             ))}
           </div>
         )}
         {slide.badges && (
-          <div className="hidden md:grid mt-auto grid-cols-2 gap-2 border-t border-[#00c7b1]/20 pt-2 flex-shrink-0">
+          <div className="hidden md:grid mt-auto grid-cols-2 gap-2 border-t border-s21/20 pt-2 flex-shrink-0">
             {slide.badges.map((badge, i) => (
-              <div key={i} className="bg-[#00c7b1]/5 border border-[#00c7b1]/20 rounded p-1.5 flex flex-col justify-start items-start text-left">
-                <span className="block text-[0.5rem] font-bold uppercase tracking-widest text-[#00c7b1]">{badge.label}</span>
+              <div key={i} className="bg-s21/5 border border-s21/20 rounded p-1.5 flex flex-col justify-start items-start text-left">
+                <span className="block text-5xs font-bold uppercase tracking-widest text-s21">{badge.label}</span>
                 <span className={`block text-white font-extrabold mt-0.5 ${badge.value.length > 35 ? 'text-xs' : 'text-sm'}`}>{badge.value}</span>
               </div>
             ))}
@@ -1041,7 +1041,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         )}
       </div>
       {slide.imagen_desktop && (
-        <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-[#00c7b1]/20 relative" style={{ width: '42%' }}>
+        <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-s21/20 relative" style={{ width: '42%' }}>
           <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: slide.imagen_desktop_position || 'top', filter: slide.imagen_brightness ? `brightness(${slide.imagen_brightness})` : undefined }} />
         </div>
       )}
@@ -1061,13 +1061,13 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
       <div className="flex-1 overflow-hidden flex flex-col justify-center">
         <div className="px-6 md:px-10 py-6 flex flex-col gap-5">
           <div>
-            <p className="text-[0.65rem] font-bold tracking-widest text-[#00c7b1] uppercase mb-1">Modalidad de cursado</p>
+            <p className="text-2xs font-bold tracking-widest text-s21 uppercase mb-1">Modalidad de cursado</p>
             <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-wider">{slide.titulo}</h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
             {slide.items.map((item, i) => (
               <div key={i} className="flex items-start gap-1 md:gap-2 text-sm leading-snug">
-                <span className="text-[#00c7b1] font-bold mt-[0.1em] shrink-0">✓</span>
+                <span className="text-s21 font-bold mt-[0.1em] shrink-0">✓</span>
                 <span className="text-[#b4d3ce]">
                   {item.bold_inicio && <b className="text-white">{item.bold_inicio}</b>}
                   {item.texto}
@@ -1086,24 +1086,24 @@ function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluaci
   return (
     <div className="h-full flex flex-col items-center justify-center p-3 sm:p-10 gap-2 sm:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
       <div className="text-center flex-shrink-0">
-        <p className="text-[0.6rem] font-bold tracking-[0.16em] text-[#00c7b1] uppercase mb-0.5 sm:mb-1">Proceso de evaluacion</p>
+        <p className="text-3xs font-bold tracking-etiqueta-ancha text-s21 uppercase mb-0.5 sm:mb-1">Proceso de evaluacion</p>
         <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider">¿Como te evaluamos?</h3>
       </div>
       <div className="flex gap-1.5 sm:gap-3 w-full max-w-md">
         {slide.cards.map((card, i) => (
-          <div key={i} className={`flex-1 min-w-0 rounded-xl p-1.5 sm:p-4 text-center ${card.accent ? 'bg-[#00c7b1]/10 border-[1.5px] border-[#00c7b1]' : 'bg-[#1c2f31] border border-[#00c7b1]/18'}`}>
-            <div className="text-2xl sm:text-4xl font-black text-[#00c7b1] leading-none">{card.numero}</div>
-            <div className="text-[0.45rem] sm:text-[0.65rem] font-semibold text-[#7ca19b] uppercase tracking-normal sm:tracking-wider mt-1 whitespace-pre-line">{card.label}</div>
-            <div className={`text-[0.45rem] sm:text-[0.6rem] mt-0.5 ${card.accent ? 'text-[#00c7b1] font-bold' : 'text-[#48b3a4]'}`}>{card.sub}</div>
+          <div key={i} className={`flex-1 min-w-0 rounded-xl p-1.5 sm:p-4 text-center ${card.accent ? 'bg-s21/10 border-[1.5px] border-s21' : 'bg-[#1c2f31] border border-s21/18'}`}>
+            <div className="text-2xl sm:text-4xl font-black text-s21 leading-none">{card.numero}</div>
+            <div className="text-6xs sm:text-2xs font-semibold text-[#7ca19b] uppercase tracking-normal sm:tracking-wider mt-1 whitespace-pre-line">{card.label}</div>
+            <div className={`text-6xs sm:text-3xs mt-0.5 ${card.accent ? 'text-s21 font-bold' : 'text-[#48b3a4]'}`}>{card.sub}</div>
           </div>
         ))}
       </div>
       <div className="flex gap-1 sm:gap-1.5 flex-wrap justify-center">
         {slide.tags.map(tag => (
-          <span key={tag} className="bg-[#00c7b1]/8 border border-[#00c7b1]/22 text-[#b4d3ce] text-[0.6rem] sm:text-[0.7rem] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-semibold">{tag}</span>
+          <span key={tag} className="bg-s21/8 border border-s21/22 text-[#b4d3ce] text-3xs sm:text-[0.7rem] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-semibold">{tag}</span>
         ))}
       </div>
-      <p className="text-xs sm:text-sm text-[#7ca19b] text-center max-w-sm leading-relaxed [&_b]:text-[#00c7b1]" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.nota) }} />
+      <p className="text-xs sm:text-sm text-[#7ca19b] text-center max-w-sm leading-relaxed [&_b]:text-s21" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.nota) }} />
     </div>
   );
 }
@@ -1122,12 +1122,12 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
           background: 'rgba(0,199,177,0.08)',
           border: '1px solid rgba(0,199,177,0.18)',
         }}>
-          <svg className="w-3.5 h-3.5 text-[#00c7b1]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-3.5 h-3.5 text-s21" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[0.5rem] font-bold tracking-[0.14em] uppercase text-[#9ac5be]">{carrera.nivel} · {carrera.duracion}</p>
+          <p className="text-5xs font-bold tracking-etiqueta uppercase text-[#9ac5be]">{carrera.nivel} · {carrera.duracion}</p>
           <h3 className="text-sm md:text-base font-black text-white uppercase tracking-wider leading-tight">Plan de Estudios</h3>
         </div>
         <button
@@ -1144,7 +1144,7 @@ function SlidePlanView({ slide, carrera, isVisible }: { slide: SlidePlanEstudios
           </svg>
           <span className="hidden sm:inline">Descargar Plan de Estudio</span>
           <span className="sm:hidden">Descargar</span>
-          <span className="px-1.5 py-0.5 rounded text-[0.5rem] font-black tracking-wider" style={{ background: '#c0392b', color: 'white' }}>PDF</span>
+          <span className="px-1.5 py-0.5 rounded text-5xs font-black tracking-wider" style={{ background: '#c0392b', color: 'white' }}>PDF</span>
         </button>
       </div>
       <PlanPanels paginas={slide.paginas} carreraNombre={carrera.nombre} isVisible={isVisible} />
@@ -1178,7 +1178,7 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
       <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-8 flex flex-col justify-center md:justify-start gap-4 md:gap-5 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
         {/* Título */}
         <div className="mt-0 md:mt-auto text-center md:text-left">
-          <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.titulo || 'Estudiá <br><span class="text-[#00c7b1]">con nosotros</span>') }}></h3>
+          <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.titulo || 'Estudiá <br><span class="text-s21">con nosotros</span>') }}></h3>
           {slide.subtitulo && (
             <p className="text-[#7ca19b] text-sm md:text-base mt-2">{slide.subtitulo}</p>
           )}
@@ -1192,7 +1192,7 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
         <div className="flex flex-col gap-3 md:gap-4">
           {slide.beneficios.map((b, i) => (
             <div key={i} className="flex items-center gap-2.5 md:gap-3">
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#00c7b1]/10 flex items-center justify-center text-[#00c7b1] shrink-0">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-s21/10 flex items-center justify-center text-s21 shrink-0">
                 <svg className="w-3.5 h-3.5 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   {(ICON_PATHS[b.icono] || ICON_PATHS.star).split(' M').map((d, di) => (
                     <path key={di} strokeLinecap="round" strokeLinejoin="round" d={di === 0 ? d : `M${d}`} />

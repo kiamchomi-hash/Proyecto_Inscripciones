@@ -5,6 +5,29 @@
 @source "../app";
 @source "../components";
 
+/* Tokens de Tailwind para los modales de carrera. Cada valor reemplaza a un
+   valor arbitrario que se repetía en los cuatro modales, con la misma medida:
+   no redondear ni fusionar escalones, porque cambiaría cómo se ve.
+   - text-6xs…text-2xs: la escala de rótulos por debajo de text-xs (0.75rem).
+     Sin `--line-height` propio a propósito: igual que `text-[0.6rem]`, el
+     interlineado sigue saliendo del elemento o de una clase `leading-*`.
+   - tracking-*: el espaciado de las etiquetas en mayúsculas.
+   - s21: el acento de Siglo 21. Lee `--color-highlight` de `:root` para que el
+     color tenga una sola fuente. */
+@theme {
+  --text-6xs: 0.45rem;
+  --text-5xs: 0.5rem;
+  --text-4xs: 0.55rem;
+  --text-3xs: 0.6rem;
+  --text-2xs: 0.65rem;
+
+  --tracking-amplio: 0.08em;
+  --tracking-etiqueta: 0.14em;
+  --tracking-etiqueta-ancha: 0.16em;
+
+  --color-s21: var(--color-highlight);
+}
+
 /* --- TEXTURES & GRAIN --- */
 .grain-overlay {
   position: relative;

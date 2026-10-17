@@ -111,7 +111,7 @@ function parsePlan(plan: string | null): Modulo[] {
 /** Rotulo de seccion de un slide */
 function Rotulo({ children }: { children: React.ReactNode }) {
   return (
-    <p className="flex-shrink-0 text-[0.6rem] font-black uppercase tracking-[0.16em]" style={{ color: AZUL_CLARO }}>
+    <p className="flex-shrink-0 text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: AZUL_CLARO }}>
       {children}
     </p>
   );
@@ -192,7 +192,7 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
           <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
           <div className="min-w-0">
             {carrera.prefix && (
-              <p className="text-[0.6rem] sm:text-xs font-black uppercase tracking-[0.16em] mb-1" style={{ color: AMARILLO }}>
+              <p className="text-3xs sm:text-xs font-black uppercase tracking-etiqueta-ancha mb-1" style={{ color: AMARILLO }}>
                 {carrera.prefix}
               </p>
             )}
@@ -240,7 +240,7 @@ function BloqueDato({ label, valor, principal, className = '' }: { label: string
       }
     >
       <span
-        className="block text-[0.55rem] font-black uppercase tracking-[0.14em]"
+        className="block text-4xs font-black uppercase tracking-etiqueta"
         style={{ color: principal ? 'rgba(16,24,32,0.7)' : AZUL_CLARO }}
       >
         {label}
@@ -334,7 +334,7 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
     <div className="ia-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
       <div className="flex-shrink-0 flex items-baseline justify-between gap-3">
         <Rotulo>Plan de estudios</Rotulo>
-        <span className="text-[0.5rem] font-black uppercase tracking-[0.14em] text-white/50">
+        <span className="text-5xs font-black uppercase tracking-etiqueta text-white/50">
           {modulos.length} módulos · {carrera.duracion}
         </span>
       </div>
@@ -400,7 +400,7 @@ function ModuloDetalle({ modulo, enTarjeta }: { modulo: Modulo; enTarjeta?: bool
       }
     >
       <p
-        className="text-[0.55rem] font-black uppercase tracking-[0.16em]"
+        className="text-4xs font-black uppercase tracking-etiqueta-ancha"
         style={{ color: modulo.destacado ? AMARILLO : AZUL_CLARO }}
       >
         {modulo.etiqueta}
@@ -426,7 +426,7 @@ function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; d
   return (
     <button
       onClick={onClick}
-      className="flex-shrink-0 px-2.5 py-2 rounded text-[0.55rem] font-black uppercase tracking-[0.08em] whitespace-nowrap md:whitespace-normal md:text-left transition-all cursor-pointer"
+      className="flex-shrink-0 px-2.5 py-2 rounded text-4xs font-black uppercase tracking-amplio whitespace-nowrap md:whitespace-normal md:text-left transition-all cursor-pointer"
       style={
         activo
           ? {
@@ -590,7 +590,7 @@ export default function IAModal({ carrera, onClose }: Props) {
           <div className="relative flex justify-between items-center gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <Isotipo className="h-6 sm:h-8 w-auto flex-shrink-0" />
-              <p className="text-[0.5rem] sm:text-[0.6rem] font-black uppercase tracking-[0.18em] text-white/70 leading-tight flex-shrink-0">
+              <p className="text-5xs sm:text-3xs font-black uppercase tracking-[0.18em] text-white/70 leading-tight flex-shrink-0">
                 Academia
                 <span className="block text-white">Identidad Argentina</span>
               </p>
@@ -642,7 +642,7 @@ export default function IAModal({ carrera, onClose }: Props) {
             onClick={() => setIdx(i => Math.max(0, i - 1))}
             disabled={idx === 0}
             aria-label="Slide anterior"
-            className="flex items-center gap-1 sm:gap-2 text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
+            className="flex items-center gap-1 sm:gap-2 text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
             style={{ color: AZUL_CLARO, boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.45)' }}
           >
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -672,7 +672,7 @@ export default function IAModal({ carrera, onClose }: Props) {
             onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))}
             disabled={idx === slides.length - 1}
             aria-label="Slide siguiente"
-            className="flex items-center gap-1 sm:gap-2 text-white text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
+            className="flex items-center gap-1 sm:gap-2 text-white text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
             style={{ background: 'rgba(255,255,255,0.09)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.25)' }}
           >
             <span className="hidden min-[360px]:inline">Siguiente</span>

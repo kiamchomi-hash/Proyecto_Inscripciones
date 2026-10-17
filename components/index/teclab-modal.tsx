@@ -132,7 +132,7 @@ function BloqueCocreacion({
         boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
       }}
     >
-      <span className="block text-[0.55rem] font-black uppercase tracking-[0.14em]" style={{ color: CLARO[acento] }}>
+      <span className="block text-4xs font-black uppercase tracking-etiqueta" style={{ color: CLARO[acento] }}>
         Carrera cocreada con
       </span>
       {ficha.partner.logo ? (
@@ -154,7 +154,7 @@ function BloqueCocreacion({
 function Rotulo({ children, acento }: { children: React.ReactNode; acento: string }) {
   return (
     <p
-      className="flex-shrink-0 text-[0.6rem] font-black uppercase tracking-[0.16em]"
+      className="flex-shrink-0 text-3xs font-black uppercase tracking-etiqueta-ancha"
       style={{ color: CLARO[acento] }}
     >
       {children}
@@ -187,7 +187,7 @@ function BloqueDato({
       }
     >
       <span
-        className="block text-[0.55rem] font-black uppercase tracking-[0.14em]"
+        className="block text-4xs font-black uppercase tracking-etiqueta"
         style={{ color: principal ? `${textoPrincipal}b3` : CLARO[acento] }}
       >
         {label}
@@ -237,7 +237,7 @@ function SlidePortada({
         <div className="min-w-0">
           {carrera.prefix && (
             <p
-              className="text-[0.6rem] sm:text-xs font-black uppercase tracking-[0.16em] mb-1"
+              className="text-3xs sm:text-xs font-black uppercase tracking-etiqueta-ancha mb-1"
               style={{ color: acento }}
             >
               {carrera.prefix}
@@ -434,7 +434,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
     <div className="teclab-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
       <div className="flex-shrink-0 flex items-baseline justify-between gap-3">
         <Rotulo acento={acento}>Plan de estudios</Rotulo>
-        <span className="text-[0.5rem] font-black uppercase tracking-[0.14em] text-white/50">
+        <span className="text-5xs font-black uppercase tracking-etiqueta text-white/50">
           {periodos.length} períodos · {carrera.duracion}
         </span>
       </div>
@@ -445,7 +445,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
           <button
             key={i}
             onClick={() => irAlAño(i)}
-            className="flex-1 min-h-[2.5rem] whitespace-nowrap px-3 py-2 rounded text-[0.6rem] font-black uppercase tracking-[0.08em] transition-all cursor-pointer"
+            className="flex-1 min-h-[2.5rem] whitespace-nowrap px-3 py-2 rounded text-3xs font-black uppercase tracking-amplio transition-all cursor-pointer"
             style={estiloBoton(añoVisible === i)}
           >
             {a.año}
@@ -507,11 +507,11 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                 </svg>
-                <span className="text-[0.6rem] font-black uppercase tracking-wider whitespace-nowrap">Inicio</span>
+                <span className="text-3xs font-black uppercase tracking-wider whitespace-nowrap">Inicio</span>
               </>
             ) : (
               <>
-                <span className="text-[0.6rem] font-black uppercase tracking-wider whitespace-nowrap">Ver {siguienteAño?.año}</span>
+                <span className="text-3xs font-black uppercase tracking-wider whitespace-nowrap">Ver {siguienteAño?.año}</span>
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -532,7 +532,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
         >
           <button
             onClick={() => setActivo(-1)}
-            className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-2 rounded text-[0.55rem] font-black uppercase tracking-[0.08em] text-left transition-all cursor-pointer"
+            className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-2 rounded text-4xs font-black uppercase tracking-amplio text-left transition-all cursor-pointer"
             style={estiloBoton(activo === -1)}
           >
             <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -550,7 +550,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
             <button
               key={i}
               onClick={() => setActivo(i)}
-              className="flex-shrink-0 px-2.5 py-2 rounded text-[0.55rem] font-black uppercase tracking-[0.08em] text-left transition-all cursor-pointer"
+              className="flex-shrink-0 px-2.5 py-2 rounded text-4xs font-black uppercase tracking-amplio text-left transition-all cursor-pointer"
               style={estiloBoton(activo === i)}
             >
               {a.año}
@@ -597,7 +597,7 @@ function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: st
       <div className="grid gap-5" style={{ gridTemplateColumns: `repeat(${año.cuatrimestres.length}, minmax(0,1fr))` }}>
         {año.cuatrimestres.map((c, i) => (
           <div key={i}>
-            <p className="text-[0.6rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
+            <p className="text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
               {c.label}
             </p>
             <ListaMaterias materias={c.materias} acento={acento} />
@@ -620,7 +620,7 @@ function PeriodoDetalle({ periodo, acento }: { periodo: TeclabPeriodo; acento: s
         borderLeft: `3px solid ${acento}`,
       }}
     >
-      <p className="text-[0.6rem] font-black uppercase tracking-[0.16em]" style={{ color: CLARO[acento] }}>
+      <p className="text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
         {periodo.label}
       </p>
       <ListaMaterias materias={periodo.materias} acento={acento} />
@@ -991,7 +991,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
             onClick={() => setIdx(i => Math.max(0, i - 1))}
             disabled={idx === 0}
             aria-label="Slide anterior"
-            className="flex items-center gap-1 sm:gap-2 text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
+            className="flex items-center gap-1 sm:gap-2 text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
             style={{ color: CLARO[acento], boxShadow: `inset 0 0 0 1px ${acento}73` }}
           >
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -1021,7 +1021,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
             onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))}
             disabled={idx === slides.length - 1}
             aria-label="Slide siguiente"
-            className="flex items-center gap-1 sm:gap-2 text-white text-[0.6rem] sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
+            className="flex items-center gap-1 sm:gap-2 text-white text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
             style={{ background: 'rgba(255,255,255,0.09)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.25)' }}
           >
             <span className="hidden min-[360px]:inline">Siguiente</span>
