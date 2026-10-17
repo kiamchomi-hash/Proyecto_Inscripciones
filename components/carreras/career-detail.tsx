@@ -330,6 +330,16 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                 <span>Instituto Técnico Superior</span>
               </div>
             )}
+            {!isIA && !conMaterialTeclab && (
+              <div className="career-hero-marca career-hero-marca--siglo21">
+                <Image
+                  src="/imagenes/imagenes_cau/siglo21-marca.svg"
+                  alt="Universidad Siglo 21"
+                  width={1031}
+                  height={373}
+                />
+              </div>
+            )}
             {isIA && (
               <div className="career-hero-marca career-hero-marca--ia">
                 <IsotipoIA />

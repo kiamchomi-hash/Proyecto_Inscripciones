@@ -298,3 +298,17 @@
 .career-page--siglo21 .career-related li > a svg {
   color: var(--s21-violeta-claro);
 }
+
+/* Sello de la universidad en la fila de las migas, el mismo lugar donde
+   Teclab e Identidad muestran el suyo. El logo ya dice «Universidad Siglo 21»,
+   asi que va sin texto al lado. */
+.career-page--siglo21 .career-hero-marca--siglo21 {
+  padding: .45rem 1.1rem;
+  border-color: rgba(242, 240, 247, .22);
+  border-radius: 999px;
+  background: rgba(0, 43, 43, .6);
+}
+
+.career-page--siglo21 .career-hero-marca--siglo21 img {
+  height: 2rem;
+}

@@ -5,6 +5,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 [Volver a los pendientes](../PENDIENTES.md).
 
 
+## Sitio — estética de las fichas de Siglo 21, 17/10/2026
+
+- [x] **Cambiar la estética de las páginas de carrera.** Sólo las de Siglo 21, sin mover la disposición: DM Sans en los títulos, la píldora cian sólo en los botones, el plan de estudios en tarjetas petróleo con el año en una píldora violeta, y la columna lateral y las otras carreras en la misma paleta. El usuario descartó el mosaico de cuatro colores y después los bloques petróleo y violeta en la franja de datos: la franja quedó como estaba, con el texto centrado. El logo de la universidad va en el hero, en la fila de las migas, el mismo lugar donde Teclab e Identidad muestran el suyo. Teclab e Identidad no cambian. Commit `818443e`, publicado el 17/10/2026 junto con `2e047f2`, que arregló el test de los modales que había frenado el primer deploy; `npm run check` pasó 509 de 509 y producción sirve la ficha con la clase `career-page--siglo21`.
+
 ## Siglo 21 — calendario de pagos, 17/10/2026
 
 - [x] **Imagen de calendario de pagos para mandar a los leads**. Aprobada por el usuario el 17/10/2026, para WhatsApp, en 1350×1080 y en 2x. Responde «¿Qué cubre mi pago?» con los doce meses pintados por bimestre, en siete vistas: anual, primer y segundo cuatrimestre, y una por bimestre de ingreso. No lleva la cantidad de materias de cada período: el usuario definió la pieza sin ese dato. Está en `contenidos/siglo21/aprobados/generales/whatsapp/`, con la fuente y la `ficha.md` en `2026-10-17-calendario-pagos/`; `contenidos/` está fuera de git.
