@@ -37,6 +37,7 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 - [ ] **8. Rediseñar Identidad Argentina: los modales y la página principal**. Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo**. [Detalle](docs/pendientes-detalle.md#pendiente-16).
 - [ ] **La hoja de estilos viaja tres veces en el HTML de la home** y la documentación de Next promete dos (medido el 28/08/2026 con Next 16.3.0). [Detalle](docs/pendientes-detalle.md#pendiente-02).
+- [ ] **Cambiar la estética de las páginas de carrera** (`/carreras/[slug]`), agregado el 17/10/2026. Falta definir con el usuario qué no le gusta de cómo se ven hoy; antes de proponer, leer las skills `cau_design_patterns` y `diseno-uiverse`.
 
 ## 7. Bot, leads y comercial
 
