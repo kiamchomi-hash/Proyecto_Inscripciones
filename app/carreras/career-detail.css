@@ -42,6 +42,11 @@
 
 .career-hero-shade {
   z-index: -2;
+  /* La foto se pinta en su propia capa por el transform de la animación, y con
+     un alto fraccionario esa capa redondea su borde distinto que la sombra:
+     quedaba una línea de foto sin oscurecer al pie. En capa propia, las dos
+     redondean igual. */
+  transform: translateZ(0);
   background:
     linear-gradient(90deg, rgba(3, 16, 15, .96) 0%, rgba(3, 16, 15, .76) 43%, rgba(3, 16, 15, .13) 78%),
     linear-gradient(0deg, rgba(3, 16, 15, .92) 0%, transparent 55%);
