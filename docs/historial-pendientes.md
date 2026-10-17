@@ -5,6 +5,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 [Volver a los pendientes](../PENDIENTES.md).
 
 
+## Siglo 21 — mensaje de aranceles, 17/10/2026
+
+- [x] **3. Mejorar el mensaje de aranceles**. En las 15 respuestas de precio del corpus del bot (`ventas/corpus/siglo21.json`, gitignorado) se reemplazó la advertencia «Ojo: ese total no es el de la carrera completa…» por «Este pago cubre sólo la matrícula y los bimestres detallados arriba. La matrícula se abona cada cuatrimestre, junto con los bimestres que vayas a cursar.», que vale tanto para quien entra al inicio como a mitad de cuatrimestre; en `cuotas`, sin desglose, dice «los bimestres de tu ingreso». `pago-anual` aclara que el año tiene dos cuatrimestres y responde «hay tres cuatrimestres» sin pisar a `ritmo`. Buscador y entrenador regenerados.
+
 ## Siglo 21 y Teclab — cabecera de tres fichas, 17/10/2026
 
 - [x] **Pulir el FAQ y revisar la cabecera de Procurador, Gestión Contable y Seguros**. El FAQ ya estaba pulido desde el 07/10/2026 (T7). La cabecera se contrastó con la `descripcion` previa al 05/10/2026 y se corrigieron tres cosas. Seguros prometía la matrícula como automática; ahora dice que se pide ante la SSN sin rendir el examen (Res. SSN 253/2019 y [trámite oficial](https://www.argentina.gob.ar/servicio/obtener-matricula-de-productores-asesores-de-seguros-aspirantes)). Gestión Contable presentaba como título el certificado intermedio. Procurador había perdido «junto a abogados» y «tribunales». En Teclab sólo se reemplazó la primera oración, que es la que muestra el hero, y se conservó la salida laboral. Aplicado con `cau_editor` por el pooler, con precondición sobre el texto anterior; comparación posterior sin otros campos cambiados y hero público verificado en las tres fichas. [Tarea](../odd/tasks/seo-tres-fichas.md).
