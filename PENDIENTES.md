@@ -18,7 +18,6 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ### Web y formularios
 
-- [ ] **Robot de autoinscripción**: modo de prueba sin tocar el portal, prueba real autorizada con cuenta nueva y aviso por Telegram si falla (`autoinscripcion-teclab` T4, T4c, T5 y T10). [Detalle](odd/tasks/autoinscripcion-teclab.md).
 - [ ] **Completar `.env.example`** con las variables de mail (`mail-precio-teclab` T3).
 
 ### Carreras
@@ -111,6 +110,8 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
 
 - [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
+
+- [ ] **Robot de autoinscripción de Teclab: cierres que dependen del usuario** (bajado al fondo el 16/10/2026). El robot ya carga en producción (99000006 y 99000007). Falta: primer login de una cuenta nueva por `/payments/select` (99000003 a 99000005), pedir a Teclab la baja de las cargas 99000001 a 99000007, relevar el aviso que confirma «Enviar link de pago» con una carga autorizada y revisar el primer aviso real en `net._http_response` (`autoinscripcion-teclab` T4, T4c, T5 y T10). [Detalle](odd/tasks/autoinscripcion-teclab.md).
 
 ## Documentación de apoyo
 
