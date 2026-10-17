@@ -16,11 +16,6 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 ## 4. Teclab
 
-
-
-
-### Comercial
-
 - [ ] **Reunir en un archivo local todos los procesos de preinscripción de Teclab**, con pasos y requisitos. Fuera del repositorio público si tiene información interna.
 
 ## 5. Siglo 21
