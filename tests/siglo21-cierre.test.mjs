@@ -12,6 +12,7 @@ const { SlideCierreView } = cargarTypescript('components/index/carousel-modal.ts
   '@/lib/sanitize-content': { sanitizeContent: valor => valor },
   '@/components/carreras/career-content': { mensajeWhatsAppPrecios: () => 'Consulta' },
   './use-compartir': {}, './icono-compartir': {},
+  './modal-shell': {}, './use-foco-modal': {},
   '@/components/formularios/elegir-carrera': {},
   '@/components/formularios/casas': casas,
   './ver-precio-teclab': { AccesoVerPrecio: () => React.createElement(React.Fragment, null,
@@ -30,7 +31,7 @@ test('el cierre de Siglo 21 muestra estudio a distancia en ambos encuadres', () 
   assert.match(html, /siglo21-cierre-acciones/);
   assert.match(html, /h-full flex flex-col md:flex-row/);
   assert.match(html, /hidden md:block w-\[42%\]/);
-  assert.match(html, /md:hidden relative h-\[24vh\]/);
+  assert.match(html, /md:hidden relative h-\[calc\(var\(--alto-modal\)\*0\.26\)\]/);
   assert.match(html, /object-cover object-left-bottom/);
   assert.match(html, /object-position:center/);
   assert.match(html, /linear-gradient\(to right, transparent 60%, #011f17 100%\)/);
