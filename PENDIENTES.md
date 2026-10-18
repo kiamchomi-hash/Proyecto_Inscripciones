@@ -27,8 +27,6 @@ Completado el 17/10/2026: flecha hacia abajo en lugar de la barra de scroll en l
 
 Completado el 17/10/2026: estética de las fichas de Siglo 21 con su sistema visual (`818443e`, publicado). [Evidencia](docs/historial-pendientes.md#sitio--estética-de-las-fichas-de-siglo-21-17102026).
 
-Completado el 18/10/2026: precio dentro del formulario de preinscripción, en Siglo 21 y Teclab, y aclaración de que completarlo no cobra nada (`36d5823`, `2b9fd55`). [Evidencia](docs/historial-pendientes.md#formularios--precio-en-la-preinscripción-18102026).
-
 Completado el 18/10/2026: la cursada online, a la vista en fichas, home, modales y formulario. [Evidencia](docs/historial-pendientes.md#sitio--cursada-online-a-la-vista-18102026).
 
 ## 7. Bot, leads y comercial
@@ -79,6 +77,8 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 
 - [ ] **23/10/2026: primera revisión del embudo del test vocacional** (general y Teclab). Publicado el 16/10/2026 (`e239bc9`). Si hay pocos intentos, ampliar la observación antes de sacar conclusiones; después, mejorar los pasos con mayor caída. [Cómo leerlo](docs/medicion-test-vocacional.md).
 
+- [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción — parcialmente hecho** (18/10/2026). Hecho y publicado en Siglo 21 y Teclab, con la aclaración de que completarlo no cobra nada (`36d5823`, `2b9fd55`; [detalle](docs/historial-pendientes.md#formularios--precio-en-la-preinscripción-18102026)). Falta Identidad Argentina, que todavía no publica precio en el sitio.
+
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
 
 - [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
@@ -105,7 +105,7 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 
 - [ ] **9. Dar imágenes a todas las carreras**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
-- [ ] **Imagen OG propia por carrera**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas. Hoy las fichas comparten la genérica de su categoría: por ejemplo, [Tecnicatura Superior en Seguros](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-seguros) usa `/imagenes/og/default-teclab-gestion.jpg` (verificado el 17/10/2026).
+- [ ] **Imagen OG propia por carrera — parcialmente hecho** (18/10/2026). Hecho en Teclab: las 31 carreras y cursos tienen la suya, con su foto y su nombre (`npm run og:teclab`). Faltan Siglo 21 e Identidad Argentina, que siguen con la genérica de su categoría (por ejemplo, Administración usa `/imagenes/og/default.jpg`).
 
 - [ ] **1. Incorporar más imágenes de personas**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
