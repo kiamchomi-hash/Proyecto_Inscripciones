@@ -27,6 +27,8 @@ Completado el 17/10/2026: flecha hacia abajo en lugar de la barra de scroll en l
 
 Completado el 17/10/2026: estética de las fichas de Siglo 21 con su sistema visual (`818443e`, publicado). [Evidencia](docs/historial-pendientes.md#sitio--estética-de-las-fichas-de-siglo-21-17102026).
 
+Completado el 18/10/2026: precio dentro del formulario de preinscripción, en Siglo 21 y Teclab, y aclaración de que completarlo no cobra nada (`36d5823`, `2b9fd55`). [Evidencia](docs/historial-pendientes.md#formularios--precio-en-la-preinscripción-18102026).
+
 ## 7. Bot, leads y comercial
 
 Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, que rotan en un desplegable del buscador. [Evidencia](docs/historial-pendientes.md#bot--mensajes-de-seguimiento-17102026).
@@ -74,8 +76,6 @@ Los pedidos ya redactados y el destino de cada dato están en [las notas operati
 Postergado por el usuario el 16/10/2026; se retoma después de los pendientes anteriores.
 
 - [ ] **23/10/2026: primera revisión del embudo del test vocacional** (general y Teclab). Publicado el 16/10/2026 (`e239bc9`). Si hay pocos intentos, ampliar la observación antes de sacar conclusiones; después, mejorar los pasos con mayor caída. [Cómo leerlo](docs/medicion-test-vocacional.md).
-
-- [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción** (para más adelante). Hoy «Quiero inscribirme» (modales, ficha y mail) lleva directo al formulario sin pasar por el precio. La idea es que uno de los pasos del formulario muestre el precio de la carrera elegida, como los pasos que ya tiene Teclab. En los modales están bien los dos botones, «Ver precio» y WhatsApp; eso no se toca (aclarado el 16/10/2026).
 
 - [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
 

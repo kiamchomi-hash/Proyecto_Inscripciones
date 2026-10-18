@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Formularios — precio en la preinscripción, 18/10/2026
+
+- [x] **Mostrar el precio dentro de los pasos del formulario de preinscripción.** Siglo 21: con precio vigente, el paso 2 después de enviar es el precio, y «Continuar» lleva al cartel de enviada. Teclab, entrada directa (ficha, mail y `/teclab/inscripcion`): después de enviar va el portal, y «Ver precio» abre el precio en el slide siguiente, con «Volver». La entrada normal de Teclab ya lo tenía. El endpoint devuelve el precio en la preinscripción de Siglo 21 (verificando la casa contra la base) y, si está vigente, en la autoinscripción. Debajo del formulario se agregó, en letra grande, que completarlo no realiza ningún pago. Verificado en local con el modo demo, grabando el cambio de alto de la tarjeta (celular 1227 → 372 px, escritorio 651 → 368 px, sin hueco ni precio fuera de pantalla); `npm run check` 512/512. Commits `36d5823` y `2b9fd55`.
+
 ## WhatsApp — volumen tras el reparto, 17/10/2026
 
 - [x] **Verificar el volumen de consultas de WhatsApp tras el cambio de reparto de agosto.** `npm run leads -- --dias=62` (18/08 al 18/10): 190 clics de 154 personas, unos 3 por día y sin semanas en cero; 116 desde el móvil. `lib/whatsapp.ts` tiene un solo asesor (`NUMERO_CAU`), así que todos van al número que atiende. No se puede comparar contra antes del 14/08: el evento `whatsapp` con página de origen existe desde el 17/08 y la API de Vercel da 62 días como máximo. Los mensajes que llegan al teléfono no los ve ninguna herramienta.
