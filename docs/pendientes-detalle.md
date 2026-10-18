@@ -8,6 +8,10 @@ Actualizado el 30/09/2026 con evidencia de cierre y correcciones de referencias 
 
 ## pendiente-02
 
+**Cerrado el 17/10/2026**: la copia extra no cuesta en el cable y no se parchea Next. [Causa, medición y decisión](historial-pendientes.md#css-de-la-home--tercera-copia-cerrada-17102026). Se conserva debajo el contexto anterior.
+
+**Remedido el 17/10/2026 sobre producción, con Next 16.3.8: siguen tres apariciones** de `:root{--cau-brand-teal` y de `@layer base`; la home pesa 679,9 KiB sin comprimir.
+
 **Remedido el 30/09/2026: siguen tres apariciones.** Medición realizada, anomalía no corregida. Next local sigue en 16.3.3; repetir al actualizarlo. [Evidencia y límites](medicion-css-home-2026-09-30.md), [rutinas](rutinas.md#css-de-la-home-al-actualizar-next). Se conserva debajo el contexto anterior.
 
 - [ ] **La hoja de estilos viaja tres veces en el HTML de la home, y la documentación de Next promete dos.** Medido el 28/08/2026 sobre producción, con Next **16.3.0**.

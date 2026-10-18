@@ -38,4 +38,4 @@ Los problemas concretos que aparezcan vuelven a [Pendientes](../PENDIENTES.md) c
 
 ## CSS de la home al actualizar Next
 
-- [ ] **Al actualizar Next, remedir las copias de CSS sin apagar `inlineCss`.** Última revisión: 30/09/2026, tres apariciones, anomalía abierta. Next local sigue en 16.3.3; no se modificó el framework. [Evidencia actual](medicion-css-home-2026-09-30.md) y [contexto original](pendientes-detalle.md#pendiente-02). Es un seguimiento condicionado a una actualización, no un arreglo terminado.
+Retirada el 17/10/2026: la tercera copia sale del `global-error` interno de Next y con el Brotli de Vercel no cuesta en el cable (0,1 KB). No hace falta remedirla en cada actualización. [Causa y medición](historial-pendientes.md#css-de-la-home--tercera-copia-cerrada-17102026).

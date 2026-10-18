@@ -14,41 +14,32 @@ Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficti
 
 Completado el 17/10/2026: imagen de calendario de pagos de Siglo 21, en siete vistas. [Evidencia](docs/historial-pendientes.md#siglo-21--calendario-de-pagos-17102026).
 
-- [ ] **Imagen de la financiación de Teclab para mandar a los leads**, agregado el 17/10/2026.
-
 
 ## 5. Siglo 21
 
-- [ ] **18. Revisar las aperturas de las carreras**, parcialmente hecho el 07/10/2026. Verificados los ingresos nominales de marzo, mayo, agosto y octubre a distancia, sujetos a cupo ([fuente oficial](https://21.edu.ar/grado-y-pregrado)). Falta el listado o la circular de aperturas efectivas por carrera, porque algunas se postergan al año siguiente si no reúnen inscriptos.
-- [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras.
+Descartado por el usuario el 17/10/2026: **18. Revisar las aperturas de las carreras de 2026**. Ya se está inscribiendo para 2027; la revisión pendiente de 2026 dejó de ser relevante. No implica que las aperturas de 2027 estén verificadas.
 
 ## 6. Sitio y diseño
 
-- [ ] **Aclarar que la cursada es online en casi todos los lugares del sitio** (fichas, modales, formularios, home).
-- [ ] **5. Mostrar la fecha de inicio y el mensaje «Todavía estás a tiempo de inscribirte» en todas las carreras**, según la vigencia de cada inscripción.
-- [ ] **Corregir las páginas de Computación**.
-- [ ] **15. Permitir que una pregunta del buscador de carreras se responda combinando varias respuestas**, separadas por párrafos.
-- [ ] **9. Dar imágenes a todas las carreras**.
-- [ ] **Imagen OG propia por carrera**. Hoy las fichas comparten la genérica de su categoría: por ejemplo, [Tecnicatura Superior en Seguros](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-seguros) usa `/imagenes/og/default-teclab-gestion.jpg` (verificado el 17/10/2026).
-- [ ] **1. Incorporar más imágenes de personas**.
-- [ ] **6. Mejorar con IA las imágenes de algunos modales de carreras**.
-- [ ] **2. Mejorar las páginas de clases y crear sus folletos e imágenes**.
-- [ ] **7. Mejorar la página de materias en base a los folletos creados**.
-- [ ] **11. Crear un folleto de carreras relevantes**.
-- [ ] **8. Rediseñar Identidad Argentina: los modales y la página principal**. Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
-- [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo**. [Detalle](docs/pendientes-detalle.md#pendiente-16).
-- [ ] **La hoja de estilos viaja tres veces en el HTML de la home** y la documentación de Next promete dos (medido el 28/08/2026 con Next 16.3.0). [Detalle](docs/pendientes-detalle.md#pendiente-02).
+Cerrado el 17/10/2026: la tercera copia de la hoja de estilos en la home no cuesta en el cable; no se parchea Next. [Evidencia](docs/historial-pendientes.md#css-de-la-home--tercera-copia-cerrada-17102026).
+
+Completado el 17/10/2026: flecha hacia abajo en lugar de la barra de scroll en los modales (`d1c7d28`, `components/index/flechas-de-scroll`).
+
 Completado el 17/10/2026: estética de las fichas de Siglo 21 con su sistema visual (`818443e`, publicado). [Evidencia](docs/historial-pendientes.md#sitio--estética-de-las-fichas-de-siglo-21-17102026).
 
 ## 7. Bot, leads y comercial
 
+Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, que rotan en un desplegable del buscador. [Evidencia](docs/historial-pendientes.md#bot--mensajes-de-seguimiento-17102026).
+
+- [ ] **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas. No es una tarea de ejecución inmediata.
+
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
-- [ ] **14. Crear más mensajes de seguimiento que complementen al primero**. Siglo 21 tiene segundo seguimiento desde el 03/10/2026; Teclab, primero y segundo; Identidad, ambos desde el 07/10/2026 (380/380 pruebas comerciales). Falta verificar la suite y regenerar los HTML de Identidad (`seguimientos-identidad` T2). Sin publicación ni envío automático. [Identidad](odd/tasks/seguimientos-identidad.md), [Siglo 21](docs/historial-pendientes.md#mensajes-siglo21-2026-10-03).
-- [ ] **Verificar si el aviso de Telegram puede mostrar si la persona marcó la suscripción al newsletter**, distinguiendo aceptada de no aceptada.
 - [ ] **Automatizar HubSpot**.
 - [ ] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas**.
 - [ ] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram**, sobre todo las de Estadística y Análisis Aplicado.
 - [ ] Verificar el volumen de consultas de WhatsApp tras el cambio de reparto de agosto. *(De las [notas operativas](docs/notas-operativas.md); estado sin confirmar.)*
+
+Descartado por el usuario el 17/10/2026: mostrar en el aviso de Telegram si la persona marcó el newsletter. No hace falta ese dato.
 
 ## 8. Infraestructura y seguridad
 
@@ -105,6 +96,30 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **Fichas de carreras de Teclab**: las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
 
 - [ ] **Autoinscripción de Siglo 21: postergada el 16/10/2026**; bajada al fondo el 17/10/2026. Hoy el formulario sólo registra la solicitud y la atención sigue a mano. Antes de retomarla, definir si se hace con un robot en el portal de Siglo 21 (como en Teclab) o con un enlace personalizado.
+
+- [ ] **Imagen de la financiación de Teclab para mandar a los leads**, agregado el 17/10/2026; bajado al fondo por el usuario el 17/10/2026.
+
+- [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras. Bajado al fondo por el usuario el 17/10/2026: se consultará y completará a medida que surjan casos en el día a día, no como un relevamiento general anticipado.
+
+- [ ] **Aclarar que la cursada es online en casi todos los lugares del sitio** (fichas, modales, formularios, home). Bajado al fondo por el usuario el 17/10/2026.
+
+- [ ] **9. Dar imágenes a todas las carreras**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **Imagen OG propia por carrera**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas. Hoy las fichas comparten la genérica de su categoría: por ejemplo, [Tecnicatura Superior en Seguros](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-seguros) usa `/imagenes/og/default-teclab-gestion.jpg` (verificado el 17/10/2026).
+
+- [ ] **1. Incorporar más imágenes de personas**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **6. Mejorar con IA las imágenes de algunos modales de carreras**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **2. Mejorar las páginas de clases y crear sus folletos e imágenes**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **7. Mejorar la página de materias en base a los folletos creados**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **11. Crear un folleto de carreras relevantes**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **8. Rediseñar Identidad Argentina: los modales y la página principal**. Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo**. [Detalle](docs/pendientes-detalle.md#pendiente-16). Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
 - [ ] **Línea del tiempo de Siglo 21 para explicar semestres y cuatrimestres** (pieza para leads), agregado el 17/10/2026. **Fija al fondo de la cola**: no se mueve nunca, y lo que se baje al fondo queda arriba de las fijas. Contenido: semestres de enero a junio y de julio a diciembre, cada uno con un cuatrimestre de cursada adentro, de dos bimestres; la matrícula se paga una vez por cuatrimestre. El primer borrador (paso 3, en `contenidos/siglo21/en-curso/2026-10-17-linea-semestres/`) no se entendía: hay que repensar cómo mostrarlo, no retocar ese.
 

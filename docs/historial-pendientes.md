@@ -4,10 +4,30 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Bot — mensajes de seguimiento, 17/10/2026
+
+- [x] **14. Crear más mensajes de seguimiento que complementen al primero.** Teclab pasó de dos a nueve: a Dudas e Inicio de clases se sumaron Financiación, Requisitos, Inscripción, Para cursar, Medios de pago, Después de inscribirte y Duración y título (`retomar-panel-3` a `retomar-panel-9` en `ventas/corpus/teclab.json`). Los eligió el usuario entre quince borradores, y todos salen de datos que ya estaban en el corpus, sin precios, cupos ni reservas. En el buscador, los seguimientos de las tres casas quedaron bajo un solo botón «Seguimiento» con un desplegable. Al tocarlo muestra el mensaje que sigue al último copiado en esa casa, así no se repite siempre el mismo. Evidencia: `herramientas/ventas/tests/seguimientos-teclab.test.mjs` (RED observado y después GREEN), suite comercial 499/499 y buscador regenerado con `--descuento-beneficio 10`. Siglo 21 e Identidad tenían sus dos seguimientos desde el 03/10 y el 07/10/2026. El corpus, el generador y el buscador están en el gitignore: no viajan por git.
 
 ## Sitio — estética de las fichas de Siglo 21, 17/10/2026
 
 - [x] **Cambiar la estética de las páginas de carrera.** Sólo las de Siglo 21, sin mover la disposición: DM Sans en los títulos, la píldora cian sólo en los botones, el plan de estudios en tarjetas petróleo con el año en una píldora violeta, y la columna lateral y las otras carreras en la misma paleta. El usuario descartó el mosaico de cuatro colores y después los bloques petróleo y violeta en la franja de datos: la franja quedó como estaba, con el texto centrado. El logo de la universidad va en el hero, en la fila de las migas, el mismo lugar donde Teclab e Identidad muestran el suyo. Teclab e Identidad no cambian. Commit `818443e`, publicado el 17/10/2026 junto con `2e047f2`, que arregló el test de los modales que había frenado el primer deploy; `npm run check` pasó 509 de 509 y producción sirve la ficha con la clase `career-page--siglo21`.
+
+## CSS de la home — tercera copia cerrada, 17/10/2026
+
+- [x] **Cerrar el pendiente 02 (la hoja de estilos viaja tres veces en la home).** Causa: Turbopack le asigna las hojas del layout raíz al `global-error` interno de Next, y con `inlineCss` `getGlobalErrorStyles` las vuelve a meter enteras en el payload RSC (campo `G`). Un `app/global-error.tsx` propio sin CSS recibe las mismas hojas, y Next 16.4.2 tiene el mismo código. Se probó un parche que manda esas hojas como `<link>`: en el build local la home bajó de 689,9 a 568,7 KiB sin comprimir y de 113,9 a 93,5 KiB en gzip, pero producción comprime el HTML con Brotli de calidad baja (68,5 KB medidos, entre q2 y q3) y ahí la diferencia es de 0,1 KB, porque Brotli ya deduplica la copia. Decisión del usuario: revertir el parche y no tocar el framework. La copia extra sólo pesa sin comprimir (parseo y memoria del navegador), no en la transferencia.
+
+
+
+- [x] **Corregir las páginas de Computación**. Cerrado por confirmación explícita del usuario. Encabezado reducido a «Computación» con icono, centrado en escritorio y junto al regreso en móvil. «Clases particulares en Villa Lugano» integrado en la barra superior de herramientas; ese título y «Programación» centrados, en tipografía pixel de 14 px y negrita. Typecheck, ESLint focalizado y comprobación de diff aprobados; capturas de escritorio verificadas. La última versión móvil queda sin captura de verificación. Commit `52f07dd`, publicado el 17/10/2026.
+
+## Siglo 21 — aviso de inscripción descartado, 17/10/2026
+
+- **5. Mostrar la fecha de inicio y «Todavía estás a tiempo de inscribirte» en todas las carreras**. Cerrado por descarte explícito del usuario, no por implementación. La fecha de inicio dejó de interesarle y rechazó la maqueta del mensaje junto a «Quiero inscribirme». No se modificó ni publicó el sitio.
+
+
+## Lógica — validación de materias públicas, 17/10/2026
+
+- [x] **Validar los campos JSON de materias antes de renderizar las páginas públicas**. Adaptadores tipados y rechazo de datos inválidos, sin cambios visuales ni del panel admin. Verificación local: 24/24 pruebas, typecheck y lint aprobados (28 advertencias previas); verificación independiente sin hallazgos. Completado por pedido del usuario. `npm run check` 509/509; commit `2b2c23f`, publicado el 17/10/2026. [Evidencia](../odd/tasks/a3-materias.md).
 
 ## Siglo 21 — calendario de pagos, 17/10/2026
 
