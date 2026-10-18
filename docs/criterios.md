@@ -134,6 +134,16 @@ Ojo con el diagnóstico: la API devuelve los grupos `crs` con `active: true`, pe
 **eso no significa que estén evaluando** — el ruleset está apagado a nivel
 proyecto, y modificarlo responde `401 OWASP Core Ruleset must be enabled`.
 
+### El SPF se queda en `~all`
+
+Decidido el 18/10/2026. Con DMARC en `p=reject`, los servidores que lo aplican ya
+rechazan el mail falsificado; `-all` sólo suma en los pocos que miran el SPF e
+ignoran el DMARC. A cambio, algunos rechazan apenas el SPF da *hardfail*, antes de
+mirar el DKIM: si mañana se agrega un servicio que envíe con el dominio raíz en el
+sobre y nadie actualiza el SPF, esos mails se pierden sin aviso. Hoy ningún envío
+legítimo usa el raíz (SMTP2GO usa el subdominio `em776964`). No reproponerlo salvo
+que se deje de usar DMARC en `reject`.
+
 ### Identidad Argentina se migra a otro sitio
 
 Decidido el 23/08/2026: su oferta no lleva página propia en `siglo21sur.com`. **No
