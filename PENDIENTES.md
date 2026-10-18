@@ -47,7 +47,7 @@ Descartado por el usuario el 17/10/2026: mostrar en el aviso de Telegram si la p
 Completado el 18/10/2026: **tipar el contrato de consultas y el detalle de carreras** (A3; `bc593a0`, `ad52917`), con check y build completos. [Evidencia](docs/historial-pendientes.md#tipos--contrato-de-consultas-y-detalle-de-carreras-18102026).
 Descartado por el usuario el 16/10/2026: **superficie segura de revisión para el código comercial ignorado** (`descuentos-siglo21-2027` T5). La revisión nativa está apagada a nivel global, así que no hace falta. [Detalle](odd/tasks/descuentos-siglo21-2027.md).
 Completado el 18/10/2026: PAT de Supabase revisados; queda sólo el del CLI de Linux y se borró el de Windows. [Detalle](docs/notas-operativas.md).
-- [ ] Comprobar si siguen sin uso las credenciales de Resend de este proyecto antes de retirarlas; no tocar las de otros proyectos. *(Notas operativas.)*
+- [ ] **Borrar la clave `Onboarding` en el panel de Resend** (la hace el usuario; no tocar `topykly-dev`). El resto se retiró el 18/10/2026: sin uso en el código, ya no estaba en Vercel y se borró el secreto de Supabase. *(Notas operativas.)*
 - [ ] Evaluar pasar el SPF de `~all` a `-all` sólo si sigue justificado (prioridad baja). *(Notas operativas.)*
 - [ ] **Factibilidad de Cloudflare** (prioridad baja): el deploy a workers.dev está frenado a propósito porque OpenNext mete todo `.env.local` en el bundle; requiere un entorno de build sólo con `NEXT_PUBLIC_*`. Falta el informe final. [Detalle](odd/tasks/factibilidad-cloudflare.md).
 
