@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Fuentes de las casas — acceso revisado, 17/10/2026
+
+- [x] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas.** Con sesión: la calculadora de CASA (Siglo 21), el portal administrativo de Teclab y la API de Identidad (`/dev/curso`, por POST) actualizaron precios el mismo 17/10/2026, y `estado-precios.mjs` da las tres vigentes. Públicas, responden: `21.edu.ar`, `contenidos.21.edu.ar` (fichas PDF), `teclab.edu.ar` (403 a curl por el filtro de bots, abre en navegador), el Dashboard Comercial de Teclab en `informacion.teclab.edu.ar` y la portada de La Nube 21. HubSpot: la sesión existente se verificó ese día; el login autónomo sigue abierto en «Automatizar HubSpot». Sin probar: el ingreso con usuario a La Nube 21, que no se hace desde el agente.
+
 ## Bot — mensajes de seguimiento, 17/10/2026
 
 - [x] **14. Crear más mensajes de seguimiento que complementen al primero.** Teclab pasó de dos a nueve: a Dudas e Inicio de clases se sumaron Financiación, Requisitos, Inscripción, Para cursar, Medios de pago, Después de inscribirte y Duración y título (`retomar-panel-3` a `retomar-panel-9` en `ventas/corpus/teclab.json`). Los eligió el usuario entre quince borradores, y todos salen de datos que ya estaban en el corpus, sin precios, cupos ni reservas. En el buscador, los seguimientos de las tres casas quedaron bajo un solo botón «Seguimiento» con un desplegable. Al tocarlo muestra el mensaje que sigue al último copiado en esa casa, así no se repite siempre el mismo. Evidencia: `herramientas/ventas/tests/seguimientos-teclab.test.mjs` (RED observado y después GREEN), suite comercial 499/499 y buscador regenerado con `--descuento-beneficio 10`. Siglo 21 e Identidad tenían sus dos seguimientos desde el 03/10 y el 07/10/2026. El corpus, el generador y el buscador están en el gitignore: no viajan por git.
