@@ -17,6 +17,7 @@
     "calidad:integraciones": "node --env-file-if-exists=.env.local herramientas/integraciones.mjs",
     "calidad": "node --env-file-if-exists=.env.local herramientas/calidad.mjs",
     "auditar": "node --env-file-if-exists=.env.local herramientas/auditar-contenido.mjs",
+    "og:teclab": "node --env-file-if-exists=.env.local herramientas/generar-og-teclab.mjs",
     "smoke": "node herramientas/smoke.mjs",
     "capturas": "node herramientas/capturas.mjs",
     "seo": "node --env-file-if-exists=.env.local herramientas/seo-semanal.mjs",

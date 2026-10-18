@@ -56,6 +56,10 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   - [ ] **M** — `FICHAS`: url oficial, imagen, imagen de cierre y partner. Las fotos se
     bajan con `scripts/descargar-assets-teclab.mjs`. Una anunciada va en
     `PORTADAS_ANUNCIADAS` hasta que tenga ficha oficial.
+  - [ ] **M** — Imagen para compartir propia: con la foto ya en `FICHAS` o
+    `PORTADAS_ANUNCIADAS`, correr `npm run og:teclab` y commitear
+    `public/imagenes/og/teclab/` y `components/carreras/og-teclab.json`. Sin esto
+    queda con la de su familia.
   - [ ] **M, opcional** — `DESTACADAS` (las tres competencias del modal).
   - [ ] **M** — `articulaConSiglo21`: articulan todas menos las `proximamente` y las de
     `SIN_ARTICULACION_CONFIRMADA` (Seguros y las altas del 16/10/2026). Si la fuente no

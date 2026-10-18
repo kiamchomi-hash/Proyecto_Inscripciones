@@ -14,6 +14,7 @@ import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
 import { duracionISO } from '@/lib/duracion-iso';
+import ogTeclab from '@/components/carreras/og-teclab.json';
 import '../career-detail.css';
 import '../career-detail-teclab.css';
 import '../career-detail-siglo21.css';
@@ -54,11 +55,19 @@ async function getCarreras() {
   return (data ?? []).filter(esCarreraVisible).map(carreraAPublica);
 }
 
-// Miniatura para compartir, una por familia. Ni Teclab ni las diplomaturas de
-// convenio son Siglo 21: cada marca lleva su portada, con sus colores y su logo, y
-// ninguna de las dos menciona a la universidad. Las genera `herramientas/generar-og.mjs`.
+// Miniatura para compartir. Teclab tiene una por carrera, con su foto y su
+// nombre (`npm run og:teclab`, que deja la lista en og-teclab.json); la que no
+// esta en la lista, y el resto, llevan la de su familia. Ni Teclab ni las
+// diplomaturas de convenio son Siglo 21: cada marca lleva su portada, con sus
+// colores y su logo. Las de familia las genera `herramientas/generar-og.mjs`.
+// `?.`: los tests cargan la pagina con las dependencias simuladas y el json
+// llega vacio; sin lista, todas van con la de su familia.
+const OG_TECLAB = new Set<string>(ogTeclab?.slugs ?? []);
+
 function ogCarrera(carrera: Carrera): string {
   if (carrera.nivel === 'Identidad Argentina') return '/imagenes/og/default-identidad-argentina.jpg';
+  const slug = carreraToSlug(carrera);
+  if (OG_TECLAB.has(slug)) return `/imagenes/og/teclab/${slug}.jpg`;
   const familia = getFamiliaTeclab(carrera);
   if (familia) return `/imagenes/og/default-teclab-${familia}.jpg`;
   return '/imagenes/og/default.jpg';
