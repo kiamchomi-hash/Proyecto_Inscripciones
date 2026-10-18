@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## WhatsApp — volumen tras el reparto, 17/10/2026
+
+- [x] **Verificar el volumen de consultas de WhatsApp tras el cambio de reparto de agosto.** `npm run leads -- --dias=62` (18/08 al 18/10): 190 clics de 154 personas, unos 3 por día y sin semanas en cero; 116 desde el móvil. `lib/whatsapp.ts` tiene un solo asesor (`NUMERO_CAU`), así que todos van al número que atiende. No se puede comparar contra antes del 14/08: el evento `whatsapp` con página de origen existe desde el 17/08 y la API de Vercel da 62 días como máximo. Los mensajes que llegan al teléfono no los ve ninguna herramienta.
+
 ## Instagram — referencia del CAU Corrientes, 17/10/2026
 
 - [x] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram.** Relevada la cuenta, con foco en la Tecnicatura en Estadística Aplicada y Análisis Avanzado: placa con foto temática y el nombre de la carrera como titular, placas de beneficio con un porcentaje por tarjeta, y reels con gente de la sede y un rótulo corto. Las capturas, los enlaces y qué tomar para el CAU están en `notas-locales/referencia-cau-corrientes-instagram/LEER.md`, fuera del repo porque es una sede competidora.
