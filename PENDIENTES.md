@@ -35,7 +35,7 @@ Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, q
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
 - [ ] **Automatizar HubSpot**.
-Completado el 17/10/2026: **17. Acceso a las fuentes de las casas**. Las tres de precios se actualizaron solas ese día, y el usuario confirmó su ingreso a La Nube 21. [Evidencia](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
+Completado el 17/10/2026: **17. Acceso a las fuentes de las casas**. Las tres de precios se actualizaron solas ese día; queda sin confirmar el ingreso con usuario a La Nube 21. [Evidencia](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 Completado el 17/10/2026: **23. Referencia del CAU Corrientes para Instagram**, relevada con capturas en la nota local `notas-locales/referencia-cau-corrientes-instagram/`. [Evidencia](docs/historial-pendientes.md#instagram--referencia-del-cau-corrientes-17102026).
 Completado el 17/10/2026: volumen de WhatsApp tras el reparto de agosto, estable desde el arreglo. [Evidencia](docs/historial-pendientes.md#whatsapp--volumen-tras-el-reparto-17102026).
 

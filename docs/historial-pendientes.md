@@ -14,7 +14,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 ## Fuentes de las casas — acceso revisado, 17/10/2026
 
-- [x] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas.** Con sesión: la calculadora de CASA (Siglo 21), el portal administrativo de Teclab y la API de Identidad (`/dev/curso`, por POST) actualizaron precios el mismo 17/10/2026, y `estado-precios.mjs` da las tres vigentes. Públicas, responden: `21.edu.ar`, `contenidos.21.edu.ar` (fichas PDF), `teclab.edu.ar` (403 a curl por el filtro de bots, abre en navegador), el Dashboard Comercial de Teclab en `informacion.teclab.edu.ar` y la portada de La Nube 21. HubSpot: la sesión existente se verificó ese día; el login autónomo sigue abierto en «Automatizar HubSpot». El ingreso con usuario a La Nube 21 lo confirmó el usuario el mismo día.
+- [x] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas.** Con sesión: la calculadora de CASA (Siglo 21), el portal administrativo de Teclab y la API de Identidad (`/dev/curso`, por POST) actualizaron precios el mismo 17/10/2026, y `estado-precios.mjs` da las tres vigentes. Públicas, responden: `21.edu.ar`, `contenidos.21.edu.ar` (fichas PDF), `teclab.edu.ar` (403 a curl por el filtro de bots, abre en navegador), el Dashboard Comercial de Teclab en `informacion.teclab.edu.ar` y la portada de La Nube 21. HubSpot: la sesión existente se verificó ese día; el login autónomo sigue abierto en «Automatizar HubSpot». Sin confirmar: el ingreso con usuario a La Nube 21; sólo se comprobó que la portada responde.
 
 ## Bot — mensajes de seguimiento, 17/10/2026
 
