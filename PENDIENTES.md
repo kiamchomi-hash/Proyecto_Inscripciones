@@ -36,7 +36,6 @@ Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, q
 - [ ] **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas. No es una tarea de ejecución inmediata.
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
-- [ ] **Automatizar HubSpot**.
 Completado el 17/10/2026: **17. Acceso a las fuentes de las casas**. Las tres de precios se actualizaron solas ese día; queda sin confirmar el ingreso con usuario a La Nube 21. [Evidencia](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 Completado el 17/10/2026: **23. Referencia del CAU Corrientes para Instagram**, relevada con capturas en la nota local `notas-locales/referencia-cau-corrientes-instagram/`. [Evidencia](docs/historial-pendientes.md#instagram--referencia-del-cau-corrientes-17102026).
 Completado el 17/10/2026: volumen de WhatsApp tras el reparto de agosto, estable desde el arreglo. [Evidencia](docs/historial-pendientes.md#whatsapp--volumen-tras-el-reparto-17102026).
@@ -45,8 +44,6 @@ Descartado por el usuario el 17/10/2026: mostrar en el aviso de Telegram si la p
 
 ## 8. Infraestructura y seguridad
 
-- [ ] **Completar la recuperación de Supabase: Auth funcional, permisos/RLS, Vault y archivos de Storage**. Al 07/10/2026: respaldo diario cifrado activo en la PC de la sede y restauración real limitada aprobada en Docker aislado, sin seguridad idéntica verificada. Falta comparar con el inventario de origen, recuperar y probar esos servicios, guardar una copia cifrada fuera de esta PC y medir la recuperación completa. RPO objetivo 24 h; RTO objetivo 4 h para recibir leads, aún no demostrado. [Procedimiento](docs/recuperacion-supabase.md).
-- [ ] **Aplicar las actualizaciones de dependencias** con los overrides mínimos y verificar auditoría, check y build. [Detalle](odd/tasks/auditoria-dependencias.md).
 - [ ] **Tipar el contrato de consultas y el detalle de carreras** (A3): filas `TablesInsert` con contratos negativos, y adaptador con validación en runtime para el detalle. [Consultas](odd/tasks/a3-contrato-consultas.md), [detalle](odd/tasks/a3-detalle-carreras.md).
 - [ ] **Superficie segura de revisión para el código comercial ignorado** (`descuentos-siglo21-2027` T5), sin exponerlo al repositorio público.
 - [ ] Revisar los PAT de Supabase y retirar sólo los que ya no se usen. *(Notas operativas.)*
@@ -70,6 +67,7 @@ Los pedidos ya redactados y el destino de cada dato están en [las notas operati
 - [ ] **Confirmar medios de pago del curso de IA de Teclab**. Arancel individual registrado con vigencia hasta el 30/09; no es un precio permanente. [Detalle](docs/pendientes-detalle.md#pendiente-08).
 - [ ] **Confirmar becas, doble carrera y las dudas restantes de requisitos**, que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 - [ ] Revisar las decisiones pendientes sobre los módulos de Bienestar Integral y Mindfulness, si siguen dentro del alcance del convenio. *(Notas operativas; estado sin confirmar.)*
+- [ ] **Cerrar las 5 alertas altas de `braces`** (GHSA-vfj7-8cjw-p6xm), en espera de un arreglo publicado. Sólo entra en desarrollo, por `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` 3.3.1 → `micromatch`; no llega al sitio. Sharp, source-map-js y el watcher ya se actualizaron (`96e2e78`). Al 18/10/2026 ni Next 16.4.2 ni el canary 16.5 cambiaron `fast-glob`, y el alias a tinyglobby rompe el plugin. Revisar cuando salga una versión nueva de Next. [Detalle](odd/tasks/auditoria-dependencias.md).
 
 ## Al fondo de la cola
 
@@ -120,6 +118,10 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **8. Rediseñar Identidad Argentina: los modales y la página principal**. Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo**. [Detalle](docs/pendientes-detalle.md#pendiente-16). Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+
+- [ ] **Automatizar HubSpot**. En curso con otra IA; bajado al fondo por el usuario el 18/10/2026. [Detalle](odd/tasks/hubspot-negocios.md).
+
+- [ ] **Completar la recuperación de Supabase: Auth funcional, permisos/RLS, Vault y archivos de Storage**. Al 07/10/2026: respaldo diario cifrado activo en la PC de la sede y restauración real limitada aprobada en Docker aislado, sin seguridad idéntica verificada. Falta comparar con el inventario de origen, recuperar y probar esos servicios, guardar una copia cifrada fuera de esta PC y medir la recuperación completa. RPO objetivo 24 h; RTO objetivo 4 h para recibir leads, aún no demostrado. [Procedimiento](docs/recuperacion-supabase.md). En curso con otra IA; bajado al fondo por el usuario el 18/10/2026.
 
 - [ ] **Línea del tiempo de Siglo 21 para explicar semestres y cuatrimestres** (pieza para leads), agregado el 17/10/2026. **Fija al fondo de la cola**: no se mueve nunca, y lo que se baje al fondo queda arriba de las fijas. Contenido: semestres de enero a junio y de julio a diciembre, cada uno con un cuatrimestre de cursada adentro, de dos bimestres; la matrícula se paga una vez por cuatrimestre. El primer borrador (paso 3, en `contenidos/siglo21/en-curso/2026-10-17-linea-semestres/`) no se entendía: hay que repensar cómo mostrarlo, no retocar ese.
 
