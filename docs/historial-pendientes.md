@@ -4,9 +4,13 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Instagram — referencia del CAU Corrientes, 17/10/2026
+
+- [x] **23. Tomar como referencia al CAU de Corrientes para las publicaciones de Instagram.** Relevada la cuenta, con foco en la Tecnicatura en Estadística Aplicada y Análisis Avanzado: placa con foto temática y el nombre de la carrera como titular, placas de beneficio con un porcentaje por tarjeta, y reels con gente de la sede y un rótulo corto. Las capturas, los enlaces y qué tomar para el CAU están en `notas-locales/referencia-cau-corrientes-instagram/LEER.md`, fuera del repo porque es una sede competidora.
+
 ## Fuentes de las casas — acceso revisado, 17/10/2026
 
-- [x] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas.** Con sesión: la calculadora de CASA (Siglo 21), el portal administrativo de Teclab y la API de Identidad (`/dev/curso`, por POST) actualizaron precios el mismo 17/10/2026, y `estado-precios.mjs` da las tres vigentes. Públicas, responden: `21.edu.ar`, `contenidos.21.edu.ar` (fichas PDF), `teclab.edu.ar` (403 a curl por el filtro de bots, abre en navegador), el Dashboard Comercial de Teclab en `informacion.teclab.edu.ar` y la portada de La Nube 21. HubSpot: la sesión existente se verificó ese día; el login autónomo sigue abierto en «Automatizar HubSpot». Sin probar: el ingreso con usuario a La Nube 21, que no se hace desde el agente.
+- [x] **17. Revisar si todavía tenemos acceso a todas las fuentes de las casas.** Con sesión: la calculadora de CASA (Siglo 21), el portal administrativo de Teclab y la API de Identidad (`/dev/curso`, por POST) actualizaron precios el mismo 17/10/2026, y `estado-precios.mjs` da las tres vigentes. Públicas, responden: `21.edu.ar`, `contenidos.21.edu.ar` (fichas PDF), `teclab.edu.ar` (403 a curl por el filtro de bots, abre en navegador), el Dashboard Comercial de Teclab en `informacion.teclab.edu.ar` y la portada de La Nube 21. HubSpot: la sesión existente se verificó ese día; el login autónomo sigue abierto en «Automatizar HubSpot». El ingreso con usuario a La Nube 21 lo confirmó el usuario el mismo día.
 
 ## Bot — mensajes de seguimiento, 17/10/2026
 
