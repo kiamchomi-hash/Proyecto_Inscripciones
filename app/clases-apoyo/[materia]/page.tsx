@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import ReservaClase from '@/components/clases-apoyo/reserva/reserva-clase';
 import MateriaGenerica from '@/components/clases-apoyo/materia-generica';
 import ComputacionPixel from '@/components/clases-apoyo/computacion/computacion-pixel';
-import { OtrasMaterias, VolverAClases, type MateriaOtra } from '@/components/clases-apoyo/navegacion-materia';
-import type { MateriaDB } from '@/components/clases-apoyo/tipos';
+import { OtrasMaterias, VolverAClases } from '@/components/clases-apoyo/navegacion-materia';
+import { COLUMNAS_MATERIA_BASICA, COLUMNAS_MATERIA_FICHA, COLUMNAS_MATERIA_NAV, materiaAFicha, materiaAFichaBasica, materiaANavegacion, type MateriaFicha } from '@/lib/datos/materia';
 import TextoMateria from '@/components/clases-apoyo/texto-materia';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
@@ -15,15 +15,8 @@ import '../computacion.css';
 
 const BASE_URL = 'https://www.siglo21sur.com';
 
-// Sólo las columnas que la ficha activa realmente usa. La navegación pide
-// aparte, de todas, lo que usan las tarjetas de "Otras materias".
-const CAMPOS_FICHA =
-  'id, slug, label, nombre_profesor, whatsapp, telefono_display, descripcion, imagenes, en_construccion, orden, modo_manana, dias_bloqueados, horarios_bloqueados, texto_seo';
-
-type Ficha = MateriaDB & { texto_seo: string[] | null };
-
-async function getMateria(slug: string): Promise<Ficha | null> {
-  const pedir = (campos: string) =>
+async function getMateria(slug: string): Promise<MateriaFicha | null> {
+  const pedir = <T extends typeof COLUMNAS_MATERIA_FICHA | typeof COLUMNAS_MATERIA_BASICA>(campos: T) =>
     supabase
       .from('materias')
       .select(campos)
@@ -31,15 +24,15 @@ async function getMateria(slug: string): Promise<Ficha | null> {
       .eq('slug', slug)
       .maybeSingle();
 
-  const { data, error } = await pedir(CAMPOS_FICHA);
-  if (!error) return (data as unknown as Ficha) ?? null;
+  const { data, error } = await pedir(COLUMNAS_MATERIA_FICHA);
+  if (!error) return data ? materiaAFicha(data) : null;
 
   // texto_seo lo agrega sql/2026-08-04_texto_seo_materias.sql, que se corre a
   // mano. Si el deploy llega antes que el SQL, PostgREST rechaza la consulta
   // entera por la columna que falta y las seis páginas darían 404. Se reintenta
   // sin ella: la ficha se sirve igual, sólo sin el texto de abajo.
-  const { data: basica } = await pedir(CAMPOS_FICHA.replace(', texto_seo', ''));
-  return basica ? ({ ...(basica as unknown as MateriaDB), texto_seo: null }) : null;
+  const { data: basica } = await pedir(COLUMNAS_MATERIA_BASICA);
+  return basica ? materiaAFichaBasica(basica) : null;
 }
 
 export async function generateStaticParams() {
@@ -77,19 +70,13 @@ export default async function Page({ params }: { params: Promise<{ materia: stri
     getMateria(materia),
     supabase
       .from('materias')
-      .select('id, slug, label, en_construccion, imagenes')
+      .select(COLUMNAS_MATERIA_NAV)
       .eq('activa', true)
       .order('orden', { ascending: true }),
   ]);
 
   // A las tarjetas de "Otras materias" les alcanza con la primera foto.
-  const otras: MateriaOtra[] = (nav ?? []).map(m => ({
-    id: m.id,
-    slug: m.slug,
-    label: m.label,
-    en_construccion: m.en_construccion,
-    foto: Array.isArray(m.imagenes) && typeof m.imagenes[0] === 'string' ? m.imagenes[0] : null,
-  }));
+  const otras = (nav ?? []).map(materiaANavegacion);
 
   if (!ficha) notFound();
 

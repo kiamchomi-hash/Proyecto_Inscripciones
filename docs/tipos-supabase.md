@@ -107,13 +107,37 @@ errores anidados, filtro previo, caché y propagación de errores. Los contratos
 compilados comprueban además que una proyección incompleta o inválida no sirve
 para alimentar los adaptadores y que `Json` no es un arreglo de slides tipado.
 
+## Materias públicas: JSON validado antes del render
+
+`lib/datos/materia.ts` usa proyecciones literales y `Pick<Tables<'materias'>>`
+para el listado, la ficha y la navegación. Valida `descripcion`, `imagenes`,
+`dias_bloqueados`, `horarios_bloqueados` y `texto_seo` como listas de strings:
+el HTML SEO viaja dentro de cada string, no como objetos anidados.
+
+Un valor o elemento inválido rechaza el render con id y ruta, sin registrar su
+contenido ni omitir la fila para simular éxito parcial. La navegación conserva
+sólo identidad, estado y primera foto, pero valida toda la lista de fotos.
+No consulta descripción ni SEO de otras materias.
+
+Las listas JSON null se conservan en el listado y en SEO; en la ficha se
+normalizan a listas vacías para los consumidores que ya las trataban como
+contenido ausente. No cambia el fallback de consulta sin `texto_seo`: sólo se
+activa ante error de Supabase, no ante datos corruptos. El panel admin queda
+fuera de este avance. No se consultó ni modificó contenido remoto.
+
+`tests/materia-datos.test.mjs` ejecuta las páginas reales con Supabase simulado:
+rechazo previo al render, proyecciones exactas, null/vacío, valores anidados,
+ausencia de mutaciones, fallback y separación del SEO. Los contratos compilados
+rechazan proyecciones incompletas y el uso directo de `Json` como párrafos.
+
 ## Alcance pendiente de A3
 
 Este avance no elimina todos los casts del proyecto. Siguen pendientes
-el adaptador de materias y las demás fronteras JSON fuera del detalle de carreras.
-`Carrera` sigue siendo un tipo de presentación manual; el tipo generado refleja
-las nulabilidades reales y no afirma que `slides` tenga un formato particular.
-No convertir `Json` a una estructura de slides con un cast y presentar eso como
-validación. Las pruebas de integración de RLS y permisos siguen siendo necesarias.
+el panel de materias y las demás fronteras JSON fuera de carreras y materias
+públicas. `Carrera` sigue siendo un tipo de presentación manual; el tipo generado
+refleja las nulabilidades reales y no afirma que `slides` tenga un formato
+particular. No convertir `Json` a una estructura de slides con un cast y presentar
+eso como validación. Las pruebas de integración de RLS y permisos siguen siendo
+necesarias.
 
 Fuentes: [referencias](../referencias/2026-10-02-tipos-supabase.md).

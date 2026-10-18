@@ -36,6 +36,7 @@ function cargarPagina(archivo, fallaEn = 1, persistente = false) {
   } };
   return cargarTypescript(archivo, {
     '@/lib/supabase': { supabase },
+    '@/lib/datos/materia': cargarTypescript('lib/datos/materia.ts', {}),
     '@/lib/json-ld': { jsonLdScript: JSON.stringify },
     '@/components/index/types': taxonomia,
     'next/navigation': { notFound: () => { throw new Error('404 incorrecto'); } },
@@ -61,6 +62,7 @@ for (const archivo of ['app/faq/page.tsx', 'app/clases-apoyo/page.tsx']) {
       } });
       const pagina = cargarTypescript(archivo, {
         '@/lib/supabase': { supabase: { from: () => consulta } },
+        '@/lib/datos/materia': cargarTypescript('lib/datos/materia.ts', {}),
         '@/lib/json-ld': { jsonLdScript: JSON.stringify },
         'react/jsx-runtime': { jsx: () => null, jsxs: () => null },
       }, () => ({}));

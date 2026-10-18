@@ -1,3 +1,4 @@
+import { COLUMNAS_MATERIA_CARD, COLUMNAS_MATERIA_NAV, COLUMNAS_MATERIA_FICHA, COLUMNAS_MATERIA_BASICA, materiaACard, materiaAFicha, materiaAFichaBasica, materiaANavegacion } from '@/lib/datos/materia';
 import type { TablesInsert } from '@/lib/database.types';
 import type { Campo } from '@/components/formularios/casas';
 import { CAMPOS, columnaDe } from '@/components/formularios/casas';
@@ -85,5 +86,43 @@ export async function verificarProyeccionesCarrera() {
   incorrecta.data?.forEach(fila => {
     // @ts-expect-error Una selección inválida no satisface el adaptador.
     carreraADetalle(fila);
+  });
+}
+
+// Las materias públicas se construyen sólo desde sus proyecciones exactas.
+export async function verificarProyeccionesMateria() {
+  const cards = await supabase.from('materias').select(COLUMNAS_MATERIA_CARD);
+  cards.data?.forEach(fila => {
+    materiaACard(fila);
+    // @ts-expect-error El listado no consulta la ficha completa.
+    materiaAFicha(fila);
+    // @ts-expect-error La navegación no puede inventar imágenes ausentes.
+    materiaANavegacion(fila);
+  });
+  const fichas = await supabase.from('materias').select(COLUMNAS_MATERIA_FICHA);
+  fichas.data?.forEach(fila => {
+    const ficha = materiaAFicha(fila);
+    // @ts-expect-error Json no demuestra que los párrafos sean strings.
+    const parrafos: typeof ficha.texto_seo = fila.texto_seo;
+    // @ts-expect-error La ficha pública no publica datos de infraestructura.
+    void ficha.created_at;
+    void parrafos;
+  });
+  const basicas = await supabase.from('materias').select(COLUMNAS_MATERIA_BASICA);
+  basicas.data?.forEach(fila => {
+    materiaAFichaBasica(fila);
+    // @ts-expect-error El fallback no consultó texto_seo.
+    materiaAFicha(fila);
+  });
+  const nav = await supabase.from('materias').select(COLUMNAS_MATERIA_NAV);
+  nav.data?.forEach(fila => {
+    materiaANavegacion(fila);
+    // @ts-expect-error La navegación no consulta contenido SEO ajeno.
+    void fila.texto_seo;
+  });
+  const incorrecta = await supabase.from('materias').select('id, columna_inexistente');
+  incorrecta.data?.forEach(fila => {
+    // @ts-expect-error Una proyección inválida no satisface el adaptador.
+    materiaACard(fila);
   });
 }

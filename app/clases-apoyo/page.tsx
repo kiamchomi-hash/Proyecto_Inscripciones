@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ClasesApoyoLanding from '@/components/clases-apoyo/clases-apoyo-landing';
 import SiteFooter from '@/components/footer';
-import type { MateriaCard } from '@/components/clases-apoyo/clases-apoyo-landing';
+import { COLUMNAS_MATERIA_CARD, materiaACard } from '@/lib/datos/materia';
 import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
 import { supabase } from '@/lib/supabase';
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
 export default async function Page() {
   const { data } = await supabase
     .from('materias')
-    .select('id, slug, label, en_construccion, descripcion')
+    .select(COLUMNAS_MATERIA_CARD)
     .eq('activa', true)
     .order('orden', { ascending: true })
     .throwOnError();
 
-  const materias = (data ?? []) as MateriaCard[];
+  const materias = (data ?? []).map(materiaACard);
 
   const servicioSchema = {
     '@context': 'https://schema.org',
