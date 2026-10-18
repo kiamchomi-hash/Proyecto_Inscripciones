@@ -1031,6 +1031,19 @@
   transform: translateY(-2px);
 }
 
+.career-equivalente {
+  margin: -0.75rem 0 1.5rem;
+  color: var(--career-soft);
+  font-size: .9rem;
+}
+
+.career-equivalente a {
+  color: var(--career-accent);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
 .career-related li > a svg {
   flex: 0 0 auto;
   color: var(--career-accent);

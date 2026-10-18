@@ -8,6 +8,7 @@ import { carreraToSlug, carreraFullName, esCarreraVisible, getAreaForCarrera } f
 import { esCursoTeclab, getFamiliaTeclab, esTeclab, getFichaTeclab, parseEnfoqueTeclab } from '@/components/index/teclab';
 import { parseIAMeta, tienePlanDeEstudios } from '@/components/carreras/career-content';
 import CareerDetail from '@/components/carreras/career-detail';
+import { carreraEquivalente } from '@/components/carreras/carrera-equivalente';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import DirectCareerOpenTracker from '@/components/carreras/direct-career-open-tracker';
 import SiteFooter from '@/components/footer';
@@ -121,6 +122,13 @@ const SEO_ESPECIFICO: Record<string, { title: string; description: string }> = {
   'Tecnicatura Superior en Gestión Contable': {
     title: 'Tecnicatura en Gestión Contable Online | Teclab',
     description: 'Título oficial en 2 años, 100% online, con certificación intermedia de Auxiliar Contable. Estudiá contabilidad, impuestos y estados contables en Teclab.',
+  },
+  // La ficha de Teclab le ganaba "siglo 21 marketing digital" porque es la unica
+  // que dice "marketing digital" seguido. La description arranca por esas dos
+  // palabras y nombra a la universidad; el titulo es el oficial y no se toca.
+  'Tecnicatura en Marketing y Publicidad Digital': {
+    title: 'Tecnicatura en Marketing y Publicidad Digital | Siglo 21',
+    description: 'Marketing digital en Universidad Siglo 21: SEO/SEM, redes sociales y email marketing. Tecnicatura a distancia de 2 años. Consultá el plan de estudios.',
   },
   'Procurador': {
     title: 'Procurador a Distancia | Universidad Siglo 21',
@@ -592,7 +600,7 @@ export default async function CarreraPage({ params }: { params: Promise<{ slug: 
         <DirectCareerOpenTracker
           carrera={carreraFullName(carrera)}
         />
-        <CareerDetail carrera={carrera} relacionadas={relacionadas} />
+        <CareerDetail carrera={carrera} relacionadas={relacionadas} equivalente={carreraEquivalente(carrera, carreras)} />
         <DeferredEnrollmentForm carreras={opcionesFormulario} carreraInicial={carrera.id} />
       </main>
       <SiteFooter casa={conTeclab ? 'teclab' : 'cau'} fuente={conTeclab ? poppins.variable : ''} />

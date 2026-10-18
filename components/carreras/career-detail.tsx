@@ -41,10 +41,13 @@ import {
   modalidadCorta,
 } from './career-content';
 import { rutaInscripcion, tieneInscripcionPropia } from './inscripcion-carrera';
+import type { Equivalente } from './carrera-equivalente';
 
 interface Props {
   carrera: Carrera;
   relacionadas: CarreraEnlace[];
+  /** La ficha de la otra casa con la que Google la confunde (ver carrera-equivalente.ts). */
+  equivalente?: Equivalente | null;
 }
 
 type CareerStyle = CSSProperties & {
@@ -137,7 +140,7 @@ function CheckIcon() {
   );
 }
 
-export default function CareerDetail({ carrera, relacionadas }: Props) {
+export default function CareerDetail({ carrera, relacionadas, equivalente = null }: Props) {
   const isIA = carrera.nivel === 'Identidad Argentina';
   const isTeclabCourse = esCursoTeclab(carrera);
   // Las carreras de Teclab traen su material de la ficha oficial del instituto:
@@ -746,7 +749,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
         </aside>
       </div>
 
-      {relacionadas.length > 0 && (
+      {(relacionadas.length > 0 || equivalente) && (
         <section className="career-related career-reveal">
           <div className="career-related-heading">
             <div>
@@ -757,6 +760,18 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
             </div>
             <Link href="/#carreras" prefetch={false}>Ver todas <ArrowIcon /></Link>
           </div>
+          {/* Antes de la grilla y con la casa en el texto del enlace: es lo que
+              separa a esta ficha de su pareja de la otra casa en el buscador. */}
+          {equivalente && (
+            <p className="career-equivalente">
+              {equivalente.casa === 'Teclab' ? '¿Preferís un título de instituto técnico?' : '¿Buscabas la de la universidad?'}{' '}
+              Mirá la{' '}
+              <Link href={`/carreras/${carreraToSlug(equivalente.carrera)}`} prefetch={false}>
+                {carreraFullName(equivalente.carrera)} de {equivalente.casa}
+              </Link>.
+            </p>
+          )}
+          {relacionadas.length > 0 && (
           <ul>
             {/* Con inlineCss cada precarga arrastra los 123 KB de CSS de la ruta:
                 al llegar scrolleando hasta aca se pedian hasta 8 paginas de golpe. */}
@@ -769,6 +784,7 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
               </li>
             ))}
           </ul>
+          )}
         </section>
       )}
     </article>
