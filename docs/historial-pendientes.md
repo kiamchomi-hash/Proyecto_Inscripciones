@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Sitio — cursada online a la vista, 18/10/2026
+
+- [x] **Aclarar que la cursada es online en fichas, modales, formularios y home.** Un solo texto por casa, `modalidadCorta()` en `components/carreras/career-content.ts`: «Cursada online» en Siglo 21 (no «100% online», porque la modalidad distribuida tiene instancias en la sede y los datos estructurados la declaran `blended`), «100% online» en Teclab y, en Identidad, «Online, con clases en vivo» para las híbridas. Ficha: dentro de la fila de la marca, sin renglón propio (se midió que la fila no cambia de alto). Home: una línea bajo «Inscripciones». Modales de Siglo 21: reemplaza «Modalidad: Virtual» y el «Consultar». Formulario de preinscripción: a la derecha de la etiqueta «Carrera». `npm run check` 512/512.
+
 ## Formularios — precio en la preinscripción, 18/10/2026
 
 - [x] **Mostrar el precio dentro de los pasos del formulario de preinscripción.** Siglo 21: con precio vigente, el paso 2 después de enviar es el precio, y «Continuar» lleva al cartel de enviada. Teclab, entrada directa (ficha, mail y `/teclab/inscripcion`): después de enviar va el portal, y «Ver precio» abre el precio en el slide siguiente, con «Volver». La entrada normal de Teclab ya lo tenía. El endpoint devuelve el precio en la preinscripción de Siglo 21 (verificando la casa contra la base) y, si está vigente, en la autoinscripción. Debajo del formulario se agregó, en letra grande, que completarlo no realiza ningún pago. Verificado en local con el modo demo, grabando el cambio de alto de la tarjeta (celular 1227 → 372 px, escritorio 651 → 368 px, sin hueco ni precio fuera de pantalla); `npm run check` 512/512. Commits `36d5823` y `2b9fd55`.

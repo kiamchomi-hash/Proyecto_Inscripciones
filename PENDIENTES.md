@@ -29,6 +29,8 @@ Completado el 17/10/2026: estética de las fichas de Siglo 21 con su sistema vis
 
 Completado el 18/10/2026: precio dentro del formulario de preinscripción, en Siglo 21 y Teclab, y aclaración de que completarlo no cobra nada (`36d5823`, `2b9fd55`). [Evidencia](docs/historial-pendientes.md#formularios--precio-en-la-preinscripción-18102026).
 
+Completado el 18/10/2026: la cursada online, a la vista en fichas, home, modales y formulario. [Evidencia](docs/historial-pendientes.md#sitio--cursada-online-a-la-vista-18102026).
+
 ## 7. Bot, leads y comercial
 
 Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, que rotan en un desplegable del buscador. [Evidencia](docs/historial-pendientes.md#bot--mensajes-de-seguimiento-17102026).
@@ -100,8 +102,6 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **Imagen de la financiación de Teclab para mandar a los leads**, agregado el 17/10/2026; bajado al fondo por el usuario el 17/10/2026.
 
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras. Bajado al fondo por el usuario el 17/10/2026: se consultará y completará a medida que surjan casos en el día a día, no como un relevamiento general anticipado.
-
-- [ ] **Aclarar que la cursada es online en casi todos los lugares del sitio** (fichas, modales, formularios, home). Bajado al fondo por el usuario el 17/10/2026.
 
 - [ ] **9. Dar imágenes a todas las carreras**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
