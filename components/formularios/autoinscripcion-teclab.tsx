@@ -136,13 +136,16 @@ export function PasoInscribirme({
 }
 
 /**
- * El precio vigente, como un paso propio del carrusel entre la preinscripción
- * y «Inscribirme». Sólo aparece en la entrada normal y con precio vigente: la
- * entrada directa viene de «Ver precio», que ya lo mostró.
+ * El precio vigente, como un paso propio del carrusel después del envío: en
+ * Teclab, antes de «Inscribirme»; en Siglo 21, antes del cartel de enviada.
+ * También es el slide que sigue al portal, con «Ver precio», y ahí el botón
+ * vuelve a la confirmación. Sólo con precio vigente.
  */
-export function PasoPrecio({ detalle, onContinuar, onSaltear }: {
+export function PasoPrecio({ detalle, onContinuar, onSaltear, textoContinuar = 'Continuar' }: {
   detalle: ReactNode;
   onContinuar: () => void;
+  /** «Volver» cuando el precio se abrió desde la confirmación. */
+  textoContinuar?: string;
   onSaltear?: () => void;
 }) {
   return (
@@ -154,7 +157,7 @@ export function PasoPrecio({ detalle, onContinuar, onSaltear }: {
         {detalle}
         <div className="space-y-1.5">
           <button type="button" onClick={onContinuar} className={BOTON_PRINCIPAL} style={ESTILO_PRINCIPAL}>
-            Continuar
+            {textoContinuar}
           </button>
           {onSaltear && (
             <button type="button" onClick={onSaltear} className={LINK_SECUNDARIO}>
@@ -167,7 +170,7 @@ export function PasoPrecio({ detalle, onContinuar, onSaltear }: {
   );
 }
 
-export function PasoListo({ waHref, dni, solicitud = false }: { waHref: string; dni: string; solicitud?: boolean }) {
+export function PasoListo({ waHref, dni, solicitud = false, onVerPrecio }: { waHref: string; dni: string; solicitud?: boolean; onVerPrecio?: () => void }) {
   const usuario = dni.replace(/\D/g, '');
   return (
     <div className="flex flex-col items-center gap-3 px-4 py-8 text-center" aria-live="polite">
@@ -234,6 +237,16 @@ export function PasoListo({ waHref, dni, solicitud = false }: { waHref: string; 
         >
           portalalumno.teclab.edu.ar
         </a>
+        {/* El precio es el slide siguiente; desde ahí, «Volver» trae acá. */}
+        {onVerPrecio && (
+          <button
+            type="button"
+            onClick={onVerPrecio}
+            className="cursor-pointer rounded-lg border border-[var(--catalogo-acento)]/60 py-2 text-sm font-bold text-white transition-colors hover:bg-[var(--catalogo-acento)]/15"
+          >
+            Ver precio
+          </button>
+        )}
         <Desplegable titulo="¿Entraste y no ves la pantalla de pago?">
           <ol className="flex flex-col gap-3 text-left text-sm text-white">
             <li>

@@ -130,10 +130,11 @@ function montarEndpoint(t) {
 
   const estado = {
     carreras: new Map([
-      [7, { id: 7, nombre: 'Tecnicatura Superior en Programación', nivel: 'Teclab - Tecnología' }],
+      [7, { id: 7, nombre: 'Tecnicatura Superior en Programación', nivel: 'Teclab - Tecnología', activa: true }],
       [8, { id: 8, nombre: 'Licenciatura en Administración', nivel: 'Grado' }],
       [9, { id: 9, nombre: 'Diplomatura en Oratoria', nivel: 'Identidad Argentina' }],
     ]),
+    precios: new Map(),
     escrituras: [],
     claves: [],
     captcha: true,
@@ -151,7 +152,12 @@ function montarEndpoint(t) {
       upsert: async fila => { estado.escrituras.push({ tabla, op: 'upsert', fila }); return { error: null }; },
       select: () => tabla === 'consultas' ? consultaDeReuso(estado) : ({
         eq: (_columna, valor) => ({
-          maybeSingle: async () => ({ data: tabla === 'carreras' ? estado.carreras.get(valor) ?? null : null, error: null }),
+          maybeSingle: async () => ({
+            data: tabla === 'carreras' ? estado.carreras.get(valor) ?? null
+              : tabla === casas.TABLA_PRECIOS ? estado.precios.get(valor) ?? null
+              : null,
+            error: null,
+          }),
         }),
       }),
     }),
@@ -216,6 +222,23 @@ test('la autoinscripción entra como consulta de Teclab marcada, sin medio de pa
   for (const ajeno of ['newsletter', 'carreraId', 'medioPago']) {
     assert.equal(ajeno in fila, false, `${ajeno} no llega a consultas`);
   }
+});
+
+test('con precio vigente, la autoinscripción lo devuelve para la confirmación de la entrada directa', async t => {
+  const { estado, enviar } = montarEndpoint(t);
+  const conceptos = [{ concepto: 'Matrícula', monto: '$ 10.000,00', descuento: 50 }];
+  estado.precios.set(7, { conceptos, total: '$ 10.000,00', nota: null, vigente_hasta: '2999-12-31' });
+  const { status, cuerpo } = await enviar(pedido);
+  assert.equal(status, 201);
+  assert.deepEqual(cuerpo, {
+    ok: true,
+    estado: 'vigente',
+    precio: { conceptos, total: '$ 10.000,00', nota: null, vigenteHasta: '2999-12-31' },
+  });
+
+  // Vencido no se muestra: la confirmación no da un precio que ya no vale.
+  estado.precios.set(7, { conceptos, total: '$ 10.000,00', nota: null, vigente_hasta: '2000-01-01' });
+  assert.deepEqual((await enviar(pedido)).cuerpo, { ok: true });
 });
 
 test('con el checkbox, la autoinscripción suscribe al newsletter de la carrera', async t => {

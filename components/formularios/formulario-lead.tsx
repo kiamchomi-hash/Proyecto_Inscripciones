@@ -14,7 +14,7 @@ import {
 import { bloquesDe, ROTULO_GRUPO } from './bloques';
 import { EVENTO_ELEGIR_CARRERA, pideAutoinscripcion, type DetalleElegirCarrera } from './elegir-carrera';
 import { AVISO_TOKEN, AVISO_VERIFICAR, AvisoSinPago, PasoInscribirme, PasoListo, PasoPrecio } from './autoinscripcion-teclab';
-import { DetallePrecio, type PrecioVigente } from '@/components/index/ver-precio-teclab';
+import { PrecioEnFormulario, type PrecioVigente } from '@/components/index/ver-precio-teclab';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -224,8 +224,10 @@ function duracionDe(carrera: CarreraOpcion | null): string | null {
 }
 
 // `precio` sólo se recorre en la entrada normal de Teclab con precio vigente.
-type Paso = 'datos' | 'precio' | 'gestionar' | 'confirmacion';
-const ORDEN_PASOS: Paso[] = ['datos', 'precio', 'gestionar', 'confirmacion'];
+// `precio` va antes de «Inscribirme» (entrada normal); `verPrecio`, después de
+// la confirmación, y se abre con «Ver precio» desde el portal.
+type Paso = 'datos' | 'precio' | 'gestionar' | 'confirmacion' | 'verPrecio';
+const ORDEN_PASOS: Paso[] = ['datos', 'precio', 'gestionar', 'confirmacion', 'verPrecio'];
 
 /** Tope por si el `transitionend` del deslizamiento no llega nunca. */
 const DURACION_MAXIMA_SLIDE = 450;
@@ -691,9 +693,15 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // La preinscripción ya entró (entrada normal): irse desde la pregunta no es
   // un abandono.
   const [preinscripcionEnviada, setPreinscripcionEnviada] = useState(false);
-  // El precio vigente que devuelve la preinscripción de Teclab, para mostrarlo
-  // arriba de «Inscribirme». Vencido o sin precio queda en null y no se ve nada.
-  const [precioTeclab, setPrecioTeclab] = useState<PrecioVigente | null>(null);
+  // El precio vigente que devuelve la preinscripción (Teclab y Siglo 21), para
+  // mostrarlo como un paso propio: en Teclab, antes de «Inscribirme»; en Siglo
+  // 21, antes del cartel de enviada. Vencido o sin precio queda en null.
+  const [precioCarrera, setPrecioCarrera] = useState<PrecioVigente | null>(null);
+  // La autoinscripción ya entró: irse desde la confirmación no es un abandono.
+  const [autoinscripta, setAutoinscripta] = useState(false);
+  // El precio que trae la autoinscripción de la entrada directa, que no pasó
+  // por el paso del precio: se ve con «Ver precio» desde la confirmación.
+  const [precioDirecto, setPrecioDirecto] = useState<PrecioVigente | null>(null);
   const botonRef = useRef<HTMLButtonElement>(null);
   const seccionRef = useRef<HTMLElement>(null);
   const inicioMedido = useRef(false);
@@ -937,8 +945,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const valido = datosValidos && Boolean(token);
 
   useEffect(() => {
-    estadoAbandonoRef.current = { listo: listo || preinscripcionEnviada || paso === 'confirmacion', enviando, error, intentado, valido, token, valores };
-  }, [error, enviando, intentado, listo, paso, preinscripcionEnviada, token, valido, valores]);
+    estadoAbandonoRef.current = { listo: listo || preinscripcionEnviada || autoinscripta, enviando, error, intentado, valido, token, valores };
+  }, [autoinscripta, error, enviando, intentado, listo, preinscripcionEnviada, token, valido, valores]);
 
   useEffect(() => {
     const medirAbandono = () => {
@@ -1120,6 +1128,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     setGestionIntentada(true);
     const conPase = Boolean(pase);
     if (!conPase && !token) return;
+    let precioRespuesta: PrecioVigente | null = null;
     setEnviando(true);
     setError('');
     try {
@@ -1141,6 +1150,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
         const detalle = await respuesta.json().catch(() => null) as { error?: string } | null;
         throw new Error(detalle?.error || 'submit_failed');
       }
+      // La entrada directa no vio el precio: llega con la respuesta y queda
+      // detrás de «Ver precio». Ilegible no es un error: la solicitud ya entró.
+      const datos = await respuesta.json().catch(() => null) as { estado?: string; precio?: PrecioVigente } | null;
+      if (!preinscripcionEnviada && datos?.estado === 'vigente' && datos.precio) precioRespuesta = datos.precio;
     } catch (fallo) {
       const motivo = fallo instanceof Error ? fallo.message : '';
       setError(motivo === 'Demasiadas solicitudes'
@@ -1158,6 +1171,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       trackConsulta(origen, carreraElegida || null, filtro ? (CATEGORIES.find(c => c.id === filtro)?.label || filtro) : null);
     }
     setEnviando(false);
+    setAutoinscripta(true);
+    setPrecioDirecto(precioRespuesta);
     irAPaso('confirmacion');
   };
 
@@ -1177,7 +1192,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     setPaso('datos');
     setGestionIntentada(false);
     setPreinscripcionEnviada(false);
-    setPrecioTeclab(null);
+    setPrecioCarrera(null);
+    setAutoinscripta(false);
+    setPrecioDirecto(null);
     setPase('');
     setListo(false);
     setIntentado(false);
@@ -1277,12 +1294,21 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     // su captcha, visible, con uno nuevo.
     if (conAutoinscripcion) {
       setPreinscripcionEnviada(true);
-      setPrecioTeclab(precio);
+      setPrecioCarrera(precio);
       setPase(paseNuevo);
       setGestionIntentada(false);
       nuevoCaptcha();
       // Con precio vigente, primero el precio; si no, directo a «Inscribirme».
       irAPaso(precio ? 'precio' : 'gestionar');
+      return;
+    }
+    // Siglo 21 (sin autoinscripción): con precio vigente, el precio es el paso
+    // 2 y el cartel de enviada llega al continuar. Una anunciada no tiene
+    // precio: el servidor no lo manda, y acá tampoco se muestra.
+    if (esPreinscripcion && precio && !carrera?.proximamente) {
+      setPreinscripcionEnviada(true);
+      setPrecioCarrera(precio);
+      irAPaso('precio');
       return;
     }
     setListo(true);
@@ -1294,7 +1320,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // sigue montado, pero sin su captcha.
   // Sin precio vigente el paso del precio no está en la pista: si estuviera,
   // ir de los datos a «Inscribirme» deslizaría por un panel vacío.
-  const pasos = precioTeclab ? ORDEN_PASOS : ORDEN_PASOS.filter(p => p !== 'precio');
+  // Lo mismo con «Ver precio»: sin precio, no hay slide después del portal.
+  const precioParaVer = precioCarrera ?? precioDirecto;
+  const pasos = ORDEN_PASOS.filter(p => (p !== 'precio' || precioCarrera) && (p !== 'verPrecio' || precioParaVer));
   const indicePaso = pasos.indexOf(paso);
   const captchaDatos = paso === 'datos';
   const montado = (cual: Paso) => paso === cual || pasoSaliente === cual;
@@ -1338,7 +1366,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const titulo = esPreinscripcion ? 'PREINSCRIPCIÓN' : 'CONTACTO';
   // El encabezado es uno solo para todos los pasos y sólo cambia la bajada:
   // así no salta. Los textos son cortos para que no ocupen otra línea.
-  const bajada = paso === 'confirmacion'
+  const bajada = paso === 'confirmacion' || paso === 'verPrecio'
     ? (solicitudDirecta ? 'Acceso y próximos pasos.' : preinscripcionEnviada ? 'Inscripción enviada.' : 'Paso 2 de 2: inscripción enviada.')
     : paso === 'gestionar' || paso === 'precio'
     ? 'Tu preinscripción ya fue enviada.'
@@ -1731,7 +1759,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
           </form>
 
           {conPaneles && (<>
-          {precioTeclab && (
+          {precioCarrera && (
           <div
             ref={panel => { panelesRef.current.precio = panel; }}
             className="form-carrusel-panel flex flex-col"
@@ -1744,11 +1772,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 // Los colores salen del acento del formulario (ver
                 // `.vp-en-formulario` en modales.css), no de una tabla aparte.
                 <div className="vp-cuerpo vp-en-formulario">
-                  <DetallePrecio precio={precioTeclab} duracion={duracionDe(carrera)} />
+                  <PrecioEnFormulario precio={precioCarrera} duracion={duracionDe(carrera)} casa={casaDeLaCarrera ?? 'teclab'} />
                 </div>
               }
-              onContinuar={() => irAPaso('gestionar')}
-              onSaltear={saltearAutoinscripcion}
+              // En Teclab sigue a «Inscribirme»; en Siglo 21, al cartel de enviada.
+              onContinuar={conAutoinscripcion ? () => irAPaso('gestionar') : () => setListo(true)}
+              onSaltear={conAutoinscripcion ? saltearAutoinscripcion : undefined}
             />
           )}
           </div>
@@ -1782,9 +1811,33 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
             inert={paso !== 'confirmacion'}
           >
           {montado('confirmacion') && (
-            <PasoListo solicitud={solicitudDirecta} dni={texto('dni')} waHref={`https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`} />
+            <PasoListo
+              solicitud={solicitudDirecta}
+              onVerPrecio={precioParaVer ? () => irAPaso('verPrecio') : undefined}
+              dni={texto('dni')}
+              waHref={`https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`} />
           )}
           </div>
+          {precioParaVer && (
+          <div
+            ref={panel => { panelesRef.current.verPrecio = panel; }}
+            className="form-carrusel-panel flex flex-col"
+            aria-hidden={paso !== 'verPrecio'}
+            inert={paso !== 'verPrecio'}
+          >
+          {montado('verPrecio') && (
+            <PasoPrecio
+              detalle={
+                <div className="vp-cuerpo vp-en-formulario">
+                  <PrecioEnFormulario precio={precioParaVer} duracion={duracionDe(carrera)} casa="teclab" />
+                </div>
+              }
+              textoContinuar="Volver"
+              onContinuar={() => irAPaso('confirmacion')}
+            />
+          )}
+          </div>
+          )}
           </>)}
           </div>
           </div>

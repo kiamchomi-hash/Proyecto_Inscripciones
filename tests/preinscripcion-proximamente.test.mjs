@@ -193,10 +193,13 @@ test('el formulario no sigue al precio ni a «Inscribirme» con una anunciada', 
   assert.equal(conAuto(ABIERTA), true);
   assert.equal(conAuto({ id: 10, nombre: ANUNCIADA.nombre, nivel: ANUNCIADA.nivel, proximamente: true }), false);
   assert.equal(conAuto(ABIERTA, false), false);
-  // Sin `conAutoinscripcion` el envío termina en la confirmación simple
-  // (`setListo(true)`): ni el paso del precio ni el de «Inscribirme».
+  // Sin `conAutoinscripcion` no hay «Inscribirme»; el paso del precio queda
+  // sólo para una carrera que no es anunciada, y si no, la confirmación simple.
   const fin = fuente.slice(fuente.indexOf('    if (conAutoinscripcion) {\n      setPreinscripcionEnviada(true);'));
-  assert.match(fin, /irAPaso\(precio \? 'precio' : 'gestionar'\);\s*return;\s*\}\s*setListo\(true\);/);
+  assert.match(fin, /irAPaso\(precio \? 'precio' : 'gestionar'\);\s*return;\s*\}/);
+  const resto = fin.slice(fin.indexOf('return;') + 'return;'.length, fin.indexOf('setListo(true);') + 'setListo(true);'.length);
+  assert.match(resto, /if \(esPreinscripcion && precio && !carrera\?\.proximamente\) \{[^}]*irAPaso\('precio'\);\s*return;\s*\}\s*setListo\(true\);/);
+  assert.doesNotMatch(resto, /gestionar/);
 });
 
 // ── La ficha ──

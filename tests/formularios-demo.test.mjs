@@ -97,7 +97,7 @@ test('demo en desarrollo: 201 por cada kind sin Supabase, Turnstile, red ni tare
   }
 });
 
-test('demo en desarrollo: «Ver precio» y la preinscripción de Teclab traen precio y pase', async t => {
+test('demo en desarrollo: «Ver precio» y la preinscripción traen precio; el pase, sólo Teclab', async t => {
   const { enviar } = montar(t, DEMO_DEV);
   const hoy = casas.fechaArgentina(new Date());
 
@@ -122,9 +122,12 @@ test('demo en desarrollo: «Ver precio» y la preinscripción de Teclab traen pr
   assert.equal(sinMail.status, 201);
   assert.equal(sinMail.datos.pase, undefined);
 
-  // Siglo 21 y los contactos responden sólo el ok, como en real.
+  // Siglo 21 trae el precio pero no el pase: no tiene autoinscripción.
   const siglo = await enviar({ kind: 'consulta', token: 'demo', payload: { casa: 'siglo21', tipoFormulario: 'preinscripcion', email: 'ana@example.test', carreraId: 3 } });
-  assert.deepEqual(siglo.datos, { ok: true });
+  assert.equal(siglo.datos.estado, 'vigente');
+  assert.deepEqual(siglo.datos.precio, precio.datos.precio);
+  assert.equal(siglo.datos.pase, undefined);
+  // Los contactos responden sólo el ok, como en real.
   const contactoTeclab = await enviar({ kind: 'consulta', token: 'demo', payload: { casa: 'teclab', tipoFormulario: 'contacto', email: 'ana@example.test', carreraId: 7 } });
   assert.deepEqual(contactoTeclab.datos, { ok: true });
 });

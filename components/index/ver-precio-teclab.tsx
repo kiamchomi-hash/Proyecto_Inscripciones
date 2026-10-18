@@ -221,6 +221,23 @@ export function DetallePrecio({ precio, duracion, vencido = false, financiacion 
 }
 
 /**
+ * El precio dentro del formulario de preinscripción (un paso del carrusel o la
+ * confirmación), armado como lo muestra «Ver precio» en cada casa: Siglo 21
+ * con la vigencia arriba y qué cubre el pago abajo, sin la nota de la
+ * promoción; Teclab con sus aclaraciones y la financiación plegada.
+ */
+export function PrecioEnFormulario({ precio, duracion, casa }: { precio: PrecioVigente; duracion?: string | null; casa: CasaId }) {
+  if (casa !== 'siglo21') return <DetallePrecio precio={precio} duracion={duracion} casa={casa} />;
+  return (
+    <>
+      <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
+      <DetallePrecio precio={precio} duracion={duracion} casa={casa} aclaraciones={false} financiacion={false} />
+      <NotaCobertura precio={precio} casa={casa} />
+    </>
+  );
+}
+
+/**
  * Los dos botones del slide de cierre: «Ver precio», que lleva al slide del
  * precio, y WhatsApp a la vista, para quien prefiere preguntar directo sin
  * pasar por el mail.

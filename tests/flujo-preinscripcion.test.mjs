@@ -18,8 +18,11 @@ test('la entrada dedicada activa el envío directo sólo para preinscripción Te
 test('el envío directo real hace un POST y conserva datos ante errores para reintentar', async () => {
   const auto = fuente.slice(fuente.indexOf('  const enviarAutoinscripcion ='), fuente.indexOf('  /**\n   * «Ahora no»'));
   const enviar = fuente.slice(fuente.indexOf('  const enviar = async'), fuente.indexOf("    setEnviando(true);", fuente.indexOf('  const enviar = async')));
-  for (const fallo of [null, 'CAPTCHA inválido', 'Demasiadas solicitudes', 'red']) {
+  for (let fallo of [null, 'precio', 'CAPTCHA inválido', 'Demasiadas solicitudes', 'red']) {
+    // 'precio' no es un fallo: la respuesta trae precio vigente, que queda para «Ver precio».
+    const conPrecio = fallo === 'precio'; if (conPrecio) fallo = null;
     const solicitudes = []; const pasos = []; const errores = []; let captcha = 0; let analytics = 0;
+    const precios = []; let inscripta = false;
     const valores = { dni:'30123456', nacionalidad:'Peruana' };
     const contexto = {
       enviando:false, carrera:{id:7}, casaDeLaCarrera:'teclab', pase:'', token:'seguro',
@@ -27,9 +30,10 @@ test('el envío directo real hace un POST y conserva datos ante errores para rei
       CATEGORIES:[], flujoAuto:true, valido:true, datosValidos:true, modo:'preinscripcion', valores,
       setGestionIntentada:()=>{},setEnviando:()=>{},setError:e=>errores.push(e),setPase:()=>{},
       nuevoCaptcha:()=>captcha++, irAPaso:p=>pasos.push(p),
+      setAutoinscripta:v=>{inscripta=v;}, setPrecioDirecto:p=>precios.push(p),
       trackConsulta:()=>analytics++, trackIntentoFormulario:()=>{},
       armarPayload:(_c,_m,v)=>({...v}), AVISO_VERIFICAR:'Verificá nuevamente',
-      fetch:async (_url,opciones)=> { solicitudes.push(JSON.parse(opciones.body)); if(fallo==='red') throw new Error('red'); return {ok:!fallo,json:async()=>({error:fallo})}; },
+      fetch:async (_url,opciones)=> { solicitudes.push(JSON.parse(opciones.body)); if(fallo==='red') throw new Error('red'); return {ok:!fallo,json:async()=>(fallo?{error:fallo}:conPrecio?{ok:true,estado:'vigente',precio:{total:'$ 1'}}:{ok:true})}; },
     };
     const funciones = new Function(...Object.keys(contexto), js(`${auto}\n${enviar}\n}; return {enviar,enviarAutoinscripcion};`))(...Object.values(contexto));
     assert.equal(solicitudes.length,0,'sin envío al montar');
@@ -43,6 +47,8 @@ test('el envío directo real hace un POST y conserva datos ante errores para rei
     assert.deepEqual(valores,{dni:'30123456',nacionalidad:'Peruana'});
     assert.equal(analytics,fallo?0:1);
     assert.deepEqual(pasos,fallo?[]:['confirmacion']);
+    assert.equal(inscripta,!fallo);
+    assert.deepEqual(precios,fallo?[]:[conPrecio?{total:'$ 1'}:null]);
     if(fallo) { assert.ok(errores.at(-1)); assert.equal(captcha,1); await funciones.enviarAutoinscripcion(); assert.equal(solicitudes.length,2); }
   }
 });

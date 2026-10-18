@@ -341,7 +341,7 @@ test('si el lead no se guarda, no se muestra el precio', async t => {
   assert.equal(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS), false);
 });
 
-// ── La preinscripción de Teclab trae el precio; el resto de las consultas, no ──
+// ── La preinscripción de Teclab y de Siglo 21 trae el precio; el resto de las consultas, no ──
 
 const preinscripcion = {
   email: 'ana@example.test', casa: 'teclab', tipoFormulario: 'preinscripcion',
@@ -384,13 +384,36 @@ test('si no se puede verificar la carrera, la preinscripción ya guardada respon
   assert.equal(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS), false);
 });
 
+test('la preinscripción de Siglo 21 también devuelve el precio vigente, sin pase', async t => {
+  const { estado, enviar } = montarEndpoint(t);
+  estado.precios.set(8, { ...fila, vigente_hasta: '2999-12-31' });
+  const { status, cuerpo } = await enviar({ ...preinscripcion, casa: 'siglo21', carreraId: 8 }, 'consulta');
+  assert.equal(status, 201);
+  assert.deepEqual(cuerpo, {
+    ok: true,
+    estado: 'vigente',
+    precio: { conceptos: fila.conceptos, total: fila.total, nota: fila.nota, vigenteHasta: '2999-12-31' },
+  });
+  assert.equal(estado.escrituras.filter(e => e.tabla === 'consultas').length, 1);
+});
+
+test('una preinscripción no lee el precio de una carrera de otra casa', async t => {
+  const { estado, enviar } = montarEndpoint(t);
+  estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
+  // Dice Siglo 21 pero la carrera 7 es de Teclab: manda la base.
+  const { status, cuerpo } = await enviar({ ...preinscripcion, casa: 'siglo21' }, 'consulta');
+  assert.equal(status, 201);
+  assert.deepEqual(cuerpo, { ok: true });
+  assert.equal(estado.lecturas.some(l => l.tabla === TABLA_PRECIOS), false);
+});
+
 test('el resto de las consultas responde sólo el ok, sin leer precios', async t => {
   const { estado, enviar } = montarEndpoint(t);
   estado.precios.set(7, { ...fila, vigente_hasta: '2999-12-31' });
   estado.precios.set(8, { ...fila, vigente_hasta: '2999-12-31' });
   for (const payload of [
     { ...preinscripcion, tipoFormulario: 'contacto' },
-    { ...preinscripcion, casa: 'siglo21', carreraId: 8 },
+    { ...preinscripcion, casa: 'siglo21', tipoFormulario: 'contacto', carreraId: 8 },
     { ...preinscripcion, casa: 'identidad' },
     { ...preinscripcion, carreraId: null },
   ]) {

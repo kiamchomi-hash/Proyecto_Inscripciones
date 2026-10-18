@@ -9,7 +9,7 @@ import {
   camposDe, carreraConAutoinscripcion, carreraConPrecio, carreraIdDe, casaDeCarrera, columnaDe,
   fechaArgentina, filaNewsletter, mailParaNewsletter, resultadoPrecio, validarPayloadAutoinscripcion,
   validarPayloadPrecio,
-  CASAS_CON_AUTOINSCRIPCION, TABLA_ENLACES, consultaConEnlace, estadoEnlace, payloadDesdeConsulta,
+  CASAS_CON_AUTOINSCRIPCION, CASAS_CON_PRECIO, TABLA_ENLACES, consultaConEnlace, estadoEnlace, payloadDesdeConsulta,
   validarPayloadEnlace, pedidoLeadSede, TABLA_ROBOT, despachoRobot,
   type CampoId, type CasaId, type FilaEnlace, type FilaPrecio, type Modo, type ResultadoPrecio,
 } from '@/components/formularios/casas';
@@ -248,8 +248,8 @@ async function suscribirDesdeFormulario(kind: string, payload: JsonRecord) {
 
 /**
  * La carrera, si su casa publica precio. La casa se valida contra el `nivel`
- * de la base, no contra lo que diga el navegador: por ahora sólo Teclab
- * publica precio. `carrera: null` es una carrera inexistente, inactiva,
+ * de la base, no contra lo que diga el navegador: publican Teclab y
+ * Siglo 21. `carrera: null` es una carrera inexistente, inactiva,
  * anunciada (`proximamente`) o de otra casa. Trae además lo que usa el mail
  * del precio: prefijo, nombre corto y duración.
  */
@@ -264,21 +264,24 @@ async function buscarCarreraConPrecio(supabase: ClienteAdmin, carreraId: number)
 }
 
 /**
- * El precio que acompaña a la preinscripción de Teclab, para mostrarlo antes
- * de «Inscribirme». Corre con el lead ya guardado, así que nunca lo tumba: si
- * la carrera no se puede verificar, la respuesta es sólo el ok. El resto de las
- * consultas no lee precios, y tampoco la preinscripción de una anunciada
- * (`proximamente`): `buscarCarreraConPrecio` la descarta, así que no hay
- * precio ni mail, sólo la fila y el aviso de Telegram.
+ * El precio que acompaña a la preinscripción de Teclab y de Siglo 21, para
+ * mostrarlo como un paso del formulario (en Teclab, antes de «Inscribirme»).
+ * Corre con el lead ya guardado, así que nunca lo tumba: si la carrera no se
+ * puede verificar, la respuesta es sólo el ok. La casa del payload tiene que
+ * coincidir con la de la base. El resto de las consultas no lee precios, y
+ * tampoco la preinscripción de una anunciada (`proximamente`):
+ * `buscarCarreraConPrecio` la descarta, así que no hay precio ni mail, sólo la
+ * fila y el aviso de Telegram.
  */
 async function precioDePreinscripcion(payload: JsonRecord) {
   const carreraId = carreraIdDe(payload);
-  if (payload.casa !== 'teclab' || payload.tipoFormulario !== 'preinscripcion' || !carreraId) return null;
+  if (payload.tipoFormulario !== 'preinscripcion' || !carreraId) return null;
+  if (!CASAS_CON_PRECIO.includes(payload.casa as CasaId)) return null;
   try {
     const supabase = createSupabaseAdmin();
     const { carrera, error } = await buscarCarreraConPrecio(supabase, carreraId);
     if (error) console.error('[formularios] No se pudo verificar la carrera del precio', { code: error.code });
-    if (!carrera) return null;
+    if (!carrera || casaDeCarrera(carrera) !== payload.casa) return null;
     const resultado = await leerPrecio(supabase, carrera.id);
     // El mail es opcional en la preinscripción (alcanza con el teléfono):
     // sin uno válido no hay a quién mandarle el resumen.
@@ -287,6 +290,27 @@ async function precioDePreinscripcion(payload: JsonRecord) {
     return resultado;
   } catch (error) {
     console.error('[formularios] No se pudo leer el precio de la preinscripción', error);
+    return null;
+  }
+}
+
+/**
+ * El precio para la confirmación de la autoinscripción: en la entrada directa
+ * es el único paso donde se ve. Sólo vigente —un precio vencido no se muestra
+ * como el que se va a pagar— y sin mail: el resumen ya salió con «Ver precio»
+ * o con la preinscripción. Corre con la fila ya guardada y nunca la tumba.
+ */
+async function precioDeAutoinscripcion(payload: JsonRecord) {
+  const carreraId = carreraIdDe(payload);
+  if (!carreraId) return null;
+  try {
+    const supabase = createSupabaseAdmin();
+    const { carrera } = await buscarCarreraConPrecio(supabase, carreraId);
+    if (!carrera) return null;
+    const resultado = await leerPrecio(supabase, carrera.id);
+    return resultado.estado === 'vigente' ? resultado : null;
+  } catch (error) {
+    console.error('[formularios] No se pudo leer el precio de la autoinscripción', error);
     return null;
   }
 }
@@ -709,12 +733,12 @@ function respuestaDemo(kind: string, payload: JsonRecord, paseDemo: string): Jso
   switch (kind) {
     case 'consulta': {
       filaConsulta(payload);
-      // Como en real: precio y pase sólo en la preinscripción de Teclab, y el
-      // pase sólo con un mail válido, porque se ata a él.
-      if (payload.casa !== 'teclab' || payload.tipoFormulario !== 'preinscripcion' || !carreraIdDe(payload)) {
+      // Como en real: precio en la preinscripción de Teclab y Siglo 21, y el
+      // pase sólo en Teclab y con un mail válido, porque se ata a él.
+      if (!CASAS_CON_PRECIO.includes(payload.casa as CasaId) || payload.tipoFormulario !== 'preinscripcion' || !carreraIdDe(payload)) {
         return { ok: true };
       }
-      const conPase = EMAIL.test(text(payload.email, 254));
+      const conPase = payload.casa === 'teclab' && EMAIL.test(text(payload.email, 254));
       return { ok: true, ...precioDemo(), ...(conPase ? { pase: paseDemo } : {}) };
     }
     case 'faq':
@@ -728,7 +752,7 @@ function respuestaDemo(kind: string, payload: JsonRecord, paseDemo: string): Jso
       return { ok: true, ...precioDemo() };
     case 'autoinscripcion':
       if (!validarPayloadAutoinscripcion(payload)) throw new TypeError('Datos inválidos');
-      return { ok: true };
+      return { ok: true, ...precioDemo() };
     default:
       if (!validarPayloadEnlace(payload)) throw new TypeError('Datos inválidos');
       return { ok: true };
@@ -882,11 +906,14 @@ export async function POST(request: NextRequest) {
     // «Ver precio», la autoinscripción y el enlace ya suscribieron adentro, con su carrera.
     if (kind === 'consulta' || kind === 'faq') await suscribirDesdeFormulario(kind, payload);
 
-    // «Ver precio» y la preinscripción de Teclab devuelven además el estado y,
-    // si está vigente, el precio. El resto, sólo el ok.
+    // «Ver precio» y la preinscripción de Teclab y Siglo 21 devuelven además el
+    // estado y el precio; la autoinscripción, el precio sólo si está vigente.
+    // El resto, sólo el ok.
     const resultado = 'resultado' in result && result.resultado
       ? result.resultado
-      : kind === 'consulta' ? await precioDePreinscripcion(payload) : null;
+      : kind === 'consulta' ? await precioDePreinscripcion(payload)
+        : kind === 'autoinscripcion' ? await precioDeAutoinscripcion(payload)
+          : null;
     const extra = resultado ?? {};
     // La preinscripción de Teclab trae además el pase para «Inscribirme».
     const paseNuevo = kind === 'consulta' ? await paseDePreinscripcion(payload) : null;
