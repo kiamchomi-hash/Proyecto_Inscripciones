@@ -144,6 +144,21 @@ sobre y nadie actualiza el SPF, esos mails se pierden sin aviso. Hoy ningún env
 legítimo usa el raíz (SMTP2GO usa el subdominio `em776964`). No reproponerlo salvo
 que se deje de usar DMARC en `reject`.
 
+### No se migra de Vercel a Cloudflare Workers, por ahora
+
+Decidido el 18/10/2026, después de la [prueba de factibilidad](../odd/tasks/factibilidad-cloudflare.md).
+Es viable técnicamente, pero ahorra unos USD 10 a 15 por mes (Pro contra Workers
+Paid) a cambio de varios días de trabajo y dos riesgos: el middleware de Node, que
+es `proxy.ts` y protege todo el panel admin, es experimental en OpenNext; y los
+redirects y las respuestas del middleware salieron sin CSP, HSTS ni `X-Robots-Tag`.
+Además se pierden los eventos de Vercel Analytics que leen `npm run leads`, el
+digest y la vigilancia, y hay que rehacer los tres crons, el WAF con su alerta, la
+revalidación on-demand, `next/image` y el `check` antes del deploy.
+
+Se vuelve a evaluar sólo si Vercel sube el precio, si el sitio supera los límites
+de Pro o si OpenNext deja de marcar como experimental el middleware de Node. La
+rama local `exp/cloudflare` (`5841d28`) queda como punto de partida.
+
 ### Identidad Argentina se migra a otro sitio
 
 Decidido el 23/08/2026: su oferta no lleva página propia en `siglo21sur.com`. **No
