@@ -94,7 +94,7 @@ Esperado: `200` y `{"ok":true,"telegram":true}`. Un `401` significa que el secre
 
   La credencial del SMTP User de SMTP2GO la guarda Gmail en el "enviar como"; **no va en `.env`** — ningún código del sitio manda mails. Mejora menor pendiente: el SPF podría ir de `~all` a `-all`, aunque con DMARC en `reject` el margen es chico.
 
-**Los PAT de Supabase no vencen y dan acceso a todos los proyectos de la cuenta.** Al 27/07 quedan vivos `codex-release` (`sbp_ae97…`, en uso) y `mercadolibrebot` (`sbp_bc7d…`). Conviene revisarlos cada tanto en https://supabase.com/dashboard/account/tokens y borrar el que deje de usarse.
+**Los PAT de Supabase no vencen y dan acceso a todos los proyectos de la cuenta.** Revisados el 18/10/2026: queda uno solo, `cli_lolom@lolom-Lenovo-ideapad-320-15IKB`, que es el del CLI de la máquina Linux (lo crea `npx supabase login`). Se borró el del CLI de la PC de Windows (`cli_matia@DESKTOP-HHATBRL`), que ya no se usa; `codex-release` y `mercadolibrebot` ya no existían. Si se vuelve a usar otra máquina, `npx supabase login` genera uno nuevo. Conviene revisarlos cada tanto en https://supabase.com/dashboard/account/tokens y borrar el que deje de usarse.
 
 **Resend ya no se usa acá.** Al sacar el mail quedaron sin uso la clave `Onboarding` y la variable `RESEND_API_KEY` de Vercel; el secret `RESEND_FROM` de Supabase nunca llegó a setearse. Conviene borrarlos: `topykly-dev` es del otro proyecto que comparte la cuenta y no hay que tocarla.
 
