@@ -19,7 +19,7 @@ oculta antes de validar. No incluir columnas privadas de la fila completa.
 
 ## Tarea
 
-- [ ] A3-D1: adaptador, validación runtime, integración API/página, pruebas y
+- [x] A3-D1: adaptador, validación runtime, integración API/página, pruebas y
   actualización de documentación.
   Ruta: delegada, por lógica nueva en múltiples archivos y lectura preparatoria.
   Aceptación: cinco variantes y opcionales verificadas; datos corruptos rechazados;
@@ -64,3 +64,10 @@ No se mezclaron esos cambios ni se creó commit para forzar la revisión.
 Siguiente paso: acotar la revisión nativa y obtener consentimiento; build sólo
 con autorización de sus lecturas remotas adicionales. Materias, sitemap y armado
 dinámico de consultas siguen fuera de esta unidad y pendientes en A3.
+
+## Cierre, 18/10/2026
+
+Verificación completa fuera del sandbox: `npm run check` exit 0 (519/519 tests,
+typecheck correcto, lint 0 errores y 27 advertencias) y `npm run build` exit 0
+(243/243 páginas). `next-env.d.ts` generado por el build restaurado a HEAD.
+Tarea cerrada.

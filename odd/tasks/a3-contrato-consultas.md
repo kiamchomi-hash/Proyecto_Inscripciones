@@ -16,7 +16,7 @@ No ejecutar build, regeneración de tipos ni operaciones remotas.
 
 ## Tarea y aceptación
 
-- [ ] A3-C1: definiciones correlacionadas y filas TablesInsert, contratos negativos,
+- [x] A3-C1: definiciones correlacionadas y filas TablesInsert, contratos negativos,
   regresiones de payload y documentación.
   Ruta delegada: nuevos contratos compartidos y múltiples archivos no triviales.
   Sin any, casts amplios ni setters que admitan columna/valor incompatibles.
@@ -74,3 +74,10 @@ se presenta como offline. Se detuvieron nuevas ejecuciones.
 
 El check íntegro sigue pendiente: requiere autorizar los npm ci temporales y
 su posible acceso al registro público npm, sin credenciales ni publicación.
+
+## Cierre, 18/10/2026
+
+Verificación completa fuera del sandbox: `npm run check` exit 0 (519/519 tests,
+typecheck correcto, lint 0 errores y 27 advertencias) y `npm run build` exit 0
+(243/243 páginas). `next-env.d.ts` generado por el build restaurado a HEAD.
+Tarea cerrada.

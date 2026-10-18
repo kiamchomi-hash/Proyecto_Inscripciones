@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Tipos — contrato de consultas y detalle de carreras, 18/10/2026
+
+- [x] **Tipar el contrato de consultas y el detalle de carreras (A3).** Consultas (`bc593a0`): las filas de consulta, precio y autoinscripción se arman como `TablesInsert<'consultas'>` desde las columnas que declara `casas.ts`, con expectativas negativas (`@ts-expect-error`) que fallan si un campo apunta a una columna de otro tipo. Detalle (`ad52917`): un adaptador del esquema generado valida en runtime las cinco variantes de slides; datos corruptos dan 502 en la API en vez de publicar un conjunto parcial. La verificación completa había quedado trabada por el sandbox (EPERM al lanzar Gitleaks y los fixtures de npm); fuera de él, `npm run check` 519/519 y `npm run build` 243/243 páginas. [Consultas](../odd/tasks/a3-contrato-consultas.md), [detalle](../odd/tasks/a3-detalle-carreras.md).
+
 ## Sitio — cursada online a la vista, 18/10/2026
 
 - [x] **Aclarar que la cursada es online en fichas, modales, formularios y home.** Un solo texto por casa, `modalidadCorta()` en `components/carreras/career-content.ts`: «Cursada online» en Siglo 21 (no «100% online», porque la modalidad distribuida tiene instancias en la sede y los datos estructurados la declaran `blended`), «100% online» en Teclab y, en Identidad, «Online, con clases en vivo» para las híbridas. Ficha: dentro de la fila de la marca, sin renglón propio (se midió que la fila no cambia de alto). Home: una línea bajo «Inscripciones». Modales de Siglo 21: reemplaza «Modalidad: Virtual» y el «Consultar». Formulario de preinscripción: a la derecha de la etiqueta «Carrera». `npm run check` 512/512.

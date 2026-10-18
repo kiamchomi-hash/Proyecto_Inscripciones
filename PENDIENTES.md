@@ -44,7 +44,7 @@ Descartado por el usuario el 17/10/2026: mostrar en el aviso de Telegram si la p
 
 ## 8. Infraestructura y seguridad
 
-- [ ] **Tipar el contrato de consultas y el detalle de carreras** (A3): filas `TablesInsert` con contratos negativos, y adaptador con validación en runtime para el detalle. [Consultas](odd/tasks/a3-contrato-consultas.md), [detalle](odd/tasks/a3-detalle-carreras.md).
+Completado el 18/10/2026: **tipar el contrato de consultas y el detalle de carreras** (A3; `bc593a0`, `ad52917`), con check y build completos. [Evidencia](docs/historial-pendientes.md#tipos--contrato-de-consultas-y-detalle-de-carreras-18102026).
 - [ ] **Superficie segura de revisión para el código comercial ignorado** (`descuentos-siglo21-2027` T5), sin exponerlo al repositorio público.
 - [ ] Revisar los PAT de Supabase y retirar sólo los que ya no se usen. *(Notas operativas.)*
 - [ ] Comprobar si siguen sin uso las credenciales de Resend de este proyecto antes de retirarlas; no tocar las de otros proyectos. *(Notas operativas.)*
