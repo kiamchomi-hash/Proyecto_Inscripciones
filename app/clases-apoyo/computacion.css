@@ -49,7 +49,8 @@
 
 /* ── Título y regreso compacto ── */
 .cp-encabezado {
-  display: flex;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
@@ -67,7 +68,7 @@
   border: 1px solid var(--cp-pixel);
 }
 
-.cp-encabezado .cp-h1 { min-width: 0; }
+.cp-encabezado .cp-h1 { min-width: 0; justify-self: center; }
 .cp-reserva .rc-horarios { padding-bottom: 1rem; }
 
 .cp-h1 {
@@ -76,11 +77,11 @@
   gap: 1rem;
   margin: 0;
   color: var(--cp-texto-suave);
-  font-size: clamp(1.4rem, 3.4vw, 2.2rem);
+  font-size: clamp(1rem, 2.1vw, 1.65rem);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  text-wrap: balance;
+  white-space: nowrap;
 }
 
 .cp-h1-icono {
@@ -199,6 +200,25 @@
     calc(var(--cp-borde) + var(--cp-sombra)) calc(var(--cp-borde) + var(--cp-sombra)) 0 0 var(--cp-contorno);
 }
 
+.hr > .cp-barra {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 70px;
+}
+
+.hr > .cp-barra > .cp-barra-titulo { font-size: 14px; font-weight: 700; text-align: center; }
+
+.cp-barra .cp-contenido-titulo {
+  margin: 0;
+  padding: 10px 0;
+  font-family: var(--cp-pixel-fuente);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
 .cp-contacto-rotulo {
   font-family: var(--cp-pixel-fuente);
   font-size: 0.9rem;
@@ -282,10 +302,14 @@
 }
 
 @media (max-width: 520px) {
-  .cp-encabezado { align-items: flex-start; }
-  .cp-h1 { align-items: flex-start; }
-  .cp-h1-icono { width: 40px; height: 37px; margin-top: 4px; }
+  .cp-encabezado { grid-template-columns: 44px minmax(0, 1fr); gap: 12px; }
+  .cp-encabezado .cp-h1 { gap: 10px; justify-self: start; font-size: clamp(18px, 5vw, 22px); }
+  .cp .cp-h1-icono { width: 27px; height: 25px; }
   .cp-barra-titulo { font-size: 0.7rem; letter-spacing: 0.12em; }
+  .hr > .cp-barra { grid-template-columns: 50px minmax(0, 1fr) 50px; gap: 8px; padding-inline: 8px; }
+  .cp-barra .cp-contenido-titulo { font-size: 14px; }
+  .hr > .cp-barra .cp-barra-botones { gap: 4px; }
+  .hr > .cp-barra .cp-barra-botones img { width: 14px; }
   .cp-whatsapp { flex-wrap: wrap; gap: 8px 12px; }
 }
 

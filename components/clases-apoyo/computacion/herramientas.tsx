@@ -35,10 +35,7 @@ export default function Herramientas() {
 
   return (
     <section className="hr cp-ventana" aria-labelledby="hr-titulo">
-      {/* El título no se ve: la ventana con los logos se entiende sola. Queda
-          para lectores de pantalla y buscadores. */}
-      <h2 id="hr-titulo" className="sr-only">Herramientas que vas a usar</h2>
-      <BarraVentana />
+      <BarraVentana titulo="Clases particulares en Villa Lugano" encabezado tituloId="hr-titulo" />
 
       {/* Las doce fichas están siempre montadas, apiladas en la misma celda, y
           sólo se ve la elegida. Así la ventana mide lo que la ficha más larga

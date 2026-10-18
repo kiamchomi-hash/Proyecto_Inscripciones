@@ -58,15 +58,12 @@ export default function ComputacionPixel({ materia, parrafos }: { materia: Mater
 
   return (
     <div className={`cp ${fuentePixel.variable}`}>
-      {/* El h1 de todas las materias, completo y a la vista. Sólo el nombre
-          de la materia va en letra pixel: una palabra, no una frase. */}
+      {/* El nombre de la materia conserva la letra pixel del folleto. */}
       <header className="cp-encabezado">
         <VolverAClases compacto />
         <h1 className="cp-h1">
           <Image src="/imagenes/clases-apoyo/computacion/computadora.svg" alt="" width={27} height={25} unoptimized className="cp-h1-icono" />
-          <span>
-            Clases particulares de <strong><NombrePixel texto={materia.label} /></strong> en Villa Lugano
-          </span>
+          <strong><NombrePixel texto={materia.label} /></strong>
         </h1>
       </header>
 
