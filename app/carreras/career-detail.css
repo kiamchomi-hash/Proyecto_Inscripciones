@@ -249,6 +249,25 @@
   animation: none;
 }
 
+/* La modalidad, dentro de la fila de la marca: separada por una barra y en
+   blanco, para que se lea aunque la fila sea chica. No ocupa renglon propio. */
+.career-hero .career-hero-marca span.career-hero-modalidad {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: #fff;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.career-hero .career-hero-marca span.career-hero-modalidad::before {
+  content: "";
+  width: .45rem;
+  height: .45rem;
+  border-radius: 50%;
+  background: var(--career-accent-bright);
+}
+
 .career-hero-intro {
   max-width: 650px;
   margin-top: 1.5rem;

@@ -17,6 +17,7 @@ import {
   parsePlanModulos,
   parseDocente,
   mensajeWhatsAppInfo,
+  modalidadCorta,
 } from '@/components/carreras/career-content';
 
 interface Props {
@@ -77,13 +78,14 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
       { label: 'Institución', value: 'Teclab' },
       { label: 'Tipo', value: 'Curso' },
       { label: 'Duración', value: carrera.duracion },
-      { label: 'Modalidad', value: carrera.modalidad || 'Consultar' },
+      { label: 'Modalidad', value: carrera.modalidad || modalidadCorta(carrera) },
     ];
   } else {
     metaItems = [
       { label: 'Nivel', value: carrera.nivel },
       { label: 'Duracion', value: carrera.duracion },
       { label: 'Titulo', value: carrera.titulo },
+      { label: 'Modalidad', value: modalidadCorta(carrera) },
       { label: 'Foco', value: carrera.enfoque },
     ];
   }

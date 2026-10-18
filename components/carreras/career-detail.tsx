@@ -38,6 +38,7 @@ import {
   contarMaterias,
   tienePlanDeEstudios,
   mensajeWhatsAppInfo,
+  modalidadCorta,
 } from './career-content';
 import { rutaInscripcion, tieneInscripcionPropia } from './inscripcion-carrera';
 
@@ -328,6 +329,9 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                   height={100}
                 />
                 <span>Instituto Técnico Superior</span>
+                {/* La modalidad va en esta fila, que ya existe: como renglón
+                    propio bajo el título empujaba todo hacia abajo. */}
+                <span className="career-hero-modalidad">{modalidadCorta(carrera)}</span>
               </div>
             )}
             {!isIA && !conMaterialTeclab && (
@@ -338,12 +342,18 @@ export default function CareerDetail({ carrera, relacionadas }: Props) {
                   width={1031}
                   height={373}
                 />
+                {/* La modalidad va en esta fila, que ya existe: como renglón
+                    propio bajo el título empujaba todo hacia abajo. */}
+                <span className="career-hero-modalidad">{modalidadCorta(carrera)}</span>
               </div>
             )}
             {isIA && (
               <div className="career-hero-marca career-hero-marca--ia">
                 <IsotipoIA />
                 <span>Academia Identidad Argentina</span>
+                {/* La modalidad va en esta fila, que ya existe: como renglón
+                    propio bajo el título empujaba todo hacia abajo. */}
+                <span className="career-hero-modalidad">{modalidadCorta(carrera)}</span>
               </div>
             )}
           </div>

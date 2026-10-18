@@ -15,6 +15,7 @@ import { bloquesDe, ROTULO_GRUPO } from './bloques';
 import { EVENTO_ELEGIR_CARRERA, pideAutoinscripcion, type DetalleElegirCarrera } from './elegir-carrera';
 import { AVISO_TOKEN, AVISO_VERIFICAR, AvisoSinPago, PasoInscribirme, PasoListo, PasoPrecio } from './autoinscripcion-teclab';
 import { PrecioEnFormulario, type PrecioVigente } from '@/components/index/ver-precio-teclab';
+import { modalidadCorta } from '@/components/carreras/career-content';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -1491,7 +1492,18 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                     y el filtro sólo acota su lista. */}
                 <div className="space-y-2">
                   <div ref={listaRef} className="relative">
-                    <label className={ETIQUETA} htmlFor={`${prefijo}-carrera`}>Carrera</label>
+                    {/* La modalidad comparte el renglón de la etiqueta: en uno
+                        propio agrandaba el formulario. Sin carrera dice la
+                        general y al elegirla cambia sólo el texto. */}
+                    <div className="mb-0.5 flex items-baseline justify-between gap-2">
+                      <label className={`${ETIQUETA} mb-0`} htmlFor={`${prefijo}-carrera`}>Carrera</label>
+                      {esPreinscripcion && (
+                        <span className="flex items-center gap-1 whitespace-nowrap text-[10px] font-black uppercase tracking-wider text-white">
+                          <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--catalogo-acento)]" />
+                          {carrera ? modalidadCorta(carrera) : casaActiva === 'teclab' ? '100% online' : 'Cursada online'}
+                        </span>
+                      )}
+                    </div>
                     <div className="relative">
                       <input
                         id={`${prefijo}-carrera`}

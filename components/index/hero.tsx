@@ -33,6 +33,11 @@ export default function Hero() {
                 >
                   Inscripciones {new Date().getFullYear()}
                 </h2>
+                {/* La modalidad a la vista: el titulo oculto de la home lo dice, pero
+                    la primera pantalla no. Mismo estilo que la bajada de Teclab. */}
+                <p className="relative z-10 mt-1 sm:mt-1.5 text-white/85 font-semibold text-[6.5px] min-[380px]:text-[8px] sm:text-[10px] lg:text-[11px] uppercase tracking-wider text-center">
+                  Carreras de Universidad Siglo 21 con cursada online
+                </p>
                 <div className="flex flex-row items-center justify-center gap-1 min-[380px]:gap-2 sm:gap-3 mt-1.5 sm:mt-2 z-10 w-full px-1">
                   <span className="text-white font-bold text-[7px] min-[380px]:text-[8.5px] sm:text-[11px] md:text-[13px] lg:text-[15px] uppercase tracking-wider drop-shadow-md text-center">
                     Inscribite pulsando este botón:

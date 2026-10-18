@@ -5,7 +5,7 @@ import { useFocoModal } from './use-foco-modal';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug, getAreaForCarrera } from './types';
 import { sanitizeContent } from '@/lib/sanitize-content';
-import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
+import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios, modalidadCorta } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
 import IconoCompartir from './icono-compartir';
 import { PanelVerPrecio, AccesoVerPrecio } from './ver-precio-teclab';
@@ -971,7 +971,8 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           </div>
           <div className="flex-shrink-0 flex items-center bg-s21/12 border border-s21/35 rounded px-2.5 py-1">
             <span className="text-[clamp(0.55rem,1.75cqi,0.72rem)] font-black text-white uppercase tracking-wider leading-none">
-              Modalidad: <span className="text-s21">Virtual</span>
+              {/* Lo mismo que dice la ficha: "Virtual" no aclaraba si había que ir. */}
+              <span className="text-s21">{modalidadCorta(carrera)}</span>
             </span>
           </div>
         </div>

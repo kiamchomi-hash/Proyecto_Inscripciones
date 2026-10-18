@@ -65,6 +65,24 @@ export function parseIAMeta(enfoque: string): { modalidad: string; certificacion
   return { modalidad, certificacion };
 }
 
+/**
+ * La modalidad en pocas palabras, para que se vea a primera vista que no hay
+ * que viajar: la ficha, los modales y el formulario la muestran igual.
+ *
+ * Siglo 21 dice "cursada online" y no "100% online": la cursada es en la
+ * plataforma, pero la modalidad distribuida tiene instancias en la sede (los
+ * datos estructurados de la ficha la declaran `blended`). En Identidad,
+ * "híbrido" es en vivo por Innova Virtual, no presencial: se dice así.
+ */
+export function modalidadCorta(carrera: Pick<Carrera, 'nivel'> & { enfoque?: string | null }): string {
+  if (esTeclab(carrera) || esCursoTeclab(carrera)) return '100% online';
+  if (carrera.nivel === 'Identidad Argentina') {
+    const { modalidad } = parseIAMeta(carrera.enfoque || '');
+    return /h[ií]brid|en vivo/i.test(modalidad) ? 'Online, con clases en vivo' : '100% online';
+  }
+  return 'Cursada online';
+}
+
 /** Parsea el plan_estudios de Identidad Argentina en modulos. */
 export function parsePlanModulos(plan: string): { titulo: string; contenido: string }[] {
   const blocks = plan.split(/\n\n+/);
