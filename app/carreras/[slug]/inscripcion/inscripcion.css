@@ -373,6 +373,15 @@
   line-height: 1.6;
 }
 
+/* Que no se paga nada: letra grande y blanca, sin adornos. */
+.inscripcion-proximos p.inscripcion-sin-pago {
+  margin-top: .75rem;
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 @media (min-width: 640px) {
   .inscripcion-proximos { padding-inline: 2rem; }
 }

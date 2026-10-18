@@ -237,7 +237,10 @@ test('ambas páginas explican los próximos pasos sin competir con el formulario
     const contenido = recorrer(tarjeta).find(nodo => nodo.props?.className === 'inscripcion-proximos-contenido');
     assert.deepEqual(recorrer(contenido).filter(nodo => nodo.type === 'p').map(texto), [
       'Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.',
+      'Completar este formulario no realiza ningún pago: sólo registra tu solicitud. El pago lo hacés después, desde el portal del alumno.',
     ]);
+    // La aclaración de que no se paga va aparte, con su propia clase (letra grande).
+    assert.ok(recorrer(contenido).some(nodo => nodo.props?.className === 'inscripcion-sin-pago'));
 
     assert.doesNotMatch(texto(bloque), /[¿?]|Lugano|CAU|sede|\d|horas|minutos/i);
     assert.equal(recorrer(bloque).filter(nodo => ['a', 'button'].includes(nodo.type)).length, 0);
