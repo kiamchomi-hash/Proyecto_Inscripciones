@@ -39,4 +39,4 @@ Ruta delegada, con un solo escritor y TDD RED → GREEN donde existen pruebas de
 - No se hicieron stage, commit ni push durante la implementación original.
 
 ## Próximo paso
-Resolver la superficie de revisión segura y obtener una fuente con vigencia comprobable antes de habilitar cotizaciones promocionales. El respaldo íntegro y los detalles comerciales quedan en documentación local privada.
+Obtener una fuente con vigencia comprobable antes de habilitar cotizaciones promocionales. El respaldo íntegro y los detalles comerciales quedan en documentación local privada.
