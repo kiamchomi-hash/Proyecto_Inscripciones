@@ -29,6 +29,11 @@ detalle.
 Y si no queda rastro, decirlo así: «no está configurado; si fue una acción de una
 sola vez, no deja huella» es una respuesta útil. «¿Qué era?» a secas, no.
 
+### No avisar sobre la máquina Windows
+
+Desde el 19/10/2026 trabaja sólo desde Linux. No cerrar respuestas con avisos de
+pasar cambios a Windows, de `entorno.mjs` ni de paridad entre máquinas.
+
 ### Nada de puntuación decorativa en lo que se copia y pega
 
 En mails a leads y mensajes de WhatsApp: nada de viñeta al medio (`·`), guión

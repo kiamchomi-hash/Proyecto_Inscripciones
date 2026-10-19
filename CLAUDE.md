@@ -4,9 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Proyecto
 
-Sitio de **Universidad Siglo 21 — CAU Villa Lugano**, un centro de aprendizaje a distancia. Publica la oferta académica, capta inscripciones y gestiona las clases de apoyo. Producción: `https://www.siglo21sur.com` (Vercel).
+Sitio de **Universidad Siglo 21 — CAU Villa Lugano**, un centro de aprendizaje a distancia. Publica la oferta académica (Siglo 21, Teclab e Identidad Argentina), capta inscripciones y gestiona las clases de apoyo. Producción: `https://www.siglo21sur.com` (Vercel). Next.js 16 (App Router) + Supabase.
 
 Todo el texto de interfaz, los comentarios de código y la documentación están en español (es-AR).
+
+En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede dar la impresión de que queremos quedarnos con la plata del lead. Para aranceles usar un encabezado neutro, por ejemplo `Arancel vigente:`.
+
+**[`docs/criterios.md`](docs/criterios.md) se lee antes de proponer nada**: las decisiones ya tomadas que no hay que volver a proponer y cómo espera el usuario que se trabaje.
 
 ## Comandos
 
@@ -23,33 +27,42 @@ npm run check        # lint + typecheck + test — correr esto antes de commitea
 
 Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --test --test-name-pattern "rol admin" tests/security.test.mjs`.
 
+GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` el control de secretos, `npm run check` y `npm audit --omit=dev`.
+
 ### Verificaciones que no cubre `npm run check`
 
-`check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.bat` y un `.sh` de doble clic al lado de cada `.mjs`: `npm run auditar` (contenido faltante en Supabase), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.
+`check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.sh` de doble clic al lado de cada `.mjs` (la lógica se toca en el `.mjs`; el envoltorio no tiene lógica propia, y nada de esa carpeta entra al bundle): `npm run auditar` (contenido faltante en Supabase), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.
 
-**La vigilancia de producción ya existe, son dos y no se duplican**: el cron de Vercel cada 6 horas (`app/api/vigilancia`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
+`npm run calidad` es la auditoría ampliada: corre todos los controles (código, dependencias, contenido, Search Console, producción, SEO de cada URL del sitemap, integraciones y navegador) aunque uno falle, y tiene comandos por área (`calidad:web`, `calidad:seo`, `calidad:integraciones`). Un código 2 es que faltó una fuente, nunca un aprobado. Detalle en [`docs/controles-automaticos.md`](docs/controles-automaticos.md); el agente `auditor-web` interpreta la corrida.
 
-**El detalle de cada script, las banderas que aceptan, los dos vigilantes y los generadores sin script npm (`generar-og`, `generar-secretos`, `generar-favicon`) están en `docs/herramientas.md`.** Leerlo antes de correr o tocar cualquiera de ellos.
+Las pruebas de integración corren contra un Supabase local en Docker, nunca contra producción: `npm run db:local:iniciar`, `npm run test:integracion`, `npm run db:local:detener`. Procedimiento en [`docs/pruebas-supabase-local.md`](docs/pruebas-supabase-local.md).
+
+**La vigilancia de producción ya existe, son dos y no se duplican**: el cron de Vercel cada 6 horas (`app/api/vigilancia`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa, disparado por cron. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
+
+**El detalle de cada script, las banderas que aceptan, los dos vigilantes y los generadores (`og:teclab`, y sin script npm `generar-og`, `generar-secretos`, `generar-favicon`) están en `docs/herramientas.md`.** Leerlo antes de correr o tocar cualquiera de ellos.
 
 ### Deploy
 
-**Push a `main` = deploy**: Vercel publica automáticamente. `herramientas/5 - Subir cambios (deploy).bat` (o el `.sh` gemelo) es el flujo guiado (muestra el diff, pide descripción, corre `npm run check` y recién ahí commitea y pushea). Antes de un push manual, vaciar `GH_TOKEN` y `GITHUB_TOKEN` si están seteados: valores viejos hacen fallar el push con un error que no explica nada.
+**Push a `main` = deploy**: Vercel publica automáticamente. Se trabaja directo sobre `main`, sin ramas ni PRs. Commitear **sólo los archivos propios** (nada de `git add -A`: se editan cosas en paralelo).
 
-### Dos máquinas: Windows y Linux
+`herramientas/5 - Subir cambios (deploy).sh` es el flujo guiado (muestra el diff, pide descripción, corre `npm run check` y recién ahí commitea y pushea). Antes del diff, del commit y del push revisa con Gitleaks que no viajen secretos ni archivos privados; se prepara una vez por máquina con `npm run secretos:instalar` y se revisa a mano con `npm run secretos`. Alcance y excepciones en [`docs/publicacion-sin-secretos.md`](docs/publicacion-sin-secretos.md).
 
-El proyecto se trabaja desde las dos, con el mismo repo y el mismo comportamiento. Lo que sostiene la paridad:
+Antes de un push manual, vaciar `GH_TOKEN` y `GITHUB_TOKEN` si están seteados: valores viejos hacen fallar el push con un error que no explica nada.
 
-- **Nada de rutas absolutas de una máquina** en archivos versionados. El caso testigo fue `.claude/skills`, que era un symlink a `/home/coco/...`: en Windows git lo bajaba como un archivo de texto y las skills no cargaban.
-- **`.gitattributes` fija los finales de línea** por extensión. Un `.sh` con CRLF falla con `bad interpreter: ^M`.
-- **Los envoltorios son por sistema, la lógica no.** Cada verificación es un `.mjs` con un `.bat` y un `.sh` al lado; ninguno de los dos tiene lógica propia.
-- **`node herramientas/entorno.mjs exportar|importar`** mueve lo que no viaja por git: `.env.local`, la memoria de Claude Code, la credencial de Search Console, `.agents/` y `notas-locales/` (investigaciones propias que no van al repo, que es público). La memoria vive en `~/.claude/projects/<ruta del proyecto con guiones>/memory`, así que el nombre de la carpeta cambia con la ruta y el script lo recalcula. El procedimiento completo está en `herramientas/LEER.md`.
-- **`fs.cpSync` recursivo no se usa**: en Node 24 sobre Windows revienta el proceso (0xC0000409, no lanza excepción) si la ruta tiene un carácter no ASCII, y la de este proyecto tiene un acento.
+### Una sola máquina: Linux
+
+Desde el 19/10/2026 el proyecto se trabaja sólo desde Linux. Los `.bat` que quedan en `herramientas/` son históricos; no hace falta mantener la paridad con Windows.
+
+- **Nada de rutas absolutas** en archivos versionados: el repo es público.
+- **`node herramientas/entorno.mjs exportar|importar`** respalda lo que no viaja por git: `.env.local`, la memoria de Claude Code, la credencial de Search Console, `.agents/` y `notas-locales/`. El procedimiento está en `herramientas/LEER.md`.
 
 ## Arquitectura
 
 ### Next.js 16 + App Router
 
-Las páginas son Server Components que leen de Supabase en el render. La home usa `revalidate = 3600`; `/carreras/[slug]`, `/novedades/[page]` y los artículos usan 86400 para no gastar ISR Writes; `/faq`, `/clases-apoyo/[materia]` e `/imagenes` no declaran ninguno, así que son estáticos puros. `/sitemap.xml` usa `dynamic = 'force-dynamic'` y se genera en cada pedido para reflejar altas, bajas y fechas sin depender de ISR. Esos números son la red de abajo, no el mecanismo: lo que publica de verdad es la revalidación on-demand (ver más abajo). `/clases-apoyo` **también es estática**: mostraba un calendario relativo a hoy y por eso usaba `dynamic = 'force-dynamic'`, pero dejó de mostrarlo y el flag se sacó. La revalida el trigger de `materias`.
+Las páginas son Server Components que leen de Supabase en el render. La home y las de Teclab (`/teclab`, `/teclab/inscripcion`, `/teclab/test-vocacional`) usan `revalidate = 3600`; `/carreras/[slug]`, `/carreras/[slug]/inscripcion`, `/novedades/[page]` y los artículos usan 86400 para no gastar ISR Writes; `/faq`, `/clases-apoyo/[materia]` e `/imagenes` no declaran ninguno, así que son estáticos puros. `/sitemap.xml` usa `dynamic = 'force-dynamic'` y se genera en cada pedido para reflejar altas, bajas y fechas sin depender de ISR; `/inscripcion/[codigo]` (enlace personalizado de inscripción) también es dinámica. Esos números son la red de abajo, no el mecanismo: lo que publica de verdad es la revalidación on-demand (ver más abajo). `/clases-apoyo` **también es estática**: mostraba un calendario relativo a hoy y por eso usaba `dynamic = 'force-dynamic'`, pero dejó de mostrarlo y el flag se sacó. La revalida el trigger de `materias`.
+
+**Esta no es la versión de Next que conocés**: ante cualquier duda de API o convención, leer la guía en `node_modules/next/dist/docs/` antes de escribir código (ver el bloque del final).
 
 `proxy.ts` en la raíz **es el middleware** — Next 16 renombró `middleware.ts` a `proxy.ts` y exporta una función `proxy()`. Ahí vive todo el control de acceso del panel admin.
 
@@ -87,9 +100,10 @@ Todo lo que envía el público pasa por `POST /api/formularios`, que discrimina 
 
 ### Un solo lugar declara los campos: `components/formularios/casas.ts`
 
-El sitio tiene dos formularios por casa (contacto y preinscripción) y un único componente que los pinta. Lo que cambia entre uno y otro no está en el componente sino en `casas.ts`, que declara los campos con **la columna de `consultas` donde se guarda cada uno**: `insertConsulta` arma la fila con `columnaDe()` y no tiene ni un nombre de columna escrito a mano. El 23/08/2026 el endpoint apuntó a nueve columnas inexistentes y **dejaron de entrar todas las consultas del sitio**, porque PostgREST rechaza la fila entera cuando una no existe. Un test de `security.test.mjs` falla si vuelve a aparecer un literal de columna en el endpoint.
+El sitio tiene dos formularios por casa (contacto y preinscripción) y un único componente que los pinta. Lo que cambia entre uno y otro no está en el componente sino en `casas.ts`, que declara los campos con **la columna de `consultas` donde se guarda cada uno** y qué pide cada casa (`siglo21`, `teclab`, `identidad`): `insertConsulta` arma la fila con `columnaDe()` y no tiene ni un nombre de columna escrito a mano. El 23/08/2026 el endpoint apuntó a nueve columnas inexistentes y **dejaron de entrar todas las consultas del sitio**, porque PostgREST rechaza la fila entera cuando una no existe (PGRST204). Un test de `security.test.mjs` falla si vuelve a aparecer un literal de columna en el endpoint.
 
-**Antes de agregar o mover un campo, leer `docs/formularios-por-casa.md`**: qué pide cada casa, cuáles bloquean el envío, cómo viaja el payload y cómo verificar que la columna exista de verdad.
+**Antes de agregar o mover un campo, leer `docs/formularios-por-casa.md`**: qué pide cada casa, cuáles bloquean el envío, cómo viaja el payload y cómo verificar que la columna exista de verdad (`GET /rest/v1/consultas?select=<columna>&limit=1` con la anon key; un `42703` es la columna que falta) antes de mandar una consulta real.
+
 ### Avisos de formulario: fallan en silencio
 
 Hay **tres** triggers de Postgres, uno por tabla de formulario, y todos llaman a la misma función `notify_edge_function()`, que vía `net.http_post` invoca la Edge Function `supabase/functions/notificar/` (Telegram, único canal desde el 01/08/2026):
@@ -132,9 +146,11 @@ Rutas `/admin/*` y `/api/admin/*`, todas protegidas por `proxy.ts`. La cadena de
 1. Sin sesión → las páginas redirigen a `/admin/login`, las APIs devuelven 401.
 2. Sin fila en `profesores` → se crea una con `estado: 'pendiente'`, `rol: 'profesor'` (auto-registro al primer login).
 3. `estado !== 'aprobado'` → `/admin/pendiente` o 403.
-4. `/admin` (dashboard) y todo `/api/admin/*` exigen además `rol === 'admin'`; un profesor cae en `/admin/clases-apoyo`.
+4. `/admin` (dashboard), `/admin/buscador` y todo `/api/admin/*` exigen además `rol === 'admin'`; un profesor cae en `/admin/clases-apoyo`.
 
 Públicas dentro de `/admin`: `login`, `auth/callback`, `reset-password`, `pendiente`. `next.config.ts` le pone `X-Robots-Tag: noindex, nofollow` a todo `/admin`.
+
+Única excepción a la sesión: el actualizador de precios de la máquina de casa publica el buscador con `PUT /api/admin/buscador` y `Authorization: Bearer $BUSCADOR_SECRET`. El proxy lo deja pasar sin comparar el secreto; la autoridad es la route, que devuelve 401 si no coincide.
 
 `PATCH` y `DELETE /api/admin/profesores` también verifican sesión, aprobación y
 rol admin dentro del handler con `lib/auth/exigir-admin.ts`, antes de crear el
@@ -146,7 +162,7 @@ rechaza la operación. Las escrituras del profesor en el panel siguen usando ano
 
 `components/index/types.ts` es la fuente de verdad y la usan la home, `/carreras/[slug]` y `sitemap.ts` por igual:
 
-- **`esCarreraVisible()`** filtra los niveles fuera de la oferta (Posgrado, APLV-Extragrado, Certificación, Curso). Las filas siguen en Supabase; simplemente no tienen categoría, así que no se listan, no se pueden elegir en el formulario y no tienen página. **Aplicar este filtro en cualquier lectura nueva de `carreras`**, o se publican páginas de carreras que no se dictan.
+- **`esCarreraVisible()`** filtra los niveles fuera de la oferta (Posgrado, APLV-Extragrado, Certificación y los cursos históricos de Siglo 21; de los cursos sólo se publica `Teclab - Curso`). Las filas siguen en Supabase; simplemente no tienen categoría, así que no se listan, no se pueden elegir en el formulario y no tienen página. **Aplicar este filtro en cualquier lectura nueva de `carreras`**, o se publican páginas de carreras que no se dictan.
 - `getCategoryForCarrera()` mapea `nivel` → las 5 categorías del catálogo (licenciaturas, tecnicaturas, Identidad Argentina, Teclab Tecnología, Teclab Gestión).
 - `getAreaForCarrera()` y `getDurationGroup()` alimentan los filtros, por palabras clave sobre el nombre.
 - `carreraToSlug()` arma la URL desde `prefix + nombre` (`carreraFullName()`), sin acentos. La página compara el slug pedido contra el canónico y hace `permanentRedirect` si difiere, así las URLs viejas con guión bajo no duplican contenido.
@@ -156,7 +172,7 @@ rechaza la operación. Las escrituras del profesor en el panel siguen usando ano
 `careers-catalog.tsx` abre siempre `career-info-modal.tsx`, que es sólo un despachador con imports dinámicos:
 
 1. `nivel === 'Identidad Argentina'` → `ia-modal.tsx` (marca del convenio, azul `#0090C1` / amarillo `#F1CF1C`)
-2. `esTeclab(carrera)` → `teclab-modal.tsx` (cian `#2ee7d7` en Tecnología, violeta `#8e2cf2` en Gestión)
+2. `esTeclab(carrera)` o `esCursoTeclab(carrera)` → `teclab-modal.tsx` (cian `#2ee7d7` en Tecnología, violeta `#8e2cf2` en Gestión)
 3. tiene `slides` → `carousel-modal.tsx`
 4. si no → `career-modal.tsx`
 
@@ -168,11 +184,11 @@ Las carreras sin slides *y* fuera de convenio caen en `career-modal.tsx`, que ar
 
 Es una prioridad activa del proyecto, no un detalle; `docs/indexacion.md` lleva el seguimiento de la campaña de indexación. La medición semanal la hace sola `npm run seo` (ver arriba) y el agente `estratega-seo` la interpreta.
 
-- `app/sitemap.ts` genera todo: home, carreras visibles, materias, páginas de novedades y artículos.
+- `app/sitemap.ts` genera todo: home, carreras visibles y sus páginas de inscripción, materias, páginas de novedades y artículos, las de Teclab y las páginas fijas.
 - JSON-LD: `EducationalOrganization` + `LocalBusiness` con `areaServed` en `app/layout.tsx`; `Course` + `BreadcrumbList` en la página de carrera.
 - Los `<title>` de carrera eligen el sufijo más largo que entre en 61 caracteres y usan `title: { absolute }` para que el template del layout no duplique la marca. El presupuesto se prueba primero con el nombre completo y recién después con `nombre_corto`, o sea que **primero se suelta "a Distancia" y después el prefijo académico**. Es a propósito y está medido (02/09/2026, 90 días): las consultas que dicen "tecnicatura" o "licenciatura" traen 25 de los 99 clics y las que dicen "a distancia" traen 6. Dar vuelta ese orden ya se simuló y deja 83 de 88 fichas sin el nombre largo — no rehacerlo.
 - Las fichas se enlazan entre sí: 6 del mismo nivel más 2 de otro nivel. Las tres primeras del nivel y la primera cruzada salen del **área** de la carrera (`getAreaForCarrera()`), y el resto de una rotación por `id`. Es determinístico a propósito, para no romper el cache de ISR. El área adelante porque Procurador enlazaba a videojuegos, redes y programación: ocho enlaces y ninguno de derecho, que no le dice nada a Google sobre el tema de la página. Con el cambio, los enlaces dentro de la misma área pasaron de 17% a 41%. **Antes de tocar ese criterio hay que simular el grafo y contar enlaces entrantes por ficha**: al meter el área, el paso de la rotación cruzada quedó en 2 recorriendo un solo lugar, o sea sólo índices pares, y dejó al curso de Teclab —único de su nivel, así que sólo puede recibir cruzadas— en cero enlaces entrantes. Con paso 1 vuelve a recorrer todo: mínimo 2, máximo 12, ninguna en cero.
-- `next.config.ts` concentra los redirects (apex → `www`, `/carrera/:slug` → `/carreras/:slug`, `/contactos` → `/contacto`, `/carreras` → home).
+- `next.config.ts` concentra los redirects (apex → `www`, `/index.html` → `/`, `/carrera/:slug` → `/carreras/:slug`, `/contactos` → `/contacto`, `/novedades` → `/novedades/1`, `/carreras` → home, y las fichas renombradas o dadas de baja).
 
 ### Rendimiento y seguridad de la entrega
 
@@ -186,37 +202,46 @@ El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada
 
 La plantilla completa está en `.env.example` y el reparto de cuál usa Next, cuál las Edge Functions y cuál las herramientas, en `docs/variables-de-entorno.md`.
 
-Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tiene `SUPABASE_SERVICE_ROLE_KEY`** (está marcada Sensitive y `vercel env pull` no la trae). Alcanza para levantar el sitio y leer de la base, pero **un POST válido a `/api/formularios` devuelve 503 en local** (un sobre inválido devuelve 400 antes de consultar la base). Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
+Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tiene `SUPABASE_SERVICE_ROLE_KEY`** (está marcada Sensitive y `vercel env pull` no la trae). Alcanza para levantar el sitio y leer de la base, pero **un POST válido a `/api/formularios` devuelve 503 en local** (un sobre inválido devuelve 400 antes de consultar la base). Para recorrer los formularios en local sin escribir está el modo demo (`NEXT_PUBLIC_FORMULARIOS_DEMO=1`, sólo con `next dev`, ver `lib/formularios-demo.ts`): valida igual, saltea el captcha y no guarda nada. Para probar de punta a punta hay que pegar la clave a mano desde el gestor de contraseñas.
+
 ## Base de datos
 
 Tablas de contenido y formularios: `carreras`, `materias`, `solicitudes_clase`, `consultas`, `faq_preguntas`, `novedades`, `profesores`.
+
+Tablas de precios, inscripción y newsletter: `precios_carreras`, `precios_meta`, `precios_privados`, `descuentos`, `enlaces_inscripcion`, `robot_autoinscripciones`, `suscripciones_newsletter`, `reservas_mail_precio` ([límite de mails de «Ver precio»](docs/limite-mails-precio.md)) y `plantillas_mensajes`. La lista al día es la de `lib/database.types.ts`.
 
 `clases_apoyo` **no existe**: `sql/setup_completo.sql` la crea en el papel y le pone una policy, pero en la base no está y ningún componente la lee — la agenda de clases de apoyo sale toda de `materias`. Verificado el 28/08/2026.
 
 Tablas de infraestructura, sin acceso desde `anon` ni `authenticated` (sólo service role, vía RPC): `form_rate_limits` (respalda `check_form_rate_limit`) y `career_clicks` (respalda `registrar_click_carrera` y el digest diario).
 
+No hay backups programados ni PITR (plan Free); el estado de la recuperación está en [`docs/recuperacion-supabase.md`](docs/recuperacion-supabase.md).
+
 ### Escribir contenido desde local: el rol `cau_editor`
 
-`npm run db "<sql>"` (o `npm run db -- --archivo x.sql`) corre SQL contra la base con un rol de Postgres acotado, que **sólo tiene privilegios sobre las tablas de contenido** (`carreras`, `novedades`, `materias`, y `faq_preguntas` por columna). Contra las tablas de formularios responde `permission denied`, y eso es el rol funcionando: esa consulta va al SQL Editor del dashboard. `herramientas/db.mjs` además frena los `UPDATE` y `DELETE` sin `WHERE`.
+`npm run db "<sql>"` (o `npm run db -- --archivo x.sql`) corre SQL contra la base con un rol de Postgres acotado: escribe en las tablas de contenido (`carreras`, `novedades`, `materias`, y `faq_preguntas` por columna) y en `precios_privados`, y sobre `consultas` sólo lee y borra. Contra el resto de las tablas de formularios responde `permission denied`, y eso es el rol funcionando: esa consulta va al SQL Editor del dashboard. `herramientas/db.mjs` además frena los `UPDATE` y `DELETE` sin `WHERE`.
 
 **El alcance tabla por tabla, la cadena de conexión, el certificado de Supabase y qué hacer si la máquina no tiene IPv6 están en `docs/rol-editor.md`.**
 
 Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano en el SQL Editor de Supabase, en orden de fecha. Hay jobs de `pg_cron` (limpieza de clases pasadas, digest diario de clicks) que se programan desde ahí.
+
 ## Convenciones
 
 - Alias `@/*` → raíz del proyecto.
 - El contenido HTML que viene de la base (novedades) pasa siempre por `lib/sanitize-content.ts` antes de renderizarse.
 - Colores en `app/globals.css` `:root` — fondo `--color-deep-dark-bg: #013729`, acento `--color-highlight: #00c7b1`, tarjetas `--color-card-bg: #1c2f31`, dorado `--color-gold: #e69b05`, marca `--cau-brand-blue: #005587` / `--cau-brand-green: #058c70`.
 - `docs/textos-whatsapp.md` son las respuestas institucionales para copiar y pegar al atender un lead a mano. **No las usa el bot**, que contesta desde `ventas/corpus/`. No llevan precios ni fechas a propósito.
-- [`PENDIENTES.md`](PENDIENTES.md) es la lista breve de tareas abiertas. Sus rutinas, detalles, historial y procedimientos están enlazados desde ahí; no mezclar esos registros con la lista rápida.
+- [`PENDIENTES.md`](PENDIENTES.md) es la lista breve de tareas abiertas. Sus rutinas ([`docs/rutinas.md`](docs/rutinas.md)), detalles, historial y procedimientos están enlazados desde ahí; no mezclar esos registros con la lista rápida.
 - `docs/seguridad.md` es el historial de seguridad: qué se endureció y cuándo, el mapa de qué defiende cada pieza, los cinco pasos de una revisión y la bitácora de las que se hicieron. Antes de proponer un endurecimiento, mirar ahí si ya está hecho; después de revisar, anotar el resultado.
 - **Al dar de alta, renombrar o abrir una carrera, recorrer [`docs/alta-de-carrera.md`](docs/alta-de-carrera.md)**: lo que se busca por nombre (áreas, tipos de Teclab, HubSpot, test vocacional, bot, folletos) no se actualiza solo.
 - `docs/criterios.md` son las decisiones ya tomadas (no volver a proponerlas) y las preferencias de trabajo del usuario. Lo leen Claude Code y Codex por igual: lo que está ahí no va en la memoria de ninguno de los dos, porque la memoria no cruza de herramienta ni de máquina.
+- `referencias/AAAA-MM-DD-<tema>.md` guarda los links que se usaron en cada trabajo; los docs los citan desde ahí.
+- `odd/tasks/` son los documentos de seguimiento de cada funcionalidad (objetivo, tareas y verificación).
 - `contenidos/` es el material gráfico y de video por casa (`cau/`, `siglo21/`, `teclab/`, `identidad/`; lo general y lo de la sede es del CAU; cada una con `oficial/`, `en-curso/`, `aprobados/` y `remotion/`, donde viven sus proyectos de video). Pesa más de 11 GB y está fuera de git, de TypeScript y de ESLint. **No se explora, no se lista ni se busca adentro salvo que el usuario lo pida** o que el trabajo sea una pieza gráfica o un video (ahí mandan las skills `lienzo-de-diseno`, `piezas_teclab` y `remotion`). Cómo se usa: `contenidos/LEER.md`.
-- `scripts/` son utilitarios de carga de datos de una sola vez (parseo e insert de carreras, descarga de assets de Teclab); no participan del build ni de `check`.
-- `.claude/skills/` es una biblioteca local de skills para Claude Code: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), SEO, y guías generales de Next/React. Antes vivía en `shared_skills/` con un symlink al lado, que sólo funcionaba en Linux; ahora es un directorio real y carga en los dos sistemas.
+- `scripts/` son utilitarios de una sola vez (descarga de assets de Teclab, generadores de folletos); no participan del build ni de `check`.
+- `.claude/skills/` es una biblioteca local de skills: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), piezas gráficas por casa, SEO, y guías generales de Next/React. `.claude/agents/` tiene los agentes de revisión del proyecto (`auditor-contenido`, `auditor-dependencias`, `auditor-web`, `estratega-seo`, `verificador-produccion`); ninguno escribe ni commitea.
 - `docs/plans/` son planes de implementación históricos, no estado actual; además es donde escriben las skills `brainstorming` y `writing-plans`. `docs/resumen-proyecto.md` es un resumen para reutilizar patrones en otros proyectos — ante una contradicción, manda este archivo y el código.
-- `carreras/`, `ventas/` y `herramientas/ventas/` son la base de conocimiento comercial (precios, corpus del bot de WhatsApp, fichas), **no las usa el sitio**. Las tres están gitignoradas y ancladas con `/` porque el repo es público, así que Grep no las ve. Ningún script arma rutas a mano: el mapa está en `herramientas/ventas/rutas.mjs`. Detalle en `docs/material-comercial.md`.
+- `carreras/`, `ventas/` y `herramientas/ventas/` son la base de conocimiento comercial (precios, corpus del bot de WhatsApp, fichas), **no las usa el sitio**. Las tres están gitignoradas y ancladas con `/` (si no se comerían `app/carreras/` y `components/carreras/`): **el repo es público y ahí hay precios, no commitearlas**. Grep no las ve; buscar ahí con Bash. Ningún script arma rutas a mano: el mapa está en `herramientas/ventas/rutas.mjs`. Detalle en `docs/material-comercial.md`.
+- `conocimiento/` es la versión versionada y sin precios de esa base (información académica de las tres casas, para piezas). La genera `herramientas/ventas/exportar-conocimiento.mjs`: no se edita a mano. Ver `conocimiento/LEER.md`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
