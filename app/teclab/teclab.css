@@ -229,17 +229,45 @@
 /* La columna del titulo mide lo que mide el texto y las fotos tienen tope:
    con dos mitades iguales sobraban ~200 px de aire entre el texto y las fotos.
    El conjunto va centrado y el sobrante queda en los bordes. El tope va en px
-   porque aca el rem crece con la pantalla. Las columnas se alinean abajo para
-   que los botones queden a la altura de las marcas cocreadoras. */
+   porque aca el rem crece con la pantalla. Las dos columnas ocupan el mismo
+   alto: el logo arranca a la altura de las fotos y los botones terminan a la
+   de las marcas cocreadoras. */
 .teclab-hero-content {
   display: grid;
   grid-template-columns: fit-content(36rem) minmax(0, 620px);
   justify-content: center;
-  align-items: end;
+  align-items: stretch;
   gap: clamp(2.5rem, 5vw, 5rem);
   width: min(100%, 1500px);
   margin: 0 auto;
   padding: clamp(1.75rem, 2.8vw, 2.5rem) clamp(1.25rem, 6vw, 5rem);
+}
+
+/* Desde tablet: el logo arriba, los botones abajo (a la altura de las marcas
+   cocreadoras) y el titulo centrado entre los dos. */
+@media (min-width: 761px) {
+  .teclab-hero-decir {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Con el contenedor adelante: `.teclab-hero h1 { margin: 0 }` va mas abajo
+     y a igual especificidad lo pisaba. */
+  .teclab-hero .teclab-hero-decir h1 {
+    margin-block: auto;
+  }
+
+  /* Sin margenes propios: el aire de arriba y el de abajo del titulo los
+     reparte solo el auto, y quedan iguales. */
+  .teclab-hero-decir .teclab-hero-logo,
+  .teclab-hero-decir .teclab-hero-actions {
+    margin-block: 0;
+  }
+
+  .teclab-hero-decir h1 {
+    padding-block: 1rem;
+  }
 }
 
 .teclab-hero-logo {
@@ -424,6 +452,19 @@
 
 .teclab-button--primary:hover {
   box-shadow: 9px 9px 0 var(--tl-azul);
+}
+
+/* Los dos botones del hero no saltan al pasar el mouse: el aviso es el color. */
+.teclab-hero-actions .teclab-button:hover {
+  transform: none;
+}
+
+.teclab-hero-actions .teclab-button--primary:hover {
+  background: var(--tl-cian-vivo);
+}
+
+.teclab-hero-actions .teclab-button--secundario:hover {
+  background: #1f6bff;
 }
 
 .teclab-button:focus-visible,
@@ -886,28 +927,18 @@
     letter-spacing: 0.05em;
   }
 
-  .teclab-hero-actions,
-  .teclab-hero-partners ul {
+  .teclab-hero-actions {
     justify-content: center;
   }
 
-  /* Esta fuera de la columna del titulo: el centrado no le llega de ahi. */
+  /* En el celular no van las marcas cocreadoras: el hero tiene que dejar ver
+     el catalogo en la primera pantalla. */
   .teclab-hero-partners {
-    margin-top: 1.1rem;
-    text-align: center;
-  }
-
-  .teclab-hero-partners > p {
-    margin-bottom: 0.6rem;
+    display: none;
   }
 
   .teclab-button {
     width: 100%;
-  }
-
-  /* En el celular entran las tres marcas mas conocidas en una sola fila. */
-  .teclab-hero-partners li:nth-child(n + 4) {
-    display: none;
   }
 
   .teclab-hero-mosaico {
