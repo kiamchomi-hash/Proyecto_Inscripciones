@@ -11,7 +11,7 @@ export default function Hero() {
         {/* Banner carousel */}
         <div className="flex-1 w-full xl:max-w-4xl flex flex-col items-center min-w-0 overflow-hidden">
           <HeroCarousel>
-            {/* Slide 1: Inscripciones 2026 (Texto 3D sutil) */}
+            {/* Slide 1: Inscripciones 2027 (Texto 3D sutil) */}
             <div className="banner-slide">
               <div className="w-full h-full relative min-h-[120px] texture-forest grain-overlay overflow-hidden flex flex-col items-center justify-center p-2 sm:p-4">
                 {/* SVGs decorativos de fondo (pequeños y en los extremos absolutos) */}
@@ -31,7 +31,7 @@ export default function Hero() {
                   className="relative z-10 text-white font-black text-[1.15rem] min-[380px]:text-[1.8rem] sm:text-[2.2rem] md:text-[2.5rem] lg:text-[3.5rem] xl:text-[2.5rem] 2xl:text-[3rem] text-center tracking-tight uppercase whitespace-nowrap leading-none"
                   style={{ textShadow: "1px 1px 0 #4b5563, 2px 2px 0 #374151, 3px 3px 0 #1f2937, 4px 4px 0 #111827, 4px 4px 10px rgba(0,0,0,0.6)" }}
                 >
-                  Inscripciones {new Date().getFullYear()}
+                  Inscripciones 2027
                 </h2>
                 {/* La modalidad a la vista: el titulo oculto de la home lo dice, pero
                     la primera pantalla no. Mismo estilo que la bajada de Teclab. */}
