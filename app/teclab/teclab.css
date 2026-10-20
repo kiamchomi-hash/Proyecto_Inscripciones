@@ -243,32 +243,35 @@
   padding: clamp(1.75rem, 2.8vw, 2.5rem) clamp(1.25rem, 6vw, 5rem);
 }
 
-/* Desde tablet: el logo arriba, los botones abajo (a la altura de las marcas
-   cocreadoras) y el titulo centrado entre los dos. */
+/* Desde tablet: el logo arriba y pegado al titulo, los dos centrados sobre la
+   columna; los botones abajo, a la altura de las marcas cocreadoras. El aire
+   que sobra queda entre el titulo y los botones. */
 @media (min-width: 761px) {
   .teclab-hero-decir {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
   }
 
   /* Con el contenedor adelante: `.teclab-hero h1 { margin: 0 }` va mas abajo
      y a igual especificidad lo pisaba. */
-  /* "Tecnicaturas" centrado sobre la linea de los resaltados. */
   .teclab-hero .teclab-hero-decir h1 {
-    margin-block: auto;
+    margin-top: clamp(0.8rem, 1.3vw, 1.2rem);
+    margin-bottom: auto;
     text-align: center;
   }
 
-  /* Sin margenes propios: el aire de arriba y el de abajo del titulo los
-     reparte solo el auto, y quedan iguales. */
   .teclab-hero-decir .teclab-hero-logo,
   .teclab-hero-decir .teclab-hero-actions {
     margin-block: 0;
   }
 
-  .teclab-hero-decir h1 {
-    padding-block: 1rem;
+  .teclab-hero-decir .teclab-hero-actions {
+    padding-top: 1rem;
+  }
+
+  .teclab-hero-decir .teclab-hero-logo {
+    width: clamp(15rem, 21vw, 21rem);
   }
 
   /* Menos aire arriba y abajo: el alto lo ponen las fotos, no un minimo fijo. */
