@@ -124,6 +124,49 @@
   color: #fff;
 }
 
+/* El panel que despliega el boton sigue la misma familia azul. */
+.teclab-page .filter-dropdown {
+  border-color: rgba(111, 160, 255, 0.35);
+}
+
+.teclab-page .filter-dropdown-header,
+.teclab-page .mobile-filter-header {
+  background: rgba(0, 85, 240, 0.08);
+  border-color: rgba(111, 160, 255, 0.2);
+}
+
+.teclab-page .filter-dropdown-header:hover {
+  background: rgba(0, 85, 240, 0.16);
+}
+
+.teclab-page .filter-dropdown-header.open,
+.teclab-page .mobile-filter-header.open {
+  background: rgba(0, 85, 240, 0.18);
+  border-color: rgba(111, 160, 255, 0.5);
+  color: var(--tl-azul-claro);
+}
+
+.teclab-page .filter-option:hover {
+  background: rgba(0, 85, 240, 0.18);
+  border-color: rgba(111, 160, 255, 0.45);
+}
+
+.teclab-page .filter-option.active {
+  background: var(--tl-azul);
+  border-color: var(--tl-azul-claro);
+  color: #fff;
+}
+
+.teclab-page .filter-active-tag {
+  background: rgba(0, 85, 240, 0.2);
+  border-color: rgba(111, 160, 255, 0.45);
+  color: var(--tl-azul-claro);
+}
+
+.teclab-page .filter-badge-dot-inline {
+  background: var(--tl-azul-claro);
+}
+
 .teclab-page .filter-toggle-btn.active .filter-count-badge {
   background: #fff;
   border-color: #fff;
