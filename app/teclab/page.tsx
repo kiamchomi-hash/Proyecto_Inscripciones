@@ -171,6 +171,18 @@ export default async function TeclabPage() {
                   Quiero inscribirme <span aria-hidden="true">→</span>
                 </a>
               </div>
+            </div>
+
+            {/* Las fotos arriba y las empresas debajo: la prueba de las alianzas
+                acompaña a las imagenes en vez de alargar la columna del titulo. */}
+            <div className="teclab-hero-visual">
+              <div className="teclab-hero-mosaico" aria-hidden="true">
+                {MOSAICO.map((src, i) => (
+                  <div key={src}>
+                    <Image src={src} alt="" fill sizes="(max-width: 760px) 45vw, 24vw" preload={i === 0} />
+                  </div>
+                ))}
+              </div>
 
               <div className="teclab-hero-partners">
                 <p>Carreras cocreadas con</p>
@@ -182,14 +194,6 @@ export default async function TeclabPage() {
                   ))}
                 </ul>
               </div>
-            </div>
-
-            <div className="teclab-hero-mosaico" aria-hidden="true">
-              {MOSAICO.map((src, i) => (
-                <div key={src}>
-                  <Image src={src} alt="" fill sizes="(max-width: 760px) 45vw, 24vw" preload={i === 0} />
-                </div>
-              ))}
             </div>
           </div>
         </section>

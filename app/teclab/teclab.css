@@ -212,10 +212,10 @@
 }
 
 
-/* Prueba visual: las empresas con las que Teclab cocreo carreras. Reemplaza al
-   parrafo que estaba en el hero. */
+/* Prueba visual: las empresas con las que Teclab cocreo carreras. Va debajo de
+   las fotos, en la columna derecha, para que la del titulo quede corta. */
 .teclab-hero-partners {
-  margin-top: clamp(1.35rem, 2.6vw, 1.9rem);
+  margin-top: clamp(1.5rem, 2.8vw, 2.1rem);
   opacity: 0;
   animation: teclabRise 0.72s 0.44s ease-out forwards;
 }
