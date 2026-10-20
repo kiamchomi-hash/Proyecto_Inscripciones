@@ -75,6 +75,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: { absolute: title },
     description,
     alternates: { canonical: url },
+    // No se indexa (20/10/2026): no sirve como entrada desde Google. La
+    // cabecera X-Robots-Tag de next.config.ts dice lo mismo; esto cubre a los
+    // buscadores que solo leen la meta.
+    robots: { index: false, follow: true },
     openGraph: { title, description, url, images: [og] },
     twitter: { card: 'summary_large_image', title, description, images: [og] },
   };

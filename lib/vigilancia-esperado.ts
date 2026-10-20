@@ -44,6 +44,7 @@ export const HSTS_ESPERADO = /max-age=63072000/;
 export const NOINDEX: Array<[string, RegExp]> = [
   ['/admin/login', /noindex/],
   ['/api/formularios', /noindex/],
+  ['/carreras/tecnicatura-superior-en-programacion/inscripcion', /noindex/],
 ];
 
 /**

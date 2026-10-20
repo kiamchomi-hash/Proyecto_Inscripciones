@@ -116,10 +116,13 @@ function cargarPagina(archivo = 'app/carreras/[slug]/inscripcion/page.tsx') {
 
 const params = slug => ({ params: Promise.resolve({ slug }) });
 
-test('el sitemap publica la inscripcion solo de las carreras de Teclab con inscripcion abierta', async () => {
+// Desde el 20/10/2026 las /carreras/<slug>/inscripcion no se indexan: no
+// sirven como entrada desde Google. Siguen existiendo para quien llega desde la
+// ficha, pero fuera del sitemap y con noindex.
+test('el sitemap no publica las inscripciones por carrera', async () => {
   const entradas = await cargarSitemap().default();
   const inscripciones = entradas.map(e => e.url).filter(url => url.startsWith(`${BASE}/carreras/`) && url.endsWith('/inscripcion'));
-  assert.deepEqual(inscripciones.sort(), [...slugTeclab, 'abogacia'].map(s => `${BASE}/carreras/${s}/inscripcion`).sort());
+  assert.deepEqual(inscripciones, []);
   // La inscripción genérica de Teclab, con el selector de todas sus carreras.
   assert.ok(entradas.some(e => e.url === `${BASE}/teclab/inscripcion`));
   // La ficha sigue publicada aparte: la inscripcion no la reemplaza.
@@ -137,7 +140,7 @@ test('solo se pre-generan las paginas de Teclab', async () => {
   assert.deepEqual(slugs.sort(), [...slugTeclab, 'abogacia'].sort());
 });
 
-test('la metadata es propia, entra en el resultado de Google y se declara canonica', async () => {
+test('la metadata es propia, se declara canonica y pide no indexar', async () => {
   const pagina = cargarPagina();
   const vistas = new Set();
   for (const slug of slugTeclab) {
@@ -149,7 +152,7 @@ test('la metadata es propia, entra en el resultado de Google y se declara canoni
     assert.ok(meta.description.length <= 165, meta.description);
     assert.equal(meta.alternates.canonical, `${BASE}/carreras/${slug}/inscripcion`);
     assert.equal(meta.openGraph.url, `${BASE}/carreras/${slug}/inscripcion`);
-    assert.equal(meta.robots, undefined);
+    assert.deepEqual(meta.robots, { index: false, follow: true });
     vistas.add(meta.description);
   }
   assert.equal(vistas.size, slugTeclab.length);

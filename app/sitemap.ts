@@ -4,7 +4,6 @@ import type { Carrera } from '@/components/index/types';
 import { carreraToSlug, esCarreraVisible } from '@/components/index/types';
 import { esTeclab, getPortadaTeclab } from '@/components/index/teclab';
 import { getPortada } from '@/components/carreras/career-content';
-import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 
 // `sitemap.ts` es un Route Handler que Next puede cachear por defecto. En
 // producción la caché de Vercel conservaba esta metadata route aunque
@@ -88,18 +87,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       };
     });
 
-  // Pagina de inscripcion de cada carrera de Teclab con inscripcion abierta
-  // (/carreras/<slug>/inscripcion). Contesta "como me inscribo" y no compite
-  // con la ficha: un escalon abajo de prioridad, y el mismo lastmod porque se
-  // arma con la misma fila.
-  const inscripcionEntries: MetadataRoute.Sitemap = ((carreras || []) as CarreraFila[])
-    .filter(c => tieneInscripcionPropia(c))
-    .map(c => ({
-      url: `${baseUrl}${rutaInscripcion(c)}`,
-      ...(c.updated_at ? { lastModified: new Date(c.updated_at) } : {}),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    }));
+  // Las paginas /carreras/<slug>/inscripcion no van: desde el 20/10/2026 no se
+  // indexan (llevan noindex, ver next.config.ts).
 
   // Materias activas (clases de apoyo). Las que están en construcción quedan
   // afuera: su página es el cartel de "vuelva pronto" y no hay nada que
@@ -221,7 +210,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ],
     },
     ...carrerasEntries,
-    ...inscripcionEntries,
     ...materiasEntries,
     ...novedadesPageEntries,
     ...novedadesArticuloEntries,

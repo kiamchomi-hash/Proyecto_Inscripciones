@@ -76,6 +76,13 @@ const nextConfig: NextConfig = {
         source: '/imagenes',
         headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
       },
+      {
+        // Inscripcion por carrera: no sirve como entrada desde Google
+        // (20/10/2026). Fuera del sitemap y con noindex; follow para que los
+        // enlaces a la ficha sigan contando.
+        source: '/carreras/:slug/inscripcion',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, follow' }],
+      },
     ];
   },
   async redirects() {
