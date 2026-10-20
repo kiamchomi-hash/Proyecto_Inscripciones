@@ -263,13 +263,13 @@
   }
 
   /* Separacion entre el logo y el titulo: una linea fina posicionada en el
-     margen, que no suma alto. */
+     margen, que no suma alto. Mide lo mismo que el logo. */
   .teclab-hero .teclab-hero-decir h1::before {
     content: "";
     position: absolute;
     top: -0.35rem;
     left: 50%;
-    width: min(80%, 22rem);
+    width: clamp(19rem, 30vw, 28rem);
     height: 1px;
     background: rgba(255, 255, 255, 0.22);
     transform: translate(-50%, -50%);
