@@ -793,8 +793,10 @@
     justify-content: center;
   }
 
+  /* Esta fuera de la columna del titulo: el centrado no le llega de ahi. */
   .teclab-hero-partners {
     margin-top: 1.1rem;
+    text-align: center;
   }
 
   .teclab-hero-partners > p {
