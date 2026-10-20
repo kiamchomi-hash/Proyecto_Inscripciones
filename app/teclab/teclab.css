@@ -83,6 +83,25 @@
   color: #fff !important;
 }
 
+/* El campo de busqueda, su texto de ayuda y el panel de filtros traen el verde
+   petroleo de Siglo 21 fijo en index.css. Aca van sobre el navy de Teclab; el
+   texto de ayuda pasa al gris azulado de la marca. */
+.teclab-page .search-input-custom {
+  background-color: rgba(17, 34, 54, 0.85);
+}
+
+.teclab-page .search-input-custom:focus-visible {
+  background-color: var(--tl-navy-claro);
+}
+
+.teclab-page .search-input-custom::placeholder {
+  color: var(--tl-texto-suave);
+}
+
+.teclab-page .filter-dropdown {
+  background: rgba(8, 17, 26, 0.98);
+}
+
 /* Titulares del catalogo en Poppins, con el interlineado cerrado de la marca. */
 .teclab-page .section-header-container h2 {
   font-family: var(--font-poppins), 'Poppins', sans-serif;
