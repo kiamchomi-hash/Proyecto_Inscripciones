@@ -226,11 +226,17 @@
   animation: teclabLinesIn 1.2s 0.5s ease both;
 }
 
+/* La columna del titulo mide lo que mide el texto y las fotos tienen tope:
+   con dos mitades iguales sobraban ~200 px de aire entre el texto y las fotos.
+   El conjunto va centrado y el sobrante queda en los bordes. El tope va en px
+   porque aca el rem crece con la pantalla. Las columnas se alinean abajo para
+   que los botones queden a la altura de las marcas cocreadoras. */
 .teclab-hero-content {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
-  align-items: center;
-  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: fit-content(36rem) minmax(0, 620px);
+  justify-content: center;
+  align-items: end;
+  gap: clamp(2.5rem, 5vw, 5rem);
   width: min(100%, 1500px);
   margin: 0 auto;
   padding: clamp(1.75rem, 2.8vw, 2.5rem) clamp(1.25rem, 6vw, 5rem);

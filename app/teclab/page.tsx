@@ -158,7 +158,8 @@ export default async function TeclabPage() {
                 preload
               />
               <h1 id="teclab-title">
-                Tecnicaturas de{' '}
+                Tecnicaturas de
+                <br />
                 <span className="teclab-resalte teclab-resalte--cian">dos años</span>{' '}
                 <span className="teclab-resalte teclab-resalte--azul">100% online</span>
               </h1>
