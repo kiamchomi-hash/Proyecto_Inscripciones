@@ -254,8 +254,10 @@
 
   /* Con el contenedor adelante: `.teclab-hero h1 { margin: 0 }` va mas abajo
      y a igual especificidad lo pisaba. */
+  /* "Tecnicaturas" centrado sobre la linea de los resaltados. */
   .teclab-hero .teclab-hero-decir h1 {
     margin-block: auto;
+    text-align: center;
   }
 
   /* Sin margenes propios: el aire de arriba y el de abajo del titulo los

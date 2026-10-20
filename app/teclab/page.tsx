@@ -158,7 +158,9 @@ export default async function TeclabPage() {
                 preload
               />
               <h1 id="teclab-title">
-                Tecnicaturas de
+                {/* El "de" no se ve pero se lee: el titulo visible es mas corto y el
+                    H1 sigue diciendo la frase completa. */}
+                Tecnicaturas<span className="sr-only"> de </span>
                 <br />
                 <span className="teclab-resalte teclab-resalte--cian">dos años</span>{' '}
                 <span className="teclab-resalte teclab-resalte--azul">100% online</span>
