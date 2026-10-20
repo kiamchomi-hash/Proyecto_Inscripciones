@@ -256,9 +256,23 @@
   /* Con el contenedor adelante: `.teclab-hero h1 { margin: 0 }` va mas abajo
      y a igual especificidad lo pisaba. */
   .teclab-hero .teclab-hero-decir h1 {
-    margin-top: clamp(0.8rem, 1.3vw, 1.2rem);
+    position: relative;
+    margin-top: 0.7rem;
     margin-bottom: auto;
     text-align: center;
+  }
+
+  /* Separacion entre el logo y el titulo: una linea fina posicionada en el
+     margen, que no suma alto. */
+  .teclab-hero .teclab-hero-decir h1::before {
+    content: "";
+    position: absolute;
+    top: -0.35rem;
+    left: 50%;
+    width: min(80%, 22rem);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(74, 226, 231, 0.35), transparent);
+    transform: translate(-50%, -50%);
   }
 
   .teclab-hero-decir .teclab-hero-logo,
