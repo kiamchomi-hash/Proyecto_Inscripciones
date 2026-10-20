@@ -197,6 +197,18 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
 
   const categoriasFiltro = FILTROS_CATALOGO;
 
+  // El panel ofrece solo las opciones que tienen alguna carrera en esta lista:
+  // la landing de Teclab recibe solo sus tecnicaturas y no tiene que mostrar
+  // las areas ni las duraciones de Siglo 21, que dejaban la lista vacia.
+  const areasDisponibles = useMemo(
+    () => AREAS.filter(a => carreras.some(c => getAreaForCarrera(c) === a.id)),
+    [carreras],
+  );
+  const duracionesDisponibles = useMemo(
+    () => DURATION_GROUPS.filter(d => carreras.some(c => getDurationGroup(c.duracion) === d.id)),
+    [carreras],
+  );
+
   // Visible categories (categories that have at least one career)
   const visibleCategories = useMemo(() => {
     return categoriasFiltro.filter(cat => {
@@ -440,14 +452,15 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
 
                 {showFilters && (
                   <div className="filter-dropdown">
-                    {/* Área */}
+                    {/* Área: con una sola opcion no filtra nada */}
+                    {areasDisponibles.length > 1 && (<>
                     <button className={`filter-dropdown-header ${desktopFilterSection === 'area' ? 'open' : ''}`} onClick={() => setDesktopFilterSection(desktopFilterSection === 'area' ? null : 'area')}>
                       <span>Área {filterArea ? `· ${AREAS.find(a => a.id === filterArea)?.label}` : ''}</span>
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                     </button>
                     {desktopFilterSection === 'area' && (
                       <div className="filter-dropdown-options">
-                        {AREAS.map(a => (
+                        {areasDisponibles.map(a => (
                           <button
                             key={a.id}
                             onClick={() => setFilterArea(filterArea === a.id ? null : a.id)}
@@ -461,14 +474,16 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                         )}
                       </div>
                     )}
-                    {/* Duración */}
+                    </>)}
+                    {/* Duración: en Teclab todas duran lo mismo */}
+                    {duracionesDisponibles.length > 1 && (<>
                     <button className={`filter-dropdown-header ${desktopFilterSection === 'duracion' ? 'open' : ''}`} onClick={() => setDesktopFilterSection(desktopFilterSection === 'duracion' ? null : 'duracion')}>
                       <span>Duración {filterDuration ? `· ${DURATION_GROUPS.find(d => d.id === filterDuration)?.label}` : ''}</span>
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                     </button>
                     {desktopFilterSection === 'duracion' && (
                       <div className="filter-dropdown-options">
-                        {DURATION_GROUPS.map(d => (
+                        {duracionesDisponibles.map(d => (
                           <button
                             key={d.id}
                             onClick={() => setFilterDuration(filterDuration === d.id ? null : d.id)}
@@ -482,6 +497,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                         )}
                       </div>
                     )}
+                    </>)}
                     {hasFilters && (
                       <button
                         onClick={() => { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); }}
