@@ -163,16 +163,42 @@
 }
 
 .teclab-hero h1 {
-  max-width: 17ch;
+  max-width: 21ch;
   margin: 0;
   font-family: var(--font-poppins), 'Poppins', sans-serif;
   font-size: clamp(1.75rem, 2.9vw, 2.75rem);
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.22;
   text-wrap: balance;
   opacity: 0;
   animation: teclabRise 0.72s 0.24s ease-out forwards;
+}
+
+/* Resaltado de marcador, de la pieza titular-resaltados-inclinados-loopster
+   del UIverse local: las dos promesas de la oferta van dentro de un bloque
+   solido, girado un grado para cada lado, como marcador puesto a mano. El
+   texto va en blanco, asi que el bloque no puede ser el cian de Teclab (1,5:1
+   de contraste): "dos años" usa un petroleo de su misma familia y "100%
+   online" el azul de la marca. */
+.teclab-resalte {
+  display: inline-block;
+  padding: 0.02em 0.22em;
+  border-radius: 0.2em;
+  white-space: nowrap;
+  background: var(--resalte-fondo);
+  color: #fff;
+  font-weight: 800;
+}
+
+.teclab-resalte--cian {
+  --resalte-fondo: #0b7a80;
+  transform: rotate(-1deg);
+}
+
+.teclab-resalte--azul {
+  --resalte-fondo: var(--tl-azul);
+  transform: rotate(1deg);
 }
 
 .teclab-hero-actions {
@@ -185,9 +211,6 @@
   animation: teclabRise 0.72s 0.34s ease-out forwards;
 }
 
-.teclab-hero-actions .teclab-text-link {
-  margin-top: 0;
-}
 
 /* Prueba visual: las empresas con las que Teclab cocreo carreras. Reemplaza al
    parrafo que estaba en el hero. */
@@ -239,18 +262,14 @@
   border-radius: 0.45rem;
 }
 
-.teclab-hero-mosaico > div:nth-child(odd) {
-  transform: translateY(clamp(-1.4rem, -2vw, -0.7rem));
-}
-
 .teclab-hero-mosaico > div:nth-child(1) {
   border-color: var(--tl-cian);
   box-shadow: 7px 7px 0 rgba(74, 226, 231, 0.16);
 }
 
-.teclab-hero-mosaico > div:nth-child(4) {
+.teclab-hero-mosaico > div:nth-child(2) {
   border-color: var(--tl-azul);
-  box-shadow: -7px 7px 0 rgba(0, 85, 240, 0.45);
+  box-shadow: 7px 7px 0 rgba(0, 85, 240, 0.45);
 }
 
 .teclab-hero-mosaico img {
@@ -283,6 +302,24 @@
 .teclab-button--ghost {
   background: rgba(12, 24, 36, 0.58);
   color: #fff;
+}
+
+/* Segunda accion del hero: contenedor azul lleno, sin la sombra dura del
+   primario, para que se vea como boton sin competir con el cian. */
+/* En el hero el primario va plano, sin la sombra dura desplazada. */
+.teclab-hero-actions .teclab-button--primary,
+.teclab-hero-actions .teclab-button--primary:hover {
+  box-shadow: none;
+}
+
+.teclab-button--secundario {
+  border-color: var(--tl-azul);
+  background: var(--tl-azul);
+  color: #fff;
+}
+
+.teclab-button--secundario:hover {
+  border-color: var(--tl-azul-claro);
 }
 
 .teclab-button:hover {
@@ -712,28 +749,65 @@
 
   .teclab-hero-content {
     grid-template-columns: 1fr;
-    gap: 1.7rem;
-    padding-top: 2rem;
-    padding-bottom: 2.25rem;
+    gap: 1.25rem;
+    padding-top: 1.35rem;
+    padding-bottom: 1.5rem;
+  }
+
+  /* La barra de arriba ya muestra el logo de Teclab: repetirlo aca gastaba
+     una franja entera de la primera pantalla. */
+  .teclab-hero-logo {
+    display: none;
+  }
+
+  /* Centrado: alineado a la izquierda, el titulo angosto dejaba un hueco a
+     la derecha y la columna se veia corrida. */
+  .teclab-hero-decir {
+    text-align: center;
   }
 
   .teclab-hero h1 {
     max-width: 15ch;
-    font-size: clamp(1.85rem, 7.4vw, 2.7rem);
+    margin-inline: auto;
+    font-size: clamp(1.5rem, 6.4vw, 2.2rem);
   }
 
+  /* Los dos botones en una fila, mitad y mitad: apilados ocupaban el doble
+     de alto. */
   .teclab-hero-actions {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 1.1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
   }
 
-  .teclab-hero-actions .teclab-text-link {
+  .teclab-hero-actions .teclab-button {
+    padding-inline: 0.6rem;
+    gap: 0.45rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+  }
+
+  .teclab-hero-actions,
+  .teclab-hero-partners ul {
     justify-content: center;
+  }
+
+  .teclab-hero-partners {
+    margin-top: 1.1rem;
+  }
+
+  .teclab-hero-partners > p {
+    margin-bottom: 0.6rem;
   }
 
   .teclab-button {
     width: 100%;
+  }
+
+  /* En el celular entran las tres marcas mas conocidas en una sola fila. */
+  .teclab-hero-partners li:nth-child(n + 4) {
+    display: none;
   }
 
   .teclab-hero-mosaico {

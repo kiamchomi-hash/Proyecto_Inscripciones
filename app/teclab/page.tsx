@@ -67,13 +67,12 @@ export const revalidate = 3600;
  * Mosaico del hero: la primera pantalla muestra de que se trata la oferta en
  * vez de describirla. La libreria de Teclab (public/imagenes/teclab/carreras/,
  * bajada con scripts/descargar-assets-teclab.mjs) es casi toda retratos de
- * estudio; estas cuatro son las que tienen escena y alternan oscuro y claro.
+ * estudio; estas dos tienen escena y alternan oscuro y claro. Son dos y no
+ * cuatro para que el hero no pase de media pantalla y el catalogo asome.
  */
 const MOSAICO = [
   "/imagenes/teclab/carreras/programacion.webp",
-  "/imagenes/teclab/carreras/seguros.webp",
   "/imagenes/teclab/carreras/quality-assurance.webp",
-  "/imagenes/teclab/carreras/curso-ia.webp",
 ];
 
 /**
@@ -158,14 +157,18 @@ export default async function TeclabPage() {
                 height={100}
                 preload
               />
-              <h1 id="teclab-title">Tecnicaturas de dos años, 100% online.</h1>
+              <h1 id="teclab-title">
+                Tecnicaturas de{' '}
+                <span className="teclab-resalte teclab-resalte--cian">dos años</span>{' '}
+                <span className="teclab-resalte teclab-resalte--azul">100% online</span>
+              </h1>
               <div className="teclab-hero-actions">
                 <a className="teclab-button teclab-button--primary" href="#oferta-teclab">
                   Ver las carreras
                   <span aria-hidden="true">↓</span>
                 </a>
-                <a className="teclab-text-link" href="#preinscripcion">
-                  Quiero asesoramiento <span aria-hidden="true">→</span>
+                <a className="teclab-button teclab-button--secundario" href="#preinscripcion">
+                  Quiero inscribirme <span aria-hidden="true">→</span>
                 </a>
               </div>
 
