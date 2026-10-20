@@ -102,6 +102,34 @@
   background: rgba(8, 17, 26, 0.98);
 }
 
+/* El boton de filtros: con el cian traslucido se leia como el verde agua de
+   Siglo 21. Va en el azul de Teclab, igual que la pildora activa. El de
+   "Limpiar filtros" comparte la clase y conserva su rojo. */
+.teclab-page .filter-toggle-btn:not(.desktop-clear-filters) {
+  background: rgba(0, 85, 240, 0.18);
+  border-color: rgba(111, 160, 255, 0.55);
+  color: var(--tl-azul-claro);
+}
+
+.teclab-page .filter-toggle-btn:not(.desktop-clear-filters):hover,
+.teclab-page .filter-toggle-btn.active:not(.desktop-clear-filters) {
+  background: var(--tl-azul);
+  border-color: var(--tl-azul-claro);
+  color: #fff;
+}
+
+.teclab-page .filter-count-badge {
+  background: rgba(0, 85, 240, 0.35);
+  border-color: rgba(111, 160, 255, 0.55);
+  color: #fff;
+}
+
+.teclab-page .filter-toggle-btn.active .filter-count-badge {
+  background: #fff;
+  border-color: #fff;
+  color: var(--tl-azul);
+}
+
 /* Titulares del catalogo en Poppins, con el interlineado cerrado de la marca. */
 .teclab-page .section-header-container h2 {
   font-family: var(--font-poppins), 'Poppins', sans-serif;
