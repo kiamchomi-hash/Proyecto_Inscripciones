@@ -355,11 +355,10 @@
 
 
 /* Prueba visual: las empresas con las que Teclab cocreo carreras. Va debajo de
-   las fotos, en la columna derecha, para que la del titulo quede corta. */
+   las fotos, en la columna derecha, para que la del titulo quede corta. Sin
+   animacion de entrada: el fundido de logos grises se veia fantasmal. */
 .teclab-hero-partners {
-  margin-top: clamp(1.5rem, 2.8vw, 2.1rem);
-  opacity: 0;
-  animation: teclabRise 0.72s 0.44s ease-out forwards;
+  margin-top: clamp(0.9rem, 1.4vw, 1.2rem);
 }
 
 .teclab-hero-partners > p {
@@ -1015,7 +1014,6 @@
   .teclab-hero-logo,
   .teclab-hero h1,
   .teclab-hero-actions,
-  .teclab-hero-partners,
   .teclab-hero-mosaico {
     opacity: 1;
     transform: none;
