@@ -75,7 +75,7 @@ Los pedidos ya redactados y el destino de cada dato están en [las notas operati
 
 Postergado por el usuario el 16/10/2026; se retoma después de los pendientes anteriores.
 
-- [ ] **23/10/2026: primera revisión del embudo del test vocacional** (general y Teclab). Publicado el 16/10/2026 (`e239bc9`). Si hay pocos intentos, ampliar la observación antes de sacar conclusiones; después, mejorar los pasos con mayor caída. [Cómo leerlo](docs/medicion-test-vocacional.md).
+- [ ] **06/11/2026: segunda revisión del embudo del test vocacional** (general y Teclab). Primera lectura el 20/10/2026 (16 al 20/10): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron; la caída está en las preguntas 1 a 3 y después nadie abandona. El de Teclab no tuvo ninguna visita. Muestra demasiado chica para tocar pasos; si sigue en cero, revisar cómo se llega al de Teclab. [Cómo leerlo](docs/medicion-test-vocacional.md).
 
 - [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción — parcialmente hecho** (18/10/2026). Hecho y publicado en Siglo 21 y Teclab, con la aclaración de que completarlo no cobra nada (`36d5823`, `2b9fd55`; [detalle](docs/historial-pendientes.md#formularios--precio-en-la-preinscripción-18102026)). Falta Identidad Argentina, que todavía no publica precio en el sitio.
 
