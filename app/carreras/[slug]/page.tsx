@@ -383,6 +383,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       images: [ogCarrera(carrera)],
     },
     twitter: { card: 'summary_large_image', title, description, images: [ogCarrera(carrera)] },
+    // Las diplomaturas de Identidad Argentina se sacan del indice de Google:
+    // la ficha sigue abierta para quien llega por enlace, pero no se indexa.
+    // follow deja que los enlaces internos de la ficha sigan contando.
+    ...(esIA ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
