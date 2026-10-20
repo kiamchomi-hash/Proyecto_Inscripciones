@@ -17,9 +17,10 @@
 // su revalidate. Por eso los revalidate de cada pagina siguen puestos — son la
 // red abajo, no algo que este de mas.
 
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { carreraToSlug, esCarreraVisible } from '@/components/index/types';
+import { avisarIndexNow, urlsParaIndexNow } from '@/lib/indexnow';
 
 export const dynamic = 'force-dynamic';
 
@@ -156,6 +157,16 @@ export async function POST(request: NextRequest) {
   }
 
   for (const [ruta, tipo] of rutas) revalidatePath(ruta, tipo);
+
+  // Después de responder, para no demorar al trigger. Sólo desde producción: un
+  // preview avisaría URLs que todavía no muestran el cambio.
+  if (process.env.VERCEL_ENV === 'production') {
+    const urls = urlsParaIndexNow(rutas);
+    after(async () => {
+      const estado = await avisarIndexNow(urls);
+      if (estado !== null && estado >= 400) console.error('[indexnow] Rechazado', { estado, urls: urls.length });
+    });
+  }
 
   // La lista vuelve en la respuesta para poder leerla desde net._http_response,
   // que es donde se ve si el trigger hizo lo que se esperaba.

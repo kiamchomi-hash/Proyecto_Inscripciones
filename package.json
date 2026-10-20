@@ -27,7 +27,8 @@
     "db:local:iniciar": "node herramientas/supabase-local.mjs iniciar",
     "db:local:detener": "node herramientas/supabase-local.mjs detener",
     "db:local:estado": "node herramientas/supabase-local.mjs estado",
-    "test:integracion": "node --test --test-concurrency=1 tests/integracion/*.test.mjs"
+    "test:integracion": "node --test --test-concurrency=1 tests/integracion/*.test.mjs",
+    "indexnow": "node herramientas/indexnow.mjs"
   },
   "repository": {
     "type": "git",

@@ -35,6 +35,17 @@ Dos cosas más que hace solo. **Avisa que los clics se miden desde el 17/08/2026
 
 Las tres fuentes usan credenciales que ya están en la máquina —el token de la CLI de Vercel (`~/.local/share/com.vercel.cli/auth.json` en Linux, `%APPDATA%\com.vercel.cli\Datauth.json` en Windows, o `VERCEL_TOKEN`), `EDITOR_DATABASE_URL` y la service account de Search Console—. **Si falta una, esa sección sale como no disponible y el resto se muestra igual**; sólo sale con código 1 si no se pudo leer ninguna. El acceso a Search Console vive en `herramientas/gsc.mjs`, compartido con `seo-semanal.mjs`: es una sola implementación del JWT.
 
+## Bing e IndexNow
+
+ChatGPT busca sobre el índice de Bing, así que una ficha que Bing no tiene no aparece en sus respuestas aunque esté bien en Google. Desde el 20/10/2026 el sitio le avisa a IndexNow (Bing, Yandex y los demás buscadores del protocolo) cada URL que cambia:
+
+- **Solo, en cada cambio de contenido**: `/api/revalidar` (el que disparan los triggers de Supabase) manda las URLs concretas que rehizo, después de responder y sólo con `VERCEL_ENV=production`. Si IndexNow falla queda en el log de Vercel con el prefijo `[indexnow]`; la revalidación no se entera.
+- **A mano, el sitemap entero**: `npm run indexnow` (`herramientas/indexnow.mjs`), para la primera carga o después de un deploy que toca muchas páginas a la vez. `--probar` lista sin mandar. Antes de mandar confirma que la clave esté publicada, y sale con código 1 si IndexNow no aceptó.
+
+La clave vive en `lib/indexnow.ts` y en `public/<clave>.txt`, con el mismo contenido. **No es un secreto**: el protocolo la pide pública para comprobar que el aviso viene del dueño del dominio. Cambiarla obliga a renombrar el archivo en el mismo commit; `tests/indexnow.test.mjs` falla si no coinciden.
+
+El alta en Bing Webmaster Tools se hace importando la propiedad desde Search Console, sin verificar nada aparte.
+
 ## Publicar los precios de «Ver precio»
 
 `herramientas/ventas/publicar-precios.mjs` copia los precios de Teclab a la tabla privada `precios_privados` (`sql/2026-10-02_precios_carrera.sql`), que es de donde los lee «Ver precio» en `POST /api/formularios`. No cotiza: toma lo que el pipeline de precios ya resolvió en `carreras/teclab/carreras-externas.json` (la ruta sale de `herramientas/ventas/rutas.mjs`) y lo publica con su vigencia, el último día de la promoción. Vive en `herramientas/ventas/`, que está gitignorada como el resto del material comercial.
