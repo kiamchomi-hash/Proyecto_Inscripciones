@@ -271,7 +271,19 @@
   }
 
   .teclab-hero-decir .teclab-hero-logo {
-    width: clamp(15rem, 21vw, 21rem);
+    width: min(100%, clamp(19rem, 30vw, 28rem));
+  }
+
+  /* Las marcas siempre al pie de la columna de las fotos, aunque la del
+     titulo quede mas alta: asi siguen a la altura de los botones. */
+  .teclab-hero-visual {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .teclab-hero-visual .teclab-hero-partners {
+    margin-top: auto;
+    padding-top: clamp(0.9rem, 1.4vw, 1.2rem);
   }
 
   /* Menos aire arriba y abajo: el alto lo ponen las fotos, no un minimo fijo. */
