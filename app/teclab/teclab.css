@@ -856,10 +856,12 @@
     text-align: center;
   }
 
+  /* Dos lineas y no tres: "Tecnicaturas de dos años" y "100% online". Con el
+     tope de 15ch cortaba en tres y empujaba el catalogo ~30 px mas abajo. */
   .teclab-hero h1 {
-    max-width: 15ch;
+    max-width: none;
     margin-inline: auto;
-    font-size: clamp(1.5rem, 6.4vw, 2.2rem);
+    font-size: clamp(1.3rem, 5.7vw, 2.2rem);
   }
 
   /* Los dos botones en una fila, mitad y mitad: apilados ocupaban el doble
