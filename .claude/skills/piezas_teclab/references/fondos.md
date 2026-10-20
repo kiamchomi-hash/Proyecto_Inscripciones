@@ -11,15 +11,16 @@ Tecnología, con grano en overlay al 32%. Encima, una de estas luces.
 
 | Luz | Pieza | CSS |
 |---|---|---|
-| Esquinas: azul abajo a la derecha y contraluz arriba a la izquierda (UIverse `mias/pliegue-luz-azul-xai`) | Placa Teclab en Villa Lugano, 23/09/2026 | `aprobados/2026-09-23-placa-teclab-villa-lugano/placa.html` |
+| Esquinas: azul abajo a la derecha y contraluz arriba a la izquierda (UIverse `mias/pliegue-luz-azul-xai`) | Placa Teclab en Villa Lugano, 23/09/2026 | `aprobados/generales/whatsapp/2026-09-23-placa-teclab-villa-lugano/placa.html` |
 | Banda diagonal ancha y difusa, azul con un filo cian | Placa Planificación y Organización de Eventos, 02/10/2026 | abajo |
 | Luz desde el pie, ancha, con núcleo cian (CSS abajo, en «Luz desde el pie») | Folleto de Seguros, 04/10/2026 | `en-curso/2026-10-04-folleto-seguros/` |
-| Elipses giradas difusas, azul y cian | Lista de carreras para WhatsApp, 25/09/2026 | `aprobados/2026-09-25-lista-carreras-whatsapp/pieza.html` |
+| Elipses giradas difusas, azul y cian | Lista de carreras para WhatsApp, 25/09/2026 | `aprobados/generales/whatsapp/2026-09-25-lista-carreras-whatsapp/pieza.html` |
 | Trama de puntos cian que se apaga desde la esquina superior derecha, con luz azul suave (UIverse `mias/tarjetas-tramadas-azules-replicate`) | Fichas de carrera, versión con el sistema de Siglo 21 en colores de Teclab, 09/10/2026 | abajo, en «CSS de referencia» |
 | Cuadrícula cian de 80 px que se apaga hacia los bordes, con brillo azul al centro (UIverse `mias/fondo-cuadricula-luminosa-xai-oscuro`) | Ficha Experiencia del Cliente, versión con el sistema de Siglo 21, 09/10/2026 | `en-curso/2026-10-09-fichas-carreras/experiencia-paso-1-fondo.html` |
 | Líneas de barrido cian (UIverse `mias/panel-hud-postura-seguridad-basedash`) con una constelación en dos capas, repartida con distancia mínima entre puntos y el centro atenuado (nodos de `mias/enjambre-nodos-hero-antimetal`) | Ficha Gestión Agraria, versión con el sistema de Siglo 21, 10/10/2026 | `en-curso/2026-10-09-fichas-carreras/agraria-paso-1-combinadas.html`, opción 3 |
 | Escalera de píxeles: cuadros de 50 px azules y cian que se apagan desde la esquina inferior derecha (UIverse `mias/fondo-escalera-pixeles-teclab`) | Posteo de presentación de teclab.villalugano, 10/10/2026 | `en-curso/2026-10-10-posteo-presentacion-ig/fondos.mjs`, `pixeles()` |
-| Luz a la derecha, detrás de la persona, con núcleo cian abajo; la izquierda queda limpia para el texto | Vista previa del enlace de inscripción (OG 1200×630), 03/10/2026 | `aprobados/2026-10-03-og-inscripcion-teclab/pieza.html` |
+| Luz a la derecha, detrás de la persona, con núcleo cian abajo; la izquierda queda limpia para el texto | Vista previa del enlace de inscripción (OG 1200×630), 03/10/2026 | `aprobados/generales/pantalla/2026-10-03-og-inscripcion-teclab/pieza.html` |
+| Banda diagonal ancha y difusa con trama de puntos cian desde la esquina superior derecha, sobre azul `#0055F0` | Financiación de Teclab para WhatsApp, 20/10/2026 | `en-curso/2026-10-20-financiacion-whatsapp/pieza.html` |
 
 ```css
 .luz-diagonal {

@@ -37,6 +37,7 @@ Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, q
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
 - [ ] **Ampliar la app de HubSpot** (18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición; no ejecutar todavía. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
+Completado el 20/10/2026: **imagen de la financiación de Teclab** para WhatsApp, en versión clara y oscura, con los datos del simulador (`contenidos/teclab/aprobados/generales/whatsapp/2026-10-20-financiacion-teclab/`). Si el simulador cambia, se rehace.
 Descartado el 20/10/2026: cierres del robot de Teclab con las cuentas de prueba 99000001 a 99000007 (no se incluyen) y medios de pago del curso de IA de Teclab (para siempre).
 Completado el 20/10/2026: **formulario de Teclab**. El código postal deja de bloquear la preinscripción, como en el portal (`CASAS.teclab.opcionales`); el resto de los campos sí los exige.
 Completado el 17/10/2026: **17. Acceso a las fuentes de las casas**. Las tres de precios se actualizaron solas ese día; queda sin confirmar el ingreso con usuario a La Nube 21. [Evidencia](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
@@ -98,8 +99,6 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [ ] **Fichas de carreras de Teclab**: las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
 
 - [ ] **Autoinscripción de Siglo 21: postergada el 16/10/2026**; bajada al fondo el 17/10/2026. Hoy el formulario sólo registra la solicitud y la atención sigue a mano. Antes de retomarla, definir si se hace con un robot en el portal de Siglo 21 (como en Teclab) o con un enlace personalizado.
-
-- [ ] **Imagen de la financiación de Teclab para mandar a los leads**, agregado el 17/10/2026; bajado al fondo por el usuario el 17/10/2026.
 
 - [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras. Bajado al fondo por el usuario el 17/10/2026: se consultará y completará a medida que surjan casos en el día a día, no como un relevamiento general anticipado.
 
