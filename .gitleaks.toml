@@ -2,3 +2,9 @@
 # nunca carpetas enteras, baselines ni comentarios gitleaks:allow.
 [extend]
 useDefault = true
+
+# Clave de IndexNow: pública por diseño, el protocolo exige servirla en
+# https://www.siglo21sur.com/<clave>.txt (lib/indexnow.ts). No da acceso a nada.
+[[allowlists]]
+description = "Clave pública de IndexNow"
+regexes = ['''^797fb61c1ace165de4ba56d8d37ad9c5$''']
