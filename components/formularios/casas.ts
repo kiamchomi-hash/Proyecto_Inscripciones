@@ -171,6 +171,11 @@ export interface Casa {
   niveles: string[];
   contacto: CampoId[];
   preinscripcion: CampoId[];
+  /**
+   * Campos que la casa pide en la preinscripción pero su portal no exige. Se
+   * muestran igual y no bloquean el envío.
+   */
+  opcionales?: CampoId[];
 }
 
 export const CASAS: Record<CasaId, Casa> = {
@@ -205,6 +210,9 @@ export const CASAS: Record<CasaId, Casa> = {
       'nivelEstudios', 'colegio', 'colegioLocalidad',
       'email', 'telefono',
     ],
+    // El portal administrativo crea la preinscripción sin código postal
+    // (relevado el 19/10/2026 con «Crear» sobre el formulario vacío).
+    opcionales: ['codigoPostal'],
   },
   identidad: {
     nombre: 'Academia Identidad Argentina',
@@ -272,7 +280,7 @@ export function camposPosibles(modo: Modo): CampoId[] {
  * Los campos que bloquean el envío.
  *
  * En **preinscripción son todos**, menos los que son opcionales por lo que son
- * (piso, depto, torre). Es un legajo: si el lead no quiere darlos, lo que le
+ * (piso, depto, torre) y los que el portal de la casa no exige (`opcionales`). Es un legajo: si el lead no quiere darlos, lo que le
  * corresponde es el formulario de contacto, no una preinscripción a medias que
  * después hay que completar a mano.
  *
@@ -283,7 +291,9 @@ export function camposPosibles(modo: Modo): CampoId[] {
  * no tiene su ficha oficial cargada, como Teclab— no queda sin exigir nada.
  */
 export const obligatoriosDe = (casa: CasaId, modo: Modo): CampoId[] =>
-  modo === 'contacto' ? [] : camposDe(casa, modo).filter(id => !CAMPOS[id].siempreOpcional);
+  modo === 'contacto'
+    ? []
+    : camposDe(casa, modo).filter(id => !CAMPOS[id].siempreOpcional && !CASAS[casa].opcionales?.includes(id));
 
 // ── Qué viaja en el envío ──
 

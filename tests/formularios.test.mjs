@@ -205,13 +205,14 @@ test('el contacto reserva el lugar de todo lo que alguna casa pide', () => {
   assert.equal('equivalencias' in armarPayload('teclab', 'contacto', { equivalencias: true }), false);
 });
 
-test('en una preinscripcion se pide todo, salvo lo que depende del domicilio', () => {
+test('en una preinscripcion se pide todo, salvo lo que depende del domicilio o el portal no exige', () => {
   // Es un legajo: el que no quiere darlos tiene el formulario de contacto.
   for (const casa of ['siglo21', 'teclab', 'identidad']) {
     const campos = camposDe(casa, 'preinscripcion');
     const obl = obligatoriosDe(casa, 'preinscripcion');
+    const opcionales = CASAS[casa].opcionales ?? [];
     for (const id of campos) {
-      if (CAMPOS[id].siempreOpcional) {
+      if (CAMPOS[id].siempreOpcional || opcionales.includes(id)) {
         assert.ok(!obl.includes(id), `${casa}: ${id} no puede exigirse`);
       } else {
         assert.ok(obl.includes(id), `${casa}: falta exigir ${id}`);
@@ -222,6 +223,14 @@ test('en una preinscripcion se pide todo, salvo lo que depende del domicilio', (
   assert.ok(obligatoriosDe('teclab', 'preinscripcion').length > 10);
   assert.ok(obligatoriosDe('siglo21', 'preinscripcion').includes('telefono'));
   assert.ok(obligatoriosDe('siglo21', 'preinscripcion').includes('codigoPostal'));
+});
+
+test('teclab pide el codigo postal sin exigirlo, como su portal', () => {
+  // Relevado el 19/10/2026: el portal administrativo deja crear la
+  // preinscripcion sin codigo postal. Piso y depto ya son siempre opcionales.
+  assert.ok(camposDe('teclab', 'preinscripcion').includes('codigoPostal'));
+  assert.ok(!obligatoriosDe('teclab', 'preinscripcion').includes('codigoPostal'));
+  assert.ok(obligatoriosDe('teclab', 'preinscripcion').includes('domicilioNumero'));
 });
 
 test('el medio de pago no se pregunta: se habla con el lead', () => {
