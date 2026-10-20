@@ -36,6 +36,9 @@ Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, q
 - [ ] **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas. No es una tarea de ejecución inmediata.
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
+- [ ] **Ampliar la app de HubSpot** (18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición; no ejecutar todavía. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
+Descartado el 20/10/2026: cierres del robot de Teclab con las cuentas de prueba 99000001 a 99000007 (no se incluyen) y medios de pago del curso de IA de Teclab (para siempre).
+Completado el 20/10/2026: **formulario de Teclab**. El código postal deja de bloquear la preinscripción, como en el portal (`CASAS.teclab.opcionales`); el resto de los campos sí los exige.
 Completado el 17/10/2026: **17. Acceso a las fuentes de las casas**. Las tres de precios se actualizaron solas ese día; queda sin confirmar el ingreso con usuario a La Nube 21. [Evidencia](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 Completado el 17/10/2026: **23. Referencia del CAU Corrientes para Instagram**, relevada con capturas en la nota local `notas-locales/referencia-cau-corrientes-instagram/`. [Evidencia](docs/historial-pendientes.md#instagram--referencia-del-cau-corrientes-17102026).
 Completado el 17/10/2026: volumen de WhatsApp tras el reparto de agosto, estable desde el arreglo. [Evidencia](docs/historial-pendientes.md#whatsapp--volumen-tras-el-reparto-17102026).
@@ -64,7 +67,6 @@ Cerrado el 18/10/2026: **factibilidad de Cloudflare**. Es viable, pero no se mig
 
 Los pedidos ya redactados y el destino de cada dato están en [las notas operativas](docs/notas-operativas.md) y en `herramientas/pedidos-a-enviar.md`. Confirmar que el pedido siga vigente antes de enviarlo.
 
-- [ ] **Confirmar medios de pago del curso de IA de Teclab**. Arancel individual registrado con vigencia hasta el 30/09; no es un precio permanente. [Detalle](docs/pendientes-detalle.md#pendiente-08).
 - [ ] **Confirmar becas, doble carrera y las dudas restantes de requisitos**, que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 - [ ] Revisar las decisiones pendientes sobre los módulos de Bienestar Integral y Mindfulness, si siguen dentro del alcance del convenio. *(Notas operativas; estado sin confirmar.)*
 - [ ] **Cerrar las 5 alertas altas de `braces`** (GHSA-vfj7-8cjw-p6xm), en espera de un arreglo publicado. Sólo entra en desarrollo, por `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` 3.3.1 → `micromatch`; no llega al sitio. Sharp, source-map-js y el watcher ya se actualizaron (`96e2e78`). Al 18/10/2026 ni Next 16.4.2 ni el canary 16.5 cambiaron `fast-glob`, y el alias a tinyglobby rompe el plugin. Revisar cuando salga una versión nueva de Next. [Detalle](odd/tasks/auditoria-dependencias.md).
@@ -81,7 +83,7 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 
 - [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
-- [ ] **Robot de autoinscripción de Teclab: cierres que dependen del usuario** (bajado al fondo el 16/10/2026). El robot ya carga en producción (99000006 y 99000007). Falta: primer login de una cuenta nueva por `/payments/select` (99000003 a 99000005), pedir a Teclab la baja de las cargas 99000001 a 99000007, relevar el aviso que confirma «Enviar link de pago» con una carga autorizada y revisar el primer aviso real en `net._http_response` (`autoinscripcion-teclab` T4, T4c, T5 y T10). [Detalle](odd/tasks/autoinscripcion-teclab.md).
+- [ ] **Relevar la financiación de Siglo 21 con una preinscripción propia** (19/10/2026). La web de Siglo 21 no publica cuotas, tarjetas ni medios de pago, así que no se puede repetir lo de Teclab (extraer las tarjetas de la página). El usuario hace una preinscripción con su mail y llega hasta la pantalla de pago; Claude la lee sin cargar datos y saca tarjetas, cuotas, bancos y medios de pago para armar el mensaje de financiación a los leads. Antes, avisar o marcar como prueba el lead que se genera en HubSpot. Lo que se vea vale para esa carrera y ese momento; las promos bancarias cambian seguido.
 
 - [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo). Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. Bajado al fondo el 16/10/2026: las carreras todavía no están validadas. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 
@@ -119,7 +121,7 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 
 - [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo**. [Detalle](docs/pendientes-detalle.md#pendiente-16). Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
-- [ ] **Automatizar HubSpot**. En curso con otra IA; bajado al fondo por el usuario el 18/10/2026. [Detalle](odd/tasks/hubspot-negocios.md).
+- [ ] **Automatizar HubSpot**. Pendientes propios separados: pasar a Seguimientos al marcar WhatsApp enviado, mejorar pestañas y agregar contadores rojos de envíos/seguimientos pendientes (19/10/2026). Bajado al fondo por el usuario el 18/10/2026. [Detalle](odd/tasks/hubspot-negocios.md).
 
 - [ ] **Completar la recuperación de Supabase: Auth funcional, permisos/RLS, Vault y archivos de Storage**. Al 07/10/2026: respaldo diario cifrado activo en la PC de la sede y restauración real limitada aprobada en Docker aislado, sin seguridad idéntica verificada. Falta comparar con el inventario de origen, recuperar y probar esos servicios, guardar una copia cifrada fuera de esta PC y medir la recuperación completa. RPO objetivo 24 h; RTO objetivo 4 h para recibir leads, aún no demostrado. [Procedimiento](docs/recuperacion-supabase.md). En curso con otra IA; bajado al fondo por el usuario el 18/10/2026.
 
