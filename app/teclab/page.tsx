@@ -151,10 +151,10 @@ export default async function TeclabPage() {
             <div className="teclab-hero-decir">
               <Image
                 className="teclab-hero-logo"
-                src="/imagenes/teclab/logo-teclab.webp"
-                alt="Teclab, Instituto Técnico Superior"
-                width={296}
-                height={100}
+                src="/imagenes/teclab/logo-teclab-siglo21.webp"
+                alt="Teclab, Instituto Técnico Superior, y Universidad Siglo 21"
+                width={380}
+                height={69}
                 preload
               />
               <h1 id="teclab-title">

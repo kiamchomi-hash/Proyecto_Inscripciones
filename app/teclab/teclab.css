@@ -290,8 +290,10 @@
   }
 }
 
+/* El lockup Teclab + Siglo 21 es mas ancho que el logo solo (5,5:1 contra
+   3:1): este ancho le da el mismo alto que tenia el de Teclab. */
 .teclab-hero-logo {
-  width: clamp(8rem, 10.5vw, 10.5rem);
+  width: clamp(13rem, 17vw, 17rem);
   height: auto;
   margin-bottom: clamp(0.85rem, 1.8vh, 1.15rem);
   opacity: 0;
