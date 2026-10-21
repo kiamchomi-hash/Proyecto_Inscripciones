@@ -203,6 +203,7 @@ No proponer reactivarlas ni completarles el plan de estudios:
 |---|---|---|
 | Lic. en Agroinformática | 03/08/2026 | el CAU no la dicta |
 | Tec. Sup. en Venta Directa | 07/08/2026 | Teclab dejó de dictarla |
+| Curso de IA (Actualización Profesional en Inteligencia Artificial) | 21/10/2026 | el CAU no lo ofrece |
 
 Las dos con `activa = false` en Supabase y un 301 a la home en `next.config.ts`.
 Traían algo de tráfico, pero es tráfico que no se puede vender: que redirijan a la
@@ -212,6 +213,11 @@ Venta Directa además **el corpus del bot la reponía sola**, porque el simulado
 precios de Teclab la sigue cotizando: para eso está la lista `TECLAB_FUERA_DE_OFERTA`
 en `herramientas/ventas/extraer-externos.mjs`. Si mañana se da de baja otra, el
 lugar es esa lista — sacarla del JSON generado no alcanza.
+
+El curso de IA está en esa misma lista desde el 21/10/2026, y no es un detalle: el
+simulador lo sigue cotizando, `publicar-precios.mjs` no lo encontraba entre las
+carreras activas de Teclab, salía con código 1 y la corrida diaria daba por fallida
+**toda** la carga de Teclab e Identidad (no rearmaba ni publicaba el buscador).
 
 ## El entorno: lo que ya costó descubrir
 

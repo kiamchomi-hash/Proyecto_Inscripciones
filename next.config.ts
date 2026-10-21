@@ -114,13 +114,19 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
-      // El curso de Teclab estuvo dos días con el slug que salía de "Curso en"
-      // (30/07 al 01/08/2026). Se corrigió a "Curso de", que es como se dice y
-      // como viene el prefijo en la base; el slug viejo pudo entrar al sitemap.
+      // El curso de IA de Teclab salió de la oferta el 21/10/2026 (carrera 235
+      // inactiva). Quedaron dos URLs indexadas: la de "Curso de", publicada
+      // desde el 01/08, y la de "Curso en", el slug provisorio de los dos
+      // primeros días. Las dos van a la home, como las otras bajas.
+      {
+        source: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
+        destination: '/',
+        statusCode: 301,
+      },
       {
         source: '/carreras/curso-en-actualizacion-profesional-en-inteligencia-artificial',
-        destination: '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
-        permanent: true,
+        destination: '/',
+        statusCode: 301,
       },
       // Energías Renovables de Teclab se publicó como «Próximamente» con nombre
       // provisorio (09/10/2026); el oficial agrega «Gestión de».

@@ -94,7 +94,8 @@ con una segunda inspección antes de anotarlo.
 - ✅ `/carreras/abogacia` 06/08
 - ✅ `/carreras/actuario` 09/08
 - ✅ `/carreras/contador-publico` 16/08
-- ✅ `/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial` 03/08
+- ✅ `/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial` 03/08 — dado
+  de baja el 21/10/2026 (el CAU ya no ofrece el curso); va con 301 a la home.
 - ✅ `/carreras/curso-de-constitucion-de-sociedades-sa-sas-srl` 04/08
 - ✅ `/carreras/diplomatura-en-ciberseguridad-aplicada` 09/08
 - ✅ `/carreras/diplomatura-en-compliance` 19/08

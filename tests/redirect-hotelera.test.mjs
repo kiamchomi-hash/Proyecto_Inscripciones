@@ -21,11 +21,15 @@ test('se conservan exactamente las demás reglas de redirección', async () => {
     '/carreras/tecnicatura-superior-en-producto-digital',
     // Agile Coaching (16/10/2026), probada en teclab-bloques-2-y-3.test.mjs.
     '/carreras/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',
+    // Curso de IA de Teclab (21/10/2026), probada en redirect-curso-ia.test.mjs.
+    // La otra URL del curso —la de "Curso en"— ya estaba en la huella: cambió
+    // su destino de la ficha a la home, así que la huella se volvió a tomar.
+    '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
   ]);
   const redirects = (await config.redirects()).filter(regla => !nuevas.has(regla.source));
   // Huella de las 23 reglas anteriores: rutas, destinos, códigos y condiciones.
   const hash = createHash('sha256').update(JSON.stringify(redirects)).digest('hex');
-  assert.equal(hash, '9dd3b994436cc68a6e8964c02aa2b9670e41c1700d8665bec271e0249343eeda');
+  assert.equal(hash, '2954b37f15cab6306d464324309d4c6cbfc836da6a92653eb6945fe029108e32');
   for (const source of [
     '/carreras/licenciatura-en-agroinformatica',
     '/carreras/licenciatura-en-nutricion',
