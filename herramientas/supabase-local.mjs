@@ -81,20 +81,37 @@ export async function localStatus() {
   return status;
 }
 
+function fixtureConnection(status) {
+  assertLocalStatus(status);
+  // Rol administrativo del contenedor aislado, necesario para el esquema storage
+  // vacío. Nunca se toma una URL, usuario ni contraseña del entorno del sitio.
+  return new pg.Client({ connectionString: 'postgresql://supabase_admin:postgres@127.0.0.1:55422/postgres', connectionTimeoutMillis: 5000 });
+}
+
 export async function fixtureDatabase(status) {
   assertLocalStatus(status);
-  const client = new pg.Client({ connectionString: status.DB_URL, connectionTimeoutMillis: 5000 });
+  const client = fixtureConnection(status);
   await client.connect();
   try {
     const { rows } = await client.query("SELECT obj_description('public.guardrails_fixture'::regclass) AS marker");
     if (rows[0]?.marker !== PROJECT) throw new Error('La base no es el fixture aislado esperado.');
-    const triggers = await client.query("SELECT 1 FROM pg_trigger WHERE NOT tgisinternal AND tgrelid IN (SELECT oid FROM pg_class WHERE relnamespace = 'public'::regnamespace)");
-    if (triggers.rowCount) throw new Error('Fixture con triggers ajenos: no se harán escrituras.');
-    const tables = await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'public'");
-    const allowed = ['guardrails_fixture', 'materias', 'profesores', 'consultas', 'faq_preguntas', 'solicitudes_clase', 'form_rate_limits'];
-    if (tables.rows.some(row => !allowed.includes(row.tablename))) throw new Error('La base contiene tablas ajenas al fixture; no se harán escrituras.');
+    await verifyFixtureInventory(client);
     return client;
   } catch (error) { await client.end(); throw error; }
+}
+
+async function verifyFixtureInventory(client) {
+  const triggers = await client.query("SELECT 1 FROM pg_trigger WHERE NOT tgisinternal AND tgrelid IN (SELECT oid FROM pg_class WHERE relnamespace IN ('public'::regnamespace, to_regnamespace('storage')))");
+  const tables = await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'public'");
+  const storage = await client.query("SELECT tablename, obj_description(format('%I.%I', schemaname, tablename)::regclass) AS marker FROM pg_tables WHERE schemaname = 'storage'");
+  assertFixtureInventory(tables.rows, storage.rows, triggers.rowCount);
+}
+
+export function assertFixtureInventory(tables, storage, triggerCount) {
+  if (triggerCount) throw new Error('Fixture con triggers ajenos: no se harán escrituras.');
+  const allowed = ['guardrails_fixture', 'materias', 'profesores', 'consultas', 'faq_preguntas', 'solicitudes_clase', 'form_rate_limits', 'precios_carreras', 'precios_meta'];
+  if (tables.some(row => !allowed.includes(row.tablename))) throw new Error('La base contiene tablas ajenas al fixture; no se harán escrituras.');
+  if (storage.some(row => row.tablename !== 'objects' || row.marker !== PROJECT)) throw new Error('Storage no es el fixture sintético esperado; no se harán escrituras.');
 }
 
 export async function applyPolicies(client) {
@@ -103,11 +120,26 @@ export async function applyPolicies(client) {
     const sql = (await readFile(join(ROOT, 'sql', name), 'utf8')).replace(/^\uFEFF/, '');
     await client.query(sql);
   }
+  // Sólo prerrequisitos sintéticos: nunca ejecutar la migración amplia de julio.
+  const fixture = await readFile(join(WORKDIR, 'fixture.sql'), 'utf8');
+  const marker = '-- PRERREQUISITOS DE PERMISOS 21/10';
+  if (fixture.split(marker).length !== 2) throw new Error('Falta el bloque acotado del fixture.');
+  await client.query(fixture.split(marker)[1]);
+  const july = await readFile(join(ROOT, 'sql/2026-07-30_corregir_advisors_supabase.sql'), 'utf8');
+  const helper = july.match(/CREATE SCHEMA IF NOT EXISTS private;[\s\S]*?(?=-- Recrea las policies)/)?.[0];
+  if (!helper) throw new Error('No se encontró el helper privado real de julio.');
+  await client.query(helper);
+  const hardening = await readFile(join(ROOT, 'sql/2026-10-21_endurecer_storage_y_policies.sql'), 'utf8');
+  // La segunda aplicación debe ser una operación válida, no una excepción tolerada.
+  try {
+    await client.query(hardening);
+    await client.query(hardening);
+  } catch (error) { await client.query('ROLLBACK'); throw error; }
   await client.query("NOTIFY pgrst, 'reload schema'");
 }
 
 async function prepareDatabase(status) {
-  const client = new pg.Client({ connectionString: status.DB_URL, connectionTimeoutMillis: 5000 });
+  const client = fixtureConnection(status);
   await client.connect();
   try {
     const lock = await client.query('SELECT pg_try_advisory_lock(554215542) AS acquired');
@@ -117,6 +149,8 @@ async function prepareDatabase(status) {
       const verified = await fixtureDatabase(status);
       await verified.end();
     } else {
+      // También protege la primera preparación si storage ya contiene objetos ajenos.
+      await verifyFixtureInventory(client);
       await client.query(await readFile(join(WORKDIR, 'fixture.sql'), 'utf8'));
     }
     await applyPolicies(client);
@@ -127,7 +161,7 @@ export async function startApp(status) {
   assertLocalStatus(status);
   const nonce = randomUUID();
   const dir = await mkdtemp(join(tmpdir(), 'cau-guardrails-'));
-  for (const file of ['app/api/formularios/route.ts', 'lib/supabase-admin.ts', 'lib/turnstile.ts', 'components/formularios/casas.ts', 'tsconfig.json']) {
+  for (const file of ['app/api/formularios/route.ts', 'lib/supabase-admin.ts', 'lib/turnstile.ts', 'lib/pase-autoinscripcion.ts', 'lib/formularios-demo.ts', 'lib/whatsapp.ts', 'lib/vigilancia-esperado.ts', 'components/formularios/casas.ts', 'components/formularios/mail-precio.ts', 'components/formularios/cobertura-pago.ts', 'components/index/types.ts', 'tsconfig.json']) {
     await mkdir(dirname(join(dir, file)), { recursive: true });
     await copyFile(join(ROOT, file), join(dir, file));
   }

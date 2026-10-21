@@ -231,3 +231,23 @@ dashboard. Los índices sin uso (`idx_faq_destacada`,
 `idx_profesores_materia_id`, `idx_solicitudes_clase_materia_id`) se dejan: con
 este volumen no cuestan.
 
+
+### 21/10/2026, prueba aislada del endurecimiento de permisos
+
+El SQL preparado ahora elimina también sus dos policies nuevas antes de
+recrearlas. Se reprodujo el fallo de reaplicación `42710` en Supabase local y se
+corrigió sin aplicar nada remoto. El harness aplica el archivo real dos veces,
+usa sólo el helper privado real de julio y verifica anon, cuenta sin perfil,
+profesor aprobado y admin pendiente, rechazado y aprobado.
+
+Storage se verifica por SQL/RLS contra una tabla sintética marcada, con la API
+HTTP deshabilitada: no certifica uploads ni borrados por esa API. Precios se
+prueba por PostgREST; las ACL de funciones se consultan y se comprueba tanto el
+rechazo de invocaciones públicas como la ejecución de triggers sintéticos.
+Los prerrequisitos no reproducen datos reales, notificaciones ni toda la base.
+Se actualizaron las dependencias copiadas al servidor HTTP temporal porque el
+endpoint actual ya importa helpers que el harness anterior no incluía.
+
+La aplicación en el SQL Editor, la comprobación HTTP de Storage y los ajustes
+de Auth siguen pendientes. Resultados de las corridas y revisión independiente
+en [el seguimiento](../odd/tasks/permisos-supabase-2026-10-21.md).

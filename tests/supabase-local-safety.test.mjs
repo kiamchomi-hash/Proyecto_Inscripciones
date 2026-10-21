@@ -2,16 +2,19 @@ import test from 'node:test';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import assert from 'node:assert/strict';
-import { assertLocalStatus, isolatedEnvironment, assertLocalDockerEndpoint, containerEnvironment, assertTemporaryCleanupPath, applyPolicies } from '../herramientas/supabase-local.mjs';
+import { assertLocalStatus, isolatedEnvironment, assertLocalDockerEndpoint, containerEnvironment, assertTemporaryCleanupPath, applyPolicies, assertFixtureInventory } from '../herramientas/supabase-local.mjs';
 const status = { API_URL: 'http://127.0.0.1:55421', DB_URL: 'postgresql://postgres:postgres@127.0.0.1:55422/postgres', ANON_KEY: 'local-anon', SERVICE_ROLE_KEY: 'local-service' };
 test('los SQL reales se envían a PostgreSQL sin la marca BOM de Windows', async () => {
   const queries = [];
   await applyPolicies({ query: async sql => queries.push(sql) });
-  assert.equal(queries.length, 4);
+  assert.equal(queries.length, 8);
   for (const sql of queries) assert.equal(sql.startsWith('\uFEFF'), false);
   assert.match(queries[0], /^BEGIN;/);
   assert.match(queries[1], /^BEGIN;/);
-  assert.equal(queries[3], "NOTIFY pgrst, 'reload schema'");
+  assert.match(queries[4], /CREATE OR REPLACE FUNCTION private.current_user_is_admin/);
+  assert.doesNotMatch(queries[4], /DROP TABLE|DROP FUNCTION|CREATE POLICY/);
+  assert.equal(queries[5], queries[6], 'El SQL de octubre debe ejecutarse dos veces sin modificarlo');
+  assert.equal(queries[7], "NOTIFY pgrst, 'reload schema'");
 });
 test('integración acepta únicamente los puertos y direcciones locales dedicados', () => {
   assert.doesNotThrow(() => assertLocalStatus(status));
@@ -51,4 +54,14 @@ test('CLI fail-closed rechaza override remoto sin contactar Docker', async () =>
     assert.match(error.stderr,/override Docker/);
     return true;
   });
+});
+
+test('el fixture rechaza tablas ajenas, Storage sin marca y triggers en cualquier esquema', () => {
+  const tables = ['guardrails_fixture', 'precios_carreras', 'precios_meta'].map(tablename => ({ tablename }));
+  const storage = [{ tablename: 'objects', marker: 'cau-guardrails-local' }];
+  assert.doesNotThrow(() => assertFixtureInventory(tables, storage, 0));
+  assert.throws(() => assertFixtureInventory([...tables, { tablename: 'ajena' }], storage, 0), /tablas ajenas/);
+  assert.throws(() => assertFixtureInventory(tables, [{ tablename: 'objects' }], 0), /Storage/);
+  assert.throws(() => assertFixtureInventory(tables, [...storage, { tablename: 'buckets' }], 0), /Storage/);
+  assert.throws(() => assertFixtureInventory(tables, storage, 1), /triggers ajenos/);
 });

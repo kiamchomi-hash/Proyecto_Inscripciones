@@ -18,6 +18,9 @@ BEGIN;
 -- ─────────────────────────────────────────────────────────────────────────────
 DROP POLICY IF EXISTS "Upload autenticado novedades" ON storage.objects;
 DROP POLICY IF EXISTS "Delete autenticado novedades" ON storage.objects;
+-- Permite reaplicar el archivo sin colisionar con las policies nuevas.
+DROP POLICY IF EXISTS "Admin sube imagenes de novedades" ON storage.objects;
+DROP POLICY IF EXISTS "Admin borra imagenes de novedades" ON storage.objects;
 
 CREATE POLICY "Admin sube imagenes de novedades"
 ON storage.objects

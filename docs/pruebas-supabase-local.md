@@ -33,24 +33,44 @@ Sólo ese servidor se cierra al terminar. El stack se detiene con el comando ant
 - Profesor pendiente/no asignado sin actualizaciones; aprobado actualiza su materia
   y no columnas prohibidas. Admin actualiza otras materias con los mismos grants.
 - Registro propio pendiente sin autoaprobarse, cambiar rol o asignarse materia.
+- SQL del 21/10 aplicado dos veces: Storage sintético sólo permite insertar y
+  borrar novedades al admin aprobado; ningún perfil escribe otro bucket.
+- Precios por PostgREST: insertar/borrar carreras y actualizar meta sólo como
+  admin aprobado; anon, sin perfil, profesor y admin pendiente/rechazado no escriben.
+- ACL reales de tres funciones de trigger: invocación pública rechazada,
+  service role conserva EXECUTE y los triggers sintéticos siguen funcionando.
 - Endpoint HTTP real: consulta, FAQ y clase devuelven 201 y persisten en Postgres.
 - Token local inválido no inserta y consume cuota; sexto intento devuelve 429.
 
 Se usan Auth, PostgREST y PostgreSQL reales, no mocks. Los SQL de seguridad de
 `sql/2026-07-20_seguridad_admin.sql`, `sql/2026-07-20_seguridad_formularios.sql` y
-`sql/2026-07-22_cerrar_lectura_publica.sql` se leen y aplican en cada corrida;
-no se copia su lógica a otra colección de policies.
+`sql/2026-07-22_cerrar_lectura_publica.sql` se leen y aplican en cada corrida,
+al igual que `sql/2026-10-21_endurecer_storage_y_policies.sql` (dos veces).
+Del SQL del 30/07 se extrae únicamente el bloque de creación del esquema privado,
+el helper `private.current_user_is_admin()` y sus grants. No se ejecutan sus
+borrados de tablas, cambios de notificaciones ni otras policies.
+No se copia la lógica que se verifica a otra colección de policies.
 
 El esquema mínimo de `herramientas/supabase-local/fixture.sql` es sintético:
 esto prueba esas políticas y la persistencia del endpoint, **no** paridad completa
 con producción, navegación del panel, notificaciones o Turnstile real.
+Storage HTTP permanece deshabilitado. Su esquema local vacío requiere el rol
+administrativo local `supabase_admin`: el harness lo usa sólo en el destino fijo
+validado para preparar una tabla `storage.objects` sintética y marcada. Las
+operaciones por rol ejecutan `SET LOCAL ROLE` y claims JWT dentro de transacciones
+revertidas; **no prueban uploads, borrados, objetos ni permisos de la API Storage**.
+Las tablas de precios y funciones de trigger también son mínimas/sintéticas;
+no se reproducen sus columnas completas, límites ni efectos de producción.
+
 El endpoint utiliza su modo local de desarrollo existente (`rate-limit-only`);
 no se cambia ni saltea la protección de producción.
 
 ## Seguridad y resultados
 
 Antes de escribir se exige contexto Docker local, ID del contenedor, URL y puertos
-exactos, marca del fixture, tablas esperadas y ausencia de triggers ajenos.
+exactos, marca del fixture, tablas esperadas y ausencia de triggers ajenos en `public`
+y `storage`. También se rechaza Storage sin la marca sintética, aun en la primera
+preparación.
 Se rechazan otros destinos, incluso otro Supabase local. Cualquier override
 `DOCKER_*` heredado exige quitarlo antes de correr; el endpoint local validado queda
 fijado para Docker y la CLI. La limpieza valida el destino temporal resuelto y
@@ -72,6 +92,7 @@ Docker Engine 29.8.2 instalado en Linux Mint 22.3 mediante el repositorio oficia
 para Ubuntu Noble. Usuario agregado al grupo `docker`; cerrar sesión y volver
 a entrar para que las terminales y la aplicación incorporen el grupo. Mientras
 tanto, `sg docker -c 'npm run db:local:iniciar'` permite ejecutar con ese grupo.
+Si `sg` resuelve a ast-grep, usar el ejecutable de util-linux/newgrp, no ese alias.
 Usar Node 24 (instalado con nvm): `nvm use 24` y comprobar `node --version`.
 La terminal inicial usaba Node 18 y fallaba al importar TypeScript.
 
