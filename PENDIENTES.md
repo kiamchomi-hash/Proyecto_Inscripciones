@@ -17,6 +17,11 @@ Completado el 17/10/2026: imagen de calendario de pagos de Siglo 21, en siete vi
 
 ## 5. Siglo 21
 
+- [ ] **Revisar parciales en carreras cuatrimestrales y bimestrales** (20/10/2026):
+  - **Carreras cuatrimestrales** (Abogacía, Contador, Licenciatura en Informática): regla de un parcial por cuatrimestre.
+  - **Carreras bimestrales**: regla de un parcial por bimestre.
+  - Contrastar contra el corpus y respuestas (`ventas/corpus/siglo21.json`), que hoy describen dos parciales por materia.
+
 Descartado por el usuario el 17/10/2026: **18. Revisar las aperturas de las carreras de 2026**. Ya se está inscribiendo para 2027; la revisión pendiente de 2026 dejó de ser relevante. No implica que las aperturas de 2027 estén verificadas.
 
 ## 6. Sitio y diseño
@@ -37,6 +42,11 @@ Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, q
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
 - [ ] **Ampliar la app de HubSpot** (18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición; no ejecutar todavía. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
+- [ ] **HubSpot leads — mejoras de panel y operaciones** (20/10/2026):
+  - **Agregar check de WhatsApp**: casilla manual para marcar envío donde falte (ej. en Activity).
+  - **Permitir editar el texto del textarea**: retirar el `readonly` de `.activity-texto` para poder editar el mensaje/criterio antes de enviarlo.
+  - **Abrir las mesas al hacer clic en el día**: al hacer clic en la fecha/día, desplegar o abrir las mesas asociadas.
+  - **Completar los procesos CAU**: incorporar y completar los procesos y trámites administrativos de la sede en la herramienta. [Detalle](odd/tasks/hubspot-negocios.md).
 Completado el 20/10/2026: **imagen de la financiación de Teclab** para WhatsApp, en versión clara y oscura, con los datos del simulador (`contenidos/teclab/aprobados/generales/whatsapp/2026-10-20-financiacion-teclab/`). Si el simulador cambia, se rehace.
 Descartado el 20/10/2026: cierres del robot de Teclab con las cuentas de prueba 99000001 a 99000007 (no se incluyen) y medios de pago del curso de IA de Teclab (para siempre).
 Completado el 20/10/2026: **formulario de Teclab**. El código postal deja de bloquear la preinscripción, como en el portal (`CASAS.teclab.opcionales`); el resto de los campos sí los exige.
@@ -51,13 +61,15 @@ Descartado por el usuario el 17/10/2026: mostrar en el aviso de Telegram si la p
 Completado el 18/10/2026: **tipar el contrato de consultas y el detalle de carreras** (A3; `bc593a0`, `ad52917`), con check y build completos. [Evidencia](docs/historial-pendientes.md#tipos--contrato-de-consultas-y-detalle-de-carreras-18102026).
 Descartado por el usuario el 16/10/2026: **superficie segura de revisión para el código comercial ignorado** (`descuentos-siglo21-2027` T5). La revisión nativa está apagada a nivel global, así que no hace falta. [Detalle](odd/tasks/descuentos-siglo21-2027.md).
 Completado el 18/10/2026: PAT de Supabase revisados; queda sólo el del CLI de Linux y se borró el de Windows. [Detalle](docs/notas-operativas.md).
+- [ ] **Correr `sql/2026-10-21_endurecer_storage_y_policies.sql` en el SQL Editor** (21/10/2026). Cierra el único hallazgo accionable de los Advisors: cualquier cuenta con mail confirmado podía subir y borrar las imágenes del bucket `novedades`, porque las dos policies de storage sólo miraban `bucket_id`. Incluye las policies de precios, el EXECUTE de las funciones de trigger y tres policies de INSERT muertas. `cau_editor` no alcanza `storage` ni `auth`, así que va por el dashboard. [Bitácora](docs/seguridad.md#21102026-dependencias-node-y-una-pasada-por-la-base).
+- [ ] **Revisar en Auth → Attack Protection** la protección de contraseñas filtradas, el vencimiento de OTP y el MFA (21/10/2026). No se pueden leer desde SQL ni con la anon key; quedaron fuera de la revisión del 21/10.
 - [ ] **Borrar la clave `Onboarding` en el panel de Resend** (la hace el usuario; no tocar `topykly-dev`). El resto se retiró el 18/10/2026: sin uso en el código, ya no estaba en Vercel y se borró el secreto de Supabase. *(Notas operativas.)*
 Descartado por el usuario el 18/10/2026: pasar el SPF de `~all` a `-all`. Con DMARC en `reject` no suma y agrega un riesgo silencioso. [Criterio](docs/criterios.md#el-spf-se-queda-en-all).
 Cerrado el 18/10/2026: **factibilidad de Cloudflare**. Es viable, pero no se migra por ahora: ahorra poco y arriesga seguridad y medición. [Criterio](docs/criterios.md#no-se-migra-de-vercel-a-cloudflare-workers-por-ahora).
 
 ## 9. Herramientas e inspiración
 
-- [ ] **Crear una herramienta de procesos del CAU**, distinta del buscador de carreras, para consultar los trámites y procesos de la sede.
+- [ ] **Crear una herramienta de procesos del CAU y completar los procesos CAU** (20/10/2026), distinta del buscador de carreras, para consultar los trámites y procesos de la sede.
 - [ ] **20. Terminar de revisar el UIverse local**.
 - [ ] **Usar la página de los alumnos para sacar elementos estéticos para el UIverse local**.
 - [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.

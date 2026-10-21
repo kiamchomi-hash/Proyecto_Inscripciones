@@ -163,3 +163,71 @@ emisión (no atómico: dos envíos simultáneos pueden pasar, dentro de la cuota
 Sin secreto no se emite ni se acepta ningún pase. Sin variable ni tabla nueva.
 Tests con mocks; sin escrituras reales ni publicación.
 [Detalle](formularios-por-casa.md).
+
+### 21/10/2026, dependencias, Node y una pasada por la base
+
+**Dependencias.** `sanitize-html` 2.17.7 → **2.18.1** (los tres avisos del
+registry: SMIL, `noscript` y `meta refresh`). El whitelist de
+`lib/sanitize-content.ts` no deja pasar esos tags, así que no había XSS posible;
+el parche es de higiene. `npm audit` queda en **5 altos**, todos el mismo
+advisory de `braces` por `eslint-config-next` → `fast-glob` → `micromatch`, que
+sólo entra en desarrollo y sigue esperando un arreglo publicado (ver
+`PENDIENTES.md`). `npm audit --omit=dev`: **0**.
+
+**Next 16.3.8 → 16.4.2.** El release del 14/10 (`nextjs-security-update-october-14-2026`)
+no tuvo backport a la línea 16.3, así que la versión que teníamos quedó afuera.
+Ninguna de las tres aplicaba al código, pero se subió igual porque `npm audit`
+no ve estos avisos:
+
+- **GHSA-673q-mjm6-r5xr**, RCE crítico en `use cache` con Cache Components: el
+  proyecto no habilita `cacheComponents` ni tiene un solo `'use cache'`.
+- **CVE-2026-96889**, RCE crítico en la optimización de imágenes con SVG sobre
+  Linux glibc. Mitigado por el workaround oficial (`sharp >= 0.35.5`): el
+  `overrides` del `package.json` ya lo fijaba.
+- **GHSA-p3m5-59mp-jv5r**, DoS alto con Server Actions: no hay ningún
+  `'use server'` en `app/`, `lib/` ni `components/`.
+
+`npm run check` en verde (527 tests) y build de producción completo con la
+versión nueva.
+
+**Node.** La máquina pasó de 24.14.1 a **24.22.1**, el release de seguridad del
+21/10 (`CVE-2026-111497`, RCE por out-of-bounds write en el decoder de Brotli,
+más tres bypass de validación de certificados TLS). A producción no la toca: el
+runtime lo parchea Vercel y el CI instala la última 24.x. La copia vieja queda en
+`~/.nvm`; una sesión de opencode abierta antes del cambio sigue viendo la vieja
+en su `PATH` hasta reiniciarse.
+
+**Los Advisors de Supabase, revisados sin PAT.** En Linux no hay credencial de
+Management API, así que la corrida oficial del panel quedó pendiente y se
+replicaron sus chequeos contra la base con el rol `cau_editor` más la anon key.
+Resultado: RLS encendido en todas las tablas de `public`, ninguna sin policies
+por accidente (las cinco que no tienen son de service role a propósito), ninguna
+función `SECURITY DEFINER` sin `search_path`, ninguna vista que saltee RLS,
+ninguna extensión en `public`, ninguna FK sin índice, ni índices duplicados, ni
+tablas sin PK. Con la anon key: `consultas`, `faq_preguntas`, `solicitudes_clase`,
+`profesores` y `plantillas_mensajes` devuelven 200 con **cero filas**, y las siete
+que no tienen grants para `anon` devuelven 401. El único hallazgo accionable fue
+de storage.
+
+**Un agujero real, en Storage.** `disable_signup: false` en Auth: cualquiera se
+crea una cuenta con un mail descartable y la confirma. Las policies del bucket
+`novedades` sólo miraban `bucket_id`, sin rol ni estado, así que esa cuenta podía
+**subir y borrar las imágenes de las novedades** (desfigurar el sitio y consumir
+storage). Las de `clases-apoyo` sí exigían admin. Se preparó
+[`sql/2026-10-21_endurecer_storage_y_policies.sql`](../sql/2026-10-21_endurecer_storage_y_policies.sql),
+que además alinea las policies de precios a `private.current_user_is_admin()`
+(las viejas sólo miraban `rol` y no `estado = 'aprobado'`), revoca el EXECUTE de
+las tres funciones de trigger y borra tres policies de INSERT para `anon` que
+quedaron muertas cuando se revocaron los grants en julio. **Pendiente de correr
+en el SQL Editor**: `cau_editor` no alcanza `storage` ni `auth`.
+
+`descuentos` es legible por `anon` y se revisó el contenido: son tres porcentajes
+(10% sede, 5% universidad, uno promocional sin valor), no datos comerciales
+sensibles. Se deja como está.
+
+Fuera de alcance por falta de credencial: la protección de contraseñas filtradas,
+el vencimiento de OTP y el MFA se miran en Auth → Attack Protection del
+dashboard. Los índices sin uso (`idx_faq_destacada`,
+`idx_profesores_materia_id`, `idx_solicitudes_clase_materia_id`) se dejan: con
+este volumen no cuestan.
+
