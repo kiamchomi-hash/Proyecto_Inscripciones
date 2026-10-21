@@ -17,6 +17,8 @@ Test-first donde haya prueba determinística ejecutable. npm run check; npm run 
 Estrategia ask-on-risk. Estimación inicial 250-380 líneas autorales; reevaluar si crece. Sin PR ni push. Commit sólo de archivos propios con check aprobado; no cerrar tareas sin evidencia.
 
 ## Progreso
+Unidad T1/T2 guardada en commit local `5832800` (293 adiciones y 18 bajas,
+documentación incluida). Sin push ni deploy.
 T1 implementado y autoverificado.
 Se agregaron DROP de las dos policies nuevas, fixture mínimo de Storage/precios,
 helper privado real extraído de julio y ejecución doble del SQL de octubre.
