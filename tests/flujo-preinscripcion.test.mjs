@@ -79,14 +79,9 @@ test('el resultado dedicado confirma gestión pendiente sin ofrecer credenciales
   const texto=n=>typeof n==='string'?n:Array.isArray(n)?n.map(texto).join(' '):n?.props?texto(n.props.children):'';
   const confirmacion=texto(PasoListo({solicitud:true,dni:'30123456',waHref:'#'}));
   assert.match(confirmacion,/Solicitud recibida/);
-  // La tarjeta de acceso, aclarando que sirve una vez gestionada.
-  assert.match(confirmacion,/Cuando esté gestionada, entrás con/);
-  assert.match(confirmacion,/Usuario 30123456 Contraseña 30123456/);
-  assert.equal((confirmacion.match(/gestionad|gestionar/g)||[]).length,1);
-  assert.doesNotMatch(confirmacion,/brevedad|cuenta creada|acceso listo/);
-  assert.match(confirmacion,/Entrar al portal/);
-  const nodos=n=>Array.isArray(n)?n.flatMap(nodos):n?.props?[n,...nodos(n.props.children)]:[];
-  assert.ok(nodos(PasoListo({solicitud:true,dni:'30123456',waHref:'#'})).some(n=>n.type==='a'&&n.props.href==='https://portalalumno.teclab.edu.ar/payments/select'));
+  assert.match(confirmacion,/Nos comunicamos a la brevedad para realizar tu preinscripción\./);
+  assert.doesNotMatch(confirmacion,/Usuario|Contraseña|30123456|Entrar al portal|cuenta creada|acceso listo/);
+  assert.match(confirmacion,/Escribinos por WhatsApp/);
   assert.equal((confirmacion.match(/Solicitud recibida/g)||[]).length,1);
   assert.match(texto(AvisoSinPago()),/Al tocar Inscribirme/);
 });
