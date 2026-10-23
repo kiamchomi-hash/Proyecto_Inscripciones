@@ -23,7 +23,7 @@
   position: relative;
   z-index: 10;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
   max-width: 64rem;
   height: var(--alto-modal);
@@ -32,6 +32,71 @@
   container-type: inline-size;
   container-name: modal;
 }
+
+/* El carril es hermano del contenido: ninguna posición de scroll puede
+   poner texto o acciones debajo del indicador. Su ancho permanece estable. */
+.modal-contenido {
+  container-type: inline-size;
+  container-name: modal;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: clip;
+}
+.modal-carril-lectura {
+  flex: 0 0 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 0.5rem;
+  background: rgba(0, 0, 0, 0.15);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.modal-carril-inactivo { display: none; }
+/* En los carruseles el carril pertenece sólo a la fila de lectura:
+   encabezado, navegación y acciones conservan todo el ancho del panel. */
+.modal-panel:has(.modal-vista-lectura) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  overflow: clip;
+}
+.modal-panel:has(.modal-vista-lectura) > .modal-contenido { display: contents; overflow: visible; }
+.modal-panel:has(.modal-vista-lectura) > .modal-contenido > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.modal-panel:has(.modal-vista-lectura) .modal-vista-lectura {
+  grid-column: 1;
+  grid-row: 2;
+  container-type: inline-size;
+}
+.modal-panel:has(.modal-vista-lectura) > .modal-carril-lectura {
+  grid-column: 2;
+  grid-row: 2;
+  width: 2.5rem;
+}
+
+.plan-navegacion-periodos {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+.plan-navegacion-periodos button {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.75rem;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 0.5rem;
+}
+.plan-navegacion-periodos button:disabled { opacity: 0.4; }
+[data-periodo-destino]:focus { outline: 2px solid #00c7b1; outline-offset: -2px; }
 
 /* Barra de scroll de los slides */
 .custom-scrollbar::-webkit-scrollbar {

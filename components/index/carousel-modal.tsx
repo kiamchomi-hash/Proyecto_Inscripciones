@@ -112,7 +112,7 @@ function PanelContent({ panel, showTitle, cuatStartIdx }: { panel: Panel; showTi
       {/* Mobile: stacked; Desktop: side by side */}
       <div className="md:grid md:gap-4" style={{ gridTemplateColumns: `repeat(${panel.cuatrimestres.length}, 1fr)` }}>
         {panel.cuatrimestres.map((c, ci) => (
-          <div key={ci} data-cuat-idx={cuatStartIdx != null ? cuatStartIdx + ci : undefined}>
+          <div key={ci} tabIndex={-1} data-periodo-destino={cuatStartIdx != null ? cuatStartIdx + ci : undefined} data-cuat-idx={cuatStartIdx != null ? cuatStartIdx + ci : undefined}>
             {/* Mobile separator between cuatrimestres */}
             {ci > 0 && (
               <div className="my-3 h-[2px] rounded-full md:hidden" style={{ background: 'linear-gradient(90deg, rgba(0,199,177,0.35) 0%, rgba(0,199,177,0.08) 60%, transparent 100%)' }} />
@@ -231,6 +231,14 @@ const esEscritorio = () => typeof window !== 'undefined' && window.matchMedia('(
 
 // ── Plan panels: left=year buttons, right=content ──
 function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanEstudios['paginas']; carreraNombre: string; isVisible?: boolean }) {
+  const [esDesktop, setEsDesktop] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 768px)');
+    const actualizar = () => setEsDesktop(media.matches);
+    actualizar();
+    media.addEventListener('change', actualizar);
+    return () => media.removeEventListener('change', actualizar);
+  }, []);
   const requisito = paginas.flatMap(p => p.extras || []).find(e => e.titulo.toLowerCase().includes('requisito'));
   const panels = flattenPaginas(paginas);
   // -2 = show requisito only, -1 = show all, >= 0 = specific panel
@@ -269,10 +277,6 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
       setCurrentVisibleIdx(requisito ? -1 : 0);
       setCurrentCuatIdx(0);
       setIsAtBottom(false);
-      setCuatBtnVisible(true);
-      cuatGracePeriod.current = false;
-      if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
-      cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 5000);
       if (esEscritorio()) {
         setActive(-1);
       } else {
@@ -365,20 +369,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
       });
       setCurrentVisibleIdx(closest);
 
-      // Track visible cuatrimestre (mobile)
-      const cuatEls = Array.from(container.querySelectorAll<HTMLDivElement>('[data-cuat-idx]'))
-        .filter(el => el.offsetParent !== null);
-      if (cuatEls.length > 0) {
-        let closestCuat = 0;
-        let closestCuatDist = Infinity;
-        cuatEls.forEach(el => {
-          const idx = Number(el.dataset.cuatIdx);
-          const top = el.getBoundingClientRect().top - container.getBoundingClientRect().top + scrollTop;
-          const dist = Math.abs(top - scrollTop);
-          if (dist < closestCuatDist) { closestCuatDist = dist; closestCuat = idx; }
-        });
-        setCurrentCuatIdx(closestCuat);
-      }
+
     };
     container.addEventListener('scroll', onScroll, { passive: true });
     return () => container.removeEventListener('scroll', onScroll);
@@ -390,61 +381,19 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
   const nextPanel = hasNext ? panels[nextIdx] : null;
   const nextLabel = nextPanel ? nextPanel.año : null;
 
-  // ── Cuatrimestre-level navigation (mobile only) ──
-  const allCuatLabels = useMemo(() => panels.flatMap(p => p.cuatrimestres.map(c => c.label)), [panels]);
+  // Los destinos se toman del árbol visible, nunca de su duplicado móvil.
+  const periodos = panels.flatMap((p, año) => p.cuatrimestres.map(c => ({ label: `${p.año} · ${c.label}`, año })));
   const [currentCuatIdx, setCurrentCuatIdx] = useState(0);
-  const [cuatBtnVisible, setCuatBtnVisible] = useState(true);
-
-  // Auto-hide cuatrimestre button after 5s on first appearance
-  const cuatHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cuatInitialShown = useRef(false);
-  useEffect(() => {
-    if (!cuatInitialShown.current) {
-      cuatInitialShown.current = true;
-      setCuatBtnVisible(true);
-      cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 5000);
-    }
-    return () => { if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current); };
-  }, []);
-  const cuatGracePeriod = useRef(false);
-  const showCuatBtn = useCallback(() => {
-    if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
-    cuatGracePeriod.current = false;
-    setCuatBtnVisible(true);
-  }, []);
-  const hideCuatBtn = useCallback(() => {
-    if (cuatGracePeriod.current) return;
-    cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 200);
-  }, []);
-
-  // When year button disappears while cuat is hovered/open, keep it open 5s more
-  const prevHasNext = useRef(hasNext);
-  useEffect(() => {
-    if (prevHasNext.current && !hasNext && cuatBtnVisible) {
-      cuatGracePeriod.current = true;
-      if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
-      cuatHideTimer.current = setTimeout(() => {
-        cuatGracePeriod.current = false;
-        setCuatBtnVisible(false);
-      }, 5000);
-    }
-    prevHasNext.current = hasNext;
-  }, [hasNext, cuatBtnVisible]);
-
-  // Scroll to a cuatrimestre by its global index
-  const scrollToCuat = useCallback((idx: number) => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    const el = container.querySelector<HTMLDivElement>(`[data-cuat-idx="${idx}"]`);
-    if (el) {
-      const top = el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
-      container.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
-    }
-  }, []);
-
-  const nextCuatIdx = currentCuatIdx + 1;
-  const hasNextCuat = nextCuatIdx < allCuatLabels.length;
-  const nextCuatLabel = hasNextCuat ? allCuatLabels[nextCuatIdx] : null;
+  const disponibles = periodos.map((p, i) => ({ ...p, i })).filter(p => !esDesktop || active < 0 || p.año === active);
+  const elegido = disponibles.some(p => p.i === currentCuatIdx) ? currentCuatIdx : disponibles[0]?.i;
+  const irAlPeriodo = (idx: number) => {
+    const destino = Array.from(scrollContainerRef.current?.querySelectorAll<HTMLElement>(`[data-periodo-destino="${idx}"]`) || [])
+      .find(el => el.offsetParent !== null);
+    if (!destino) return;
+    setCurrentCuatIdx(idx);
+    destino.focus({ preventScroll: true });
+    scrollContainerRef.current?.scrollTo({ top: Math.max(0, getOffsetInContainer(destino) - 8), behavior: 'smooth' });
+  };
 
   return (
     <div className="flex-1 flex flex-col md:flex-row gap-0 min-h-0 overflow-hidden md:rounded-xl md:border md:border-s21/20" style={{
@@ -578,7 +527,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
         </div>
 
         {/* Scrollable content */}
-        <div ref={scrollContainerRef} data-sin-flecha className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10 pb-20 md:pb-10">
+        <div ref={scrollContainerRef} data-sin-flecha className="flex-1 overflow-y-auto px-4 md:px-5 pt-3 flex flex-col gap-2 custom-scrollbar relative z-10 pb-3 md:pb-3">
           {/* Mobile: all panels with requisito on top */}
           <div className="md:hidden flex flex-col gap-2">
             {requisito && (<>
@@ -668,7 +617,7 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
                 </div>
               </div>
             ) : (
-              activePanel && <PanelContent panel={activePanel} />
+              activePanel && <PanelContent panel={activePanel} cuatStartIdx={panels.slice(0, active).reduce((n, p) => n + p.cuatrimestres.length, 0)} />
             )}
           </div>
         </div>
@@ -681,128 +630,14 @@ function PlanPanels({ paginas, carreraNombre, isVisible }: { paginas: SlidePlanE
           background: 'linear-gradient(to top, rgba(10,30,28,0.5) 0%, transparent 100%)',
         }} />
 
-        {/* Floating cuatrimestre nav button — mobile only, circle → expands left on hover */}
-        {hasNextCuat && !isAtBottom && (
-          <button
-            onClick={() => {
-              showCuatBtn();
-              scrollToCuat(nextCuatIdx);
-              if (cuatHideTimer.current) clearTimeout(cuatHideTimer.current);
-              cuatHideTimer.current = setTimeout(() => setCuatBtnVisible(false), 5000);
-            }}
-            onPointerEnter={showCuatBtn}
-            onPointerLeave={hideCuatBtn}
-            className="absolute right-5 z-20 md:hidden flex items-center justify-center rounded-full cursor-pointer overflow-hidden"
-            style={{
-              bottom: hasNext ? '3.5rem' : '0.75rem',
-              height: '32px',
-              minWidth: '32px',
-              maxWidth: cuatBtnVisible ? '220px' : '32px',
-              padding: cuatBtnVisible ? '0 12px' : '0 9px',
-              background: 'linear-gradient(135deg, #1a5c4a, #14473a)',
-              border: '1px solid rgba(0,199,177,0.2)',
-              boxShadow: '0 2px 10px rgba(0,0,0,0.4)',
-              transition: 'max-width 0.3s ease, padding 0.3s ease, bottom 0.3s ease',
-            }}
-          >
-            <span
-              className="text-5xs font-bold uppercase tracking-wider text-[#b4e8dd] whitespace-nowrap"
-              style={{
-                opacity: cuatBtnVisible ? 1 : 0,
-                maxWidth: cuatBtnVisible ? 160 : 0,
-                marginRight: cuatBtnVisible ? 5 : 0,
-                overflow: 'hidden',
-                transition: 'opacity 0.3s, max-width 0.3s, margin 0.3s',
-              }}
-            >
-              Ver {nextCuatLabel}
-            </span>
-            {/* Chevron — rotates from down (closed) to left (open) */}
-            <svg
-              style={{
-                width: 14, height: 14, minWidth: 14, minHeight: 14,
-                transform: cuatBtnVisible ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.3s ease',
-              }}
-              className="text-[#b4e8dd] flex-shrink-0"
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        )}
+        {!showRequisito && disponibles.length > 0 && <nav aria-label="Navegación de períodos" className="plan-navegacion-periodos relative z-10">
+          <select aria-label="Período del plan" value={elegido} onChange={e => irAlPeriodo(Number(e.target.value))} className="min-w-0 flex-1 bg-[#102f29] text-white text-xs rounded p-1">
+            {disponibles.map(p => <option key={p.i} value={p.i}>{p.label}</option>)}
+          </select>
+          <button type="button" onClick={() => irAlPeriodo(disponibles[(disponibles.findIndex(p => p.i === elegido) + 1) % disponibles.length].i)}>Siguiente período</button>
+          {(hasNext || isAtBottom) && (showAll || !esDesktop) && <button type="button" onClick={() => isAtBottom ? scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' }) : scrollToPanel(nextIdx)}>{isAtBottom ? 'Inicio' : `Ver ${nextLabel}`}</button>}
+        </nav>}
 
-        {/* Floating nav button — mobile */}
-        {hasNext && (
-          <button
-            onClick={() => {
-              if (isAtBottom) {
-                scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-              } else {
-                scrollToPanel(nextIdx);
-              }
-            }}
-            className="absolute bottom-3 right-5 z-20 flex items-center gap-2 px-3.5 py-2 rounded-full cursor-pointer transition-all duration-300 md:hidden group"
-            style={{
-              background: 'linear-gradient(135deg, #00c7b1, #009681)',
-              boxShadow: '0 4px 24px rgba(0,199,177,0.3), 0 2px 8px rgba(0,0,0,0.3)',
-            }}
-          >
-            {isAtBottom ? (
-              <>
-                <svg className="w-3.5 h-3.5 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-                <span className="text-3xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Inicio</span>
-              </>
-            ) : (
-              <>
-                <span className="text-3xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
-                  Ver {nextLabel}
-                </span>
-                <svg className="w-3.5 h-3.5 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </>
-            )}
-          </button>
-        )}
-
-        {/* Floating nav button — desktop showAll */}
-        {showAll && hasNext && (
-          <button
-            onClick={() => {
-              if (isAtBottom) {
-                scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-              } else {
-                scrollToPanel(nextIdx);
-              }
-            }}
-            className="absolute bottom-3 right-6 z-20 hidden md:flex items-center gap-2 px-4 py-2.5 rounded-full cursor-pointer transition-all duration-300 hover:brightness-110 group"
-            style={{
-              background: 'linear-gradient(135deg, #00c7b1, #009681)',
-              boxShadow: '0 4px 24px rgba(0,199,177,0.3), 0 2px 8px rgba(0,0,0,0.3)',
-            }}
-          >
-            {isAtBottom ? (
-              <>
-                <svg className="w-4 h-4 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-                <span className="text-2xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">Volver al inicio</span>
-              </>
-            ) : (
-              <>
-                <span className="text-2xs font-black uppercase tracking-wider text-[#013729] whitespace-nowrap">
-                  Ver {nextLabel}
-                </span>
-                <svg className="w-4 h-4 text-[#013729]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </>
-            )}
-          </button>
-        )}
       </div>
     </div>
   );
@@ -868,7 +703,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
         </div>
 
         {/* Slides */}
-        <div className="flex-1 min-h-0 overflow-hidden relative" style={{ contain: 'strict' }}>
+        <div className="modal-vista-lectura flex-1 min-h-0 overflow-hidden relative" style={{ contain: 'strict' }}>
           <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
               <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>

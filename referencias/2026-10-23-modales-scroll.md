@@ -32,3 +32,23 @@ Se conservan las barras nativas como respaldo, sin atributos mutables que puedan
 ## Limitaciones
 
 La CSP de producción bloquea `eval` de depuración de React en `next dev`; Chromium se ejecutó con `bypassCSP: true` sólo para las pruebas locales, sin cambiar la política del sitio. Esto no demuestra comportamiento de la CSP en producción. La base académica se leyó mediante las rutas públicas normales del sitio; no se enviaron formularios ni se modificaron datos.
+
+## Corrección de navegación y superposición (segunda revisión)
+
+- El historial `6d9bffa` ya limitaba el salto de cuatrimestre de Siglo 21 a móvil. `ef3e2fb` no lo eliminó: la prueba anterior comprobó cambio de año, no cambio de período. Teclab no tenía salto de período explícito en el historial consultado.
+- Reproducción: en el cierre de Abogacía a 375 × 560, el indicador absoluto intersecaba «Consultar por WhatsApp» en posiciones intermedias de scroll. Las capturas del usuario mostraron la misma falla en el cierre y el precio mostrado de Teclab.
+- Solución estructural: el indicador es un botón accesible dentro de un carril hermano de la lectura. En ambos carruseles el carril ocupa sólo la fila del viewport; encabezado, navegación y acciones conservan su ancho completo. No hay padding final para esconder la superposición ni detección especial de WhatsApp.
+- El carril se reserva sólo ante lectura desbordada y se conserva al llegar al final, aunque desaparezca el botón. Padding vacío no lo activa. El wrapper usa `overflow: clip`, para que enfocar una acción no desplace horizontalmente todo el layout.
+- Los planes tienen selector con año y etiqueta real del período y botón «Siguiente período», en flujo fuera del scroll. El destino se busca en el árbol visible, no en el duplicado móvil oculto. Se conserva el índice anual y se adapta la lista al cambiar entre desktop y móvil.
+- Las pruebas de precio mostrado interceptan Turnstile y `POST /api/formularios` sólo en Chromium local. Importes y nota son una fixture explícita, no aranceles publicados ni leads reales. No se cambió el comportamiento de «Ver precio».
+- La fuente base del sitio es `clamp(13px, 10px + 0.234vw, 16px)`: en móvil no se deben forzar 16 px como supuesto de tamaño normal. Se separaron base real, ampliación del 125 % y estrés de 20 px.
+- RED: tres regresiones estructurales fallaron antes de implementar; GREEN posterior. Se agregó una cuarta regresión para el marco no desplazable por foco. La corrida dentro del sandbox falló en fixtures por `spawnSync git EPERM`; fuera del sandbox la suite anterior pasó completa. El resultado final congelado se registra en el documento de tareas.
+
+### Fuentes de esta revisión
+
+- [Contrato de armazón](../components/index/modal-shell.tsx), carril estructural compartido.
+- [Indicador de lectura](../components/index/flechas-de-scroll.tsx), detección y botón accesible.
+- [Plan de Siglo 21](../components/index/carousel-modal.tsx) y [plan de Teclab](../components/index/teclab-modal.tsx), destinos visibles e índice anual.
+- [Estilos de modales](../components/index/modales.css), reserva de espacio fuera del contenido.
+- El grid de los carruseles usa `display: contents` en el wrapper del contenido; ese wrapper debe tener `overflow: visible`, porque carece de caja y no puede recortar la medición a su rectángulo 0 × 0. La caja real del viewport mantiene el recorte. Se reprodujo el indicador ausente y volvió con esta corrección puntual.
+- Verificación congelada: `npm run check` aprobó lint, tipos y 538/538 pruebas (64 s de suite). Cambio de año, resize y regreso al plan aprobados en ambos carruseles. Enter desplaza lectura y Tab/Shift+Tab permanecen en el modal. La matriz reforzada queda parcial por un assert de presencia del indicador en Teclab a 375 × 667, para verificación independiente; no se presenta como aprobado completo.

@@ -9,6 +9,10 @@ El detector global confunde cualquier overflow con lectura pendiente y deja atri
 ## Tareas
 - [x] T1: reproducir en servidor actual, implementar regiones de lectura explícitas y ajuste de layout donde la reproducción lo justifique; probar regresiones y revisar en navegador.
 
+- [x] T2: restaurar el salto entre periodos en el plan; verificar específicamente bimestre/cuatrimestre además del cambio de año, desktop y móvil. Reabierto por reporte del usuario tras publicación; la verificación anterior cubrió años pero no acreditó este control. Ruta delegated direct por diagnóstico y corrección de comportamiento.
+
+- [x] T3: eliminar superposición de la flecha genérica con acciones, en particular Teclab después de Ver precios y cierre S21. Verificar todas las posiciones de scroll, pantallas bajas y texto ampliado.
+
 ## Ruta y verificación
 Delegated direct: análisis y escritura multicomponente. Un escritor, luego verificador independiente si el riesgo es alto/no evaluable. Test-first para contrato determinista; layout se verifica en navegador antes/después. Ejecutar npm run check. Capturas a 1280px y 375px, pantallas bajas, navegación y resize. Sin umbral arbitrario ni recorte de contenido.
 
@@ -30,3 +34,17 @@ Implementación, npm run check (534/534), regresiones y verificación independie
 - Detalle y limitaciones: `referencias/2026-10-23-modales-scroll.md`.
 - Next dev actualizó automáticamente encabezado de AGENTS.md y rutas generadas de next-env.d.ts; no forman parte de la corrección y quedan para decisión del coordinador.
 - Verificación independiente: pruebas enfocadas y dos scripts Chromium aprobados, sin bloqueantes. Spot check del coordinador: node --test tests/flechas-de-scroll.test.mjs y git diff --check aprobados. Sin push. Commit de implementación: `ef3e2fb` (213 adiciones + 49 eliminaciones, 262 líneas propias). Sin publicación.
+
+## Ampliación confirmada por el usuario
+El salto de periodos se reporta ausente en todas las fichas. Además la flecha de bajar tapa WhatsApp tras Ver precios en Teclab. No conservar indicadores flotantes sobre acciones: resolver espacio del control en el componente común. No publicar nuevos cambios sin autorización.
+
+## Segunda revisión: períodos y carril de lectura
+- Causa verificada: el salto de cuatrimestre S21 era exclusivamente móvil desde `6d9bffa`; Teclab no tenía salto de período explícito. La verificación de T1 sólo probó años. El indicador genérico absoluto sí tapaba WhatsApp durante el scroll; confirmado en Abogacía y capturas aportadas de Teclab.
+- Se implementaron selector con etiquetas académicas reales y salto al siguiente período en los dos planes, en flujo, manteniendo índice anual. Se eligen destinos visibles y se actualiza la disponibilidad al cambiar de tamaño.
+- El indicador accesible ocupa un carril propio, sólo en la fila de lectura de los carruseles. Header, navegación y footer mantienen todo su ancho. Se conserva el carril al final del scroll; no se activa sólo por padding.
+- La condición `overflow: clip` del marco impide el scroll horizontal imperativo que un foco podía provocar sobre el wrapper oculto. Se agregó regresión estructural.
+- La prueba de precio mostrado intercepta API y captcha en el navegador local con datos ficticios rotulados. No envió leads ni alteró producción; «Ver precio» permanece intacto.
+- Ronda final congelada: `npm run check` PASS, lint + tipos + 538/538 pruebas (64 s de suite); `git diff --check` de archivos propios PASS. Cambio de año, resize y regreso al slide PASS en S21/Teclab. Indicador accesible con Enter, Tab y Shift+Tab PASS. Verificación independiente final aprobada: S21 y Teclab en 1280 × 720, 375 × 667, 375 × 560 y 375 × 560 con texto 125 %, cierre y precio ficticio, 21 posiciones de scroll por estado, navegación y foco. Los asserts previos contaban financiación cerrada o slides recortados; checkVisibility y elementsFromPoint confirmaron que no había superposición visible. Sin cambios de fuente del verificador. Spot check del coordinador: pruebas enfocadas y capturas aprobadas. Evidencia: /tmp/independent-periodos-all.log. Sin push de esta segunda revisión.
+- Excepción de tamaño: la corrección coherente supera aproximadamente 400 líneas sumadas, principalmente por retirar el antiguo bloque de botones flotantes y temporizadores. Se mantiene la regla específica del repositorio: main, sin ramas ni PRs; no se fragmenta artificialmente el arreglo.
+
+- Estado final T2/T3: 538/538 pruebas aprobadas y verificación independiente completa. Capturas de flecha separada y navegación mostradas al usuario. Commit propio pendiente de registro; no publicar sin autorización nueva.

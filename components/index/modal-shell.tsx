@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties, ReactNode, RefObject } from 'react';
+import { useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import FlechasDeScroll from './flechas-de-scroll';
 
 interface Props {
@@ -43,6 +43,7 @@ export default function ModalShell({
   children,
   ...aria
 }: Props) {
+  const [carrilVisible, setCarrilVisible] = useState(false);
   return (
     <div
       ref={dialogRef}
@@ -51,14 +52,14 @@ export default function ModalShell({
       aria-modal="true"
       {...aria}
     >
-      <FlechasDeScroll raiz={dialogRef} />
       <div
         className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300 ${abierto ? 'opacity-100' : 'opacity-0'}`}
         style={{ background: colorVelo }}
         onClick={onCerrar}
       />
       <div {...datos} className={`modal-panel ${className}`} style={style}>
-        {children}
+        <div className="modal-contenido">{children}</div>
+        <div className={`modal-carril-lectura ${carrilVisible ? '' : 'modal-carril-inactivo'}`}><FlechasDeScroll raiz={dialogRef} onOcupado={setCarrilVisible} /></div>
       </div>
     </div>
   );

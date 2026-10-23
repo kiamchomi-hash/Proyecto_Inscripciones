@@ -7,8 +7,6 @@ const HOLGURA = 1;
 
 interface Flecha {
   zona: HTMLElement;
-  left: number;
-  top: number;
 }
 
 type Limites = Pick<DOMRect, 'left' | 'right' | 'bottom'>;
@@ -44,7 +42,7 @@ function contenidoPendiente(zona: HTMLElement, limites: Limites): boolean {
  * modifican atributos del DOM ni se ocultan barras de desplazamiento.
  * `raiz` es el contenedor fijo del modal, referencia de las coordenadas.
  */
-export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement | null> }) {
+export default function FlechasDeScroll({ raiz, onOcupado }: { raiz: RefObject<HTMLElement | null>; onOcupado?: (ocupado: boolean) => void }) {
   const [flechas, setFlechas] = useState<Flecha[]>([]);
 
   useEffect(() => {
@@ -57,6 +55,7 @@ export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement 
       cuadro = requestAnimationFrame(() => {
         const marco = contenedor.getBoundingClientRect();
         const nuevas: Flecha[] = [];
+        let ocupado = false;
         for (const zona of zonasConScroll(contenedor)) {
           const caja = zona.getBoundingClientRect();
           let izquierda = Math.max(caja.left, marco.left);
@@ -79,11 +78,24 @@ export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement 
             }
           }
           if (abajo <= arriba || derecha - izquierda < caja.width - HOLGURA) continue;
-          if (!contenidoPendiente(zona, { left: izquierda, right: derecha, bottom: abajo })) continue;
-          nuevas.push({ zona, left: (izquierda + derecha) / 2 - marco.left, top: abajo - marco.top });
+          const pendiente = contenidoPendiente(zona, { left: izquierda, right: derecha, bottom: abajo });
+          // Al final se conserva el carril, pero padding vacío desde el inicio
+          // no alcanza para reservarlo ni para encender un indicador.
+          if (!pendiente && zona.scrollTop <= HOLGURA) continue;
+          ocupado = true;
+          if (!pendiente) continue;
+          nuevas.push({ zona });
         }
+        onOcupado?.(ocupado);
         setFlechas(nuevas);
       });
+    };
+
+    // Al cambiar el espacio disponible se vuelve a medir a ancho completo.
+    // Evita que un carril abierto durante la carga de fuentes se auto-sostenga.
+    const recalcularEspacio = () => {
+      onOcupado?.(false);
+      requestAnimationFrame(medir);
     };
 
     const tamanos = new ResizeObserver(medir);
@@ -100,9 +112,9 @@ export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement 
     // El scroll no burbujea: se escucha en captura para enterarse de todas las zonas.
     contenedor.addEventListener('scroll', medir, { capture: true, passive: true });
     contenedor.addEventListener('transitionend', medir);
-    window.addEventListener('resize', medir);
+    window.addEventListener('resize', recalcularEspacio);
     contenedor.addEventListener('load', medir, true);
-    document.fonts.addEventListener('loadingdone', medir);
+    document.fonts.addEventListener('loadingdone', recalcularEspacio);
     const mutaciones = new MutationObserver(observar);
     mutaciones.observe(contenedor, { childList: true, subtree: true, attributes: true, characterData: true, attributeFilter: ['class', 'style', 'hidden', 'data-scroll-lectura'] });
 
@@ -110,30 +122,28 @@ export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement 
       cancelAnimationFrame(cuadro);
       contenedor.removeEventListener('scroll', medir, { capture: true });
       contenedor.removeEventListener('transitionend', medir);
-      window.removeEventListener('resize', medir);
+      window.removeEventListener('resize', recalcularEspacio);
       contenedor.removeEventListener('load', medir, true);
-      document.fonts.removeEventListener('loadingdone', medir);
+      document.fonts.removeEventListener('loadingdone', recalcularEspacio);
       mutaciones.disconnect();
       tamanos.disconnect();
     };
-  }, [raiz]);
+  }, [raiz, onOcupado]);
 
   return (
     <>
-      {flechas.map(({ zona, left, top }, i) => (
-        // No es un botón a propósito: quedaría dentro de la trampa de foco del
-        // modal. Con teclado se baja como siempre; la flecha es para el mouse y el dedo.
-        <div
+      {flechas.map(({ zona }, i) => (
+        <button
           key={i}
-          aria-hidden="true"
+          type="button"
+          aria-label="Seguir leyendo"
           className="flecha-scroll"
-          style={{ left, top }}
           onClick={() => zona.scrollBy({ top: zona.clientHeight * 0.8, behavior: 'smooth' })}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
             <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </div>
+        </button>
       ))}
     </>
   );
