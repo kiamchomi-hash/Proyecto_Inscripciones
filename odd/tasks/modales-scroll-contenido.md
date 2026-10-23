@@ -48,3 +48,21 @@ El salto de periodos se reporta ausente en todas las fichas. Además la flecha d
 - Excepción de tamaño: la corrección coherente supera aproximadamente 400 líneas sumadas, principalmente por retirar el antiguo bloque de botones flotantes y temporizadores. Se mantiene la regla específica del repositorio: main, sin ramas ni PRs; no se fragmenta artificialmente el arreglo.
 
 - Estado final T2/T3: 538/538 pruebas aprobadas y verificación independiente completa. Capturas de flecha separada y navegación mostradas al usuario. Commit de T2/T3: `f338996` (230 adiciones y 264 eliminaciones, incluidas pruebas y seguimiento); no publicar sin autorización nueva.
+
+## Tercera revisión: la flecha vuelve a flotar
+- Se descarta el carril de 2,5 rem. El pedido era mover la flecha, no reservarle una columna: el carril comía ancho a todo el panel en cada ficha y agregaba fondo y filete que no se pidieron.
+- La flecha vuelve a ser un indicador flotante, ahora anclada a la **esquina inferior derecha de la zona de lectura** (`data-scroll-lectura`), no del panel. Por eso no puede llegar al pie de acciones ni a la navegación del carrusel, y no reserva espacio en el flujo.
+- La capa `.flechas-scroll` es transparente y `pointer-events: none`; sólo el botón recibe clics. El corrimiento por tamaño propio y margen se hace con `translate(calc(-100% - 0.625rem), …)`, así no hay números mágicos en el JS.
+- Se conserva `overflow: clip` como protección contra el scroll imperativo al enfocar, ahora en `.modal-panel` (antes vivía en el contenedor del carril).
+- Regresión actualizada en `tests/navegacion-periodos-modal.test.mjs`: no existe `.modal-carril-lectura`, la capa no recibe clics y la flecha es absoluta.
+- Verificado en navegador (1280×720, 375×667 y 375×560) con Abogacía (S21) y Tecnicatura Superior en Programación (Teclab): cabecera y pie a todo el ancho del panel, sin columna muerta; con la flecha visible queda a 8 px del borde de la zona y por encima de la navegación. `npm run check` PASS (538/538).
+
+## T4: restaurar navegación histórica, sin rediseño
+- [x] Recuperar exclusivamente los componentes del plan de `165f308`, previos al selector introducido en `f338996`. Preservar correcciones de portada, scroll y flecha de la otra IA. Ruta delegated direct por restauración analizada multicomponente.
+- Autorizado por usuario: commit y push de esta corrección. No incluir cambios locales ajenos.
+- Evidencia: el botón histórico desktop de S21 estaba abajo a la derecha y cambiaba de año; el salto de cuatrimestre era móvil. Teclab tenía índice anual desktop y salto flotante móvil. No inventar controles nuevos ni reinterpretar períodos.
+- Verificación: igualdad de las funciones restauradas contra `165f308`, npm run check y navegador desktop/móvil con controles históricos; comprobar flecha genérica y WhatsApp. Control de secretos antes de publicar.
+- Restauración aplicada exclusivamente a `PanelContent`, `PlanPanels`, `SlidePlan` y `AñoDetalle`: igualdad byte a byte con `165f308` acreditada por extracción de funciones y comparación directa, sin desvíos de compatibilidad. Eliminado sólo el CSS del selector nuevo.
+- Regresión RED antes de restaurar y GREEN después; preservadas las aserciones de la otra IA para la flecha flotante, sin carril.
+- Navegador local: S21 y Teclab, desktop 1280 y móvil 375, navegación histórica visible y clic verificado; capturas temporales `historico-{s21,teclab}-{1280,375}.png`. S21 desktop recupera el control inferior derecho; Teclab conserva índice anual desktop y salto móvil, exactamente como el commit de referencia.
+- Verificación T4 final: `npm run check` aprobado (lint sin errores, 27 advertencias previas; tipos y suite completa). Corrida inicial limitada por sandbox en fixtures Git, repetida con permisos locales. `git diff --check` aprobado. Teclab cierre y precio simulado: 21 posiciones de scroll por estado, desktop 1280×720 y móvil 375×560, sin superposición detectada de flecha con contenido visible. Sin envío real de formularios. Commit y push quedan a cargo del coordinador.

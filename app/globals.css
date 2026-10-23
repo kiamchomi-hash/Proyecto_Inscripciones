@@ -198,13 +198,22 @@ body::after {
   }
 }
 
-/* Indicador complementario: las barras nativas siguen disponibles. */
+/* Indicador complementario: las barras nativas siguen disponibles.
+   Flota sobre la zona de lectura, sin reservar espacio: la capa deja pasar los
+   clics y sólo el botón los recibe. */
+.flechas-scroll {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
 .flecha-scroll {
-  position: relative;
-  flex-shrink: 0;
+  position: absolute;
+  /* Anclada a la esquina inferior derecha de la zona: se corre su propio
+     tamaño más el margen, así el valor no vive escrito a mano en el JS. */
+  transform: translate(calc(-100% - 0.625rem), calc(-100% - 0.625rem));
   width: 2.25rem;
   height: 2.25rem;
-  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,6 +223,7 @@ body::after {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 4px 14px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(4px);
   cursor: pointer;
+  pointer-events: auto;
 }
 .flecha-scroll svg {
   width: 1.25rem;

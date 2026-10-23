@@ -372,14 +372,6 @@ function agruparPorAño(periodos: TeclabPeriodo[]): TeclabAño[] {
 }
 
 function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: TeclabPeriodo[]; acento: string }) {
-  const [esDesktop, setEsDesktop] = useState(false);
-  useEffect(() => {
-    const media = window.matchMedia('(min-width: 768px)');
-    const actualizar = () => setEsDesktop(media.matches);
-    actualizar();
-    media.addEventListener('change', actualizar);
-    return () => media.removeEventListener('change', actualizar);
-  }, []);
   const años = useMemo(() => agruparPorAño(periodos), [periodos]);
   // -1 = plan completo, >= 0 = un año
   const [activo, setActivo] = useState(-1);
@@ -436,23 +428,10 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
     if (marco && el) marco.scrollTo({ top: Math.max(0, posicionDe(el, marco) - 10), behavior: 'smooth' });
   }, []);
 
-  const [periodoElegido, setPeriodoElegido] = useState(0);
-  const planRef = useRef<HTMLDivElement>(null);
-  const periodosDisponibles = periodos.map((p, i) => ({ ...p, i })).filter(p => !esDesktop || activo === -1 || p.año === años[activo]?.año);
-  const elegido = periodosDisponibles.some(p => p.i === periodoElegido) ? periodoElegido : periodosDisponibles[0]?.i;
-  const irAlPeriodo = (idx: number) => {
-    const destino = Array.from(planRef.current?.querySelectorAll<HTMLElement>(`[data-periodo-destino="${idx}"]`) || []).find(el => el.offsetParent !== null);
-    if (!destino) return;
-    setPeriodoElegido(idx);
-    destino.focus({ preventScroll: true });
-    const marco = destino.closest<HTMLElement>('[data-scroll-plan]');
-    if (marco) marco.scrollTo({ top: Math.max(0, posicionDe(destino, marco) - 8), behavior: 'smooth' });
-  };
-
   const siguienteAño = añoVisible + 1 < años.length ? años[añoVisible + 1] : null;
 
   return (
-    <div ref={planRef} className="teclab-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
+    <div className="teclab-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
       <div className="flex-shrink-0 flex items-baseline justify-between gap-3">
         <Rotulo acento={acento}>Plan de estudios</Rotulo>
         <span className="text-5xs font-black uppercase tracking-etiqueta text-white/50">
@@ -478,7 +457,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
           en la esquina en vez de irse con el contenido. */}
       <div className="md:hidden relative flex-1 min-h-0">
         <div
-          data-scroll-plan ref={marcoRef}
+          ref={marcoRef}
           className="h-full overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
           style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
         >
@@ -493,7 +472,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
                   {a.año}
                 </p>
                 {a.cuatrimestres.map((c, j) => (
-                  <div key={j} tabIndex={-1} data-periodo-destino={periodos.indexOf(c)}><PeriodoDetalle periodo={c} acento={acento} /></div>
+                  <PeriodoDetalle key={j} periodo={c} acento={acento} />
                 ))}
               </div>
             );
@@ -510,7 +489,36 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
           style={{ background: 'linear-gradient(to top, rgba(7,24,34,0.8) 0%, transparent 100%)' }}
         />
 
-
+        {(siguienteAño || alFinal) && (
+          <button
+            onClick={() => {
+              if (alFinal) marcoRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              else irAlAño(añoVisible + 1);
+            }}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3.5 py-2 rounded-full cursor-pointer transition-all"
+            style={{
+              background: acento,
+              color: textoActivo,
+              boxShadow: `0 4px 20px ${acento}4d, 0 2px 8px rgba(0,0,0,0.35)`,
+            }}
+          >
+            {alFinal ? (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+                <span className="text-3xs font-black uppercase tracking-wider whitespace-nowrap">Inicio</span>
+              </>
+            ) : (
+              <>
+                <span className="text-3xs font-black uppercase tracking-wider whitespace-nowrap">Ver {siguienteAño?.año}</span>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Desktop: indice a la izquierda y el contenido a la derecha */}
@@ -557,7 +565,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
           <p className="flex-shrink-0 px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-white border-b border-white/10">
             {titulo}
           </p>
-          <div data-scroll-plan className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-4 py-3 flex flex-col gap-4">
+          <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-4 py-3 flex flex-col gap-4">
             {visibles.map((a, i) =>
               a ? (
                 <div key={i} className="flex-shrink-0 flex flex-col gap-4">
@@ -566,26 +574,19 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
                   {i > 0 && <div className="h-px" style={{ background: `linear-gradient(90deg, ${acento}33 0%, transparent 60%)` }} />}
                   {/* Con un solo año a la vista el rotulo ya esta en la barra de
                       arriba, asi que no se repite. */}
-                  <AñoDetalle año={a} acento={acento} conTitulo={activo === -1} periodos={periodos} />
+                  <AñoDetalle año={a} acento={acento} conTitulo={activo === -1} />
                 </div>
               ) : null,
             )}
           </div>
         </div>
       </div>
-      <nav aria-label="Navegación de períodos" className="plan-navegacion-periodos">
-        <select aria-label="Período del plan" value={elegido} onChange={e => irAlPeriodo(Number(e.target.value))} className="min-w-0 flex-1 bg-[#102633] text-white text-xs rounded p-1">
-          {periodosDisponibles.map(p => <option key={p.i} value={p.i}>{p.año} · {p.label}</option>)}
-        </select>
-        <button type="button" onClick={() => irAlPeriodo(periodosDisponibles[(periodosDisponibles.findIndex(p => p.i === elegido) + 1) % periodosDisponibles.length].i)}>Siguiente período</button>
-        {(siguienteAño || alFinal) && <button type="button" className="md:hidden" onClick={() => alFinal ? marcoRef.current?.scrollTo({ top: 0, behavior: 'smooth' }) : irAlAño(añoVisible + 1)}>{alFinal ? 'Inicio' : `Ver ${siguienteAño?.año}`}</button>}
-      </nav>
     </div>
   );
 }
 
 /** Un año del plan: el rotulo arriba y los cuatrimestres en columnas */
-function AñoDetalle({ año, acento, conTitulo, periodos }: { año: TeclabAño; acento: string; conTitulo?: boolean; periodos: TeclabPeriodo[] }) {
+function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: string; conTitulo?: boolean }) {
   return (
     <div>
       {conTitulo && (
@@ -595,7 +596,7 @@ function AñoDetalle({ año, acento, conTitulo, periodos }: { año: TeclabAño; 
       )}
       <div className="grid gap-5" style={{ gridTemplateColumns: `repeat(${año.cuatrimestres.length}, minmax(0,1fr))` }}>
         {año.cuatrimestres.map((c, i) => (
-          <div key={i} tabIndex={-1} data-periodo-destino={periodos.indexOf(c)}>
+          <div key={i}>
             <p className="text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
               {c.label}
             </p>
