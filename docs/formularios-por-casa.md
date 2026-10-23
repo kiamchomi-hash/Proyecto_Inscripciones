@@ -79,11 +79,11 @@ Cron de Vercel (`vercel.json`, `0 13 * * *`: todos los días a las 10 de Argenti
 
 ## Autoinscripción de Teclab: `kind: 'autoinscripcion'`
 
-Quien elige gestionar su inscripción en Teclab manda la preinscripción completa. No hay medio de pago: desde el 03/10/2026 el formulario no lo pregunta, porque el portal del alumno pide la tarjeta y decide la financiación por su cuenta. Hay dos entradas al carrusel de `formulario-lead.tsx` (la pregunta y el «¡Listo!» en `autoinscripcion-teclab.tsx`), sólo con una carrera de Teclab elegida:
+Quien elige gestionar su inscripción en Teclab manda la preinscripción completa. No hay medio de pago: desde el 03/10/2026 el formulario no lo pregunta, porque el portal del alumno pide la tarjeta y decide la financiación por su cuenta. Las entradas de `formulario-lead.tsx` confirman directamente con «Preinscripción enviada» y «Nos comunicamos a la brevedad.», sin decisiones posteriores al envío:
 
-- **Directa**: la ficha con `?inscripcion=auto#preinscripcion` (`pideAutoinscripcion()` en `elegir-carrera.ts`). Desde el 09/10/2026 ningún botón la arma —«Inscribite ya» del modal y de «Ver precio» van a la página dedicada, y el mail usa `?desde=mail`—; se sigue leyendo por los enlaces viejos. El parámetro se lee en el navegador, así la página sigue siendo estática. Datos («Paso 1 de 2», botón «Inscribirme», Turnstile invisible) → «¡Listo!» («Paso 2 de 2»), con **un solo envío**, el de la autoinscripción, que sale desde los datos.
+- **Directa**: la ficha con `?inscripcion=auto#preinscripcion` (`pideAutoinscripcion()` en `elegir-carrera.ts`). Desde el 09/10/2026 ningún botón la arma —«Inscribite ya» del modal y de «Ver precio» van a la página dedicada, y el mail usa `?desde=mail`—; se sigue leyendo por los enlaces viejos. El parámetro se lee en el navegador, así la página sigue siendo estática. Datos (botón «Inscribirme», Turnstile invisible) → confirmación, con **un solo envío**, el de la autoinscripción, que sale desde los datos.
 - **Página dedicada** (`alinearAlLlegar`, Teclab, preinscripción): el botón «Solicitar inscripción» envía una sola vez `kind: autoinscripcion`, con captcha y newsletter. No envía antes una consulta ni pide una segunda confirmación. Valida DNI de 7 a 9 dígitos en el cliente. El aviso explica gestión sin cobro; el resultado confirma solicitud recibida, no una cuenta creada. El robot sigue pendiente: registrar la solicitud no prueba que el portal ya tenga el alumno.
-- **Normal**: la preinscripción se envía como siempre (`kind: 'consulta'`, con su aviso) y, en vez del cartel de enviada, sigue el paso «¿Querés gestionar tu inscripción?» con un botón «Inscribirme» y un Turnstile invisible. «Ahora no» deja el cartel de siempre; «Inscribirme» hace el **segundo envío** y pasa al «¡Listo!». Ese envío no pide otro captcha: va con el **pase** que devolvió la preinscripción (ver abajo). Sin pase, o si el servidor lo rechaza, el paso muestra un Turnstile **visible** con el aviso «Completá la verificación de seguridad y volvé a tocar Inscribirme.».
+- **Normal** (home, `/teclab`, fichas y páginas de preinscripción de todas las casas): conserva `kind: 'consulta'`, con sus avisos y newsletter, y pasa directamente a la confirmación. No ofrece «Ahora no», no pregunta por otra inscripción y no hace un segundo envío. Si la respuesta trae precio vigente, queda accesible con «Ver precio» desde la confirmación; «Volver» regresa a ella sin enviar nada.
 
 ```json
 { "kind": "autoinscripcion", "token": "<turnstile>",
@@ -94,11 +94,13 @@ Quien elige gestionar su inscripción en Teclab manda la preinscripción complet
 - La validación es estricta (`validarPayloadAutoinscripcion` en `casas.ts`, sección *Autoinscripción*): todos los obligatorios de la preinscripción de Teclab, opciones de su lista, DNI de 7 a 9 dígitos y mail y teléfono válidos. Un `medioPago` que mande una página vieja en caché se ignora. Con esos datos se crea la cuenta del alumno, así que nada entra a medias: un payload inválido devuelve 400 sin escribir.
 - La carrera se busca por `carreraId` y la casa sale de su `nivel`: una carrera que no es de Teclab o no existe devuelve 400.
 - Entra en `consultas` con `casa: 'teclab'`, `tipo_formulario: 'autoinscripcion'`, `tipo: 'Autoinscripción'`, el nombre de la carrera de la base y el legajo armado con `columnaDe()`, igual que la preinscripción. La columna `medio_pago` sigue en la tabla, pero ya no se escribe (las filas anteriores al 03/10/2026 la pueden tener). El aviso de Telegram sale por el trigger de siempre y muestra el tipo.
-- `newsletter` funciona como en el resto. En la entrada normal el segundo envío manda `false`: la suscripción ya salió con la preinscripción.
+- `newsletter` funciona como en el resto y sale una sola vez con cada envío.
 - Por ahora no dispara nada externo: el robot que carga la preinscripción en el portal de Teclab (T4 de `odd/tasks/autoinscripcion-teclab.md`) va donde lo marca el comentario de `registrarAutoinscripcion`.
 - `tests/autoinscripcion.test.mjs` cubre la validación, la casa y el endpoint con Supabase simulado.
 
-### El pase: un solo captcha en la entrada normal
+### El pase: compatibilidad de clientes anteriores
+
+El servidor conserva la emisión y validación de pases para clientes anteriores. El formulario actual no los consume: la entrada normal confirma la consulta y las directas usan su captcha.
 
 Los tokens de Turnstile son de un solo uso, y la entrada normal envía dos veces. Hasta el 04/10/2026 la pregunta montaba un segundo Turnstile invisible y, cuando ese desafío fallaba, la persona quedaba frente a «Estamos verificando la conexión…» sin saber qué hacer. Ahora el servidor le devuelve una prueba de que ya verificó:
 
@@ -112,14 +114,14 @@ Los tokens de Turnstile son de un solo uso, y la entrada normal envía dos veces
 
 **`components/formularios/financiacion-teclab.ts`** es la placa oficial de financiación del período vuelta datos (vigente desde el 26/08/2026; se actualiza con cada placa nueva). Hoy lo usa sólo «Ver precio», para las líneas de «Financiación» bajo el total. Hasta el 03/10/2026 alimentaba también la cuota del panel de la tarjeta, que se fue con el paso del medio de pago.
 
-La preinscripción de Teclab responde `{ "ok": true }`, como el resto de las consultas: hasta el 03/10/2026 sumaba el precio para ese panel, y «Ver precio» lo guardaba en el `sessionStorage` de la pestaña. Las dos cosas se sacaron con el paso del medio de pago. El único que devuelve precio es «Ver precio».
+La preinscripción de Teclab responde `{ "ok": true }`, como el resto de las consultas: hasta el 03/10/2026 sumaba el precio para ese panel, y «Ver precio» lo guardaba en el `sessionStorage` de la pestaña. Las dos cosas se sacaron con el paso del medio de pago. Actualmente la respuesta de la preinscripción también puede traer precio vigente, que el cliente ofrece sólo después de confirmar el envío.
 
 ### Carreras anunciadas (`proximamente`): sólo la preinscripción
 
 Una carrera con `proximamente = true` (desde el 10/10/2026, las cinco nuevas de Teclab) todavía no está cargada en la casa, pero acepta la preinscripción: el lead la elige en el formulario, la fila entra en `consultas` y el trigger `on_consulta_insert` avisa por Telegram. **Nada más.**
 
 - **Servidor**: `carreraConPrecio` y `carreraConAutoinscripcion` (`casas.ts`) descartan una anunciada, y todas las lecturas de `carreras` del endpoint que deciden precio, pase o autoinscripción traen `proximamente` de la base. La preinscripción responde sólo `{ ok: true }`: sin precio, sin mail del precio y sin pase. `kind: 'autoinscripcion'`, `kind: 'enlace'` y `kind: 'precio'` con una anunciada devuelven 400, sin escribir ni marcar el enlace usado; por lo tanto tampoco hay alta en HubSpot ni robot.
-- **Cliente**: los dos formularios reciben las mismas carreras (ya no hay filtro por modo). `formulario-lead.tsx` no considera `conAutoinscripcion` a una anunciada, así que el envío termina en el cartel «Preinscripción enviada», sin los pasos del precio ni de «Inscribirme». La ficha la manda a `#preinscripcion` con «Preinscribite»; las páginas de inscripción dedicadas no la ofrecen (`tieneInscripcionPropia`).
+- **Cliente**: los dos formularios reciben las mismas carreras (ya no hay filtro por modo). `formulario-lead.tsx` no considera `conAutoinscripcion` a una anunciada, así que el envío termina en «Preinscripción enviada», sin ofrecer precio ni otra inscripción. La ficha la manda a `#preinscripcion` con «Preinscribite»; las páginas de inscripción dedicadas no la ofrecen (`tieneInscripcionPropia`).
 - El aviso de Telegram de su preinscripción todavía suma el enlace de inscripción (lo arma `notificar`): ese enlace responde 400 hasta que la carrera se habilite.
 - `tests/preinscripcion-proximamente.test.mjs` lo cubre. Cuando la casa la habilite, se apaga `proximamente` y vuelve el flujo completo (`docs/alta-de-carrera.md`).
 

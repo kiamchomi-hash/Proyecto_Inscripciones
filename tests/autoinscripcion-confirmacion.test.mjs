@@ -16,8 +16,9 @@ for (const solicitud of [false, true]) {
       const html = renderToStaticMarkup(createElement(PasoListo, {
         waHref: 'https://wa.me/541100000000', dni, solicitud, onVerPrecio: () => {},
       }));
-      assert.match(html, /Nos comunicamos a la brevedad para realizar tu preinscripción\./);
+      assert.match(html, /Nos comunicamos a la brevedad\./);
       assert.doesNotMatch(html, /Usuario|Contraseña|tu DNI|30123456|Entrar al portal|PAGO AUTOGESTIONADO|Pagos en línea/);
+      assert.match(html, /Preinscripción enviada/);
       assert.match(html, /Escribinos por WhatsApp/);
       assert.match(html, /Ver precio/);
     });

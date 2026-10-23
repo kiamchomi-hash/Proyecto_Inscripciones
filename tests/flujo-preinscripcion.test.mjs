@@ -16,7 +16,7 @@ test('la entrada dedicada activa el envío directo sólo para preinscripción Te
 });
 
 test('el envío directo real hace un POST y conserva datos ante errores para reintentar', async () => {
-  const auto = fuente.slice(fuente.indexOf('  const enviarAutoinscripcion ='), fuente.indexOf('  /**\n   * «Ahora no»'));
+  const auto = fuente.slice(fuente.indexOf('  const enviarAutoinscripcion ='), fuente.indexOf('  const limpiar'));
   const enviar = fuente.slice(fuente.indexOf('  const enviar = async'), fuente.indexOf("    setEnviando(true);", fuente.indexOf('  const enviar = async')));
   for (let fallo of [null, 'precio', 'CAPTCHA inválido', 'Demasiadas solicitudes', 'red']) {
     // 'precio' no es un fallo: la respuesta trae precio vigente, que queda para «Ver precio».
@@ -78,15 +78,49 @@ test('el resultado dedicado confirma gestión pendiente sin ofrecer credenciales
   const {PasoListo,AvisoSinPago}=cargarTypescript('components/formularios/autoinscripcion-teclab.tsx',{'react/jsx-runtime':{jsx:elemento,jsxs:elemento}},()=>({}));
   const texto=n=>typeof n==='string'?n:Array.isArray(n)?n.map(texto).join(' '):n?.props?texto(n.props.children):'';
   const confirmacion=texto(PasoListo({solicitud:true,dni:'30123456',waHref:'#'}));
-  assert.match(confirmacion,/Solicitud recibida/);
-  assert.match(confirmacion,/Nos comunicamos a la brevedad para realizar tu preinscripción\./);
+  assert.match(confirmacion,/Preinscripción enviada/);
+  assert.match(confirmacion,/Nos comunicamos a la brevedad\./);
   assert.doesNotMatch(confirmacion,/Usuario|Contraseña|30123456|Entrar al portal|cuenta creada|acceso listo/);
   assert.match(confirmacion,/Escribinos por WhatsApp/);
-  assert.equal((confirmacion.match(/Solicitud recibida/g)||[]).length,1);
+  assert.equal((confirmacion.match(/Preinscripción enviada/g)||[]).length,1);
   assert.match(texto(AvisoSinPago()),/Al tocar Inscribirme/);
 });
 
 test('el error CAPTCHA indica reenvío sin nombrar un botón ajeno', () => {
   const auto = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
   assert.match(auto, /export const AVISO_VERIFICAR = 'Volvé a verificar la seguridad y enviá la solicitud\.'/);
+});
+
+ test('toda preinscripción normal confirma directamente sin una segunda decisión', () => {
+  const fin = fuente.slice(fuente.indexOf('    trackConsulta(origen, carreraElegida || null, etiquetaTipo);'), fuente.indexOf('  const precioParaVer ='));
+  assert.match(fin, /if \(esPreinscripcion\) \{[\s\S]*irAPaso\('confirmacion'\)/);
+  assert.doesNotMatch(fuente, /onSaltear|saltearAutoinscripcion|'gestionar'|Paso 1 de 2|Acceso y próximos pasos/);
+  assert.match(fuente, /kind: 'consulta'/);
+});
+
+test('el submit normal conserva una consulta por casa y confirma sin depender del precio', async () => {
+  const inicio = fuente.indexOf('    setEnviando(true);', fuente.indexOf('  const enviar = async'));
+  const fin = fuente.indexOf('\n  // Sólo los datos montan el captcha', inicio);
+  const cuerpo = fuente.slice(inicio, fin);
+  for (const casaActiva of ['teclab', 'siglo21', 'identidad']) {
+    for (const respuesta of [{ok:true}, {estado:'vigente',precio:{total:'$ 1'}}, null]) {
+      const solicitudes = []; const pasos = []; const precios = []; let confirmada = false;
+      const contexto = {
+        casaActiva, modo:'preinscripcion', esPreinscripcion:true, valores:{nombre:'Ana'},
+        filtro:null, CATEGORIES:[], carreraElegida:'Carrera', carrera:{id:7}, token:'seguro', newsletter:true, origen:'normal',
+        setEnviando:()=>{}, setError:()=>{}, armarPayload:(_c,_m,v)=>v,
+        setPreinscripcionEnviada:v=>{confirmada=v;}, setPrecioCarrera:p=>precios.push(p),
+        irAPaso:p=>pasos.push(p), setListo:()=>assert.fail('no debe quedar sobre el formulario largo'),
+        trackConsulta:()=>{}, tipoFalloTecnicoFormulario:()=>null,
+        fetch:async(_url,opciones)=>{solicitudes.push(JSON.parse(opciones.body));return {ok:true,status:201,json:async()=>respuesta};},
+      };
+      await new Function(...Object.keys(contexto), js(`return (async()=>{${cuerpo.slice(0, cuerpo.lastIndexOf('  };'))}})();`))(...Object.values(contexto));
+      assert.equal(solicitudes.length,1);
+      assert.equal(solicitudes[0].kind,'consulta');
+      assert.equal(solicitudes[0].payload.newsletter,true);
+      assert.equal(confirmada,true);
+      assert.deepEqual(pasos,['confirmacion']);
+      assert.deepEqual(precios,[respuesta?.precio ?? null]);
+    }
+  }
 });

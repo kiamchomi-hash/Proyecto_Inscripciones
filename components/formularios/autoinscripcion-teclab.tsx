@@ -1,16 +1,14 @@
 'use client';
 
-// Lo que sigue a los datos en la autoinscripción de Teclab: la confirmación
-// «Inscribirme» de la entrada normal y del enlace, y el «¡Listo!». El paso 1 es
-// la preinscripción de siempre, y el estado vive en `formulario-lead.tsx` (o en
-// `inscripcion-enlace.tsx`); acá sólo se pintan.
+// Confirmación de preinscripción compartida por los formularios y el enlace.
+// El estado vive en `formulario-lead.tsx` o `inscripcion-enlace.tsx`; acá sólo
+// se pintan los pasos y la confirmación del enlace.
 //
 // Los recorridos están en `odd/tasks/autoinscripcion-teclab.md`. Desde el
 // 03/10/2026 no hay paso de medio de pago: el portal del alumno pide la
 // tarjeta y decide la financiación solo, así que preguntarlo acá era un paso
 // de más. La entrada directa (`?inscripcion=auto`) envía desde los datos; la
-// normal, después de enviar la preinscripción, ofrece «Inscribirme» con la
-// pregunta «¿Querés gestionar tu inscripción?».
+// normal confirma la preinscripción sin otro envío ni decisiones intermedias.
 
 import { type FormEvent, type ReactNode } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
@@ -23,7 +21,6 @@ export const PORTAL_ALUMNO_TECLAB = 'https://portalalumno.teclab.edu.ar/payments
 
 const BOTON_PRINCIPAL = 'w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 hover:shadow-[0_6px_18px_rgba(var(--catalogo-acento-rgb),0.35)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 disabled:hover:shadow-none';
 const ESTILO_PRINCIPAL = { background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' };
-const LINK_SECUNDARIO = 'w-full cursor-pointer py-1 text-sm font-bold text-[var(--catalogo-texto-suave)] underline underline-offset-2 transition-colors hover:text-white';
 
 /** Lo que se muestra si se aprieta antes de que el captcha invisible devuelva el token. */
 export const AVISO_TOKEN = 'Estamos verificando la conexión. Probá de nuevo en un segundo.';
@@ -33,9 +30,7 @@ export const AVISO_VERIFICAR = 'Volvé a verificar la seguridad y enviá la soli
 
 /**
  * La confirmación de la autoinscripción: «Inscribirme», con el captcha
- * invisible que firma el envío. En la entrada normal del formulario suma la
- * pregunta y «Ahora no» (la preinscripción ya salió y esto es opcional); en el
- * enlace va sola, debajo de los datos precargados.
+ * invisible que firma el envío del enlace, debajo de los datos precargados.
  */
 /**
  * Inscribirse no cobra nada: el portal genera el ticket y la persona paga
@@ -51,7 +46,7 @@ export function AvisoSinPago() {
 }
 
 export function PasoInscribirme({
-  pregunta, intentado, enviando, error, captcha = true, captchaVisible = false, captchaKey, token, onToken, onEnviar, onSaltear,
+  pregunta, intentado, enviando, error, captcha = true, captchaVisible = false, captchaKey, token, onToken, onEnviar,
 }: {
   pregunta: boolean;
   intentado: boolean;
@@ -72,7 +67,6 @@ export function PasoInscribirme({
   token: string;
   onToken: (token: string) => void;
   onEnviar: () => void;
-  onSaltear?: () => void;
 }) {
   const aviso = error
     ? <span className="text-red-400">{error}</span>
@@ -97,11 +91,6 @@ export function PasoInscribirme({
           {enviando ? 'Enviando...' : 'Inscribirme'}
         </button>
         <AvisoSinPago />
-        {onSaltear && (
-          <button type="button" onClick={onSaltear} disabled={enviando} className={LINK_SECUNDARIO}>
-            Ahora no
-          </button>
-        )}
         {/* Invisible en el enlace: Cloudflare solo pide algo si sospecha de
             un bot. En el carrusel, sin pase, va visible (ver `captchaVisible`).
             Va último para que lo que mida no corra el botón. */}
@@ -135,17 +124,14 @@ export function PasoInscribirme({
 }
 
 /**
- * El precio vigente, como un paso propio del carrusel después del envío: en
- * Teclab, antes de «Inscribirme»; en Siglo 21, antes del cartel de enviada.
- * También es el slide que sigue al portal, con «Ver precio», y ahí el botón
- * vuelve a la confirmación. Sólo con precio vigente.
+ * El precio vigente se abre desde la confirmación con «Ver precio».
+ * El botón vuelve a la confirmación sin volver a enviar los datos.
  */
-export function PasoPrecio({ detalle, onContinuar, onSaltear, textoContinuar = 'Continuar' }: {
+export function PasoPrecio({ detalle, onContinuar, textoContinuar = 'Continuar' }: {
   detalle: ReactNode;
   onContinuar: () => void;
   /** «Volver» cuando el precio se abrió desde la confirmación. */
   textoContinuar?: string;
-  onSaltear?: () => void;
 }) {
   return (
     <div className="flex grow flex-col">
@@ -158,18 +144,13 @@ export function PasoPrecio({ detalle, onContinuar, onSaltear, textoContinuar = '
           <button type="button" onClick={onContinuar} className={BOTON_PRINCIPAL} style={ESTILO_PRINCIPAL}>
             {textoContinuar}
           </button>
-          {onSaltear && (
-            <button type="button" onClick={onSaltear} className={LINK_SECUNDARIO}>
-              Ahora no
-            </button>
-          )}
         </div>
       </div>
     </div>
   );
 }
 
-export function PasoListo({ waHref, solicitud = false, onVerPrecio }: { waHref: string; dni: string; solicitud?: boolean; onVerPrecio?: () => void }) {
+export function PasoListo({ waHref, onVerPrecio }: { waHref: string; dni: string; solicitud?: boolean; onVerPrecio?: () => void }) {
   return (
     <div className="flex flex-col items-center gap-3 px-4 py-8 text-center" aria-live="polite">
       <div
@@ -184,9 +165,9 @@ export function PasoListo({ waHref, solicitud = false, onVerPrecio }: { waHref: 
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <p data-paso-foco tabIndex={-1} className="text-3xl font-black tracking-tight text-white focus:outline-none">{solicitud ? 'Solicitud recibida' : '¡Listo!'}</p>
+      <p data-paso-foco tabIndex={-1} className="text-3xl font-black tracking-tight text-white focus:outline-none">Preinscripción enviada</p>
       <p className="max-w-md text-base leading-snug text-white">
-        Nos comunicamos a la brevedad para realizar tu preinscripción.
+        Nos comunicamos a la brevedad.
       </p>
       <div className="mt-2 flex w-full max-w-sm flex-col gap-2">
         {/* El precio es el slide siguiente; desde ahí, «Volver» trae acá. */}
