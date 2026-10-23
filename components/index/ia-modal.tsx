@@ -182,7 +182,7 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
   // overflow-x-hidden: el isotipo de fondo se sale por la derecha y sin recorte
   // aparece una barra de scroll horizontal al pie del slide.
   return (
-    <div className="ia-slide relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
+    <div data-scroll-lectura className="ia-slide relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
       {/* El isotipo grande y apagado, como en el render: da fondo sin tapar
           nada. En mobile va abajo a la derecha, que es donde queda el aire. */}
       <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
@@ -262,7 +262,7 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
 
   return (
     // relative + overflow-x-hidden por el isotipo, que se sale por la derecha
-    <div className="ia-slide relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
+    <div data-scroll-lectura className="ia-slide relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
       <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
       <Rotulo>A cargo de</Rotulo>
 
@@ -463,7 +463,7 @@ function SlideCierre({ carrera, onInscribir }: { carrera: Carrera; onInscribir: 
   const waHref = `https://wa.me/${NUMERO_TECLAB_IDENTIDAD}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
-    <div className="ia-slide ia-cierre relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
+    <div data-scroll-lectura className="ia-slide ia-cierre relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
       {/* El isotipo, grande y apagado, ocupando el alto que sobra */}
       <Isotipo className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] sm:w-[34rem] max-w-[135%] opacity-[0.09]" />
 

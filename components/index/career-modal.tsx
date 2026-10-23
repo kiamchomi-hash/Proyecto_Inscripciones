@@ -185,7 +185,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
         </div>
 
         {/* Content */}
-        <div className="p-5 sm:p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0" hidden={precioAbierto}>
+        <div data-scroll-lectura className="p-5 sm:p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0" hidden={precioAbierto}>
           {isIA ? (
             /* ── Identidad Argentina layout ── */
             <div className="space-y-6">
@@ -346,7 +346,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
           )}
         </div>
 
-        {precioAbierto && conPrecio && <div className="vp-slide vp-siglo21 overflow-y-auto p-6 flex-1 min-h-0">
+        {precioAbierto && conPrecio && <div data-scroll-lectura className="vp-slide vp-siglo21 overflow-y-auto p-6 flex-1 min-h-0">
           <PanelVerPrecio carreraId={carrera.id} nombreCarrera={cleanName} casa={casaDeCarrera(carrera) ?? 'siglo21'}
             acento={accent} acentoClaro={accentLight} textoAcento="#013729" waHref={waHref}
             slug={carreraToSlug(carrera)} duracion={carrera.duracion} activo={precioAbierto} />

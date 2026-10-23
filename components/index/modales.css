@@ -1083,3 +1083,10 @@
     gap: 0.5rem;
   }
 }
+
+/* La foto decorativa cede espacio antes que el texto y las acciones. Su alto
+   preferido se conserva cuando entra; no hace falta medir ni cambiar de modo. */
+.s21-portada-foto {
+  flex: 0 1 max(7rem, calc(var(--alto-modal) * 0.24));
+  min-height: 6rem;
+}

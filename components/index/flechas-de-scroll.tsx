@@ -2,9 +2,8 @@
 
 import { useEffect, useState, type RefObject } from 'react';
 
-// Margen para dar por llegado al final: los redondeos de subpíxel dejan
-// scrollTop + clientHeight uno o dos píxeles por debajo de scrollHeight.
-const HOLGURA = 4;
+// Sólo tolera redondeos de subpíxel; no decide cuánto contenido importa.
+const HOLGURA = 1;
 
 interface Flecha {
   zona: HTMLElement;
@@ -12,23 +11,38 @@ interface Flecha {
   top: number;
 }
 
+type Limites = Pick<DOMRect, 'left' | 'right' | 'bottom'>;
+
 function zonasConScroll(raiz: HTMLElement): HTMLElement[] {
-  return Array.from(raiz.querySelectorAll<HTMLElement>('*')).filter((el) => {
+  return Array.from(raiz.querySelectorAll<HTMLElement>('[data-scroll-lectura]')).filter((el) => {
     const { overflowY } = getComputedStyle(el);
-    return !el.closest('[data-sin-flecha]') && (overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight - el.clientHeight > HOLGURA;
+    return (overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight - el.clientHeight > HOLGURA;
   });
 }
 
+// Medimos líneas y elementos útiles, no las cajas de los bloques: esas cajas
+// incluyen padding y pueden desbordar aunque ya se haya leído todo.
+function contenidoPendiente(zona: HTMLElement, limites: Limites): boolean {
+  const debajo = (rect: DOMRect) => rect.width > 0 && rect.height > 0
+    && rect.right > limites.left && rect.left < limites.right
+    && rect.bottom > limites.bottom + HOLGURA;
+  const documento = zona.ownerDocument;
+  const textos = documento.createTreeWalker(zona, NodeFilter.SHOW_TEXT);
+  const rango = documento.createRange();
+  for (let nodo = textos.nextNode(); nodo; nodo = textos.nextNode()) {
+    if (!nodo.textContent?.trim() || nodo.parentElement?.closest('[aria-hidden="true"], [hidden], svg')) continue;
+    rango.selectNodeContents(nodo);
+    if (Array.from(rango.getClientRects()).some(debajo)) return true;
+  }
+  return Array.from(zona.querySelectorAll<HTMLElement>('img[alt]:not([alt=""]), button, a, input, select, textarea'))
+    .some(el => !el.closest('[aria-hidden="true"], [hidden]') && debajo(el.getBoundingClientRect()));
+}
+
 /**
- * Reemplaza la barra de scroll de un modal por una flecha hacia abajo. Busca
- * dentro de `raiz` las zonas con contenido que no entra, les oculta la barra y
- * pinta una flecha al pie de cada una mientras quede algo por ver. La rueda y
- * el gesto táctil siguen funcionando; la flecha sólo avanza un tramo.
- * Una zona con navegación propia (el plan de estudios) se excluye con
- * `data-sin-flecha` y conserva su barra.
- *
- * `raiz` tiene que ser el contenedor fijo a pantalla completa del modal: las
- * flechas se posicionan con las coordenadas de la ventana.
+ * Indicador para regiones de lectura declaradas con `data-scroll-lectura`.
+ * Los planes e índices conservan su navegación y su barra nativa. No se
+ * modifican atributos del DOM ni se ocultan barras de desplazamiento.
+ * `raiz` es el contenedor fijo del modal, referencia de las coordenadas.
  */
 export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement | null> }) {
   const [flechas, setFlechas] = useState<Flecha[]>([]);
@@ -44,34 +58,61 @@ export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement 
         const marco = contenedor.getBoundingClientRect();
         const nuevas: Flecha[] = [];
         for (const zona of zonasConScroll(contenedor)) {
-          zona.dataset.flechaScroll = '';
-          if (zona.scrollTop + zona.clientHeight >= zona.scrollHeight - HOLGURA) continue;
           const caja = zona.getBoundingClientRect();
-          // Los slides fuera de cuadro del carrusel siguen en el DOM: sólo
-          // cuentan las zonas que se ven dentro del modal.
-          const centro = caja.left + caja.width / 2;
-          if (caja.height === 0 || centro < marco.left || centro > marco.right) continue;
-          nuevas.push({ zona, left: centro - marco.left, top: caja.bottom - marco.top });
+          let izquierda = Math.max(caja.left, marco.left);
+          let derecha = Math.min(caja.right, marco.right);
+          let abajo = Math.min(caja.top + zona.clientTop + zona.clientHeight, marco.bottom);
+          let arriba = Math.max(caja.top, marco.top);
+          // Un slide puede estar fuera de cuadro o cortado por su propio
+          // viewport, aunque siga dentro del overlay de pantalla completa.
+          for (let padre = zona.parentElement; padre && padre !== contenedor; padre = padre.parentElement) {
+            const estilo = getComputedStyle(padre);
+            const rect = padre.getBoundingClientRect();
+            const contiene = /paint|strict|content/.test(estilo.contain);
+            if (estilo.overflowX !== 'visible' || contiene) {
+              izquierda = Math.max(izquierda, rect.left);
+              derecha = Math.min(derecha, rect.right);
+            }
+            if (estilo.overflowY !== 'visible' || contiene) {
+              arriba = Math.max(arriba, rect.top);
+              abajo = Math.min(abajo, rect.bottom);
+            }
+          }
+          if (abajo <= arriba || derecha - izquierda < caja.width - HOLGURA) continue;
+          if (!contenidoPendiente(zona, { left: izquierda, right: derecha, bottom: abajo })) continue;
+          nuevas.push({ zona, left: (izquierda + derecha) / 2 - marco.left, top: abajo - marco.top });
         }
         setFlechas(nuevas);
       });
     };
 
-    medir();
+    const tamanos = new ResizeObserver(medir);
+    const observar = () => {
+      tamanos.disconnect();
+      tamanos.observe(contenedor);
+      for (const zona of contenedor.querySelectorAll<HTMLElement>('[data-scroll-lectura]')) {
+        tamanos.observe(zona);
+        for (const hijo of zona.children) tamanos.observe(hijo);
+      }
+      medir();
+    };
+    observar();
     // El scroll no burbujea: se escucha en captura para enterarse de todas las zonas.
     contenedor.addEventListener('scroll', medir, { capture: true, passive: true });
     contenedor.addEventListener('transitionend', medir);
     window.addEventListener('resize', medir);
-    const mutaciones = new MutationObserver(medir);
-    mutaciones.observe(contenedor, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
-    const tamanos = new ResizeObserver(medir);
-    tamanos.observe(contenedor);
+    contenedor.addEventListener('load', medir, true);
+    document.fonts.addEventListener('loadingdone', medir);
+    const mutaciones = new MutationObserver(observar);
+    mutaciones.observe(contenedor, { childList: true, subtree: true, attributes: true, characterData: true, attributeFilter: ['class', 'style', 'hidden', 'data-scroll-lectura'] });
 
     return () => {
       cancelAnimationFrame(cuadro);
       contenedor.removeEventListener('scroll', medir, { capture: true });
       contenedor.removeEventListener('transitionend', medir);
       window.removeEventListener('resize', medir);
+      contenedor.removeEventListener('load', medir, true);
+      document.fonts.removeEventListener('loadingdone', medir);
       mutaciones.disconnect();
       tamanos.disconnect();
     };

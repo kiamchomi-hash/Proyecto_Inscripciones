@@ -875,7 +875,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
                 {renderSlide(slide, carrera, si === slideIdx, inscribir, conPrecio ? verPrecio : undefined)}
               </div>
             ))}
-            {conPrecio && <div className="vp-slide vp-siglo21 flex-shrink-0 w-full h-full overflow-y-auto flex flex-col justify-center p-6">
+            {conPrecio && <div data-scroll-lectura className="vp-slide vp-siglo21 flex-shrink-0 w-full h-full overflow-y-auto flex flex-col justify-center p-6">
               <PanelVerPrecio carreraId={carrera.id} nombreCarrera={cleanName} casa={casaDeCarrera(carrera) ?? 'siglo21'}
                 acento="#00c7b1" acentoClaro="#00ffe1" textoAcento="#013729" waHref={waHref}
                 slug={carreraToSlug(carrera)} duracion={carrera.duracion} activo={slideIdx === slides.length} pedido={pedidoPrecio} />
@@ -957,7 +957,7 @@ function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean, 
 function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePortada; carrera: Carrera }) {
   return (
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
-      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] flex flex-col md:justify-start pt-1 sm:pt-2 pb-6 sm:pb-8 px-6 sm:px-8 md:pt-3 md:pb-1 md:px-8 md:gap-1 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto">
+      <div data-scroll-lectura className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] flex flex-col md:justify-start pt-1 sm:pt-2 pb-6 sm:pb-8 px-6 sm:px-8 md:pt-3 md:pb-1 md:px-8 md:gap-1 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto">
         {/* Mobile: two zones - content (grows, centers children) + image/badges (fixed bottom) */}
         {/* Desktop: all sequential with justify-start */}
 
@@ -997,7 +997,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         </div>
 
         {/* Mobile: banner bajo el título — foto mobile si existe, si no cover generado */}
-        <div className="md:hidden flex-shrink-0 relative w-full h-[max(7rem,calc(var(--alto-modal)*0.24))] rounded-xl overflow-hidden border border-s21/15 mt-3">
+        <div className="s21-portada-foto md:hidden relative w-full h-[max(7rem,calc(var(--alto-modal)*0.24))] rounded-xl overflow-hidden border border-s21/15 mt-3">
           {slide.imagen_mobile ? (
             <>
               <img
@@ -1085,7 +1085,7 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
 
 function SlideEvaluacionView({ slide }: { slide: import('./types').SlideEvaluacion }) {
   return (
-    <div className="h-full flex flex-col items-center justify-center p-3 sm:p-10 gap-2 sm:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
+    <div data-scroll-lectura className="h-full flex flex-col items-center justify-center p-3 sm:p-10 gap-2 sm:gap-4 bg-gradient-to-br from-[#011f17] to-[#0c2920] overflow-y-auto custom-scrollbar">
       <div className="text-center flex-shrink-0">
         <p className="text-3xs font-bold tracking-etiqueta-ancha text-s21 uppercase mb-0.5 sm:mb-1">Proceso de evaluacion</p>
         <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider">¿Como te evaluamos?</h3>
@@ -1176,9 +1176,9 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
       )}
       {/* Los márgenes automáticos centran sólo cuando sobra alto; al ampliar
           el texto, el inicio queda accesible y el contenido crece hacia abajo. */}
-      <div className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-8 flex flex-col justify-center md:justify-start gap-4 md:gap-5 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
+      <div data-scroll-lectura className="flex-1 min-w-0 min-h-0 [overflow-wrap:anywhere] relative z-10 bg-transparent md:bg-[#011f17] px-6 py-5 md:p-8 flex flex-col justify-start gap-4 md:gap-5 overflow-y-auto custom-scrollbar [&>*]:shrink-0">
         {/* Título */}
-        <div className="mt-0 md:mt-auto text-center md:text-left">
+        <div className="mt-auto text-center md:text-left">
           <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-tight" dangerouslySetInnerHTML={{ __html: sanitizeContent(slide.titulo || 'Estudiá <br><span class="text-s21">con nosotros</span>') }}></h3>
           {slide.subtitulo && (
             <p className="text-[#7ca19b] text-sm md:text-base mt-2">{slide.subtitulo}</p>
@@ -1188,7 +1188,7 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
         {/* Beneficios y botones comparten columna: en celular el título va
             centrado y, sueltos, los beneficios quedaban pegados a la izquierda
             mientras los botones se centraban. El ancho tope es el de dos botones. */}
-        <div className="mb-0 md:mb-auto flex flex-col gap-4 md:gap-5 w-full max-w-[28.5rem] md:max-w-none mx-auto md:mx-0">
+        <div className="mb-auto flex flex-col gap-4 md:gap-5 w-full max-w-[28.5rem] md:max-w-none mx-auto md:mx-0">
         {/* Beneficios */}
         <div className="flex flex-col gap-3 md:gap-4">
           {slide.beneficios.map((b, i) => (

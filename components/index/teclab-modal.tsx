@@ -231,7 +231,7 @@ function SlidePortada({
     // En mobile es una columna y la foto entra despues de los chips: ahi toma
     // el alto que sobra (ver modales.css), asi no queda hueco al pie con textos
     // cortos ni empuja el resto fuera de la pantalla con textos largos.
-    <div className="teclab-slide teclab-portada h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-7 overflow-y-auto custom-scrollbar">
+    <div data-scroll-lectura className="teclab-slide teclab-portada h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-7 overflow-y-auto custom-scrollbar">
       <div className="teclab-portada-titulo flex-shrink-0 flex gap-3">
         <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: acento }} />
         <div className="min-w-0">
@@ -338,7 +338,7 @@ function SlideCompetencias({
           solo, las filas quedaban parejas por debajo del texto y la tarjeta
           mas larga se salia un par de pixeles: un scroll que no llevaba a nada. */}
       <div
-        className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5 grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
+        data-scroll-lectura className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5 grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
         style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
       >
         {competencias.map((texto, i) => (
@@ -666,7 +666,7 @@ function SlideCierre({
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
-    <div className="teclab-slide teclab-cierre h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
+    <div data-scroll-lectura className="teclab-slide teclab-cierre h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto custom-scrollbar">
       {/* La segunda foto de la ficha (o la portada de una anunciada), de fondo
           y bajo un velo tinta */}
       {fondo && (
@@ -775,7 +775,7 @@ function SlideVerPrecio({
     <div
       ref={ref}
       tabIndex={-1}
-      className="teclab-slide vp-slide h-full flex flex-col p-4 sm:p-7 overflow-y-auto custom-scrollbar outline-none"
+      data-scroll-lectura className="teclab-slide vp-slide h-full flex flex-col p-4 sm:p-7 overflow-y-auto custom-scrollbar outline-none"
     >
       <PanelVerPrecio
         carreraId={carrera.id}
