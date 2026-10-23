@@ -16,9 +16,9 @@ Delegated direct: análisis y escritura multicomponente. Un escritor, luego veri
 Forecast: 200–350 líneas propias, estrategia ask-on-risk si supera 400. Repositorio exige main sin ramas/PR. RDD off global verificado. No push. Commit sólo de archivos propios tras verificaciones.
 
 ## Estado
-Implementación, npm run check (534/534), regresiones y verificación independiente aprobados. RDD desactivado globalmente; evaluación nativa no evaluable por inventario ajeno no versionado, tratado como riesgo alto y cubierto con verificador independiente. Mirror Engram pendiente de sincronización final.
+Implementación, npm run check (534/534), regresiones y verificación independiente aprobados. RDD desactivado globalmente; evaluación nativa no evaluable por inventario ajeno no versionado, tratado como riesgo alto y cubierto con verificador independiente. Seguimiento espejado en Engram bajo odd/modales-scroll-contenido/tasks.
 
-## Implementación y evidencia (sin commit todavía)
+## Implementación y evidencia
 - Reproducción actual: Abogacía a 375 × 560 tenía 7 px de desborde en portada. La foto no cedía espacio (`flex-shrink-0`). Su flex-basis ahora conserva el tamaño preferido y cede hasta 6 rem, sin reducir lectura; desborde final: 0 px.
 - Detector reemplazado por contrato positivo `data-scroll-lectura`; mide líneas/acciones reales, no padding. Planes e índices quedan fuera, sin modificar sus controles ni sus barras. Se mantienen barras nativas de respaldo.
 - Se observa contenido tardío, fuentes, carga de imágenes y tamaños de las regiones. No se escriben atributos imperativos de presentación. Cierre centrado con márgenes seguros cuando sobra alto.
@@ -29,4 +29,4 @@ Implementación, npm run check (534/534), regresiones y verificación independie
 - Fixture local del componente real: padding no genera aviso; texto tardío sí; fin y vuelta arriba actualizan; resize de región también. Texto al 125 % conserva lectura larga y llegada al final.
 - Detalle y limitaciones: `referencias/2026-10-23-modales-scroll.md`.
 - Next dev actualizó automáticamente encabezado de AGENTS.md y rutas generadas de next-env.d.ts; no forman parte de la corrección y quedan para decisión del coordinador.
-- Verificación independiente: pruebas enfocadas y dos scripts Chromium aprobados, sin bloqueantes. Spot check del coordinador: node --test tests/flechas-de-scroll.test.mjs y git diff --check aprobados. Sin push. Commit propio pendiente de registrar.
+- Verificación independiente: pruebas enfocadas y dos scripts Chromium aprobados, sin bloqueantes. Spot check del coordinador: node --test tests/flechas-de-scroll.test.mjs y git diff --check aprobados. Sin push. Commit de implementación: `ef3e2fb` (213 adiciones + 49 eliminaciones, 262 líneas propias). Sin publicación.
