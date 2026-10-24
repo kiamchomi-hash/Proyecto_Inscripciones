@@ -33,10 +33,12 @@ export function OtrasMaterias({ materias, actual }: { materias: MateriaOtra[]; a
         {otras.map(m => (
           <li key={m.id}>
             <Link href={`/clases-apoyo/${m.slug}`} className={`ca-otra${m.foto ? '' : ' ca-otra-sin-foto'}`}>
-              {m.foto && (
-                <Image src={m.foto} alt="" fill sizes="(max-width: 640px) 50vw, 220px" className="ca-otra-foto" />
-              )}
-              {m.en_construccion && <span className="ca-otra-pronto">Próximamente</span>}
+              <span className="ca-otra-imagen">
+                {m.foto && (
+                  <Image src={m.foto} alt="" fill sizes="(max-width: 640px) 100vw, 280px" className="ca-otra-foto" />
+                )}
+                {m.en_construccion && <span className="ca-otra-pronto">Próximamente</span>}
+              </span>
               <span className="ca-otra-pie">
                 <span className="ca-otra-nombre">{m.label}</span>
                 {!m.en_construccion && (
