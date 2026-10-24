@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { esRutaPreinscripcion } from '@/lib/rutas-preinscripcion';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -17,7 +18,8 @@ const NAV_LINKS = [
 ];
 
 const SOCIALS = [
-  { href: 'https://wa.me/5491132973801?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta', label: 'WhatsApp', Icon: WhatsAppIcon, cssClass: 'social-whatsapp' },
+  { href: 'https://wa.me/5491132973801?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta', label: 'WhatsApp', Icon: WhatsAppIcon, cssClass: 'social-whatsapp marca-cau' },
+  { href: `https://wa.me/${numeroWhatsAppDe('teclab')}?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta`, label: 'WhatsApp', Icon: WhatsAppIcon, cssClass: 'social-whatsapp marca-teclab' },
   { href: 'https://www.facebook.com/ceducativovillalugano/', label: 'Facebook', Icon: FacebookIcon, cssClass: 'social-facebook' },
   { href: 'https://www.instagram.com/centroeducativovillalugano/', label: 'Instagram', Icon: InstagramIcon, cssClass: 'social-instagram' },
 ];
@@ -196,8 +198,8 @@ export default function Navbar() {
 
           <div className="menu-footer lg:hidden">
             <div className="menu-footer-social" style={{ justifyContent: 'center' }}>
-              {SOCIALS.map(({ href, label, Icon }) => (
-                <a key={label} href={href} target="_blank" rel="noopener nofollow" aria-label={label}>
+              {SOCIALS.map(({ href, label, Icon, cssClass }) => (
+                <a key={`${label}-${cssClass}`} href={href} target="_blank" rel="noopener nofollow" aria-label={label} className={cssClass}>
                   <Icon />
                 </a>
               ))}
@@ -208,7 +210,7 @@ export default function Navbar() {
         {/* Desktop socials */}
         <div className="navbar-social hidden lg:flex items-center flex-shrink-0" style={{ marginLeft: 8, alignSelf: 'stretch' }}>
           {SOCIALS.map(({ href, label, Icon, cssClass }) => (
-            <a key={label} href={href} target="_blank" rel="noopener nofollow" aria-label={label} className={`navbar-social-icon ${cssClass}`}>
+            <a key={`${label}-${cssClass}`} href={href} target="_blank" rel="noopener nofollow" aria-label={label} className={`navbar-social-icon ${cssClass}`}>
               <Icon className="w-4 h-4" />
             </a>
           ))}

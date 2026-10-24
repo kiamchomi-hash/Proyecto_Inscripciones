@@ -365,9 +365,13 @@ html {
    página, así que el navbar —que vive en el layout— cambia sin saber de rutas
    y sin esperar a hidratar. Paleta oficial: navy, azul y cian. */
 .marca-teclab { display: none; }
+.navbar-social-icon.marca-teclab,
+.menu-footer-social a.marca-teclab { display: none; }
 
 body:has(.teclab-page, .ficha-teclab, .tvt-page) .marca-cau { display: none; }
 body:has(.teclab-page, .ficha-teclab, .tvt-page) .marca-teclab { display: block; }
+body:has(.teclab-page, .ficha-teclab, .tvt-page) .navbar-social-icon.marca-teclab,
+body:has(.teclab-page, .ficha-teclab, .tvt-page) .menu-footer-social a.marca-teclab { display: flex; }
 
 body:has(.teclab-page, .ficha-teclab, .tvt-page) .main-navbar,
 body:has(.teclab-page, .ficha-teclab, .tvt-page) .main-navbar::after {

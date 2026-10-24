@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { MAPS_URL } from '@/lib/sede';
 import './footer-teclab.css';
 
@@ -54,7 +55,7 @@ const COLUMNA = 'py-7 border-t border-[rgba(0,199,177,0.12)] lg:py-0 lg:border-t
  * `casa` cambia la identidad del pie. En /teclab la oferta es 100% online y se
  * vende a cualquier punto del pais: ahi no va ni la marca del CAU ni la sede,
  * porque una direccion se lee como un requisito de asistencia y frena al lead
- * que vive lejos. Los canales de contacto (telefono y WhatsApp) son los mismos.
+ * que vive lejos. WhatsApp usa el número de la casa; el teléfono conserva el de la sede.
  */
 export default function SiteFooter({ casa = 'cau', fuente = '' }: {
   casa?: 'cau' | 'teclab';
@@ -65,7 +66,11 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
   // La sede tiene cuenta propia de Teclab desde el 10/10/2026: en /teclab el
   // ícono de Instagram lleva ahí y no a la cuenta del CAU.
   const redes = teclab
-    ? REDES.map(red => red.label === 'Instagram' ? { ...red, href: 'https://www.instagram.com/teclab.villalugano/' } : red)
+    ? REDES.map(red => red.label === 'Instagram'
+      ? { ...red, href: 'https://www.instagram.com/teclab.villalugano/' }
+      : red.label === 'WhatsApp'
+        ? { ...red, href: red.href.replace('5491132973801', numeroWhatsAppDe('teclab')) }
+        : red)
     : REDES;
 
   return (
@@ -166,7 +171,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
                 mas de un asesor (hoy no: ver `lib/whatsapp.ts`). */}
             <div>
             <a
-              href={REDES[0].href}
+              href={redes[0].href}
               target="_blank"
               rel="noopener nofollow"
               className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-bold text-white transition-all hover:brightness-125 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25d366] lg:min-h-0 lg:w-auto lg:rounded-full lg:py-2 lg:text-xs"
