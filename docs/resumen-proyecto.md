@@ -179,7 +179,7 @@ Configurada en `next.config.ts` → `headers()`:
 
 ## Supabase — Patrones
 
-### Cuatro clientes según credencial y contexto
+### Dos clientes según credencial y contexto
 
 ```tsx
 // lib/supabase.ts — anon, lecturas públicas desde Server Components
@@ -190,7 +190,7 @@ export const supabase = createClient(
 );
 ```
 
-Además: `lib/supabase-auth.ts` (anon + sesión en cookies, panel admin en el navegador), `lib/supabase-server.ts` (sesión en Server Components) y `lib/supabase-admin.ts` (service role con `import 'server-only'`, escrituras del público vía API). La tabla completa de cuál usar está en `CLAUDE.md`.
+Además: `lib/supabase-admin.ts` (service role con `import 'server-only'`, escrituras del público vía API). La tabla completa de cuál usar está en `CLAUDE.md`.
 
 ### Fetch pattern en Server Components
 

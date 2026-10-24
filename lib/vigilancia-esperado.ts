@@ -42,7 +42,6 @@ export const HSTS_ESPERADO = /max-age=63072000/;
 
 /** Donde tiene que haber X-Robots-Tag noindex si o si. */
 export const NOINDEX: Array<[string, RegExp]> = [
-  ['/admin/login', /noindex/],
   ['/api/formularios', /noindex/],
   ['/carreras/tecnicatura-superior-en-programacion/inscripcion', /noindex/],
 ];

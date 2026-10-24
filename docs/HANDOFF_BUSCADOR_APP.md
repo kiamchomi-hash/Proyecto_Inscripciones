@@ -1,10 +1,12 @@
 # Traspaso: app privada de carreras y precios
 
+> **Eliminada el 24/10/2026.** El panel de administración y el buscador de precios ya no forman parte del sitio. Esta página queda como registro histórico del estado que tenía la app; los archivos, la API y la publicación automática fueron removidos del repositorio. El bucket `ventas-privadas` y los datos de Supabase se conservan.
+
 Actualizado: 2026-08-14
 
 ## Estado actual
 
-- La app está implementada en `/admin/buscador` y requiere una cuenta aprobada con rol `admin`.
+- La app fue eliminada. Antes estaba implementada en `/admin/buscador` y requería una cuenta aprobada con rol `admin`.
 - Preview activa: `https://proyecto-inscripciones-j2x7h6y9h-iuys-projects-18eed4e5.vercel.app/admin/buscador`.
 - Producción todavía no fue modificada.
 - El proyecto de Vercel pertenece al equipo Pro.

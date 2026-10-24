@@ -34,13 +34,12 @@ El detalle vive en `CLAUDE.md`; acá va sólo el mapa de qué protege qué, para
 | Turnstile con verificación de hostname | `lib/turnstile.ts` | los formularios se llenan de bots |
 | Rate limit por IP hasheada | RPC `check_form_rate_limit` | 5 por tipo cada 10 min; sin eso no hay tope |
 | RLS y grants por columna | `sql/2026-07-2*_seguridad_*.sql`, `_cerrar_lectura_publica.sql` | los datos personales vuelven a ser públicos |
-| Cadena de acceso al panel | `proxy.ts` | cualquiera logueado entra al admin |
 | CSP y cabeceras | `next.config.ts` | XSS y clickjacking |
 | Sanitizado del HTML de la base | `lib/sanitize-content.ts` | XSS almacenado en novedades |
 | Secretos en el Vault | `vault.decrypted_secrets` | se leen desde `pg_proc` con cualquier rol |
 | La service role no está en local | `.env.local` sin `SUPABASE_SERVICE_ROLE_KEY` | la máquina de casa pasa a tener la credencial que saltea todo |
 
-**`tests/security.test.mjs` es la parte que no se olvida.** Corre en `npm run check` y falla si un componente fuera de `components/admin/` inserta directo en las tablas de formularios, si vuelve el módulo de alumnos, si una API admin queda sin exigir rol, si el JSON-LD deja de escapar contenido de la base o si el endpoint de formularios vuelve a escribir nombres de columna a mano. Cada test de ahí es una regresión que ya pasó una vez.
+**`tests/security.test.mjs` es la parte que no se olvida.** Corre en `npm run check` y falla si un componente inserta directo en las tablas de formularios, si quedan rutas u helpers del panel de administración, si vuelve el módulo de alumnos, si el JSON-LD deja de escapar contenido de la base o si el endpoint de formularios vuelve a escribir nombres de columna a mano. Cada test de ahí es una regresión que ya pasó una vez.
 
 ## Cómo se hace una revisión
 
@@ -251,3 +250,20 @@ endpoint actual ya importa helpers que el harness anterior no incluía.
 La aplicación en el SQL Editor, la comprobación HTTP de Storage y los ajustes
 de Auth siguen pendientes. Resultados de las corridas y revisión independiente
 en [el seguimiento](../odd/tasks/permisos-supabase-2026-10-21.md).
+
+### 24/10/2026, eliminación del panel de administración
+
+Se eliminaron del repositorio `/admin`, `/api/admin`, `proxy.ts`, los componentes y
+helpers exclusivos del panel (`lib/supabase-auth.ts`, `lib/supabase-server.ts`,
+`lib/auth/exigir-admin.ts`), el buscador de precios (`/admin/buscador`,
+`/api/admin/buscador`, `lib/ventas-snapshot.ts`, `public/buscador-sw.js`,
+`public/buscador-icon.svg`) y la publicación automática desde
+`herramientas/ventas/`. Se actualizaron `next.config.ts`, `app/robots.ts`,
+`lib/vigilancia-esperado.ts`, `components/google-analytics.tsx`,
+`herramientas/integraciones.mjs`, `tests/security.test.mjs` y la documentación
+vigente. Se agregó un test de regresión que falla si vuelven rutas o helpers del
+panel.
+
+No se borraron tablas, cuentas, el bucket `ventas-privadas` ni secretos remotos de
+Supabase/Vercel: el código simplemente deja de usarlos. Los datos y RLS permanecen
+intactos. `npm run check` y `npm run build` quedaron en verde.

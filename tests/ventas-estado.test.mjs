@@ -24,23 +24,6 @@ test('vencimiento comercial se evalúa aparte y al abrir en hora argentina', () 
   assert.equal(normalizarActualizacion2027({version:1, ultimoIntento:{estado:'completa', fecha:'inválida'}, ultimoExito:null}), null);
 });
 
-test('snapshot remoto toma estado del HTML aunque el JSON lateral sea legado, contradictorio o inválido', async () => {
-  const { cargarTypescript } = await import('./helpers/cargar-typescript.mjs');
-  const funcionesEstado = await import('../lib/ventas-estado.ts');
-  const incompleta = estado('incompleta');
-  const html = '<!doctype html><html><script id="datos" type="application/json">' + JSON.stringify({ carreras:[{nombre:'Prueba'}], actualizacion2027: incompleta }) + '</script></html>';
-  for (const lateral of ['{}', JSON.stringify({actualizacion2027:estado('completa')}), 'inválido']) {
-    const snapshot = cargarTypescript('lib/ventas-snapshot.ts', {
-      'server-only': {}, 'node:path': {default: (await import('node:path')).default}, '@/lib/ventas-estado': funcionesEstado,
-      '@/lib/supabase-admin': { createSupabaseAdmin: () => ({storage:{from:() => ({download: async nombre => ({data: new Blob([nombre.endsWith('.html') ? html : lateral]),error:null})})}}) },
-    });
-    const resultado = await snapshot.leerVentasSnapshot();
-    assert.equal(resultado.source, 'supabase');
-    assert.equal(resultado.meta.actualizacion2027.ultimoIntento.estado, 'incompleta');
-    assert.equal(snapshot.validarSnapshot(html.replace(/,"actualizacion2027":[\s\S]*<\/script>/, '}</script>')).actualizacion2027, null);
-  }
-});
-
 test('las advertencias informan referencias sin imponer verificación comercial', () => {
   assert.equal(estadoActualizacion2027(null, ahora).titulo, 'Precios de referencia');
   assert.equal(estadoActualizacion2027(estado('incompleta'), ahora).titulo, 'Actualización incompleta');

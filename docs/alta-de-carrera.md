@@ -133,7 +133,7 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
     (`extraer-todas-carreras-kb.mjs`). Referencia: [alta de cinco carreras](../odd/tasks/altas-cinco-carreras-siglo21.md).
   - [ ] **M** — Tarjeta de WhatsApp en `carreras/siglo21/tarjetas-whatsapp/`.
   - [ ] Regenerar `generar-buscador.mjs --descuento-beneficio 10` y
-    `generar-entrenador.mjs`, publicar con `publicar-buscador.mjs`, y correr la suite de
+    `generar-entrenador.mjs`, y correr la suite de
     `herramientas/ventas/tests/` y `auditar-instituciones.mjs`.
 - Teclab:
   - [ ] **M** — Que la carrera exista en el pipeline de precios (`extraer-externos.mjs`).

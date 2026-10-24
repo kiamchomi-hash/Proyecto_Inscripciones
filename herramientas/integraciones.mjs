@@ -12,15 +12,6 @@ async function comprobar(nombre, fn) {
   try { const detalle = await fn(); resultados.push({ nombre, estado: 'ok', detalle }); console.log(`ok: ${nombre}`); }
   catch (e) { const estado = /permission denied|Falta |sin observaciones/i.test(e.message) ? 'no-verificado' : 'fallo'; resultados.push({ nombre, estado, detalle: e.message }); console.log(`${estado}: ${nombre}: ${e.message}`); }
 }
-await comprobar('panel privado sin sesión', async () => {
-  const r = await fetch(base + '/admin', { redirect: 'manual', signal: AbortSignal.timeout(15000) });
-  assert.ok([302, 303, 307, 308].includes(r.status));
-  assert.equal(new URL(r.headers.get('location'), base).pathname, '/admin/login');
-});
-await comprobar('API administrativa sin sesión', async () => {
-  const r = await fetch(base + '/api/admin/profesores', { signal: AbortSignal.timeout(15000) });
-  assert.equal(r.status, 401);
-});
 let cliente;
 await comprobar('conexión de auditoría a la base', async () => {
   assert.ok(process.env.EDITOR_DATABASE_URL, 'Falta EDITOR_DATABASE_URL');

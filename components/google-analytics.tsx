@@ -1,14 +1,11 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export default function PublicGoogleAnalytics() {
-  const pathname = usePathname();
-
-  if (!GA_ID || pathname.startsWith('/admin')) {
+  if (!GA_ID) {
     return null;
   }
 

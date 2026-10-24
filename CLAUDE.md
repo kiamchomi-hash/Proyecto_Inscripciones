@@ -25,7 +25,7 @@ npm test             # node --test tests/*.test.mjs
 npm run check        # lint + typecheck + test — correr esto antes de commitear
 ```
 
-Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --test --test-name-pattern "rol admin" tests/security.test.mjs`.
+Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --test --test-name-pattern "JSON-LD" tests/security.test.mjs`.
 
 GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` el control de secretos, `npm run check` y `npm audit --omit=dev`.
 
@@ -64,11 +64,9 @@ Las páginas son Server Components que leen de Supabase en el render. La home y 
 
 **Esta no es la versión de Next que conocés**: ante cualquier duda de API o convención, leer la guía en `node_modules/next/dist/docs/` antes de escribir código (ver el bloque del final).
 
-`proxy.ts` en la raíz **es el middleware** — Next 16 renombró `middleware.ts` a `proxy.ts` y exporta una función `proxy()`. Ahí vive todo el control de acceso del panel admin.
+### Los clientes de Supabase
 
-### Los cuatro clientes de Supabase
-
-Los cuatro clientes y el del proxy usan `Database`, generado del esquema remoto
+Los dos clientes usan `Database`, generado del esquema remoto
 en `lib/database.types.ts`. Regenerar con `npm run db:tipos` tras cambios de
 esquema, revisar el diff y correr `check`. Los tipos no validan JSON ni sustituyen
 RLS. [Procedimiento y alcance](docs/tipos-supabase.md).
@@ -78,14 +76,12 @@ Elegir mal el cliente es el error más fácil de cometer:
 | Módulo | Credencial | Para qué |
 |---|---|---|
 | `lib/supabase.ts` | anon, sin sesión | lecturas públicas desde Server Components (carreras, materias, novedades, FAQ) |
-| `lib/supabase-auth.ts` | anon + sesión en cookies | **todo el panel admin en el navegador**: login, layout, dashboard, `/admin/clases-apoyo`, sidebar. Incluye sus escrituras |
-| `lib/supabase-server.ts` | anon + sesión en cookies | sesión del usuario en servidor; `lib/auth/exigir-admin.ts` lo usa para autorizar escrituras privilegiadas. `proxy.ts` arma su propio `createServerClient` inline |
 | `lib/supabase-admin.ts` | **service role** | escrituras del público y de las APIs. Tiene `import 'server-only'`; nunca puede entrar al bundle del cliente |
 
 Qué puede escribir cada rol (definido en `sql/2026-07-20_seguridad_*.sql`):
 
 - **`anon`** (visitante sin sesión) es de sólo lectura. `INSERT` sobre `consultas`, `faq_preguntas` y `solicitudes_clase` está revocado tanto para `anon` como para `authenticated`; por eso los formularios públicos van sí o sí por la service role.
-- **`authenticated`** (profesor logueado y aprobado) **sí escribe** con la misma anon key: `UPDATE` sobre `materias` (policy `materias_approved_update`) e `INSERT` de su propia fila en `profesores` (`profesores_register_pending`). No hace falta service role para el panel — no la uses ahí.
+- **`authenticated`** (profesor logueado y aprobado) **sí escribe** con la misma anon key: `UPDATE` sobre `materias` (policy `materias_approved_update`) e `INSERT` de su propia fila en `profesores` (`profesores_register_pending`). Hoy no hay panel que lo consuma, pero las policies y la tabla siguen en la base.
 - La service role está marcada Sensitive en Vercel, así que **desde la máquina local no está la credencial que saltea todo**. Para editar contenido desde acá está el rol acotado `cau_editor` (ver *Escribir contenido desde local*, más abajo); lo que quede fuera de su alcance sigue yendo por el SQL Editor del dashboard.
 
 ### Invariante: los formularios públicos no escriben directo en la base
@@ -96,7 +92,7 @@ Todo lo que envía el público pasa por `POST /api/formularios`, que discrimina 
 2. En un `Promise.all`, verifica Turnstile **y** consulta el rate limit. Ojo: el rate limit corre siempre, así que un pedido que falla el captcha igual consume cuota.
 3. Recién en `insertConsulta`/`insertFaq`/`insertClase` valida el payload en sí (regex de email y teléfono, formato de horario, cantidad de filas).
 
-`tests/security.test.mjs` falla si algún componente fuera de `components/admin/` llama a `.from('consultas'|'faq_preguntas'|'solicitudes_clase').insert`. No es un test decorativo: es la regla que sostiene el modelo de seguridad.
+`tests/security.test.mjs` falla si algún componente llama a `.from('consultas'|'faq_preguntas'|'solicitudes_clase').insert`, si quedan rutas u helpers del panel de administración, si vuelve el módulo de alumnos, si el JSON-LD deja de escapar contenido de la base o si el endpoint de formularios vuelve a escribir nombres de columna a mano. No es un test decorativo: es la regla que sostiene el modelo de seguridad.
 
 ### Un solo lugar declara los campos: `components/formularios/casas.ts`
 
@@ -138,25 +134,6 @@ Hay una **segunda familia de triggers**, que no tiene nada que ver con los aviso
 El endpoint no recibe la fila entera sino los campos con los que arma las rutas (`slug`, `nombre`, `prefix`, `nivel` y los anteriores, para cubrir el renombre). El mapeo tabla → rutas vive en `rutasA()`; **una tabla nueva sin mapear devuelve 400 a propósito**, para que el trigger no dispare contra la nada en silencio. `tabla: 'todo'` rehace el sitio entero, sin deploy.
 
 Se autentica con `REVALIDATE_SECRET` (Vercel), que tiene que coincidir con el que guarda el Vault de Supabase — hasta el 28/08/2026 estaba escrito como literal en el cuerpo del trigger, que es donde cualquier rol con conexión podía leerlo. Igual que con los avisos, `net.http_post` encola: si esto falla el `UPDATE` responde ok lo mismo y la página queda vieja. Se diagnostica en `net._http_response` — 401 secretos distintos, 503 falta la variable en Vercel, 400 tabla sin mapear.
-
-### Panel admin
-
-Rutas `/admin/*` y `/api/admin/*`, todas protegidas por `proxy.ts`. La cadena de control:
-
-1. Sin sesión → las páginas redirigen a `/admin/login`, las APIs devuelven 401.
-2. Sin fila en `profesores` → se crea una con `estado: 'pendiente'`, `rol: 'profesor'` (auto-registro al primer login).
-3. `estado !== 'aprobado'` → `/admin/pendiente` o 403.
-4. `/admin` (dashboard), `/admin/buscador` y todo `/api/admin/*` exigen además `rol === 'admin'`; un profesor cae en `/admin/clases-apoyo`.
-
-Públicas dentro de `/admin`: `login`, `auth/callback`, `reset-password`, `pendiente`. `next.config.ts` le pone `X-Robots-Tag: noindex, nofollow` a todo `/admin`.
-
-Única excepción a la sesión: el actualizador de precios de la máquina de casa publica el buscador con `PUT /api/admin/buscador` y `Authorization: Bearer $BUSCADOR_SECRET`. El proxy lo deja pasar sin comparar el secreto; la autoridad es la route, que devuelve 401 si no coincide.
-
-`PATCH` y `DELETE /api/admin/profesores` también verifican sesión, aprobación y
-rol admin dentro del handler con `lib/auth/exigir-admin.ts`, antes de crear el
-cliente service role. El helper usa el cliente anon con sesión, no registra
-cuentas y no cachea permisos entre solicitudes. Una falla de verificación
-rechaza la operación. Las escrituras del profesor en el panel siguen usando anon.
 
 ### Taxonomía de carreras
 

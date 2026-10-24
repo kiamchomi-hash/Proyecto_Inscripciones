@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, access } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
@@ -16,11 +16,19 @@ async function sourceFiles(directory) {
   return files;
 }
 
+async function fileExists(relative) {
+  try {
+    await access(path.join(root, relative));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 test('los formularios públicos no escriben directo en Supabase', async () => {
   const files = await sourceFiles('components');
   const publicWrites = [];
   for (const file of files) {
-    if (file.includes(`${path.sep}admin${path.sep}`)) continue;
     const source = await readFile(path.join(root, file), 'utf8');
     if (/\.from\(['"](?:consultas|faq_preguntas|solicitudes_clase)['"]\)\.insert/.test(source)) {
       publicWrites.push(file);
@@ -30,48 +38,44 @@ test('los formularios públicos no escriben directo en Supabase', async () => {
 });
 
 test('el módulo de alumnos no sigue expuesto por rutas, scripts o navegación', async () => {
-  const checked = [
-    'app/admin/page.tsx',
-    'components/admin/sidebar.tsx',
-    'proxy.ts',
-    'package.json',
-  ];
+  const checked = ['package.json'];
   for (const file of checked) {
     const source = await readFile(path.join(root, file), 'utf8');
     assert.doesNotMatch(source, /admin\/alumnos|sync-alumnos|alumnos_cau/);
   }
 });
 
-test('las APIs administrativas exigen rol admin en el proxy', async () => {
-  const source = await readFile(path.join(root, 'proxy.ts'), 'utf8');
-  assert.match(source, /pathname\.startsWith\('\/api\/admin'\)/);
-  assert.match(source, /profile\.rol !== 'admin'/);
-  assert.match(source, /profile\.estado !== 'aprobado'/);
-});
+test('no quedan rutas ni helpers del panel de administración', async () => {
+  assert.equal(await fileExists('app/admin'), false, 'app/admin debería haberse eliminado');
+  assert.equal(await fileExists('app/api/admin'), false, 'app/api/admin debería haberse eliminado');
+  assert.equal(await fileExists('proxy.ts'), false, 'proxy.ts debería haberse eliminado');
+  assert.equal(await fileExists('lib/supabase-auth.ts'), false, 'lib/supabase-auth.ts debería haberse eliminado');
+  assert.equal(await fileExists('lib/supabase-server.ts'), false, 'lib/supabase-server.ts debería haberse eliminado');
+  assert.equal(await fileExists('lib/auth/exigir-admin.ts'), false, 'lib/auth/exigir-admin.ts debería haberse eliminado');
 
-test('el único /api/admin sin sesión es la publicación del buscador, y valida el secreto', async () => {
-  const proxy = await readFile(path.join(root, 'proxy.ts'), 'utf8');
-
-  // El actualizador de precios publica sin sesión, así que el proxy lo deja
-  // pasar. La excepción tiene que seguir siendo una sola ruta y un solo verbo:
-  // si mañana alguien la afloja a `startsWith('/api/admin/buscador')` o le saca
-  // el método, todo lo que cuelgue de ahí queda sin la puerta de adelante.
-  assert.match(proxy, /pathname === '\/api\/admin\/buscador'/);
-  assert.match(proxy, /request\.method === 'PUT'/);
-
-  // Y el secreto se compara en la route, que es la única autoridad: si esto
-  // desaparece, la excepción del proxy deja el endpoint abierto de par en par.
-  const route = await readFile(path.join(root, 'app/api/admin/buscador/route.ts'), 'utf8');
-  assert.match(route, /header === `Bearer \$\{secreto\}`/);
-  assert.match(route, /process\.env\.BUSCADOR_SECRET/);
+  const forbiddenImports = [
+    '@/lib/supabase-auth',
+    '@/lib/supabase-server',
+    '@/lib/auth/exigir-admin',
+  ];
+  for (const directory of ['app', 'components', 'lib']) {
+    const files = await sourceFiles(directory).catch(() => []);
+    for (const file of files) {
+      const source = await readFile(path.join(root, file), 'utf8');
+      for (const imp of forbiddenImports) {
+        assert.doesNotMatch(
+          source,
+          new RegExp(`from ['"]${imp.replace(/\//g, '\\/')}['"]`),
+          `${file} importa ${imp}`,
+        );
+      }
+    }
+  }
 });
 
 test('el JSON-LD escapa el contenido que viene de la base', async () => {
   const { jsonLdScript } = await import('../lib/json-ld.ts');
 
-  // El titulo de una FAQ nace en el formulario publico: si se publica con un
-  // cierre de script adentro, JSON.stringify a secas lo deja pasar tal cual y
-  // corta el <script> del schema antes de tiempo.
   const veneno = { name: `</script><script>alert(1)</script>` };
   const salida = jsonLdScript(veneno);
 
@@ -85,7 +89,7 @@ test('ningún bloque de datos estructurados se serializa sin escapar', async () 
   for (const file of files) {
     const source = await readFile(path.join(root, file), 'utf8');
     if (!source.includes('ld+json')) continue;
-    if (/__html: JSON.stringify/.test(source)) crudos.push(file);
+    if (/__html: JSON\.stringify/.test(source)) crudos.push(file);
   }
   assert.deepEqual(crudos, []);
 });
@@ -94,9 +98,6 @@ test('el endpoint no escribe nombres de columna a mano', async () => {
   const source = await readFile(path.join(root, 'app/api/formularios/route.ts'), 'utf8');
   const insert = source.slice(source.indexOf('function insertConsulta'), source.indexOf('function insertFaq'));
 
-  // Las columnas salen de components/formularios/casas.ts. Que el endpoint
-  // vuelva a nombrarlas a mano es exactamente lo que tumbó el sitio el 23/08:
-  // nueve de ellas no existían y PostgREST rechaza la fila entera (PGRST204).
   assert.doesNotMatch(
     insert,
     /\b(localidad_nacimiento|direccion|direccion_numero|nivel_estudios|colegio_localidad|medio_pago|tipo_documento|pais_residencia)\s*:/,

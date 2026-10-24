@@ -9,7 +9,7 @@
  *   experimental  el banco de pruebas, que vive sólo en local
  *
  * Por qué un snapshot renderizado y no `next export`: el proyecto tiene rutas
- * `/api/*` y `proxy.ts`, que `output: 'export'` no admite. Y por qué el menú va
+ * `/api/*`, que `output: 'export'` no admite. Y por qué el menú va
  * inyectado en cada página en vez de un marco que las envuelva: la CSP declara
  * `frame-ancestors 'none'`, así que el sitio no entra en un iframe.
  *

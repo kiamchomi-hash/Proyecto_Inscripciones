@@ -118,9 +118,9 @@ usa el mismo control. Alcance, bloqueos, excepciones y límites en
 ### Actualización diaria desde Linux
 
 El flujo comercial `herramientas/ventas/actualizar-todo.mjs --auto` actualiza
-Siglo 21, Teclab e Identidad y publica el buscador. Publica también los precios
-privados de Teclab, sólo tras una extracción y regeneración exitosas de esa casa,
-aunque falle otra institución. `--sin-publicar` omite ambos destinos.
+Siglo 21, Teclab e Identidad. Publica los precios privados de Teclab y de Siglo 21
+sólo tras una extracción y regeneración exitosas de cada casa, aunque falle otra
+institución. `--sin-publicar` omite esas publicaciones.
 
 `herramientas/ventas/programar-precios-linux.mjs --instalar` genera unidades
 systemd de usuario sin activar la tarea ni guardar secretos. Se activa con
@@ -148,7 +148,7 @@ Compara lo leído con la fuente privada de financiación y decide:
 | Resultado | Qué hace | Salida |
 |---|---|---|
 | Sin diferencias | no toca nada; avisa por Telegram en una línea que sigue igual | 0 |
-| Cambio conocido (tasas, CFT, bancos que cambian de grupo, aparecen o desaparecen, totales) | reescribe la fuente, regenera bot y buscador, publica el buscador y avisa con el resumen | 0 |
+| Cambio conocido (tasas, CFT, bancos que cambian de grupo, aparecen o desaparecen, totales) | reescribe la fuente, regenera bot y buscador, y avisa con el resumen | 0 |
 | Estructura nueva (forma de pago, tarjeta, cuotas fuera de 1, 3 y 6, opciones de suscripción) o lectura incompleta | no escribe ni publica; deja lo leído en un archivo de revisión privado y avisa con los motivos | 2 |
 | Error | igual que el anterior, con el error | 1 |
 
