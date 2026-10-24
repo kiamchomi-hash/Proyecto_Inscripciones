@@ -107,3 +107,16 @@ El usuario solicitó commit y push. Alcance: CSS de clases de apoyo, navegación
 - Control de secretos sobre la selección de los cuatro archivos: aprobado.
 - Spot check principal: `node tests/materias-independientes.test.mjs`, 15/15; `git diff --check` focal aprobado.
 - RDD desactivado globalmente. Se preservan todos los cambios ajenos; publicación limitada a los cuatro archivos declarados.
+
+## Corrección T9 autorizada
+- [x] Corregir el corte interno de Matemática y Computación informado en la captura del usuario. Ruta delegada por diagnóstico CSS y verificación real de tipografía.
+- Conservar diseño, textos, títulos centrados, sello y acción grafito. Reproducir con fuentes cargadas y revisar 375/1021/1273/1280 px, incluyendo tamaño raíz ampliado. No publicar hasta validación del principal.
+
+### Evidencia T9
+- Causa reproducida: `overflow-wrap: anywhere` permitía partir nombres, mientras el mínimo `2rem` aumentaba el título sin considerar el ancho de su tarjeta. A 1273px con raíz 24px, Matemática y Computación se partían con títulos de 48px, igual que la captura informada.
+- Corrección: la tarjeta establece un contenedor de ancho y limita la tipografía a `min(clamp(2rem, 3vw, 2.5rem), 14cqi)`. Se preserva el tamaño habitual y se permiten saltos sólo entre palabras; no cambia ningún texto ni otro elemento visual.
+- RED observado en la regresión nueva antes del CSS; GREEN: `node tests/materias-independientes.test.mjs`, 16/16.
+- Chromium real, Inter cargada: 375/1021/1273/1280px con raíz normal y 24px, todos los nombres completos sin desborde. Nombres de una palabra en una línea, Apoyo Secundario sólo separa palabras. Tarjetas inmóviles en hover y sin desborde horizontal.
+- Capturas completas de escritorio/celular y detalle de tarjetas inspeccionadas en `/tmp/apoyo-t9-*`. La variante escritorio con raíz 24px reproduce la configuración que fallaba y ahora conserva los nombres completos.
+- `git diff --check` focal aprobado. Sin commit ni publicación; falta presentación de capturas por el principal.
+- `npm run check` fuera del sandbox aprobado: 543/543 pruebas, typecheck correcto y lint sin errores (20 advertencias existentes).

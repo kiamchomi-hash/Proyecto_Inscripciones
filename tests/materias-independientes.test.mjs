@@ -166,7 +166,7 @@ test('las tarjetas muestran sólo el título centrado en el cuerpo y la acción 
   const tarjetas = css.slice(css.indexOf('.ca-materias-seccion {\n  padding-top:'));
   assert.match(tarjetas, /\.ca-materia\s*\{[^}]*grid-template-rows:\s*1fr auto;/);
   assert.match(tarjetas, /\.ca-materia-titulo\s*\{[^}]*grid-row:\s*1;[^}]*align-self:\s*center;/);
-  assert.match(tarjetas, /font-size:\s*clamp\(2rem, 3vw, 2\.5rem\)/);
+  assert.match(tarjetas, /font-size:\s*min\(clamp\(2rem, 3vw, 2\.5rem\), 14cqi\)/);
   assert.match(tarjetas, /\.ca-materia-descripcion\s*\{[^}]*display:\s*none;/);
   assert.match(tarjetas, /\.ca-materia-accion,\s*\.ca-materia-estado\s*\{[^}]*grid-row:\s*2;/);
 });
@@ -180,4 +180,15 @@ test('la acción centra su texto sin que la flecha lo desplace y el título tien
   assert.match(css, /\.ca-materia-accion svg\s*\{[^}]*position:\s*absolute;[^}]*right:\s*0\.8rem/);
   const titulo = [...css.matchAll(/\.ca-materia-titulo\s*\{([^}]*)\}/g)].at(-1)?.[1];
   assert.match(titulo, /text-shadow:/);
+});
+
+// Un tamaño raíz ampliado no debe forzar cortes internos en nombres completos.
+test('los títulos de materias respetan las palabras y el ancho real de la tarjeta', async () => {
+  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const tarjetas = css.slice(css.indexOf('.ca-materias-seccion {\n  padding-top:'));
+  const titulo = tarjetas.match(/\.ca-materia-titulo\s*\{([^}]*)\}/)?.[1];
+  assert.match(tarjetas, /\.ca-materia\s*\{[^}]*container-type:\s*inline-size;/);
+  assert.match(titulo, /overflow-wrap:\s*normal;/);
+  assert.match(titulo, /word-break:\s*normal;/);
+  assert.match(titulo, /font-size:\s*min\(clamp\(2rem, 3vw, 2\.5rem\), 14cqi\);/);
 });
