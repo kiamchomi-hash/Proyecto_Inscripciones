@@ -116,7 +116,7 @@ const SEO_ESPECIFICO: Record<string, { title: string; description: string }> = {
     description: 'Estudiá marketing digital, publicidad, contenidos, e-commerce y experiencia del cliente. Título oficial, 2 años y modalidad 100% online en Teclab.',
   },
   'Tecnicatura Superior en Cloud Administration': {
-    title: 'Tecnicatura en Cloud Administration Online | Teclab',
+    title: 'Técnico Superior en Cloud Administration online | Teclab',
     description: 'Aprendé a administrar servicios en la nube con AWS, Azure y Google Cloud. Título oficial de Teclab en 2 años, 100% online. Conocé el plan de estudios.',
   },
   'Tecnicatura Superior en Gestión Contable': {
@@ -133,6 +133,15 @@ const SEO_ESPECIFICO: Record<string, { title: string; description: string }> = {
   'Procurador': {
     title: 'Procurador a Distancia | Universidad Siglo 21',
     description: 'Estudiá Procurador a distancia: formación en derecho procesal, trámites y representación jurídica. Conocé el plan de estudios y cómo inscribirte.',
+  },
+  // El title es a proposito el mismo que arma `tituloSEO()` para esta ficha: la
+  // entrada esta por la description, que reemplaza a la plantilla de Teclab por
+  // el vocabulario de la carrera. Si coinciden no es un error, no borrar la
+  // entrada por "redundante"; si cambia el nombre de la carrera o los sufijos de
+  // `tituloSEO()`, este title hay que volver a copiarlo de ahi.
+  'Tecnicatura Superior en Gestión Hotelera': {
+    title: 'Tecnicatura Superior en Gestión Hotelera | Teclab · Siglo 21',
+    description: 'Estudiá hotelería y gestión hotelera a distancia: reservas, recepción, eventos y administración de alojamientos. Título oficial de Teclab en 2 años, online.',
   },
 };
 
