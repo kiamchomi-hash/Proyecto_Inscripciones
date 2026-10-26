@@ -66,10 +66,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .throwOnError()
     .then(resultado => resultado));
 
-  // Las diplomaturas de Identidad Argentina llevan noindex en su ficha: no se
-  // listan aca para no mandarle a Google URLs que no queremos indexadas.
+  // Las fichas de Identidad Argentina (las diplomaturas y el curso) se listan
+  // porque vuelven a indexarse, pero no se enlazan desde ningun lado del sitio:
+  // solo las tiene que encontrar quien las busca por nombre. No agregarlas al
+  // catalogo ni a la navegacion.
   const carrerasEntries: MetadataRoute.Sitemap = ((carreras || []) as CarreraFila[])
-    .filter(c => esCarreraVisible(c) && c.nivel !== 'Identidad Argentina')
+    .filter(c => esCarreraVisible(c))
     .map(c => {
       const imagen = imagenDeCarrera(c);
       return {
