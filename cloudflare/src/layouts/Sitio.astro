@@ -144,6 +144,17 @@ const jsonLd = jsonLdScript([
 // `FORMULARIOS_DEMO=1`); en producción el meta no aparece.
 const { sitio: sitekeyTurnstile, demo: demoFormularios } =
   configTurnstile(env as unknown as Record<string, unknown>);
+
+// Beacon de Cloudflare Web Analytics. La instalación automática está activa en
+// la zona, pero no inyecta nada en las respuestas del Worker: sin esta etiqueta
+// el sitio no mide una sola visita. El valor es el `site_token` público del
+// sitio RUM de la cuenta (no es un secreto: viaja en el HTML de cualquier sitio
+// que use Web Analytics) y no hay que confundirlo con `CF_RUM_SITE_TAG`, que es
+// el `site_tag` con el que el resumen diario consulta la API GraphQL.
+// Sólo se emite en el dominio propio, para no ensuciar la medición desde local
+// ni desde staging.
+const BEACON_TOKEN = '28aced3641ba4a7d81cb1b8722ebb2f3';
+const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEACON_TOKEN : null;
 ---
 
 <!doctype html>
@@ -192,6 +203,14 @@ const { sitio: sitekeyTurnstile, demo: demoFormularios } =
     {demoFormularios && <meta name="formularios-demo" content="1" />}
 
     <script type="application/ld+json" set:html={jsonLd} />
+    {beaconAnalytics && (
+      <script
+        is:inline
+        type="module"
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: beaconAnalytics })}
+      />
+    )}
   </head>
   <body>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#00c7b1] focus:text-black focus:rounded focus:font-bold">

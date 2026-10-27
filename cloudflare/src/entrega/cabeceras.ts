@@ -4,16 +4,20 @@
 //
 // La CSP conserva sólo los orígenes que este paquete usa: no carga Supabase,
 // Google Analytics ni Vercel Analytics, así que no se autorizan. Sí necesita
-// `challenges.cloudflare.com` para Turnstile, que Next también declara.
+// `challenges.cloudflare.com` para Turnstile, que Next también declara, y
+// `static.cloudflareinsights.com` para el beacon de Cloudflare Web Analytics:
+// sin ese origen la CSP bloquea el script y el sitio queda sin medición de
+// visitas. El beacon manda sus datos a `cloudflareinsights.com`, por eso también
+// figura en `connect-src`.
 // `frame-src` mantiene Google Maps y YouTube porque `/contacto` y
 // `/sobre-nosotros` los embeben igual que el sitio vigente.
 export const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://i.ytimg.com https://images.unsplash.com",
   "font-src 'self'",
-  "connect-src 'self' https://challenges.cloudflare.com",
+  "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com",
   "frame-src https://challenges.cloudflare.com https://www.google.com https://www.youtube-nocookie.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
