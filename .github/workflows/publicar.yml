@@ -30,8 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment:
-      name: produccion
-      url: https://www.siglo21sur.com
+      # El entorno `produccion` tiene revisores obligatorios: publicar espera
+      # una aprobación humana, y eso está bien. El ensayo no toca el sitio, así
+      # que usa un entorno propio sin reglas y no frena a nadie.
+      name: ${{ inputs.modo == 'produccion' && 'produccion' || 'ensayo' }}
     steps:
       # `workflow_dispatch` deja elegir la rama. Publicar desde otra rama sería
       # publicar código que no está en main, que es justo lo que no queremos.
