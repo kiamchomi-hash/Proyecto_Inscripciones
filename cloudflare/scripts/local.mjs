@@ -60,7 +60,8 @@ export function comandoLocal(nombre) {
     // no se envía nada ni se audita producción.
     crons: ['--test', '--test-concurrency=1', 'tests/newsletter.test.mjs', 'tests/vigilancia.test.mjs'],
     // Telemetría agregada, alertas, revalidación y registrador local de analítica.
-    telemetria: ['--test', '--test-concurrency=1', 'tests/telemetria.test.mjs', 'tests/analitica.test.mjs'],
+    telemetria: ['--test', '--test-concurrency=1', 'tests/telemetria.test.mjs', 'tests/analitica.test.mjs',
+      'tests/whatsapp-clicks.test.mjs'],
     identidad: ['--test', 'tests/pase.test.mjs', 'tests/turnstile.test.mjs'],
     // Widget de Turnstile con dobles del documento y del entorno público:
     // ni red ni DOM real.

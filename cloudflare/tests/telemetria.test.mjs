@@ -141,7 +141,7 @@ test('alertas-analytics: allowlist por evento y campo, sin datos extra', async t
   const ip = n => ({ 'cf-connecting-ip': `198.51.100.${n}` });
 
   const casos = [
-    ['whatsapp', { origen: '/carreras/x', extra: 'no-debe-salir' }, /Clic móvil a WhatsApp\nPágina: \/carreras\/x/],
+    ['whatsapp', { origen: '/carreras/x', movil: 1, extra: 'no-debe-salir' }, /Clic móvil a WhatsApp\nPágina: \/carreras\/x/],
     ['clase-whatsapp', { materia: 'Matemática', telefono: 'no' }, /Clic a WhatsApp de clases\nMateria: Matemática/],
     ['formulario-fallo', { origen: 'contacto', motivo: 'red' }, /Origen: contacto\nTipo: red/],
     ['formulario-intento', { origen: 'home', modo: 'contacto', resultado: 'captcha' }, /Resultado: captcha/],
@@ -178,7 +178,7 @@ test('alertas-analytics: allowlist por evento y campo, sin datos extra', async t
 
   // El texto de control se limpia en lugar de viajar crudo.
   const control = await manejarAlertaAnalytics(
-    pedirAlerta({ evento: 'whatsapp', datos: { origen: '/x\u0000y' } }, ip(n++)), db, { telegram },
+    pedirAlerta({ evento: 'whatsapp', datos: { origen: '/x\u0000y', movil: 1 } }, ip(n++)), db, { telegram },
   );
   assert.equal(control.status, 200);
   assert.doesNotMatch(enviados.at(-1), /\u0000/);
@@ -197,7 +197,7 @@ test('alertas-analytics: JSON inválido, configuración y fallos de transporte',
     assert.equal(respuesta.status, 400, JSON.stringify(cuerpo));
   }
 
-  const valido = { evento: 'whatsapp', datos: { origen: '/x' } };
+  const valido = { evento: 'whatsapp', datos: { origen: '/x', movil: 1 } };
   const sinCanal = await manejarAlertaAnalytics(pedirAlerta(valido, ip(101)), db, {});
   assert.equal(sinCanal.status, 502);
   assert.deepEqual(await sinCanal.json(), { ok: false });
@@ -225,7 +225,7 @@ test('alertas-analytics: cupo por evento y digest de la IP de confianza', async 
   await fijarCupo(db, clave, 5);
   let llamadas = 0;
   const respuesta = await manejarAlertaAnalytics(
-    pedirAlerta({ evento: 'whatsapp', datos: { origen: '/x' } },
+    pedirAlerta({ evento: 'whatsapp', datos: { origen: '/x', movil: 1 } },
       { 'cf-connecting-ip': ip, 'x-forwarded-for': '203.0.113.200' }),
     db, { telegram: async () => { llamadas += 1; return true; } },
   );
@@ -235,7 +235,7 @@ test('alertas-analytics: cupo por evento y digest de la IP de confianza', async 
 
   // Otra IP con otro `x-forwarded-for` no reutiliza el cupo de la anterior.
   const otra = await manejarAlertaAnalytics(
-    pedirAlerta({ evento: 'whatsapp', datos: { origen: '/y' } },
+    pedirAlerta({ evento: 'whatsapp', datos: { origen: '/y', movil: 1 } },
       { 'cf-connecting-ip': '198.51.100.121', 'x-forwarded-for': ip }),
     db, { telegram: async () => true },
   );

@@ -1,4 +1,5 @@
 import { consumirCupoAlerta } from '../datos/control.ts';
+import { registrarClickWhatsapp } from '../datos/whatsapp.ts';
 import { ipConfiable } from './ip.ts';
 
 /**
@@ -115,7 +116,23 @@ export async function manejarAlertaAnalytics(
     // dentro del catch y no inventa un envío.
     if (!db) return respuesta({ ok: false });
 
-    const permitido = await consumirCupoAlerta(db, evento, ipConfiable(request));
+    const ip = ipConfiable(request);
+    const movil = cuerpo.datos.movil === 1 || cuerpo.datos.movil === true;
+
+    // El clic a WhatsApp se cuenta siempre, desde móvil y desde escritorio, y
+    // antes de mirar el cupo de los avisos: si el aviso de Telegram se saltea
+    // —porque ya se mandaron cinco en diez minutos—, el dato igual queda.
+    if (evento === 'whatsapp') {
+      const contado = await registrarClickWhatsapp(db, cuerpo.datos.origen, movil, ip);
+      // El aviso por Telegram sigue siendo sólo del móvil. En escritorio wa.me
+      // abre WhatsApp Web y quien no tiene la sesión iniciada se queda en la
+      // pantalla de descarga: avisar por cada clic de escritorio es ruido.
+      // Tampoco se avisa de un clic que no entró al contador (cupo agotado):
+      // alertar de algo que el informe no va a mostrar descuadra las dos cosas.
+      if (!contado || !movil) return respuesta({ ok: true });
+    }
+
+    const permitido = await consumirCupoAlerta(db, evento, ip);
     if (!permitido) return respuesta({ ok: true, skipped: true });
 
     if (!entorno.telegram) return respuesta({ ok: false }, 502);

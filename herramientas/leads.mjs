@@ -5,7 +5,7 @@
 //   npm run leads                # ultimos 14 dias
 //   npm run leads -- --dias=30
 //
-// Existe porque las tres cosas viven en tres paneles distintos y ninguna sola
+// Existe porque las tres cosas viven en tres lugares distintos y ninguno solo
 // contesta la pregunta que importa, que es "por que no me estan llegando
 // mensajes". Un clic a WhatsApp no es un mensaje recibido: en escritorio wa.me
 // abre WhatsApp Web y el que no tiene la sesion iniciada se queda en la
@@ -13,22 +13,23 @@
 // los clics desde el movil. Por eso el desglose por dispositivo esta arriba y
 // no como un detalle al final.
 //
-// Las tres fuentes se leen con credenciales que ya estan en la maquina:
-//   - Vercel Analytics  el token de la CLI (npx vercel login)
-//   - Supabase          EDITOR_DATABASE_URL, el rol acotado cau_editor
+// Desde el corte a Cloudflare (27/10/2026) las fuentes son tres:
+//   - Clics a WhatsApp  D1 de produccion, tabla `whatsapp_clicks`
+//   - Consultas         D1 de produccion, tabla `consultas`
 //   - Search Console    ~/.gsc/service_account.json, la misma del informe SEO
 //
-// Si falta alguna, esa seccion sale como no disponible y el resto se muestra
-// igual: media respuesta sirve mas que un error. Sale con codigo 1 solo si no
-// se pudo leer ninguna de las tres.
+// Las visitas del sitio salen de Cloudflare Web Analytics y necesitan un token
+// con permiso de lectura de analitica en `.env.local`; sin el, esa linea no se
+// muestra y el resto funciona igual. Vercel Analytics se dio de baja con el
+// corte: el sitio ya no pasa por Vercel y sus eventos no existen mas.
+//
+// Si falta alguna fuente, esa seccion sale como no disponible y el resto se
+// muestra igual: media respuesta sirve mas que un error. Sale con codigo 1 solo
+// si no se pudo leer la base ni Search Console.
 
 import { consultar } from './d1-consulta.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
-import pg from 'pg';
-import { spawn } from 'node:child_process';
-import { conciliarPorDia } from './conciliacion.mjs';
 import { acceso as accesoGsc, consultar as consultarGsc } from './gsc.mjs';
 
 const RAIZ = path.resolve(import.meta.dirname, '..');
@@ -39,20 +40,19 @@ const opcion = (nombre, porDefecto) => {
   return encontrado ? encontrado.slice(nombre.length + 3) : porDefecto;
 };
 
-// La API de Analytics no deja pedir mas de 62 dias con granularidad diaria.
 const TOPE_DIAS = 62;
 const DIAS = Math.min(Math.max(Number(opcion('dias', '14')) || 14, 1), TOPE_DIAS);
 const SITIO = opcion('sitio', 'sc-domain:siglo21sur.com');
 
-// La medicion de clics a WhatsApp se deployo el 17/08/2026 (commit 3063530).
-// Antes de esa fecha no hay ceros: hay ausencia de medicion, que en una tabla
-// se lee igual de bien y no es lo mismo.
-const DESDE_QUE_SE_MIDE = '2026-08-17';
+// Los clics se empezaron a guardar en D1 con el corte. Antes de esa fecha no
+// hay ceros: hay ausencia de medicion, que en una tabla se lee igual de bien y
+// no es lo mismo.
+const DESDE_QUE_SE_MIDE = '2026-10-27';
 
 // Search Console consolida con dos o tres dias de atraso, asi que su ventana
-// termina antes que la de las otras dos fuentes. Se avisa en el encabezado en
-// vez de recortar todo a la fuente mas lenta: los clics de hoy son justamente
-// lo que uno viene a mirar.
+// termina antes que la de las otras fuentes. Se avisa en el encabezado en vez
+// de recortar todo a la fuente mas lenta: los clics de hoy son justamente lo
+// que uno viene a mirar.
 const RETRASO_GSC = 3;
 
 const iso = (d) => d.toISOString().slice(0, 10);
@@ -79,102 +79,18 @@ const plural = (n, singular, prural) => `${num(n)} ${n === 1 ? singular : prural
 const fuentesLeidas = [];
 const avisos = [];
 
-// ── Vercel Analytics ────────────────────────────────────────────────────────
+// ── D1: los clics a WhatsApp ────────────────────────────────────────────────
 
-// El token lo deja la CLI al hacer login. Se lee del disco en vez de invocar
-// `vercel api` en un subproceso porque la salida de la CLI no siempre es JSON
-// pelado -a veces le antepone avisos- y parsearla es fragil.
-async function tokenVercel() {
-  if (process.env.VERCEL_TOKEN) return process.env.VERCEL_TOKEN;
-
-  const datos = process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share');
-  const candidatos = [
-    process.env.APPDATA && path.join(process.env.APPDATA, 'com.vercel.cli', 'Data', 'auth.json'),
-    path.join(datos, 'com.vercel.cli', 'auth.json'),
-  ].filter(Boolean);
-
-  for (const archivo of candidatos) {
-    if (!existsSync(archivo)) continue;
-    let sesion = JSON.parse(readFileSync(archivo, 'utf8'));
-    if (sesion.token && sesion.refreshToken && sesion.expiresAt * 1000 <= Date.now() + 60000) {
-      // Las sesiones OAuth vencen aunque el login siga vigente. La CLI renueva
-      // y guarda el refresh token con su propio protocolo; no lo duplicamos acá.
-      await new Promise((resolve, reject) => {
-        const windows = process.platform === 'win32';
-        const proceso = spawn(windows ? 'cmd.exe' : 'npx', windows
-          ? ['/d', '/s', '/c', 'npx --yes vercel whoami'] : ['--yes', 'vercel', 'whoami'], {
-          stdio: 'ignore', windowsHide: true, timeout: 90000,
-          env: { ...process.env, CI: '1', NO_UPDATE_NOTIFIER: '1', VERCEL_TELEMETRY_DISABLED: '1' },
-        });
-        proceso.on('error', () => reject(new Error('No se pudo ejecutar la CLI para renovar la sesión de Vercel.')));
-        proceso.on('exit', codigo => codigo === 0 ? resolve() : reject(new Error('No se pudo renovar la sesión de Vercel. Ejecutar npx vercel login.')));
-      });
-      sesion = JSON.parse(readFileSync(archivo, 'utf8'));
-    }
-    if (sesion.token) return sesion.token;
-  }
-  return null;
-}
-
-function idsDelProyecto() {
-  const archivo = path.join(RAIZ, '.vercel', 'project.json');
-  if (!existsSync(archivo)) return null;
-  const { projectId, orgId } = JSON.parse(readFileSync(archivo, 'utf8'));
-  return projectId ? { projectId, teamId: orgId } : null;
-}
-
-async function analytics(token, ids, recurso, params) {
-  const url = new URL(`https://api.vercel.com/v1/query/web-analytics/${recurso}`);
-  url.searchParams.set('projectId', ids.projectId);
-  if (ids.teamId) url.searchParams.set('teamId', ids.teamId);
-  for (const [clave, valor] of Object.entries(params)) url.searchParams.set(clave, valor);
-
-  for (let intento = 0; intento < 3; intento++) {
-    const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(30000) });
-    if (r.ok) return (await r.json()).data;
-    const detalle = await r.text();
-    if (intento < 2 && (r.status >= 500 || detalle.includes('"code":"timeout"'))) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      continue;
-    }
-    throw new Error(`web-analytics ${r.status}: ${detalle.slice(0, 200)}`);
-  }
-}
-
-async function leerVercel() {
-  const token = await tokenVercel();
-  if (!token) throw new Error('no hay token de la CLI de Vercel. Correr: npx vercel login');
-
-  const ids = idsDelProyecto();
-  if (!ids) throw new Error('falta .vercel/project.json. Correr: npx vercel link');
-
-  const ventana = { since: DESDE, until: HASTA };
-  const soloWhatsapp = { ...ventana, filter: `eventName eq 'whatsapp'` };
-  const soloAbandono = { ...ventana, filter: `eventName eq 'formulario-abandonado'` };
-
-  // El total de personas se pide aparte y no se suma del desglose por
-  // dispositivo: quien toca desde el telefono y despues desde la computadora
-  // aparece en las dos filas, y sumarlas lo cuenta dos veces.
-  const [porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia, abandonosPorCampo, abandonosPorMotivo] = await Promise.all([
-    analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'day', limit: 100 }),
-    analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'deviceType', limit: 10 }),
-    analytics(token, ids, 'events/aggregate', { ...soloWhatsapp, by: 'eventData/origen', limit: 8 }),
-    analytics(token, ids, 'events/aggregate', { ...ventana, by: 'eventName', limit: 20 }),
-    analytics(token, ids, 'visits/count', ventana),
-    analytics(token, ids, 'events/count', soloWhatsapp),
-    analytics(token, ids, 'events/aggregate', { ...ventana, filter: "eventName eq 'consulta'", by: 'day', limit: 100 }).catch(() => null),
-    analytics(token, ids, 'events/aggregate', { ...soloAbandono, by: 'eventData/ultimo_campo', limit: 50 }),
-    analytics(token, ids, 'events/aggregate', { ...soloAbandono, by: 'eventData/motivo', limit: 20 }),
-  ]);
-
-  return { porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia, abandonosPorCampo, abandonosPorMotivo };
+async function leerClicksWhatsapp() {
+  return consultar(`SELECT fecha, origen, movil, clicks
+    FROM whatsapp_clicks
+    WHERE fecha BETWEEN '${DESDE}' AND '${HASTA}'
+    ORDER BY fecha, clicks DESC`);
 }
 
 // ── D1: las consultas que entraron de verdad ────────────────────────────────
 
 async function leerConsultas() {
-  // Antes salía de Supabase por Postgres directo; ese proyecto se dio de baja.
-  // Ahora son las mismas filas en la base de producción de Cloudflare.
   return consultar(`SELECT strftime('%d/%m %H:%M', created_at, '-3 hours') AS cuando,
       date(created_at, '-3 hours') AS dia_utc,
       coalesce(casa, '-') AS casa,
@@ -183,6 +99,83 @@ async function leerConsultas() {
     FROM consultas
     WHERE date(created_at, '-3 hours') BETWEEN '${DESDE}' AND '${HASTA}'
     ORDER BY created_at DESC`);
+}
+
+/**
+ * Una consulta guardada tiene que dejar un aviso en el outbox. Es el reemplazo
+ * de la conciliacion contra Analytics: si hay mas filas que avisos, hubo
+ * envios que se guardaron sin notificar (o el barrido los salteo).
+ */
+async function leerAvisos() {
+  const [fila] = consultar(`SELECT count(*) AS n FROM outbox
+    WHERE tipo = 'aviso-lead'
+      AND date(created_at, '-3 hours') BETWEEN '${DESDE}' AND '${HASTA}'`);
+  return fila?.n ?? 0;
+}
+
+// ── Cloudflare Web Analytics: las visitas del sitio ─────────────────────────
+
+const CONFIG_PRODUCCION = path.join(RAIZ, 'cloudflare', 'produccion', 'wrangler.json');
+const URL_GRAPHQL = 'https://api.cloudflare.com/client/v4/graphql';
+
+function configAnalytics() {
+  if (!existsSync(CONFIG_PRODUCCION)) return null;
+  const config = JSON.parse(readFileSync(CONFIG_PRODUCCION, 'utf8'));
+  const cuenta = config.vars?.CF_ACCOUNT_TAG;
+  const sitio = config.vars?.CF_RUM_SITE_TAG;
+  return cuenta && sitio ? { cuenta, sitio } : null;
+}
+
+/** El token nunca se imprime: solo se informa si esta o no. */
+function tokenAnalytics() {
+  for (const clave of ['CF_ANALYTICS_TOKEN', 'CLOUDFLARE_API_TOKEN']) {
+    if (process.env[clave]) return process.env[clave];
+  }
+  const archivo = path.join(RAIZ, '.env.local');
+  if (!existsSync(archivo)) return null;
+  const linea = readFileSync(archivo, 'utf8').split(/\r?\n/)
+    .find(fila => /^\s*(?:export\s+)?(?:CF_ANALYTICS_TOKEN|CLOUDFLARE_API_TOKEN)\s*=/.test(fila));
+  if (!linea) return null;
+  const valor = linea.slice(linea.indexOf('=') + 1).trim().replace(/^["']|["']$/g, '');
+  return valor || null;
+}
+
+const CONSULTA_VISITAS = `query Visitas($cuenta: String!, $sitio: String!, $desde: Date!, $hasta: Date!) {
+  viewer { accounts(filter: { accountTag: $cuenta }) {
+    rumPageloadEventsAdaptiveGroups(limit: 200, filter: { siteTag: $sitio, date_geq: $desde, date_leq: $hasta },
+      orderBy: [date_ASC]) {
+      count
+      sum { visits }
+      dimensions { date }
+    }
+  } }
+}`;
+
+async function leerVisitas() {
+  const config = configAnalytics();
+  if (!config) throw new Error('falta cloudflare/produccion/wrangler.json con CF_ACCOUNT_TAG y CF_RUM_SITE_TAG');
+  const token = tokenAnalytics();
+  if (!token) throw new Error('sin CF_ANALYTICS_TOKEN en .env.local (lectura de analitica de Cloudflare)');
+
+  const respuesta = await fetch(URL_GRAPHQL, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: CONSULTA_VISITAS,
+      variables: { cuenta: config.cuenta, sitio: config.sitio, desde: DESDE, hasta: HASTA },
+    }),
+    signal: AbortSignal.timeout(20000),
+  });
+  if (!respuesta.ok) throw new Error(`graphql ${respuesta.status}`);
+
+  const cuerpo = await respuesta.json();
+  const grupos = cuerpo?.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups;
+  if (!Array.isArray(grupos)) {
+    const detalle = cuerpo?.errors?.[0]?.message ?? 'respuesta sin datos';
+    throw new Error(detalle.slice(0, 120));
+  }
+  const porDia = grupos.map(g => ({ dia: g.dimensions.date, visitas: g.sum?.visits ?? 0 }));
+  return { porDia, total: porDia.reduce((a, d) => a + d.visitas, 0) };
 }
 
 // ── Search Console ──────────────────────────────────────────────────────────
@@ -210,72 +203,68 @@ const noDisponible = (error) => console.log(`  no disponible: ${error.message}`)
 
 console.log(`LEADS - ultimos ${DIAS} dias (${dm(DESDE)} al ${dm(HASTA)})`);
 
-// Las tres en paralelo: son tres servicios distintos y ninguna depende de otra.
-// El error se guarda como valor en vez de cortar, para que la caida de una no
-// se lleve puestas las otras dos.
-const [vercel, consultas, google] = await Promise.all([
-  leerVercel().then(d => (fuentesLeidas.push('vercel'), d), e => e),
-  leerConsultas().then(d => (fuentesLeidas.push('d1'), d), e => e),
+// Cada fuente se lee aparte: son tres servicios distintos y ninguno depende de
+// otro. El error se guarda como valor en vez de cortar, para que la caida de
+// uno no se lleve puestos los otros.
+const [clicks, avisosLeidos, consultas, visitas, google] = await Promise.all([
+  leerClicksWhatsapp().then(d => (fuentesLeidas.push('d1'), d), e => e),
+  leerAvisos().catch(e => e),
+  leerConsultas().catch(e => e),
+  leerVisitas().then(d => (fuentesLeidas.push('cloudflare'), d), e => e),
   leerGoogle().then(d => (fuentesLeidas.push('gsc'), d), e => e),
 ]);
 
 // ── 1. Clics a WhatsApp ─────────────────────────────────────────────────────
 
-titulo('Clics a WhatsApp', 'Vercel Analytics dado de baja: ver Cloudflare Web Analytics');
+titulo('Clics a WhatsApp', 'D1, en vivo');
 
-let personasWhatsapp = null;
-let personasMovil = null;
+let clicksTotal = null;
+let clicksMovil = null;
 
-if (vercel instanceof Error) {
-  noDisponible(vercel);
+if (clicks instanceof Error) {
+  noDisponible(clicks);
+} else if (clicks.length === 0) {
+  console.log('  Ninguno en la ventana.');
+  if (DESDE < DESDE_QUE_SE_MIDE) {
+    console.log(`  Ojo: los clics se guardan desde el ${dm(DESDE_QUE_SE_MIDE)}, el dia del corte.`);
+    console.log('  Los dias anteriores figuran vacios porque no habia medicion.');
+  }
 } else {
   if (DESDE < DESDE_QUE_SE_MIDE) {
-    console.log(`  Ojo: los clics se miden desde el ${dm(DESDE_QUE_SE_MIDE)}. Los dias anteriores`);
-    console.log('  figuran en cero porque no habia medicion, no porque nadie haya tocado.\n');
+    console.log(`  Ojo: los clics se guardan desde el ${dm(DESDE_QUE_SE_MIDE)}, el dia del corte.`);
+    console.log('  Los dias anteriores figuran en cero porque no habia medicion, no porque nadie haya tocado.\n');
   }
 
-  const dias = vercel.porDia.map(d => ({
-    dia: iso(new Date(d.timestamp)),
-    clics: d.count,
-    personas: d.visitors,
-  }));
-  const pico = Math.max(1, ...dias.map(d => d.clics));
+  const porDia = new Map();
+  for (const fila of clicks) {
+    const dia = porDia.get(fila.fecha) ?? { movil: 0, escritorio: 0 };
+    if (fila.movil === 1) dia.movil += fila.clicks;
+    else dia.escritorio += fila.clicks;
+    porDia.set(fila.fecha, dia);
+  }
+  const dias = [...porDia.entries()]
+    .map(([dia, d]) => ({ dia, clics: d.movil + d.escritorio, movil: d.movil, escritorio: d.escritorio }))
+    .sort((a, b) => a.dia.localeCompare(b.dia));
 
-  console.log('   dia    clics  personas');
+  const pico = Math.max(1, ...dias.map(d => d.clics));
+  console.log('   dia    clics  movil  escritorio');
   for (const d of dias) {
     const barra = '#'.repeat(Math.round((d.clics / pico) * 20));
-    console.log(
-      `  ${dm(d.dia)}  ${String(d.clics).padStart(5)}  ${String(d.personas).padStart(8)}  ${barra}`.trimEnd(),
-    );
+    console.log(`  ${dm(d.dia)}  ${String(d.clics).padStart(5)}  ${String(d.movil).padStart(5)}  ${String(d.escritorio).padStart(10)}  ${barra}`.trimEnd());
   }
 
-  personasWhatsapp = vercel.total.visitors;
-  console.log(`  Total  ${plural(vercel.total.count, 'clic', 'clics')} de ${plural(personasWhatsapp, 'persona', 'personas')}`);
+  clicksTotal = dias.reduce((a, d) => a + d.clics, 0);
+  clicksMovil = dias.reduce((a, d) => a + d.movil, 0);
+  console.log(`  Total  ${plural(clicksTotal, 'clic', 'clics')}, ${plural(clicksMovil, 'desde el movil', 'desde el movil')}`);
 
-  console.log('\n  Por dispositivo');
-  for (const d of vercel.porDispositivo) {
-    const etiqueta = { mobile: 'movil', desktop: 'escritorio', tablet: 'tablet' }[d.deviceType] ?? d.deviceType;
-    console.log(`    ${etiqueta.padEnd(12)}${String(d.count).padStart(3)} clics de ${plural(d.visitors, 'persona', 'personas')}`);
-    if (d.deviceType === 'mobile') personasMovil = d.visitors;
+  const porOrigen = new Map();
+  for (const fila of clicks) porOrigen.set(fila.origen, (porOrigen.get(fila.origen) ?? 0) + fila.clicks);
+  console.log('\n  Desde que paginas');
+  for (const [origen, n] of [...porOrigen].sort((a, b) => b[1] - a[1]).slice(0, 8)) {
+    console.log(`    ${String(n).padStart(3)}  ${origen}`);
   }
-  console.log('    El escritorio abre WhatsApp Web y el que no tiene la sesion iniciada se');
-  console.log('    queda ahi: el numero que predice mensajes recibidos es el del movil.');
-
-  if (vercel.porOrigen.length) {
-    console.log('\n  Desde que paginas');
-    // La API agrupa en "Others" todo lo que no entra en el limite y lo devuelve
-    // mezclado con el resto. Ordenar de mayor a menor y mandarlo al final, con
-    // nombre en castellano, para que no parezca una pagina mas.
-    const ordenadas = [...vercel.porOrigen].sort((a, b) => {
-      const otras = (o) => (o['eventData/origen'] === 'Others' ? 1 : 0);
-      return otras(a) - otras(b) || b.count - a.count;
-    });
-    for (const o of ordenadas) {
-      const origen = o['eventData/origen'];
-      const nombre = origen === 'Others' ? 'el resto de las paginas, sueltas' : origen;
-      console.log(`    ${String(o.count).padStart(3)}  ${nombre}`);
-    }
-  }
+  console.log('  El escritorio abre WhatsApp Web y el que no tiene la sesion iniciada se');
+  console.log('  queda ahi: el numero que predice mensajes recibidos es el del movil.');
 }
 
 // ── 2. Consultas del formulario ─────────────────────────────────────────────
@@ -291,46 +280,15 @@ if (consultas instanceof Error) {
     console.log(`  ${c.cuando}  ${c.casa.padEnd(10)}${c.tipo.padEnd(16)}${c.carrera}`);
   }
   console.log(`  Total  ${plural(consultas.length, 'consulta', 'consultas')}`);
-}
 
-// El evento `consulta` se dispara recien cuando el POST respondio ok, asi que
-// deberia haber uno por fila. Sobrar eventos es la senal de que hubo envios que
-// el visitante dio por buenos y no llegaron a la tabla.
-//
-// No es prueba de nada por si solo, y por eso el aviso enumera las otras dos
-// explicaciones: las filas de prueba pueden haberse borrado y Analytics puede
-// consolidar con demora. Las dos consultas usan ahora los mismos días UTC.
-if (!(vercel instanceof Error) && !(consultas instanceof Error)) {
-  const medidos = vercel.porEvento.find(e => e.eventName === 'consulta')?.count ?? 0;
-  const inicios = vercel.porEvento.find(e => e.eventName === 'formulario-iniciado')?.count;
-  if (inicios === undefined) console.log('  Inicio de formularios: sin medición en esta ventana; no se puede estimar abandono.');
-  else console.log(`  Formularios iniciados: ${inicios}; envíos medidos: ${medidos}. La diferencia es orientativa: no vincula sesiones ni mide pasos individuales.`);
-  if (medidos !== consultas.length) {
-    console.log('  Conciliación por día UTC (misma ventana en ambas fuentes):');
-    if (vercel.consultasPorDia === null) console.log('    El desglose diario de Analytics no está disponible; no se puede atribuir la diferencia.');
-    for (const { dia, eventos, filas } of conciliarPorDia(vercel.consultasPorDia, consultas)) {
-      console.log(`    ${dia}: ${eventos ?? 'no disponible'} evento(s), ${filas} fila(s)`);
-    }
+  // Cada consulta guardada deja un aviso en el outbox. Si sobran filas, hubo
+  // envios que entraron sin notificar: se guardaron pero nadie se entero.
+  if (!(avisosLeidos instanceof Error) && avisosLeidos !== consultas.length) {
+    console.log(`  Avisos generados: ${avisosLeidos}. La diferencia es un envio que no notifico.`);
     avisos.push(
-      `Vercel midio ${medidos} envio(s) del formulario y en la tabla hay ${consultas.length}. `
-      + 'Las ventanas UTC coinciden. Puede ser una fila de prueba borrada o una demora de Analytics. '
-      + 'Si no es ninguna de las dos, hubo envios que no se guardaron.',
+      `Hay ${consultas.length} consulta(s) guardada(s) y ${avisosLeidos} aviso(s) en el outbox. `
+      + 'Una fila sin aviso se guardo pero no se notifico; revisar el barrido del outbox.',
     );
-  }
-
-  const abandonos = vercel.porEvento.find(e => e.eventName === 'formulario-abandonado')?.count ?? 0;
-  if (abandonos) {
-    console.log(`  Abandonos medidos: ${plural(abandonos, 'formulario', 'formularios')}`);
-    console.log('    Ultimo campo:');
-    for (const fila of vercel.abandonosPorCampo.sort((a, b) => b.count - a.count)) {
-      console.log(`      ${String(fila['eventData/ultimo_campo']).padEnd(24)}${fila.count}`);
-    }
-    console.log('    Motivo observable:');
-    for (const fila of vercel.abandonosPorMotivo.sort((a, b) => b.count - a.count)) {
-      console.log(`      ${String(fila['eventData/motivo']).padEnd(24)}${fila.count}`);
-    }
-  } else {
-    console.log('  Abandono por campo: todavía no hay medición en esta ventana.');
   }
 }
 
@@ -367,31 +325,37 @@ if (google instanceof Error) {
 
 // ── 4. El embudo ────────────────────────────────────────────────────────────
 
-if (!(vercel instanceof Error)) {
-  titulo('Embudo', `${dm(DESDE)} al ${dm(HASTA)}`);
-  const visitantes = vercel.visitas?.visitors ?? 0;
-  const fila = (n, texto) => console.log(`  ${String(num(n)).padStart(6)}  ${texto}`);
+titulo('Embudo', `${dm(DESDE)} al ${dm(HASTA)}`);
 
-  fila(visitantes, 'personas entraron al sitio');
-  if (personasWhatsapp !== null) {
-    fila(personasWhatsapp, `tocaron el boton de WhatsApp  (${pct(personasWhatsapp, visitantes)})`);
-  }
-  if (personasMovil !== null) fila(personasMovil, 'de esas, desde el movil');
-  if (!(consultas instanceof Error)) {
-    fila(consultas.length, `dejaron el formulario  (${pct(consultas.length, visitantes)})`);
-  }
+const visitantes = visitas instanceof Error ? null : visitas.total;
+const fila = (n, texto) => console.log(`  ${String(num(n)).padStart(6)}  ${texto}`);
+
+if (visitantes !== null) fila(visitantes, 'personas entraron al sitio');
+else console.log('        -  visitas del sitio: no disponible (falta el token de Cloudflare)');
+if (clicksTotal !== null) {
+  fila(clicksTotal, `tocaron el boton de WhatsApp${visitantes ? `  (${pct(clicksTotal, visitantes)})` : ''}`);
+}
+if (clicksMovil !== null) fila(clicksMovil, 'de esos clics, desde el movil');
+if (!(consultas instanceof Error)) {
+  fila(consultas.length, `dejaron el formulario${visitantes ? `  (${pct(consultas.length, visitantes)})` : ''}`);
 }
 
 // ── Cierre ──────────────────────────────────────────────────────────────────
 
 for (const aviso of avisos) console.log(`\nAviso: ${aviso}`);
 
+if (!(clicks instanceof Error) && visitas instanceof Error) {
+  console.log(`\nNota: las visitas salen de Cloudflare Web Analytics; ${visitas.message}.`);
+  console.log('Se cargan una vez: CF_ANALYTICS_TOKEN=... en .env.local (permiso de lectura de analitica).');
+}
+
 if (fuentesLeidas.length === 0) {
-  console.log('\nNo se pudo leer ninguna de las tres fuentes.');
+  console.log('\nNo se pudo leer ninguna fuente.');
   process.exit(1);
 }
-// En una auditoría la falta de una fuente o una discrepancia no puede dar verde.
+// En una auditoria la falta de una fuente o una discrepancia no puede dar verde.
 if (args.includes('--estricto')) {
-  if (fuentesLeidas.length < 3) process.exitCode = 2;
+  const base = fuentesLeidas.includes('d1') && fuentesLeidas.includes('gsc');
+  if (!base) process.exitCode = 2;
   else if (avisos.length > 0) process.exitCode = 1;
 }

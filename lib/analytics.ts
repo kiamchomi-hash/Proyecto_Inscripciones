@@ -180,10 +180,17 @@ export function tipoFalloTecnicoFormulario(estadoRespuesta: number | null): 'red
  * de clases de apoyo va al numero del profesor y ya tiene su propio evento, y
  * el de compartir una novedad no lleva numero - no es un lead, y sumarlo
  * ensuciaria el total.
+ *
+ * El evento viaja al servidor en los dos dispositivos: ahi se cuenta en
+ * `whatsapp_clicks` y solo se manda el aviso de Telegram si es movil.
  */
 export function trackWhatsapp(origen: string) {
   track('whatsapp', { origen });
-  if (esDispositivoMovil()) avisarTelegram('whatsapp', { origen });
+  // Se manda siempre y el servidor decide: suma el clic al agregado de D1 en
+  // cualquier dispositivo y sólo alerta por Telegram cuando es móvil. Si el
+  // aviso se filtrara acá —como antes—, los clics de escritorio no existirían
+  // para el informe de leads.
+  avisarTelegram('whatsapp', { origen, movil: esDispositivoMovil() ? 1 : 0 });
 }
 
 /** Embudo vocacional sin respuestas ni avisos de Telegram. */
