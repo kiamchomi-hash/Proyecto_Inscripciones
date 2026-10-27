@@ -34,8 +34,18 @@ const CANONICO = 'www.siglo21sur.com';
  * `public, max-age=0, must-revalidate`. Se replica sólo esa forma y sólo para
  * HTML público de lectura; las rutas que fijan su propio `Cache-Control`
  * (`/inscripcion/[codigo]`, sitemap, APIs) no se tocan.
+ *
+ * Además del navegador se cachea en el borde, con una ventana corta y
+ * `stale-while-revalidate`: sin eso cada visita renderiza contra D1 y el TTFB
+ * queda entre 0,4 y 0,75 s (medido el 27/10/2026 en las 123 URLs del sitemap).
+ * `Cloudflare-CDN-Cache-Control` sólo lo entiende Cloudflare y manda sobre el
+ * `Cache-Control` del navegador, así que el HTML no se le sirve viejo a quien
+ * recarga: el borde revalida cada 5 minutos y, si venció, entrega la copia
+ * anterior mientras arma la nueva.
  */
 const HTML_PUBLICO = /^(?!\/(?:api|inscripcion)(?:\/|$)).*/;
+const EDGE_SEGUNDOS = 300;
+const EDGE_SWR_SEGUNDOS = 3600;
 
 function cacheDeProduccion(respuesta: Response, request: Request, url: URL): Response {
   const metodo = request.method === 'GET' || request.method === 'HEAD';
@@ -45,7 +55,34 @@ function cacheDeProduccion(respuesta: Response, request: Request, url: URL): Res
   if (respuesta.headers.get('Cache-Control') !== 'no-store') return respuesta;
   const salida = new Response(respuesta.body, respuesta);
   salida.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+  salida.headers.set(
+    'Cloudflare-CDN-Cache-Control',
+    `public, max-age=${EDGE_SEGUNDOS}, stale-while-revalidate=${EDGE_SWR_SEGUNDOS}`,
+  );
   return salida;
+}
+
+/**
+ * Copia de borde del HTML público. Las cabeceras solas no alcanzan: Cloudflare
+ * no guarda en su caché las respuestas que genera un Worker —lo comprobé con la
+ * regla de caché activa y `Cloudflare-CDN-Cache-Control` puesto, y el
+ * `cf-cache-status` no aparecía—, así que la copia se guarda con la Cache API,
+ * que es por centro de datos.
+ *
+ * Consecuencias, dichas sin adornos: cada PoP arma su propia copia, y publicar
+ * contenido puede tardar hasta `EDGE_SEGUNDOS` en verse desde otro PoP. Es el
+ * mismo orden de atraso que tenía el ISR de Next (1 h en la home, 24 h en las
+ * fichas) y por eso el TTL es corto.
+ */
+const cacheDeBorde = (globalThis as unknown as { caches?: { default: Cache } }).caches?.default;
+
+/** Sólo GET, sólo el dominio publicado, y nunca las rutas privadas o de API. */
+function claveDeCache(request: Request, url: URL): Request | null {
+  if (!cacheDeBorde) return null;
+  if (request.method !== 'GET') return null;
+  if (url.hostname !== CANONICO) return null;
+  if (!HTML_PUBLICO.test(url.pathname)) return null;
+  return new Request(url.toString(), { method: 'GET' });
 }
 
 export default {
@@ -66,7 +103,34 @@ export default {
         },
       });
     }
+    const clave = claveDeCache(request, url);
+    if (clave) {
+      const copia = await cacheDeBorde!.match(clave);
+      if (copia) {
+        // La copia guardada lleva `max-age` para que el borde la conserve
+        // fresca; al navegador se le devuelve la misma forma que antes
+        // (`max-age=0`), así una recarga nunca lee HTML de su propio caché.
+        const servida = new Response(copia.body, copia);
+        servida.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+        servida.headers.set(
+          'Cloudflare-CDN-Cache-Control',
+          `public, max-age=${EDGE_SEGUNDOS}, stale-while-revalidate=${EDGE_SWR_SEGUNDOS}`,
+        );
+        return servida;
+      }
+    }
+
     const respuesta = cacheDeProduccion(await aplicacion.fetch(request, env, ctx), request, url);
+
+    if (clave && respuesta.status === 200
+      && (respuesta.headers.get('Content-Type') ?? '').includes('text/html')) {
+      // La copia que se guarda lleva su propia frescura: el `max-age=0` del
+      // navegador haría que el borde revalidara en cada pedido y no habría caché.
+      const paraCache = new Response(respuesta.clone().body, respuesta);
+      paraCache.headers.set('Cache-Control', `public, max-age=${EDGE_SEGUNDOS}`);
+      ctx.waitUntil(cacheDeBorde!.put(clave, paraCache));
+    }
+
     if (!esDireccionTemporal(url)) return respuesta;
 
     if (url.pathname === '/robots.txt') {

@@ -48,7 +48,9 @@ export function comandoLocal(nombre) {
     // Sitemap, robots, redirects y cabeceras sobre el build compilado. Las
     // funciones puras se prueban antes; la integración usa workerd y D1 vacío
     // y sembrado. Requiere build previo, igual que runtime y paridad.
-    entrega: ['--test', 'tests/entrega.test.mjs'],
+    // `cache-produccion` cuida la caché de borde del entry de producción, que
+    // no se puede importar desde node.
+    entrega: ['--test', 'tests/entrega.test.mjs', 'tests/cache-produccion.test.mjs'],
     datos: ['--test', '--test-concurrency=1', 'tests/datos.test.mjs', 'tests/concurrencia.test.mjs'],
     control: ['--test', '--test-concurrency=1', 'tests/rate-limit.test.mjs', 'tests/contadores.test.mjs', 'tests/migraciones.test.mjs'],
     inscripcion: ['--test', '--test-concurrency=1', 'tests/enlaces.test.mjs', 'tests/robot.test.mjs', 'tests/upgrade-enlaces-robot.test.mjs'],

@@ -83,9 +83,26 @@ export function aplicarCabeceras(respuesta: Response, { ruta, estado }: Contexto
  * sin pasar por el Worker, así que el middleware no puede tocarlos: esta regla
  * lleva las mismas cabeceras globales que Next aplica también a sus archivos.
  * No incluye `X-Robots-Tag` ni `no-store`: un asset no es una página.
+ *
+ * Las imágenes y las fuentes salen con TTL propio. Workers Assets responde
+ * `public, max-age=0, must-revalidate` por defecto, así que cada visita volvía a
+ * pedir cada foto: en una ficha de carrera son decenas de pedidos y el LCP es
+ * una de esas imágenes. Un día de navegador y una semana de `stale-while-revalidate`
+ * alcanza para no repetirlas sin dejar una foto vieja pegada un año.
  */
 export function cabecerasAssets(): string {
   const lineas = ['/*'];
   for (const [nombre, valor] of Object.entries(CABECERAS_SEGURIDAD)) lineas.push(`  ${nombre}: ${valor}`);
-  return `${lineas.join('\n')}\n\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n`;
+  const cacheImagenes = '  Cache-Control: public, max-age=86400, stale-while-revalidate=604800';
+  return `${lineas.join('\n')}
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/imagenes/*
+${cacheImagenes}
+
+/fuentes/*
+${cacheImagenes}
+`;
 }
