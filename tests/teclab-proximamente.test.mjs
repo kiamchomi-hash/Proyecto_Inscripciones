@@ -256,9 +256,16 @@ test('las carreras anunciadas de Teclab tienen portada propia y las demás conse
   );
 });
 
-test('el slug provisorio de Energías Renovables redirige al del nombre oficial', () => {
+test('los dos slugs de Energías Renovables van a la home', () => {
+  // La carrera se dio de baja de la oferta el 27/10/2026: el slug provisorio y el
+  // renombre van a la home en un solo salto, como el resto de las bajas.
   const config = readFileSync(new URL('../next.config.ts', import.meta.url), 'utf8');
-  assert.match(config, /source: '\/carreras\/tecnicatura-superior-en-energias-renovables',\s*destination: '\/carreras\/tecnicatura-superior-en-gestion-de-energias-renovables',\s*permanent: true/);
+  for (const source of [
+    '/carreras/tecnicatura-superior-en-energias-renovables',
+    '/carreras/tecnicatura-superior-en-gestion-de-energias-renovables',
+  ]) {
+    assert.match(config, new RegExp(`source: '${source}',\\s*destination: '\\/',\\s*statusCode: 301`));
+  }
   assert.equal(
     tipos.carreraToSlug({ prefix: 'Tecnicatura Superior en', nombre: 'Tecnicatura Superior en Gestión de Energías Renovables', nombre_corto: 'Gestión de Energías Renovables', nivel: 'Teclab - Tecnología' }),
     'tecnicatura-superior-en-gestion-de-energias-renovables',

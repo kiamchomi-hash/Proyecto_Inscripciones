@@ -22,7 +22,6 @@
     "capturas": "node herramientas/capturas.mjs",
     "seo": "node --env-file-if-exists=.env.local herramientas/seo-semanal.mjs",
     "leads": "node --env-file-if-exists=.env.local herramientas/leads.mjs",
-    "test:integracion": "node --test --test-concurrency=1 tests/integracion/*.test.mjs",
     "indexnow": "node herramientas/indexnow.mjs",
     "db:d1": "node herramientas/d1.mjs",
     "db:respaldo": "node herramientas/respaldo-d1.mjs"

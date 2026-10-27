@@ -47,7 +47,7 @@ GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` e
 
 `npm run calidad` es la auditoría ampliada: corre todos los controles (código, dependencias, contenido, Search Console, producción, SEO de cada URL del sitemap, integraciones y navegador) aunque uno falle, y tiene comandos por área (`calidad:web`, `calidad:seo`, `calidad:integraciones`). Un código 2 es que faltó una fuente, nunca un aprobado. Detalle en [`docs/controles-automaticos.md`](docs/controles-automaticos.md); el agente `auditor-web` interpreta la corrida.
 
-Las pruebas de integración de la app anterior (`npm run test:integracion`) siguen apuntando al arnés local de Supabase en Docker, que ya no tiene comandos para levantarse desde la raíz; no son parte de la verificación del sitio publicado.
+Las pruebas de integración de la app anterior se retiraron junto con el arnés local de Supabase: el sitio publicado no usa Supabase y `npm run check` no necesita nada de eso.
 
 **La vigilancia de producción ya existe, son dos y no se duplican**: el cron del Worker cada 6 horas (`0 */6`, `cloudflare/src/api/vigilancia.ts`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa, disparado por cron. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
 
