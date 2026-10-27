@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { crearD1 } from './helpers/d1.mjs';
 import { manejarAlertaAnalytics } from '../src/api/alertas-analytics.ts';
 import { normalizarOrigen, registrarClickWhatsapp } from '../src/datos/whatsapp.ts';
@@ -108,4 +109,12 @@ test('registrarClickWhatsapp rechaza un origen que no es ruta', async t => {
   const { db } = await crearD1(t);
   assert.equal(await registrarClickWhatsapp(db, 'no-es-ruta', true, '203.0.113.8'), false);
   assert.deepEqual(await filas(db), []);
+});
+
+test('el layout monta el componente que dispara el clic', async () => {
+  // En Next vivía en `app/layout.tsx`. Al portar a Astro se perdió y el sitio
+  // quedó sin medir un solo clic y sin mandar el aviso de Telegram del móvil.
+  const layout = readFileSync(new URL('../src/layouts/Sitio.astro', import.meta.url), 'utf8');
+  assert.match(layout, /import WhatsappReparto from '@\/components\/whatsapp-reparto'/);
+  assert.match(layout, /<WhatsappReparto client:load \/>/);
 });

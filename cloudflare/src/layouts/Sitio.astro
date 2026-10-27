@@ -5,6 +5,7 @@ import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
 import NavbarIsla from '../entrega/NavbarIsla';
 import { configTurnstile } from '../entrega/entorno-publico.ts';
 import AnalyticsInteractions from '@/components/analytics-interactions';
+import WhatsappReparto from '@/components/whatsapp-reparto';
 import '@/app/globals.css';
 import '@/app/navbar.css';
 import '../estilos/fuentes.css';
@@ -218,6 +219,10 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
     </a>
     <NavbarIsla ruta={ruta} client:load />
     <AnalyticsInteractions client:load />
+    {/* Mide el clic a WhatsApp y reparte el número si algún día hay más de un
+        asesor. En Next vivía en `app/layout.tsx`; acá faltaba, así que desde el
+        corte no se registraba un solo clic ni salía ningún aviso. */}
+    <WhatsappReparto client:load />
     <div id="main-content">
       <slot />
     </div>
