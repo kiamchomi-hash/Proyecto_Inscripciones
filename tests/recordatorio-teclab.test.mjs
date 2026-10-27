@@ -53,7 +53,9 @@ test('recuerda la revisión de datos de ambos tests vocacionales', () => {
   }
 });
 
-test('el cron semanal está declarado en vercel.json', () => {
-  const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
-  assert.ok(config.crons.some(c => c.path === '/api/recordatorio-teclab' && c.schedule === '0 12 * * 1'));
+test('el cron semanal está declarado en el Worker', () => {
+  // Hasta el 27/10/2026 vivía en `vercel.json`. El corte a Cloudflare lo movió al
+  // Worker de producción: `recordatorio` en `CRONES` corre con esta expresión.
+  const config = JSON.parse(readFileSync(new URL('../cloudflare/produccion/wrangler.json', import.meta.url), 'utf8'));
+  assert.ok(config.triggers.crons.includes('0 12 * * 1'));
 });
