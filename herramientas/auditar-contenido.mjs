@@ -13,20 +13,26 @@
 // manana se agrega una categoria, la auditoria la toma sola.
 
 import { existsSync } from 'node:fs';
-import { createClient } from '@supabase/supabase-js';
+import { consultar } from './d1-consulta.mjs';
 import { carreraToSlug, esCarreraVisible, getCategoryForCarrera } from '../components/index/types.ts';
 import { esCursoTeclab } from '../components/index/teclab.ts';
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Lee de la base de producción en Cloudflare (D1). Antes leía Supabase con la
+// anon key; ese proyecto se dio de baja. D1 guarda los booleanos como 0/1 y el
+// JSON como texto: se normaliza acá para que el resto del script no cambie.
+const json = (valor) => {
+  if (typeof valor !== 'string') return valor;
+  try { return JSON.parse(valor); } catch { return valor; }
+};
 
-if (!url || !anonKey) {
-  console.error('Faltan NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY.');
-  console.error('Corrrer con "npm run auditar" (carga .env.local) o exportarlas a mano.');
-  process.exit(2);
-}
-
-const supabase = createClient(url, anonKey);
+const leer = (sql, tabla) => {
+  try {
+    return consultar(sql);
+  } catch (error) {
+    console.error(`No se pudo leer ${tabla}: ${String(error.message ?? error).slice(0, 200)}`);
+    process.exit(2);
+  }
+};
 
 // Niveles que sabemos que estan fuera de la oferta a proposito. Cualquier otro
 // nivel sin categoria es sospechoso: suele ser un typo al cargar la fila.
@@ -53,15 +59,14 @@ function aviso(grupo, detalle) {
 
 // ── Carreras ────────────────────────────────────────────────────────────────
 
-const { data: carreras, error: errCarreras } = await supabase
-  .from('carreras')
-  .select('id, nombre, prefix, nivel, activa, proximamente, duracion, titulo, descripcion, plan_estudios, slides')
-  .eq('activa', true);
-
-if (errCarreras) {
-  console.error('No se pudo leer carreras:', errCarreras.message);
-  process.exit(2);
-}
+const carreras = leer(`SELECT id, nombre, prefix, nivel, activa, proximamente, duracion,
+    titulo, descripcion, plan_estudios, slides FROM carreras WHERE activa = 1`, 'carreras')
+  .map(fila => ({
+    ...fila,
+    activa: fila.activa === 1,
+    proximamente: fila.proximamente === 1,
+    slides: json(fila.slides),
+  }));
 
 const visibles = carreras.filter(esCarreraVisible);
 const ocultas = carreras.filter(c => !esCarreraVisible(c));
@@ -147,13 +152,15 @@ for (const [nivel, ids] of nivelesRaros) {
 
 // ── Materias ────────────────────────────────────────────────────────────────
 
-const { data: materias, error: errMaterias } = await supabase
-  .from('materias')
-  .select('id, label, slug, activa')
-  .eq('activa', true);
-
-if (errMaterias) {
-  aviso('Materias', `no se pudieron leer: ${errMaterias.message}`);
+let materias = null;
+try {
+  materias = consultar('SELECT id, label, slug, activa FROM materias WHERE activa = 1')
+    .map(fila => ({ ...fila, activa: fila.activa === 1 }));
+} catch (error) {
+  aviso('Materias', `no se pudieron leer: ${String(error.message ?? error).slice(0, 200)}`);
+}
+if (!materias) {
+  // sin materias no hay nada más que revisar en ese bloque
 } else {
   const slugsMateria = new Map();
   for (const m of materias) {
@@ -171,13 +178,15 @@ if (errMaterias) {
 
 // ── Novedades ───────────────────────────────────────────────────────────────
 
-const { data: novedades, error: errNovedades } = await supabase
-  .from('novedades')
-  .select('id, titulo, slug, imagen_url, extracto, publicada')
-  .eq('publicada', true);
-
-if (errNovedades) {
-  aviso('Novedades', `no se pudieron leer: ${errNovedades.message}`);
+let novedades = null;
+try {
+  novedades = consultar('SELECT id, titulo, slug, imagen_url, extracto, publicada FROM novedades WHERE publicada = 1')
+    .map(fila => ({ ...fila, publicada: fila.publicada === 1 }));
+} catch (error) {
+  aviso('Novedades', `no se pudieron leer: ${String(error.message ?? error).slice(0, 200)}`);
+}
+if (!novedades) {
+  // sin novedades no hay nada más que revisar en ese bloque
 } else {
   const slugsNovedad = new Map();
   for (const n of novedades) {

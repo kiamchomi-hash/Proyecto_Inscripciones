@@ -119,27 +119,18 @@ async function enTanda(items, tamano, fn) {
 // a la home. Eso esta bien y no es un problema, pero si no se filtran copan el
 // informe: hoy la pagina con mas clics del sitio es una de esas.
 async function slugsDeLaOferta() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) {
-    contexto.push('Sin credenciales de Supabase: no se pudo separar la oferta vigente de las carreras dadas de baja.');
+  // Lee de la base de producción en Cloudflare (D1). Antes salía de Supabase, que
+  // se dio de baja: sin esto el informe no separa la oferta vigente de lo viejo.
+  try {
+    const { consultar } = await import('./d1-consulta.mjs');
+    const { carreraToSlug, esCarreraVisible } = await import('../components/index/types.ts');
+    const filas = consultar('SELECT id, nombre, prefix, nivel, activa, proximamente FROM carreras WHERE activa = 1');
+    return new Set(filas.map(fila => ({ ...fila, activa: fila.activa === 1, proximamente: fila.proximamente === 1 }))
+      .filter(esCarreraVisible).map(carreraToSlug));
+  } catch (error) {
+    contexto.push(`No se pudo leer carreras de la base: ${String(error.message ?? error).slice(0, 120)}`);
     return null;
   }
-
-  const { createClient } = await import('@supabase/supabase-js');
-  const { carreraToSlug, esCarreraVisible } = await import('../components/index/types.ts');
-  const supabase = createClient(url, anonKey);
-
-  const { data, error } = await supabase
-    .from('carreras')
-    .select('id, nombre, prefix, nivel, activa, proximamente')
-    .eq('activa', true);
-
-  if (error) {
-    contexto.push(`No se pudo leer carreras de Supabase: ${error.message}`);
-    return null;
-  }
-  return new Set(data.filter(esCarreraVisible).map(carreraToSlug));
 }
 
 async function urlsDelSitemap() {

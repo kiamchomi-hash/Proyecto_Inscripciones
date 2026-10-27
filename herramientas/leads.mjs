@@ -22,6 +22,7 @@
 // igual: media respuesta sirve mas que un error. Sale con codigo 1 solo si no
 // se pudo leer ninguna de las tres.
 
+import { consultar } from './d1-consulta.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -169,41 +170,19 @@ async function leerVercel() {
   return { porDia, porDispositivo, porOrigen, porEvento, visitas, total, consultasPorDia, abandonosPorCampo, abandonosPorMotivo };
 }
 
-// ── Supabase: las consultas que entraron de verdad ──────────────────────────
+// ── D1: las consultas que entraron de verdad ────────────────────────────────
 
 async function leerConsultas() {
-  const cadena = process.env.EDITOR_DATABASE_URL;
-  if (!cadena) throw new Error('falta EDITOR_DATABASE_URL en .env.local');
-
-  // Mismo pinchado de CA que db.mjs: el certificado lo firma la PKI propia de
-  // Supabase, que no esta en el almacen de Node.
-  const CA = new URL('supabase-ca.crt', import.meta.url);
-  const ca = existsSync(CA) ? readFileSync(CA, 'utf8') : null;
-  if (!ca) avisos.push('TLS sin verificar contra Supabase: falta herramientas/supabase-ca.crt');
-
-  const cliente = new pg.Client({
-    connectionString: cadena,
-    ssl: ca ? { ca, rejectUnauthorized: true } : { rejectUnauthorized: false },
-  });
-
-  await cliente.connect();
-  try {
-    const { rows } = await cliente.query(
-      `select to_char(created_at at time zone 'America/Argentina/Buenos_Aires', 'DD/MM HH24:MI') as cuando,
-              to_char(created_at at time zone 'UTC', 'YYYY-MM-DD') as dia_utc,
-              coalesce(casa, '-') as casa,
-              coalesce(tipo_formulario, '-') as tipo,
-              coalesce(carrera, '-') as carrera
-         from consultas
-        where created_at >= ($1::date::timestamp at time zone 'UTC')
-          and created_at < (($2::date + 1)::timestamp at time zone 'UTC')
-        order by created_at desc`,
-      [DESDE, HASTA],
-    );
-    return rows;
-  } finally {
-    await cliente.end();
-  }
+  // Antes salía de Supabase por Postgres directo; ese proyecto se dio de baja.
+  // Ahora son las mismas filas en la base de producción de Cloudflare.
+  return consultar(`SELECT strftime('%d/%m %H:%M', created_at, '-3 hours') AS cuando,
+      date(created_at, '-3 hours') AS dia_utc,
+      coalesce(casa, '-') AS casa,
+      coalesce(tipo_formulario, '-') AS tipo,
+      coalesce(carrera, '-') AS carrera
+    FROM consultas
+    WHERE date(created_at, '-3 hours') BETWEEN '${DESDE}' AND '${HASTA}'
+    ORDER BY created_at DESC`);
 }
 
 // ── Search Console ──────────────────────────────────────────────────────────
@@ -236,13 +215,13 @@ console.log(`LEADS - ultimos ${DIAS} dias (${dm(DESDE)} al ${dm(HASTA)})`);
 // se lleve puestas las otras dos.
 const [vercel, consultas, google] = await Promise.all([
   leerVercel().then(d => (fuentesLeidas.push('vercel'), d), e => e),
-  leerConsultas().then(d => (fuentesLeidas.push('supabase'), d), e => e),
+  leerConsultas().then(d => (fuentesLeidas.push('d1'), d), e => e),
   leerGoogle().then(d => (fuentesLeidas.push('gsc'), d), e => e),
 ]);
 
 // ── 1. Clics a WhatsApp ─────────────────────────────────────────────────────
 
-titulo('Clics a WhatsApp', 'Vercel Analytics, en vivo');
+titulo('Clics a WhatsApp', 'Vercel Analytics dado de baja: ver Cloudflare Web Analytics');
 
 let personasWhatsapp = null;
 let personasMovil = null;
@@ -301,7 +280,7 @@ if (vercel instanceof Error) {
 
 // ── 2. Consultas del formulario ─────────────────────────────────────────────
 
-titulo('Consultas del formulario', 'Supabase, en vivo');
+titulo('Consultas del formulario', 'D1, en vivo');
 
 if (consultas instanceof Error) {
   noDisponible(consultas);

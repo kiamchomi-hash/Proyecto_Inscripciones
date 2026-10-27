@@ -17,16 +17,10 @@
 
 import sharp from 'sharp';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { createClient } from '@supabase/supabase-js';
+import { consultar } from './d1-consulta.mjs';
 import { carreraFullName, carreraToSlug, esCarreraVisible } from '../components/index/types.ts';
 import { esCursoTeclab, esTeclab, getFamiliaTeclab, getPortadaTeclab } from '../components/index/teclab.ts';
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!url || !anonKey) {
-  console.error('Faltan NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY. Correr con "npm run og:teclab".');
-  process.exit(2);
-}
 
 const W = 1200, H = 630;
 const TINTA = '#071822';
@@ -94,12 +88,14 @@ function capa(carrera, acento, acentoTexto, etiqueta) {
   </svg>`;
 }
 
-const { data, error } = await createClient(url, anonKey)
-  .from('carreras')
-  .select('nombre, prefix, nombre_corto, nivel, duracion, activa')
-  .eq('activa', true);
-if (error) {
-  console.error('No se pudo leer carreras:', error.message);
+// Lee de la base de producción en Cloudflare (D1): Supabase se dio de baja.
+let data;
+try {
+  data = consultar(`SELECT nombre, prefix, nombre_corto, nivel, duracion, activa
+    FROM carreras WHERE activa = 1`)
+    .map(fila => ({ ...fila, activa: fila.activa === 1 }));
+} catch (error) {
+  console.error('No se pudo leer carreras:', String(error.message ?? error).slice(0, 200));
   process.exit(1);
 }
 
