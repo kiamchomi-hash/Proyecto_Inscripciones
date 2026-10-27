@@ -216,8 +216,6 @@ un build previo. `npm --prefix cloudflare run test:datos` ejecuta migraciones,
 SQL y concurrencia en bases D1 efímeras nuevas. No hay script de publicación.
 `npm --prefix cloudflare run test:control` agrega la verificación de cuotas,
 contadores y actualización 2A → 2B; también corre como parte de `check`.
-`npm --prefix cloudflare run test:inscripcion` prueba enlaces/cola local con
-fixtures; no inscribe personas ni despierta al robot. También integra `check`.
 `test:api` prueba handlers, outbox, newsletter y upgrades hasta 0005;
 `test:identidad` prueba pase Web Crypto y Turnstile con transporte simulado.
 Ambos integran `check`.
@@ -854,6 +852,10 @@ Deploy/DNS/corte siguen requiriendo aprobación explícita. Ver [plan](../docs/p
 [seguimiento](../odd/tasks/migracion-cloudflare.md).
 
 ## Continuación 4E: carreras e inscripción
+
+**Baja del 27/10/2026:** `inscripcion/[codigo].astro`, `src/datos/inscripcion-enlace.ts`,
+`propsInscripcionEnlace` y el demo `/inscripcion/demo` se retiraron con la
+autoinscripción de Teclab. Lo que sigue es historia del bloque 4E, no estado actual.
 
 `src/pages/carreras/[slug].astro`, `carreras/[slug]/inscripcion.astro` e
 `inscripcion/[codigo].astro` usan `Sitio.astro` y las islas de `src/entrega/`, sin

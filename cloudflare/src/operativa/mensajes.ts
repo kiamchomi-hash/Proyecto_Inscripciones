@@ -61,7 +61,8 @@ function cabecera(fila: Fila): string {
     return `📝 *PREINSCRIPCIÓN${casa ? ` — ${casa}` : ''}*`;
   }
   // Ni «Ver precio» ni la autoinscripción son una pregunta: el título dice qué
-  // hizo la persona (valores de `FORMULARIO_PRECIO` y `FORMULARIO_AUTOINSCRIPCION`).
+  // hizo la persona. `autoinscripcion` ya no se produce desde la baja del
+  // 27/10/2026, pero las filas viejas de `consultas` lo conservan y se rotulan.
   if (fila.tipo_formulario === 'autoinscripcion') {
     return `✅ *AUTOINSCRIPCIÓN${casa ? ` — ${casa}` : ''}*`;
   }

@@ -53,7 +53,6 @@ export function comandoLocal(nombre) {
     entrega: ['--test', 'tests/entrega.test.mjs', 'tests/cache-produccion.test.mjs'],
     datos: ['--test', '--test-concurrency=1', 'tests/datos.test.mjs', 'tests/concurrencia.test.mjs'],
     control: ['--test', '--test-concurrency=1', 'tests/rate-limit.test.mjs', 'tests/contadores.test.mjs', 'tests/migraciones.test.mjs'],
-    inscripcion: ['--test', '--test-concurrency=1', 'tests/upgrade-enlaces-robot.test.mjs'],
     api: ['--test', '--test-concurrency=1', 'tests/formularios.test.mjs', 'tests/operativa.test.mjs',
       'tests/upgrade-outbox.test.mjs', 'tests/upgrade-tablas.test.mjs', 'tests/apoyo-faq-baja.test.mjs'],
     // Crons de newsletter y recordatorio, y la vigilancia con transporte doble:
@@ -103,7 +102,7 @@ export function ejecutar(nombre) {
   const env = entornoLocal(process.env, raiz);
   mkdirSync(env.HOME, { recursive: true });
   const pasos = nombre === 'check'
-    ? ['seguridad', 'preparacion', 'publicacion', 'tipos', 'diagnostico', 'datos', 'control', 'inscripcion', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'build', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'e2e']
+    ? ['seguridad', 'preparacion', 'publicacion', 'tipos', 'diagnostico', 'datos', 'control', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'build', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'e2e']
     : [nombre];
   for (const paso of pasos) {
     const resultado = spawnSync(process.execPath, comandoLocal(paso), {

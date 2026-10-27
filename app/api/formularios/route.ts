@@ -475,7 +475,7 @@ function precioDemo(): PrecioDemo {
  * Modo demo (sólo desarrollo, ver `lib/formularios-demo.ts`): valida el
  * payload con los mismos validadores que el envío real, así un payload
  * inválido sigue dando 400, y responde con la misma forma, sin tocar la base,
- * la cuota, Turnstile, SMTP2GO, HubSpot ni el robot. La casa se toma de lo que
+ * la cuota, Turnstile, SMTP2GO, HubSpot ni los efectos externos. La casa se toma de lo que
  * manda el navegador: en real se verifica contra la base, que acá no se lee.
  */
 function respuestaDemo(kind: string, payload: JsonRecord): JsonRecord {

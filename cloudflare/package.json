@@ -14,7 +14,6 @@
     "test:entrega": "node scripts/local.mjs entrega",
     "test:datos": "node scripts/local.mjs datos",
     "test:control": "node scripts/local.mjs control",
-    "test:inscripcion": "node scripts/local.mjs inscripcion",
     "test:api": "node scripts/local.mjs api",
     "test:crons": "node scripts/local.mjs crons",
     "test:telemetria": "node scripts/local.mjs telemetria",

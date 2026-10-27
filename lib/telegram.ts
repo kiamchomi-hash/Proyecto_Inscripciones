@@ -1,8 +1,9 @@
 import 'server-only';
 
 // Aviso por Telegram desde Next, con el bot y el chat de siempre
-// (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`). Lo usan la vigilancia
-// (`/api/vigilancia`) y el robot de Teclab (`/api/robot/autoinscripciones`).
+// (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`). Lo usa la vigilancia
+// (`/api/vigilancia`); el robot de Teclab que también lo usaba se dio de baja
+// el 27/10/2026.
 // Texto plano, sin `parse_mode`: nada que escapar.
 //
 // Nunca lanza: devuelve cómo le fue, para que quien avisa lo registre o lo
