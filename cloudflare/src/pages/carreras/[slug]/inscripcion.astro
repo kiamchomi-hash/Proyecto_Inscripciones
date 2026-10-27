@@ -1,0 +1,33 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../../layouts/Sitio.astro';
+import PaginaInscripcionCarrera from '../../../entrega/PaginaInscripcionCarrera';
+import { carrerasPublicas, carreraPorSlug } from '../../../datos/carreras';
+import { configTurnstile } from '../../../entrega/entorno-publico';
+import { casaDeCarrera } from '@/components/formularios/casas';
+import { SITIO, tieneInscripcionPropia, rutaInscripcion, tituloInscripcion, descripcionInscripcion, ogInscripcion } from '@/components/carreras/inscripcion-carrera';
+import '../../../estilos/poppins.css';
+import '@/app/carreras/career-detail.css';
+import '@/components/index/modales.css';
+import '@/components/formularios/formulario-lead.css';
+import '@/app/carreras/[slug]/inscripcion/inscripcion.css';
+
+const carreras = await carrerasPublicas(env.DB);
+const slug = Astro.params.slug!;
+const carrera = carreraPorSlug(carreras, slug);
+if (!carrera || !tieneInscripcionPropia(carrera)) return new Response(null, { status: 404 });
+const ruta = rutaInscripcion(carrera);
+if (`/carreras/${slug}/inscripcion` !== ruta) return Astro.redirect(ruta, 308);
+const casa = casaDeCarrera(carrera) === 'siglo21' ? 'siglo21' : 'teclab';
+const opciones = carreras.filter(c => tieneInscripcionPropia(c) && casaDeCarrera(c) === casa)
+  .map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion }));
+const titulo = tituloInscripcion(carrera);
+const descripcion = descripcionInscripcion(carrera);
+const imagen = ogInscripcion(carrera);
+---
+<Sitio titulo={titulo} descripcion={descripcion} canonical={`${SITIO}${ruta}`} ruta={ruta}
+  robots="noindex, follow" og={{ tipo: '', titulo, descripcion, url: `${SITIO}${ruta}`, imagen: { url: imagen } }}
+  twitter={{ tarjeta: 'summary_large_image', titulo, descripcion, imagen }}>
+  <PaginaInscripcionCarrera carrera={carrera} opciones={opciones}
+    turnstile={configTurnstile(env as unknown as Record<string, unknown>)} client:load />
+</Sitio>

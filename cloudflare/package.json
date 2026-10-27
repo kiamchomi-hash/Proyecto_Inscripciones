@@ -1,0 +1,53 @@
+{
+  "name": "cau-cloudflare-local",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "dev": "node scripts/local.mjs dev",
+    "preview": "node scripts/local.mjs preview",
+    "migrar": "node scripts/local.mjs migrar",
+    "build": "node scripts/local.mjs build",
+    "test:seguridad": "node scripts/local.mjs seguridad",
+    "test:runtime": "node scripts/local.mjs runtime",
+    "test:entrega": "node scripts/local.mjs entrega",
+    "test:datos": "node scripts/local.mjs datos",
+    "test:control": "node scripts/local.mjs control",
+    "test:inscripcion": "node scripts/local.mjs inscripcion",
+    "test:api": "node scripts/local.mjs api",
+    "test:crons": "node scripts/local.mjs crons",
+    "test:telemetria": "node scripts/local.mjs telemetria",
+    "test:envios": "node scripts/local.mjs envios",
+    "test:recuperacion": "node scripts/local.mjs recuperacion",
+    "test:identidad": "node scripts/local.mjs identidad",
+    "test:materias": "node scripts/local.mjs materias",
+    "test:navegador": "node scripts/local.mjs navegador",
+    "test:paridad": "node scripts/local.mjs paridad",
+    "test:e2e": "node scripts/local.mjs e2e",
+    "exportar:publico": "node scripts/local.mjs exportar-publico",
+    "verificar:publico": "node scripts/local.mjs verificar-publico",
+    "test:importacion": "node scripts/local.mjs importacion",
+    "test:preparacion": "node scripts/local.mjs preparacion",
+    "preparar:staging": "node scripts/local.mjs preparar-staging",
+    "importar:dry-run": "node scripts/local.mjs importar-dry-run",
+    "test:staging-local": "node scripts/local.mjs staging-local",
+    "test:staging-protegido": "node scripts/local.mjs staging-protegido",
+    "verificar:imagenes-externas": "node scripts/local.mjs imagenes-externas",
+    "check": "node scripts/local.mjs check"
+  },
+  "dependencies": {
+    "astro": "7.4.2",
+    "@astrojs/cloudflare": "14.4.2",
+    "@astrojs/react": "7.1.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3",
+    "wrangler": "4.152.0"
+  }
+}

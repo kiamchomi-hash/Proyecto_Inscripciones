@@ -8,6 +8,8 @@ export default defineConfig([
   globalIgnores([
     '.next/**',
     'dist/**',
+    // Paquete aislado: su check usa Astro y workerd, no reglas de Next.
+    'cloudflare/**',
     'node_modules/**',
     '.claude/**',
     'scripts/**',

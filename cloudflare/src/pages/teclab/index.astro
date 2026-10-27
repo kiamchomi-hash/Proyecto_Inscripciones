@@ -1,0 +1,51 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../layouts/Sitio.astro';
+import PaginaTeclab from '../../entrega/PaginaTeclab';
+import SiteFooter from '@/components/footer';
+import { carrerasDeTeclab } from '../../datos/teclab.ts';
+import { configTurnstile } from '../../entrega/entorno-publico.ts';
+import '../../estilos/poppins.css';
+import '@/app/index.css';
+// Mismo motivo que en la home: `app/index.css` termina con dos `@import`
+// después de reglas y el pipeline de Astro los descarta, así que los dos
+// archivos se importan acá en el mismo orden.
+import '@/components/index/modales.css';
+import '@/components/formularios/formulario-lead.css';
+import '@/app/teclab/teclab.css';
+
+// `/teclab` paritaria con `app/teclab/page.tsx`: mismo título absoluto,
+// descripción, palabras clave, Open Graph, Twitter y JSON-LD, y el mismo
+// cuerpo. El catálogo sale de D1 con la taxonomía compartida.
+const URL = 'https://www.siglo21sur.com/teclab';
+const carreras = await carrerasDeTeclab(env.DB);
+const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
+---
+
+<Sitio
+  titulo="Tecnicaturas Teclab Online | Carreras de 2 años"
+  descripcion="Tecnicaturas y cursos Teclab 100% online en tecnología, gestión y negocios. Conocé la oferta y recibí asesoramiento personalizado."
+  palabrasClave={['teclab', 'tecnicaturas online', 'carreras cortas', 'instituto técnico superior teclab', 'universidad siglo 21', 'estudiar online']}
+  canonical={URL}
+  ruta="/teclab"
+  og={{
+    titulo: 'Tecnicaturas Teclab Online',
+    descripcion: 'Tecnología, gestión y negocios. Explorá la oferta Teclab y recibí asesoramiento personalizado.',
+    url: URL,
+    imagen: {
+      url: '/imagenes/og/default-teclab.jpg',
+      ancho: 1200,
+      alto: 630,
+      alt: 'Tecnicaturas Teclab online: tecnología, gestión y negocios',
+    },
+  }}
+  twitter={{
+    tarjeta: 'summary_large_image',
+    titulo: 'Tecnicaturas Teclab Online',
+    descripcion: 'Explorá la oferta Teclab y recibí asesoramiento personalizado.',
+    imagen: '/imagenes/og/default-teclab.jpg',
+  }}
+>
+  <PaginaTeclab carreras={carreras} turnstile={turnstile} client:load />
+  <SiteFooter casa="teclab" fuente="fuente-poppins" />
+</Sitio>

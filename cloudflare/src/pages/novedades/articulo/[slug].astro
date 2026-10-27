@@ -1,0 +1,53 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../../layouts/Sitio.astro';
+import PaginaArticulo from '../../../entrega/PaginaArticulo';
+import SiteFooter from '@/components/footer';
+import { leerArticulo } from '../../../datos/novedades';
+import { sanitizeContent } from '@/lib/sanitize-content';
+import { jsonLdScript } from '@/lib/json-ld';
+import '@/app/novedades/articulo.css';
+const slug = Astro.params.slug!;
+// Redirects de esta familia exclusivamente; no se incorporan reglas globales.
+if (slug === 'segundo-semestre-2026-inicio-3-de-agosto') {
+  return Astro.redirect(`/novedades/articulo/inicio-de-clases${Astro.url.search}`, 301);
+}
+if (slug === 'teclab-tecnicaturas-online') return Astro.redirect(`/teclab${Astro.url.search}`, 301);
+const novedad = await leerArticulo(env.DB, slug);
+if (!novedad) return new Response(null, { status: 404 });
+const ruta = `/novedades/articulo/${slug}`;
+const shareUrl = `https://www.siglo21sur.com${ruta}`;
+const og = `/imagenes/og/${slug}.jpg`;
+// Next completa las descripciones sociales indefinidas con la descripción
+// resuelta de la página, también cuando no hay extracto.
+const descripcion = novedad.extracto || `${novedad.titulo} — Universidad Siglo 21.`;
+const editor = { '@type': 'EducationalOrganization', name: 'CAU Villa Lugano - Universidad Siglo 21', url: 'https://www.siglo21sur.com' };
+const articuloSchema = {
+  '@context': 'https://schema.org', '@type': 'BlogPosting', headline: novedad.titulo,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': shareUrl }, url: shareUrl,
+  ...(novedad.extracto ? { description: novedad.extracto } : {}),
+  ...(novedad.imagen_url ? { image: new URL(novedad.imagen_url, 'https://www.siglo21sur.com').href } : {}),
+  datePublished: novedad.fecha, dateModified: novedad.updated_at ?? novedad.fecha,
+  author: editor, publisher: { ...editor, logo: { '@type': 'ImageObject', url: 'https://www.siglo21sur.com/imagenes/imagenes_cau/logo_cau.png' } },
+  ...(novedad.tag ? { articleSection: novedad.tag } : {}), inLanguage: 'es',
+};
+const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://www.siglo21sur.com' },
+  { '@type': 'ListItem', position: 2, name: 'Novedades', item: 'https://www.siglo21sur.com/novedades/1' },
+  { '@type': 'ListItem', position: 3, name: novedad.titulo, item: shareUrl },
+] };
+const contenido = novedad.contenido ? sanitizeContent(novedad.contenido) : null;
+// El HTML crudo nunca entra al payload de hidratación.
+const publica = { titulo: novedad.titulo, slug: novedad.slug, fecha: novedad.fecha,
+  tag: novedad.tag, imagen_url: novedad.imagen_url, extracto: novedad.extracto };
+---
+<Sitio titulo={`${novedad.titulo} | Siglo 21`} descripcion={descripcion}
+  ruta={ruta} canonical={shareUrl}
+  og={{ tipo: undefined, titulo: novedad.titulo, descripcion, imagen: { url: og },
+    imagenes: novedad.imagen_url ? [{ url: novedad.imagen_url }] : [] }}
+  twitter={{ tarjeta: 'summary_large_image', titulo: novedad.titulo, descripcion, imagen: og }}>
+  <script type="application/ld+json" set:html={jsonLdScript(articuloSchema)} />
+  <script type="application/ld+json" set:html={jsonLdScript(breadcrumbSchema)} />
+  <PaginaArticulo novedad={publica} contenido={contenido} client:load />
+  <SiteFooter />
+</Sitio>

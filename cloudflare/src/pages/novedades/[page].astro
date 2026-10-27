@@ -1,0 +1,19 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../layouts/Sitio.astro';
+import NovedadesPage from '@/components/novedades/novedades-page';
+import SiteFooter from '@/components/footer';
+import { listarNovedades } from '../../datos/novedades';
+import '@/app/novedades/novedades.css';
+const datos = await listarNovedades(env.DB, Astro.params.page!);
+if (!datos) return new Response(null, { status: 404 });
+const ruta = `/novedades/${Astro.params.page}`;
+const suffix = datos.currentPage > 1 ? ` — Página ${datos.currentPage}` : '';
+---
+<Sitio titulo={`Novedades${suffix} | Siglo 21`}
+  descripcion="Últimas novedades sobre carreras, inscripción y formación online."
+  palabrasClave={['novedades', 'noticias', 'siglo 21', 'carreras online', 'inscripción']}
+  canonical={`https://www.siglo21sur.com${ruta}`} ruta={ruta}>
+  <NovedadesPage {...datos} />
+  <SiteFooter />
+</Sitio>

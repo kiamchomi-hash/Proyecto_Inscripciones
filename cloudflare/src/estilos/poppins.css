@@ -1,0 +1,50 @@
+/* Poppins: la tipografía de marca de Teclab. En el sitio vigente la carga
+   `next/font` sólo en `/teclab` y `/teclab/inscripcion` (no en el layout), así
+   que esta hoja se importa únicamente desde esas dos páginas: las declaraciones
+   `@font-face` no descargan nada hasta que algo usa la familia.
+
+   Los tres archivos son los que `next/font` deja en `.next/static/media/` para
+   `Poppins({ subsets: ['latin'], weight: ['400','600','700'] })`, copiados byte
+   a byte a `public/fuentes/` de la raíz. Origen, sha256 y licencia en
+   `fuentes.md`. */
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fuentes/poppins-latin-400.woff2) format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304,
+    U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fuentes/poppins-latin-600.woff2) format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304,
+    U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fuentes/poppins-latin-700.woff2) format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304,
+    U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+/* `--font-poppins` es la variable que `next/font` declaraba en la clase que
+   `page.tsx` ponía en `<main>` y en el pie (`poppins.variable`). Las hojas del
+   sitio la consumen con fallback a 'Poppins', así que con esta clase alcanza
+   para que el render sea el mismo. */
+.fuente-poppins {
+  --font-poppins: 'Poppins';
+}

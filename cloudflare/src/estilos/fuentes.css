@@ -1,0 +1,94 @@
+/* Inter y Unbounded, autoalojadas con los mismos archivos que descarga
+   `next/font/google` en el sitio vigente (subconjunto `latin`, el único que
+   declara `app/layout.tsx`). Los `.woff2` viven en `public/fuentes/` de la
+   raíz, así el paquete no duplica binarios y las dos implementaciones los
+   sirven desde la misma URL. Origen, licencia y cómo regenerarlos:
+   `cloudflare/src/estilos/fuentes.md`.
+
+   Las dos familias se llaman igual que en Next (`Inter`, `Unbounded`) porque
+   `app/globals.css` y `components/navbar.tsx` las piden por ese nombre
+   literal, no sólo por las variables. El rango `unicode-range` es el del
+   subconjunto `latin` de Google Fonts, copiado de la hoja que genera Next:
+   sin él el navegador bajaría este archivo también para texto que nunca usa.
+
+   Inter es variable (100–900, un solo archivo). Unbounded declara los cinco
+   pesos que pide `app/layout.tsx` sobre el mismo archivo variable, igual que
+   Next: así el navegador elige el eje sin sintetizar negritas. */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fuentes/inter-latin.woff2') format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local(Arial);
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+  size-adjust: 107.12%;
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fuentes/unbounded-latin.woff2') format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fuentes/unbounded-latin.woff2') format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fuentes/unbounded-latin.woff2') format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fuentes/unbounded-latin.woff2') format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fuentes/unbounded-latin.woff2') format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Unbounded Fallback';
+  src: local(Arial);
+  ascent-override: 73.93%;
+  descent-override: 18.2%;
+  line-gap-override: 0%;
+  size-adjust: 134.59%;
+}
+
+/* Mismos valores que inyecta `next/font` en `<html>`. */
+:root {
+  --font-inter: 'Inter', 'Inter Fallback';
+  --font-unbounded: 'Unbounded', 'Unbounded Fallback';
+}

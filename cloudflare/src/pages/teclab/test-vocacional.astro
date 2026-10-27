@@ -1,0 +1,14 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../layouts/Sitio.astro';
+import Test from '@/components/test-vocacional-teclab/test-vocacional-teclab';
+import { opcionesVocacionalTeclab } from '../../datos/vocacional';
+import '../../../../app/teclab/test-vocacional/test-vocacional-teclab.css';
+import '../../estilos/poppins.css';
+const carreras = await opcionesVocacionalTeclab(env.DB);
+---
+<Sitio titulo="Test vocacional Teclab: qué tecnicatura va con vos"
+  descripcion="Siete preguntas de un toque y te mostramos las tecnicaturas Teclab que más van con vos. Sin registrarte, con asesoramiento por WhatsApp."
+  canonical="https://www.siglo21sur.com/teclab/test-vocacional" ruta="/teclab/test-vocacional">
+  <main class="tvt-page fuente-poppins"><div class="tvt-shell"><Test carreras={carreras} client:load /></div></main>
+</Sitio>

@@ -1,0 +1,12 @@
+---
+import Sitio from '../layouts/Sitio.astro';
+import Pagina, { metadata } from '../../../app/calendario-academico/page';
+---
+<Sitio titulo="Calendario Académico 2026 Siglo 21 a Distancia | Fechas"
+  descripcion={metadata.description as string} palabrasClave={metadata.keywords as string[]}
+  canonical="https://www.siglo21sur.com/calendario-academico" ruta="/calendario-academico"
+  og={{tipo: 'article', titulo: 'Calendario Académico 2026 — Universidad Siglo 21 a Distancia',
+    descripcion: 'Inicio de cursada, cierre de inscripción a materias, integradores y feriados del ciclo 2026.',
+    url: '/calendario-academico', imagen: {url: '/imagenes/og/default.jpg', ancho: 1200, alto: 630, alt: 'Universidad Siglo 21 — CAU Online'}}}>
+  <Pagina client:load />
+</Sitio>

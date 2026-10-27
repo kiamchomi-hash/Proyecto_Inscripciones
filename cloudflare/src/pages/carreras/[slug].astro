@@ -1,0 +1,43 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../layouts/Sitio.astro';
+import PaginaCarrera, { relacionadasCarrera } from '../../entrega/PaginaCarrera';
+import { carreraEquivalente } from '@/components/carreras/carrera-equivalente';
+import { carrerasPublicas, carreraPorSlug } from '../../datos/carreras';
+import { seoCarrera } from '../../entrega/carrera-seo';
+import { configTurnstile } from '../../entrega/entorno-publico';
+import { redirectCarrera } from '../../entrega/redirects-carreras';
+import { carreraToSlug } from '@/components/index/types';
+import '../../estilos/poppins.css';
+import '../../estilos/dm-sans.css';
+import '@/app/carreras/career-detail.css';
+import '@/app/carreras/career-detail-teclab.css';
+import '@/app/carreras/career-detail-siglo21.css';
+import '@/components/index/modales.css';
+import '@/components/formularios/formulario-lead.css';
+
+const redirect = redirectCarrera(Astro.params.slug!);
+if (redirect) {
+  const query = Astro.url.search;
+  return Astro.redirect(`${redirect.destino}${query}`, redirect.status);
+}
+const carreras = await carrerasPublicas(env.DB);
+const carrera = carreraPorSlug(carreras, Astro.params.slug!);
+if (!carrera) return new Response(null, { status: 404 });
+const ruta = `/carreras/${carreraToSlug(carrera)}`;
+if (Astro.params.slug !== carreraToSlug(carrera)) return Astro.redirect(ruta, 308);
+const { titulo, descripcion, imagen, palabrasClave } = seoCarrera(carrera);
+const canonical = `https://www.siglo21sur.com${ruta}`;
+const relacionadas = relacionadasCarrera(carrera, carreras);
+const equivalente = carreraEquivalente(carrera, carreras);
+const opciones = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion,
+  ...(c.proximamente ? { proximamente: true } : {}) }));
+---
+{/* Las fichas de Identidad Argentina volvieron a indexarse el 26/10/2026 (commit
+    b90fb95 del sitio): sin `robots`, igual que la ficha de Next. */}
+<Sitio titulo={titulo} descripcion={descripcion} canonical={canonical} ruta={ruta} palabrasClave={palabrasClave}
+  og={{ tipo: '', titulo, descripcion, url: canonical, imagen: { url: imagen } }}
+  twitter={{ tarjeta: 'summary_large_image', titulo, descripcion, imagen }}>
+  <PaginaCarrera carrera={carrera} relacionadas={relacionadas} equivalente={equivalente} opciones={opciones}
+    turnstile={configTurnstile(env as unknown as Record<string, unknown>)} client:load />
+</Sitio>

@@ -1,0 +1,35 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../layouts/Sitio.astro';
+import PaginaHome from '../entrega/PaginaHome';
+import SiteFooter from '@/components/footer';
+import { carrerasDeHome } from '../datos/home.ts';
+import { configTurnstile } from '../entrega/entorno-publico.ts';
+import '@/app/index.css';
+// `app/index.css` termina con dos `@import` después de reglas, que el pipeline
+// de Astro descarta (CSS exige los `@import` al principio y PostCSS sólo avisa).
+// En Next sí entran, así que se importan acá en el mismo orden para que la
+// cascade sea la misma: sin esto faltaban el panel del contacto y los modales.
+import '@/components/index/modales.css';
+import '@/components/formularios/formulario-lead.css';
+
+// Home paritaria con `app/page.tsx`: mismo título absoluto, misma descripción,
+// mismos componentes y mismo orden. El catálogo se lee de D1 con la taxonomía
+// compartida; el texto largo de las fichas no viaja en el HTML, igual que hoy.
+const anio = new Date().getFullYear();
+const carreras = await carrerasDeHome(env.DB);
+// La configuración del captcha se resuelve una vez en el servidor: la usan el
+// `<meta>` del layout y el contexto de la isla, para que el HTML renderizado
+// no dependa de leer el documento en el navegador.
+const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
+---
+
+<Sitio
+  titulo={`Universidad Siglo 21 | CAU Online | Oferta académica ${anio}`}
+  descripcion="Oferta académica online de Universidad Siglo 21, con acompañamiento para estudiantes de CABA, GBA y otras zonas. Consultá carreras e inscripciones."
+  canonical="https://www.siglo21sur.com"
+  ruta="/"
+>
+  <PaginaHome carreras={carreras} turnstile={turnstile} client:load />
+  <SiteFooter />
+</Sitio>

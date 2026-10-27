@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "estado": "preparacion-no-activada",
+  "entorno": "staging",
+  "DB": { "tipo": "D1", "id": null, "nombre": null, "compartirConProduccion": false },
+  "EFECTOS": { "tipo": "Queues", "nombre": null, "dlq": null, "activar": false },
+  "cron": { "activar": false },
+  "egress": { "modo": "disabled", "destinosAutorizados": [] },
+  "acceso": { "modo": "deny-all", "verificador": null },
+  "R2": { "requeridoPorContenidoRelevado": false }
+}

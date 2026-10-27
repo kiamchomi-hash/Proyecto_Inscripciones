@@ -1,0 +1,23 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../layouts/Sitio.astro';
+import PaginaContacto from '../entrega/PaginaContacto';
+import SiteFooter from '@/components/footer';
+import { configTurnstile } from '../entrega/entorno-publico.ts';
+
+// `/contacto` paritaria con `app/contacto/page.tsx`: mismo título con la
+// plantilla del layout, descripción, palabras clave y canónica. El cuerpo y el
+// pie son los mismos componentes del sitio.
+const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
+---
+
+<Sitio
+  titulo="Contacto | Siglo 21"
+  descripcion="Contactá al CAU Villa Lugano, sede de Universidad Siglo 21. WhatsApp, Facebook, Instagram. Guaminí 4876, Villa Lugano, Comuna 8, CABA."
+  palabrasClave={['contacto', 'CAU villa lugano', 'siglo 21', 'whatsapp', 'Guaminí 4876', 'comuna 8']}
+  canonical="https://www.siglo21sur.com/contacto"
+  ruta="/contacto"
+>
+  <PaginaContacto turnstile={turnstile} client:load />
+  <SiteFooter />
+</Sitio>

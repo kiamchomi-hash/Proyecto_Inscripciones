@@ -1,0 +1,206 @@
+---
+import { env } from 'cloudflare:workers';
+import { jsonLdScript } from '@/lib/json-ld';
+import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
+import NavbarIsla from '../entrega/NavbarIsla';
+import { configTurnstile } from '../entrega/entorno-publico.ts';
+import AnalyticsInteractions from '@/components/analytics-interactions';
+import '@/app/globals.css';
+import '@/app/navbar.css';
+import '../estilos/fuentes.css';
+
+// Cabeza y armazón equivalentes a `app/layout.tsx`: mismo título, descripción,
+// Open Graph, locale, iconos y datos estructurados. Los textos salen de ese
+// archivo tal cual; acá no se inventa copy nuevo.
+
+/** Miniatura de Open Graph: la misma forma que declara `metadata` en Next. */
+export interface ImagenSocial {
+  url: string;
+  ancho?: number;
+  alto?: number;
+  alt?: string;
+}
+
+/**
+ * `openGraph` y `twitter` de una página. Sin ellos rigen los valores del layout
+ * vigente. En Next el objeto de la página **reemplaza** el del layout: no se
+ * fusionan, así que una página que declara `openGraph` no hereda `locale` ni
+ * `siteName` (sólo `og:type`, que Next completa con `website`).
+ */
+export interface MetasSociales {
+  tipo?: string;
+  locale?: string;
+  url?: string;
+  sitio?: string;
+  titulo?: string;
+  descripcion?: string;
+  imagen?: ImagenSocial;
+  imagenes?: ImagenSocial[];
+}
+
+export interface MetasTwitter {
+  tarjeta?: string;
+  titulo?: string;
+  descripcion?: string;
+  imagen?: string;
+}
+
+export interface Props {
+  /** `<title>` completo, ya resuelto con la plantilla `%s | Siglo 21` de Next. */
+  titulo: string;
+  descripcion: string;
+  /** `keywords` de la página; sin él rige el texto literal del layout. */
+  palabrasClave?: string[];
+  /** URL canónica completa. */
+  canonical?: string;
+  /** Ruta del pedido, para el enlace activo del navbar. */
+  ruta?: string;
+  /** Sólo las páginas que declaran su propio `openGraph` en Next. */
+  og?: MetasSociales;
+  /** Sólo las páginas que declaran su propio `twitter` en Next. */
+  twitter?: MetasTwitter;
+  robots?: string;
+}
+
+const { titulo, descripcion, canonical, ruta = '/', palabrasClave, og, twitter, robots } = Astro.props;
+const SITIO = 'https://www.siglo21sur.com';
+
+// Las palabras clave del layout son las de `app/layout.tsx`, escritas igual.
+// Next las une con coma y sin espacio; el texto tiene que ser el mismo byte a byte.
+const CLAVES = palabrasClave?.length
+  ? palabrasClave.join(',')
+  : 'universidad,siglo 21,villa lugano,carreras a distancia,educación superior,estudiar online,CAU,CABA,GBA,zona sur';
+
+// Valores del layout (`app/layout.tsx`) campo por campo. `openGraph` y `twitter`
+// de una página **reemplazan** el objeto del layout en Next (no se fusionan),
+// así que cuando la página los declara sólo se emite lo declarado.
+const absoluta = (url: string) => url.startsWith('http') ? url : `${SITIO}${url}`;
+const red: MetasSociales = og ? { tipo: 'website', ...og } : {
+  tipo: 'website',
+  locale: 'es_AR',
+  url: SITIO,
+  sitio: 'Universidad Siglo 21',
+  titulo: 'Universidad Siglo 21 | CAU Online',
+  descripcion: 'Carreras universitarias online con acompañamiento para estudiantes de CABA y GBA. ¡Inscribite hoy!',
+  imagen: {
+    url: '/imagenes/og/default.jpg', ancho: 1200, alto: 630,
+    alt: 'Universidad Siglo 21 — CAU Online',
+  },
+};
+const redes: MetasTwitter = twitter ?? {
+  tarjeta: 'summary_large_image',
+  titulo: 'Universidad Siglo 21 | CAU Online',
+  descripcion: 'Carreras universitarias online con acompañamiento para estudiantes de CABA y GBA. ¡Inscribite hoy!',
+  imagen: '/imagenes/og/default.jpg',
+};
+
+// Datos fijos del layout vigente, serializados con el mismo escapador que usa
+// Next (`lib/json-ld.ts`): el `<` se convierte en `\u003c` y no puede cerrar el
+// script antes de tiempo.
+const jsonLd = jsonLdScript([
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Universidad Siglo 21',
+    alternateName: 'Siglo 21',
+    url: 'https://www.siglo21sur.com/',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': ['EducationalOrganization', 'LocalBusiness'],
+    name: 'CAU Villa Lugano - Universidad Siglo 21',
+    url: 'https://www.siglo21sur.com',
+    description: 'Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21.',
+    address: POSTAL_ADDRESS,
+    geo: { '@type': 'GeoCoordinates', ...GEO },
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '08:00',
+      closes: '20:00',
+    },
+    areaServed: [
+      'Villa Lugano', 'Villa Soldati', 'Mataderos', 'Villa Riachuelo',
+      'Villa Celina', 'Ciudad Madero', 'Tapiales', 'Ingeniero Budge',
+      'Comuna 8', 'CABA',
+    ].map(name => ({ '@type': 'Place', name })),
+    telephone: '+5491132973801',
+    sameAs: [
+      'https://www.facebook.com/ceducativovillalugano/',
+      'https://www.instagram.com/centroeducativovillalugano/',
+    ],
+    parentOrganization: {
+      '@type': 'CollegeOrUniversity',
+      name: 'Universidad Siglo 21',
+      url: 'https://21.edu.ar',
+    },
+  },
+]);
+
+// La site key de Turnstile es pública y tiene que leerse en runtime, no
+// congelarse en el build: se expone en un meta que consume el widget. Nunca se
+// escribe un valor literal acá y la secret key no existe en este paquete.
+// El modo demo sigue el mismo gate que la API (`APP_STAGE=local` +
+// `FORMULARIOS_DEMO=1`); en producción el meta no aparece.
+const { sitio: sitekeyTurnstile, demo: demoFormularios } =
+  configTurnstile(env as unknown as Record<string, unknown>);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="keywords" content={CLAVES} />
+    <meta name="author" content="CAU Villa Lugano" />
+    <meta name="creator" content="Universidad Siglo 21" />
+    {robots && <meta name="robots" content={robots} />}
+
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="dns-prefetch" href="https://wa.me" />
+    {/* Las dos familias se usan arriba del pliegue (cuerpo y cabecera): se
+        precargan del mismo origen, sin pedir nada a Google. */}
+    <link rel="preload" href="/fuentes/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fuentes/unbounded-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    {red.tipo && <meta property="og:type" content={red.tipo} />}
+    {red.locale && <meta property="og:locale" content={red.locale} />}
+    {red.url && <meta property="og:url" content={absoluta(red.url)} />}
+    {red.sitio && <meta property="og:site_name" content={red.sitio} />}
+    {red.titulo && <meta property="og:title" content={red.titulo} />}
+    {red.descripcion && <meta property="og:description" content={red.descripcion} />}
+    {red.imagen && <meta property="og:image" content={absoluta(red.imagen.url)} />}
+    {red.imagen?.ancho !== undefined && <meta property="og:image:width" content={String(red.imagen.ancho)} />}
+    {red.imagen?.alto !== undefined && <meta property="og:image:height" content={String(red.imagen.alto)} />}
+    {red.imagen?.alt !== undefined && <meta property="og:image:alt" content={red.imagen.alt} />}
+    {red.imagenes?.map(imagen => <meta property="og:image" content={absoluta(imagen.url)} />)}
+
+    {redes.tarjeta && <meta name="twitter:card" content={redes.tarjeta} />}
+    {redes.titulo && <meta name="twitter:title" content={redes.titulo} />}
+    {redes.descripcion && <meta name="twitter:description" content={redes.descripcion} />}
+    {redes.imagen && <meta name="twitter:image" content={absoluta(redes.imagen)} />}
+
+    <meta name="google-site-verification" content="google2ba266d8a709b848" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/icon.png" type="image/png" sizes="48x48" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+
+    {sitekeyTurnstile && <meta name="turnstile-site-key" content={sitekeyTurnstile} />}
+    {demoFormularios && <meta name="formularios-demo" content="1" />}
+
+    <script type="application/ld+json" set:html={jsonLd} />
+  </head>
+  <body>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#00c7b1] focus:text-black focus:rounded focus:font-bold">
+      Saltar al contenido principal
+    </a>
+    <NavbarIsla ruta={ruta} client:load />
+    <AnalyticsInteractions client:load />
+    <div id="main-content">
+      <slot />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../layouts/Sitio.astro';
+import Test from '@/components/test-vocacional/test-vocacional';
+import { opcionesVocacional } from '../datos/vocacional';
+import '../../../app/test-vocacional/test-vocacional.css';
+const carreras = await opcionesVocacional(env.DB);
+---
+<Sitio titulo="Test vocacional: descubrí qué carrera va con vos | Siglo 21"
+  descripcion="Respondé un recorrido breve y descubrí las áreas y carreras de Universidad Siglo 21 que más conectan con tus intereses."
+  canonical="https://www.siglo21sur.com/test-vocacional" ruta="/test-vocacional">
+  <main class="vocacional-page"><div class="vocacional-shell"><Test carreras={carreras} client:load /></div></main>
+</Sitio>

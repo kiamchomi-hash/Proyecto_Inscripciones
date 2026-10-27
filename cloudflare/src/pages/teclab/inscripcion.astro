@@ -1,0 +1,45 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../layouts/Sitio.astro';
+import PaginaInscripcionTeclab from '../../entrega/PaginaInscripcionTeclab';
+import { opcionesInscripcionTeclab } from '../../datos/teclab.ts';
+import { configTurnstile } from '../../entrega/entorno-publico.ts';
+import '../../estilos/poppins.css';
+import '@/app/carreras/career-detail.css';
+// `career-detail.css` termina con los mismos dos `@import` después de reglas
+// que `app/index.css`; Astro los descarta y Next sí los aplica, así que se
+// importan explícitos en el mismo orden.
+import '@/components/index/modales.css';
+import '@/components/formularios/formulario-lead.css';
+import '@/app/carreras/[slug]/inscripcion/inscripcion.css';
+
+// `/teclab/inscripcion` paritaria con `app/teclab/inscripcion/page.tsx`: mismo
+// título absoluto, descripción, Open Graph, Twitter, JSON-LD y el mismo
+// formulario. Las opciones salen de D1 y pasan por `tieneInscripcionPropia`.
+const RUTA = '/teclab/inscripcion';
+const TITULO = 'Inscripción a Teclab';
+const DESCRIPCION = 'Preinscribite en una tecnicatura o curso de Teclab, 100% online: elegí la carrera, completá tus datos, mirá el precio y confirmá tu inscripción.';
+const IMAGEN_OG = '/imagenes/og/default-teclab-inscripcion.jpg';
+const SITIO = 'https://www.siglo21sur.com';
+
+const opciones = await opcionesInscripcionTeclab(env.DB);
+const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
+---
+
+<Sitio
+  titulo={`${TITULO} | Tecnicaturas online`}
+  descripcion={DESCRIPCION}
+  canonical={`${SITIO}${RUTA}`}
+  ruta={RUTA}
+  og={{
+    locale: 'es_AR',
+    sitio: 'CAU Online',
+    url: `${SITIO}${RUTA}`,
+    titulo: TITULO,
+    descripcion: DESCRIPCION,
+    imagen: { url: IMAGEN_OG, ancho: 1200, alto: 630, alt: 'Tu inscripción en Teclab' },
+  }}
+  twitter={{ tarjeta: 'summary_large_image', titulo: TITULO, descripcion: DESCRIPCION, imagen: IMAGEN_OG }}
+>
+  <PaginaInscripcionTeclab opciones={opciones} turnstile={turnstile} client:load />
+</Sitio>

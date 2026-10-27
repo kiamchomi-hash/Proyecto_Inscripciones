@@ -70,7 +70,6 @@ export const NOINDEX: Array<[string, RegExp]> = [
 export function redirectsEsperados(base: string): Array<[string, string, number?]> {
   return [
     ['https://siglo21sur.com/', 'https://www.siglo21sur.com/', 308],
-    ['https://proyecto-inscripciones.vercel.app/', 'https://www.siglo21sur.com/'],
     [`${base}/contactos`, `${base}/contacto`],
     [`${base}/carreras`, `${base}/`],
     [`${base}/novedades`, `${base}/novedades/1`],

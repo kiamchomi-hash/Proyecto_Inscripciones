@@ -1,0 +1,34 @@
+---
+import { env } from 'cloudflare:workers';
+import Sitio from '../../layouts/Sitio.astro';
+import ClasesApoyoLanding from '@/components/clases-apoyo/clases-apoyo-landing';
+import SiteFooter from '@/components/footer';
+import { listarMateriasPublicas } from '../../datos/materias';
+import { jsonLdScript } from '@/lib/json-ld';
+import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
+import '@/app/clases-apoyo/clases-apoyo.css';
+const BASE_URL = 'https://www.siglo21sur.com';
+const materias = await listarMateriasPublicas(env.DB);
+const servicioSchema = {
+  '@context': 'https://schema.org', '@type': 'Service',
+  name: 'Clases particulares y apoyo escolar en Villa Lugano', serviceType: 'Clases de apoyo escolar',
+  description: 'Clases particulares y apoyo escolar presenciales de primaria y secundaria en Villa Lugano, de lunes a viernes.',
+  url: `${BASE_URL}/clases-apoyo`,
+  areaServed: ['Villa Lugano', 'Villa Riachuelo', 'Villa Soldati', 'Mataderos', 'Barrio Piedrabuena'].map(name => ({ '@type': 'Place', name: `${name}, Ciudad Autónoma de Buenos Aires` })),
+  provider: { '@type': 'EducationalOrganization', name: 'CAU Villa Lugano — Universidad Siglo 21', url: BASE_URL, address: POSTAL_ADDRESS, geo: { '@type': 'GeoCoordinates', ...GEO } },
+  hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Materias', itemListElement: materias.filter(m => !m.en_construccion).map(m => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: `Clases de apoyo de ${m.label}`, url: `${BASE_URL}/clases-apoyo/${m.slug}` } })) },
+};
+const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Inicio', item: BASE_URL },
+  { '@type': 'ListItem', position: 2, name: 'Clases de apoyo', item: `${BASE_URL}/clases-apoyo` },
+] };
+---
+<Sitio titulo="Clases particulares y apoyo escolar en Villa Lugano | Siglo 21"
+  descripcion="Clases particulares y apoyo escolar presenciales en Villa Lugano, Villa Riachuelo y alrededores: Matemática, Lengua, Física, Computación y Arte. Guaminí 4876."
+  palabrasClave={['clases de apoyo villa lugano', 'apoyo escolar villa lugano', 'clases particulares villa lugano', 'profesor particular villa riachuelo', 'apoyo escolar barrio piedrabuena', 'clases de apoyo mataderos']}
+  canonical={`${BASE_URL}/clases-apoyo`} ruta="/clases-apoyo">
+  <ClasesApoyoLanding materias={materias} client:load />
+  <SiteFooter />
+  <script type="application/ld+json" set:html={jsonLdScript(servicioSchema)} />
+  <script type="application/ld+json" set:html={jsonLdScript(breadcrumbSchema)} />
+</Sitio>

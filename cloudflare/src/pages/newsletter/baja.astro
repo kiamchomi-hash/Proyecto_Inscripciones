@@ -1,0 +1,32 @@
+---
+import Sitio from '../../layouts/Sitio.astro';
+import { esIdSuscripcion } from '@/components/formularios/mail-precio';
+import '@/app/newsletter/baja/baja.css';
+// Next recibe string[] ante parámetros repetidos: no tomamos el primero.
+const unico = (clave: string) => { const valores = Astro.url.searchParams.getAll(clave); return valores.length === 1 ? valores[0] : undefined; };
+const id = unico('id');
+const listo = unico('listo') === '1';
+// `listo=1` es sólo presentación heredada, no prueba ni dispara una escritura.
+---
+<Sitio titulo="Anular suscripción | CAU Villa Lugano"
+  descripcion="Carreras universitarias online de Universidad Siglo 21, con acompañamiento del CAU para estudiantes de CABA y GBA. Inscribite hoy."
+  robots="noindex, nofollow" ruta="/newsletter/baja">
+  <main class="baja-newsletter">
+    <div class="bn-tarjeta">
+      {listo ? <>
+        <h1 class="bn-titulo">Listo, no vas a recibir más novedades.</h1>
+        <p class="bn-texto">Si cambiás de idea, podés volver a suscribirte desde cualquier formulario del sitio.</p>
+      </> : !esIdSuscripcion(id) ? <>
+        <h1 class="bn-titulo">El enlace no es válido</h1>
+        <p class="bn-texto">Usá el enlace «Anular suscripción» que llega al pie de cada mail.</p>
+      </> : <>
+        <h1 class="bn-titulo">¿Dejás de recibir novedades?</h1>
+        <p class="bn-texto">No te vamos a mandar más los mails de novedades de esta carrera.</p>
+        <form method="post" action="/api/newsletter/baja">
+          <input type="hidden" name="id" value={id} />
+          <button type="submit" class="bn-boton">Anular suscripción</button>
+        </form>
+      </>}
+    </div>
+  </main>
+</Sitio>

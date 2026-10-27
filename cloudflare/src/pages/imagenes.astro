@@ -1,0 +1,13 @@
+---
+import { env } from 'cloudflare:workers';
+import archivos from 'virtual:inventario-imagenes';
+import Sitio from '../layouts/Sitio.astro';
+import Biblioteca from '@/components/imagenes/biblioteca';
+import { bibliotecaImagenes } from '../datos/imagenes';
+import '../../../app/imagenes/imagenes.css';
+const datos = await bibliotecaImagenes(env.DB, archivos);
+---
+<Sitio titulo="Biblioteca de imágenes | Siglo 21" descripcion="Carreras universitarias online de Universidad Siglo 21, con acompañamiento del CAU para estudiantes de CABA y GBA. Inscribite hoy."
+  ruta="/imagenes" robots="noindex, nofollow">
+  <Biblioteca {...datos} client:load />
+</Sitio>

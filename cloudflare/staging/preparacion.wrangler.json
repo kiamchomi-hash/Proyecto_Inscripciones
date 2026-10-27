@@ -1,0 +1,20 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "cau-staging-preparacion",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "send_metrics": false,
+  "upload_source_maps": false,
+  "observability": { "enabled": false },
+  "vars": {
+    "APP_STAGE": "staging",
+    "STAGING_ACCESS": "deny-all",
+    "OUTBOUND_MODE": "disabled"
+  },
+  "triggers": { "crons": [] },
+  "build": { "command": "node denegar-publicacion.mjs", "cwd": "." },
+  "dev": { "ip": "127.0.0.1", "port": 0 }
+}

@@ -1,0 +1,9 @@
+---
+import Sitio from '../layouts/Sitio.astro';
+import Pagina, { metadata } from '../../../app/sobre-nosotros/page';
+---
+<Sitio titulo="CAU Siglo 21 en CABA | Villa Lugano, Guaminí 4876"
+  descripcion={metadata.description as string} palabrasClave={metadata.keywords as string[]}
+  canonical="https://www.siglo21sur.com/sobre-nosotros" ruta="/sobre-nosotros">
+  <Pagina client:load />
+</Sitio>
