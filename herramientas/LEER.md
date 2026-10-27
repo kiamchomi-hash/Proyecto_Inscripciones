@@ -84,25 +84,12 @@ PowerShell, o escribirlas sin la barra: `--rutas=faq,contacto`.
 Lo que depende de timing (restauración de scroll, carga de imágenes) hay que
 mirarlo contra producción: en `npm run dev` da falso verde.
 
-### 4 — Verificar avisos
+### 4 — Verificar avisos (retirado)
 
-Los avisos de formulario fallan **en silencio**: `net.http_post` encola el pedido
-sin bloquear, así que el `INSERT` responde 201 aunque la notificación se caiga.
-Exactamente eso pasó del 20 al 27/07/2026, una semana entera, sin un solo error
-visible desde la web.
-
-El `.bat` copia `verificar-avisos.sql` al portapapeles y abre el SQL Editor. El
-`.sh` hace lo mismo, pero el portapapeles en Linux depende del servidor gráfico:
-usa `wl-copy` (Wayland), `xclip` o `xsel`, el primero que encuentre. Si no hay
-ninguno instalado no se rompe: avisa la ruta del archivo para abrirlo a mano.
-Correr **un PASO por vez** (seleccionar el bloque y Run): no anda de una sola
-pasada porque `pg_net` recién despacha el pedido cuando la transacción commitea,
-y un `pg_sleep` en el mismo bloque que el `INSERT` esperaría algo que todavía no
-salió.
-
-Prueba los tres triggers, no sólo `consultas`. Esperado: tres filas con
-`status_code` 200. Un 401 significa que el secreto del trigger no coincide con
-el de la Edge Function.
+El envoltorio y `verificar-avisos.sql` se retiraron el 27/10/2026: probaban los
+triggers de `pg_net` en el Supabase que se dio de baja. Los avisos de formulario
+salen ahora del outbox del Worker (`cloudflare/src/operativa/outbox.ts`) y
+`npm run leads` compara las consultas con los avisos que quedaron ahí.
 
 ### 5 — Subir cambios
 

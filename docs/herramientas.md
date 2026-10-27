@@ -66,11 +66,6 @@ node herramientas/ventas/publicar-precios-d1.mjs --casa todo --escribir   # escr
 
 ## Publicar sólo archivos revisados
 
-Para regenerar los tipos del esquema real está `npm run db:tipos`, con lógica en
-`tipos-supabase.mjs` y envoltorios `.sh`/`.bat`. Usa la CLI instalada y el acceso
-del usuario al proyecto, lee sólo metadatos y conserva los tipos anteriores si
-falla. [Procedimiento](tipos-supabase.md).
-
 El botón `5 - Subir cambios (deploy)` usa `herramientas/deploy.mjs`, compartido
 por Windows y Linux. Selecciona archivos propios por número, muestra su diff
 staged, pide confirmación y corre `npm run check` sobre una copia temporal exacta
@@ -100,7 +95,9 @@ Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-es
 
 Los redirects llevan un tercer campo opcional con el **código exacto**, en vez de aceptar cualquier 3xx. Se usa donde el código lo decide algo que no vive en el repo. Hoy es el apex: `next.config.ts` lo declara con `permanent: true`, pero esa regla **no se ejecuta en producción** porque Vercel tiene su propio redirect a nivel de dominio que corre en el borde antes que la app. Venía con 307 de fábrica, así que el código decía 308 y producción servía 307 desde marzo sin que ningún diff lo mostrara; se corrigió el 25/08/2026 en el panel de Vercel y quedó fijado acá para que no vuelva a pasar en silencio. **Tocarlo en `next.config.ts` no cambia nada mientras el del dominio exista.**
 
-Para los avisos de formulario (Telegram) está `herramientas/verificar-avisos.sql`: prueba los tres triggers de una sola pasada, con los pasos separados porque `pg_net` recién despacha el pedido cuando la transacción commitea.
+Para los avisos de formulario (Telegram) está el outbox del Worker
+(`cloudflare/src/operativa/outbox.ts`): `npm run leads` compara las consultas con
+los avisos que quedaron registrados ahí.
 
 También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada novedad dos derivados de 1200×630 desde las fotos de `public/` — la foto limpia (`public/imagenes/novedades/<slug>.jpg`, para `imagen_url`) y la versión con el título compuesto encima (`public/imagenes/og/<slug>.jpg`, para el og:image). Depende de `sharp` (declarado como devDependency).
 

@@ -91,10 +91,10 @@ Las páginas son Server Components que leen de Supabase en el render. La home y 
 
 ### Los clientes de Supabase
 
-Los dos clientes usan `Database`, generado del esquema remoto
-en `lib/database.types.ts`. Regenerar con `npm run db:tipos` tras cambios de
-esquema, revisar el diff y correr `check`. Los tipos no validan JSON ni sustituyen
-RLS. [Procedimiento y alcance](docs/tipos-supabase.md).
+Los dos clientes usan `Database`, el tipo que quedó en `lib/database.types.ts`
+cuando el esquema estaba en Supabase. Ya no se regenera: `npm run db:tipos` se
+retiró el 27/10/2026 con la base vieja. El esquema vivo es `cloudflare/migrations/`
+y no genera tipos para la app Next.
 
 Elegir mal el cliente es el error más fácil de cometer:
 

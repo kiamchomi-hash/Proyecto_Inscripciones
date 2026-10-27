@@ -24,8 +24,8 @@ La tabla tiene RLS, sin acceso directo para los roles de aplicación. Sólo
    acceso a la tabla. La RPC debe permitir sólo a `service_role`.
 3. Desplegar el backend con el procedimiento habitual. Si falta la RPC o falla,
    se omite únicamente el correo; el precio y el lead siguen funcionando.
-4. Regenerar los tipos desde el esquema real según `docs/tipos-supabase.md` y
-   revisar que coincidan con el contrato incorporado para este cambio.
+4. Regenerar los tipos del esquema y revisar que coincidan con el contrato
+   incorporado para este cambio.
 
 El 16/10/2026 se aplicó el SQL en el dashboard del proyecto Supabase verificado
 contra la configuración del sitio. El backend se publicó el mismo día (`1349acc`,
