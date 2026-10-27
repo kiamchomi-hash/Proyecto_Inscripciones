@@ -79,3 +79,12 @@ test('Gestión Contable informa equivalencias evaluadas sin cambiar otras articu
   const seguros = { ...contable, id: 228, nombre: 'Tecnicatura Superior en Seguros' };
   assert.doesNotMatch(renderToStaticMarkup(React.createElement(CareerDetail, { carrera: seguros, relacionadas: [] })), /career-oficial-articulacion/);
 });
+
+test('el WhatsApp del precio ya mostrado dice que la persona lo vio', () => {
+  const contenido = dependencias['./career-content'];
+  const enTeclab = { nombre: 'Tecnicatura Superior en Programación', prefix: null, nivel: 'Teclab Tecnología' };
+  const mensaje = contenido.mensajeWhatsAppPrecioVisto(enTeclab);
+  assert.equal(mensaje, 'Hola, quiero inscribirme en la carrera *TECNICATURA SUPERIOR EN PROGRAMACIÓN*');
+  // Se distingue del botón de precios de la ficha, que pregunta sin haberlo visto.
+  assert.notEqual(mensaje, contenido.mensajeWhatsAppPrecios(enTeclab));
+});

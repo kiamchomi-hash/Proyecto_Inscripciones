@@ -72,7 +72,8 @@ function cabecera(fila: Fila): string {
   return '📚 *Nueva consulta de carrera*';
 }
 
-/** El «Ver precio» anterior del mismo mail, si lo hubo (ver precio-visto.ts). */
+/** El «Ver precio» anterior del mismo mail, si lo hubo. El Worker todavía no lo
+ * busca: `transportes.ts` arma el aviso sin esta marca. */
 export interface PrecioVistoAviso {
   carrera: string | null;
   created_at: string;

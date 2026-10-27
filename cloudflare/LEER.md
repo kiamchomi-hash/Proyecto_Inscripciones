@@ -482,7 +482,7 @@ y conserva el intento de cuota, sin ampliar la validación pública del handler.
 variables de entorno ni usar el `fetch` global: reciben la configuración y un
 `buscar` inyectados, así que las pruebas no salen a la red y ningún test manda un
 aviso, un mail o un despacho real. Los textos no se copiaron: el aviso de consulta,
-pregunta y clase sale de `supabase/functions/notificar/mensajes.ts`; el mail de
+pregunta y clase sale de `src/operativa/mensajes.ts`; el mail de
 precio, de `armarMailPrecio`; el despacho y el aviso de error del robot, de
 `casas.ts`. Los cuatro usan `AbortSignal.timeout` (8 s Telegram y SMTP2GO, 5 s
 HubSpot y GitHub).
