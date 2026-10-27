@@ -75,6 +75,27 @@ test('los programados se despachan por expresión y una desconocida falla', asyn
   assert.match(JSON.stringify(sinSecreto.cuerpo), /CRON_SECRET/);
 });
 
+test('el cron de vigilancia lee los precios de la base en vez de darlos por ausentes', async () => {
+  const consultas = [];
+  const db = {
+    prepare(sql) {
+      consultas.push(sql);
+      return { all: async () => ({ results: [{ institucion: 'teclab', vigente_hasta: '2099-12-31' }] }) };
+    },
+  };
+  const { status, cuerpo } = await manejarProgramado(CRONES.vigilancia, {
+    db,
+    secretoCron: 'secreto-de-prueba',
+    origen: 'https://ensayo.invalid',
+    buscar: async () => new Response('{}'),
+  });
+  assert.equal(status, 200);
+  assert.ok(consultas.some(sql => sql.includes('precios_privados')),
+    'el cron tiene que consultar precios_privados');
+  const fallos = JSON.stringify(cuerpo.fallos ?? []);
+  assert.ok(!fallos.includes('sin lector'), `la corrida no puede informar un lector ausente: ${fallos}`);
+});
+
 const { construirDigest, construirDigestDirectas, fechaArgentina } = await import('../src/operativa/digest.ts');
 
 test('el digest reproduce el texto del contrato, incluidos los bordes', () => {

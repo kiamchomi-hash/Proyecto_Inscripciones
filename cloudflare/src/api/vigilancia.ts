@@ -84,6 +84,20 @@ export interface OpcionesChequeos {
   ahora?: () => Date;
 }
 
+/**
+ * Lector de precios: único lugar que declara la consulta.
+ *
+ * Lo usan la ruta HTTP y el cron. Si un camino arma los chequeos sin este
+ * lector, la vigilancia responde «sin lector» en cada corrida y el aviso real
+ * de precios vencidos nunca se ve: es lo que pasó con el cron hasta el
+ * 27/10/2026.
+ */
+export function lectorDePrecios(db: D1Database) {
+  return async (): Promise<{ institucion: string; vigente_hasta: string }[]> => (await db.prepare(
+    'SELECT institucion, vigente_hasta FROM precios_privados',
+  ).all<{ institucion: string; vigente_hasta: string }>()).results;
+}
+
 export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
   const { buscar } = opciones;
   const fallos: string[] = [];

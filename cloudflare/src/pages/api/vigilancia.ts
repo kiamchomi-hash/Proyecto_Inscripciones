@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { manejarVigilancia } from '../../api/vigilancia.ts';
+import { lectorDePrecios, manejarVigilancia } from '../../api/vigilancia.ts';
 import { bindingDb, buscarRed, secretoCron, telegramCron } from '../../api/runtime.ts';
 
 // Sólo lectura: los chequeos HTTP usan el `fetch` del Worker y la consulta de
@@ -13,11 +13,7 @@ export const GET: APIRoute = ({ request }) => {
     secretoCron: secretoCron(),
     buscar: buscarRed,
     telegram: (texto, timeoutMs) => telegramCron(texto, timeoutMs),
-    ...(db ? {
-      precios: async () => (await db.prepare(
-        'SELECT institucion, vigente_hasta FROM precios_privados',
-      ).all<{ institucion: string; vigente_hasta: string }>()).results,
-    } : {}),
+    ...(db ? { precios: lectorDePrecios(db) } : {}),
   });
 };
 

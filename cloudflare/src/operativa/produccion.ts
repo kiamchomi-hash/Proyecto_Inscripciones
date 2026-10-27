@@ -3,7 +3,7 @@ import { crearTransportes, type Buscar, type ConfigEnvios } from './transportes.
 import type { Transportes } from './consumidores.ts';
 import { manejarNewsletter, type EntornoNewsletter } from '../api/newsletter.ts';
 import { manejarRecordatorio } from '../api/recordatorio-teclab.ts';
-import { manejarVigilancia } from '../api/vigilancia.ts';
+import { lectorDePrecios, manejarVigilancia } from '../api/vigilancia.ts';
 import { enviarDigest } from './digest.ts';
 
 /**
@@ -153,7 +153,14 @@ export async function manejarProgramado(
   }
 
   const respuesta = tarea === 'vigilancia'
-    ? await manejarVigilancia(request, { secretoCron: contexto.secretoCron, buscar: contexto.buscar, telegram: contexto.telegram })
+    ? await manejarVigilancia(request, {
+      secretoCron: contexto.secretoCron,
+      buscar: contexto.buscar,
+      telegram: contexto.telegram,
+      // Sin el lector, la corrida del cron informaría «sin lector» cada 6 horas
+      // en vez de revisar los precios.
+      ...(contexto.db ? { precios: lectorDePrecios(contexto.db) } : {}),
+    })
     : tarea === 'newsletter'
       ? await manejarNewsletter(request, contexto.db, { secretoCron: contexto.secretoCron, mail: contexto.mail })
       : await manejarRecordatorio(request, contexto.db, { secretoCron: contexto.secretoCron, telegram: contexto.telegram });
