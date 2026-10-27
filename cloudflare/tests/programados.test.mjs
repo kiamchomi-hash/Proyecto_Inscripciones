@@ -5,7 +5,6 @@ import { consumirEfecto } from '../src/operativa/consumidores.ts';
 import { barridoDeEfectos } from '../src/operativa/colas.ts';
 import { manejarColaLocal, manejarProgramadoLocal, CRON_EFECTOS } from '../src/operativa/programados.ts';
 import { reintentar } from '../src/operativa/outbox.ts';
-import { manejarRobotPost } from '../src/api/robot.ts';
 
 async function aviso(db, clave = 'fixture') {
   return (await db.prepare("INSERT INTO outbox(tipo,clave,consulta_id) VALUES ('aviso-lead',?1,1) RETURNING id")
@@ -96,25 +95,6 @@ test('reclamo abandonado no se roba ni por antigüedad; otras intenciones siguen
   assert.equal(llamadas, 1);
   assert.equal((await db.prepare('SELECT estado FROM outbox WHERE id=?1').bind(id).first()).estado, 'pendiente');
   assert.equal((await db.prepare('SELECT estado FROM outbox WHERE id=?1').bind(segundo).first()).estado, 'enviado');
-});
-
-test('robot publica sólo el aviso confirmado; fallo de cola no cambia el 200', async t => {
-  const { db } = await crearD1(t);
-  await db.prepare("INSERT INTO consultas(id,casa,tipo_formulario) VALUES (1,'teclab','autoinscripcion')").run();
-  await db.prepare('INSERT INTO robot_autoinscripciones(id,consulta_id) VALUES (1,1)').run();
-  const publicados = [];
-  const request = () => new Request('https://local.invalid/api/robot', {
-    method: 'POST', headers: { authorization: 'Bearer secreto-ficticio' },
-    body: JSON.stringify({ id: 1, estado: 'error', detalle: 'fixture' }),
-  });
-  const respuesta = await manejarRobotPost(request(), db, 'secreto-ficticio', {
-    send: async mensaje => { publicados.push(mensaje); throw new Error('cola local caída'); },
-  });
-  assert.equal(respuesta.status, 200);
-  assert.equal(publicados.length, 1);
-  assert.deepEqual(Object.keys(publicados[0]).sort(), ['id', 'tipo']);
-  const efecto = await db.prepare('SELECT estado,tipo FROM outbox WHERE id=?1').bind(publicados[0].id).first();
-  assert.deepEqual(efecto, { estado: 'pendiente', tipo: 'aviso-robot-error' });
 });
 
 test('presupuesto del barrido actual: lote de 20 sin transporte usa 103 consultas D1', async t => {

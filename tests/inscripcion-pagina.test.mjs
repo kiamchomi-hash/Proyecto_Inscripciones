@@ -239,13 +239,15 @@ test('ambas páginas explican los próximos pasos sin competir con el formulario
     assert.ok(tarjeta, 'el contenido queda en una tarjeta centrada');
     const contenido = recorrer(tarjeta).find(nodo => nodo.props?.className === 'inscripcion-proximos-contenido');
     assert.deepEqual(recorrer(contenido).filter(nodo => nodo.type === 'p').map(texto), [
-      'Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.',
+      'Un asesor del CAU se contacta a la brevedad para terminar tu preinscripción. Después Teclab te envía por mail el acceso al portal del alumno, donde elegís el medio de pago y abonás.',
       'Completar este formulario no realiza ningún pago: sólo registra tu solicitud. El pago lo hacés después, desde el portal del alumno.',
     ]);
     // La aclaración de que no se paga va aparte, con su propia clase (letra grande).
     assert.ok(recorrer(contenido).some(nodo => nodo.props?.className === 'inscripcion-sin-pago'));
 
-    assert.doesNotMatch(texto(bloque), /[¿?]|Lugano|CAU|sede|\d|horas|minutos/i);
+    // Sin preguntas, dirección ni plazos: el CAU se nombra porque el asesor es
+    // quien continúa la gestión, no como dato de sede.
+    assert.doesNotMatch(texto(bloque), /[¿?]|Lugano|sede|Maps|\d|horas|minutos/i);
     assert.equal(recorrer(bloque).filter(nodo => ['a', 'button'].includes(nodo.type)).length, 0);
     assert.equal(nodos.filter(nodo => ['nav', 'footer'].includes(nodo.type)).length, 0);
     const formulario = nodos.find(nodo => nodo.props?.modo === 'preinscripcion');
@@ -264,14 +266,15 @@ test('el bloque de próximos pasos tiene una única columna de lectura centrada'
   assert.doesNotMatch(bloque, /repeat\(2|p \+ p|border-left/);
 });
 
-test('la página dedicada envía con «Preinscribirme» y sin nota debajo del botón', () => {
+test('la página dedicada envía con «Enviar preinscripción» y sin nota debajo del botón', () => {
   // Que no se cobra lo dicen los próximos pasos, debajo del formulario.
   const formulario = readFileSync('components/formularios/formulario-lead.tsx', 'utf8');
-  assert.doesNotMatch(formulario, /Solicitar inscripción/);
-  assert.match(formulario, /solicitudDirecta \? 'Preinscribirme' : flujoAuto \? 'Inscribirme'/);
-  assert.match(formulario, /\{flujoAuto && !solicitudDirecta && <AvisoSinPago \/>\}/);
-  const aviso = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
-  assert.doesNotMatch(aviso, /solicitás la gestión/);
+  assert.doesNotMatch(formulario, /Solicitar inscripción|Preinscribirme|Inscribirme/);
+  assert.match(formulario, /'Enviar preinscripción' : 'Enviar consulta'/);
+  // Sin autoinscripción no hay aviso de pago al lado del botón.
+  assert.doesNotMatch(formulario, /AvisoSinPago/);
+  const pasos = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
+  assert.doesNotMatch(pasos, /solicitás la gestión|AvisoSinPago|PasoInscribirme|PORTAL_ALUMNO_TECLAB|AVISO_TOKEN|AVISO_VERIFICAR/);
 });
 
 

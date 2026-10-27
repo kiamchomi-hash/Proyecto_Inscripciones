@@ -52,7 +52,7 @@ Cinco pasos, ninguno tarda. Los resultados van a la bitácora de abajo.
 5. Barrido de credenciales: buscar valores en el repo, que es público; revisar los PAT de Supabase en `supabase.com/dashboard/account/tokens`, que no vencen nunca y alcanzan todos los proyectos de la cuenta; y borrar las claves de servicios que se dejaron de usar.
 6. **Los avisos públicos de los proveedores, que es el paso que `npm audit` no cubre.** Next.js publica security releases mensuales en `nextjs.org/blog` (desde julio de 2026 con preanuncio), Vercel abre un bulletin en `vercel.com/kb/bulletin/` cuando le pasa algo a la plataforma, y Supabase avisa por el dashboard. Se comprobó el 29/08/2026 que `npm audit` daba **cero** con dos RCE críticos publicados cuatro días antes contra la versión que teníamos: el registry no siempre tiene el advisory cargado, así que la versión de Next se compara a mano contra el último release.
 
-Lo que no se puede probar automatizado: **el captcha** (Cloudflare no emite token para un navegador manejado por Playwright; lo que sí se chequea es que el checkbox se desmarque solo a los 300 s) y **la cadena completa de avisos**, que se verifica con `herramientas/verificar-avisos.sql` leyendo `net._http_response`.
+Lo que no se puede probar automatizado: **el captcha** (Cloudflare no emite token para un navegador manejado por Playwright; lo que sí se chequea es que el checkbox se desmarque solo a los 300 s) y **la cadena completa de avisos**, que se verifica con `npm run leads` comparando las consultas con los avisos del outbox del Worker.
 
 ## Bitácora
 
@@ -146,6 +146,20 @@ admin; usan mocks y no sustituyen la integración RLS/cookies real. Cambios
 locales, sin escrituras reales ni publicación.
 [Detalle](auditoria-tecnica-2026-10-02.md) y
 [referencia](../referencias/2026-10-02-autorizacion-admin.md).
+
+### 27/10/2026, baja de la autoinscripción de Teclab
+
+Se retiró el flujo completo: `kind: 'autoinscripcion'`, el pase firmado del
+04/10, el enlace `/inscripcion/<código>`, la tabla de enlaces, la cola del robot
+(`robot_autoinscripciones`, `ROBOT_SECRET`, `/api/robot/autoinscripciones`) y su
+despacho a GitHub. Para la seguridad es una reducción de superficie: desaparecen
+un endpoint autenticado por secreto propio, un secreto que había que rotar, una
+tabla privada que guardaba el legajo completo de Teclab y una página pública que
+leía la base con la service role a partir de un código. `POST /api/formularios`
+acepta ahora cuatro `kind` (`consulta`, `faq`, `clase`, `precio`); el resto
+devuelve 400 antes de captcha, cuota o base. El rate limit queda en 5 por tipo
+cada 10 minutos entre cuatro. La migración `0011` borra las dos tablas, que
+estaban vacías. [Tarea](../odd/tasks/autoinscripcion-teclab.md).
 
 ### 04/10/2026, pase firmado para la autoinscripción
 

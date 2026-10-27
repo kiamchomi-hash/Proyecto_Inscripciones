@@ -1,7 +1,6 @@
 import { pedidoLeadSede, resultadoPrecio, type ResultadoPrecio } from '../../../components/formularios/casas.ts';
 import { leerPrecioPrivado, reservarMailPrecio } from '../datos/repositorio.ts';
 import { leerRelojBase } from '../datos/reloj.ts';
-import { encolarRobot } from '../datos/robot.ts';
 import { suscribirNewsletter } from '../datos/newsletter.ts';
 import { payloadCompletoDesdeConsulta, diaArgentino } from '../api/filas.ts';
 import {
@@ -19,13 +18,11 @@ import {
 export type ResultadoTransporte = 'enviado' | 'rechazado' | 'sin-configurar';
 
 export interface PedidoTelegram {
-  tipo: 'aviso-lead' | 'aviso-robot-error';
+  tipo: 'aviso-lead';
   /** De dónde sale el aviso: una consulta, una pregunta o una solicitud de clases. */
   fuente: 'consulta' | 'faq' | 'clase';
   /** Id de la fila que lo originó (`consultas`, `faq_preguntas` o `solicitudes_clase`). */
   id: number | string;
-  robotId?: number;
-  intentos?: number;
 }
 
 export interface PedidoNewsletter {
@@ -52,15 +49,10 @@ export interface PedidoLeadSede {
   body: unknown;
 }
 
-export interface PedidoDespacho {
-  colaId: number;
-}
-
 export interface Transportes {
   telegram?: (pedido: PedidoTelegram) => Promise<ResultadoTransporte>;
   mail?: (pedido: PedidoMail) => Promise<ResultadoTransporte>;
   hubspot?: (pedido: PedidoLeadSede) => Promise<ResultadoTransporte>;
-  github?: (pedido: PedidoDespacho) => Promise<ResultadoTransporte>;
 }
 
 /** El proveedor pudo haber entregado: no se reintenta solo. */
@@ -208,38 +200,6 @@ async function prepararEfecto(db: D1Database, fila: FilaOutbox, ahora: string): 
       // Sin opción de carrera o con mail inválido no hay alta: se registra y sigue.
       if (!pedido) return { tipo: 'omitido', motivo: 'lead-sede-sin-datos' };
       return { tipo: 'pedido', transporte: 'hubspot', pedido };
-    }
-
-    case 'robot-encolar': {
-      const consultaId = fila.consulta_id;
-      if (!consultaId) return { tipo: 'omitido', motivo: 'consulta-inexistente' };
-      try {
-        // Idempotente por UNIQUE(consulta_id): reencolar no duplica ni reinicia.
-        const { id } = await encolarRobot(db, consultaId);
-        await db.prepare(`INSERT INTO outbox(tipo, clave, consulta_id)
-          SELECT 'robot-despacho', 'robot:' || id, consulta_id FROM robot_autoinscripciones WHERE id = ?1
-          ON CONFLICT(tipo, clave) DO NOTHING`).bind(id).run();
-        return { tipo: 'resuelto' };
-      } catch (error) {
-        return { tipo: 'error', codigo: error instanceof Error ? error.name : 'desconocido' };
-      }
-    }
-
-    case 'robot-despacho': {
-      const colaId = Number(fila.clave.split(':')[1]);
-      if (!Number.isSafeInteger(colaId) || colaId < 1) return { tipo: 'omitido', motivo: 'clave-invalida' };
-      return { tipo: 'pedido', transporte: 'github', pedido: { colaId } };
-    }
-
-    case 'aviso-robot-error': {
-      const [robotId, intentos] = fila.clave.split(':').slice(1);
-      return {
-        tipo: 'pedido', transporte: 'telegram',
-        pedido: {
-          tipo: 'aviso-robot-error', fuente: 'consulta', id: fila.consulta_id ?? 0,
-          robotId: Number(robotId), intentos: Number(intentos),
-        },
-      };
     }
 
     default:

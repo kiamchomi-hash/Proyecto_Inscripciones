@@ -1,10 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import * as casas from '../components/formularios/casas.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
-// El insert de la autoinscripción pide el id de vuelta (`.insert().select('id').single()`)
-// para la cola del robot: el resultado se puede esperar directo o encadenado.
+// Desde la baja de la autoinscripción (27/10/2026) ningún alta genera el efecto
+// `lead-sede`: el contrato sigue (lo consume el Worker) y sus helpers puros se
+// prueban acá, pero el endpoint de la app no lo encola. Si se quiere que cada
+// preinscripción de Teclab vuelva a dar de alta el lead, hay que encolarlo en
+// `registrarConsulta` y esta prueba tiene que cambiar a propósito.
+
 const conId = resultado => {
   const r = { select: () => r, single: async () => ({ data: resultado.error ? null : { id: 41 }, ...resultado }), then: (a, b) => Promise.resolve(resultado).then(a, b) };
   return r;
@@ -12,7 +17,7 @@ const conId = resultado => {
 
 const {
   carreraHubspotDe, provinciaHubspotDe, camposLeadSede, pedidoLeadSede,
-  LEAD_SEDE_URL, LEAD_SEDE_FORMULARIO, TABLA_ENLACES,
+  LEAD_SEDE_URL, LEAD_SEDE_FORMULARIO,
 } = casas;
 
 // ── Lógica pura ──
@@ -119,6 +124,10 @@ test('el pedido apunta al formulario de la sede con el contexto de la landing', 
 });
 
 // ── El endpoint, con Supabase y HubSpot simulados ──
+//
+// Ningún alta lo dispara: el efecto `lead-sede` sólo se envía si existe una fila
+// en el outbox del Worker. Lo que se prueba acá es que la preinscripción de
+// Teclab —el caso que antes lo generaba— se guarda sin pegarle a HubSpot.
 
 const legajo = {
   casa: 'teclab', tipoFormulario: 'preinscripcion',
@@ -129,8 +138,6 @@ const legajo = {
   nivelEstudios: 'Secundario completo', colegio: 'Escuela N° 1', colegioLocalidad: 'CABA',
   email: 'ana@example.test', telefono: '11 1234-5678',
 };
-
-const CODIGO = 'Ab3dEf6hIj9kLm2nOp5qRs8tUv';
 
 /** Un PostgREST mínimo en memoria: filtros eq/in/is, update, insert y upsert. */
 function baseEnMemoria(tablas) {
@@ -161,7 +168,7 @@ function baseEnMemoria(tablas) {
   };
 }
 
-function montarEndpoint(t, respuestaHubspot = async () => new Response('{}', { status: 200 })) {
+function montarEndpoint(t) {
   const anteriores = Object.fromEntries(['NODE_ENV', 'TURNSTILE_SECRET_KEY'].map(k => [k, process.env[k]]));
   const logError = console.error;
   const logWarn = console.warn;
@@ -179,35 +186,15 @@ function montarEndpoint(t, respuestaHubspot = async () => new Response('{}', { s
   process.env.TURNSTILE_SECRET_KEY = 'prueba-simulada';
 
   const tablas = {
-    carreras: [{ id: 7, nombre: 'Tecnicatura Superior en Programación', nivel: 'Teclab - Tecnología' }],
-    consultas: [{
-      id: 41, casa: 'teclab', tipo_formulario: 'preinscripcion',
-      carrera: 'Tecnicatura Superior en Programación',
-      nombre: 'Ana', apellido: 'Pérez', dni: '30123456', sexo: 'Femenino',
-      fecha_nacimiento: '1990-04-12', localidad_nacimiento: 'CABA', nacionalidad: 'Argentina',
-      estado_civil: 'Soltero/a', direccion: 'Av. Siempre Viva', direccion_numero: '742',
-      direccion_piso: null, direccion_departamento: null, codigo_postal: '1439', localidad: 'Villa Lugano',
-      nivel_estudios: 'Secundario completo', colegio: 'Escuela N° 1', colegio_localidad: 'CABA',
-      email: 'ana@ejemplo.com', telefono: '11 5555-1234',
-    }],
-    [TABLA_ENLACES]: [{ codigo: CODIGO, consulta_id: 41, vence_at: '2099-01-01T00:00:00Z', usado_at: null }],
+    carreras: [{ id: 7, nombre: 'Tecnicatura Superior en Programación', nivel: 'Teclab - Tecnología', activa: true, proximamente: false }],
   };
   const supabase = baseEnMemoria(tablas);
 
-  // Sin las variables del robot, que en Vercel sí existen durante el build: si
-  // no, el despacho a GitHub también pasa por `fetch` y este test cuenta de más.
-  const envRobot = { token: process.env.ROBOT_GITHUB_TOKEN, repo: process.env.ROBOT_GITHUB_REPO };
-  delete process.env.ROBOT_GITHUB_TOKEN;
-  delete process.env.ROBOT_GITHUB_REPO;
-  t.after(() => {
-    if (envRobot.token !== undefined) process.env.ROBOT_GITHUB_TOKEN = envRobot.token;
-    if (envRobot.repo !== undefined) process.env.ROBOT_GITHUB_REPO = envRobot.repo;
-  });
   // Nada sale a la red: `fetch` queda simulado y `after` sólo encola.
   const llamadas = [];
   t.mock.method(globalThis, 'fetch', async (url, init) => {
     llamadas.push({ url: String(url), init, cuerpo: JSON.parse(init.body) });
-    return respuestaHubspot();
+    return new Response('{}', { status: 200 });
   });
   const programadas = [];
 
@@ -232,61 +219,21 @@ function montarEndpoint(t, respuestaHubspot = async () => new Response('{}', { s
   return { enviar, llamadas, errores, tablas };
 }
 
-test('una autoinscripción guardada da de alta el lead en la landing de la sede una sola vez', async t => {
-  const { enviar, llamadas } = montarEndpoint(t);
-  assert.equal(await enviar('autoinscripcion', { ...legajo, carreraId: 7 }), 201);
-
-  assert.equal(llamadas.length, 1);
-  const [{ url, init, cuerpo }] = llamadas;
-  assert.equal(url, LEAD_SEDE_URL);
-  assert.equal(init.method, 'POST');
-  assert.equal(init.headers['Content-Type'], 'application/json');
-  assert.ok(init.signal, 'lleva un timeout');
-  const porNombre = Object.fromEntries(cuerpo.fields.map(c => [c.name, c.value]));
-  assert.equal(porNombre.carrera, 'Programación');
-  assert.equal(porNombre.email, 'ana@example.test');
-  assert.equal(porNombre.firstname, 'Ana');
-  assert.equal(porNombre.lastname, 'Pérez');
-  assert.equal(porNombre.phone, '+54 11 1234-5678');
-  assert.equal(porNombre.provincia, 'Buenos Aires');
-  assert.equal(porNombre.token_landings, LEAD_SEDE_FORMULARIO);
-  assert.equal(cuerpo.context.pageUri, 'https://vinculacion.teclab.edu.ar/expo-bs-as-esposito');
+test('la preinscripción de Teclab se guarda sin dar de alta el lead en la landing', async t => {
+  const { enviar, llamadas, errores, tablas } = montarEndpoint(t);
+  assert.equal(await enviar('consulta', { ...legajo, carrera: 'Tecnicatura Superior en Programación', carreraId: 7 }), 201);
+  assert.equal(tablas.escrituras.length, 1);
+  assert.equal(tablas.escrituras[0].tabla, 'consultas');
+  assert.equal(llamadas.length, 0, 'el alta sólo sale del outbox del Worker');
+  assert.deepEqual(errores, []);
 });
 
-test('la autoinscripción por enlace también da de alta el lead', async t => {
-  const { enviar, llamadas } = montarEndpoint(t);
-  assert.equal(await enviar('enlace', { codigo: CODIGO }), 201);
-  assert.equal(llamadas.length, 1);
-  const porNombre = Object.fromEntries(llamadas[0].cuerpo.fields.map(c => [c.name, c.value]));
-  assert.equal(porNombre.email, 'ana@ejemplo.com');
-  assert.equal(porNombre.carrera, 'Programación');
-  assert.equal('provincia' in porNombre, false, 'Villa Lugano no es una provincia');
-});
-
-test('si HubSpot falla o no contesta, la autoinscripción responde 201 igual y no se loguean datos personales', async t => {
-  for (const [motivo, respuesta] of [
-    ['error 400', async () => new Response('{"status":"error"}', { status: 400 })],
-    ['timeout', async () => { throw new DOMException('timeout', 'TimeoutError'); }],
-    ['red caída', async () => { throw new TypeError('fetch failed'); }],
-  ]) {
-    await t.test(motivo, async st => {
-      const { enviar, llamadas, errores } = montarEndpoint(st, respuesta);
-      assert.equal(await enviar('autoinscripcion', { ...legajo, carreraId: 7 }), 201);
-      assert.equal(llamadas.length, 1);
-      assert.ok(errores.length >= 1, 'el fallo queda registrado');
-      const logueado = JSON.stringify(errores, (_k, v) => (v instanceof Error ? v.message : v));
-      for (const dato of ['ana@example.test', 'Pérez', '1234-5678']) {
-        assert.equal(logueado.includes(dato), false, `no loguea ${dato}`);
-      }
-    });
-  }
-});
-
-test('una carrera sin opción en la landing no llama a HubSpot y la autoinscripción entra igual', async t => {
-  const { enviar, llamadas, tablas } = montarEndpoint(t);
-  tablas.carreras[0].nombre = 'Tecnicatura Superior en Venta Directa';
-  assert.equal(await enviar('autoinscripcion', { ...legajo, carreraId: 7 }), 201);
-  assert.equal(llamadas.length, 0);
+test('el endpoint no arma ni encola el alta de la sede', () => {
+  // El contrato sigue en `casas.ts` porque lo consume el Worker; si la app
+  // volviera a dispararlo, esto avisa antes que el HubSpot de Teclab se
+  // entere por un aviso de duplicado.
+  const ruta = readFileSync('app/api/formularios/route.ts', 'utf8');
+  assert.doesNotMatch(ruta, /pedidoLeadSede|camposLeadSede|hsforms|lead-sede/);
 });
 
 test('una consulta común no da de alta el lead en la landing', async t => {

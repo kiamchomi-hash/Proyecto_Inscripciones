@@ -5,7 +5,7 @@ import { leerRelojBase } from '../datos/reloj.ts';
 
 export const TIPOS_EFECTO = [
   'aviso-lead', 'newsletter-alta', 'mail-precio',
-  'lead-sede', 'robot-encolar', 'robot-despacho', 'aviso-robot-error',
+  'lead-sede',
 ] as const;
 export type TipoEfecto = (typeof TIPOS_EFECTO)[number];
 
@@ -131,20 +131,6 @@ export function sentenciaEfectosClase(
     WHERE changes() = ?${valores.length + 1}
     ON CONFLICT(tipo, clave) DO NOTHING
     RETURNING id`).bind(...valores, esperadas);
-}
-
-/**
- * Aviso del robot para una fila de su cola. La clave incluye los intentos ya
- * incrementados, así cada reporte de error avisa una vez y el reintento con el
- * mismo número no duplica el aviso.
- */
-export function sentenciaAvisoRobot(db: D1Database, robotId: number): D1PreparedStatement {
-  if (!Number.isSafeInteger(robotId) || robotId < 1) throw new TypeError('ID de robot inválido.');
-  return db.prepare(`INSERT INTO outbox(tipo, clave, consulta_id)
-    SELECT 'aviso-robot-error', 'robot:' || id || ':' || intentos, consulta_id
-    FROM robot_autoinscripciones WHERE id = ?1 AND changes() = 1
-    ON CONFLICT(tipo, clave) DO NOTHING
-    RETURNING id`).bind(robotId);
 }
 
 export async function leerEfecto(db: D1Database, id: number): Promise<FilaOutbox | null> {

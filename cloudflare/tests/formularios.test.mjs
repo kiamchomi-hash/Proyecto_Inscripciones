@@ -1,15 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { crearD1, insertarCarrera, insertarPrecio } from './helpers/d1.mjs';
-import { insertarConsulta } from './helpers/consultas.mjs';
 import { CAMPOS, CASAS, camposDe } from '../../components/formularios/casas.ts';
 import { manejarFormulario } from '../src/api/formularios.ts';
-import { manejarRobotGet, manejarRobotPost } from '../src/api/robot.ts';
-import { crearEnlace } from '../src/datos/enlaces.ts';
 import { insertarMateria, MATERIA_ID, OTRA_MATERIA_ID } from './helpers/materias.mjs';
 
-// Sólo fixtures sintéticos: el captcha y los pases son puertos dobles y ningún
-// efecto externo se ejecuta (no hay fetch en los módulos bajo prueba).
+// Sólo fixtures sintéticos: el captcha es un puerto doble y ningún efecto
+// externo se ejecuta (no hay fetch en los módulos bajo prueba).
 
 const entorno = (extra = {}) => ({
   captchaConfigurado: true,
@@ -54,6 +51,10 @@ test('sobre: los 400 del handler vigente y el 503 sin servicio', async t => {
     [{ kind: 'otro', token: 'x', payload: {} }, 'Solicitud inválida'],
     [{ kind: 'consulta', payload: {} }, 'Solicitud inválida'],
     [{ kind: 'consulta', token: 'x', payload: [] }, 'Solicitud inválida'],
+    // La autoinscripción de Teclab y el enlace personalizado se dieron de baja
+    // el 27/10/2026: sus `kind` ya no existen y el sobre no los acepta.
+    [{ kind: 'autoinscripcion', token: 'x', payload: { carreraId: 1 } }, 'Solicitud inválida'],
+    [{ kind: 'enlace', token: 'x', payload: { codigo: 'A'.repeat(32) } }, 'Solicitud inválida'],
   ];
   for (const [cuerpo, mensaje] of casos) {
     const respuesta = await pedir(cuerpo, { db });
@@ -133,13 +134,12 @@ test('consulta con preinscripción: precio vigente, mail encolado y efectos ató
   await insertarPrecio(db, 1, { vigente_hasta: '2999-01-01' });
   const carrera = await db.prepare('SELECT nombre FROM carreras WHERE id=1').first('nombre');
 
-  const respuesta = await pedir(sobre('consulta', legajoTeclab({ carrera: carrera.nombre, newsletter: true }), { pase: '' }), { db });
+  const respuesta = await pedir(sobre('consulta', legajoTeclab({ carrera: carrera.nombre, newsletter: true })), { db });
   assert.equal(respuesta.status, 201);
   const cuerpo = await respuesta.json();
   assert.equal(cuerpo.ok, true);
   assert.equal(cuerpo.estado, 'vigente');
   assert.equal(cuerpo.precio.total, 'importe sintético');
-  assert.equal(cuerpo.pase, undefined, 'sin el puerto del pase no se inventa uno');
 
   const efectos = (await filas(db)).map(f => f.tipo).sort();
   assert.deepEqual(efectos, ['aviso-lead', 'mail-precio', 'newsletter-alta']);
@@ -181,92 +181,18 @@ test('precio: validación, carrera sin precio y mail con reserva de 168 h', asyn
   assert.deepEqual((await filas(db)).map(f => f.tipo).sort(), ['aviso-lead', 'mail-precio', 'newsletter-alta']);
 });
 
-test('autoinscripción: legajo completo, carrera con autoinscripción y pase de un solo uso', async t => {
+test('fallo del alta: el batch revierte y no queda ni consulta ni efecto', async t => {
   const { db } = await crearD1(t);
   await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
-  await insertarCarrera(db, 2, { nivel: 'Grado' });
-  const carrera = await db.prepare('SELECT nombre FROM carreras WHERE id=1').first('nombre');
 
-  const incompleto = await pedir(sobre('autoinscripcion', { carreraId: 1, email: 'lead@example.invalid' }), { db });
-  assert.equal(incompleto.status, 400);
-  assert.equal((await incompleto.json()).error, 'Datos inválidos');
-
-  const sinAuto = await pedir(sobre('autoinscripcion', legajoTeclab({ carreraId: 2 })), { db });
-  assert.equal(sinAuto.status, 400);
-  assert.equal((await sinAuto.json()).error, 'Carrera inválida');
-
-  const ok = await pedir(sobre('autoinscripcion', legajoTeclab({ carrera: carrera.nombre })), { db });
-  assert.equal(ok.status, 201);
-  const fila = await db.prepare('SELECT * FROM consultas').first();
-  assert.equal(fila.tipo, 'Autoinscripción');
-  assert.equal(fila.tipo_formulario, 'autoinscripcion');
-  assert.equal(fila.dni, '30156456');
-  const efectos = (await filas(db)).map(f => f.tipo).sort();
-  assert.ok(efectos.includes('aviso-lead') && efectos.includes('robot-encolar'), efectos.join(','));
-  // La carrera del fixture no tiene opción en la landing de la sede: no se encola.
-  assert.equal(efectos.includes('lead-sede'), false);
-
-  // Un pase ya usado responde como captcha inválido, aunque el captcha sea válido.
-  const iat = Date.now() - 60_000;
-  const conPase = entorno({
-    verificarCaptcha: async () => { throw new Error('no debería llamarse'); },
-    verificarPase: (pase, email, carreraId) => (pase === 'pase-sintetico' && carreraId === 1 ? { iat } : null),
-  });
-  const reuso = await pedir({ kind: 'autoinscripcion', pase: 'pase-sintetico', payload: legajoTeclab({ carrera: carrera.nombre }) }, { db, entorno: conPase });
-  assert.equal(reuso.status, 403);
-  assert.equal((await reuso.json()).error, 'CAPTCHA inválido');
-
-  const paseAjeno = await pedir({ kind: 'autoinscripcion', pase: 'pase-sintetico', payload: legajoTeclab({ carreraId: 2 }) }, { db, entorno: conPase });
-  assert.equal(paseAjeno.status, 403);
-});
-
-test('enlace: una sola transacción de consumo, alta y outbox; 16 simultáneos dan uno', async t => {
-  const { db } = await crearD1(t);
-  await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
-  const carrera = await db.prepare('SELECT nombre FROM carreras WHERE id=1').first('nombre');
-  const previa = await insertarConsulta(db, { carrera, email: 'previa@example.invalid' });
-  const enlace = await crearEnlace(db, previa);
-
-  const inexistente = await pedir(sobre('enlace', { codigo: 'A'.repeat(32) }), { db });
-  assert.equal(inexistente.status, 400);
-  assert.equal((await inexistente.json()).error, 'El enlace ya no es válido');
-
-  const antes = await db.prepare('SELECT count(*) AS n FROM consultas').first('n');
-  const respuestas = await Promise.all(Array.from({ length: 16 }, () =>
-    pedir(sobre('enlace', { codigo: enlace.codigo, newsletter: true }), { db })));
-  const estados = respuestas.map(r => r.status);
-  assert.equal(estados.filter(estado => estado === 201).length, 1);
-  assert.equal(estados.filter(estado => estado === 400).length, 15);
-  // El enlace responde sólo el ok, como el handler vigente: el precio no viaja acá.
-  const ganadora = respuestas.find(r => r.status === 201);
-  assert.deepEqual(await ganadora.json(), { ok: true });
-
-  // La perdedora no deja ni consulta ni efectos.
-  assert.equal(await db.prepare('SELECT count(*) AS n FROM consultas').first('n'), antes + 1);
-  const fila = await db.prepare("SELECT * FROM consultas WHERE tipo_formulario='autoinscripcion'").first();
-  assert.equal(fila.casa, 'teclab');
-  assert.equal(fila.carrera, carrera);
-  const delAlta = (await filas(db)).filter(f => f.consulta_id === fila.id).map(f => f.tipo).sort();
-  assert.deepEqual(delAlta, ['aviso-lead', 'newsletter-alta', 'robot-encolar']);
-  assert.notEqual((await db.prepare('SELECT usado_at FROM enlaces_inscripcion WHERE codigo=?1').bind(enlace.codigo).first('usado_at')), null);
-});
-
-test('fallo del alta: el batch revierte y el enlace no queda consumido', async t => {
-  const { db } = await crearD1(t);
-  await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
-  const carrera = await db.prepare('SELECT nombre FROM carreras WHERE id=1').first('nombre');
-  const previa = await insertarConsulta(db, { carrera, email: 'previa@example.invalid' });
-  const enlace = await crearEnlace(db, previa);
-
-  // Un trigger que aborta el INSERT de la consulta nueva: el batch entero revierte.
+  // Un trigger que aborta el INSERT de la consulta: el batch entero revierte,
+  // incluidos el aviso y el alta del newsletter que van en el mismo lote.
   await db.prepare(`CREATE TRIGGER fallo_sintetico BEFORE INSERT ON consultas
-    WHEN NEW.tipo_formulario = 'autoinscripcion'
     BEGIN SELECT RAISE(ABORT, 'fallo sintético'); END`).run();
-  const respuesta = await pedir(sobre('enlace', { codigo: enlace.codigo }), { db });
+  const respuesta = await pedir(sobre('consulta', legajoTeclab({ newsletter: true })), { db });
   assert.equal(respuesta.status, 500);
   assert.equal((await respuesta.json()).error, 'No se pudo guardar la solicitud');
-  assert.equal((await db.prepare('SELECT usado_at FROM enlaces_inscripcion WHERE codigo=?1').bind(enlace.codigo).first('usado_at')), null);
-  assert.equal(await db.prepare('SELECT count(*) AS n FROM consultas').first('n'), 1);
+  assert.equal(await db.prepare('SELECT count(*) AS n FROM consultas').first('n'), 0);
   assert.equal((await filas(db)).length, 0);
 });
 
@@ -380,28 +306,27 @@ test('modo demo: 201 con la misma forma y sin tocar base, cuota ni outbox', asyn
   const { db } = await crearD1(t);
   const demo = entorno({ demo: true, verificarCaptcha: async () => { throw new Error('no debería llamarse'); } });
 
-  for (const kind of ['consulta', 'faq', 'clase', 'precio', 'autoinscripcion', 'enlace']) {
+  for (const kind of ['consulta', 'faq', 'clase', 'precio']) {
     const payload = {
       consulta: legajoTeclab({ carrera: 'Carrera sintética' }),
       faq: { titulo: 'Pregunta sintética', contacto: 'lead@example.invalid' },
       clase: { rows: [{ materia_id: '11111111-1111-1111-1111-111111111111', telefono: '1111111111', dias: ['lunes'], horarios: ['18:00-20:00'] }] },
       precio: { carreraId: 1, email: 'lead@example.invalid' },
-      autoinscripcion: legajoTeclab(),
-      enlace: { codigo: 'A'.repeat(32) },
     }[kind];
     const respuesta = await pedir({ kind, token: 'demo', payload }, { db, entorno: demo });
     assert.equal(respuesta.status, 201, kind);
     const cuerpo = await respuesta.json();
     assert.equal(cuerpo.ok, true, kind);
-    if (kind === 'consulta' || kind === 'precio' || kind === 'autoinscripcion') {
+    if (kind === 'consulta' || kind === 'precio') {
       assert.equal(cuerpo.estado, 'vigente', kind);
       assert.match(cuerpo.precio.total, /^\$ /);
       assert.match(cuerpo.precio.nota, /demostración/);
     }
   }
-  // La preinscripción de Teclab trae pase de demo; el resto, sólo el ok.
-  const preinscripcion = await pedir({ kind: 'consulta', token: 'demo', payload: legajoTeclab() }, { db, entorno: demo });
-  assert.equal((await preinscripcion.json()).pase, 'demo');
+  // La autoinscripción ya no existe: su `kind` no entra ni en modo demo.
+  const retirada = await pedir({ kind: 'autoinscripcion', token: 'demo', payload: legajoTeclab() }, { db, entorno: demo });
+  assert.equal(retirada.status, 400);
+  assert.equal((await retirada.json()).error, 'Solicitud inválida');
 
   assert.equal(await db.prepare('SELECT count(*) AS n FROM consultas').first('n'), 0);
   assert.equal(await db.prepare('SELECT count(*) AS n FROM faq_preguntas').first('n'), 0);
@@ -418,76 +343,6 @@ test('modo demo: 201 con la misma forma y sin tocar base, cuota ni outbox', asyn
   const real = await pedir({ kind: 'faq', token: 'x', payload: { titulo: 'Pregunta real', contacto: 'lead@example.invalid' } }, { db });
   assert.equal(real.status, 201);
   assert.equal(await db.prepare('SELECT count(*) AS n FROM faq_preguntas').first('n'), 1);
-});
-
-test('robot: secreto, barrido, legajo, 404/409 y aviso encolado en el mismo batch', async t => {
-  const { db } = await crearD1(t);
-  await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
-  const consultaId = await insertarConsulta(db, { carrera: 'Carrera sintética', email: 'robot@example.invalid' });
-  const robotId = await db.prepare(`INSERT INTO robot_autoinscripciones(consulta_id) VALUES (?1) RETURNING id`)
-    .bind(consultaId).first('id');
-
-  const pedido = (url, init = {}, secreto = 'secreto-sintetico') => new Request(url, {
-    ...init, headers: { authorization: `Bearer ${secreto}`, ...(init.headers ?? {}) },
-  });
-  const base = 'https://local.test/api/robot/autoinscripciones';
-
-  const sinSecreto = await manejarRobotGet(new Request(base), db, undefined);
-  assert.equal(sinSecreto.status, 503);
-  assert.equal((await sinSecreto.json()).error, 'ROBOT_SECRET sin configurar');
-
-  const ajeno = await manejarRobotGet(pedido(base, {}, 'otro'), db, 'secreto-sintetico');
-  assert.equal(ajeno.status, 401);
-  assert.equal(ajeno.headers.get('cache-control'), 'no-store');
-
-  const barrido = await manejarRobotGet(pedido(base), db, 'secreto-sintetico');
-  assert.deepEqual(await barrido.json(), { ids: [robotId] });
-
-  const idInvalido = await manejarRobotGet(pedido(`${base}?id=0`), db, 'secreto-sintetico');
-  assert.equal(idInvalido.status, 400);
-  const noEncontrada = await manejarRobotGet(pedido(`${base}?id=999`), db, 'secreto-sintetico');
-  assert.equal(noEncontrada.status, 404);
-
-  const legajo = await manejarRobotGet(pedido(`${base}?id=${robotId}`), db, 'secreto-sintetico');
-  assert.equal(legajo.status, 200);
-  const datos = await legajo.json();
-  assert.equal(datos.id, robotId);
-  assert.equal(datos.estado, 'pendiente');
-  assert.equal(datos.carrera, 'Carrera sintética');
-  assert.equal(datos.datos.dni, '12345678');
-
-  const cargada = await manejarRobotPost(pedido(base, {
-    method: 'POST', body: JSON.stringify({ id: robotId, estado: 'cargada' }),
-  }), db, 'secreto-sintetico');
-  assert.equal(cargada.status, 200);
-  assert.deepEqual(await cargada.json(), { ok: true, id: robotId, estado: 'cargada', intentos: 0 });
-  assert.equal((await filas(db)).length, 0, 'cargada no encola aviso');
-
-  const repetida = await manejarRobotPost(pedido(base, {
-    method: 'POST', body: JSON.stringify({ id: robotId, estado: 'error' }),
-  }), db, 'secreto-sintetico');
-  assert.equal(repetida.status, 409);
-  assert.equal((await repetida.json()).error, 'ya estaba cargada');
-
-  const otra = await db.prepare(`INSERT INTO robot_autoinscripciones(consulta_id) VALUES (?1) RETURNING id`)
-    .bind(await insertarConsulta(db, { email: 'robot2@example.invalid' })).first('id');
-  for (const intento of [1, 2]) {
-    const error = await manejarRobotPost(pedido(base, {
-      method: 'POST', body: JSON.stringify({ id: otra, estado: 'error', detalle: 'motivo sintético' }),
-    }), db, 'secreto-sintetico');
-    assert.equal(error.status, 200);
-    assert.deepEqual(await error.json(), { ok: true, id: otra, estado: 'error', intentos: intento });
-  }
-  const avisos = (await filas(db)).filter(f => f.tipo === 'aviso-robot-error');
-  assert.deepEqual(avisos.map(f => f.clave), [`robot:${otra}:1`, `robot:${otra}:2`]);
-  assert.equal((await db.prepare('SELECT detalle FROM robot_autoinscripciones WHERE id=?1').bind(otra).first('detalle')), 'motivo sintético');
-
-  const cuerpoInvalido = await manejarRobotPost(pedido(base, { method: 'POST', body: '{"id":' }), db, 'secreto-sintetico');
-  assert.equal(cuerpoInvalido.status, 400);
-  const estadoInvalido = await manejarRobotPost(pedido(base, {
-    method: 'POST', body: JSON.stringify({ id: otra, estado: 'pendiente' }),
-  }), db, 'secreto-sintetico');
-  assert.equal(estadoInvalido.status, 400);
 });
 
 test('si el lote no devuelve los ids del outbox, los efectos se publican igual', async t => {

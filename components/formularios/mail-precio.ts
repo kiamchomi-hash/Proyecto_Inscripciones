@@ -9,8 +9,7 @@
 // envíos. El diseño es el aprobado
 // el 02/10/2026 (docs/mails/mail-inicio-teclab.html): si se cambia uno, se
 // cambia el otro. Reusa las mismas piezas que la pantalla (inicio de clases,
-// qué cubre el pago, enlace de autoinscripción) para que el mail no diga otra
-// cosa que el sitio.
+// qué cubre el pago) para que el mail no diga otra cosa que el sitio.
 //
 // Sin guiones largos ni viñetas decorativas: el texto se copia por una consola
 // que los convierte en signos de pregunta.

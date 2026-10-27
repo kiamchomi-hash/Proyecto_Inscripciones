@@ -39,20 +39,18 @@ export const CABECERAS_SEGURIDAD: Readonly<Record<string, string>> = {
 const API = /^\/api(?:\/|$)/;
 const IMAGENES = /^\/imagenes\/?$/;
 const INSCRIPCION_CARRERA = /^\/carreras\/[^/]+\/inscripcion\/?$/;
-const INSCRIPCION_CODIGO = /^\/inscripcion\/[^/]+\/?$/;
 
 /**
  * `X-Robots-Tag` por ruta, como los bloques de `headers()` de `next.config.ts`.
  * No hay noindex global: una página pública tiene que poder indexarse. El 404
- * sí lo lleva porque no hay contenido que ofrecer, y las dos rutas privadas
- * repiten el noindex que ya declaran en su HTML.
+ * sí lo lleva porque no hay contenido que ofrecer, y la ruta privada repite el
+ * noindex que ya declara en su HTML.
  */
 export function robotsDeRuta(ruta: string, estado: number): string | null {
   if (estado === 404) return 'noindex, nofollow';
   if (API.test(ruta)) return 'noindex';
   if (IMAGENES.test(ruta)) return 'noindex, nofollow';
   if (INSCRIPCION_CARRERA.test(ruta)) return 'noindex, follow';
-  if (INSCRIPCION_CODIGO.test(ruta)) return 'noindex, nofollow';
   return null;
 }
 
@@ -63,9 +61,9 @@ export interface ContextoCabeceras {
 
 /**
  * Aplica las cabeceras sobre la respuesta ya generada. Respeta lo que la ruta
- * haya decidido antes: `/inscripcion/[codigo]` fija `no-referrer` y los
- * endpoints de robots/sitemap fijan su propio `Cache-Control`. Todo lo demás
- * queda `no-store`, como las páginas dinámicas de Next en desarrollo.
+ * haya decidido antes: los endpoints de robots/sitemap fijan su propio
+ * `Cache-Control`. Todo lo demás queda `no-store`, como las páginas dinámicas
+ * de Next en desarrollo.
  */
 export function aplicarCabeceras(respuesta: Response, { ruta, estado }: ContextoCabeceras): Response {
   for (const [nombre, valor] of Object.entries(CABECERAS_SEGURIDAD)) {

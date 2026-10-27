@@ -42,7 +42,7 @@ export default function PaginaInscripcionTeclab(
             <div className="inscripcion-proximos-tarjeta">
               <h2 id="proximos-pasos-titulo">Próximos pasos</h2>
               <div className="inscripcion-proximos-contenido">
-                <p>Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.</p>
+                <p>Un asesor del CAU se contacta a la brevedad para terminar tu preinscripción. Después Teclab te envía por mail el acceso al portal del alumno, donde elegís el medio de pago y abonás.</p>
                 {/* Explícito y bien visible: hay quien no completa por miedo a que le cobren. */}
                 <p className="inscripcion-sin-pago">Completar este formulario no realiza ningún pago: sólo registra tu solicitud. El pago lo hacés después, desde el portal del alumno.</p>
               </div>

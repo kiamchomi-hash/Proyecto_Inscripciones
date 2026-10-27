@@ -68,25 +68,6 @@ test('telegram: el aviso de una consulta va con Markdown y el chat configurado',
   assert.equal(TIMEOUT_TELEGRAM_MS, 8_000);
 });
 
-test('telegram: un aviso de error de robot va sin Markdown y nombra el motivo', async t => {
-  const { db } = await crearD1(t);
-  const consultaId = await insertarConsulta(db);
-  const robotId = await db.prepare(`INSERT INTO robot_autoinscripciones(consulta_id, estado, intentos, detalle)
-    VALUES (?1, 'error', 2, 'Portal caído') RETURNING id`).bind(consultaId).first('id');
-  const outboxId = await db.prepare(`INSERT INTO outbox(tipo, clave, consulta_id)
-    VALUES ('aviso-robot-error', ?1, ?2) RETURNING id`)
-    .bind(`robot:${robotId}:2`, consultaId).first('id');
-
-  const { buscar, llamadas } = espia(() => new Response('{"ok":true}', { status: 200 }));
-  const transportes = crearTransportes({ telegram: { token: 'token-sintetico', chatId: '123' } }, buscar, db);
-  assert.equal(await consumirEfecto(db, outboxId, transportes), 'enviado');
-
-  const cuerpo = JSON.parse(llamadas[0].init.body);
-  assert.equal(cuerpo.parse_mode, undefined);
-  assert.match(cuerpo.text, /intento 2/);
-  assert.match(cuerpo.text, /Portal caído/);
-});
-
 test('telegram: un aviso de una clase sale de la fila de la solicitud', async t => {
   const { db } = await crearD1(t);
   await insertarMateria(db);
@@ -262,7 +243,7 @@ test('smtp2go: sin clave no hay envío y la fila sigue pendiente', async t => {
   assert.equal((await filaOutbox(db, id)).estado, 'pendiente');
 });
 
-// ── HubSpot y GitHub ──
+// ── HubSpot ──
 
 test('hubspot: reenvía la URL y el cuerpo ya armados; apagado no llama a la red', async t => {
   const { buscar, llamadas } = espia(() => new Response(null, { status: 204 }));
@@ -277,22 +258,6 @@ test('hubspot: reenvía la URL y el cuerpo ya armados; apagado no llama a la red
   assert.equal(llamadas[0].url, 'https://api.hsforms.test/submit');
   assert.equal(llamadas[0].init.method, 'POST');
   assert.deepEqual(JSON.parse(llamadas[0].init.body), { fields: [], context: {} });
-});
-
-test('github: el despacho lleva sólo el id de la cola del robot', async t => {
-  const { buscar, llamadas } = espia(() => new Response(null, { status: 204 }));
-  const transportes = crearTransportes({ github: { repo: 'duenio/repo', token: 'gh-sintetico' } }, buscar, {});
-
-  assert.equal(await transportes.github({ colaId: 7 }), 'enviado');
-  assert.equal(llamadas[0].url, 'https://api.github.com/repos/duenio/repo/dispatches');
-  assert.equal(llamadas[0].init.headers.Authorization, 'Bearer gh-sintetico');
-  assert.deepEqual(JSON.parse(llamadas[0].init.body), {
-    event_type: 'autoinscripcion', client_payload: { id: 7 },
-  });
-
-  const sinRepo = crearTransportes({ github: { repo: 'sin-forma', token: 't' } }, buscar, {});
-  assert.equal(await sinRepo.github({ colaId: 7 }), 'sin-configurar');
-  assert.equal(llamadas.length, 1);
 });
 
 // ── Queues y barrido ──

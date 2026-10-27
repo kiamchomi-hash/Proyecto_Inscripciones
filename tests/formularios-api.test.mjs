@@ -22,7 +22,6 @@ test('el endpoint valida el sobre, captcha, cuota y resultado de escritura', asy
     'next/server': { NextResponse: Response },
     '@/components/formularios/casas': casas,
     '@/lib/turnstile': { verifyTurnstile: async () => { verificaciones++; return captcha; } },
-    '@/lib/pase-autoinscripcion': cargarTypescript('lib/pase-autoinscripcion.ts', { 'server-only': {} }),
     '@/lib/supabase-admin': { createSupabaseAdmin: () => ({
       rpc: async () => ({ data: cuota, error: null }),
       from: tabla => ({ insert: async fila => { filas.push({ tabla, fila }); return { error: errorBase }; } }),
@@ -34,6 +33,12 @@ test('el endpoint valida el sobre, captcha, cuota y resultado de escritura', asy
   const valido = { kind: 'consulta', token: 'simulado', payload: { email: 'prueba@example.test', casa: 'siglo21', tipoFormulario: 'contacto' } };
   for (const cuerpo of ['{', 'null', '[]', '1', JSON.stringify({ ...valido, payload: [] }), JSON.stringify({ ...valido, payload: null })]) {
     assert.equal((await enviar(cuerpo)).status, 400, cuerpo);
+  }
+  // Los kinds de la autoinscripción se dieron de baja el 27/10/2026: rebotan en
+  // el sobre, antes del captcha y de la cuota.
+  for (const kind of ['autoinscripcion', 'enlace']) {
+    const cuerpo = JSON.stringify({ kind, token: 'simulado', payload: { ...valido.payload, dni: '30123456', codigo: 'Ab3dEf6hIj9kLm2nOp5qRs8tUv' } });
+    assert.equal((await enviar(cuerpo)).status, 400, kind);
   }
   assert.equal(verificaciones, 0);
   assert.equal(filas.length, 0);
@@ -167,15 +172,10 @@ test('sólo true booleano activa el checkbox; ausente o fuera de la casa queda f
   }
 });
 
-test('precio y autoinscripción mantienen las filas exactas sin copiar claves del navegador', async t => {
+test('«Ver precio» mantiene la fila exacta sin copiar claves del navegador', async t => {
   const { enviar, carrera } = montarFilas(t);
   assert.deepEqual(await enviar({ ...datosPersonales, carreraId: 7, carrera: 'Otra', casa: 'siglo21', id: 999 }, 'precio'), {
     carrera: carrera.nombre, tipo: casas.TIPO_PRECIO, casa: 'teclab',
     tipo_formulario: casas.FORMULARIO_PRECIO, email: datosPersonales.email, equivalencias: false,
-  });
-  assert.deepEqual(await enviar({ ...datosPersonales, carreraId: 7, carrera: 'Otra', casa: 'siglo21', id: 999 }, 'autoinscripcion'), {
-    carrera: carrera.nombre, tipo: casas.TIPO_AUTOINSCRIPCION, casa: 'teclab',
-    tipo_formulario: casas.FORMULARIO_AUTOINSCRIPCION,
-    ...esperadosDe(casas.camposDe('teclab', 'preinscripcion')), equivalencias: false,
   });
 });

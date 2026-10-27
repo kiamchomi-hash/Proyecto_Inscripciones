@@ -255,38 +255,6 @@ export type Database = {
         }
         Relationships: []
       }
-      enlaces_inscripcion: {
-        Row: {
-          codigo: string
-          consulta_id: number
-          creado_at: string
-          usado_at: string | null
-          vence_at: string
-        }
-        Insert: {
-          codigo: string
-          consulta_id: number
-          creado_at?: string
-          usado_at?: string | null
-          vence_at?: string
-        }
-        Update: {
-          codigo?: string
-          consulta_id?: number
-          creado_at?: string
-          usado_at?: string | null
-          vence_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "enlaces_inscripcion_consulta_id_fkey"
-            columns: ["consulta_id"]
-            isOneToOne: false
-            referencedRelation: "consultas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       faq_preguntas: {
         Row: {
           contacto: string
@@ -685,44 +653,6 @@ export type Database = {
             columns: ["carrera_id"]
             isOneToOne: false
             referencedRelation: "carreras"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      robot_autoinscripciones: {
-        Row: {
-          consulta_id: number
-          created_at: string
-          detalle: string | null
-          estado: string
-          id: number
-          intentos: number
-          updated_at: string
-        }
-        Insert: {
-          consulta_id: number
-          created_at?: string
-          detalle?: string | null
-          estado?: string
-          id?: never
-          intentos?: number
-          updated_at?: string
-        }
-        Update: {
-          consulta_id?: number
-          created_at?: string
-          detalle?: string | null
-          estado?: string
-          id?: never
-          intentos?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "robot_autoinscripciones_consulta_id_fkey"
-            columns: ["consulta_id"]
-            isOneToOne: true
-            referencedRelation: "consultas"
             referencedColumns: ["id"]
           },
         ]

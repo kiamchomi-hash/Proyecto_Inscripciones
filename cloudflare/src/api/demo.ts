@@ -1,6 +1,6 @@
 import {
-  EMAIL_VALIDO, CASAS_CON_PRECIO, carreraIdDe, fechaArgentina, validarPayloadAutoinscripcion,
-  validarPayloadEnlace, validarPayloadPrecio, type ResultadoPrecio,
+  EMAIL_VALIDO, CASAS_CON_PRECIO, carreraIdDe, fechaArgentina,
+  validarPayloadPrecio, type ResultadoPrecio,
 } from '../../../components/formularios/casas.ts';
 import { filaConsulta, filaFaq, filasClase, esCasa, text, type JsonRecord } from './filas.ts';
 
@@ -39,7 +39,7 @@ export function precioDemo(ahora = Date.now()): Extract<ResultadoPrecio, { estad
 }
 
 /** La respuesta de demo por `kind`, con el mismo 201 y la misma forma que en real. */
-export function respuestaDemo(kind: string, payload: JsonRecord, paseDemo: string): Record<string, unknown> {
+export function respuestaDemo(kind: string, payload: JsonRecord): Record<string, unknown> {
   switch (kind) {
     case 'consulta': {
       filaConsulta(payload);
@@ -48,9 +48,7 @@ export function respuestaDemo(kind: string, payload: JsonRecord, paseDemo: strin
         && payload.tipoFormulario === 'preinscripcion'
         && carreraIdDe(payload) !== null;
       if (!conPrecio) return { ok: true };
-      // Como en real, el pase sólo en Teclab y con un mail válido: se ata a él.
-      const conPase = payload.casa === 'teclab' && EMAIL_VALIDO.test(text(payload.email, 254));
-      return { ok: true, ...precioDemo(), ...(conPase ? { pase: paseDemo } : {}) };
+      return { ok: true, ...precioDemo() };
     }
     case 'faq':
       filaFaq(payload);
@@ -58,14 +56,8 @@ export function respuestaDemo(kind: string, payload: JsonRecord, paseDemo: strin
     case 'clase':
       filasClase(payload);
       return { ok: true };
-    case 'precio':
+    default:
       if (!validarPayloadPrecio(payload)) throw new TypeError('Datos inválidos');
       return { ok: true, ...precioDemo() };
-    case 'autoinscripcion':
-      if (!validarPayloadAutoinscripcion(payload)) throw new TypeError('Datos inválidos');
-      return { ok: true, ...precioDemo() };
-    default:
-      if (!validarPayloadEnlace(payload)) throw new TypeError('Datos inválidos');
-      return { ok: true };
   }
 }

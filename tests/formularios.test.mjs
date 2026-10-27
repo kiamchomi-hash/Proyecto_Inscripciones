@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { CAMPOS, CASAS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, columnaDe, obligatoriosDe, validarPayloadAutoinscripcion } from '../components/formularios/casas.ts';
+import { CAMPOS, CASAS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera, columnaDe, obligatoriosDe } from '../components/formularios/casas.ts';
 import { esCarreraVisible } from '../components/index/types.ts';
 
 // La oferta que el sitio publica hoy, segun getCategoryForCarrera().
@@ -269,14 +269,12 @@ test('las nacionalidades priorizan la región y conservan una opción para otras
   assert.equal(opciones.includes('Siria'), false);
 });
 
-test('Otra sigue siendo una nacionalidad válida para la autoinscripción', () => {
-  const payload = Object.fromEntries(obligatoriosDe('teclab', 'preinscripcion')
-    .map(id => [id, CAMPOS[id].opciones?.[0] ?? 'Dato']));
-  Object.assign(payload, {
-    carreraId: 2, nacionalidad: 'Otra', dni: '30111222',
-    email: 'persona@example.com', telefono: '1132973801',
-  });
-  assert.ok(validarPayloadAutoinscripcion(payload));
+test('«Otra» sigue siendo una nacionalidad válida y viaja tal cual', () => {
+  // Desde la baja de la autoinscripción no hay validador de legajo: la fila se
+  // arma con `armarPayload` y el endpoint descarta lo que no es una opción. Por
+  // eso lo que importa es que «Otra» esté en la lista y no se transforme.
+  assert.ok(CAMPOS.nacionalidad.opciones.includes('Otra'));
+  assert.equal(armarPayload('teclab', 'preinscripcion', { nacionalidad: 'Otra', dni: '30111222' }).nacionalidad, 'Otra');
 });
 
 test('las etiquetas son países sin cambiar valores históricos del legajo', () => {
@@ -286,12 +284,9 @@ test('las etiquetas son países sin cambiar valores históricos del legajo', () 
   assert.equal(etiquetas.Peruana, 'Perú');
   assert.equal(etiquetas.Otra, 'Otro país');
   for (const nacionalidad of ['Boliviana', 'Peruana', 'Otra']) {
-    const payload = Object.fromEntries(obligatoriosDe('teclab', 'preinscripcion')
-      .map(id => [id, CAMPOS[id].opciones?.[0] ?? 'Dato']));
-    Object.assign(payload, { carreraId: 2, nacionalidad, dni: '30111222',
-      email: 'persona@example.com', telefono: '1132973801' });
-    assert.ok(validarPayloadAutoinscripcion(payload));
-    assert.equal(armarPayload('teclab', 'preinscripcion', payload).nacionalidad, nacionalidad);
+    assert.ok(CAMPOS.nacionalidad.opciones.includes(nacionalidad), nacionalidad);
+    // La etiqueta es sólo de pantalla: al legajo viaja el valor histórico.
+    assert.equal(armarPayload('teclab', 'preinscripcion', { nacionalidad }).nacionalidad, nacionalidad);
   }
 });
 

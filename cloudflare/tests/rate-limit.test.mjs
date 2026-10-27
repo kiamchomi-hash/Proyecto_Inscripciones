@@ -63,7 +63,7 @@ test('peculiaridades SQL conservadas: primera concesión con máximo 0, null y v
 test('formularios y alertas usan prefijos, umbrales y 600 segundos actuales sin guardar IP', async t => {
   const { db } = await crearD1(t);
   const ip = '192.0.2.1';
-  for (const kind of ['consulta', 'faq', 'clase', 'precio', 'autoinscripcion', 'enlace']) {
+  for (const kind of ['consulta', 'faq', 'clase', 'precio']) {
     const key = `${kind}:${hash(ip)}`;
     await db.prepare('INSERT INTO form_rate_limits(key,request_count) VALUES (?1,4)').bind(key).run();
     assert.equal(await consumirCupoFormulario(db, kind, ip), true);
@@ -102,7 +102,9 @@ test('integer inválido o clave nula fallan sin escribir; error real D1 no permi
     await assert.rejects(comprobarCupo(db, 'invalido', 5, n), /integer/);
   }
   await assert.rejects(comprobarCupo(db, null, 5, 600), /Clave/);
-  await assert.rejects(consumirCupoFormulario(db, 'otro', 'unknown'), /Formulario/);
+  for (const retirado of ['otro', 'autoinscripcion', 'enlace']) {
+    await assert.rejects(consumirCupoFormulario(db, retirado, 'unknown'), /Formulario/);
+  }
   await assert.rejects(consumirCupoAlerta(db, 'otro', 'unknown'), /Evento/);
   assert.equal(await db.prepare('SELECT count(*) AS n FROM form_rate_limits').first('n'), 0);
   await db.exec('DROP TABLE form_rate_limits');

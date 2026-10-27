@@ -69,7 +69,7 @@ test('plan público remoto parametrizado se ensaya en D1 efímero sin relajar im
       database_id:destino.id,migrations_dir:resolve('migrations'),remote:false}]}}]});
   try{await s.listen();await s.getWorker().applyD1Migrations('DB');const {DB}=await s.getWorker().getEnv();
     for(const q of plan.consultas) await DB.prepare(q.sql).bind(...q.params).run();
-    const v=await verificarPublico(DB,snapshot);assert.deepEqual(v.tablas,plan.tablas);assert.equal(Object.keys(v.privadas).length,12);
+    const v=await verificarPublico(DB,snapshot);assert.deepEqual(v.tablas,plan.tablas);assert.equal(Object.keys(v.privadas).length,10);
   } finally {await s.close();}
 });
 

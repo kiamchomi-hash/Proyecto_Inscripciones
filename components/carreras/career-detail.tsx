@@ -388,7 +388,7 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
             <div className="career-hero-actions">
               {/* Quien viene a inscribirse baja a la preinscripcion, que arma el
                   legajo. La de una carrera que todavia no abrio solo guarda la
-                  consulta y avisa por Telegram: sin precio ni autoinscripcion. */}
+                  consulta y avisa por Telegram: sin precio. */}
               <a
                 href="#preinscripcion"
                 className="career-button career-button--primary"

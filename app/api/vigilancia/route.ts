@@ -26,7 +26,6 @@ import {
 } from '@/lib/vigilancia-esperado';
 import { enviarTelegram } from '@/lib/telegram';
 import { createSupabaseAdmin } from '@/lib/supabase-admin';
-import { autoinscripcionesDemoradas } from '@/lib/vigilancia-robot';
 import { preciosVencidos } from '@/lib/vigilancia-precios';
 
 export const dynamic = 'force-dynamic';
@@ -80,7 +79,7 @@ function mensajeParaTelegram(fallo: string) {
     return 'La página principal no cumple una configuración de seguridad esperada. Revisar las cabeceras del sitio.';
   }
 
-  if (que === 'robot de autoinscripciones' || que === 'precios vencidos') return detalle;
+  if (que === 'precios vencidos') return detalle;
 
   if (que.startsWith('/')) {
     return `La página ${que} no está disponible. Revisar el sitio publicado.`;
@@ -176,22 +175,7 @@ async function correrChequeos(base: string) {
     falla('/sitemap.xml', motivo(e));
   }
 
-  // 6. Autoinscripciones de Teclab esperando al robot. No es una caida del
-  // sitio: es el robot, que corre en la PC de la sede y puede quedar parado sin
-  // avisar (ver lib/vigilancia-robot.ts).
-  try {
-    const { data, error } = await createSupabaseAdmin()
-      .from('robot_autoinscripciones')
-      .select('created_at')
-      .eq('estado', 'pendiente');
-    if (error) throw new Error(error.message);
-    const aviso = autoinscripcionesDemoradas(data ?? [], new Date());
-    if (aviso) falla('robot de autoinscripciones', aviso);
-  } catch (e) {
-    falla('robot de autoinscripciones', `No se pudo revisar la cola del robot de Teclab: ${motivo(e)}`);
-  }
-
-  // 7. Precios vencidos hace más de un día: la corrida diaria dejó de
+  // 6. Precios vencidos hace más de un día: la corrida diaria dejó de
   // renovarlos (ver lib/vigilancia-precios.ts).
   try {
     const { data, error } = await createSupabaseAdmin()

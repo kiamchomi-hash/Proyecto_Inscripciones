@@ -77,94 +77,49 @@ Cron de Vercel (`vercel.json`, `0 13 * * *`: todos los días a las 10 de Argenti
 - `POST /api/newsletter/baja` pone `activo = false`. Toma el id de la query (la baja de un clic de Gmail, responde 200) o del cuerpo del formulario de la página (responde 303 a `/newsletter/baja?listo=1`). Un id que no es UUID es 400; uno que no existe responde igual que uno que sí, para no confirmar suscripciones. La CSP ya permite el envío (`form-action 'self'`).
 - `tests/newsletter-envio.test.mjs` cubre el cron (autenticación, la regla de los 7 días, el alcance, los encabezados, la marca sólo con envío confirmado, sin clave) y la baja (los dos caminos, id mal formado o inexistente, y que la página no escriba).
 
-## Autoinscripción de Teclab: `kind: 'autoinscripcion'`
+## Autoinscripción de Teclab: dada de baja (27/10/2026)
 
-Quien elige gestionar su inscripción en Teclab manda la preinscripción completa. No hay medio de pago: desde el 03/10/2026 el formulario no lo pregunta, porque el portal del alumno pide la tarjeta y decide la financiación por su cuenta. Las entradas de `formulario-lead.tsx` confirman directamente con «Preinscripción enviada» y «Nos comunicamos a la brevedad.», sin decisiones posteriores al envío:
+Existió una autoinscripción: `kind: 'autoinscripcion'`, un pase HMAC para no pedir
+un segundo captcha, un enlace personalizado `/inscripcion/<código>` y un robot en
+GitHub Actions que cargaba la preinscripción en el Portal Administrativo de
+Teclab. **Se retiró todo.** Hoy la preinscripción de Teclab es una consulta como
+la de las otras casas: entra en `consultas`, avisa por Telegram y la atención
+sigue a mano. El historial está en `odd/tasks/autoinscripcion-teclab.md`.
 
-- **Directa**: la ficha con `?inscripcion=auto#preinscripcion` (`pideAutoinscripcion()` en `elegir-carrera.ts`). Desde el 09/10/2026 ningún botón la arma —«Inscribite ya» del modal y de «Ver precio» van a la página dedicada, y el mail usa `?desde=mail`—; se sigue leyendo por los enlaces viejos. El parámetro se lee en el navegador, así la página sigue siendo estática. Datos (botón «Inscribirme», Turnstile invisible) → confirmación, con **un solo envío**, el de la autoinscripción, que sale desde los datos.
-- **Página dedicada** (`alinearAlLlegar`, Teclab, preinscripción): el botón «Solicitar inscripción» envía una sola vez `kind: autoinscripcion`, con captcha y newsletter. No envía antes una consulta ni pide una segunda confirmación. Valida DNI de 7 a 9 dígitos en el cliente. El aviso explica gestión sin cobro; el resultado confirma solicitud recibida, no una cuenta creada. El robot sigue pendiente: registrar la solicitud no prueba que el portal ya tenga el alumno.
-- **Normal** (home, `/teclab`, fichas y páginas de preinscripción de todas las casas): conserva `kind: 'consulta'`, con sus avisos y newsletter, y pasa directamente a la confirmación. No ofrece «Ahora no», no pregunta por otra inscripción y no hace un segundo envío. Si la respuesta trae precio vigente, queda accesible con «Ver precio» desde la confirmación; «Volver» regresa a ella sin enviar nada.
+- Los `kind` válidos son `consulta`, `faq`, `clase` y `precio`. `autoinscripcion`
+  y `enlace` devuelven 400 «Solicitud inválida», y no existe el campo `pase`.
+- `ROBOT_SECRET`, `ROBOT_GITHUB_TOKEN` y `ROBOT_GITHUB_REPO` ya no existen, igual
+  que `/api/robot/autoinscripciones`. La migración
+  `cloudflare/migrations/0011_quitar_autoinscripcion.sql` borra las tablas
+  `robot_autoinscripciones` y `enlaces_inscripcion` (las dos estaban vacías).
+- El formulario no tiene flujo directo, captcha invisible ni botón «Inscribirme»:
+  envía con «Enviar preinscripción» y confirma con «Preinscripción enviada» y
+  «Nos comunicamos a la brevedad.», con «Ver precio» si la respuesta trae precio
+  vigente.
 
-```json
-{ "kind": "autoinscripcion", "token": "<turnstile>",
-  "payload": { "carreraId": 123, "nombre": "…", "dni": "…", "…": "los campos de la preinscripción de Teclab",
-               "newsletter": true } }
-```
 
-- La validación es estricta (`validarPayloadAutoinscripcion` en `casas.ts`, sección *Autoinscripción*): todos los obligatorios de la preinscripción de Teclab, opciones de su lista, DNI de 7 a 9 dígitos y mail y teléfono válidos. Un `medioPago` que mande una página vieja en caché se ignora. Con esos datos se crea la cuenta del alumno, así que nada entra a medias: un payload inválido devuelve 400 sin escribir.
-- La carrera se busca por `carreraId` y la casa sale de su `nivel`: una carrera que no es de Teclab o no existe devuelve 400.
-- Entra en `consultas` con `casa: 'teclab'`, `tipo_formulario: 'autoinscripcion'`, `tipo: 'Autoinscripción'`, el nombre de la carrera de la base y el legajo armado con `columnaDe()`, igual que la preinscripción. La columna `medio_pago` sigue en la tabla, pero ya no se escribe (las filas anteriores al 03/10/2026 la pueden tener). El aviso de Telegram sale por el trigger de siempre y muestra el tipo.
-- `newsletter` funciona como en el resto y sale una sola vez con cada envío.
-- Por ahora no dispara nada externo: el robot que carga la preinscripción en el portal de Teclab (T4 de `odd/tasks/autoinscripcion-teclab.md`) va donde lo marca el comentario de `registrarAutoinscripcion`.
-- `tests/autoinscripcion.test.mjs` cubre la validación, la casa y el endpoint con Supabase simulado.
+### El precio que quedó
 
-### El pase: compatibilidad de clientes anteriores
+La preinscripción sigue devolviendo el precio vigente cuando lo hay, y el cliente lo ofrece después de confirmar el envío: «Ver precio» abre la pantalla del precio y «Volver» regresa a la confirmación sin otro pedido. **`components/formularios/financiacion-teclab.ts`** sigue alimentando las líneas de «Financiación» de esa pantalla (vigente desde el 26/08/2026; se actualiza con cada placa nueva).
 
-El servidor conserva la emisión y validación de pases para clientes anteriores. El formulario actual no los consume: la entrada normal confirma la consulta y las directas usan su captcha.
+### Carreras anunciadas (`proximamente`)
 
-Los tokens de Turnstile son de un solo uso, y la entrada normal envía dos veces. Hasta el 04/10/2026 la pregunta montaba un segundo Turnstile invisible y, cuando ese desafío fallaba, la persona quedaba frente a «Estamos verificando la conexión…» sin saber qué hacer. Ahora el servidor le devuelve una prueba de que ya verificó:
-
-- **Emisión** (`lib/pase-autoinscripcion.ts`): una preinscripción (`kind: 'consulta'`, `tipoFormulario: 'preinscripcion'`) con mail válido y un `carreraId` cuya carrera, **leída de la base**, tiene autoinscripción responde además `pase`. Es un HMAC-SHA256 sobre `{ s, iat, exp }`: `s` es el SHA-256 del mail en minúsculas más `:carreraId`, y vence a los 10 minutos. La clave se deriva de `TURNSTILE_SECRET_KEY` con separación de dominio (`HMAC(secreto, 'pase-autoinscripcion-v1')`): no hay variable nueva, rotar el secreto invalida los pases y sin él no se emite ninguno. Un fallo al emitir nunca tumba la preinscripción, que ya está guardada.
-- **Uso**: `{ "kind": "autoinscripcion", "pase": "<pase>", "payload": { … } }`, sin `token`. Sólo este `kind` acepta `pase`. Con pase no se llama a Turnstile; se verifican firma (en tiempo constante), vencimiento y que sea del mismo mail y la misma carrera del payload. **La cuota corre igual.** Un pase vencido, adulterado, de otra persona o de otra carrera devuelve 403 `CAPTCHA inválido`, igual que un captcha rechazado, y no cae al token.
-- **Reuso**: si desde el `iat` del pase ya entró en `consultas` una autoinscripción del mismo mail (sin distinguir mayúsculas) y la misma carrera, 403. No es atómico: dos envíos simultáneos con el mismo pase pueden entrar los dos, dentro de la cuota.
-- **Cliente** (`formulario-lead.tsx`): guarda el pase de la respuesta, no monta captcha en la pregunta mientras lo tiene y lo descarta si el envío falla. `PasoInscribirme` suma `captchaVisible`; el enlace y la entrada directa siguen con su Turnstile invisible.
-- `tests/pase-autoinscripcion.test.mjs` cubre el módulo; `tests/autoinscripcion.test.mjs`, la emisión y el uso en el endpoint (sin Turnstile, con cuota, rechazos, reuso y sin secreto).
-
-### La financiación y el precio que quedaron
-
-**`components/formularios/financiacion-teclab.ts`** es la placa oficial de financiación del período vuelta datos (vigente desde el 26/08/2026; se actualiza con cada placa nueva). Hoy lo usa sólo «Ver precio», para las líneas de «Financiación» bajo el total. Hasta el 03/10/2026 alimentaba también la cuota del panel de la tarjeta, que se fue con el paso del medio de pago.
-
-La preinscripción de Teclab responde `{ "ok": true }`, como el resto de las consultas: hasta el 03/10/2026 sumaba el precio para ese panel, y «Ver precio» lo guardaba en el `sessionStorage` de la pestaña. Las dos cosas se sacaron con el paso del medio de pago. Actualmente la respuesta de la preinscripción también puede traer precio vigente, que el cliente ofrece sólo después de confirmar el envío.
-
-### Carreras anunciadas (`proximamente`): sólo la preinscripción
-
-Una carrera con `proximamente = true` (desde el 10/10/2026, las cinco nuevas de Teclab) todavía no está cargada en la casa, pero acepta la preinscripción: el lead la elige en el formulario, la fila entra en `consultas` y el trigger `on_consulta_insert` avisa por Telegram. **Nada más.**
-
-- **Servidor**: `carreraConPrecio` y `carreraConAutoinscripcion` (`casas.ts`) descartan una anunciada, y todas las lecturas de `carreras` del endpoint que deciden precio, pase o autoinscripción traen `proximamente` de la base. La preinscripción responde sólo `{ ok: true }`: sin precio, sin mail del precio y sin pase. `kind: 'autoinscripcion'`, `kind: 'enlace'` y `kind: 'precio'` con una anunciada devuelven 400, sin escribir ni marcar el enlace usado; por lo tanto tampoco hay alta en HubSpot ni robot.
-- **Cliente**: los dos formularios reciben las mismas carreras (ya no hay filtro por modo). `formulario-lead.tsx` no considera `conAutoinscripcion` a una anunciada, así que el envío termina en «Preinscripción enviada», sin ofrecer precio ni otra inscripción. La ficha la manda a `#preinscripcion` con «Preinscribite»; las páginas de inscripción dedicadas no la ofrecen (`tieneInscripcionPropia`).
-- El aviso de Telegram de su preinscripción todavía suma el enlace de inscripción (lo arma `notificar`): ese enlace responde 400 hasta que la carrera se habilite.
-- `tests/preinscripcion-proximamente.test.mjs` lo cubre. Cuando la casa la habilite, se apaga `proximamente` y vuelve el flujo completo (`docs/alta-de-carrera.md`).
-
-## Enlace de inscripción de Teclab: `kind: 'enlace'`
-
-Cada preinscripción de Teclab (`casa: 'teclab'`, `tipo_formulario: 'preinscripcion'`) trae al final del aviso de Telegram una línea «Enlace para inscribirse» con `https://www.siglo21sur.com/inscripcion/<codigo>`, lista para reenviarle a la persona. Al abrirla ve el precio vigente de su carrera, un resumen de sus datos y un botón «Inscribirme»; al confirmar queda creada la misma autoinscripción de arriba, sin volver a tipear nada.
-
-- **El código** lo crea la Edge Function `notificar` cuando llega el aviso (no hay trigger nuevo) y lo guarda con la service role en `enlaces_inscripcion` (`sql/2026-10-03_enlaces_inscripcion.sql`, tabla privada sin acceso para `anon` ni `authenticated`). Son 32 letras y números al azar; sin `_` ni `-` porque rompen el Markdown del aviso. La URL no lleva ningún dato personal. Vence a los 7 días (`vence_at`) o al usarse (`usado_at`). Si no se puede crear, el aviso sale igual, sin la línea.
-- **La página** `app/inscripcion/[codigo]/page.tsx` es dinámica (`force-dynamic`, nada se cachea) y `noindex, nofollow`. Lee con la service role el enlace, la preinscripción, la carrera (por nombre, entre los niveles de Teclab) y el precio de `precios_privados`, con la misma vigencia que «Ver precio». Al navegador llega sólo lo que arma `propsInscripcionEnlace` en `casas.ts`: nombre y apellido, DNI oculto (`30.1••.•56`), mail oculto (`a••@ejemplo.com`), la carrera y el precio. Nunca el DNI completo, el domicilio ni el teléfono.
-- Enlace inexistente, vencido o usado: un mismo mensaje con WhatsApp de Teclab y el enlace a la carrera (o a `/teclab` si no se sabe cuál). No distingue los casos para no confirmar códigos a quien prueba. Si lo guardado no alcanza para crear la cuenta (la preinscripción se guarda con la validación tolerante de la consulta), en lugar de «Inscribirme» ofrece WhatsApp.
-- La confirmación reusa `PasoInscribirme` y `PasoListo` de `autoinscripcion-teclab.tsx` (`components/formularios/inscripcion-enlace.tsx`), con un solo Turnstile invisible.
-
-```json
-{ "kind": "enlace", "token": "<turnstile>",
-  "payload": { "codigo": "<32 letras y números>" } }
-```
-
-- Mismo orden que el resto (sobre → Turnstile y cuota en paralelo, con su propia cuota `enlace:<hash>` → payload). `validarPayloadEnlace` exige un código con el formato de la tabla; `newsletter` sólo suscribe con un `true` explícito y la página no lo manda, porque ya se ofreció en la preinscripción.
-- El legajo **no viaja desde el navegador**: sale de la preinscripción guardada (`payloadDesdeConsulta`, columna por columna desde `CAMPOS`) y pasa por la misma validación estricta (`validarPayloadAutoinscripcion`) y el mismo armado (`insertarAutoinscripcion` en el endpoint) que la autoinscripción del formulario. Ahí está el comentario `// T4:` del robot: lo cruzan las dos entradas.
-- El enlace se marca usado **antes** de escribir, con un `UPDATE … WHERE usado_at IS NULL`: dos envíos simultáneos no crean dos autoinscripciones. Si el `INSERT` falla, se libera para reintentar.
-- Enlace inexistente, vencido, usado, de otra casa o con legajo incompleto: 400 `El enlace ya no es válido`, sin escribir nada. Error de base: 500.
-- `tests/enlace-inscripcion.test.mjs` cubre lo oculto, la vigencia, que las props del cliente no traigan el legajo, el endpoint con un Supabase en memoria (escritura, marca, rechazo de vencidos y usados, liberación) y la parte de la Edge Function (formato del código, qué filas llevan enlace y que el aviso salga aunque el enlace falle).
+Una carrera con `proximamente = true` (desde el 10/10/2026, las cinco nuevas de Teclab) todavía no está cargada en la casa, pero acepta la preinscripción: el lead la elige en el formulario, la fila entra en `consultas` y el trigger `on_consulta_insert` avisa por Telegram. **Nada más.** `carreraConPrecio` (`casas.ts`) la descarta, así que la respuesta es sólo `{ ok: true }`: sin precio y sin mail del precio. `tests/preinscripcion-proximamente.test.mjs` lo cubre.
 
 ## Alta del lead en la landing de la sede (Teclab)
 
-Teclab asigna el lead a la sede por su landing de HubSpot (`vinculacion.teclab.edu.ar/expo-bs-as-esposito`, portal `5880041`, formulario `a19c1564-e23a-475c-a16a-11aa244c1b9e`, sin captcha). Cada autoinscripción guardada —las dos entradas: `kind: 'autoinscripcion'` y `kind: 'enlace'`, que pasan por `insertarAutoinscripcion`— manda además los datos a ese formulario desde el servidor, por la API pública de HubSpot (`POST https://api.hsforms.com/submissions/v3/integration/submit/<portal>/<formulario>`). La persona nunca entra a la landing. Ningún otro `kind` lo hace.
+Teclab asigna el lead a la sede por su landing de HubSpot (`vinculacion.teclab.edu.ar/expo-bs-as-esposito`, portal `5880041`, formulario `a19c1564-e23a-475c-a16a-11aa244c1b9e`, sin captcha). El contrato y su consumidor siguen en el código, pero **ningún alta lo genera** desde la baja de la autoinscripción: el efecto `lead-sede` quedó sin emisor y sólo se envía si existe una fila en el outbox. Si se quiere que cada preinscripción de Teclab vuelva a dar de alta el lead en la sede, hay que encolar ese efecto en `registrarConsulta`.
 
 - **Qué viaja** (`pedidoLeadSede` en `casas.ts`): `firstname`, `lastname`, `email`, `phone`, `carrera`, `provincia` y los ocultos `token_landings` y `empresas_form` (los dos con el id del formulario), con `context.pageUri` y `pageName` de la landing. `cuando_te_recibis_` no se manda; un campo vacío tampoco.
-- **`carrera`** tiene que ser exactamente una opción de la lista de HubSpot. `carreraHubspotDe` la saca del nombre de la base por palabras clave normalizadas (acepta nombres viejos y nuevos: Cloud Administration / Servicios en la Nube, Gestión Agraria / Empresa Agraria, Customer Experience / Experiencia del Cliente, Seguros / P.A.S.). Sin opción (hoy, Venta Directa) no se manda nada y queda un `console.warn`.
+- **`carrera`** tiene que ser exactamente una opción de la lista de HubSpot. `carreraHubspotDe` la saca del nombre de la base por palabras clave normalizadas (acepta nombres viejos y nuevos: Cloud Administration / Servicios en la Nube, Gestión Agraria / Empresa Agraria, Customer Experience / Experiencia del Cliente, Seguros / P.A.S.). Sin opción no se manda nada y queda un `console.warn`.
 - **`provincia`** sale de `provinciaHubspotDe`, que compara el texto entero normalizado contra la lista; CABA, Capital Federal y Ciudad (Autónoma) de Buenos Aires van como «Buenos Aires». Teclab no pide provincia, así que se prueba con la localidad; si no coincide («Villa Lugano»), el campo se omite.
-- **Cuándo y cómo falla**: corre con `after()` de `next/server`, con la respuesta ya enviada, y un `AbortSignal.timeout` de 5 s. Nunca cambia la respuesta: la autoinscripción ya está guardada y contesta 201 igual. Un rechazo de HubSpot, un timeout o una red caída quedan en `console.error('[formularios] …')` con el `status` o el tipo de error, nunca con datos personales. No hay reintento.
-- Sin variables de entorno nuevas ni cambios de CSP (el pedido sale del servidor). `tests/lead-sede-teclab.test.mjs` cubre el mapeo de carreras y provincias, el armado y el endpoint con `fetch` simulado: una sola llamada por autoinscripción (formulario y enlace), 201 aunque HubSpot falle o no conteste, y ninguna llamada para una consulta común.
+- `tests/lead-sede-teclab.test.mjs` cubre el mapeo de carreras y provincias y el armado del pedido.
 
-## El robot de Teclab: `robot_autoinscripciones`
+## El robot de Teclab: dado de baja (27/10/2026)
 
-Cada autoinscripción guardada (las mismas dos entradas, en `insertarAutoinscripcion`) se le pasa al robot que la carga en el Portal Administrativo de Teclab (repo privado `cau-robot-teclab`, GitHub Actions). **Los datos personales nunca viajan a GitHub**: el despacho lleva sólo un id y el robot pide el legajo al sitio.
+El robot vivía en el repo privado `cau-robot-teclab` (GitHub Actions) y cargaba la preinscripción en el Portal Administrativo de Teclab. Se retiró junto con la autoinscripción: no quedan `robot_autoinscripciones`, ni `/api/robot/autoinscripciones`, ni los efectos `robot-encolar`, `robot-despacho` y `aviso-robot-error`, ni el chequeo de la vigilancia que avisaba cuando la cola se demoraba. La preinscripción se carga a mano, como antes del 03/10/2026.
 
-- **Al guardar**: el INSERT en `consultas` devuelve su `id` (`.select('id').single()`). Con `after()`, el endpoint crea la fila en `robot_autoinscripciones` (tabla privada, `sql/2026-10-03_robot_autoinscripciones.sql`, estado `pendiente`) y despacha `POST https://api.github.com/repos/$ROBOT_GITHUB_REPO/dispatches` con `{ event_type: 'autoinscripcion', client_payload: { id } }` y un timeout de 5 s. Sin `ROBOT_GITHUB_REPO` o `ROBOT_GITHUB_TOKEN` no despacha (queda un `console.warn`) y la fila espera al barrido. Nada de esto cambia el 201; los registros llevan el `status` o el tipo de error, nunca datos personales.
-- **`GET /api/robot/autoinscripciones?id=<id>`**, con `Authorization: Bearer $ROBOT_SECRET` (comparado en tiempo constante; sin la variable, 503; mal, 401): `{ id, estado, intentos, carrera, datos }`, donde `datos` es el legajo de la preinscripción de Teclab con las claves de `CAMPOS` (`nombre`, `apellido`, `dni`, `sexo`, `fechaNacimiento`, `lugarNacimiento`, `nacionalidad`, `estadoCivil`, `domicilio`, `domicilioNumero`, `domicilioPiso`, `domicilioDepartamento`, `codigoPostal`, `localidad`, `nivelEstudios`, `colegio`, `colegioLocalidad`, `email`, `telefono`), armado con `payloadDesdeConsulta`. Sólo para filas `pendiente` o `error` (un error se reintenta); `cargada` o inexistente, 404. Sin `id`: `{ ids }` de hasta 20 pendientes, para barrer lo que no se despachó.
-- **`POST /api/robot/autoinscripciones`** con `{ id, estado: 'cargada' | 'error', detalle }`: actualiza la fila (`detalle` truncado a 300 caracteres, `intentos + 1` en error) y responde `{ ok, id, estado, intentos }`. Una fila ya `cargada` devuelve 409. En `error` avisa por Telegram (`lib/telegram.ts`, texto plano) con nombre, DNI, mail, teléfono, carrera y motivo, para cargarla a mano; la respuesta suma `aviso` y un Telegram caído no la cambia. `detalle` es el motivo técnico: el robot no pone ahí datos de la persona.
-- `tests/robot-autoinscripciones.test.mjs` cubre el despacho (sólo el id, omitido sin variables, 201 aunque falle la fila o GitHub) y el endpoint (503/401, legajo sólo de filas abiertas, barrido con tope, actualización y aviso en error).
-
-Rate limit: RPC `check_form_rate_limit(p_key, p_max_requests, p_window_seconds)` con la IP hasheada en SHA-256. La clave incluye el `kind` (`consulta:<hash>`), así que el tope es **5 pedidos por cada tipo** por 10 min — una misma IP puede mandar 30 en total entre los seis (`consulta`, `faq`, `clase`, `precio`, `autoinscripcion` y `enlace`). `/api/track-click` usa 60 (navegar 20 tarjetas es uso normal).
+Rate limit: RPC `check_form_rate_limit(p_key, p_max_requests, p_window_seconds)` con la IP hasheada en SHA-256. La clave incluye el `kind` (`consulta:<hash>`), así que el tope es **5 pedidos por cada tipo** por 10 min — una misma IP puede mandar 20 en total entre los cuatro (`consulta`, `faq`, `clase` y `precio`). `/api/track-click` usa 60 (navegar 20 tarjetas es uso normal).
 
 Turnstile se verifica en `lib/turnstile.ts`, que además compara el `hostname` que devuelve Cloudflare contra `TURNSTILE_EXPECTED_HOSTNAME` (normaliza `www.`). Sin `TURNSTILE_SECRET_KEY`, el endpoint devuelve 503, salvo en desarrollo con `NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL=1`: sólo ahí acepta `rate-limit-only`. El widget emite ese token únicamente en ese modo y sin site key. **No saltea el rate limit ni la credencial de escritura**: sin `SUPABASE_SERVICE_ROLE_KEY`, un envío que llega a consultar la cuota devuelve 503. Las claves de prueba de Cloudflare son la alternativa para comprobar la integración completa del captcha.
 
@@ -172,7 +127,7 @@ El JSON mal formado y los sobres nulos, arrays o sin discriminadores válidos de
 
 ## Modo demo (sólo desarrollo)
 
-Para recorrer en local todo el frontend de la preinscripción («Ver precio», la preinscripción, «¿Querés gestionar tu inscripción?» con «Inscribirme», la autoinscripción directa y «¡Listo!») sin resolver el captcha y sin escribir nada:
+Para recorrer en local todo el frontend de la preinscripción («Ver precio», la preinscripción y «¡Listo!») sin resolver el captcha y sin escribir nada:
 
 1. Sumar `NEXT_PUBLIC_FORMULARIOS_DEMO=1` a `.env.local`.
 2. Levantar `npm run dev` (reiniciarlo si ya estaba corriendo: las `NEXT_PUBLIC_` se leen al arrancar).
@@ -180,11 +135,11 @@ Para recorrer en local todo el frontend de la preinscripción («Ver precio», l
 El chequeo vive en `lib/formularios-demo.ts` y exige además `NODE_ENV=development`: en producción la bandera no cambia nada aunque esté en `1`. Con el modo activo:
 
 - `components/turnstile-widget.tsx` no carga Cloudflare (aunque haya site key), no pinta nada y entrega el token `demo`.
-- `POST /api/formularios` valida el sobre y el payload igual que en real (lo inválido sigue dando 400) y responde 201 con la misma forma, sin tocar la base, la cuota, Turnstile, SMTP2GO, HubSpot, el robot ni el newsletter. Deja un `console.info` de una línea por envío, sin datos de la persona.
-- «Ver precio» y la preinscripción de Teclab devuelven un precio ficticio, fijo y rotulado «(demo)», vigente por 30 días; no se lee `precios_privados`. La preinscripción de Teclab con mail válido trae además un `pase` de demo, así que «Inscribirme» sigue sin otro captcha. El resto de los envíos devuelve sólo `{ ok: true }`.
+- `POST /api/formularios` valida el sobre y el payload igual que en real (lo inválido sigue dando 400) y responde 201 con la misma forma, sin tocar la base, la cuota, Turnstile, SMTP2GO ni el newsletter. Deja un `console.info` de una línea por envío, sin datos de la persona.
+- «Ver precio» y la preinscripción de Teclab devuelven un precio ficticio, fijo y rotulado «(demo)», vigente por 30 días; no se lee `precios_privados`. El resto de los envíos devuelve sólo `{ ok: true }`.
 - La casa sale de lo que manda el navegador, no de la base: el modo demo no verifica la carrera.
 
-Queda fuera el enlace personalizado `/inscripcion/<código>`: su página lee la base con la service role. `tests/formularios-demo.test.mjs` cubre el 201 por cada `kind` sin llamadas a Supabase ni a la red, el 400 de los payloads inválidos y que fuera de desarrollo todo siga igual.
+`tests/formularios-demo.test.mjs` cubre el 201 por cada `kind` sin llamadas a la base ni a la red, el 400 de los payloads inválidos y que fuera de desarrollo todo siga igual.
 
 ## Siglo 21: precios 2027 y preinscripción
 

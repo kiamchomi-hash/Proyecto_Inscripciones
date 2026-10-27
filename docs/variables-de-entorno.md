@@ -8,11 +8,7 @@ Lo que usa Next en producción (plantilla en `.env.example`): `NEXT_PUBLIC_SUPAB
 
 El `.env.local` de esta máquina tiene, de las que usa Next, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_GA_ID` y las tres de Turnstile; el resto son de las herramientas (`TELEGRAM_*` y las credenciales de los scripts de ventas). `EDITOR_DATABASE_URL` se retiró con el Supabase que la respaldaba (27/10/2026). **La que no está es `SUPABASE_SERVICE_ROLE_KEY`.** Alcanza para levantar el sitio y leer de la base, pero un POST válido a `/api/formularios` devuelve 503 al consultar la cuota o intentar escribir; los sobres inválidos devuelven 400 antes. `vercel env pull` no trae la service role (está marcada Sensitive). Para probar formularios de punta a punta hay que pegarla a mano desde el gestor de contraseñas.
 
-El robot de Teclab (`docs/formularios-por-casa.md`) suma tres, todas en Vercel:
-
-- `ROBOT_SECRET`: autentica al robot en `/api/robot/autoinscripciones` (`Authorization: Bearer …`). Va también como secreto del repo `cau-robot-teclab` en GitHub. Sin ella, el endpoint responde 503.
-- `ROBOT_GITHUB_TOKEN`: token de GitHub con permiso para disparar `repository_dispatch` en el repo del robot (fine-grained, Contents: read and write, sólo ese repo). Sin ella, no se despacha y las autoinscripciones quedan pendientes.
-- `ROBOT_GITHUB_REPO`: `dueño/repo` del robot, por ejemplo `kiamchomi-hash/cau-robot-teclab`.
+El robot de Teclab se dio de baja el 27/10/2026: ya no existen `ROBOT_SECRET`, `ROBOT_GITHUB_TOKEN` ni `ROBOT_GITHUB_REPO`, y `/api/robot/autoinscripciones` tampoco. Detalle en `odd/tasks/autoinscripcion-teclab.md`.
 
 El mail con el resumen del precio de Teclab y el newsletter semanal (`docs/formularios-por-casa.md`) usan una, en Vercel y marcada Sensitive:
 

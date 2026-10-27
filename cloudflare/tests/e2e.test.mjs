@@ -10,7 +10,6 @@ import {
 } from './helpers/servidores.mjs';
 import { sqlCatalogo } from './fixtures/catalogo-home.mjs';
 import { CAMPOS, camposDe } from '../../components/formularios/casas.ts';
-import { CODIGO } from './fixtures/inscripciones.mjs';
 
 // E2E real con Chromium (Playwright de la raíz) sobre los dos servidores en
 // loopback: el build de Astro en `wrangler dev` y el Next del sitio en
@@ -755,8 +754,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
       '/newsletter/baja', '/newsletter/baja?id=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '/newsletter/baja?listo=1',
       '/carreras/licenciatura-en-administracion', '/carreras/tecnicatura-en-programacion',
       '/carreras/diplomatura-en-oratoria', '/carreras/licenciatura-en-administracion/inscripcion',
-      '/carreras/tecnicatura-en-programacion/inscripcion', '/inscripcion/no-valido',
-      '/inscripcion/EnlaceSinteticoLocal1234567890ABCD', '/novedades/1', '/novedades/2',
+      '/carreras/tecnicatura-en-programacion/inscripcion', '/novedades/1', '/novedades/2',
       '/novedades/articulo/novedad-sintetica-1']) {
       const nombreRuta = ruta.slice(1).replaceAll('/', '-').replaceAll('?', '-').replaceAll('=', '-');
       for (const perfil of PERFILES) {
@@ -1035,29 +1033,13 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
       await pagina.locator('#preinscripcion button[type="submit"]').click();
       const payload = (await pedido).postDataJSON();
       assert.equal((await respuesta).status(), 201);
-      assert.equal(payload.kind, dedicada && casa === 'teclab' ? 'autoinscripcion' : 'consulta');
+      // La autoinscripción de Teclab se dio de baja el 27/10/2026: la página
+      // dedicada y la ficha mandan el mismo `kind` que el resto.
+      assert.equal(payload.kind, 'consulta');
       assert.equal(payload.payload.carreraId, idCarrera);
       assert.equal(payload.payload.newsletter, false);
       assert.equal(payload.token, 'demo');
       await pagina.waitForFunction(() => document.body.textContent.includes('Preinscripción enviada'));
-      await contexto.close();
-    }
-  });
-
-  await t.test('enlace personalizado: captcha invisible, sólo código en POST, error sin éxito y confirmación con doble', async () => {
-    for (const status of [500, 201]) {
-      const { pagina, contexto } = await abrirPagina(navegador, bases.demo, {ruta:`/inscripcion/${CODIGO}`});
-      const pedidos = [];
-      await contexto.route('**/api/formularios', async ruta => {
-        pedidos.push(ruta.request().postDataJSON());
-        await ruta.fulfill({status, contentType:'application/json', body:JSON.stringify(status === 201 ? {ok:true} : {error:'No se pudo guardar la solicitud'})});
-      });
-      await pagina.getByRole('button', {name:'Inscribirme', exact:true}).click();
-      await pagina.waitForFunction(ok => ok ? /Preinscripción enviada/.test(document.body.textContent)
-        : /No se pudo|Hubo un error/.test(document.body.textContent), status === 201);
-      assert.equal(pedidos.length, 1);
-      assert.deepEqual(pedidos[0], {kind:'enlace', token:'demo', payload:{codigo:CODIGO}});
-      if (status === 500) assert.equal(await pagina.getByText('Preinscripción enviada', {exact:true}).count(), 0);
       await contexto.close();
     }
   });

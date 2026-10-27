@@ -18,7 +18,7 @@ export const CONTRATO = {
   novedades: { columnas: columnas('id,titulo,contenido,extracto,fecha,tag,imagen_url,href,slug,pinned,publicada,created_at,updated_at'), filtros: { publicada: 'eq.true' }, booleanos: ['pinned','publicada'], json: [] },
   faq_preguntas: { columnas: columnas('id,titulo,descripcion,respuesta,created_at,updated_at,estado,destacada,orden,modo'), filtros: { estado: 'eq.aprobada', destacada: 'eq.true', modo: 'eq.publica' }, booleanos: ['destacada'], json: [] },
 };
-export const PRIVADAS = ['consultas','solicitudes_clase','suscripciones_newsletter','precios_privados','reservas_mail_precio','enlaces_inscripcion','robot_autoinscripciones','form_rate_limits','career_clicks','outbox','outbox_reclamos','newsletter_envios'];
+export const PRIVADAS = ['consultas','solicitudes_clase','suscripciones_newsletter','precios_privados','reservas_mail_precio','form_rate_limits','career_clicks','outbox','outbox_reclamos','newsletter_envios'];
 export const huella = valor => createHash('sha256').update(JSON.stringify(valor)).digest('hex');
 export function resumenTablas(tablas) {
   return Object.fromEntries(Object.entries(tablas).map(([tabla, filas]) => [tabla, { filas: filas.length, sha256: huella(filas) }]));

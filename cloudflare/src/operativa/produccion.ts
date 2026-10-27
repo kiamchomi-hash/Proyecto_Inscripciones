@@ -23,8 +23,6 @@ export interface EntornoProduccion {
   TELEGRAM_CHAT_ID?: string;
   SMTP2GO_API_KEY?: string;
   HUBSPOT_HABILITADO?: string;
-  GITHUB_REPO?: string;
-  GITHUB_TOKEN?: string;
 }
 
 export const COLA_EFECTOS = 'cau-efectos';
@@ -37,9 +35,6 @@ export function configEnvios(entorno: EntornoProduccion): ConfigEnvios {
   }
   if (entorno.SMTP2GO_API_KEY) config.smtp = { clave: entorno.SMTP2GO_API_KEY };
   if (entorno.HUBSPOT_HABILITADO === 'si') config.hubspot = { habilitado: true };
-  if (entorno.GITHUB_REPO && entorno.GITHUB_TOKEN) {
-    config.github = { repo: entorno.GITHUB_REPO, token: entorno.GITHUB_TOKEN };
-  }
   return config;
 }
 

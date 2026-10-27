@@ -1,19 +1,19 @@
 'use client';
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { WhatsAppIcon } from '@/components/icons';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackAbandonoFormulario, trackConsulta, trackFormularioVisto, trackInicioFormulario, trackIntentoFormulario, type OrigenConsulta } from '@/lib/analytics';
 import {
-  CAMPOS, CASAS_CON_AUTOINSCRIPCION, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera,
+  CAMPOS, armarPayload, camposComunes, camposDe, camposPosibles, casaDeCarrera,
   obligatoriosDe,
   type Campo as CampoDef, type CampoId, type CasaId, type Modo,
 } from './casas';
 import { bloquesDe, ROTULO_GRUPO } from './bloques';
-import { EVENTO_ELEGIR_CARRERA, pideAutoinscripcion, type DetalleElegirCarrera } from './elegir-carrera';
-import { AVISO_TOKEN, AVISO_VERIFICAR, AvisoSinPago, PasoListo, PasoPrecio } from './autoinscripcion-teclab';
+import { EVENTO_ELEGIR_CARRERA, type DetalleElegirCarrera } from './elegir-carrera';
+import { PasoListo, PasoPrecio } from './autoinscripcion-teclab';
 import { PrecioEnFormulario, type PrecioVigente } from '@/components/index/ver-precio-teclab';
 import { modalidadCorta } from '@/components/carreras/career-content';
 
@@ -205,9 +205,6 @@ function diasDelMes(anio: number, mes: number) {
 }
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** La URL de la página no cambia mientras el formulario vive: nada que escuchar. */
-const sinSuscripcion = () => () => {};
 
 /**
  * La duración de la carrera, si la página la mandó. `CarreraOpcion` no la
@@ -662,10 +659,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // Tildado de entrada (decisión del 02/10/2026). No es un campo de `CAMPOS`:
   // no va a `consultas` sino a `suscripciones_newsletter`, y sólo si hay mail.
   const [newsletter, setNewsletter] = useState(true);
-  // Autoinscripción de Teclab: un carrusel sobre la misma tarjeta. `entradaAuto` es la llegada con `?inscripcion=auto`; se lee en el
-  // navegador para que la página siga siendo estática; en el server da `false`
-  // y la hidratación no choca.
-  const entradaAuto = useSyncExternalStore(sinSuscripcion, pideAutoinscripcion, () => false);
   const [paso, setPaso] = useState<Paso>('datos');
   // El paso del que se está saliendo mientras dura el deslizamiento; `null`
   // quieto. Con movimiento reducido no hay deslizamiento y queda en `null`.
@@ -682,11 +675,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // El precio vigente que devuelve la preinscripción (Teclab y Siglo 21), para
   // consultarlo desde la confirmación. Vencido o sin precio queda en null.
   const [precioCarrera, setPrecioCarrera] = useState<PrecioVigente | null>(null);
-  // La autoinscripción ya entró: irse desde la confirmación no es un abandono.
-  const [autoinscripta, setAutoinscripta] = useState(false);
-  // El precio que trae la autoinscripción de la entrada directa, que no pasó
-  // por el paso del precio: se ve con «Ver precio» desde la confirmación.
-  const [precioDirecto, setPrecioDirecto] = useState<PrecioVigente | null>(null);
   const botonRef = useRef<HTMLButtonElement>(null);
   const seccionRef = useRef<HTMLElement>(null);
   const inicioMedido = useRef(false);
@@ -716,17 +704,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
 
   // La casa que manda: la fija de la página, o la que trae la carrera elegida.
   const casaActiva = casa ?? casaDeCarrera(carrera);
-  // La autoinscripción necesita la carrera elegida, no sólo la casa: en
-  // `/teclab` la casa viene fija y la carrera puede faltar.
   const casaDeLaCarrera = casaDeCarrera(carrera);
-  // Una anunciada (`proximamente`) todavía no está cargada en la casa: su
-  // preinscripción guarda la consulta, avisa por Telegram y termina en la
-  // confirmación simple, sin precio ni «Inscribirme».
-  const conAutoinscripcion = esPreinscripcion && !carrera?.proximamente && casaDeLaCarrera !== null
-    && CASAS_CON_AUTOINSCRIPCION.includes(casaDeLaCarrera);
-  // Entrada directa: datos y confirmación, con un solo envío desde los datos.
-  const solicitudDirecta = alinearAlLlegar && esPreinscripcion && casaActiva === 'teclab';
-  const flujoAuto = (entradaAuto || solicitudDirecta) && conAutoinscripcion;
   // Una preinscripción sin carrera elegida no tiene sentido: no se sabe a qué
   // se preinscribe nadie, ni qué datos hacen falta. Hasta que haya carrera se
   // muestra sólo el buscador. El contacto sí puede empezar en blanco: es una
@@ -920,18 +898,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       && !opciones!.includes(puesto);
   });
 
-  const errorDni = flujoAuto && !/^[0-9]{7,9}$/.test(texto('dni').replace(/[.\s]/g, ''))
-    ? 'Ingresá un DNI de 7 a 9 dígitos.' : '';
   const hayContacto = Boolean(email || telefono);
   const datosValidos = hayContacto && !errorEmail && !errorTelefono
-    && !faltanObligatorios.length && !malEscritos.length && !errorDni;
-  // En la entrada directa el paso 1 envía la autoinscripción, con el captcha
-  // invisible; en las demás, con el de siempre. En los dos hace falta el token.
+    && !faltanObligatorios.length && !malEscritos.length;
   const valido = datosValidos && Boolean(token);
 
   useEffect(() => {
-    estadoAbandonoRef.current = { listo: listo || preinscripcionEnviada || autoinscripta, enviando, error, intentado, valido, token, valores };
-  }, [autoinscripta, error, enviando, intentado, listo, preinscripcionEnviada, token, valido, valores]);
+    estadoAbandonoRef.current = { listo: listo || preinscripcionEnviada, enviando, error, intentado, valido, token, valores };
+  }, [error, enviando, intentado, listo, preinscripcionEnviada, token, valido, valores]);
 
   useEffect(() => {
     const medirAbandono = () => {
@@ -1101,66 +1075,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     destino?.focus({ preventScroll: true });
   }, [listo, paso, pasoSaliente]);
 
-  const nuevoCaptcha = () => { setToken(''); setCaptchaKey(key => key + 1); setCaptchaVencido(false); };
-
-  /**
-   * El único envío de la entrada directa: la
-   * preinscripción completa, con `kind: 'autoinscripcion'`. El medio de pago
-   * no viaja: lo elige la persona en el portal del alumno.
-   */
-  const enviarAutoinscripcion = async () => {
-    if (enviando || !carrera || !casaDeLaCarrera) return;
-    if (!token) return;
-    let precioRespuesta: PrecioVigente | null = null;
-    setEnviando(true);
-    setError('');
-    try {
-      const respuesta = await fetch('/api/formularios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          kind: 'autoinscripcion',
-          token,
-          payload: {
-            ...armarPayload(casaDeLaCarrera, 'preinscripcion', valores),
-            carreraId: carrera.id,
-            newsletter,
-          },
-        }),
-      });
-      if (!respuesta.ok) {
-        const detalle = await respuesta.json().catch(() => null) as { error?: string } | null;
-        throw new Error(detalle?.error || 'submit_failed');
-      }
-      // La entrada directa no vio el precio: llega con la respuesta y queda
-      // detrás de «Ver precio». Ilegible no es un error: la solicitud ya entró.
-      const datos = await respuesta.json().catch(() => null) as { estado?: string; precio?: PrecioVigente } | null;
-      if (datos?.estado === 'vigente' && datos.precio) precioRespuesta = datos.precio;
-    } catch (fallo) {
-      const motivo = fallo instanceof Error ? fallo.message : '';
-      setError(motivo === 'Demasiadas solicitudes'
-        ? 'Recibimos varios envíos desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'
-        : motivo === 'CAPTCHA inválido'
-          ? AVISO_VERIFICAR
-          : 'Hubo un error al enviar. Intentá de nuevo o escribinos por WhatsApp.');
-      setEnviando(false);
-      nuevoCaptcha();
-      return;
-    }
-    trackConsulta(origen, carreraElegida || null, filtro ? (CATEGORIES.find(c => c.id === filtro)?.label || filtro) : null);
-    setEnviando(false);
-    setAutoinscripta(true);
-    setPrecioDirecto(precioRespuesta);
-    irAPaso('confirmacion');
-  };
-
   const limpiar = () => {
     terminarSlide();
     setPaso('datos');
     setPreinscripcionEnviada(false);
     setPrecioCarrera(null);
-    setAutoinscripta(false);
-    setPrecioDirecto(null);
     setListo(false);
     setIntentado(false);
     setEnFrio(false);
@@ -1181,9 +1100,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     if (!valido) {
       trackIntentoFormulario(origen, modo, !token ? 'captcha' : 'validacion');
       setIntentado(true);
-      // El captcha invisible de la entrada directa todavía no devolvió el
-      // token: no hay nada que corregir, sólo esperar un segundo.
-      if (flujoAuto && datosValidos) return;
       setEnFrio(true);
       if (frioRef.current) clearTimeout(frioRef.current);
       frioRef.current = setTimeout(() => setEnFrio(false), 5000);
@@ -1191,7 +1107,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       // opción de su lista, y el mail o el teléfono mal escritos —que no
       // entran en ninguna de las dos y quedaban sin señalar—.
       const problemas: CampoId[] = [...faltanObligatorios, ...malEscritos];
-      if (errorDni) problemas.push('dni');
       if (errorEmail || !hayContacto) problemas.push('email');
       if (errorTelefono || !hayContacto) problemas.push('telefono');
       irAlPrimerProblema(problemas);
@@ -1199,11 +1114,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     }
     trackIntentoFormulario(origen, modo, 'valido');
 
-    // Entrada directa a la autoinscripción: el paso 1 la envía y pasa al «¡Listo!».
-    if (flujoAuto) {
-      void enviarAutoinscripcion();
-      return;
-    }
     setEnviando(true);
     setError('');
 
@@ -1264,7 +1174,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   };
 
   // Sólo los datos montan el captcha; la confirmación no vuelve a enviar.
-  const precioParaVer = precioCarrera ?? precioDirecto;
+  const precioParaVer = precioCarrera;
   const pasos = ORDEN_PASOS.filter(p => p !== 'verPrecio' || precioParaVer);
   const indicePaso = pasos.indexOf(paso);
   const captchaDatos = paso === 'datos';
@@ -1546,7 +1456,6 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                             valor={valores[id]}
                             onChange={valor => poner(id, valor)}
                             opcional={esOpcional(id)}
-                            error={id === 'dni' && flujoAuto ? (intentado ? errorDni : '') : undefined}
                             invalido={intentado && (faltanObligatorios.includes(id) || malEscritos.includes(id))}
                           />
                         </div>
@@ -1630,17 +1539,14 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 ocupa el marcador de `turnstile-widget.tsx` — si no, ese hueco
                 se lee como un vacío y aleja al botón de los datos. */}
             <div className="space-y-1.5 px-3 pb-2 pt-2.5 sm:px-4 sm:pt-3">
-              {/* En la entrada directa a la autoinscripción es invisible, como
-                  en «Ver precio». Y fuera del paso 1 no se monta: su
-                  vencimiento borraría el token del paso siguiente. */}
+              {/* Se monta sólo en el paso 1: fuera de él, su vencimiento
+                  borraría el token. */}
               {captchaDatos && (
                 <TurnstileWidget
                   key={captchaKey}
                   marca={casaActiva ?? 'siglo21'}
-                  invisible={flujoAuto}
                   onVerify={nuevo => { setToken(nuevo); setCaptchaVencido(false); }}
-                  // El invisible se renueva solo: no hay nada que volver a tildar.
-                  onExpire={() => { setToken(''); setCaptchaVencido(!flujoAuto); }}
+                  onExpire={() => { setToken(''); setCaptchaVencido(true); }}
                 />
               )}
               <button
@@ -1650,9 +1556,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 className="w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 hover:shadow-[0_6px_18px_rgba(var(--catalogo-acento-rgb),0.35)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 disabled:hover:shadow-none"
                 style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
-                {enviando ? 'Enviando...' : solicitudDirecta ? 'Preinscribirme' : flujoAuto ? 'Inscribirme' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
+                {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
               </button>
-              {flujoAuto && !solicitudDirecta && <AvisoSinPago />}
 
             </div>
 
@@ -1670,7 +1575,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                   : captchaVencido
                     ? <span className="text-amber-300">El captcha venció. Volvé a tildarlo.</span>
                     : intentado && !token
-                      ? <span className="text-amber-300">{flujoAuto ? AVISO_TOKEN : 'Falta tildar la verificación de seguridad.'}</span>
+                      ? <span className="text-amber-300">Falta tildar la verificación de seguridad.</span>
                       : null}
                 <span className="text-[var(--catalogo-texto-suave)]">¿Preferís hablar directamente?</span>
                 <a
@@ -1715,9 +1620,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
           >
           {montado('confirmacion') && (
             <PasoListo
-              solicitud={solicitudDirecta}
               onVerPrecio={precioParaVer ? () => irAPaso('verPrecio') : undefined}
-              dni={texto('dni')}
               waHref={`https://wa.me/${numeroWhatsAppDe(casaDeLaCarrera ?? casaActiva ?? 'siglo21')}?text=${encodeURIComponent(mensajeWhatsAppFormulario)}`} />
           )}
           </div>

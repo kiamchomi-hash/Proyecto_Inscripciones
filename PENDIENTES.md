@@ -16,6 +16,8 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 3. Urgente: leads y precios
 
+- [ ] **Arreglar el formulario de `/contacto`** (27/10/2026): hace «movimientos raros» al usarlo y hay que ajustarlo. Reproducirlo primero en el sitio publicado (`cloudflare/`, con `cd cloudflare && npm run dev`) y anotar qué se mueve o salta antes de tocar `cloudflare/src/entrega/PaginaContacto`; después verificar el envío real contra `/api/formularios` y revisar que la consulta entre en D1. Sin detalle del síntoma todavía.
+
 - [ ] **Investigar cuotas, intereses y cargos de otros medios de pago de Teclab** (23/10/2026): MercadoPago con dinero en cuenta, GoCuotas, WiBond, PagoFácil y Rapipago. El mismo total inicial no confirma las condiciones de financiación. [Detalle y límite de acceso](odd/tasks/teclab-extractor-dashboard.md#medios-de-pago-adicionales-condiciones-pendientes).
 
 ## 5. Siglo 21
@@ -26,6 +28,8 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
   - Contrastar contra el corpus y respuestas (`ventas/corpus/siglo21.json`), que hoy describen dos parciales por materia.
 
 ## 6. Sitio y diseño
+
+- [ ] **Dar a Teclab alcance en México y Chile por el SEO** (27/10/2026): Teclab se ofrece principalmente en México y Chile, no sólo en Argentina, y hoy el sitio no lo dice. Sumar esos países al contenido y a las páginas de Teclab (títulos, descripciones y texto visible) para que se lo encuentre buscando desde ahí. Sin inventar condiciones de cursada, precios ni modalidad que no estén confirmados: las condiciones por país las aporta el usuario.
 
 - [ ] **Revisar las páginas oficiales de Teclab para ver los cambios de frontend** (21/10/2026): recorrer el sitio de Teclab y anotar qué cambió en su diseño (colores, tipografía, componentes, disposición), para evaluar si conviene actualizar de acá las piezas y las fichas.
 
@@ -45,6 +49,7 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 8. Infraestructura y seguridad
 
+- [ ] **Renovar el token `CLOUDFLARE_API_TOKEN`** que usa el deploy por CI (creado el 27/10/2026 en *My Profile · API Tokens*, con `Workers Scripts:Edit`, `Queues:Edit`, `Workers Routes:Edit` y `Zone:Read` sobre `siglo21sur.com`). Si se le puso TTL de 90 días, vence a fines de enero de 2027 y el workflow falla con 401; renovarlo y volver a `gh secret set CLOUDFLARE_API_TOKEN`. Procedimiento en [`cloudflare/LEER.md`](cloudflare/LEER.md).
 - [ ] **Borrar la clave `Onboarding` en el panel de Resend** (la hace el usuario; no tocar `topykly-dev`). El resto se retiró el 18/10/2026: sin uso en el código, ya no estaba en Vercel y se borró el secreto de Supabase. *(Notas operativas.)*
 
 ## 9. Herramientas e inspiración
@@ -63,7 +68,6 @@ Los pedidos ya redactados y el destino de cada dato están en [las notas operati
 - [ ] **Confirmar becas, doble carrera y las dudas restantes de requisitos**, que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 - [ ] Revisar las decisiones pendientes sobre los módulos de Bienestar Integral y Mindfulness, si siguen dentro del alcance del convenio. *(Notas operativas; estado sin confirmar.)*
 - [ ] **Cerrar las 5 alertas altas de `braces`** (GHSA-vfj7-8cjw-p6xm), en espera de un arreglo publicado. Sólo entra en desarrollo, por `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` 3.3.1 → `micromatch`; no llega al sitio. Sharp, source-map-js y el watcher ya se actualizaron (`96e2e78`). Al 18/10/2026 ni Next 16.4.2 ni el canary 16.5 cambiaron `fast-glob`, y el alias a tinyglobby rompe el plugin. Revisar cuando salga una versión nueva de Next. [Detalle](odd/tasks/auditoria-dependencias.md).
-- [ ] Quitar autoinscripcion, mejor, un asesor se contactará a la brevedad pero ofrecer el botón ver precios
 
 ## Al fondo de la cola
 

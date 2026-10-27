@@ -5,7 +5,7 @@ import { insertarConsulta } from './helpers/consultas.mjs';
 import { sentenciaInsertConsulta } from '../src/api/filas.ts';
 import {
   ESTADOS_EFECTO, leerEfecto, listarPendientes, marcarAmbiguo, marcarEnviado, marcarError,
-  marcarIntento, marcarOmitido, reintentar, sentenciaAvisoRobot, sentenciaEfectos, TOPE_LOTE_OUTBOX,
+  marcarIntento, marcarOmitido, reintentar, sentenciaEfectos, TOPE_LOTE_OUTBOX,
 } from '../src/operativa/outbox.ts';
 import { consumirPendientes, ErrorAmbiguo } from '../src/operativa/consumidores.ts';
 
@@ -168,46 +168,6 @@ test('mail del precio: la reserva de 168 h omite el reenvío y no se libera por 
   await consumirPendientes(db, { mail: async () => 'enviado' });
   const sinVigencia = (await filas(db)).filter(f => f.estado === 'omitido').map(f => f.ultimo_error);
   assert.deepEqual(sinVigencia.sort(), ['reserva-vigente', 'sin-precio-vigente']);
-});
-
-test('robot: el encolado es idempotente y el aviso de error usa la clave del intento', async t => {
-  const { db } = await crearD1(t);
-  await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
-  const consultaId = await altaConEfectos(db, [{ tipo: 'robot-encolar' }], {
-    tipo_formulario: 'autoinscripcion',
-  });
-  assert.equal((await db.prepare('SELECT count(*) AS n FROM robot_autoinscripciones').first('n')), 0);
-
-  const resumen = await consumirPendientes(db, {});
-  assert.equal(resumen.enviados, 1);
-  assert.equal((await db.prepare('SELECT count(*) AS n FROM robot_autoinscripciones').first('n')), 1);
-  const despacho = (await filas(db)).find(f => f.tipo === 'robot-despacho');
-  assert.equal(despacho.consulta_id, consultaId);
-  assert.equal(despacho.estado, 'pendiente');
-
-  // Reencolar no duplica la fila ni reinicia el estado del robot.
-  await db.prepare("UPDATE outbox SET estado='pendiente' WHERE tipo='robot-encolar'").run();
-  await consumirPendientes(db, {});
-  assert.equal((await db.prepare('SELECT count(*) AS n FROM robot_autoinscripciones').first('n')), 1);
-  assert.equal((await db.prepare("SELECT count(*) AS n FROM outbox WHERE tipo='robot-despacho'").first('n')), 1);
-
-  const robotId = await db.prepare('SELECT id FROM robot_autoinscripciones').first('id');
-  const [estado] = await db.batch([
-    db.prepare(`UPDATE robot_autoinscripciones SET estado='error', intentos=intentos+1,
-      updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?1 AND estado<>'cargada'`).bind(robotId),
-    sentenciaAvisoRobot(db, robotId),
-  ]);
-  assert.equal(estado.meta.changes, 1);
-  const aviso = (await filas(db)).find(f => f.tipo === 'aviso-robot-error');
-  assert.equal(aviso.clave, `robot:${robotId}:1`);
-  assert.equal(aviso.consulta_id, consultaId);
-  // Repetir el mismo intento no duplica el aviso; el siguiente sí tiene su clave.
-  await db.batch([
-    db.prepare(`UPDATE robot_autoinscripciones SET estado='error', updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now')
-      WHERE id=?1 AND estado<>'cargada'`).bind(robotId),
-    sentenciaAvisoRobot(db, robotId),
-  ]);
-  assert.equal((await db.prepare("SELECT count(*) AS n FROM outbox WHERE tipo='aviso-robot-error'").first('n')), 1);
 });
 
 test('newsletter: alta por carrera, general única, renovación y baja sin borrar', async t => {

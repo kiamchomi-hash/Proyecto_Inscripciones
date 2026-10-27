@@ -24,7 +24,7 @@ test('la clave de caché es sólo GET del dominio canónico y nunca rutas privad
   assert.match(worker, /request\.method !== 'GET'\) return null/);
   assert.match(worker, /url\.hostname !== CANONICO\) return null/);
   assert.match(worker, /HTML_PUBLICO\.test\(url\.pathname\)\) return null/);
-  assert.match(worker, /api\|inscripcion/);
+  assert.match(worker, /api/);
 });
 
 test('la copia se guarda en la caché del borde y se devuelve con frescura propia', () => {

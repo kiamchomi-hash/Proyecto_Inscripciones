@@ -106,10 +106,10 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
 - [ ] **M** — Fechas de inicio de Teclab (`components/index/inicio-teclab.ts`).
 - [ ] **M** — Lead a HubSpot de la sede (`CARRERAS_HUBSPOT`, `casas.ts`). **Sin entrada el
   lead no se manda y sólo queda un `console.warn`.** Probar con
-  `tests/lead-sede-teclab.test.mjs`.
-- [ ] **M** — Robot de autoinscripción de Teclab: el nombre tiene que existir en el
-  desplegable del portal. El mapeo vive en el repo del robot (`src/mapeo.mjs`, fuera de
-  este repo); probar con `--ensayo`. Ver [autoinscripción](../odd/tasks/autoinscripcion-teclab.md).
+  `tests/lead-sede-teclab.test.mjs`. Ojo: desde la baja de la autoinscripción
+  (27/10/2026) ningún alta encola ese efecto; el contrato está, el emisor no.
+- [x] **M** — ~~Robot de autoinscripción de Teclab~~: dado de baja el 27/10/2026
+  junto con el repo `cau-robot-teclab`. La preinscripción se carga a mano.
 
 ## 5. Test vocacional
 

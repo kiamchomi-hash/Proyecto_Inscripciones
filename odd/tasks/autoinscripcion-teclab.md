@@ -1,5 +1,13 @@
 # Autoinscripción en Teclab
 
+> **Dada de baja el 27/10/2026.** El usuario dejó de usarla: el flujo completo
+> (carrusel «Inscribirme», `kind: 'autoinscripcion'`, el pase HMAC, el enlace
+> `/inscripcion/<código>`, la cola del robot, `/api/robot/autoinscripciones`, el
+> chequeo de vigilancia y el repo privado `cau-robot-teclab`) se retiró del sitio
+> y de GitHub. La migración `cloudflare/migrations/0011_quitar_autoinscripcion.sql`
+> borra `robot_autoinscripciones` y `enlaces_inscripcion`. Este documento queda
+> como historial de lo que se hizo y por qué.
+
 ## Objetivo
 
 Quien llega desde el botón «Quiero inscribirme» del mail o desde el nuevo botón «Inscribite ya» de la ventana «Ver precio» completa la preinscripción en un carrusel: datos, medio de pago y confirmación. Un robot crea la cuenta en el Portal Administrativo de Teclab y dispara el mail con usuario y contraseña (los dos son el DNI, sin puntos). La persona paga sola en el portal del alumno.

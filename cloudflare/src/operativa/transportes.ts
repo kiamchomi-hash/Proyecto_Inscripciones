@@ -1,11 +1,10 @@
-import { avisoErrorRobot, despachoRobot } from '../../../components/formularios/casas.ts';
 import { armarMailPrecio, REMITENTE_MAIL, SMTP2GO_URL } from '../../../components/formularios/mail-precio.ts';
 import {
   buildConsultaMessage, buildFaqMessage, buildSolicitudClaseMessage,
 } from '../../../supabase/functions/notificar/mensajes.ts';
 import {
   ErrorAmbiguo, ErrorRechazo,
-  type PedidoDespacho, type PedidoLeadSede, type PedidoMail, type PedidoTelegram,
+  type PedidoLeadSede, type PedidoMail, type PedidoTelegram,
   type ResultadoTransporte, type Transportes,
 } from './consumidores.ts';
 
@@ -22,14 +21,12 @@ import {
 export const TIMEOUT_TELEGRAM_MS = 8_000;
 export const TIMEOUT_SMTP_MS = 8_000;
 export const TIMEOUT_HUBSPOT_MS = 5_000;
-export const TIMEOUT_GITHUB_MS = 5_000;
 
 export interface ConfigEnvios {
   telegram?: { token: string; chatId: string };
   smtp?: { clave: string };
   /** La URL viaja en el pedido, armada desde `casas.ts`; acá sólo se habilita. */
   hubspot?: { habilitado: boolean };
-  github?: { repo: string; token: string };
 }
 
 export type Buscar = (url: string, init: RequestInit) => Promise<Response>;
@@ -59,24 +56,6 @@ async function enviar(
 
 /** El texto del aviso con los constructores vigentes; nunca se escribe acá. */
 async function textoTelegram(db: D1Database, pedido: PedidoTelegram): Promise<{ texto: string; markdown: boolean }> {
-  if (pedido.tipo === 'aviso-robot-error') {
-    const robotId = Number(pedido.robotId);
-    if (!Number.isSafeInteger(robotId) || robotId < 1) throw new ErrorRechazo('robot-id-invalido');
-    const robot = await db.prepare('SELECT consulta_id, detalle FROM robot_autoinscripciones WHERE id = ?1')
-      .bind(robotId).first<{ consulta_id: number; detalle: string | null }>();
-    const consulta = robot
-      ? await db.prepare('SELECT * FROM consultas WHERE id = ?1').bind(robot.consulta_id).first<Record<string, unknown>>()
-      : null;
-    return {
-      texto: avisoErrorRobot(
-        { id: robotId, intentos: Number(pedido.intentos) || 0 },
-        consulta,
-        robot?.detalle ?? '',
-      ),
-      markdown: false,
-    };
-  }
-
   if (pedido.fuente === 'faq') {
     const fila = await db.prepare('SELECT * FROM faq_preguntas WHERE id = ?1')
       .bind(Number(pedido.id)).first<Record<string, unknown>>();
@@ -92,8 +71,8 @@ async function textoTelegram(db: D1Database, pedido: PedidoTelegram): Promise<{ 
   const consulta = await db.prepare('SELECT * FROM consultas WHERE id = ?1')
     .bind(Number(pedido.id)).first<Record<string, unknown>>();
   if (!consulta) throw new ErrorRechazo('fila-inexistente');
-  // Sin `precio-visto` ni enlace de autoinscripción: las dos consultas del
-  // contrato vigente van a Supabase por REST y no se reimplementaron acá.
+  // Sin `precio-visto` ni el enriquecimiento del aviso de consulta: las dos
+  // consultas del contrato vigente van a la base por el adaptador propio.
   return { texto: buildConsultaMessage(consulta), markdown: true };
 }
 
@@ -182,17 +161,8 @@ function transportarHubspot(config: ConfigEnvios, buscar: Buscar): NonNullable<T
   };
 }
 
-/** GitHub: el `repository_dispatch` lleva sólo el id de la cola del robot. */
-function transportarGithub(config: ConfigEnvios, buscar: Buscar): NonNullable<Transportes['github']> {
-  return async (pedido: PedidoDespacho) => {
-    const despacho = despachoRobot(config.github?.repo, config.github?.token, pedido.colaId);
-    if (!despacho) return 'sin-configurar';
-    return enviar(buscar, despacho.url, despacho.init, TIMEOUT_GITHUB_MS);
-  };
-}
-
 /**
- * Los cuatro transportes con la configuración y el `buscar` inyectados. Sin la
+ * Los tres transportes con la configuración y el `buscar` inyectados. Sin la
  * sección correspondiente devuelven `sin-configurar`: la intención queda
  * pendiente en el outbox y la levanta un barrido posterior.
  */
@@ -201,7 +171,6 @@ export function crearTransportes(config: ConfigEnvios, buscar: Buscar, db: D1Dat
     telegram: transportarTelegram(db, config, buscar),
     mail: transportarMail(config, buscar),
     hubspot: transportarHubspot(config, buscar),
-    github: transportarGithub(config, buscar),
   };
 }
 

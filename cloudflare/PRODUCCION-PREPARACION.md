@@ -30,7 +30,7 @@ se envió, y colas, cron, precios, R2, SEO productivo y cachés siguen sin proba
 | 8 | Outbox con ejecutores reales: productor, consumidor, DLQ, reclamo e idempotencia. Hoy `queue()` y `scheduled()` de staging lanzan y ningún efecto sale | pruebas de concurrencia, ambigüedad y recuperación; un efecto enviado una sola vez |
 | 9 | Cron: reemplazar los tres crons de Vercel y los jobs de `pg_cron` (limpieza de clases, digest, vigilancia) sin duplicar emisores | un solo emisor por tarea; schedule remoto distinto de `[]` sólo en producción |
 | 10 | Newsletter y mail de precio: alta, renovación y baja sin borrar, con precio vigente y encabezados RFC 8058 | alta y baja de una suscripción de prueba; sin campaña masiva |
-| 11 | Robot de autoinscripción, enlaces personalizados y avisos a HubSpot/GitHub: no autorizados y no probados en staging | un enlace de prueba consume una sola vez y el aviso sale por su canal |
+| 11 | ~~Robot de autoinscripción, enlaces personalizados y avisos a HubSpot/GitHub~~: **dados de baja el 27/10/2026**; ya no hay robot, enlace ni despacho | no aplica |
 | 12 | Vigilancia y analítica: `/api/vigilancia`, `/api/alertas-analytics`, telemetría y el embudo. Conservar un vigilante remoto y uno local, sin crear otro | corrida de vigilancia con un fallo simulado y aviso recibido |
 | 13 | Caché e invalidación: la revalidación on-demand de Next no existe tal cual; falta política explícita por ruta y su invalidación al publicar | publicar una carrera y verla sin deploy; medir `Cache-Control` real |
 | 14 | R2: inventario y autorización propios; los assets estáticos de staging no prueban que R2 haga falta | sólo si hay objetos dinámicos o privados |

@@ -5,7 +5,6 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { crearD1, insertarCarrera, insertarPrecio } from './helpers/d1.mjs';
 import { insertarConsulta } from './helpers/consultas.mjs';
-import { crearEnlace } from '../src/datos/enlaces.ts';
 import { reservarMailPrecio } from '../src/datos/repositorio.ts';
 
 for (const version of [1, 2, 3]) {
@@ -20,11 +19,7 @@ for (const version of [1, 2, 3]) {
     await reservarMailPrecio(db, 'fixture@example.invalid', 1);
     const reserva = await db.prepare('SELECT * FROM reservas_mail_precio').first();
     let consultaId = null;
-    let enlace = null;
-    if (version >= 3) {
-      consultaId = await insertarConsulta(db);
-      enlace = await crearEnlace(db, consultaId);
-    }
+    if (version >= 3) consultaId = await insertarConsulta(db);
     for (let n = version + 1; n <= 5; n++) copiar(n);
     await worker.applyD1Migrations('DB');
     // Reaplicar por historial no vuelve a correr nada.
@@ -36,10 +31,8 @@ for (const version of [1, 2, 3]) {
     assert.equal(await db.prepare('SELECT count(*) AS n FROM outbox').first('n'), 0);
 
     if (version >= 3) {
-      // Los datos sintéticos de enlaces/robot siguen iguales después del upgrade.
+      // Los datos sintéticos de consultas siguen iguales después del upgrade.
       assert.equal(await db.prepare('SELECT count(*) AS n FROM consultas').first('n'), 1);
-      assert.equal((await db.prepare('SELECT usado_at FROM enlaces_inscripcion WHERE codigo=?1')
-        .bind(enlace.codigo).first('usado_at')), null);
       assert.equal(consultaId, 1);
     }
 

@@ -43,7 +43,7 @@ const CANONICO = 'www.siglo21sur.com';
  * recarga: el borde revalida cada 5 minutos y, si venció, entrega la copia
  * anterior mientras arma la nueva.
  */
-const HTML_PUBLICO = /^(?!\/(?:api|inscripcion)(?:\/|$)).*/;
+const HTML_PUBLICO = /^(?!\/api(?:\/|$)).*/;
 const EDGE_SEGUNDOS = 300;
 const EDGE_SWR_SEGUNDOS = 3600;
 

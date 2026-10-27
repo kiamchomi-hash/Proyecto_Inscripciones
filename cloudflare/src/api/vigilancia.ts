@@ -1,7 +1,6 @@
 import {
   BASE_PROD, CABECERAS_ESPERADAS, HSTS_ESPERADO, NOINDEX, RUTAS, redirectsEsperados,
 } from '../../../lib/vigilancia-esperado.ts';
-import { autoinscripcionesDemoradas } from '../../../lib/vigilancia-robot.ts';
 import { preciosVencidos } from '../../../lib/vigilancia-precios.ts';
 import type { Buscar } from '../operativa/telegram.ts';
 import { rechazoBearer } from './auth.ts';
@@ -71,7 +70,7 @@ function mensajeParaTelegram(fallo: string) {
     return 'La página principal no cumple una configuración de seguridad esperada. Revisar las cabeceras del sitio.';
   }
 
-  if (que === 'robot de autoinscripciones' || que === 'precios vencidos') return detalle;
+  if (que === 'precios vencidos') return detalle;
 
   if (que.startsWith('/')) {
     return `La página ${que} no está disponible. Revisar el sitio publicado.`;
@@ -82,7 +81,6 @@ function mensajeParaTelegram(fallo: string) {
 
 export interface OpcionesChequeos {
   buscar: Buscar;
-  pendientesRobot?: () => Promise<{ created_at: string }[]>;
   precios?: () => Promise<{ institucion: string; vigente_hasta: string }[]>;
   ahora?: () => Date;
 }
@@ -196,19 +194,7 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
 
   const ahora = opciones.ahora?.() ?? new Date();
 
-  // 6. Autoinscripciones de Teclab esperando al robot.
-  if (!opciones.pendientesRobot) {
-    falla('robot de autoinscripciones', 'No se pudo revisar la cola del robot de Teclab: sin lector');
-  } else {
-    try {
-      const aviso = autoinscripcionesDemoradas(await opciones.pendientesRobot(), ahora);
-      if (aviso) falla('robot de autoinscripciones', aviso);
-    } catch (e) {
-      falla('robot de autoinscripciones', `No se pudo revisar la cola del robot de Teclab: ${motivo(e)}`);
-    }
-  }
-
-  // 7. Precios vencidos hace más de un día.
+  // 6. Precios vencidos hace más de un día.
   if (!opciones.precios) {
     falla('precios vencidos', 'No se pudo revisar la vigencia de los precios: sin lector');
   } else {

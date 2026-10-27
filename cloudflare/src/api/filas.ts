@@ -141,15 +141,6 @@ export function filasClase(payload: JsonRecord) {
   });
 }
 
-/** La fila de una preinscripción completa, con la casa verificada en la base. */
-export function filaAutoinscripcion(casa: CasaId, payload: JsonRecord, encabezado: FilaConsulta) {
-  const fila: FilaConsulta = { ...encabezado };
-  const campos = camposDe(casa, 'preinscripcion');
-  for (const campo of campos) asignarCampo(fila, campo, payload);
-  completarBooleanos(fila, campos);
-  return fila;
-}
-
 /** La consulta guardada vuelta payload completo (todas las columnas declaradas). */
 export function payloadCompletoDesdeConsulta(consulta: JsonRecord): JsonRecord {
   const payload: JsonRecord = {};

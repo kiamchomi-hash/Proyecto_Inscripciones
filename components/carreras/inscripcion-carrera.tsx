@@ -80,8 +80,8 @@ export function descripcionInscripcion(c: Pick<Carrera, 'nombre' | 'prefix' | 'n
   const completo = carreraFullName(c);
   if (['licenciaturas', 'tecnicaturas'].includes(getCategoryForCarrera(c))) return `Completá el formulario de preinscripción a ${completo} de Universidad Siglo 21. Te contactamos para continuar con la inscripción.`;
   const tramites = [
-    'Completás la preinscripción online y te llega por mail el acceso al portal del alumno.',
-    'Preinscripción online y acceso al portal del alumno por mail.',
+    'Completás la preinscripción online y un asesor te contacta para terminar la inscripción.',
+    'Preinscripción online y un asesor te contacta para inscribirte.',
   ];
   const { modalidad } = parseEnfoqueTeclab(c.enfoque);
   const datos = c.duracion ? `${c.duracion}, ${modalidad.toLowerCase()}.` : null;
@@ -108,10 +108,12 @@ export function ogInscripcion(c: Pick<Carrera, 'nivel'>): string {
 }
 
 /**
- * El tramite real de Teclab, relevado el 02/10/2026: la preinscripcion se carga
- * en el Portal Administrativo, el portal manda el mail de acceso (usuario y
- * contraseña son el DNI sin puntos) y el pago es autogestionado en el portal
- * del alumno. Sin fechas, precios ni cuotas: cambian y aca no se mantienen.
+ * El tramite real de Teclab: la preinscripcion se carga en el Portal
+ * Administrativo, el portal manda el mail de acceso (usuario y contraseña son
+ * el DNI sin puntos) y el pago es autogestionado en el portal del alumno. Desde
+ * la baja de la autoinscripción (27/10/2026) esa carga la hace un asesor del
+ * CAU a mano, y el paso 2 lo dice. Sin fechas, precios ni cuotas: cambian y aca
+ * no se mantienen.
  */
 export const PASOS_INSCRIPCION = [
   {
@@ -119,12 +121,12 @@ export const PASOS_INSCRIPCION = [
     texto: 'Cargás tus datos en el formulario de esta página.',
   },
   {
-    titulo: 'Te llega un mail de Teclab',
-    texto: 'Con tu usuario y tu contraseña del portal del alumno: los dos son tu DNI, sin puntos.',
+    titulo: 'Te contacta un asesor',
+    texto: 'Se comunica con vos para terminar la inscripción en Teclab.',
   },
   {
-    titulo: 'Pagás desde el portal',
-    texto: 'Entrás al portal del alumno y abonás con el medio de pago que elijas.',
+    titulo: 'Accedés al portal del alumno',
+    texto: 'Teclab te envía por mail el usuario y la contraseña (tu DNI, sin puntos). Desde ahí elegís el medio de pago y abonás.',
   },
 ] as const;
 

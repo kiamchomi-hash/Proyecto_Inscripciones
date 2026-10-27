@@ -1,16 +1,15 @@
 import {
-  CASAS_CON_PRECIO, CAMPOS_PRECIO, FORMULARIO_AUTOINSCRIPCION, FORMULARIO_PRECIO,
-  TIPO_AUTOINSCRIPCION, TIPO_PRECIO, carreraConAutoinscripcion, carreraConPrecio,
-  carreraIdDe, casaDeCarrera, columnaDe, mailParaNewsletter, pedidoLeadSede,
-  resultadoPrecio, validarPayloadAutoinscripcion, validarPayloadEnlace, validarPayloadPrecio,
+  CASAS_CON_PRECIO, CAMPOS_PRECIO, FORMULARIO_PRECIO,
+  TIPO_PRECIO, carreraConPrecio,
+  carreraIdDe, casaDeCarrera, columnaDe, mailParaNewsletter,
+  resultadoPrecio, validarPayloadPrecio,
   type FilaPrecio, type ResultadoPrecio,
 } from '../../../components/formularios/casas.ts';
 import { comprobarEntradaFormulario } from '../datos/control.ts';
 import { leerRelojBase } from '../datos/reloj.ts';
 import { leerPrecioPrivado } from '../datos/repositorio.ts';
-import { prepararEnlace, SQL_RESERVAR_ENLACE } from '../datos/enlaces.ts';
 import {
-  EMAIL, completarBooleanos, diaArgentino, esRegistro, filaAutoinscripcion, filaConsulta,
+  EMAIL, completarBooleanos, diaArgentino, esRegistro, filaConsulta,
   filaFaq, filasClase, sentenciaInsertClases, sentenciaInsertConsulta, sentenciaInsertFaq, text,
   type FilaConsulta, type JsonRecord,
 } from './filas.ts';
@@ -18,7 +17,7 @@ import {
   sentenciaEfectos, sentenciaEfectosClase, sentenciaEfectosFaq, type Efecto,
 } from '../operativa/outbox.ts';
 import { publicarEfectos, type ProductorCola } from '../operativa/colas.ts';
-import { TOKEN_DEMO, respuestaDemo } from './demo.ts';
+import { respuestaDemo } from './demo.ts';
 
 /**
  * API de formularios: el sobre, la autenticación y los códigos de estado son los
@@ -27,13 +26,8 @@ import { TOKEN_DEMO, respuestaDemo } from './demo.ts';
  * ningún efecto se ejecuta acá.
  */
 
-const KINDS = ['consulta', 'faq', 'clase', 'precio', 'autoinscripcion', 'enlace'] as const;
+const KINDS = ['consulta', 'faq', 'clase', 'precio'] as const;
 type Kind = (typeof KINDS)[number];
-
-const ENLACE_INVALIDO = 'El enlace ya no es válido';
-
-/** Un pase ya usado responde como captcha inválido, igual que el handler vigente. */
-class PaseRechazado extends Error {}
 
 /** Fallo de lectura o escritura de la base: 500, como el `result.error` vigente. */
 class ErrorBaseDatos extends Error {}
@@ -46,9 +40,6 @@ export interface EntornoFormularios {
   verificarCaptcha(token: string, ip: string): Promise<boolean>;
   /** Modo demo local: nunca puede estar activo en producción (lo decide el adaptador). */
   demo?: boolean;
-  /** Puerto del pase de autoinscripción (HMAC; en el Worker, Web Crypto). */
-  verificarPase?(pase: string, email: string, carreraId: number): Promise<{ iat: number } | null>;
-  emitirPase?(email: string, carreraId: number): Promise<string | null>;
   /** Cola de efectos. Sin binding la fila queda pendiente y la toma el barrido. */
   cola?: ProductorCola;
 }
@@ -193,12 +184,7 @@ async function registrarConsulta(db: D1Database, payload: JsonRecord, entorno: E
     efectos.push({ tipo: 'mail-precio', detalle: { carreraId: carrera.id, limitar: false } });
   }
   const encolados = await guardarConEfectos(db, fila, efectos);
-
-  // El pase de Teclab para «Inscribirme»: mismos requisitos que el handler vigente.
-  const pase = carrera && carreraConAutoinscripcion(carrera) && EMAIL.test(email) && entorno.emitirPase
-    ? await intentarLectura(() => entorno.emitirPase!(email, carrera!.id))
-    : null;
-  return { resultado: precio, pase, efectos: encolados };
+  return { resultado: precio, efectos: encolados };
 }
 
 /** `kind: 'precio'`: el mail es obligatorio y la carrera tiene que publicar precio. */
@@ -227,97 +213,6 @@ async function registrarPrecio(db: D1Database, payload: JsonRecord) {
   }
   const encolados = await guardarConEfectos(db, fila, efectos);
   return { resultado, efectos: encolados };
-}
-
-/** Un pase vale una sola vez: otra autoinscripción del mismo mail y carrera lo anula. */
-async function paseYaUsado(db: D1Database, email: string, carrera: string, iat: number) {
-  const literal = email.trim().replace(/[\\%_]/g, caracter => `\\${caracter}`);
-  const fila = await db.prepare(`SELECT id FROM consultas
-    WHERE tipo_formulario = ?1 AND email LIKE ?2 ESCAPE '\\' AND carrera = ?3 AND created_at >= ?4
-    LIMIT 1`)
-    .bind(FORMULARIO_AUTOINSCRIPCION, literal, carrera, new Date(iat).toISOString()).first();
-  return fila !== null;
-}
-
-/** Alta en la landing de la sede: sin opción de carrera o sin mail válido no hay. */
-function leadSedeDe(payload: JsonRecord, carrera: string) {
-  return pedidoLeadSede({ ...payload, carrera, email: payload.email });
-}
-
-function efectosAutoinscripcion(payload: JsonRecord, carrera: Carrera, newsletter: boolean): Efecto[] {
-  const efectos: Efecto[] = [{ tipo: 'aviso-lead' }];
-  if (newsletter) efectos.push({ tipo: 'newsletter-alta' });
-  if (leadSedeDe(payload, carrera.nombre)) efectos.push({ tipo: 'lead-sede' });
-  efectos.push({ tipo: 'robot-encolar' });
-  return efectos;
-}
-
-function filaAutoinscripcionDe(carrera: Carrera, payload: JsonRecord) {
-  const casa = casaDeCarrera(carrera);
-  if (!casa) throw new TypeError('Carrera inválida');
-  return filaAutoinscripcion(casa, payload, {
-    carrera: carrera.nombre,
-    tipo: TIPO_AUTOINSCRIPCION,
-    casa,
-    tipo_formulario: FORMULARIO_AUTOINSCRIPCION,
-  });
-}
-
-/** `kind: 'autoinscripcion'`: preinscripción completa, con pase opcional. */
-async function registrarAutoinscripcion(db: D1Database, payload: JsonRecord, paseIat: number | null) {
-  const datos = validarPayloadAutoinscripcion(payload);
-  if (!datos) throw new TypeError('Datos inválidos');
-
-  const carrera = await conBase(() => leerCarrera(db, datos.carreraId));
-  if (!carrera || !carreraConAutoinscripcion(carrera)) throw new TypeError('Carrera inválida');
-  if (paseIat !== null && await conBase(() => paseYaUsado(db, datos.email, carrera.nombre, paseIat))) {
-    throw new PaseRechazado();
-  }
-
-  // Sólo el precio vigente viaja en la confirmación de la autoinscripción.
-  const precio = await intentarLectura(() => leerPrecio(db, carrera.id));
-  const encolados = await guardarConEfectos(
-    db, filaAutoinscripcionDe(carrera, payload),
-    efectosAutoinscripcion(payload, carrera, datos.newsletter),
-  );
-  return { resultado: precio?.estado === 'vigente' ? precio : null, efectos: encolados };
-}
-
-/**
- * `kind: 'enlace'`: consumo del enlace, nueva consulta y outbox en una sola
- * transacción. Las sentencias posteriores al UPDATE condicional sólo escriben si
- * ese mismo UPDATE consumió el enlace (`changes()`), así dos envíos simultáneos
- * no crean dos autoinscripciones ni encolan efectos de la perdedora.
- */
-async function registrarPorEnlace(db: D1Database, payload: JsonRecord) {
-  const pedido = validarPayloadEnlace(payload);
-  if (!pedido) throw new TypeError('Datos inválidos');
-
-  const preparado = await conBase(() => prepararEnlace(db, pedido.codigo));
-  if (!preparado) throw new TypeError(ENLACE_INVALIDO);
-
-  // La carrera y el legajo ya se validaron contra la preinscripción guardada.
-  const carrera = await conBase(() => leerCarrera(db, preparado.carrera.id));
-  if (!carrera || !carreraConAutoinscripcion(carrera)) throw new TypeError(ENLACE_INVALIDO);
-
-  const fila = filaAutoinscripcionDe(carrera, preparado.legajo);
-  const columnas = Object.keys(fila);
-  const valores = columnas.map((_, i) => `?${i + 1}`).join(',');
-  const sentencias = [
-    db.prepare(SQL_RESERVAR_ENLACE).bind(preparado.enlace.codigo, await leerRelojBase(db)),
-    db.prepare(`INSERT INTO consultas(${columnas.join(',')}) SELECT ${valores} WHERE changes() = 1`)
-      .bind(...columnas.map(columna => fila[columna] ?? null)),
-  ];
-  const outbox = sentenciaEfectos(db, efectosAutoinscripcion(preparado.legajo, carrera, pedido.newsletter));
-  if (outbox) sentencias.push(outbox);
-
-  const resultados = await conBase(() => db.batch(sentencias));
-  const [reserva] = resultados;
-  // Perdedora del consumo: el batch no escribió nada, ni consulta ni efectos.
-  if (reserva.results.length === 0) throw new TypeError(ENLACE_INVALIDO);
-  // El handler vigente responde sólo `{ ok: true }` para el enlace: el precio de
-  // la página se lee aparte, no en esta respuesta.
-  return { resultado: null, efectos: idsDeEfectos(resultados[2]) };
 }
 
 /** `kind: 'faq'`: la pregunta y sus efectos, en un batch. */
@@ -360,16 +255,14 @@ export async function manejarFormulario(
 
     const kind = text(cuerpo.kind, 20) as Kind;
     const token = text(cuerpo.token, 4096);
-    // El pase reemplaza al token sólo en la autoinscripción.
-    const pase = kind === 'autoinscripcion' ? text(cuerpo.pase, 1024) : '';
     const payload = cuerpo.payload;
-    if (!KINDS.includes(kind) || !(token || pase) || !esRegistro(payload)) {
+    if (!KINDS.includes(kind) || !token || !esRegistro(payload)) {
       return respuesta({ error: 'Solicitud inválida' }, 400);
     }
 
     // Modo demo: antes del captcha, de la cuota y de la base, y nunca fuera de local.
     if (entorno.demo) {
-      const demo = respuestaDemo(kind, payload, TOKEN_DEMO);
+      const demo = respuestaDemo(kind, payload);
       console.info(`[formularios] Envío de demo (${kind}): no se guardó ni se avisó nada`);
       return respuesta(demo, 201);
     }
@@ -380,17 +273,12 @@ export async function manejarFormulario(
       return respuesta({ error: 'Servicio temporalmente no disponible' }, 503);
     }
     const ip = ipDeCliente(request);
-    const paseValido = pase && entorno.verificarPase
-      ? await entorno.verificarPase(pase, text(payload.email, 254), carreraIdDe(payload) ?? 0)
-      : null;
 
     // Captcha y cuota en paralelo; el intento concedido persiste aunque el captcha falle.
     const { captchaOk, permitido } = await comprobarEntradaFormulario(db, kind, ip, () =>
-      pase
-        ? Promise.resolve(paseValido !== null)
-        : entorno.captchaConfigurado
-          ? entorno.verificarCaptcha(token, ip)
-          : Promise.resolve(token === 'rate-limit-only'));
+      entorno.captchaConfigurado
+        ? entorno.verificarCaptcha(token, ip)
+        : Promise.resolve(token === 'rate-limit-only'));
     if (!captchaOk) return respuesta({ error: 'CAPTCHA inválido' }, 403);
     if (!permitido) return respuesta({ error: 'Demasiadas solicitudes' }, 429);
 
@@ -400,19 +288,13 @@ export async function manejarFormulario(
         ? await registrarFaq(db, payload)
         : kind === 'clase'
           ? await registrarClase(db, payload)
-          : kind === 'precio'
-            ? await registrarPrecio(db, payload)
-            : kind === 'autoinscripcion'
-              ? await registrarAutoinscripcion(db, payload, paseValido?.iat ?? null)
-              : await registrarPorEnlace(db, payload);
+          : await registrarPrecio(db, payload);
 
-    const paseNuevo = 'pase' in resultado ? resultado.pase : null;
     // El alta ya está confirmada en D1. Publicar es best-effort: si la cola
     // falla, la fila queda `pendiente` y la recupera el barrido.
     await publicarEfectos(entorno.cola, resultado.efectos);
-    return respuesta({ ok: true, ...(resultado.resultado ?? {}), ...(paseNuevo ? { pase: paseNuevo } : {}) }, 201);
+    return respuesta({ ok: true, ...(resultado.resultado ?? {}) }, 201);
   } catch (error) {
-    if (error instanceof PaseRechazado) return respuesta({ error: 'CAPTCHA inválido' }, 403);
     if (error instanceof TypeError) return respuesta({ error: error.message }, 400);
     if (error instanceof ErrorBaseDatos) return respuesta({ error: 'No se pudo guardar la solicitud' }, 500);
     console.error('[formularios] Error interno', { code: error instanceof Error ? error.name : 'desconocido' });

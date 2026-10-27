@@ -9,9 +9,10 @@ const { configEnvios, transportesProduccion, manejarColaProduccion,
 test('sin credenciales no se arma ningún transporte: nada sale por defecto', () => {
   assert.deepEqual(configEnvios({}), {});
   assert.deepEqual(configEnvios({ APP_STAGE: 'produccion' }), {});
-  // Un chat sin token, o un repo sin token, tampoco habilitan el canal.
+  // Un chat sin token tampoco habilita el canal, y la credencial del robot
+  // retirado (GitHub) ya no arma ningún transporte aunque llegue en el entorno.
   assert.deepEqual(configEnvios({ TELEGRAM_CHAT_ID: '1' }), {});
-  assert.deepEqual(configEnvios({ GITHUB_REPO: 'x/y' }), {});
+  assert.deepEqual(configEnvios({ GITHUB_REPO: 'x/y', GITHUB_TOKEN: 'g' }), {});
   assert.deepEqual(transportesProduccion({}, {}), {});
 });
 
@@ -21,8 +22,6 @@ test('cada canal aparece sólo con su credencial completa', () => {
   assert.deepEqual(configEnvios({ SMTP2GO_API_KEY: 'k' }), { smtp: { clave: 'k' } });
   assert.deepEqual(configEnvios({ HUBSPOT_HABILITADO: 'no' }), {});
   assert.deepEqual(configEnvios({ HUBSPOT_HABILITADO: 'si' }), { hubspot: { habilitado: true } });
-  assert.deepEqual(configEnvios({ GITHUB_REPO: 'x/y', GITHUB_TOKEN: 'g' }),
-    { github: { repo: 'x/y', token: 'g' } });
 });
 
 test('la operativa exige etapa de producción y la cola autorizada', async () => {
@@ -57,7 +56,9 @@ test('los programados se despachan por expresión y una desconocida falla', asyn
     origen: 'https://ensayo.invalid',
     buscar: async () => new Response('{}'),
   };
-  await assert.rejects(manejarProgramado('*/5 * * * *', contexto), /Cron no autorizado/);
+  await assert.rejects(manejarProgramado('7 3 * * *', contexto), /Cron no autorizado/);
+  // El barrido sin base falla cerrado antes de tocar la cola.
+  await assert.rejects(manejarProgramado(CRONES.efectos, contexto), /Barrido sin base/);
 
   // Sin transporte de vigilancia el handler responde 503 en vez de correr.
   const sinTransporte = await manejarProgramado(CRONES.vigilancia, { ...contexto, buscar: undefined });

@@ -89,7 +89,6 @@ test('vigilancia: corrida limpia sin avisos y dentro del dominio propio', async 
       secretoCron: 'secreto-sintetico',
       buscar,
       telegram: telegramOk(textos),
-      pendientesRobot: async () => [],
       precios: async () => [],
       ahora: () => new Date('2026-10-25T12:00:00.000Z'),
     },
@@ -118,7 +117,6 @@ test('vigilancia: los fallos se explican y se avisan una sola vez', async t => {
       secretoCron: 'secreto-sintetico',
       buscar,
       telegram: telegramOk(textos),
-      pendientesRobot: async () => { throw new Error('base caída'); },
       precios: async () => { throw new Error('base caída'); },
       ahora: () => new Date('2026-10-25T12:00:00.000Z'),
     },
@@ -128,13 +126,12 @@ test('vigilancia: los fallos se explican y se avisan una sola vez', async t => {
   assert.ok(cuerpo.fallos.some(f => f.startsWith('/faq — HTTP 500')));
   assert.ok(cuerpo.fallos.some(f => f.startsWith('content-security-policy')));
   assert.ok(cuerpo.fallos.some(f => f.startsWith('/sitemap.xml — no devolvio')));
-  assert.ok(cuerpo.fallos.some(f => f.startsWith('robot de autoinscripciones')));
   assert.ok(cuerpo.fallos.some(f => f.startsWith('precios vencidos')));
   assert.equal(cuerpo.aviso, 'enviado');
   assert.equal(textos.length, 1);
   assert.match(textos[0], /La página \/faq no está disponible/);
   assert.match(textos[0], /mapa de páginas del sitio está vacío/);
-  assert.match(textos[0], /No se pudo revisar la cola del robot/);
+  assert.match(textos[0], /No se pudo revisar la vigencia de los precios/);
 });
 
 test('vigilancia: una <loc> externa se informa y no se pide (sin SSRF)', async t => {
@@ -146,7 +143,6 @@ test('vigilancia: una <loc> externa se informa y no se pide (sin SSRF)', async t
   const { fallos, urlsSitemap } = await correrChequeos(BASE_PROD, {
     buscar,
     telegram: telegramOk(textos),
-    pendientesRobot: async () => [],
     precios: async () => [],
   });
   assert.equal(urlsSitemap, 1);
@@ -176,6 +172,5 @@ test('vigilancia: ?prueba manda sólo el aviso y no corre chequeos', async t => 
 test('vigilancia: un lector ausente se informa, no se omite', async () => {
   const { buscar } = redEscenario();
   const { fallos } = await correrChequeos(BASE_PROD, { buscar });
-  assert.ok(fallos.some(f => f.startsWith('robot de autoinscripciones') && f.includes('sin lector')));
   assert.ok(fallos.some(f => f.startsWith('precios vencidos') && f.includes('sin lector')));
 });

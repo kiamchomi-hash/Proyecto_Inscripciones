@@ -180,11 +180,6 @@ const RUTAS_NUEVAS = [
   { ruta: '/carreras/diplomatura-en-oratoria', textos: ['Oratoria'] },
   { ruta: '/carreras/licenciatura-en-administracion/inscripcion', textos: ['Próximos pasos'], sinPie: true, sinNavbar: true },
   { ruta: '/carreras/tecnicatura-en-programacion/inscripcion', textos: ['Próximos pasos'], sinPie: true, sinNavbar: true },
-  { ruta: '/inscripcion/no-valido', textos: ['Este enlace ya no está disponible'], sinPie: true, minimo: 50 },
-  { ruta: '/inscripcion/demo', textos: ['Prueba Demo'], sinPie: true, minimo: 50 },
-  { ruta: '/inscripcion/EnlaceSinteticoLocal1234567890ABCD', textos: ['Ana', 'Sintética'], sinPie: true, minimo: 50 },
-  { ruta: '/inscripcion/VencidoSintetico1234567890ABCD', textos: ['Este enlace ya no está disponible'], sinPie: true, minimo: 50 },
-  { ruta: '/inscripcion/UsadoSintetico1234567890ABCD', textos: ['Este enlace ya no está disponible'], sinPie: true, minimo: 50 },
   { ruta: '/novedades/1', textos: ['Destacado', 'Novedad destacada sintética'], minimo: 50 },
   { ruta: '/novedades/2', textos: ['Novedad sintética 6'], minimo: 50 },
   { ruta: '/novedades/3', textos: ['Novedad sintética 12'], minimo: 50 },
@@ -359,7 +354,7 @@ test('las páginas migradas coinciden con Next en encabezado, texto y enlaces', 
   // El stub recibió sólo lecturas de `carreras`: las tres páginas y el detalle
   // salen de D1, nunca de Supabase.
   assert.ok(supabase.pedidos.length >= 1, 'el stub debe haber recibido la consulta de Next');
-  assert.ok(supabase.pedidos.every(pedido => /^(GET|HEAD) \/rest\/v1\/(carreras|materias|faq_preguntas|consultas|enlaces_inscripcion|precios_privados|novedades)\?/.test(pedido)),
+  assert.ok(supabase.pedidos.every(pedido => /^(GET|HEAD) \/rest\/v1\/(carreras|materias|faq_preguntas|consultas|precios_privados|novedades)\?/.test(pedido)),
     `consulta inesperada: ${supabase.pedidos.join(', ')}`);
 });
 
@@ -393,7 +388,7 @@ test('baja compilada: GET/HEAD no escriben, POST confirma D1, inválidos y fallo
   assert.deepEqual(await fallo.json(), { error: 'No se pudo procesar la baja' });
 });
 
-test('fichas y enlaces compilados: sin datos privados públicos, no-store y fallo de servicio sin éxito', async t => {
+test('fichas compiladas: sin datos privados públicos, no-store y la ruta del enlace ya no existe', async t => {
   const astro = createTestHarness({ workers: [{ configPath: CONFIG }] });
   t.after(() => astro.close());
   await astro.listen();
@@ -401,37 +396,29 @@ test('fichas y enlaces compilados: sin datos privados públicos, no-store y fall
   await worker.applyD1Migrations('DB');
   const { DB } = await worker.getEnv();
   await insertarCatalogo(DB);
-  const codigo = 'EnlaceSinteticoLocal1234567890ABCD';
-  for (const ruta of ['/carreras/tecnicatura-en-programacion', '/carreras/tecnicatura-en-programacion/inscripcion', `/inscripcion/${codigo}`]) {
+  for (const ruta of ['/carreras/tecnicatura-en-programacion', '/carreras/tecnicatura-en-programacion/inscripcion']) {
     const r = await astro.fetch(ruta);
     assert.equal(r.status, 200);
     assert.equal(r.headers.get('cache-control'), 'no-store');
     const html = await r.text();
     assert.doesNotMatch(html, /ana\.sintetica@example\.invalid|Dato sintético|1111111111/);
-    if (!ruta.startsWith('/inscripcion/')) assert.doesNotMatch(html, /123\.456|Precio sintético|EnlaceSinteticoLocal/);
-    else {
-      assert.equal(r.headers.get('referrer-policy'), 'no-referrer');
-      assert.equal(canonical(html), null);
-      assert.ok(!Object.values(metas(html)).some(v => v.includes(codigo)));
-      assert.match(html, /12\.3••\.•78/);
-    }
+    assert.doesNotMatch(html, /123\.456|Precio sintético/);
   }
+  // La autoinscripción se dio de baja el 27/10/2026: no queda página de enlace.
+  assert.equal((await astro.fetch('/inscripcion/EnlaceSinteticoLocal1234567890ABCD')).status, 404);
+  // Igual que en Next: sin datos de contacto no se escribe, y sin captcha no hay servicio.
   const antes = await DB.prepare('SELECT count(*) AS n FROM consultas').first('n');
+  const contacto = { casa: 'teclab', tipoFormulario: 'contacto', email: 'lead@example.invalid', telefono: '1111111111' };
   for (const token of [null, 'invalido']) {
     const r = await astro.fetch('/api/formularios', {method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({kind:'enlace', token, payload:{codigo}})});
-    assert.equal(r.status, token ? 503 : 400, 'sin secreto/configuración no confirma inscripción');
+      body:JSON.stringify({kind:'consulta', token, payload:contacto})});
+    assert.equal(r.status, token ? 503 : 400, 'sin secreto/configuración no se registra la consulta');
   }
   assert.equal(await DB.prepare('SELECT count(*) AS n FROM consultas').first('n'), antes);
-  assert.equal(await DB.prepare('SELECT usado_at FROM enlaces_inscripcion WHERE codigo=?1').bind(codigo).first('usado_at'), null);
   await DB.prepare('UPDATE carreras SET descripcion=?1 WHERE id=11').bind('Texto </script><script>globalThis.noEjecutar=1</script>').run();
   const escapado = await (await astro.fetch('/carreras/licenciatura-en-administracion')).text();
   assert.ok(jsonLd(escapado).some(s => s.includes('\\u003c/script')));
   assert.doesNotMatch(escapado, /<script>globalThis\.noEjecutar/);
-  await DB.prepare('DROP TABLE precios_privados').run();
-  const caido = await astro.fetch(`/inscripcion/${codigo}`);
-  assert.equal(caido.status, 503);
-  assert.equal(await caido.text(), '');
   for (const familia of ['silkscreen','dm-sans']) {
     const aviso = await astro.fetch(`/licencias/${familia}.txt`);
     assert.equal(aviso.status, 200);

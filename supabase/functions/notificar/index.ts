@@ -6,7 +6,6 @@ import {
   buildFaqMessage,
   buildSolicitudClaseMessage,
 } from "./mensajes.ts";
-import { agregarEnlace } from "./enlace.ts";
 import { buscarPrecioVisto } from "./precio-visto.ts";
 
 // Avisos de los tres formularios publicos. Telegram es el unico canal desde el
@@ -18,12 +17,10 @@ const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID")!;
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET")!;
 
-// Para el enlace de inscripción de las preinscripciones de Teclab (ver
-// enlace.ts). SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY las inyecta Supabase en
-// toda Edge Function; SITIO_URL es opcional y sólo cambia el dominio del enlace.
+// Para la marca de «precio visto» (ver precio-visto.ts). SUPABASE_URL y
+// SUPABASE_SERVICE_ROLE_KEY las inyecta Supabase en toda Edge Function.
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const SITIO_URL = Deno.env.get("SITIO_URL") || "https://www.siglo21sur.com";
 
 interface WebhookPayload {
   type: "INSERT";
@@ -85,12 +82,7 @@ Deno.serve(async (req: Request) => {
           supabaseUrl: SUPABASE_URL,
           serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY,
         });
-        // Si el enlace no se puede crear, el aviso sale igual, sin él.
-        texto = await agregarEnlace(buildConsultaMessage(record, { precioVisto }), record, {
-          supabaseUrl: SUPABASE_URL,
-          serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY,
-          sitioUrl: SITIO_URL,
-        });
+        texto = buildConsultaMessage(record, { precioVisto });
         break;
       }
       case "solicitudes_clase":

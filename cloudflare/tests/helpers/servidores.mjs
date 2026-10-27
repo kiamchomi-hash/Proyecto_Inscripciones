@@ -75,7 +75,7 @@ export async function stubSupabase() {
     pedidos.push(`${pedido.method} ${pedido.url}`);
     const url = new URL(pedido.url, 'http://127.0.0.1');
     const tablas = { carreras: filasPostgrest(), materias: MATERIAS, faq_preguntas: FAQS,
-      consultas: CONSULTAS, enlaces_inscripcion: ENLACES, precios_privados: PRECIOS, novedades: NOVEDADES };
+      consultas: CONSULTAS, precios_privados: PRECIOS, novedades: NOVEDADES };
     const tabla = url.pathname.replace('/rest/v1/', '');
     if (!['GET', 'HEAD'].includes(pedido.method) || !Object.hasOwn(tablas, tabla)) {
       respuesta.writeHead(404, { 'Content-Type': 'application/json' });
@@ -188,5 +188,5 @@ export function matarGrupo(hijo) {
   try { process.kill(-hijo.pid, 'SIGKILL'); } catch { /* ya terminó */ }
 }
 import { MATERIAS, FAQS } from '../fixtures/apoyo-faq.mjs';
-import { CONSULTAS, ENLACES, PRECIOS } from '../fixtures/inscripciones.mjs';
+import { CONSULTAS, PRECIOS } from '../fixtures/inscripciones.mjs';
 import { NOVEDADES } from '../fixtures/novedades.mjs';

@@ -1,7 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { resolverDb } from '../datos/binding.ts';
 import type { EntornoFormularios } from './formularios.ts';
-import { emitirPase, verificarPase } from './pase.ts';
 import { verificarTurnstile } from './turnstile.ts';
 import type { ProductorCola } from '../operativa/colas.ts';
 import { crearTransporteMail, type Buscar } from '../operativa/transportes.ts';
@@ -17,7 +16,6 @@ import {
 type EntornoRuntime = {
   DB?: D1Database;
   EFECTOS?: ProductorCola;
-  ROBOT_SECRET?: string;
   TURNSTILE_SECRET_KEY?: string;
   TURNSTILE_EXPECTED_HOSTNAME?: string;
   APP_STAGE?: string;
@@ -42,8 +40,6 @@ export const bindingDb = (): D1Database | null =>
 // intención queda en el outbox y la levanta el barrido.
 export const bindingCola = (): ProductorCola | undefined =>
   runtime.APP_STAGE === 'local' || runtime.APP_STAGE === 'produccion' ? runtime.EFECTOS : undefined;
-
-export const secretoRobot = (): string | undefined => runtime.ROBOT_SECRET;
 
 export const secretoCron = (): string | undefined => runtime.CRON_SECRET;
 
@@ -71,9 +67,9 @@ export const telegramAlerta = (texto: string) =>
 
 /**
  * Configuración de la API de formularios. Falla cerrado: sin
- * `TURNSTILE_SECRET_KEY` no se acepta ningún envío (503), no se emite ningún
- * pase y no se verifica ninguno. La verificación de Turnstile usa `fetch` real
- * sólo acá; las pruebas inyectan un doble y nunca salen a la red.
+ * `TURNSTILE_SECRET_KEY` no se acepta ningún envío (503) y no se verifica el
+ * captcha. La verificación usa `fetch` real sólo acá; las pruebas inyectan un
+ * doble y nunca salen a la red.
  *
  * El modo demo y el token de prueba local exigen `APP_STAGE === 'local'`: en un
  * entorno publicado la bandera no habilita nada, igual que `NODE_ENV` en el sitio
@@ -94,7 +90,5 @@ export const entornoFormularios = (): EntornoFormularios => {
         buscar: (url, init) => fetch(url, init),
       })
       : Promise.resolve(false),
-    verificarPase: (pase, email, carreraId) => verificarPase(secreto, pase, email, carreraId),
-    emitirPase: (email, carreraId) => emitirPase(secreto, email, carreraId),
   };
 };

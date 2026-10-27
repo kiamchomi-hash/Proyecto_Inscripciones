@@ -33,7 +33,7 @@ export default function PaginaInscripcionCarrera({ carrera, opciones, turnstile 
           <div className="inscripcion-proximos-tarjeta">
             <h2 id="proximos-pasos-titulo">Próximos pasos</h2>
             <div className="inscripcion-proximos-contenido">
-              <p>{casa === 'teclab' ? 'Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.' : 'Te contactamos para continuar con tu inscripción a Universidad Siglo 21.'}</p>
+              <p>{casa === 'teclab' ? 'Un asesor del CAU se contacta a la brevedad para terminar tu preinscripción. Después Teclab te envía por mail el acceso al portal del alumno, donde elegís el medio de pago y abonás.' : 'Te contactamos para continuar con tu inscripción a Universidad Siglo 21.'}</p>
               <p className="inscripcion-sin-pago">{casa === 'teclab'
                 ? 'Completar este formulario no realiza ningún pago: sólo registra tu solicitud. El pago lo hacés después, desde el portal del alumno.'
                 : 'Completar este formulario no realiza ningún pago: sólo registra tu preinscripción.'}</p>

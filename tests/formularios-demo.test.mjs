@@ -54,7 +54,6 @@ function montar(t, entorno) {
     '@/components/formularios/casas': casas,
     '@/lib/formularios-demo': cargarTypescript('lib/formularios-demo.ts', {}),
     '@/lib/turnstile': { verifyTurnstile: async () => { llamadas.turnstile++; return false; } },
-    '@/lib/pase-autoinscripcion': cargarTypescript('lib/pase-autoinscripcion.ts', { 'server-only': {} }),
     '@/lib/supabase-admin': { createSupabaseAdmin: () => {
       llamadas.supabase++;
       return { rpc: async () => ({ data: true, error: null }), from: tabla };
@@ -79,9 +78,6 @@ test('demo en desarrollo: 201 por cada kind sin Supabase, Turnstile, red ni tare
     { kind: 'faq', token: 'demo', payload: { titulo: '¿Cuándo empiezan las clases?', contacto: 'ana@example.test' } },
     { kind: 'clase', token: 'demo', payload: { rows: [{ materia_id: '00000000-0000-0000-0000-000000000001', telefono: '11 1234-5678', dias: ['Lunes'], horarios: ['10:00-11:00'] }] } },
     { kind: 'precio', token: 'demo', payload: { carreraId: 7, email: 'ana@example.test', newsletter: true } },
-    { kind: 'autoinscripcion', pase: 'demo', payload: { ...legajoTeclab, carreraId: 7 } },
-    { kind: 'autoinscripcion', token: 'demo', payload: { ...legajoTeclab, carreraId: 7 } },
-    { kind: 'enlace', token: 'demo', payload: { codigo: 'Ab3dEf6hIj9kLm2nOp5qRs8tUv' } },
   ];
   for (const cuerpo of envios) {
     const { status, datos } = await enviar(cuerpo);
@@ -97,7 +93,7 @@ test('demo en desarrollo: 201 por cada kind sin Supabase, Turnstile, red ni tare
   }
 });
 
-test('demo en desarrollo: «Ver precio» y la preinscripción traen precio; el pase, sólo Teclab', async t => {
+test('demo en desarrollo: «Ver precio» y la preinscripción traen el precio de la casa', async t => {
   const { enviar } = montar(t, DEMO_DEV);
   const hoy = casas.fechaArgentina(new Date());
 
@@ -114,19 +110,14 @@ test('demo en desarrollo: «Ver precio» y la preinscripción traen precio; el p
   assert.equal(teclab.status, 201);
   assert.equal(teclab.datos.estado, 'vigente');
   assert.deepEqual(teclab.datos.precio, precio.datos.precio);
-  assert.equal(typeof teclab.datos.pase, 'string');
-  assert.ok(teclab.datos.pase.length > 0);
 
-  // Sin mail válido no hay pase, como en real: el paso pide el captcha (que en demo se resuelve solo).
-  const sinMail = await enviar({ kind: 'consulta', token: 'demo', payload: { ...legajoTeclab, email: '', carreraId: 7 } });
-  assert.equal(sinMail.status, 201);
-  assert.equal(sinMail.datos.pase, undefined);
-
-  // Siglo 21 trae el precio pero no el pase: no tiene autoinscripción.
+  // Siglo 21 también publica precio: la preinscripción lo trae igual.
   const siglo = await enviar({ kind: 'consulta', token: 'demo', payload: { casa: 'siglo21', tipoFormulario: 'preinscripcion', email: 'ana@example.test', carreraId: 3 } });
   assert.equal(siglo.datos.estado, 'vigente');
   assert.deepEqual(siglo.datos.precio, precio.datos.precio);
-  assert.equal(siglo.datos.pase, undefined);
+  // Identidad no está en CASAS_CON_PRECIO: sólo el ok.
+  const identidad = await enviar({ kind: 'consulta', token: 'demo', payload: { casa: 'identidad', tipoFormulario: 'preinscripcion', email: 'ana@example.test', carreraId: 5 } });
+  assert.deepEqual(identidad.datos, { ok: true });
   // Los contactos responden sólo el ok, como en real.
   const contactoTeclab = await enviar({ kind: 'consulta', token: 'demo', payload: { casa: 'teclab', tipoFormulario: 'contacto', email: 'ana@example.test', carreraId: 7 } });
   assert.deepEqual(contactoTeclab.datos, { ok: true });
@@ -142,8 +133,10 @@ test('demo en desarrollo: un sobre o un payload inválido sigue dando 400', asyn
     { kind: 'faq', token: 'demo', payload: { titulo: 'Hola', contacto: '' } },
     { kind: 'clase', token: 'demo', payload: { rows: [null] } },
     { kind: 'precio', token: 'demo', payload: { carreraId: 7, email: 'no-es-un-mail' } },
-    { kind: 'autoinscripcion', pase: 'demo', payload: { ...legajoTeclab, dni: '12', carreraId: 7 } },
-    { kind: 'enlace', token: 'demo', payload: { codigo: 'corto' } },
+    // Los kinds de la autoinscripción están dados de baja: 400 como cualquier
+    // otro sobre desconocido, aunque el payload venga completo.
+    { kind: 'autoinscripcion', token: 'demo', payload: { ...legajoTeclab, carreraId: 7 } },
+    { kind: 'enlace', token: 'demo', payload: { codigo: 'Ab3dEf6hIj9kLm2nOp5qRs8tUv' } },
   ];
   for (const cuerpo of invalidos) {
     assert.equal((await enviar(cuerpo)).status, 400, JSON.stringify(cuerpo));
@@ -166,8 +159,9 @@ test('fuera de desarrollo la bandera no cambia nada', async t => {
     assert.equal(consulta.status, 403);
     assert.equal(llamadas.turnstile, 1);
     assert.ok(llamadas.supabase > 0, 'la cuota corre como en real');
-    const auto = await enviar({ kind: 'autoinscripcion', pase: 'demo', payload: { ...legajoTeclab, carreraId: 7 } });
-    assert.equal(auto.status, 403, 'un pase de demo no vale en producción');
+    // Un kind dado de baja ni siquiera llega al captcha: rebota en el sobre.
+    const auto = await enviar({ kind: 'autoinscripcion', token: 'demo', payload: { ...legajoTeclab, carreraId: 7 } });
+    assert.equal(auto.status, 400, 'la autoinscripción ya no existe');
   });
 
   await t.test('test (NODE_ENV=test) tampoco activa la demo', async t => {

@@ -5,90 +5,92 @@ import { readFileSync } from 'node:fs';
 const fuente = readFileSync('components/formularios/formulario-lead.tsx', 'utf8');
 const js = texto => ts.transpileModule(texto, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
 
-test('la entrada dedicada activa el envío directo sólo para preinscripción Teclab', () => {
-  const calculo = fuente.slice(fuente.indexOf('  const solicitudDirecta ='), fuente.indexOf('  // Una preinscripción sin carrera'));
-  assert.ok(calculo.includes('solicitudDirecta'));
-  for (const [alinearAlLlegar, esPreinscripcion, casaActiva, conAutoinscripcion, esperado] of [
-    [true,true,'teclab',true,true], [false,true,'teclab',true,false],
-    [true,false,'teclab',false,false], [true,true,'siglo21',false,false],
-    [true,true,'identidad',false,false],
-  ]) assert.equal(new Function('alinearAlLlegar','esPreinscripcion','casaActiva','conAutoinscripcion','entradaAuto',js(`${calculo}\nreturn flujoAuto;`))(alinearAlLlegar,esPreinscripcion,casaActiva,conAutoinscripcion,false), esperado);
-});
-
-test('el envío directo real hace un POST y conserva datos ante errores para reintentar', async () => {
-  const auto = fuente.slice(fuente.indexOf('  const enviarAutoinscripcion ='), fuente.indexOf('  const limpiar'));
-  const enviar = fuente.slice(fuente.indexOf('  const enviar = async'), fuente.indexOf("    setEnviando(true);", fuente.indexOf('  const enviar = async')));
-  for (let fallo of [null, 'precio', 'CAPTCHA inválido', 'Demasiadas solicitudes', 'red']) {
-    // 'precio' no es un fallo: la respuesta trae precio vigente, que queda para «Ver precio».
-    const conPrecio = fallo === 'precio'; if (conPrecio) fallo = null;
-    const solicitudes = []; const pasos = []; const errores = []; let captcha = 0; let analytics = 0;
-    const precios = []; let inscripta = false;
-    const valores = { dni:'30123456', nacionalidad:'Peruana' };
+test('si el envío falla, no confirma y conserva los datos para reintentar', async () => {
+  const inicio = fuente.indexOf('    setEnviando(true);', fuente.indexOf('  const enviar = async'));
+  const fin = fuente.indexOf('\n  // Sólo los datos montan el captcha', inicio);
+  const cuerpo = fuente.slice(inicio, fin);
+  for (const [motivo, respuesta] of [
+    ['error del servidor', { ok: false, status: 500, json: async () => ({ error: 'No se pudo guardar la solicitud' }) }],
+    ['cuota', { ok: false, status: 429, json: async () => ({ error: 'Demasiadas solicitudes' }) }],
+    ['red caída', null],
+  ]) {
+    const valores = { nombre: 'Ana', nacionalidad: 'Peruana', dni: '30123456' };
+    const solicitudes = [];
+    const confirmaciones = [];
+    let error = '';
     const contexto = {
-      enviando:false, carrera:{id:7}, casaDeLaCarrera:'teclab', pase:'', token:'seguro',
-      preinscripcionEnviada:false, newsletter:true, origen:'dedicada', carreraElegida:'Eventos', filtro:null,
-      CATEGORIES:[], flujoAuto:true, valido:true, datosValidos:true, modo:'preinscripcion', valores,
-      setGestionIntentada:()=>{},setEnviando:()=>{},setError:e=>errores.push(e),setPase:()=>{},
-      nuevoCaptcha:()=>captcha++, irAPaso:p=>pasos.push(p),
-      setAutoinscripta:v=>{inscripta=v;}, setPrecioDirecto:p=>precios.push(p),
-      trackConsulta:()=>analytics++, trackIntentoFormulario:()=>{},
-      armarPayload:(_c,_m,v)=>({...v}), AVISO_VERIFICAR:'Verificá nuevamente',
-      fetch:async (_url,opciones)=> { solicitudes.push(JSON.parse(opciones.body)); if(fallo==='red') throw new Error('red'); return {ok:!fallo,json:async()=>(fallo?{error:fallo}:conPrecio?{ok:true,estado:'vigente',precio:{total:'$ 1'}}:{ok:true})}; },
+      casaActiva: 'teclab', modo: 'preinscripcion', esPreinscripcion: true, valores,
+      filtro: null, CATEGORIES: [], carreraElegida: 'Carrera', carrera: { id: 7 }, token: 'seguro',
+      newsletter: true, origen: 'normal', setEnviando: () => {}, setError: e => { error = e; },
+      armarPayload: (_c, _m, v) => v,
+      setPreinscripcionEnviada: v => confirmaciones.push(v), setPrecioCarrera: () => {},
+      irAPaso: p => confirmaciones.push(p), setListo: () => confirmaciones.push('listo'),
+      trackConsulta: () => assert.fail('un envío fallido no cuenta como consulta'),
+      tipoFalloTecnicoFormulario: () => null,
+      setToken: () => {}, setCaptchaKey: () => {}, setCaptchaVencido: () => {},
+      fetch: async (_url, opciones) => {
+        solicitudes.push(JSON.parse(opciones.body));
+        if (!respuesta) throw new Error('red');
+        return respuesta;
+      },
     };
-    const funciones = new Function(...Object.keys(contexto), js(`${auto}\n${enviar}\n}; return {enviar,enviarAutoinscripcion};`))(...Object.values(contexto));
-    assert.equal(solicitudes.length,0,'sin envío al montar');
-    await funciones.enviar({preventDefault(){}});
-    await new Promise(resolve=>setImmediate(resolve));
-    assert.equal(solicitudes.length,1);
-    assert.equal(solicitudes[0].kind,'autoinscripcion');
-    assert.equal(solicitudes[0].payload.newsletter,true);
-    assert.equal(solicitudes[0].payload.nacionalidad,'Peruana');
-    assert.equal(solicitudes[0].pase,undefined);
-    assert.deepEqual(valores,{dni:'30123456',nacionalidad:'Peruana'});
-    assert.equal(analytics,fallo?0:1);
-    assert.deepEqual(pasos,fallo?[]:['confirmacion']);
-    assert.equal(inscripta,!fallo);
-    assert.deepEqual(precios,fallo?[]:[conPrecio?{total:'$ 1'}:null]);
-    if(fallo) { assert.ok(errores.at(-1)); assert.equal(captcha,1); await funciones.enviarAutoinscripcion(); assert.equal(solicitudes.length,2); }
+    await new Function(...Object.keys(contexto), js(`return (async()=>{${cuerpo.slice(0, cuerpo.lastIndexOf('  };'))}})();`))(...Object.values(contexto));
+    assert.equal(solicitudes.length, 1, motivo);
+    assert.equal(solicitudes[0].kind, 'consulta', motivo);
+    assert.ok(error, `${motivo}: tiene que quedar un aviso`);
+    assert.deepEqual(confirmaciones, [], `${motivo}: no confirma`);
+    assert.deepEqual(valores, { nombre: 'Ana', nacionalidad: 'Peruana', dni: '30123456' }, `${motivo}: los datos quedan cargados`);
   }
 });
 
-test('el DNI estricto integra la validación y el error de campo', () => {
-  assert.match(fuente,/const errorDni = flujoAuto/);
-  assert.match(fuente,/!errorDni/);
-  assert.match(fuente,/if \(errorDni\) problemas.push\('dni'\)/);
-  assert.ok(fuente.includes("error={id === 'dni' && flujoAuto ? (intentado ? errorDni : '') : undefined}"));
-});
-
-test('DNI vacío, corto, largo o con letras y opciones ajenas frenan el submit', async () => {
-  const validacion = fuente.slice(fuente.indexOf('  const errorDni ='), fuente.indexOf('  // En la entrada directa el paso 1'));
-  const enviar = fuente.slice(fuente.indexOf('  const enviar = async'), fuente.indexOf("    setEnviando(true);", fuente.indexOf('  const enviar = async')));
-  for (const [dni,malEscritos] of [['',[]],['123456',[]],['1234567890',[]],['3012345A',[]],['30123456',['nacionalidad']]]) {
-    let pedidos=0;let problemas=[];
-    const contexto={flujoAuto:true,texto:()=>dni,email:'ana@example.test',telefono:'1112345678',errorEmail:'',errorTelefono:'',faltanObligatorios:dni?[]:['dni'],malEscritos,enviando:false,token:'seguro',origen:'dedicada',modo:'preinscripcion',setIntentado:()=>{},trackIntentoFormulario:()=>{},setEnFrio:()=>{},frioRef:{current:null},irAlPrimerProblema:p=>problemas=p,enviarAutoinscripcion:()=>pedidos++,setTimeout:()=>1,clearTimeout:()=>{}};
-    await new Function(...Object.keys(contexto), js(`${validacion}\nconst valido=datosValidos;\n${enviar}\n}; return enviar({preventDefault(){}});`))(...Object.values(contexto));
-    assert.equal(pedidos,0);
-    assert.ok(problemas.includes(malEscritos.length?'nacionalidad':'dni'));
+test('una opción fuera de su lista, o un obligatorio vacío, frenan el envío y señalan el campo', async () => {
+  // El desplegable acepta texto libre: lo escrito que no es una opción no viaja
+  // y el envío se detiene hasta corregirlo. El DNI ya no se valida acá.
+  const guardia = fuente.slice(fuente.indexOf('    if (!valido) {'), fuente.indexOf('    setEnviando(true);'));
+  for (const [caso, esperado, intentadoEsperado] of [
+    [{ malEscritos: ['nacionalidad'], faltanObligatorios: [] }, 'nacionalidad', true],
+    [{ malEscritos: [], faltanObligatorios: ['dni'] }, 'dni', true],
+    [{ malEscritos: [], faltanObligatorios: [] }, null, false],
+  ]) {
+    let problemas = [];
+    let intentado = false;
+    const contexto = {
+      valido: caso.malEscritos.length === 0 && caso.faltanObligatorios.length === 0,
+      ...caso, token: 'seguro', hayContacto: true, errorEmail: '', errorTelefono: '',
+      origen: 'dedicada', modo: 'preinscripcion', trackIntentoFormulario: () => {},
+      setIntentado: v => { intentado = v; }, setEnFrio: () => {},
+      frioRef: { current: null }, setTimeout: () => 1, clearTimeout: () => {},
+      irAlPrimerProblema: p => { problemas = p; },
+    };
+    await new Function(...Object.keys(contexto), js(`return (async()=>{${guardia}})();`))(...Object.values(contexto));
+    if (esperado) assert.ok(problemas.includes(esperado), `${esperado} tiene que señalarse`);
+    else assert.deepEqual(problemas, []);
+    assert.equal(intentado, intentadoEsperado);
   }
 });
 
 test('el resultado dedicado confirma gestión pendiente sin ofrecer credenciales listas', async () => {
   const { cargarTypescript } = await import('./helpers/cargar-typescript.mjs');
   const elemento=(type,props)=>({type,props});
-  const {PasoListo,AvisoSinPago}=cargarTypescript('components/formularios/autoinscripcion-teclab.tsx',{'react/jsx-runtime':{jsx:elemento,jsxs:elemento}},()=>({}));
+  const {PasoListo}=cargarTypescript('components/formularios/autoinscripcion-teclab.tsx',{'react/jsx-runtime':{jsx:elemento,jsxs:elemento}},()=>({}));
   const texto=n=>typeof n==='string'?n:Array.isArray(n)?n.map(texto).join(' '):n?.props?texto(n.props.children):'';
-  const confirmacion=texto(PasoListo({solicitud:true,dni:'30123456',waHref:'#'}));
+  const confirmacion=texto(PasoListo({waHref:'#'}));
   assert.match(confirmacion,/Preinscripción enviada/);
   assert.match(confirmacion,/Nos comunicamos a la brevedad\./);
   assert.doesNotMatch(confirmacion,/Usuario|Contraseña|30123456|Entrar al portal|cuenta creada|acceso listo/);
   assert.match(confirmacion,/Escribinos por WhatsApp/);
   assert.equal((confirmacion.match(/Preinscripción enviada/g)||[]).length,1);
-  assert.match(texto(AvisoSinPago()),/Al tocar Inscribirme/);
+  // «Ver precio» sólo aparece cuando la carrera trae un precio vigente.
+  assert.doesNotMatch(confirmacion,/Ver precio/);
+  assert.match(texto(PasoListo({waHref:'#',onVerPrecio:()=>{}})),/Ver precio/);
 });
 
-test('el error CAPTCHA indica reenvío sin nombrar un botón ajeno', () => {
-  const auto = readFileSync('components/formularios/autoinscripcion-teclab.tsx', 'utf8');
-  assert.match(auto, /export const AVISO_VERIFICAR = 'Volvé a verificar la seguridad y enviá la solicitud\.'/);
+test('los avisos de captcha del formulario piden reintentar sin nombrar un botón ajeno', () => {
+  const formulario = readFileSync('components/formularios/formulario-lead.tsx', 'utf8');
+  assert.match(formulario, /El captcha venció\. Volvé a tildarlo\./);
+  assert.match(formulario, /Falta tildar la verificación de seguridad\./);
+  // Ya no hay un aviso que hable de «Inscribirme» ni de un captcha invisible.
+  assert.doesNotMatch(formulario, /AVISO_VERIFICAR|captcha invisible/);
 });
 
  test('toda preinscripción normal confirma directamente sin una segunda decisión', () => {

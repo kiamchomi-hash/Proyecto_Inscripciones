@@ -53,7 +53,7 @@ export function comandoLocal(nombre) {
     entrega: ['--test', 'tests/entrega.test.mjs', 'tests/cache-produccion.test.mjs'],
     datos: ['--test', '--test-concurrency=1', 'tests/datos.test.mjs', 'tests/concurrencia.test.mjs'],
     control: ['--test', '--test-concurrency=1', 'tests/rate-limit.test.mjs', 'tests/contadores.test.mjs', 'tests/migraciones.test.mjs'],
-    inscripcion: ['--test', '--test-concurrency=1', 'tests/enlaces.test.mjs', 'tests/robot.test.mjs', 'tests/upgrade-enlaces-robot.test.mjs'],
+    inscripcion: ['--test', '--test-concurrency=1', 'tests/upgrade-enlaces-robot.test.mjs'],
     api: ['--test', '--test-concurrency=1', 'tests/formularios.test.mjs', 'tests/operativa.test.mjs',
       'tests/upgrade-outbox.test.mjs', 'tests/upgrade-tablas.test.mjs', 'tests/apoyo-faq-baja.test.mjs'],
     // Crons de newsletter y recordatorio, y la vigilancia con transporte doble:
@@ -62,7 +62,7 @@ export function comandoLocal(nombre) {
     // Telemetría agregada, alertas, revalidación y registrador local de analítica.
     telemetria: ['--test', '--test-concurrency=1', 'tests/telemetria.test.mjs', 'tests/analitica.test.mjs',
       'tests/whatsapp-clicks.test.mjs'],
-    identidad: ['--test', 'tests/pase.test.mjs', 'tests/turnstile.test.mjs'],
+    identidad: ['--test', 'tests/turnstile.test.mjs'],
     // Widget de Turnstile con dobles del documento y del entorno público:
     // ni red ni DOM real.
     navegador: ['--test', 'tests/turnstile-navegador.test.mjs'],

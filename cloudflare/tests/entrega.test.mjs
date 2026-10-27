@@ -103,22 +103,25 @@ test('X-Robots-Tag se decide por ruta: público sin noindex, privado y 404 con n
     ['/api/formularios', 405, 'noindex'],
     ['/imagenes', 200, 'noindex, nofollow'],
     ['/carreras/licenciatura-en-administracion/inscripcion', 200, 'noindex, follow'],
-    ['/inscripcion/codigo', 200, 'noindex, nofollow'],
     ['/no-existe', 404, 'noindex, nofollow'],
   ];
   for (const [ruta, estado, esperado] of casos) {
     assert.equal(robotsDeRuta(ruta, estado), esperado, ruta);
   }
+  // La autoinscripción se dio de baja el 27/10/2026: ninguna ruta `/inscripcion/`
+  // tiene regla propia; si no existe, la cubre el 404.
+  assert.equal(robotsDeRuta('/inscripcion/codigo', 404), 'noindex, nofollow');
+  assert.equal(robotsDeRuta('/inscripcion/codigo', 200), null);
 
   // No pisa lo que la ruta ya decidió (no-referrer y cache propio), y agrega
   // las cabeceras globales que sí vienen de next.config.ts.
   const original = new Response('x', { status: 200, headers: {
     'Cache-Control': 'public, max-age=0, must-revalidate', 'Referrer-Policy': 'no-referrer',
   } });
-  const respuesta = aplicarCabeceras(original, { ruta: '/inscripcion/codigo', estado: 200 });
+  const respuesta = aplicarCabeceras(original, { ruta: '/carreras/licenciatura-en-administracion/inscripcion', estado: 200 });
   assert.equal(respuesta.headers.get('Referrer-Policy'), 'no-referrer');
   assert.equal(respuesta.headers.get('Cache-Control'), 'public, max-age=0, must-revalidate');
-  assert.equal(respuesta.headers.get('X-Robots-Tag'), 'noindex, nofollow');
+  assert.equal(respuesta.headers.get('X-Robots-Tag'), 'noindex, follow');
   assert.match(respuesta.headers.get('Content-Security-Policy'), /frame-ancestors 'none'/);
   assert.equal(respuesta.headers.get('Strict-Transport-Security'),
     'max-age=63072000; includeSubDomains; preload');
@@ -239,11 +242,8 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.equal((await astro.fetch('/imagenes')).headers.get('x-robots-tag'), 'noindex, nofollow');
   const inscripcion = await astro.fetch('/carreras/licenciatura-en-administracion/inscripcion');
   assert.equal(inscripcion.headers.get('x-robots-tag'), 'noindex, follow');
-  const enlace = await astro.fetch('/inscripcion/EnlaceSinteticoLocal1234567890ABCD');
-  assert.equal(enlace.status, 200);
-  assert.equal(enlace.headers.get('x-robots-tag'), 'noindex, nofollow');
-  assert.equal(enlace.headers.get('cache-control'), 'no-store');
-  assert.equal(enlace.headers.get('referrer-policy'), 'no-referrer');
+  // La autoinscripción se dio de baja el 27/10/2026: la ruta del enlace ya no existe.
+  assert.equal((await astro.fetch('/inscripcion/EnlaceSinteticoLocal1234567890ABCD')).status, 404);
 
   // Assets: Workers Assets los sirve fuera del Worker; `_headers` les lleva
   // seguridad y cache, pero no X-Robots-Tag ni no-store de HTML.

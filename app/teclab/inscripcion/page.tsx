@@ -11,7 +11,7 @@ import '../../carreras/[slug]/inscripcion/inscripcion.css';
 // La inscripción a Teclab sin carrera elegida: el mismo formulario que la página
 // de inscripción de cada carrera (`/carreras/<slug>/inscripcion`), con el
 // selector de todas las de Teclab. Sigue el mismo proceso: preinscripción,
-// precio, «Inscribirme» y confirmación. Sirve para difundir una sola dirección.
+// precio y confirmación. Sirve para difundir una sola dirección.
 const RUTA = '/teclab/inscripcion';
 const TITULO = 'Inscripción a Teclab';
 const DESCRIPCION = 'Preinscribite en una tecnicatura o curso de Teclab, 100% online: elegí la carrera, completá tus datos, mirá el precio y confirmá tu inscripción.';
@@ -88,7 +88,7 @@ export default async function InscripcionTeclabPage() {
             <div className="inscripcion-proximos-tarjeta">
               <h2 id="proximos-pasos-titulo">Próximos pasos</h2>
               <div className="inscripcion-proximos-contenido">
-                <p>Teclab te envía por mail el acceso al portal del alumno una vez gestionada la inscripción. Desde allí elegís el medio de pago y abonás.</p>
+                <p>Un asesor del CAU se contacta a la brevedad para terminar tu preinscripción. Después Teclab te envía por mail el acceso al portal del alumno, donde elegís el medio de pago y abonás.</p>
                 {/* Explícito y bien visible: hay quien no completa por miedo a que le cobren. */}
                 <p className="inscripcion-sin-pago">Completar este formulario no realiza ningún pago: sólo registra tu solicitud. El pago lo hacés después, desde el portal del alumno.</p>
               </div>

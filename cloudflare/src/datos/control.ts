@@ -25,7 +25,7 @@ export async function comprobarCupo(db: D1Database, clave: string, maximo: numbe
   return await db.prepare(SQL_CUPO).bind(clave, maximo, ventanaSegundos, ahora).first() !== null;
 }
 
-const FORMULARIOS = ['consulta', 'faq', 'clase', 'precio', 'autoinscripcion', 'enlace'];
+const FORMULARIOS = ['consulta', 'faq', 'clase', 'precio'];
 const MAXIMOS_ALERTA = {
   whatsapp: 5, 'clase-whatsapp': 5, 'formulario-fallo': 5,
   'formulario-intento': 12, 'formulario-abandonado': 12,

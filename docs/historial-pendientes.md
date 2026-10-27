@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Bajas
+
+- **Autoinscripción de Teclab, 27/10/2026.** Se dio de baja el flujo completo: el carrusel «Inscribirme» del formulario, `kind: 'autoinscripcion'`, el pase HMAC, el enlace `/inscripcion/<código>`, la cola `robot_autoinscripciones`, la API `/api/robot/autoinscripciones`, el chequeo de vigilancia de la cola y el repo privado `cau-robot-teclab` en GitHub. El formulario de Teclab vuelve a ser una preinscripción como las otras: se guarda la consulta, avisa por Telegram y ofrece «Ver precio» después de confirmar, con la atención a mano. La migración `0011` borra las dos tablas (estaban vacías). [Tarea](../odd/tasks/autoinscripcion-teclab.md).
+
 ## Cierres y descartes trasladados de la lista activa, 23/10/2026
 
 ### Sitio y comercial

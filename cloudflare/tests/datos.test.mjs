@@ -10,10 +10,14 @@ test('migración desde cero y segunda aplicación por historial sin cambios', as
   await insertarCarrera(db);
   await worker.applyD1Migrations('DB');
   assert.equal(await db.prepare('SELECT count(*) AS n FROM carreras').first('n'), 1);
-  assert.equal(await db.prepare('SELECT count(*) AS n FROM d1_migrations').first('n'), 10);
+  assert.equal(await db.prepare('SELECT count(*) AS n FROM d1_migrations').first('n'), 12);
   const tablas = (await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all()).results.map(r => r.name);
-  for (const nombre of ['carreras', 'precios_privados', 'reservas_mail_precio', 'form_rate_limits', 'career_clicks', 'consultas', 'enlaces_inscripcion', 'robot_autoinscripciones', 'outbox',
+  for (const nombre of ['carreras', 'precios_privados', 'reservas_mail_precio', 'form_rate_limits', 'career_clicks', 'consultas', 'outbox',
     'faq_preguntas', 'solicitudes_clase', 'suscripciones_newsletter', 'newsletter_envios', 'materias', 'novedades']) assert.ok(tablas.includes(nombre));
+  // `0011` da de baja la autoinscripción de Teclab: las dos tablas que usaba ya no están.
+  for (const retirada of ['enlaces_inscripcion', 'robot_autoinscripciones']) {
+    assert.ok(!tablas.includes(retirada), `${retirada} sigue en el esquema`);
+  }
   assert.equal((await db.prepare('PRAGMA table_info(carreras)').all()).results.length, 23);
 });
 
