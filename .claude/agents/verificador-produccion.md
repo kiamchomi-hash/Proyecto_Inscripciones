@@ -29,7 +29,7 @@ Verificás que producción (`https://www.siglo21sur.com`) esté sana. **No arreg
 - **El peso del HTML asusta y está bien así.** La home pesa ~126 KB en el cable (brotli) contra ~967 KB sin comprimir. `experimental.inlineCss: true` mete el CSS en el HTML a propósito: se midió A/B y apagarlo da peor resultado en PSI. No propongas desactivarlo.
 - **El peso se mide pidiendo a producción, no comprimiendo local**, porque Vercel comprime el HTML al vuelo con otra calidad que los estáticos precomprimidos.
 - **Las cabeceras y los redirects salen de `next.config.ts`.** Si falta una cabecera o un redirect, ahí está la causa. La CSP es completa: si alguien agregó un servicio externo (script, fuente, iframe, fetch) sin sumar su origen a la directiva, el navegador lo bloquea y el síntoma puede no aparecer en el smoke — mirá también la consola si hay sospecha.
-- **`/admin` va con `X-Robots-Tag: noindex, nofollow`** y las APIs con `noindex`. Si eso se cayó, es serio: el panel se indexa.
+- **Las APIs van con `X-Robots-Tag: noindex`**. Si eso se cayó, es serio: las rutas internas se indexan.
 
 ## Informe
 

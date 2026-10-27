@@ -6,7 +6,16 @@ import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackConsulta, trackInicioFormulario } from '@/lib/analytics';
+import { mensajeRechazoEnsayo, type DetalleRechazo } from '@/components/formularios/errores-ensayo';
 import './contacto.css';
+
+/**
+ * El ensayo de staging inyecta este `<meta>` en `/contacto`; el sitio vigente no.
+ * Sirve para mostrar el motivo funcional del rechazo sin cambiar producción.
+ */
+function detalleEnsayoServido(): boolean {
+  return typeof document !== 'undefined' && document.querySelector('meta[name="formularios-detalle"]') !== null;
+}
 
 /* ── Publicaciones ────────────────────────────────────── *
  *  Cada post tiene: imagen local, link al post original,  *
@@ -86,6 +95,7 @@ function ContactForm() {
     setError('');
 
     let estadoRespuesta: number | null = null;
+    let mensajeSeguro: string | null = null;
     try {
       const response = await fetch('/api/formularios', {
         method: 'POST',
@@ -113,16 +123,18 @@ function ContactForm() {
       });
       estadoRespuesta = response.status;
       if (!response.ok) {
-        const detalle = await response.json().catch(() => null) as { error?: string } | null;
+        const detalle = await response.json().catch(() => null) as DetalleRechazo | null;
+        // Sólo el ensayo de staging trae este meta; en producción queda null.
+        mensajeSeguro = detalleEnsayoServido() ? mensajeRechazoEnsayo(detalle) : null;
         throw new Error(detalle?.error || 'submit_failed');
       }
     } catch (err) {
       const tipoFallo = tipoFalloTecnicoFormulario(estadoRespuesta);
       if (tipoFallo) avisarFalloFormularioContacto('contacto', tipoFallo);
       const motivo = err instanceof Error ? err.message : '';
-      setError(motivo === 'Demasiadas solicitudes'
+      setError(mensajeSeguro ?? (motivo === 'Demasiadas solicitudes'
         ? 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.'
-        : 'Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.');
+        : 'Hubo un error al enviar. Intentá de nuevo o contactanos por WhatsApp.'));
       setSubmitting(false);
       setTurnstileToken('');
       setCaptchaKey((k) => k + 1);
@@ -250,7 +262,7 @@ function ContactForm() {
               {captchaExpirado ? 'El captcha venció. Volvé a tildarlo.' : ''}
             </p>
 
-            {error && <p className="text-[11px] text-red-400">{error}</p>}
+            {error && <p role="alert" className="text-[11px] text-red-400">{error}</p>}
 
             <button
               type="submit"

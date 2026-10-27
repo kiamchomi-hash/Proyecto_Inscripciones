@@ -9,6 +9,13 @@ esto es **cómo se trabaja en él**. [`PENDIENTES.md`](../PENDIENTES.md) es la l
 
 ## Cómo escribir
 
+### Todo cambio estético se muestra en el chat
+
+Después de cualquier cambio estético, mostrar cómo quedó con capturas visibles
+directamente en el chat, en escritorio y celular. No alcanza con revisarlas
+internamente, describir el resultado ni dejar sólo enlaces para abrirlas. No
+esperar a que el usuario las pida.
+
 ### Las respuestas van cortas
 
 Nada de tablas de estado, resúmenes de lo que quedó hecho ni párrafos
@@ -121,7 +128,7 @@ no hacen `translate`, no escalan y no se mueven.
 Al terminar, un archivo con **los links que se usaron** (`referencias/AAAA-MM-DD-<tema>.md`).
 No es un resumen de lo hecho: es la lista de links, una línea por cada uno con qué
 se tomó de ahí. Lo descartado también va, con el motivo. Los abre para guardarse
-lo que le sirve en su UIverse local (`~/Desktop/uiverse`), así que las piezas de
+lo que le sirve en su UIverse local (`~/Documentos/uiverse`), así que las piezas de
 UIverse van con su URL de `uiverse.io`, no con la ruta local.
 
 ## Decisiones tomadas: no volver a proponerlas
@@ -149,20 +156,21 @@ sobre y nadie actualiza el SPF, esos mails se pierden sin aviso. Hoy ningún env
 legítimo usa el raíz (SMTP2GO usa el subdominio `em776964`). No reproponerlo salvo
 que se deje de usar DMARC en `reject`.
 
-### No se migra de Vercel a Cloudflare Workers, por ahora
+### Migración a Cloudflare: aprobada, se hace después de cerrar las pruebas locales
 
-Decidido el 18/10/2026, después de la [prueba de factibilidad](../odd/tasks/factibilidad-cloudflare.md).
-Es viable técnicamente, pero ahorra unos USD 10 a 15 por mes (Pro contra Workers
-Paid) a cambio de varios días de trabajo y dos riesgos: el middleware de Node, que
-es `proxy.ts` y protege todo el panel admin, es experimental en OpenNext; y los
-redirects y las respuestas del middleware salieron sin CSP, HSTS ni `X-Robots-Tag`.
-Además se pierden los eventos de Vercel Analytics que leen `npm run leads`, el
-digest y la vigilancia, y hay que rehacer los tres crons, el WAF con su alerta, la
-revalidación on-demand, `next/image` y el `check` antes del deploy.
+Aprobada por el usuario el 24/10/2026: se deja Vercel, Supabase y Next.js por
+Cloudflare (Astro + React sobre Workers, D1 y R2). Reemplaza la decisión del
+18/10/2026 de no migrar, que se tomó sólo por costo y se basaba en la
+[prueba de factibilidad](../odd/tasks/factibilidad-cloudflare.md).
 
-Se vuelve a evaluar sólo si Vercel sube el precio, si el sitio supera los límites
-de Pro o si OpenNext deja de marcar como experimental el middleware de Node. La
-rama local `exp/cloudflare` (`5841d28`) queda como punto de partida.
+Orden: primero terminar las pruebas locales del prototipo en `cloudflare/`
+(bloque 3 en adelante, paridad de páginas, respaldo de Supabase restaurable) y
+recién después el plan de corte, que requiere aprobación explícita antes de
+tocar DNS, deploy, facturación o datos reales. Hasta entonces producción no cambia.
+
+El ahorro todavía no está medido: Workers Paid parte de USD 5 por mes, pero falta
+comparar con la factura real de Vercel y Supabase y sumar el costo de mantenimiento.
+La rama local `exp/cloudflare` (`5841d28`) es antecedente, no punto de partida.
 
 ### Identidad Argentina se migra a otro sitio
 

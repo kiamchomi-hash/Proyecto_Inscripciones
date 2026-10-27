@@ -4,6 +4,30 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Cierres y descartes trasladados de la lista activa, 23/10/2026
+
+### Sitio y comercial
+
+- Completado el 17/10/2026: flecha hacia abajo en lugar de la barra de scroll en los modales (`d1c7d28`, `components/index/flechas-de-scroll`).
+- Completado el 20/10/2026: **imagen de la financiación de Teclab** para WhatsApp, en versión clara y oscura, con los datos del simulador (`contenidos/teclab/aprobados/generales/whatsapp/2026-10-20-financiacion-teclab/`). Si el simulador cambia, se rehace.
+- Completado el 20/10/2026: **formulario de Teclab**. El código postal deja de bloquear la preinscripción, como en el portal (`CASAS.teclab.opcionales`); el resto de los campos sí los exige.
+- Descartado por el usuario el 17/10/2026: **18. Revisar las aperturas de las carreras de 2026**. Ya se está inscribiendo para 2027; la revisión pendiente de 2026 dejó de ser relevante. No implica que las aperturas de 2027 estén verificadas.
+- Descartado el 20/10/2026: cierres del robot de Teclab con las cuentas de prueba 99000001 a 99000007 (no se incluyen) y medios de pago del curso de IA de Teclab (para siempre).
+- Descartado por el usuario el 17/10/2026: mostrar en el aviso de Telegram si la persona marcó el newsletter. No hace falta ese dato.
+
+### Infraestructura y seguridad
+
+- Completado el 18/10/2026: PAT de Supabase revisados; queda sólo el del CLI de Linux y se borró el de Windows. [Detalle](notas-operativas.md).
+- Descartado por el usuario el 18/10/2026: pasar el SPF de `~all` a `-all`. Con DMARC en `reject` no suma y agrega un riesgo silencioso. [Criterio](criterios.md#el-spf-se-queda-en-all).
+- Cerrado el 18/10/2026: **factibilidad de Cloudflare**. Es viable, pero no se migra por ahora: ahorra poco y arriesga seguridad y medición. [Criterio](criterios.md#no-se-migra-de-vercel-a-cloudflare-workers-por-ahora).
+
+## Supabase — permisos y revisión de Auth, 21/10/2026
+
+- [x] **Aplicar el SQL de permisos en producción.** Con autorización del usuario y su sesión del dashboard, se confirmó el proyecto y se ejecutó `sql/2026-10-21_endurecer_storage_y_policies.sql` dentro de una transacción. SQL Editor devolvió éxito; el catálogo posterior mostró 5 policies objetivo con `private.current_user_is_admin()`, ninguna policy antigua objetivo, ningún EXECUTE de las funciones de trigger para `anon`/`authenticated` y ningún INSERT directo de formularios. No hubo prueba HTTP de Storage ni datos de prueba.
+- [x] **Revisar Auth: protección de contraseñas, OTP y MFA.** Lectura del dashboard sin cambiar ajustes: protección de contraseñas filtradas desactivada y limitada a Pro por la interfaz (proyecto Free), OTP de 3600 segundos y 8 caracteres, proveedor TOTP habilitado. Habilitar el proveedor no demuestra usuarios enrolados ni MFA exigido por la aplicación. La revisión está completa; los posibles cambios de configuración requieren autorización independiente.
+
+[Estado completo y límites](seguridad.md#21102026-permisos-aplicados-en-producción-y-auth-revisado), [seguimiento](../odd/tasks/permisos-supabase-2026-10-21.md), [enlaces](../referencias/2026-10-21-permisos-supabase-auth.md).
+
 ## Tipos — contrato de consultas y detalle de carreras, 18/10/2026
 
 - [x] **Tipar el contrato de consultas y el detalle de carreras (A3).** Consultas (`bc593a0`): las filas de consulta, precio y autoinscripción se arman como `TablesInsert<'consultas'>` desde las columnas que declara `casas.ts`, con expectativas negativas (`@ts-expect-error`) que fallan si un campo apunta a una columna de otro tipo. Detalle (`ad52917`): un adaptador del esquema generado valida en runtime las cinco variantes de slides; datos corruptos dan 502 en la API en vez de publicar un conjunto parcial. La verificación completa había quedado trabada por el sandbox (EPERM al lanzar Gitleaks y los fixtures de npm); fuera de él, `npm run check` 519/519 y `npm run build` 243/243 páginas. [Consultas](../odd/tasks/a3-contrato-consultas.md), [detalle](../odd/tasks/a3-detalle-carreras.md).
@@ -105,7 +129,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 ## Sitio y diseño — 16/10/2026
 
 - [x] **Medir en qué punto se abandona el test vocacional** (general y Teclab). Publicado el 16/10/2026 en `e239bc9`; smoke de producción verde. La revisión de datos y las mejoras siguen en la lista. [Tarea](../odd/tasks/medicion-abandono-vocacional.md).
-- [x] **Limitar «Ver precio» a un mail por carrera y semana**. SQL aplicado y backend publicado el 16/10/2026 en `1349acc`; tipos regenerados desde el esquema. [Tarea](../odd/tasks/limitar-mails-precio.md). Prueba real del 16/10/2026: el segundo pedido en la misma carrera mostró el precio sin mandar otro mail.
+- [x] **Limitar «Ver precio» a un mail por carrera y semana**. SQL aplicado y backend publicado el 16/10/2026 en `1349acc`; tipos regenerados desde el esquema. [Tarea](../odd/tasks/limitar-mails-precio.md). Prueba real del 16/10/2026: el segundo pedido en la misma carrera mostró el precio sin mandar otro mail. También se verificó concurrencia real en dos sesiones y se confirmó la limpieza de la reserva ficticia. [Evidencia](limite-mails-precio.md#pruebas).
 
 - [x] **Corregir la web de Teclab** (15/10/2026). Test vocacional debajo de las carreras, articulación después de los formularios y ajustes responsive. Publicado en `3bb9355` y `0d28969`; [comprobaciones y limitaciones](../odd/tasks/teclab-responsive-formulario.md).
 - [x] **Arreglar la estética de los mails de Siglo 21 y de Teclab** (`46cc8fc`). Ver el mail de Teclab en la bandeja quedó como pendiente aparte.
@@ -350,3 +374,9 @@ Cerrado: encontrada la página oficial de la Tecnicatura en Responsabilidad y Ge
 - [x] **Comprobar el enlace de inscripción y la marca de «vio el precio» en Telegram.** Prueba autorizada en producción con las consultas ficticias 155 (precio) y 156 (preinscripción), identificadas como «PRUEBA AVISO IGNORAR». Las respuestas del webhook 439 y 440 devolvieron HTTP 200 y `telegram: true`; se generó el enlace para la consulta 156. El usuario confirmó visualmente ambos elementos en el segundo aviso el 16/10/2026.
 - No se enviaron correos ni se ejecutó el robot de inscripción. Los dos registros ficticios permanecen en la base; no se borraron datos.
 - Pruebas locales aprobadas: `node --test tests/avisos.test.mjs tests/precio-visto.test.mjs tests/enlace-inscripcion.test.mjs`.
+
+## extractor-teclab-portal-2026-10-23
+
+- [x] **Adaptar el extractor de precios de Teclab al portal actual.** Resuelto el 23/10/2026: navegación del menú contraído, etiquetas duplicadas, inventario virtualizado y selección de financiación corregidos sin alterar la lógica de importes. Verificación independiente final: 15/15 fixtures y sintaxis de ambos extractores correctos; spot check del coordinador correcto. Lectura viva: inventarios 18/18/18, cotización con aritmética y vigencia comprobadas, ocho tarjetas y 121 combinaciones tarjeta/banco.
+- No se ejecutó el actualizador completo, no se reemplazaron archivos de precios ni se publicó el buscador. Sin commit ni push de material comercial privado. [Detalle y evidencia](../odd/tasks/teclab-extractor-dashboard.md).
+- Las condiciones de cuotas, intereses y cargos de MercadoPago con dinero en cuenta, GoCuotas, WiBond, PagoFácil y Rapipago quedan como pendiente separado; su presencia con el mismo total inicial no acredita financiación sin recargos.

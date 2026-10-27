@@ -1,19 +1,22 @@
 # Pendientes
 
-Lista de trabajo para una sola persona. No hace falta trasladarla a otra herramienta. Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; las revisiones repetibles van en rutinas.
+Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; las revisiones repetibles van en rutinas.
 
-Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas de [`odd/tasks/`](odd/tasks/) y el [detalle de pendientes](docs/pendientes-detalle.md). El orden es: primero lo que ya está hecho y falta publicar o marcar; después lo que hace perder leads o muestra un dato equivocado; después el resto; Teclab ya no tiene prioridad especial (16/10/2026). Los números de los pedidos del 02/10/2026 se conservan para poder referirse a cada tarea.
+Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas de [`odd/tasks/`](odd/tasks/) y el [detalle de pendientes](docs/pendientes-detalle.md). El orden es: primero lo que ya está hecho y falta publicar o marcar; después lo que hace perder leads o muestra un dato equivocado; después el resto; Teclab ya no tiene prioridad especial (16/10/2026). Los números de los pedidos del 02/10/2026 se conservan para poder referirse a cada tarea  
 
-## 2. Comprobaciones que quedan de tareas ya hechas
+1.Enfocar clases de apoyo computación en secundario y adultos mayores, no en universitarios, es el público objetivo más fuerte  
+1.2 fichas grandes de modales generan esa flecha de abajo, es algo que hice hace poco, además en desktop remplazo las flechas de bimestre y año, no es algo que esperaba
 
-Completado el 16/10/2026: límite de correos de «Ver precio», con concurrencia real verificada en dos sesiones y limpieza de la reserva ficticia confirmada. [Evidencia](docs/limite-mails-precio.md#pruebas).
+1.3 mal otras carreras en clase de apoyo, habilitar apoyo secundario  
+1.4 usar mejor los negocios para la automatización de negocios [https://app.hubspot.com/contacts/44080364/objects/0-3/views/recently_assigned/list](https://app.hubspot.com/contacts/44080364/objects/0-3/views/recently_assigned/list)
 
-Completado el 16/10/2026: aviso de Teclab probado en producción con datos ficticios; el usuario confirmó en Telegram el enlace de inscripción y la marca de «vio el precio». [Evidencia](docs/historial-pendientes.md#aviso-teclab-telegram-2026-10-16).
+1.5 sumar carrera bloque 4
+
+1.5 guardar en el md algo para el slop, (es un guardado de twitter)
 
 ## 3. Urgente: leads y precios
 
-Completado el 17/10/2026: imagen de calendario de pagos de Siglo 21, en siete vistas. [Evidencia](docs/historial-pendientes.md#siglo-21--calendario-de-pagos-17102026).
-
+- [ ] **Investigar cuotas, intereses y cargos de otros medios de pago de Teclab** (23/10/2026): MercadoPago con dinero en cuenta, GoCuotas, WiBond, PagoFácil y Rapipago. El mismo total inicial no confirma las condiciones de financiación. [Detalle y límite de acceso](odd/tasks/teclab-extractor-dashboard.md#medios-de-pago-adicionales-condiciones-pendientes).
 
 ## 5. Siglo 21
 
@@ -22,23 +25,15 @@ Completado el 17/10/2026: imagen de calendario de pagos de Siglo 21, en siete vi
   - **Carreras bimestrales**: regla de un parcial por bimestre.
   - Contrastar contra el corpus y respuestas (`ventas/corpus/siglo21.json`), que hoy describen dos parciales por materia.
 
-Descartado por el usuario el 17/10/2026: **18. Revisar las aperturas de las carreras de 2026**. Ya se está inscribiendo para 2027; la revisión pendiente de 2026 dejó de ser relevante. No implica que las aperturas de 2027 estén verificadas.
-
 ## 6. Sitio y diseño
 
-Cerrado el 17/10/2026: la tercera copia de la hoja de estilos en la home no cuesta en el cable; no se parchea Next. [Evidencia](docs/historial-pendientes.md#css-de-la-home--tercera-copia-cerrada-17102026).
-
-Completado el 17/10/2026: flecha hacia abajo en lugar de la barra de scroll en los modales (`d1c7d28`, `components/index/flechas-de-scroll`).
-
-Completado el 17/10/2026: estética de las fichas de Siglo 21 con su sistema visual (`818443e`, publicado). [Evidencia](docs/historial-pendientes.md#sitio--estética-de-las-fichas-de-siglo-21-17102026).
-
-Completado el 18/10/2026: la cursada online, a la vista en fichas, home, modales y formulario. [Evidencia](docs/historial-pendientes.md#sitio--cursada-online-a-la-vista-18102026).
+- [ ] **Revisar las páginas oficiales de Teclab para ver los cambios de frontend** (21/10/2026): recorrer el sitio de Teclab y anotar qué cambió en su diseño (colores, tipografía, componentes, disposición), para evaluar si conviene actualizar de acá las piezas y las fichas.
 
 ## 7. Bot, leads y comercial
 
-Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, que rotan en un desplegable del buscador. [Evidencia](docs/historial-pendientes.md#bot--mensajes-de-seguimiento-17102026).
-
 - [ ] **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas. No es una tarea de ejecución inmediata.
+
+- [ ] **Confirmar el ingreso con usuario a La Nube 21**. El 17/10/2026 sólo se comprobó que la portada responde. [Revisión de acceso](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
 - [ ] **Ampliar la app de HubSpot** (18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición; no ejecutar todavía. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
@@ -47,25 +42,10 @@ Completado el 17/10/2026: **14. Mensajes de seguimiento**. Teclab tiene nueve, q
   - **Permitir editar el texto del textarea**: retirar el `readonly` de `.activity-texto` para poder editar el mensaje/criterio antes de enviarlo.
   - **Abrir las mesas al hacer clic en el día**: al hacer clic en la fecha/día, desplegar o abrir las mesas asociadas.
   - **Completar los procesos CAU**: incorporar y completar los procesos y trámites administrativos de la sede en la herramienta. [Detalle](odd/tasks/hubspot-negocios.md).
-Completado el 20/10/2026: **imagen de la financiación de Teclab** para WhatsApp, en versión clara y oscura, con los datos del simulador (`contenidos/teclab/aprobados/generales/whatsapp/2026-10-20-financiacion-teclab/`). Si el simulador cambia, se rehace.
-Descartado el 20/10/2026: cierres del robot de Teclab con las cuentas de prueba 99000001 a 99000007 (no se incluyen) y medios de pago del curso de IA de Teclab (para siempre).
-Completado el 20/10/2026: **formulario de Teclab**. El código postal deja de bloquear la preinscripción, como en el portal (`CASAS.teclab.opcionales`); el resto de los campos sí los exige.
-Completado el 17/10/2026: **17. Acceso a las fuentes de las casas**. Las tres de precios se actualizaron solas ese día; queda sin confirmar el ingreso con usuario a La Nube 21. [Evidencia](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
-Completado el 17/10/2026: **23. Referencia del CAU Corrientes para Instagram**, relevada con capturas en la nota local `notas-locales/referencia-cau-corrientes-instagram/`. [Evidencia](docs/historial-pendientes.md#instagram--referencia-del-cau-corrientes-17102026).
-Completado el 17/10/2026: volumen de WhatsApp tras el reparto de agosto, estable desde el arreglo. [Evidencia](docs/historial-pendientes.md#whatsapp--volumen-tras-el-reparto-17102026).
-
-Descartado por el usuario el 17/10/2026: mostrar en el aviso de Telegram si la persona marcó el newsletter. No hace falta ese dato.
 
 ## 8. Infraestructura y seguridad
 
-Completado el 18/10/2026: **tipar el contrato de consultas y el detalle de carreras** (A3; `bc593a0`, `ad52917`), con check y build completos. [Evidencia](docs/historial-pendientes.md#tipos--contrato-de-consultas-y-detalle-de-carreras-18102026).
-Descartado por el usuario el 16/10/2026: **superficie segura de revisión para el código comercial ignorado** (`descuentos-siglo21-2027` T5). La revisión nativa está apagada a nivel global, así que no hace falta. [Detalle](odd/tasks/descuentos-siglo21-2027.md).
-Completado el 18/10/2026: PAT de Supabase revisados; queda sólo el del CLI de Linux y se borró el de Windows. [Detalle](docs/notas-operativas.md).
-- [ ] **Correr `sql/2026-10-21_endurecer_storage_y_policies.sql` en el SQL Editor** (21/10/2026). Cierra el único hallazgo accionable de los Advisors: cualquier cuenta con mail confirmado podía subir y borrar las imágenes del bucket `novedades`, porque las dos policies de storage sólo miraban `bucket_id`. Incluye las policies de precios, el EXECUTE de las funciones de trigger y tres policies de INSERT muertas. `cau_editor` no alcanza `storage` ni `auth`, así que va por el dashboard. [Bitácora](docs/seguridad.md#21102026-dependencias-node-y-una-pasada-por-la-base).
-- [ ] **Revisar en Auth → Attack Protection** la protección de contraseñas filtradas, el vencimiento de OTP y el MFA (21/10/2026). No se pueden leer desde SQL ni con la anon key; quedaron fuera de la revisión del 21/10.
 - [ ] **Borrar la clave `Onboarding` en el panel de Resend** (la hace el usuario; no tocar `topykly-dev`). El resto se retiró el 18/10/2026: sin uso en el código, ya no estaba en Vercel y se borró el secreto de Supabase. *(Notas operativas.)*
-Descartado por el usuario el 18/10/2026: pasar el SPF de `~all` a `-all`. Con DMARC en `reject` no suma y agrega un riesgo silencioso. [Criterio](docs/criterios.md#el-spf-se-queda-en-all).
-Cerrado el 18/10/2026: **factibilidad de Cloudflare**. Es viable, pero no se migra por ahora: ahorra poco y arriesga seguridad y medición. [Criterio](docs/criterios.md#no-se-migra-de-vercel-a-cloudflare-workers-por-ahora).
 
 ## 9. Herramientas e inspiración
 
@@ -83,6 +63,7 @@ Los pedidos ya redactados y el destino de cada dato están en [las notas operati
 - [ ] **Confirmar becas, doble carrera y las dudas restantes de requisitos**, que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 - [ ] Revisar las decisiones pendientes sobre los módulos de Bienestar Integral y Mindfulness, si siguen dentro del alcance del convenio. *(Notas operativas; estado sin confirmar.)*
 - [ ] **Cerrar las 5 alertas altas de `braces`** (GHSA-vfj7-8cjw-p6xm), en espera de un arreglo publicado. Sólo entra en desarrollo, por `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` 3.3.1 → `micromatch`; no llega al sitio. Sharp, source-map-js y el watcher ya se actualizaron (`96e2e78`). Al 18/10/2026 ni Next 16.4.2 ni el canary 16.5 cambiaron `fast-glob`, y el alias a tinyglobby rompe el plugin. Revisar cuando salga una versión nueva de Next. [Detalle](odd/tasks/auditoria-dependencias.md).
+- [ ] Quitar autoinscripcion, mejor, un asesor se contactará a la brevedad pero ofrecer el botón ver precios
 
 ## Al fondo de la cola
 
@@ -144,6 +125,7 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 
 - [Rutinas de mantenimiento](docs/rutinas.md): contenido, bot, SEO, fuentes comerciales, leads y verificaciones de deploy. La revisión de indexación y rendimiento (antigua tarea 13) es seguimiento permanente, no tarea cerrable.
 - [Detalle de pendientes abiertos](docs/pendientes-detalle.md): mediciones, restricciones, fuentes y pasos originales.
-- [Historial de pendientes cerrados](docs/historial-pendientes.md): tareas terminadas y registros anteriores, con su evidencia.- [Notas y procedimientos operativos](docs/notas-operativas.md): webhook, secretos, correo, incidentes y límites conocidos.
+- [Historial de pendientes cerrados](docs/historial-pendientes.md): tareas terminadas y registros anteriores, con su evidencia.
+- [Notas y procedimientos operativos](docs/notas-operativas.md): webhook, secretos, correo, incidentes y límites conocidos.
 
 Las notas históricas no reemplazan [los criterios vigentes](docs/criterios.md). Los planes de `docs/plans/` tampoco son el backlog.

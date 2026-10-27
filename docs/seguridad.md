@@ -217,16 +217,17 @@ storage). Las de `clases-apoyo` sí exigían admin. Se preparó
 que además alinea las policies de precios a `private.current_user_is_admin()`
 (las viejas sólo miraban `rol` y no `estado = 'aprobado'`), revoca el EXECUTE de
 las tres funciones de trigger y borra tres policies de INSERT para `anon` que
-quedaron muertas cuando se revocaron los grants en julio. **Pendiente de correr
-en el SQL Editor**: `cau_editor` no alcanza `storage` ni `auth`.
+quedaron muertas cuando se revocaron los grants en julio. En esta primera pasada
+quedó pendiente de correr en el SQL Editor: `cau_editor` no alcanza `storage` ni
+`auth`. La aplicación autorizada posterior se registra más abajo.
 
 `descuentos` es legible por `anon` y se revisó el contenido: son tres porcentajes
 (10% sede, 5% universidad, uno promocional sin valor), no datos comerciales
 sensibles. Se deja como está.
 
-Fuera de alcance por falta de credencial: la protección de contraseñas filtradas,
-el vencimiento de OTP y el MFA se miran en Auth → Attack Protection del
-dashboard. Los índices sin uso (`idx_faq_destacada`,
+En esta primera pasada quedaron fuera de alcance por falta de credencial la
+protección de contraseñas filtradas, el vencimiento de OTP y el MFA; la revisión
+posterior del dashboard se registra más abajo. Los índices sin uso (`idx_faq_destacada`,
 `idx_profesores_materia_id`, `idx_solicitudes_clase_materia_id`) se dejan: con
 este volumen no cuestan.
 
@@ -247,9 +248,45 @@ Los prerrequisitos no reproducen datos reales, notificaciones ni toda la base.
 Se actualizaron las dependencias copiadas al servidor HTTP temporal porque el
 endpoint actual ya importa helpers que el harness anterior no incluía.
 
-La aplicación en el SQL Editor, la comprobación HTTP de Storage y los ajustes
-de Auth siguen pendientes. Resultados de las corridas y revisión independiente
-en [el seguimiento](../odd/tasks/permisos-supabase-2026-10-21.md).
+Al cerrar esta prueba local todavía no se había aplicado el SQL en producción
+ni revisado Auth. La autorización y ejecución posteriores se registran a
+continuación. La API HTTP de Storage no se probó. Resultados de las corridas y
+revisión independiente en [el seguimiento](../odd/tasks/permisos-supabase-2026-10-21.md).
+
+### 21/10/2026, permisos aplicados en producción y Auth revisado
+
+**Aplicado y comprobado por catálogo**, con autorización explícita del usuario y
+su sesión del dashboard. Antes de escribir se confirmó el proyecto de producción
+contra la URL pública configurada y las notas operativas; se leyeron las policies
+anteriores y el helper `private.current_user_is_admin()`, que exige admin aprobado.
+El SQL exacto del archivo del 21/10 se ejecutó dentro de `BEGIN`/`COMMIT` en el SQL
+Editor, con resultado «Success. No rows returned». La consulta posterior devolvió:
+
+- `policies_admin = 5`: las cinco policies objetivo usan el helper privado.
+- `policies_antiguas_restantes = 0`.
+- `execute_trigger_anon_o_authenticated = 0`.
+- `insert_directo_formularios = 0`.
+
+No se leyeron filas personales ni se escribieron leads, cuentas o archivos de
+prueba. Esta comprobación de catálogo no reemplaza una prueba HTTP de Storage,
+que no se hizo. Las policies de `clases-apoyo` requieren rol admin, pero no estado
+aprobado; se observó la diferencia y **no se modificó**, por estar fuera del parche.
+
+**Auth revisado sin modificar ajustes.** Estado observado en el dashboard:
+
+| Área | Estado observado |
+|---|---|
+| Attack Protection | Captcha desactivado. Protección de contraseñas filtradas desactivada; la interfaz la ofrece sólo desde Pro, y el proyecto está en Free. |
+| Proveedor Email | Activado. Cambio seguro de email activado; cambio seguro de contraseña y exigencia de contraseña actual desactivados. |
+| OTP por email | Vencimiento de 3600 segundos, longitud 8. |
+| Registro | Altas y confirmación de email activadas; acceso anónimo desactivado. |
+| MFA | TOTP activado, máximo 10 factores. Límite de duración AAL1 activado: la interfaz indica verificar el factor registrado dentro de 15 minutos. SMS desactivado, ofrecido sólo desde Pro. |
+
+Que TOTP esté habilitado **no acredita** factores registrados por los usuarios ni
+que la aplicación exija MFA. La revisión queda cerrada; no se autorizó ningún
+cambio de configuración. Cambiar el OTP requiere autorización aparte y comprobar
+compatibilidad; no se establece una actualización de plan como requisito.
+[Enlaces consultados](../referencias/2026-10-21-permisos-supabase-auth.md).
 
 ### 24/10/2026, eliminación del panel de administración
 

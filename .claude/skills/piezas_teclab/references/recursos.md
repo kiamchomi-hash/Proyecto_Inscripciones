@@ -35,6 +35,28 @@ opaco, apuntando hacia lo que sigue. Guardada el 02/10/2026.
 </svg>
 ```
 
+## Resaltador (guardado, sin usar)
+
+Una franja de color detrás de **una sola línea** del titular, para marcar la
+frase que importa. Sale de las piezas oficiales de pauta de Seguros
+(`oficial/PAUTA - IMAGENES TECLAB/asesor-de-seguros_4.png`, «NOS DA
+TRANQUILIDAD», y `asesor-de-seguros_Teclab_16-9_1.png`, «PRODUCTOR ASESOR DE
+SEGUROS»). Guardado el 18/10/2026: el usuario lo marcó como buen recurso.
+
+- Color: cian `#49E4E8` (el `#4AE2E7` de la paleta) con texto navy `#111A29`;
+  o blanco con texto navy. Sobre fondo navy.
+- Titular en **Poppins Black, caja alta**. Alto de la franja ≈ 1,2 veces la
+  altura de las mayúsculas, casi al ras del texto (medido: 68 px de franja para
+  57 px de texto), y ~0,25 em de aire a cada lado.
+- Una franja por renglón, cada una del largo de su línea: no un bloque parejo.
+- Una o dos líneas resaltadas por pieza, nunca el titular entero.
+
+```css
+.resaltado { display: inline; background: #4AE2E7; color: #111A29;
+  padding: .02em .25em; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  font: 900 1em/1.2 Poppins, sans-serif; text-transform: uppercase; }
+```
+
 ## Descartado
 
 - Riel: línea fina con un punto al inicio, de la bajada a la píldora (02/10/2026).

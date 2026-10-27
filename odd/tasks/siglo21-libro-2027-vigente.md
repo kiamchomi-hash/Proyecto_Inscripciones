@@ -44,8 +44,8 @@ El 19/10/2026 la carga diaria salió con código 1 y "NO SE PUEDE COTIZAR — la
 - 19/10/2026: T1-T3 hechos por el writer; `node --test herramientas/ventas/tests/*.test.mjs` 594/594 (base 586/586), RED observado antes de cada comportamiento nuevo. Abogacía 1A cotiza Matrícula 402.480 / Bimestre 1.140.984 / Bimestre 760.680 / Total 2.304.144; ningún importe 2026 en contextos, respuestas ni buscador.
 - 19/10/2026: T4 `actualizar-todo.mjs --auto --solo siglo21` salió con código 0: Siglo 21 al día (vence 21/10/2026), buscador publicado.
 - Siguen leyendo el archivo 2026 ya guardado, sólo para la lista de carreras: generar-buscador, publicar-precios-siglo21, calcular-precios-2027, cotizaciones-masivas-2027, generar-entrenador, relevar-financiacion, planilla-precios-siglo21.
+- 19/10/2026: las 6 cuotas vuelven al mensaje 2027 (decisión del usuario: están en el Excel de CASA, y ahí valen total / 6, verificado con Abogacía 2026). El buscador las agrega debajo del total, salvo en valores de referencia vencidos, y `cotizar-2027` deja de quitarlas. Tests comerciales en verde.
 
 ## Pendiente
 
-- Decidir si el bot anuncia 6 cuotas en 2027 (`cuota6` = total / 6, igual que 2026) cuando el mensaje del buscador 2027 omite la financiación por no verificada.
 - El 22/10/2026 vence la promo 1A y 1B no tiene promo: el aviso vuelve a marcar fallo y el bot deja de cotizar hasta que Siglo 21 cargue la nueva.

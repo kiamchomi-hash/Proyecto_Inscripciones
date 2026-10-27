@@ -382,8 +382,8 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
   return { asunto, html, texto };
 }
 
-const SMTP2GO_URL = 'https://api.smtp2go.com/v3/email/send';
-const REMITENTE_MAIL = 'CAU Online <inscripciones@siglo21sur.com>';
+export const SMTP2GO_URL = 'https://api.smtp2go.com/v3/email/send';
+export const REMITENTE_MAIL = 'CAU Online <inscripciones@siglo21sur.com>';
 const TIMEOUT_MAIL_MS = 8000;
 
 export interface EnvioSmtp2go {

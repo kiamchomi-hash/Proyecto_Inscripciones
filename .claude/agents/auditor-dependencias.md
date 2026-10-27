@@ -32,7 +32,7 @@ Esta es la razón de que exista este agente. `npm audit` da varias respuestas en
 
 1. Corré `npm audit` y el desglose JSON de arriba.
 2. Para cada advisory: versión parcheada real, si el paquete es directo o transitivo, si llega al runtime de producción, y si la ruta de arreglo que propone npm es sensata o un downgrade.
-3. Para lo que llega a producción, mirá si el proyecto está expuesto de verdad. Ejemplo: un bypass de middleware es crítico acá porque **todo el control de acceso del panel admin vive en `proxy.ts`**; en cambio una falla de `sanitize-html` en atributos que `lib/sanitize-content.ts` no habilita es teórica. Leé el código antes de asignar urgencia.
+3. Para lo que llega a producción, mirá si el proyecto está expuesto de verdad. Ejemplo: una falla de `sanitize-html` en atributos que `lib/sanitize-content.ts` no habilita es teórica; una falla que deje escribir en las tablas de formularios desde el navegador sería crítica, porque los formularios públicos deberían pasar sí o sí por `POST /api/formularios`. Leé el código antes de asignar urgencia.
 4. Si algo amerita bump, decí exactamente qué comando correrías y qué habría que verificar después. Para paquetes con binarios nativos (`sharp`) o que participan del build, el bump se valida corriendo `npm run check` **y** `npm run build`, más una prueba del pipeline real que lo usa (`herramientas/generar-og.mjs` en el caso de sharp).
 
 ## Informe

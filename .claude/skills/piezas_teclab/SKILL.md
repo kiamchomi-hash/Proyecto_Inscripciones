@@ -30,6 +30,8 @@ Toda pieza gráfica de Teclab: folleto, afiche, placa de WhatsApp, posteo, histo
 - **Aval:** los escudos del Ministerio de Educación (Ciudad y Nación) al pie, en blanco. Si nombra una empresa cocreadora (AWS, Google, Microsoft, HubSpot, Avenga, Zendesk), va su logo real.
 - **Descuentos:** la cifra es el elemento más grande de la pieza («15% off») y la condición va debajo en Bold chico.
 
+Si la pieza tiene que verse como la pauta 1A («Recibite en Seguros.»: panel azul, papel gris, Poppins Medium, foto en blanco y negro), es otro estilo: `piezas_teclab2`.
+
 ## Qué composición usar
 
 | Pieza | Composición (detalle en `references/composiciones.md`) |
