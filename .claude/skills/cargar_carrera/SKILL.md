@@ -11,7 +11,7 @@ Workflow para cargar los slides JSON de una carrera **de Siglo 21** en la tabla 
 
 - **Sólo Siglo 21.** Teclab no usa slides: su modal sale de `FICHAS` en `components/index/teclab.ts` más `descripcion` y `enfoque` con formato propio. Identidad Argentina la trae su API. Las dos se cargan según [docs/alta-de-carrera.md](../../../docs/alta-de-carrera.md).
 - Esta skill cubre el paso 1 de esa lista para Siglo 21. **Un alta completa recorre la lista entera**: áreas, formulario, HubSpot, test vocacional, bot y folletos se buscan por nombre y no se actualizan solos.
-- **Precios y descuentos quedan fuera.** El precio vive en `precios_privados` y lo carga `herramientas/ventas/publicar-precios.mjs` (hoy sólo Teclab). `descuento_especial` no se toca desde acá: se saca a propósito de los datos públicos.
+- **Precios y descuentos quedan fuera.** El precio vive en `precios_privados` y lo carga `herramientas/ventas/publicar-precios-d1.mjs` (Teclab y Siglo 21). `descuento_especial` no se toca desde acá: se saca a propósito de los datos públicos.
 
 ## Flujo
 

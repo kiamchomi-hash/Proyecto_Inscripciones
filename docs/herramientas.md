@@ -48,18 +48,21 @@ El alta en Bing Webmaster Tools se hace importando la propiedad desde Search Con
 
 ## Publicar los precios de «Ver precio»
 
-`herramientas/ventas/publicar-precios.mjs` copia los precios de Teclab a la tabla privada `precios_privados` (`sql/2026-10-02_precios_carrera.sql`), que es de donde los lee «Ver precio» en `POST /api/formularios`. No cotiza: toma lo que el pipeline de precios ya resolvió en `carreras/teclab/carreras-externas.json` (la ruta sale de `herramientas/ventas/rutas.mjs`) y lo publica con su vigencia, el último día de la promoción. Vive en `herramientas/ventas/`, que está gitignorada como el resto del material comercial.
+`herramientas/ventas/publicar-precios-d1.mjs` escribe los precios privados de **Teclab y Siglo 21** en la tabla `precios_privados` de la D1 de producción (`cloudflare/migrations/0001.sql`), que es de donde los lee «Ver precio». No cotiza: toma lo que el pipeline de precios ya resolvió —`carreras/teclab/carreras-externas.json` para Teclab y los finales verificados de `ventas/precios/2027/precios-lista-1-2027.json` para Siglo 21— y lo publica con su vigencia, el último día de la promoción. Vive en `herramientas/ventas/`, que está gitignorada como el resto del material comercial.
 
 ```bash
-node herramientas/ventas/publicar-precios.mjs --dry-run   # muestra qué escribiría, sin conectarse
-node herramientas/ventas/publicar-precios.mjs             # escribe con cau_editor
+node herramientas/ventas/publicar-precios-d1.mjs                          # dry-run de las dos casas
+node herramientas/ventas/publicar-precios-d1.mjs --casa teclab            # dry-run de una
+node herramientas/ventas/publicar-precios-d1.mjs --casa todo --escribir   # escribe
 ```
 
-- **Correrlo después de cada actualización de precios.** Si no, la API muestra los anteriores hasta que vencen y después ofrece WhatsApp. Avisa cuántas carreras ya llegan vencidas: se publican igual y la API no las muestra.
-- Escribe con el rol `cau_editor` y la misma credencial que `npm run db` (`EDITOR_DATABASE_URL`, ver [rol-editor.md](rol-editor.md)); si la variable no está en el entorno, la lee de `.env.local`. Todo va en una transacción, con upsert por `carrera_id`.
-- El emparejamiento con `carreras` usa `nombres-carreras.mjs` contra las filas activas de los tres niveles de Teclab, más dos sinónimos fijos (`QA`, `Gestión de la Empresa Agraria`). Una carrera sin candidato, con dos candidatos o con el precio incompleto (sin total, sin conceptos o sin `promoHasta` válido) **no se publica** y se lista al final; en ese caso sale con código 1.
-- `--dry-run` no se conecta, así que no puede mostrar el `carrera_id`: el emparejamiento contra la base se ve recién al escribir.
-- Las funciones de mapeo están cubiertas por `herramientas/ventas/tests/publicar-precios.test.mjs` (`node --test herramientas/ventas/tests/*.test.mjs`).
+- **Ya está enganchado en la corrida diaria** (`actualizar-todo.mjs`): Teclab publica después de su extracción y de `extraer-externos.mjs`; Siglo 21, al final de su cadena 2027 y sólo si la cobertura de finales verificados está completa. `--sin-publicar` omite las dos.
+- **Correrlo a mano después de cada actualización de precios.** Si no, la API muestra los anteriores hasta que vencen y después ofrece WhatsApp. Avisa cuántas carreras ya llegan vencidas: no se escriben y la API no las muestra.
+- Teclab: emparejamiento conservador con `carreras` por `nombres-carreras.mjs` contra los tres niveles de Teclab, más dos sinónimos fijos (`QA`, `Gestión de la Empresa Agraria`). Una carrera sin candidato, con dos candidatos o con el precio incompleto (sin total, sin conceptos o sin `promoHasta` válido) **no se publica** y se lista al final; en ese caso sale con código 1.
+- Siglo 21: sólo finales verificados vigentes. La identidad pública manda por la ficha local cuando coincide con el catálogo; si esa ficha ya no está en el catálogo, la carrera se informa como `sin cotizar` y no frena a las demás. Dos candidatos por nombre sí son error.
+- Escribe con Wrangler contra la base remota, con el `D1_PRODUCCION` (por defecto `cau-produccion`), y **verifica la lectura de vuelta**: si lo escrito no vuelve igual, sale con código 1.
+- `--dry-run` (el modo por defecto) no escribe y consulta D1 para emparejar.
+- Desde el 27/10/2026 los publicadores de Supabase quedaron fuera de servicio: `publicar-precios.mjs` y `publicar-precios-siglo21.mjs` conservan el parseo y la preparación que usa este script, pero su CLI ya no escribe (el proyecto viejo se dio de baja).
 
 ## Publicar sólo archivos revisados
 

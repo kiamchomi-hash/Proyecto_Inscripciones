@@ -99,10 +99,10 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   documentar el paso a paso por casa. Pista para Teclab: el pipeline
   (`ventas/fuentes/teclab/price-automation/update_teclab_prices.py`) arma la lista de
   carreras a partir de las guías cortas numeradas y exige exactamente 18.
-- [ ] **M** — Precio («Ver precio» y mail de precio, hoy sólo Teclab): fila en
-  `precios_privados`, que carga `herramientas/ventas/publicar-precios.mjs`. Empareja por
-  nombre; si el del pipeline difiere, va en `SINONIMOS` (`casas.ts`). Sin fila el modal
-  ofrece WhatsApp en vez del precio.
+- [ ] **M** — Precio («Ver precio» y mail de precio, Teclab y Siglo 21): fila en
+  `precios_privados`, que carga `herramientas/ventas/publicar-precios-d1.mjs` sobre la D1
+  de producción. Empareja por nombre; si el del pipeline difiere, va en `SINONIMOS`
+  (`casas.ts`). Sin fila el modal ofrece WhatsApp en vez del precio.
 - [ ] **M** — Fechas de inicio de Teclab (`components/index/inicio-teclab.ts`).
 - [ ] **M** — Lead a HubSpot de la sede (`CARRERAS_HUBSPOT`, `casas.ts`). **Sin entrada el
   lead no se manda y sólo queda un `console.warn`.** Probar con

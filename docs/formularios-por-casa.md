@@ -48,7 +48,7 @@ El modal de Teclab cambia el mail por el precio de la carrera. Va por el mismo e
 - **El lead entra primero**, en `consultas`, con `casa: 'teclab'`, `tipo_formulario: 'precio'`, `tipo: 'Ver precio'` y el nombre de la carrera. El aviso de Telegram sale por el trigger de siempre y muestra "Tipo: Ver precio". Si ese `INSERT` falla, la respuesta es 500 y **no hay precio**.
 - Con el checkbox, además suscribe al newsletter de esa carrera, con la misma escritura que el resto de los formularios (ver *Newsletter*, arriba). Si falla, se registra y la respuesta sigue: el lead ya está guardado.
 - El precio se lee con la service role de `precios_privados`, tabla sin acceso para `anon` ni `authenticated` (`sql/2026-10-02_precios_carrera.sql`). Si el precio estuviera en el HTML o en una tabla pública, el registro sería decorativo. Se muestra hasta `vigente_hasta` **inclusive**, comparado contra la fecha de Argentina, no la UTC. Vencido, sin fila o con error de lectura, la respuesta no trae montos y la ventana ofrece WhatsApp.
-- Los precios los carga `herramientas/ventas/publicar-precios.mjs` (ver [herramientas](herramientas.md)). `tests/ver-precio.test.mjs` cubre la validación, la vigencia y el endpoint con Supabase simulado.
+- Los precios los carga `herramientas/ventas/publicar-precios-d1.mjs` (ver [herramientas](herramientas.md)). `tests/ver-precio.test.mjs` cubre la validación, la vigencia y el endpoint con Supabase simulado.
 
 ### Mail con el resumen del precio
 
