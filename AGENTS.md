@@ -57,7 +57,7 @@ Las pruebas de integración de la app anterior se retiraron junto con el arnés 
 
 **Push a `main` ya no publica el sitio.** Versiona y dispara CI, pero producción es el Worker de Cloudflare y el dominio no apunta a Vercel. Se publica con un solo publicador, desde dos lugares:
 
-- **CI, lo recomendado**: el workflow `Publicar el Worker` (`.github/workflows/publicar.yml`), disparado a mano desde Actions. Pide `ensayo` (por defecto) o `produccion`, se niega a correr fuera de `main` y usa el secreto de repositorio `CLOUDFLARE_API_TOKEN`. Así no hay credencial de producción en ninguna máquina y queda registrado quién publicó y con qué commit.
+- **CI, lo recomendado**: el workflow `Publicar el Worker` (`.github/workflows/publicar.yml`), disparado a mano desde Actions. Pide `ensayo` (por defecto) o `produccion`, se niega a correr fuera de `main` y usa el secreto de repositorio `CLOUDFLARE_API_TOKEN`. Así no hay credencial de producción en ninguna máquina y queda registrado quién publicó y con qué commit. Verifica rutas fijas, cabeceras y redirects: el barrido de las 123 URLs del sitemap no se corre desde el runner porque el borde lo rechaza con 403 (es una ráfaga de IP de datacenter), y de eso se encargan `herramientas/vigilancia.mjs` y la máquina.
 - **Local**, desde `cloudflare/`:
 
 ```bash
@@ -212,7 +212,7 @@ Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tie
 
 Tablas de contenido y formularios: `carreras`, `materias`, `solicitudes_clase`, `consultas`, `faq_preguntas`, `novedades`, `profesores`.
 
-Tablas de precios, inscripción y newsletter: `precios_carreras`, `precios_meta`, `precios_privados`, `descuentos`, `enlaces_inscripcion`, `robot_autoinscripciones`, `suscripciones_newsletter`, `reservas_mail_precio` ([límite de mails de «Ver precio»](docs/limite-mails-precio.md)) y `plantillas_mensajes`. La lista al día es la de `lib/database.types.ts`.
+Tablas de precios, inscripción y newsletter: `precios_carreras`, `precios_meta`, `precios_privados`, `descuentos`, `suscripciones_newsletter`, `reservas_mail_precio` ([límite de mails de «Ver precio»](docs/limite-mails-precio.md)) y `plantillas_mensajes`. La lista al día es la de `lib/database.types.ts`.
 
 `clases_apoyo` **no existe**: `sql/setup_completo.sql` la crea en el papel y le pone una policy, pero en la base no está y ningún componente la lee — la agenda de clases de apoyo sale toda de `materias`. Verificado el 28/08/2026.
 

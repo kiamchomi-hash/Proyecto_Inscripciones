@@ -99,12 +99,14 @@ test('el token sale de .env.local sin arrastrar el resto de las credenciales', (
 test('sin credencial no se publica', () => {
   const carpeta = mkdtempSync(join(tmpdir(), 'cau-publicar-sin-'));
   try {
-    const resultado = spawnSync(process.execPath, ['scripts/publicar.mjs', '--publicar'], {
+    const resultado = spawnSync(process.execPath, ['scripts/publicar.mjs', '--publicar', '--smoke-rapido'], {
       cwd: raiz, encoding: 'utf8', env: { PATH: process.env.PATH, HOME: carpeta },
     });
     assert.notEqual(resultado.status, 0);
     assert.match(resultado.stderr, /No hay credencial de Cloudflare/);
-    // Se niega antes de compilar: no hay build en juego.
+    // La bandera del smoke en CI se acepta: el rechazo es por la credencial, no
+    // por argumentos, y llega antes de compilar.
+    assert.doesNotMatch(resultado.stderr, /Bandera desconocida/);
     assert.doesNotMatch(resultado.stdout, /\[1\/3\]/);
   } finally {
     rmSync(carpeta, { recursive: true, force: true });

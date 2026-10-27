@@ -177,8 +177,13 @@ function main() {
   const argumentos = process.argv.slice(2);
   const publicar = argumentos.includes('--publicar');
   const ensayo = argumentos.includes('--ensayo');
+  // El barrido de las 123 URLs del sitemap es una ráfaga desde una IP de
+  // datacenter, y el borde de Cloudflare la rechaza con 403 (Browser Integrity
+  // Check): no es que el sitio esté roto. En CI se corre la parte fija; el
+  // barrido completo queda para `herramientas/vigilancia.mjs` y para la máquina.
+  const smokeRapido = argumentos.includes('--smoke-rapido');
   if (publicar && ensayo) throw new Error('--publicar y --ensayo no van juntos.');
-  const conocidos = argumentos.filter(a => !['--publicar', '--ensayo'].includes(a));
+  const conocidos = argumentos.filter(a => !['--publicar', '--ensayo', '--smoke-rapido'].includes(a));
   if (conocidos.length) throw new Error(`Bandera desconocida: ${conocidos.join(' ')}`);
 
   const config = leerConfig();
@@ -229,9 +234,9 @@ function main() {
     return;
   }
 
-  console.log(`\n[3/3] Verificación contra ${BASE}`);
+  console.log(`\n[3/3] Verificación contra ${BASE}${smokeRapido ? ' (rutas fijas)' : ''}`);
   try {
-    correr('smoke', process.execPath, [join(repo, 'herramientas', 'smoke.mjs')], { cwd: repo, env: entornoWrangler(null) });
+    correr('smoke', process.execPath, [join(repo, 'herramientas', 'smoke.mjs'), ...(smokeRapido ? ['--rapido'] : [])], { cwd: repo, env: entornoWrangler(null) });
   } catch {
     console.log('\nEl deploy quedó publicado y el smoke encontró fallas. No revierte solo:');
     console.log('la vuelta atrás es publicar la versión anterior desde el panel de Cloudflare o repetir este paso con el commit bueno.');

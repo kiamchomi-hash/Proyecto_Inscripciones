@@ -374,6 +374,9 @@ soporte de FK/lectura del legajo: no se migró su API de escritura, triggers,
 newsletter ni notificaciones. Defaults/validación completa de esa tabla siguen
 sujetos al inventario real antes de cualquier importación; los fixtures no lo
 sustituyen. No se alteraron 0001/0002 ni se añadieron bindings al sitio.
+**`0011_quitar_autoinscripcion.sql` borra las dos tablas de enlaces y robot: la
+autoinscripción de Teclab se dio de baja el 27/10/2026.** Las descripciones de
+enlaces y robot que siguen son historia del bloque 2C, no estado actual.
 
 Enlaces: se reutilizan los validadores puros de `casas.ts` y `nuevoCodigo` de la
 función existente (sin llamar a sus helpers de red). Código alfanumérico 22–64,
@@ -1003,6 +1006,14 @@ Desde el 27/10/2026 también corre en CI: `.github/workflows/publicar.yml`
 rechazo si la rama no es `main` y el token como secreto de repositorio
 `CLOUDFLARE_API_TOKEN`. Es el camino recomendado: no deja credencial de producción
 en ninguna máquina. Los comandos de abajo quedan para trabajar desde local.
+
+En CI la verificación va con `--smoke-rapido` (rutas fijas, cabeceras,
+redirects y peso). El barrido de las 123 URLs del sitemap **no** se corre desde
+el runner: es una ráfaga desde una IP de datacenter y el borde la rechaza con
+403 por Browser Integrity Check —el 27/10/2026 la primera publicación terminó en
+rojo con el sitio perfectamente sano, comprobado desde la máquina con el smoke
+completo en verde—. Ese barrido queda para `herramientas/vigilancia.mjs` y para
+la máquina de casa.
 
 Sin banderas sólo informa. El publicador revisa la configuración contra el
 código —nombre, entrada, assets, base, colas, dominios, `observability` y que

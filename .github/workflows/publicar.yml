@@ -69,7 +69,11 @@ jobs:
           MODO: ${{ inputs.modo }}
         run: |
           if [ "$MODO" = "produccion" ]; then
-            node scripts/publicar.mjs --publicar
+            # `--smoke-rapido`: desde un runner de GitHub el barrido de las 123
+            # URLs del sitemap recibe 403 del borde (Browser Integrity Check).
+            # La verificación fija alcanza para cerrar el deploy; el barrido
+            # completo lo hacen la vigilancia y la máquina.
+            node scripts/publicar.mjs --publicar --smoke-rapido
           else
             node scripts/publicar.mjs --ensayo
           fi
