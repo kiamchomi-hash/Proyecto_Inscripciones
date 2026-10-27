@@ -116,6 +116,7 @@ async function leerAvisos() {
 // ── Cloudflare Web Analytics: las visitas del sitio ─────────────────────────
 
 const CONFIG_PRODUCCION = path.join(RAIZ, 'cloudflare', 'produccion', 'wrangler.json');
+const ARCHIVO_CLAVE_ANALYTICS = path.join(RAIZ, 'cloudflare', '.local', 'produccion', 'cf-analytics.key');
 const URL_GRAPHQL = 'https://api.cloudflare.com/client/v4/graphql';
 
 function configAnalytics() {
@@ -132,12 +133,23 @@ function tokenAnalytics() {
     if (process.env[clave]) return process.env[clave];
   }
   const archivo = path.join(RAIZ, '.env.local');
-  if (!existsSync(archivo)) return null;
-  const linea = readFileSync(archivo, 'utf8').split(/\r?\n/)
-    .find(fila => /^\s*(?:export\s+)?(?:CF_ANALYTICS_TOKEN|CLOUDFLARE_API_TOKEN)\s*=/.test(fila));
-  if (!linea) return null;
-  const valor = linea.slice(linea.indexOf('=') + 1).trim().replace(/^["']|["']$/g, '');
-  return valor || null;
+  if (existsSync(archivo)) {
+    const linea = readFileSync(archivo, 'utf8').split(/\r?\n/)
+      .find(fila => /^\s*(?:export\s+)?(?:CF_ANALYTICS_TOKEN|CLOUDFLARE_API_TOKEN)\s*=/.test(fila));
+    if (linea) {
+      const valor = linea.slice(linea.indexOf('=') + 1).trim().replace(/^["']|["']$/g, '');
+      if (valor) return valor;
+    }
+  }
+  // La entrada que ya existe para esto es `cargar-clave-analytics.py`, que pide
+  // el token por consola con la entrada oculta y lo deja en 0600 dentro de la
+  // carpeta privada. Se lee de ahi antes que obligar a pegarlo en `.env.local`,
+  // que ademas viaja en los respaldos de entorno.
+  if (existsSync(ARCHIVO_CLAVE_ANALYTICS)) {
+    const valor = readFileSync(ARCHIVO_CLAVE_ANALYTICS, 'utf8').trim();
+    if (valor) return valor;
+  }
+  return null;
 }
 
 const CONSULTA_VISITAS = `query Visitas($cuenta: String!, $sitio: String!, $desde: Date!, $hasta: Date!) {
@@ -346,7 +358,8 @@ for (const aviso of avisos) console.log(`\nAviso: ${aviso}`);
 
 if (!(clicks instanceof Error) && visitas instanceof Error) {
   console.log(`\nNota: las visitas salen de Cloudflare Web Analytics; ${visitas.message}.`);
-  console.log('Se cargan una vez: CF_ANALYTICS_TOKEN=... en .env.local (permiso de lectura de analitica).');
+  console.log('Se cargan una vez: python3 cloudflare/.local/produccion/cargar-clave-analytics.py');
+  console.log('(pide el token por consola, sin mostrarlo) o CF_ANALYTICS_TOKEN en .env.local.');
 }
 
 if (fuentesLeidas.length === 0) {
