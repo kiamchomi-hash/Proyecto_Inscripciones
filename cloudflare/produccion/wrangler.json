@@ -1,0 +1,58 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "cau-produccion-20261026",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "vars": {
+    "APP_STAGE": "produccion",
+    "DB_STAGE": "produccion",
+    "DB_NAME": "cau-produccion",
+    "TURNSTILE_EXPECTED_HOSTNAME": "www.siglo21sur.com",
+    "PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAFncCnVXxSdGTsIO",
+    "CF_ACCOUNT_TAG": "e4854090127ccb31fb50321d83411613",
+    "CF_RUM_SITE_TAG": "0805b5ef8ecd4fa9ab53256033ac75de"
+  },
+  "assets": {
+    "directory": "../dist/client",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cau-produccion",
+      "database_id": "4a1cc90c-8c55-493f-9753-d40ac5cbc3cb"
+    }
+  ],
+  "queues": {
+    "producers": [{ "binding": "EFECTOS", "queue": "cau-efectos" }],
+    "consumers": [
+      {
+        "queue": "cau-efectos",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 3,
+        "retry_delay": 30,
+        "dead_letter_queue": "cau-efectos-dlq"
+      }
+    ]
+  },
+  "triggers": {
+    "crons": [
+      "*/5 * * * *",
+      "0 */6 * * *",
+      "0 13 * * *",
+      "0 12 * * 1",
+      "0 12 * * *"
+    ]
+  },
+  "routes": [
+    { "pattern": "www.siglo21sur.com", "custom_domain": true },
+    { "pattern": "siglo21sur.com", "custom_domain": true }
+  ],
+  "observability": { "enabled": true },
+  "upload_source_maps": false
+}

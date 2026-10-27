@@ -1,7 +1,8 @@
 # Ventana de corte a Cloudflare
 
 Plan reversible para pasar `www.siglo21sur.com` de Vercel al Worker de Cloudflare.
-No se ejecutó nada de esto: el dominio sigue apuntando a Vercel.
+**Ya se ejecutó**: el dominio apunta al Worker desde el 27/10/2026. Lo verificado
+está al final, en «Estado real del corte». El plan se conserva como rollback.
 
 Datos del terreno (verificados el 26/10/2026):
 
@@ -75,3 +76,38 @@ y de la prueba real de captcha, apagar los crons de Vercel y el `pg_cron` de
 Supabase **en el mismo momento** en que se activan los de Cloudflare.
 
 Reversión: restaurar los dos registros guardados en `dns-antes-del-corte.json`.
+
+## Estado real del corte (verificado el 27/10/2026)
+
+Lo que sigue se comprobó desde afuera, con el MCP de Cloudflare y `npm run smoke`.
+No es el plan: es lo que está pasando.
+
+- `www.siglo21sur.com` **y** `siglo21sur.com` son Workers Custom Domains de
+  `cau-produccion-20261026` (`environment: production`, `enabled`). Las rutas de
+  zona (`/workers/routes`) siguen vacías: el dominio entra por Custom Domain, no
+  por ruta. La raíz responde `308` a `www`.
+- La publicación dejó de depender de una configuración fuera del repo: está
+  `cloudflare/produccion/wrangler.json` y se publica con `npm run
+  publicar:produccion` (ver [LEER.md](LEER.md#27102026--publicador-versionado)).
+- Secretos cargados en el Worker: `CF_ANALYTICS_TOKEN`, `CRON_SECRET`,
+  `SMTP2GO_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`,
+  `TURNSTILE_SECRET_KEY`. Con eso queda cubierto el punto 1 de «Lo que falta».
+- Los cinco programados de `CRONES` están declarados y activos: `*/5` (barrido
+  del outbox), `0 */6` (vigilancia), `0 13` (newsletter), `0 12 * * 1`
+  (recordatorio) y `0 12` (resumen diario). Es el punto 2.
+- `npm run smoke` completo, sin fallos: las 11 rutas fijas en 200, cabeceras de
+  seguridad y HSTS, `noindex` en `/api/formularios` y en la inscripción, los seis
+  redirects con el código exacto, las 123 URLs del sitemap en 200 y la home en
+  22,0 KB comprimidos (184,1 KB sin comprimir).
+- `POST /api/formularios` respeta el orden documentado: `400` sin `token`, `403`
+  con token inválido —ese `403` prueba que siteverify respondió y que el secreto
+  está puesto; sin secreto el handler daría `503`— y `400` con `kind`
+  desconocido. Es el punto 4 en su parte de configuración, no con un token real.
+- Observabilidad activa con logs persistidos (`head_sampling_rate: 1`).
+- Los números del panel cuadran con esta estructura: las invocaciones superan a
+  los requests porque los cinco crons y el consumidor de colas no son HTTP.
+
+Sin verificar desde acá: el captcha con un token real en el dominio, si los
+emisores viejos (Vercel y `pg_cron` de Supabase) quedaron apagados, y lo que sigue
+diciendo «no se puede afirmar todavía» arriba. Este registro no acredita paridad
+total ni recuperación.

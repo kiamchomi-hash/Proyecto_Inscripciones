@@ -983,3 +983,41 @@ pedido 409 sin duplicar. Cierre con bandera `no` y secretos retirados: ruta 503,
 formularios y correo 503, `/` sin credenciales 401, cron `[]`, sin colas.
 `test:staging-protegido` **33/33**; check completo exit 0.
 Detalle en [STAGING-PREPARACION.md](STAGING-PREPARACION.md).
+
+## 27/10/2026 — publicador versionado
+
+Hasta acá el Worker de producción se publicó con un `wrangler` suelto y una
+configuración que no estaba en el repo (`.local/produccion/`). Eso ya no es el
+camino: la configuración es `produccion/wrangler.json` (dominios propios, D1
+`cau-produccion`, colas `cau-efectos` + DLQ, los cinco crons y las variables
+públicas) y el único publicador es `scripts/publicar.mjs`:
+
+```bash
+npm run publicar             # plan: no compila, no autentica, no toca nada
+npm run publicar:ensayo      # build + `wrangler deploy --dry-run`
+npm run publicar:produccion  # build + deploy + `herramientas/smoke.mjs`
+```
+
+Desde el 27/10/2026 también corre en CI: `.github/workflows/publicar.yml`
+(`Publicar el Worker`), disparado a mano desde Actions, con `ensayo` por defecto,
+rechazo si la rama no es `main` y el token como secreto de repositorio
+`CLOUDFLARE_API_TOKEN`. Es el camino recomendado: no deja credencial de producción
+en ninguna máquina. Los comandos de abajo quedan para trabajar desde local.
+
+Sin banderas sólo informa. El publicador revisa la configuración contra el
+código —nombre, entrada, assets, base, colas, dominios, `observability` y que
+`vars` no lleve secretos— y se niega a seguir si algo no cierra. `--ensayo` no
+necesita credencial porque no sale a la red; `--publicar` usa un token acotado
+(`Workers Scripts:Edit`, `Workers Routes:Edit` de la zona, `Queues:Edit` y
+`D1:Edit` sólo para migrar) que se lee del entorno o de `.env.local`, y le pasa a
+wrangler **sólo** esa variable: la base, SMTP2GO y las credenciales de ventas que
+también viven en `.env.local` no entran al proceso que publica. La alternativa
+es `wrangler login`, que guarda el OAuth en texto plano en el perfil. Las pruebas
+de contrato —crons del JSON iguales a `CRONES`, y que el token salga sin
+arrastrar el resto— están en `tests/publicacion.test.mjs` y corren dentro de
+`npm run check`.
+
+Lo que no hace, a propósito: no aplica migraciones (`wrangler d1 migrations
+apply --remote` es una decisión aparte), no administra secretos (un deploy no los
+pisa) y no revierte solo; si el smoke falla después de publicar, la vuelta atrás
+es un deploy de la versión anterior, decidido por una persona.

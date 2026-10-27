@@ -1,0 +1,75 @@
+name: Publicar el Worker
+
+# El deploy de producción se dispara a mano, desde la pestaña Actions. No corre
+# en cada push a propósito: publicar el sitio es una decisión, no un efecto
+# secundario del commit.
+#
+# La credencial es el secreto de repositorio CLOUDFLARE_API_TOKEN, acotado a esta
+# cuenta y a la zona del sitio. No hay token de producción en ninguna notebook.
+# Si el token no está cargado, el publicador se niega antes de compilar.
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'ensayo no publica; produccion compila, publica y corre el smoke'
+        type: choice
+        options: [ensayo, produccion]
+        default: ensayo
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publicar-worker
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: Worker de producción
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: produccion
+      url: https://www.siglo21sur.com
+    steps:
+      # `workflow_dispatch` deja elegir la rama. Publicar desde otra rama sería
+      # publicar código que no está en main, que es justo lo que no queremos.
+      - name: Sólo desde main
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "::error::Se publica sólo desde main (hoy: ${GITHUB_REF})."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            cloudflare/package-lock.json
+
+      # El build de Astro importa módulos del sitio anterior con el alias `@/`,
+      # así que necesita sus dependencias además de las del Worker.
+      - name: Dependencias del sitio anterior
+        run: npm ci
+
+      - name: Dependencias del Worker
+        run: npm ci
+        working-directory: cloudflare
+
+      - name: Publicar
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          WRANGLER_SEND_METRICS: 'false'
+          MODO: ${{ inputs.modo }}
+        run: |
+          if [ "$MODO" = "produccion" ]; then
+            node scripts/publicar.mjs --publicar
+          else
+            node scripts/publicar.mjs --ensayo
+          fi

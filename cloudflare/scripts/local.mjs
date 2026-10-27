@@ -85,6 +85,8 @@ export function comandoLocal(nombre) {
     'verificar-publico': ['--experimental-transform-types', 'scripts/verificar-datos.mjs'],
     importacion: ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/importacion.test.mjs'],
     preparacion: ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/preparacion.test.mjs'],
+    // Contrato del publicador y de produccion/wrangler.json: sin red y sin credenciales.
+    publicacion: ['--test', 'tests/publicacion.test.mjs'],
     'preparar-staging': ['scripts/preparar-staging.mjs'],
     'importar-dry-run': ['--experimental-transform-types', 'scripts/importar-datos.mjs', '--dry-run'],
     'staging-local': ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/staging-local.test.mjs'],
@@ -100,7 +102,7 @@ export function ejecutar(nombre) {
   const env = entornoLocal(process.env, raiz);
   mkdirSync(env.HOME, { recursive: true });
   const pasos = nombre === 'check'
-    ? ['seguridad', 'preparacion', 'tipos', 'diagnostico', 'datos', 'control', 'inscripcion', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'build', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'e2e']
+    ? ['seguridad', 'preparacion', 'publicacion', 'tipos', 'diagnostico', 'datos', 'control', 'inscripcion', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'build', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'e2e']
     : [nombre];
   for (const paso of pasos) {
     const resultado = spawnSync(process.execPath, comandoLocal(paso), {

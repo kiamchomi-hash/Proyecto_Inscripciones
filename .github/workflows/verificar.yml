@@ -28,3 +28,16 @@ jobs:
           SECRETOS_BASE: ${{ github.event.before }}
       - run: npm run check
       - run: npm audit --omit=dev
+  worker:
+    name: Configuración del Worker de producción
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      # Sin dependencias a propósito: el contrato del publicador y de
+      # produccion/wrangler.json se verifica leyendo el repo, no instalando.
+      - run: node --test tests/publicacion.test.mjs
+        working-directory: cloudflare

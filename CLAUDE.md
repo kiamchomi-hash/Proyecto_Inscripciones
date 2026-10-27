@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Proyecto
 
-Sitio de **Universidad Siglo 21 — CAU Villa Lugano**, un centro de aprendizaje a distancia. Publica la oferta académica (Siglo 21, Teclab e Identidad Argentina), capta inscripciones y gestiona las clases de apoyo. Producción: `https://www.siglo21sur.com` (Vercel). Next.js 16 (App Router) + Supabase.
+Sitio de **Universidad Siglo 21 — CAU Villa Lugano**, un centro de aprendizaje a distancia. Publica la oferta académica (Siglo 21, Teclab e Identidad Argentina), capta inscripciones y gestiona las clases de apoyo. Producción: `https://www.siglo21sur.com`, servida desde el 27/10/2026 por el Worker de Cloudflare `cau-produccion-20261026`: Astro con islas de React sobre D1, código en `cloudflare/`.
+
+La app Next.js 16 (App Router) + Supabase de `app/`, `components/` y `lib/` es **la versión anterior**: sigue en el repo y es lo que revisa `npm run check`, pero ya no sirve producción y su base se dio de baja. Para el sitio publicado, la referencia es [`cloudflare/LEER.md`](cloudflare/LEER.md); el corte y su rollback están en [`cloudflare/CORTE.md`](cloudflare/CORTE.md); lo que falta antes de dar de baja Vercel, en [`cloudflare/PRODUCCION-PREPARACION.md`](cloudflare/PRODUCCION-PREPARACION.md).
 
 Todo el texto de interfaz, los comentarios de código y la documentación están en español (es-AR).
 
@@ -15,9 +17,9 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
 ## Comandos
 
 ```bash
-npm run dev          # servidor de desarrollo
-npm run build        # build de producción
-npm start            # servir el build
+npm run dev          # servidor de desarrollo de la app Next (no es el sitio publicado)
+npm run build        # build de la app Next
+npm start            # servir ese build
 
 npm run lint         # eslint
 npm run typecheck    # tsc --noEmit
@@ -27,23 +29,44 @@ npm run check        # lint + typecheck + test — correr esto antes de commitea
 
 Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --test --test-name-pattern "JSON-LD" tests/security.test.mjs`.
 
-GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` el control de secretos, `npm run check` y `npm audit --omit=dev`.
+El sitio publicado es otro paquete y tiene su propio control; el `check` de la raíz **no lo mira**:
+
+```bash
+cd cloudflare
+npm run dev      # Astro + workerd en local
+npm run build    # build del Worker
+npm run check    # control completo del paquete: tipos, datos, API, crons, navegador, build…
+npm run publicar # plan del deploy, sin publicar (ver «Deploy»)
+```
+
+GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` el control de secretos, `npm run check` y `npm audit --omit=dev`, más un trabajo corto que verifica el contrato de `cloudflare/produccion/wrangler.json` contra el código.
 
 ### Verificaciones que no cubre `npm run check`
 
-`check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.sh` de doble clic al lado de cada `.mjs` (la lógica se toca en el `.mjs`; el envoltorio no tiene lógica propia, y nada de esa carpeta entra al bundle): `npm run auditar` (contenido faltante en Supabase), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.
+`check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.sh` de doble clic al lado de cada `.mjs` (la lógica se toca en el `.mjs`; el envoltorio no tiene lógica propia, y nada de esa carpeta entra al bundle): `npm run auditar` (contenido faltante en la base D1 de producción), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.
 
 `npm run calidad` es la auditoría ampliada: corre todos los controles (código, dependencias, contenido, Search Console, producción, SEO de cada URL del sitemap, integraciones y navegador) aunque uno falle, y tiene comandos por área (`calidad:web`, `calidad:seo`, `calidad:integraciones`). Un código 2 es que faltó una fuente, nunca un aprobado. Detalle en [`docs/controles-automaticos.md`](docs/controles-automaticos.md); el agente `auditor-web` interpreta la corrida.
 
-Las pruebas de integración corren contra un Supabase local en Docker, nunca contra producción: `npm run db:local:iniciar`, `npm run test:integracion`, `npm run db:local:detener`. Procedimiento en [`docs/pruebas-supabase-local.md`](docs/pruebas-supabase-local.md).
+Las pruebas de integración de la app anterior (`npm run test:integracion`) siguen apuntando al arnés local de Supabase en Docker, que ya no tiene comandos para levantarse desde la raíz; no son parte de la verificación del sitio publicado.
 
-**La vigilancia de producción ya existe, son dos y no se duplican**: el cron de Vercel cada 6 horas (`app/api/vigilancia`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa, disparado por cron. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
+**La vigilancia de producción ya existe, son dos y no se duplican**: el cron del Worker cada 6 horas (`0 */6`, `cloudflare/src/api/vigilancia.ts`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa, disparado por cron. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
 
 **El detalle de cada script, las banderas que aceptan, los dos vigilantes y los generadores (`og:teclab`, y sin script npm `generar-og`, `generar-secretos`, `generar-favicon`) están en `docs/herramientas.md`.** Leerlo antes de correr o tocar cualquiera de ellos.
 
 ### Deploy
 
-**Push a `main` = deploy**: Vercel publica automáticamente. Se trabaja directo sobre `main`, sin ramas ni PRs. Commitear **sólo los archivos propios** (nada de `git add -A`: se editan cosas en paralelo).
+**Push a `main` ya no publica el sitio.** Versiona y dispara CI, pero producción es el Worker de Cloudflare y el dominio no apunta a Vercel. Se publica con un solo publicador, desde dos lugares:
+
+- **CI, lo recomendado**: el workflow `Publicar el Worker` (`.github/workflows/publicar.yml`), disparado a mano desde Actions. Pide `ensayo` (por defecto) o `produccion`, se niega a correr fuera de `main` y usa el secreto de repositorio `CLOUDFLARE_API_TOKEN`. Así no hay credencial de producción en ninguna máquina y queda registrado quién publicó y con qué commit.
+- **Local**, desde `cloudflare/`:
+
+```bash
+npm run publicar             # plan: no compila, no autentica, no toca nada
+npm run publicar:ensayo      # build + wrangler deploy --dry-run (no publica)
+npm run publicar:produccion  # build + deploy + smoke contra el dominio
+```
+
+La configuración es [`cloudflare/produccion/wrangler.json`](cloudflare/produccion/wrangler.json): dominios propios, base D1, colas, los cinco crons y las variables públicas. Los seis secretos viven en Cloudflare y un deploy no los pisa; las migraciones de D1 se aplican aparte. La credencial es un token acotado (`Workers Scripts:Edit`, `Workers Routes:Edit` y `Zone:Read` de la zona, `Queues:Edit` y `D1:Edit` sólo para migrar) guardado en `.env.local` o en el entorno: al proceso de wrangler viaja **sólo** esa variable, nunca el resto de `.env.local`. `wrangler login` es la alternativa, con el OAuth en texto plano en el perfil. El publicador revisa la configuración contra el código (`cloudflare/scripts/publicar.mjs`, con pruebas en `cloudflare/tests/publicacion.test.mjs`) y se niega a publicar si no cierra. Antes de un cambio grande, leer [`cloudflare/CORTE.md`](cloudflare/CORTE.md): orden, verificación y rollback. Se trabaja directo sobre `main`, sin ramas ni PRs. Commitear **sólo los archivos propios** (nada de `git add -A`: se editan cosas en paralelo).
 
 `herramientas/5 - Subir cambios (deploy).sh` es el flujo guiado (muestra el diff, pide descripción, corre `npm run check` y recién ahí commitea y pushea). Antes del diff, del commit y del push revisa con Gitleaks que no viajen secretos ni archivos privados; se prepara una vez por máquina con `npm run secretos:instalar` y se revisa a mano con `npm run secretos`. Alcance y excepciones en [`docs/publicacion-sin-secretos.md`](docs/publicacion-sin-secretos.md).
 
@@ -57,6 +80,8 @@ Desde el 19/10/2026 el proyecto se trabaja sólo desde Linux. Los `.bat` que que
 - **`node herramientas/entorno.mjs exportar|importar`** respalda lo que no viaja por git: `.env.local`, la memoria de Claude Code, la credencial de Search Console, `.agents/` y `notas-locales/`. El procedimiento está en `herramientas/LEER.md`.
 
 ## Arquitectura
+
+**De acá al final, salvo que se diga lo contrario, se describe la app Next de `app/`, que ya no sirve producción.** El sitio publicado es `cloudflare/` (Astro + islas de React, datos en D1, entrega por el Worker): su mapa está en [`cloudflare/LEER.md`](cloudflare/LEER.md).
 
 ### Next.js 16 + App Router
 
@@ -182,6 +207,8 @@ La plantilla completa está en `.env.example` y el reparto de cuál usa Next, cu
 Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tiene `SUPABASE_SERVICE_ROLE_KEY`** (está marcada Sensitive y `vercel env pull` no la trae). Alcanza para levantar el sitio y leer de la base, pero **un POST válido a `/api/formularios` devuelve 503 en local** (un sobre inválido devuelve 400 antes de consultar la base). Para recorrer los formularios en local sin escribir está el modo demo (`NEXT_PUBLIC_FORMULARIOS_DEMO=1`, sólo con `next dev`, ver `lib/formularios-demo.ts`): valida igual, saltea el captcha y no guarda nada. Para probar de punta a punta hay que pegar la clave a mano desde el gestor de contraseñas.
 
 ## Base de datos
+
+**La base del sitio publicado es D1**, no Supabase: se consulta con `npm run db:d1` (lectura; escritura con `--escribir`) y su esquema está en `cloudflare/migrations/`. Lo que sigue describe el esquema de la app anterior, que se dio de baja; se conserva como referencia del modelo.
 
 Tablas de contenido y formularios: `carreras`, `materias`, `solicitudes_clase`, `consultas`, `faq_preguntas`, `novedades`, `profesores`.
 

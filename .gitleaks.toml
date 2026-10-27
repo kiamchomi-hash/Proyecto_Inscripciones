@@ -8,3 +8,11 @@ useDefault = true
 [[allowlists]]
 description = "Clave pública de IndexNow"
 regexes = ['''^797fb61c1ace165de4ba56d8d37ad9c5$''']
+
+# Token público del beacon de Cloudflare Web Analytics
+# (`cloudflare/src/layouts/Sitio.astro`): viaja en el `data-cf-beacon` de cada
+# visita y sólo sirve para atribuir la medición. No es `CF_RUM_SITE_TAG`, que es
+# otro valor, se usa del lado del servidor y no está en el repo.
+[[allowlists]]
+description = "Token público del beacon de Cloudflare Web Analytics"
+regexes = ['''^28aced3641ba4a7d81cb1b8722ebb2f3$''']

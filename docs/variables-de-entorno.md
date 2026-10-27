@@ -21,3 +21,13 @@ El mail con el resumen del precio de Teclab y el newsletter semanal (`docs/formu
 `NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL=1` habilita el token `rate-limit-only` únicamente con `NODE_ENV=development` y sin claves Turnstile. El valor por defecto es `0`; producción lo ignora aunque esté en `1`. No reemplaza la service role ni el rate limit.
 
 `NEXT_PUBLIC_FORMULARIOS_DEMO=1` es el modo demo de formularios, **sólo de desarrollo**: vale únicamente con `NODE_ENV=development` (`npm run dev`); en producción, en el build y en los tests se ignora aunque esté en `1`. Sirve para recorrer en local todos los pasos de la preinscripción sin captcha. El widget no carga Cloudflare (aunque haya site key) y `/api/formularios` valida el payload y responde 201 con datos de demo. **Qué no hace**: no escribe en Supabase, no consume la cuota, no verifica Turnstile, no manda mails por SMTP2GO, no da de alta en HubSpot, no despacha el robot, no suscribe al newsletter y no dispara avisos de Telegram; tampoco necesita la service role. Por eso no prueba la integración real: para eso está `NEXT_PUBLIC_FORMULARIOS_PRUEBA_LOCAL` o las claves de prueba de Cloudflare. Detalle en `docs/formularios-por-casa.md`, sección «Modo demo».
+
+## Publicar el Worker de producción
+
+Todo lo de arriba es de la app anterior. El sitio publicado se despliega desde `cloudflare/` y usa una sola credencial:
+
+- `CLOUDFLARE_API_TOKEN`: token acotado a esta cuenta, guardado en `.env.local` (no versionado) o pasado por el entorno. Permisos: `Workers Scripts:Edit`, `Workers Routes:Edit` de la zona `siglo21sur.com` y `Queues:Edit`; `D1:Edit` sólo si además se van a aplicar migraciones. `npm run publicar:ensayo` funciona sin él porque no sale a la red; `npm run publicar:produccion` se niega a publicar sin credencial.
+
+El camino recomendado es publicar desde CI: `.github/workflows/publicar.yml` usa el secreto de repositorio `CLOUDFLARE_API_TOKEN` (mismos permisos) y se dispara a mano desde Actions. La variable local queda para trabajar en la máquina.
+
+El publicador (`cloudflare/scripts/publicar.mjs`) le pasa a wrangler **sólo** el `PATH`, el `HOME` y ese token: la service role de Supabase, `SMTP2GO_API_KEY`, `TELEGRAM_*` y las credenciales de ventas que comparten el archivo no entran al proceso que publica. La alternativa a la variable es `wrangler login`, que guarda el OAuth en texto plano en `~/.wrangler/config/default.toml`; sirve, pero no se acota por permiso ni por Worker y no deja rastro de quién publicó.
