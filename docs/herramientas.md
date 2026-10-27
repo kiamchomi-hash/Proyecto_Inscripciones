@@ -78,14 +78,14 @@ están en [Herramientas, sección 5](../herramientas/LEER.md#5--subir-cambios).
 
 **Antes de proponer cualquier monitoreo, alerta o "que avise si el sitio se cae", leer esto: está hecho.** Hay dos vigilantes, a propósito, y ninguno reemplaza al otro:
 
-| | `app/api/vigilancia` (cron de Vercel) | `herramientas/vigilancia.mjs` (local) |
+| | `cloudflare/src/api/vigilancia` (cron del Worker) | `herramientas/vigilancia.mjs` (local) |
 |---|---|---|
-| Cuándo | cada 6 horas, declarado en `vercel.json` | cuando lo dispara el Programador de tareas |
+| Cuándo | cada 6 horas, declarado en `cloudflare/produccion/wrangler.json` | cuando lo dispara el Programador de tareas |
 | Dónde | en la nube, con la máquina apagada | en la máquina de casa |
-| Qué mira | rutas, cabeceras, noindex, redirects, el sitemap entero, la cola del robot de Teclab y los precios vencidos hace más de un día | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
+| Qué mira | rutas, cabeceras, noindex, redirects, el sitemap entero y los precios vencidos hace más de un día | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
 | Cómo avisa | Telegram | archivo `REVISAR-SITIO.txt` en el escritorio + Telegram |
 
-El de Vercel es el que cubre las caídas de verdad, porque no depende de que la PC esté prendida. Se autentica con `CRON_SECRET` y **con `?prueba=1` manda un aviso de prueba sin correr los chequeos**, que es la forma de confirmar que el canal de Telegram sigue vivo sin esperar a que algo se rompa. No mide el peso comprimido del HTML a propósito: eso necesita leer los bytes del socket sin descomprimir y `fetch` descomprime solo, así que ese chequeo vive únicamente en `smoke.mjs`.
+El del Worker es el que cubre las caídas de verdad, porque no depende de que la PC esté prendida. Se autentica con `CRON_SECRET` y **con `?prueba=1` manda un aviso de prueba sin correr los chequeos**, que es la forma de confirmar que el canal de Telegram sigue vivo sin esperar a que algo se rompa. No mide el peso comprimido del HTML a propósito: eso necesita leer los bytes del socket sin descomprimir y `fetch` descomprime solo, así que ese chequeo vive únicamente en `smoke.mjs`.
 
 Los precios de `precios_privados` vencen a la medianoche y la corrida diaria de la mañana los renueva, así que un vencimiento de unas horas no es un problema. El cron avisa sólo cuando el precio más nuevo de una institución lleva **más de 24 h** vencido, porque eso significa que la corrida falló más de un día seguido (`lib/vigilancia-precios.ts`). Igual que el resto de sus chequeos, repite el aviso en cada corrida mientras siga vencido.
 
@@ -93,7 +93,7 @@ El local avisa por Telegram **sólo en los cambios de estado** (`ok → problema
 
 Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos (`smoke.mjs` lo carga con Node pelado, que strippea los tipos). Rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más: duplicar esa lista deja a uno de los dos viejo sin que nadie se entere.
 
-Los redirects llevan un tercer campo opcional con el **código exacto**, en vez de aceptar cualquier 3xx. Se usa donde el código lo decide algo que no vive en el repo. Hoy es el apex: `next.config.ts` lo declara con `permanent: true`, pero esa regla **no se ejecuta en producción** porque Vercel tiene su propio redirect a nivel de dominio que corre en el borde antes que la app. Venía con 307 de fábrica, así que el código decía 308 y producción servía 307 desde marzo sin que ningún diff lo mostrara; se corrigió el 25/08/2026 en el panel de Vercel y quedó fijado acá para que no vuelva a pasar en silencio. **Tocarlo en `next.config.ts` no cambia nada mientras el del dominio exista.**
+Los redirects llevan un tercer campo opcional con el **código exacto**, en vez de aceptar cualquier 3xx. Se usa donde el código lo decide algo que no vive en el repo. Hoy es el apex: el borde lo resuelve antes que la app, así que el código queda fijado acá para que no cambie en silencio. Viene de cuando producción era Vercel y su redirect a nivel de dominio servía 307 mientras el config decía 308 desde marzo, sin que ningún diff lo mostrara; se corrigió el 25/08/2026. En Cloudflare el apex lo redirige el Worker desde `cloudflare/src/entrega/redirects.ts`.
 
 Para los avisos de formulario (Telegram) está el outbox del Worker
 (`cloudflare/src/operativa/outbox.ts`): `npm run leads` compara las consultas con

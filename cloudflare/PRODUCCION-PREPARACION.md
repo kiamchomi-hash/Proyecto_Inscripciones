@@ -36,7 +36,9 @@ se envió, y colas, cron, precios, R2, SEO productivo y cachés siguen sin proba
 | 14 | R2: inventario y autorización propios; los assets estáticos de staging no prueban que R2 haga falta | sólo si hay objetos dinámicos o privados |
 
 **P2 — después del corte, con su propia autorización.** Bajas de Vercel/Supabase,
-facturación, limpieza y cualquier borrado de recursos.
+facturación, limpieza y cualquier borrado de recursos. **Vercel se dio de baja el
+27/10/2026**: el proyecto se cerró y `vercel.json` se retiró del repo. Queda
+Supabase.
 
 ## Corte reversible, no ejecutado
 
@@ -59,8 +61,9 @@ copian.
 - **Variables:** apagar banderas (`STAGING_*`, `OUTBOUND_MODE`) deshabilita rutas
   sin tocar código; en producción las banderas de ensayo no deben existir.
 - **Efectos:** un ambiguo no se reintenta solo; un enviado no se deshace.
-- **Dominio:** conservar los registros anteriores y el TTL hasta cerrar la
-  ventana de estabilidad; Vercel/Supabase siguen siendo el retorno.
+- **Dominio:** los registros anteriores quedaron anotados en
+  `.local/produccion/dns-antes-del-corte.json`. Vercel ya no es el retorno: el
+  proyecto se dio de baja el 27/10/2026 y `vercel.json` se retiró del repo.
 
 ## Base productiva creada y verificada (26/10/2026)
 

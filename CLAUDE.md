@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Sitio de **Universidad Siglo 21 — CAU Villa Lugano**, un centro de aprendizaje a distancia. Publica la oferta académica (Siglo 21, Teclab e Identidad Argentina), capta inscripciones y gestiona las clases de apoyo. Producción: `https://www.siglo21sur.com`, servida desde el 27/10/2026 por el Worker de Cloudflare `cau-produccion-20261026`: Astro con islas de React sobre D1, código en `cloudflare/`.
 
-La app Next.js 16 (App Router) + Supabase de `app/`, `components/` y `lib/` es **la versión anterior**: sigue en el repo y es lo que revisa `npm run check`, pero ya no sirve producción y su base se dio de baja. Para el sitio publicado, la referencia es [`cloudflare/LEER.md`](cloudflare/LEER.md); el corte y su rollback están en [`cloudflare/CORTE.md`](cloudflare/CORTE.md); lo que falta antes de dar de baja Vercel, en [`cloudflare/PRODUCCION-PREPARACION.md`](cloudflare/PRODUCCION-PREPARACION.md).
+La app Next.js 16 (App Router) + Supabase de `app/`, `components/` y `lib/` es **la versión anterior**: sigue en el repo y es lo que revisa `npm run check`, pero ya no sirve producción y su base se dio de baja. Para el sitio publicado, la referencia es [`cloudflare/LEER.md`](cloudflare/LEER.md); el corte está en [`cloudflare/CORTE.md`](cloudflare/CORTE.md) y el estado de las bajas de Vercel y Supabase, en [`cloudflare/PRODUCCION-PREPARACION.md`](cloudflare/PRODUCCION-PREPARACION.md).
 
 Todo el texto de interfaz, los comentarios de código y la documentación están en español (es-AR).
 

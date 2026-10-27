@@ -44,12 +44,12 @@ Datos del terreno (verificados el 26/10/2026):
 
 ## Rollback
 
-- **DNS:** volver `www` a `cname.vercel-dns.com` y la raíz a `76.76.21.21`. Con
-  TTL automático el retorno es rápido, pero conviene bajar el TTL a 60 s el día
-  anterior.
+- **DNS:** ya no vuelve a Vercel. El proyecto se dio de baja el 27/10/2026 y
+  `vercel.json` se retiró del repo, así que los registros `cname.vercel-dns.com`
+  y `76.76.21.21` de más arriba quedan sólo como historia del corte.
 - **Worker:** cada deploy deja versión y deployment anteriores.
-- **Datos:** el rollback de DNS **no** revierte lo escrito en D1. Exportar antes y
-  reconciliar lo nuevo; nunca pisar filas.
+- **Datos:** volver a una versión anterior del Worker **no** revierte lo escrito
+  en D1. Exportar antes y reconciliar lo nuevo; nunca pisar filas.
 - **Efectos:** un aviso enviado no se deshace y un ambiguo no se reintenta solo.
 
 ## Qué no se puede afirmar todavía

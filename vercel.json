@@ -1,4 +1,0 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "node herramientas/secretos.mjs instalar && npm run check && npm run build"
-}

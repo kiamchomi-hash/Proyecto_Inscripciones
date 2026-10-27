@@ -12,8 +12,8 @@ import { rechazoBearer } from './auth.ts';
  * `{ ok, fallos, urlsSitemap, segundos, aviso }`.
  *
  * La lista de lo esperado sigue viniendo de `lib/vigilancia-esperado.ts`: no se
- * duplica ni se amplía. Los chequeos de robot y precios reutilizan sus funciones
- * puras; las lecturas D1 llegan como puertos para probarlos sin base.
+ * duplica ni se amplía. El chequeo de precios reutiliza su función pura; las
+ * lecturas D1 llegan como puertos para probarlas sin base.
  *
  * Los tests no auditan producción: `buscar` se inyecta y el handler no tiene un
  * `fetch` global de reserva. Además, cualquier URL que no sea del dominio propio
