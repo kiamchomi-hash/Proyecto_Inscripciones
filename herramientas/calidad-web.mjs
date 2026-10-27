@@ -66,7 +66,7 @@ await context.route('**/*', async route => {
   // acceso cruzado de su iframe aunque la página funcione. Su validación real se
   // controla por el procedimiento manual; acá evitamos además generar tráfico.
   if (u.hostname === 'challenges.cloudflare.com') return route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
-  if (u.pathname.startsWith('/_vercel/') || /google-analytics|googletagmanager|vercel-insights|vercel-scripts/.test(u.hostname) || u.pathname.startsWith('/api/track-')) return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
+  if (/google-analytics|googletagmanager/.test(u.hostname) || u.pathname.startsWith('/api/track-')) return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method()) && u.origin === new URL(base).origin) return route.abort('blockedbyclient');
   return route.continue();
 });

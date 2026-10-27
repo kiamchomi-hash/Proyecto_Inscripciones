@@ -22,7 +22,6 @@ export const SITIO_CANONICO = 'https://www.siglo21sur.com';
  */
 const HOSTS_REDIRIGIDOS = new Set([
   'siglo21sur.com',
-  'proyecto-inscripciones.vercel.app',
 ]);
 
 export const REDIRECCIONES: readonly Redireccion[] = [
@@ -74,9 +73,9 @@ export function buscarRedireccion(ruta: string): Redireccion | null {
 }
 
 /**
- * Redirect de host de `next.config.ts`: apex y el alias `.vercel.app` van al
- * dominio propio con 308, conservando ruta y query. No matchea el dominio
- * canónico (sería un bucle) ni localhost/previews.
+ * Redirect de host de `next.config.ts`: el apex va al dominio propio con 308,
+ * conservando ruta y query. No matchea el dominio canónico (sería un bucle) ni
+ * localhost/previews.
  */
 export function redireccionDeHost(
   host: string, ruta: string, canonico = SITIO_CANONICO,

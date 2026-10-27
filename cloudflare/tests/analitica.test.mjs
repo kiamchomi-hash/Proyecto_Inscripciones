@@ -4,14 +4,14 @@ import { registerHooks } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { registrarAlias } from './helpers/alias.mjs';
 
-// `lib/analytics.ts` importa `@vercel/analytics`. En este paquete el alias apunta
-// al registrador local, sin red. El gancho es sólo resolución de módulos.
+// `lib/analytics.ts` importa `@/lib/analytics-destino`. En este paquete el alias
+// apunta al registrador local, sin red. El gancho es sólo resolución de módulos.
 registrarAlias();
 registerHooks({
   resolve(especificador, contexto, siguiente) {
-    if (especificador === '@vercel/analytics') {
+    if (especificador === '@/lib/analytics-destino') {
       return {
-        url: pathToFileURL(new URL('../src/entrega/vercel-analytics.ts', import.meta.url).pathname).href,
+        url: pathToFileURL(new URL('../src/entrega/analitica.ts', import.meta.url).pathname).href,
         shortCircuit: true,
       };
     }

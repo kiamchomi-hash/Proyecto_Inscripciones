@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline'",
               `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com`,
               "font-src 'self'",
@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
               // Supabase Storage; sin esta directiva caen en default-src y el
               // navegador los bloquea.
               `media-src 'self' https://${supabaseHost}`,
-              `connect-src 'self' https://${supabaseHost} https://*.google-analytics.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com`,
+              `connect-src 'self' https://${supabaseHost} https://*.google-analytics.com https://challenges.cloudflare.com`,
               "frame-src https://challenges.cloudflare.com https://www.google.com https://www.youtube-nocookie.com",
               "worker-src 'self' blob:",
               "object-src 'none'",
@@ -300,39 +300,13 @@ const nextConfig: NextConfig = {
         destination: '/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos',
         statusCode: 301,
       },
-      // Apex a www. **Ojo: en produccion esta regla no se ejecuta.** Vercel tiene
-      // su propio redirect a nivel de dominio (Project → Domains), corre en el
-      // borde antes que la app y gana siempre. Se nota en la respuesta: no trae
-      // ninguna cabecera de Next.
-      //
-      // Hasta el 25/08/2026 ese redirect del dominio venia con
-      // `redirectStatusCode: 307`, el valor de fabrica, mientras este bloque
-      // decia `permanent: true`. O sea que el codigo declaraba 308 y produccion
-      // servia 307 desde marzo, sin que ningun diff lo mostrara. Un 307 dice
-      // "mudanza temporal", asi que Google nunca consolidaba el apex en www:
-      // seguia entrando por ahi y gastando un pedido en cada URL sin www que
-      // tenia anotada, con dos fichas esperando turno de rastreo. Se corrigio
-      // en el dominio (a 308), que es donde se decide.
-      //
-      // La regla se deja igual: es la red de abajo si alguien saca el redirect
-      // del panel, y en ese caso el que vale es este. **Tocarla aca no cambia
-      // nada mientras el del dominio exista.** El codigo esperado esta fijado en
-      // `lib/vigilancia-esperado.ts` y los dos vigilantes avisan si se mueve.
+      // Apex a www. En producción esta regla no se ejecuta: la resuelve el
+      // borde antes que la app. Se deja igual como red de abajo, y el código
+      // esperado está fijado en `lib/vigilancia-esperado.ts`: los dos
+      // vigilantes avisan si se mueve.
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'siglo21sur.com' }],
-        destination: 'https://www.siglo21sur.com/:path*',
-        permanent: true,
-      },
-      // El alias .vercel.app de produccion servia el sitio entero con 200 y sin
-      // noindex: contenido duplicado compitiendo con el dominio propio. Los otros
-      // aliases (los de deployment y el de rama) ya estan detras del SSO de Vercel
-      // y con X-Robots-Tag: noindex, asi que este era el unico abierto. El canonical
-      // apunta bien, pero es una sugerencia; el 308 no. Matchea ese host exacto:
-      // ni localhost ni los previews entran.
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'proyecto-inscripciones.vercel.app' }],
         destination: 'https://www.siglo21sur.com/:path*',
         permanent: true,
       },

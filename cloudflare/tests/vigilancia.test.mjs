@@ -103,7 +103,7 @@ test('vigilancia: corrida limpia sin avisos y dentro del dominio propio', async 
   assert.equal(textos.length, 0);
   assert.ok(llamadas.length >= RUTAS.length);
   for (const llamada of llamadas) {
-    assert.match(llamada.url, /^https:\/\/(?:www\.)?siglo21sur\.com\/|^https:\/\/proyecto-inscripciones\.vercel\.app\//);
+    assert.match(llamada.url, /^https:\/\/(?:www\.)?siglo21sur\.com\//);
     assert.ok(llamada.init.signal instanceof AbortSignal);
   }
 });

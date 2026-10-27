@@ -68,12 +68,12 @@ const CHEQUEOS = {
     titulo: 'Produccion (smoke)',
     comando: 'npm run smoke',
     agente: 'verificador-produccion',
-    // El aviso por Telegram de este lo manda el cron de Vercel
-    // (app/api/vigilancia), que corre cada 6 horas y no depende de que esta
+    // El aviso por Telegram de este lo manda el cron del Worker
+    // (cloudflare/src/api/vigilancia.ts), que corre cada 6 horas y no depende de que esta
     // maquina este prendida. Duplicarlo aca serian dos mensajes por la misma
     // caida. El archivo del escritorio si se sigue escribiendo: el smoke local
     // mide ademas el peso comprimido del HTML, que el cron no mira.
-    avisaVercel: true,
+    avisaCron: true,
     necesitaRed: true,
   },
   contenido: {
@@ -290,8 +290,8 @@ function recortar(texto, tope) {
 async function avisarTelegram(clave, veredicto, cambio) {
   if (!cambio) return;
 
-  if (CHEQUEOS[clave]?.avisaVercel) {
-    console.log('El aviso por Telegram de este chequeo lo manda el cron de Vercel.');
+  if (CHEQUEOS[clave]?.avisaCron) {
+    console.log('El aviso por Telegram de este chequeo lo manda el cron del Worker.');
     return;
   }
 

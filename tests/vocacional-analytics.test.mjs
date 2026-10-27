@@ -64,7 +64,7 @@ test('CTA sólo categórica y errores de analytics no rompen el recorrido', () =
 
 test('emisor reconstruye payload permitido sin filtrar respuestas ni activar Telegram', () => {
   const eventos = [];
-  const { trackVocacional } = cargarTypescript('lib/analytics.ts', { '@vercel/analytics': { track: (nombre, datos) => eventos.push({ nombre, datos }) } });
+  const { trackVocacional } = cargarTypescript('lib/analytics.ts', { '@/lib/analytics-destino': { track: (nombre, datos) => eventos.push({ nombre, datos }) } });
   trackVocacional('vocacional-cta', { test: 'general', pregunta: 2, respondidas: 1, total: 3, destino: 'carrera', etapa: 'preguntas', respuestas: 'secreto', perfil: 'secreto', url: '?email=secreto' });
   assert.deepEqual(eventos[0], { nombre: 'vocacional-cta', datos: { test: 'general', pregunta: 2, respondidas: 1, total: 3, destino: 'carrera', etapa: 'preguntas' } });
 });

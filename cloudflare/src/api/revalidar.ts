@@ -12,10 +12,9 @@ import { rechazoBearer } from './auth.ts';
  * inexistente. La lista de rutas se conserva porque es lo que el trigger mira en
  * `net._http_response` y porque documenta el mapeo vigente.
  *
- * Tampoco se conserva el aviso posterior a IndexNow: dependía de
- * `VERCEL_ENV=production`, de la red externa y de la publicación en Vercel. Su
- * reemplazo es una decisión del bloque 6, no una llamada silenciosa desde un
- * paquete local.
+ * Tampoco se conserva el aviso posterior a IndexNow: dependía de la red externa
+ * y de un build que ya no existe. Su reemplazo es una decisión del bloque 6, no
+ * una llamada silenciosa desde un paquete local.
  */
 
 interface Aviso {

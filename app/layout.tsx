@@ -7,9 +7,6 @@ import AnalyticsInteractions from '@/components/analytics-interactions';
 import WhatsappReparto from '@/components/whatsapp-reparto';
 import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
-
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import './navbar.css';
 
@@ -121,8 +118,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <WhatsappReparto />
         <PublicGoogleAnalytics />
         <AnalyticsInteractions />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

@@ -544,9 +544,8 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
       }
       assert.match(datos.cuerpo, /Inter/, `${nombre}: el cuerpo no usa Inter`);
       assert.ok(datos.recursos.length >= 2, `${nombre}: no se descargó ningún .woff2`);
-      // El Next en desarrollo pide dos scripts de depuración de Vercel
-      // Analytics; se abortan (no hay respuesta externa). Astro no pide nada.
-      assert.deepEqual(externos.filter(url => !url.includes('va.vercel-scripts.com')), [],
+      // Ni Next ni Astro piden nada externo: la analítica es local.
+      assert.deepEqual(externos, [],
         `${nombre}: pedidos externos inesperados`);
       metricas[nombre] = datos;
       // Next declara una cara por subconjunto y peso; se comparan las
@@ -1101,8 +1100,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
     // El único pedido externo es el mapa embebido de la sede, que la prueba
     // aborta igual que en las dos puntas: no se resuelve ningún host externo.
     assert.deepEqual(
-      demo.externos.filter(url => !url.includes('va.vercel-scripts.com')
-        && !url.startsWith('https://www.google.com/maps')),
+      demo.externos.filter(url => !url.startsWith('https://www.google.com/maps')),
       [],
       'el envío no puede generar pedidos externos',
     );

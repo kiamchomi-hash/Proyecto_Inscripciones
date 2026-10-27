@@ -12,7 +12,7 @@
 //   3. /api lleva X-Robots-Tag noindex.
 //   4. Los redirects declarados siguen vivos (solo contra el dominio propio).
 //   5. Todas las URLs del sitemap responden 200.
-//   6. Peso real comprimido del HTML de la home, medido contra el server: Vercel
+//   6. Peso real comprimido del HTML de la home, medido contra el server: el borde
 //      comprime al vuelo, asi que gzipear el HTML local da otro numero.
 //
 // Sale con codigo 1 si algo fallo.
@@ -20,7 +20,7 @@
 import { request as httpsRequest } from 'node:https';
 import { request as httpRequest } from 'node:http';
 // Que se espera de produccion lo declara un solo archivo, que tambien lee el
-// cron de Vercel (app/api/vigilancia). Si la lista viviera duplicada, uno de
+// cron del Worker (cloudflare/src/api/vigilancia.ts). Si la lista viviera duplicada, uno de
 // los dos chequeos quedaria viejo sin que nadie se entere.
 import {
   BASE_PROD,

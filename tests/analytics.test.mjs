@@ -19,7 +19,7 @@ test('los eventos de conversión conservan origen y los avisos no llevan datos p
     avisos.push({ url, cuerpo: JSON.parse(opciones.body) });
     return new Response(null, { status: 200 });
   };
-  const analytics = cargarTypescript('lib/analytics.ts', { '@vercel/analytics': { track: (nombre, datos) => eventos.push({ nombre, datos }) } });
+  const analytics = cargarTypescript('lib/analytics.ts', { '@/lib/analytics-destino': { track: (nombre, datos) => eventos.push({ nombre, datos }) } });
   analytics.trackConsulta('contacto', null, null);
   analytics.trackWhatsapp('/teclab');
   analytics.trackPreguntaFaq('privada');
@@ -67,7 +67,7 @@ test('el aviso de WhatsApp viaja en los dos dispositivos y sólo marca si es mó
     avisos.push(JSON.parse(opciones.body));
     return new Response(null, { status: 200 });
   };
-  const analytics = cargarTypescript('lib/analytics.ts', { '@vercel/analytics': { track: () => {} } });
+  const analytics = cargarTypescript('lib/analytics.ts', { '@/lib/analytics-destino': { track: () => {} } });
 
   globalThis.window = {
     navigator: { userAgentData: { mobile: false } },
@@ -88,7 +88,7 @@ test('el aviso de WhatsApp viaja en los dos dispositivos y sólo marca si es mó
 });
 
 test('sólo una falla de red o del servidor cuenta como fallo técnico del formulario', () => {
-  const analytics = cargarTypescript('lib/analytics.ts', { '@vercel/analytics': { track: () => {} } });
+  const analytics = cargarTypescript('lib/analytics.ts', { '@/lib/analytics-destino': { track: () => {} } });
   assert.equal(analytics.tipoFalloTecnicoFormulario(null), 'red');
   assert.equal(analytics.tipoFalloTecnicoFormulario(500), 'servidor');
   assert.equal(analytics.tipoFalloTecnicoFormulario(503), 'servidor');

@@ -42,7 +42,7 @@ const reemplazos = [
   { find: 'next/navigation', replacement: `${aqui}src/entrega/next-navigation.ts` },
   { find: 'next/dynamic', replacement: `${aqui}src/entrega/next-dynamic.tsx` },
   { find: '@next/third-parties/google', replacement: `${aqui}src/entrega/next-third-parties.ts` },
-  { find: '@vercel/analytics', replacement: `${aqui}src/entrega/vercel-analytics.ts` },
+  { find: /^@\/lib\/analytics-destino$/, replacement: `${aqui}src/entrega/analitica.ts` },
   { find: '@', replacement: raiz },
 ];
 

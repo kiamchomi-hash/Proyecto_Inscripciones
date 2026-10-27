@@ -20,8 +20,8 @@
 //
 // Las visitas del sitio salen de Cloudflare Web Analytics y necesitan un token
 // con permiso de lectura de analitica en `.env.local`; sin el, esa linea no se
-// muestra y el resto funciona igual. Vercel Analytics se dio de baja con el
-// corte: el sitio ya no pasa por Vercel y sus eventos no existen mas.
+// muestra y el resto funciona igual. La medición de eventos vive en D1 desde el
+// corte: la del sitio anterior ya no existe.
 //
 // Si falta alguna fuente, esa seccion sale como no disponible y el resto se
 // muestra igual: media respuesta sirve mas que un error. Sale con codigo 1 solo
@@ -103,8 +103,8 @@ async function leerConsultas() {
 
 /**
  * Una consulta guardada tiene que dejar un aviso en el outbox. Es el reemplazo
- * de la conciliacion contra Analytics: si hay mas filas que avisos, hubo
- * envios que se guardaron sin notificar (o el barrido los salteo).
+ * de la conciliación que hacía la app anterior: si hay más filas que avisos,
+ * hubo envíos que se guardaron sin notificar (o el barrido los salteó).
  */
 async function leerAvisos() {
   const [fila] = consultar(`SELECT count(*) AS n FROM outbox

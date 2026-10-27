@@ -26,7 +26,6 @@ const TIMEOUT_MS = 15_000;
 const HOSTS_PERMITIDOS = new Set([
   'www.siglo21sur.com',
   'siglo21sur.com',
-  'proyecto-inscripciones.vercel.app',
 ]);
 
 const motivo = (e: unknown) => (e instanceof Error ? e.message : String(e));

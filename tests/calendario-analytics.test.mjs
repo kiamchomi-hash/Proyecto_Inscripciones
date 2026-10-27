@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
 test('clasifica sólo salidas internas desde el calendario hacia inicio o carreras', () => {
-  const analytics = cargarTypescript('lib/analytics.ts', { '@vercel/analytics': { track: () => {} } });
+  const analytics = cargarTypescript('lib/analytics.ts', { '@/lib/analytics-destino': { track: () => {} } });
   const origen = 'https://www.siglo21sur.com/calendario-academico';
 
   assert.equal(analytics.destinoDesdeCalendario('/calendario-academico', 'https://www.siglo21sur.com/', origen), 'inicio');
@@ -17,7 +17,7 @@ test('clasifica sólo salidas internas desde el calendario hacia inicio o carrer
 test('registra un evento de salida con origen y destino, sin datos personales', () => {
   const eventos = [];
   const analytics = cargarTypescript('lib/analytics.ts', {
-    '@vercel/analytics': { track: (nombre, datos) => eventos.push({ nombre, datos }) },
+    '@/lib/analytics-destino': { track: (nombre, datos) => eventos.push({ nombre, datos }) },
   });
 
   analytics.trackSalidaCalendario('carreras');

@@ -19,7 +19,7 @@ const partes = text => text.split('\0').filter(Boolean);
 export function esRutaPrivada(path) {
   const p = path.replaceAll('\\', '/').toLowerCase();
   const name = p.split('/').at(-1);
-  return /^(?:carreras|ventas|herramientas\/ventas|notas-locales|contenidos|entregables|\.agents|\.pi|\.vercel)(?:\/|$)/.test(p)
+  return /^(?:carreras|ventas|herramientas\/ventas|notas-locales|contenidos|entregables|\.agents|\.pi)(?:\/|$)/.test(p)
     || (name.startsWith('.env') && name !== '.env.example')
     || /(?:service_account|credentials|credenciales)/.test(name)
     || (/gsc/.test(name) && name.endsWith('.json'))

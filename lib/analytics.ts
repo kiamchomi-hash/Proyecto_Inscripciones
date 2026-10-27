@@ -11,7 +11,7 @@
 // consola) y no lanza si algo sale mal, asi que ninguna de estas llamadas puede
 // romper el envio, que a esa altura ya ocurrio.
 
-import { track } from '@vercel/analytics';
+import { track } from '@/lib/analytics-destino';
 
 /** Desde dónde se envió la consulta, para distinguir cada superficie de captación. */
 export type OrigenConsulta = 'home' | 'teclab' | 'contacto';

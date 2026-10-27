@@ -83,8 +83,8 @@ test('redirects: códigos exactos, barra final y query conservada', () => {
   }
 });
 
-test('redirects de host: apex y alias al dominio propio, sin bucles ni localhost', () => {
-  for (const host of ['siglo21sur.com', 'siglo21sur.com:443', 'proyecto-inscripciones.vercel.app']) {
+test('redirects de host: apex al dominio propio, sin bucles ni localhost', () => {
+  for (const host of ['siglo21sur.com', 'siglo21sur.com:443']) {
     const redireccion = redireccionDeHost(host, '/carreras/x');
     assert.deepEqual(redireccion, { destino: 'https://www.siglo21sur.com/carreras/x', estado: 308 }, host);
     assert.equal(ubicacionRedireccion(redireccion, '?a=1'),

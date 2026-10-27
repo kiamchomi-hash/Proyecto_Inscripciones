@@ -27,12 +27,13 @@ test('se conservan exactamente las demás reglas de redirección', async () => {
     '/carreras/curso-de-actualizacion-profesional-en-inteligencia-artificial',
   ]);
   const redirects = (await config.redirects()).filter(regla => !nuevas.has(regla.source));
-  // Huella de las 24 reglas anteriores: rutas, destinos, códigos y condiciones.
+  // Huella de las 23 reglas anteriores: rutas, destinos, códigos y condiciones.
   // La última vez se volvió a tomar el 27/10/2026, cuando Energías Renovables de
   // Teclab pasó de apuntar a la ficha renombrada a la home: el renombre quedó
-  // como regla propia y por eso ahora son 24.
+  // como regla propia. Ese mismo día se dio de baja Vercel y se fue la regla de
+  // host del alias `.vercel.app`, así que ahora son 23.
   const hash = createHash('sha256').update(JSON.stringify(redirects)).digest('hex');
-  assert.equal(hash, '0eb57b0a76550fc889a2e829f4f137b75d5d113229be48c5b46381145b949206');
+  assert.equal(hash, 'f3235773f5f1fc78a8be76a08a776e69065fed4af693e958efd64369e2deae2c');
   for (const source of [
     '/carreras/licenciatura-en-agroinformatica',
     '/carreras/licenciatura-en-nutricion',

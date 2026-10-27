@@ -105,7 +105,7 @@ export async function runDeploy({ cwd, ask, print = console.log, check = checkLo
     }
     print('[3/3] Subiendo a GitHub.');
     await push(cwd);
-    print('Publicado. Vercel iniciará el deploy; después ejecutar el smoke de producción.');
+    print('Publicado. Producción se publica aparte: workflow "Publicar el Worker" o npm run publicar:produccion en cloudflare/.');
     return 0;
   } catch (error) {
     print(`No se completó la publicación: ${error.message}`);
