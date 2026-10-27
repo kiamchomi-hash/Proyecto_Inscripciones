@@ -1,7 +1,7 @@
 /**
  * Analítica del navegador, local y sin proveedor externo.
  *
- * El sitio vigente manda eventos a Vercel Analytics y, si hay
+ * El sitio anterior mandaba eventos a un proveedor externo y, si había
  * `NEXT_PUBLIC_GA_ID`, a Google. En este paquete no hay tokens, scripts ni
  * pedidos a ninguno de los dos: los eventos se guardan en memoria acotada y se
  * emiten como `CustomEvent` para que las pruebas y el desarrollo puedan verlos.
@@ -73,7 +73,7 @@ export function registrarEvento(
   }
 }
 
-/** Firma de `track` de Vercel Analytics: nombre y propiedades planas. */
+/** Firma de `track` que espera `lib/analytics.ts`: nombre y propiedades planas. */
 export function track(evento: string, propiedades?: Record<string, unknown>): void {
   registrarEvento(evento, propiedades);
 }

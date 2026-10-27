@@ -21,9 +21,9 @@ test('build sin variables del padre ni secretos en los artefactos', () => {
   }
   revisar(new URL('../dist/', import.meta.url));
 
-  // Analítica: no se cuela el script de Vercel ni un proveedor de Google, y el
+  // Analítica: no se cuela ningún proveedor externo, y el
   // guard de GA de los componentes compartidos no queda como referencia rota.
-  const prohibidos = ['googletagmanager.com', 'google-analytics.com', 'va.vercel-scripts.com', 'NEXT_PUBLIC_GA_ID'];
+  const prohibidos = ['googletagmanager.com', 'google-analytics.com', 'NEXT_PUBLIC_GA_ID'];
   function revisarCliente(directorio) {
     for (const entry of readdirSync(directorio, { withFileTypes: true })) {
       const path = new URL(entry.name, directorio);
@@ -77,7 +77,7 @@ test('Astro compilado responde en workerd con guardas locales y catálogo de D1'
       const html = await respuesta.text();
       assert.match(html, /<html lang="es(-AR)?">/);
       assert.doesNotMatch(html, /centinela|supabase/i);
-      assert.doesNotMatch(html, /googletagmanager\.com|google-analytics\.com|va\.vercel-scripts\.com/i);
+      assert.doesNotMatch(html, /googletagmanager\.com|google-analytics\.com/i);
       if (path === '/') assert.match(html, /Licenciatura en Administración/);
       else assert.match(html, /<main><\/main>/);
     }

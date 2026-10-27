@@ -10,7 +10,7 @@ import * as whatsapp from '../lib/whatsapp.ts';
 import * as vigilancia from '../lib/vigilancia-esperado.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
-// El newsletter semanal de Teclab (`/api/newsletter`, cron de Vercel) y su
+// El newsletter semanal de Teclab (`/api/newsletter`, cron) y su
 // baja (`/api/newsletter/baja` y la página `/newsletter/baja`). Supabase y
 // SMTP2GO están simulados: ningún test sale a la red ni escribe en la base.
 

@@ -15,7 +15,7 @@ export const SITIO_CANONICO = 'https://www.siglo21sur.com';
 
 /**
  * Hosts que `next.config.ts` manda al dominio propio. En producción el apex
- * puede resolverse antes, en el borde (histórico: Vercel respondía 307 aunque
+ * puede resolverse antes, en el borde (histórico: el borde respondía 307 aunque
  * el config dijera 308); en Cloudflare el equivalente depende de la zona y del
  * DNS, que este paquete no configura. La lista queda fijada para que el
  * comportamiento sea el mismo si la regla llega al Worker.

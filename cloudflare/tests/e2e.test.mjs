@@ -201,8 +201,7 @@ async function abrirPagina(navegador, base, opciones = {}) {
   const enCierre = error =>
     /Request context disposed|context or browser has been closed|Target closed/i
       .test(String(error?.message ?? error));
-  // Ningún pedido sale de loopback. Los scripts de depuración de Vercel
-  // Analytics que pide el Next en desarrollo se abortan; los pedidos a
+  // Ningún pedido sale de loopback. Los pedidos a
   // Cloudflare de Turnstile se resuelven en la prueba que los necesita.
   await contexto.route(url => !['127.0.0.1', 'localhost'].includes(url.hostname), async ruta => {
     try {
@@ -711,7 +710,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
       if (!['127.0.0.1', 'localhost'].includes(url.hostname)) externos.push(pedido.url());
     });
 
-    // El registrador es local: no hay Vercel ni Google. Se espera a que el
+    // El registrador es local: no hay proveedor externo. Se espera a que el
     // medidor montado en el layout tome el clic del CTA.
     await pagina.waitForTimeout(1_500);
     const enlace = pagina.locator('a[href="#preinscripcion"]').first();

@@ -5,9 +5,8 @@ producción, SEO de todas las páginas y navegador. Cada control deja
 su log en `herramientas/vigilancia-logs/calidad/<fecha>/` y se ejecutan todos aunque
 uno falle. Un código 2 significa que falta una fuente o no se pudo verificar; nunca
 se convierte en un aprobado. `npm run leads -- --estricto` exige las tres fuentes.
-El informe renueva las sesiones OAuth vencidas mediante la CLI de Vercel. Compara
-Analytics y Supabase con la misma ventana de días UTC y muestra el desglose diario
-si difieren. Los timeouts y errores 5xx tienen hasta dos reintentos; si persisten,
+El informe usa la D1 y Cloudflare Web Analytics con la misma ventana de días UTC y
+muestra el desglose diario si difieren. Los timeouts y errores 5xx tienen hasta dos reintentos; si persisten,
 la fuente queda no disponible.
 
 ## Comandos por área
@@ -68,12 +67,13 @@ HTTPS desde un puerto HTTP. Las demás directivas se conservan; producción no s
 
 ## Ejecución recurrente
 
-GitHub Actions ejecuta `check` y `npm audit` en cada push a main. Vercel ejecuta
-`check` antes del build: un fallo detiene esa publicación. Los workflows se activan
-cuando el archivo está publicado en GitHub, no por existir en la carpeta local.
+GitHub Actions ejecuta `check` y `npm audit` en cada push a main. Publicar el Worker
+es una decisión aparte, disparada a mano: un push no pone nada en producción. Los
+workflows se activan cuando el archivo está publicado en GitHub, no por existir en
+la carpeta local.
 
 La vigilancia existente incorpora la opción `calidad`, que ejecuta
-`npm run calidad -- --solo-web --visual`. No agrega otro cron de Vercel ni duplica
+`npm run calidad -- --solo-web --visual`. No agrega otro cron ni duplica
 los avisos del smoke. La tarea local requiere referencias visuales registradas,
 navegadores instalados y las credenciales existentes en `.env.local`.
 En esta PC quedó registrada `CAU - Vigilancia calidad web`, los domingos a las

@@ -1,7 +1,7 @@
 # Herramientas
 
 Verificaciones que no cubre `npm run check`. Nada de esto llega al sitio
-publicado: Vercel sirve el build de Next y estos archivos no entran en el
+publicado: producción es el Worker de Cloudflare y estos archivos no entran en el
 bundle, así que se pueden correr y editar sin miedo a romper producción.
 
 **Doble clic en el `.bat`** y listo. La ventana queda abierta al terminar.
@@ -50,7 +50,7 @@ Rutas principales en 200, las cinco cabeceras de seguridad, `noindex` donde
 corresponde, los cinco redirects, las ~119 URLs del sitemap y el peso real
 comprimido de la home.
 
-El peso se mide pidiendo a producción, no comprimiendo el HTML local: Vercel
+El peso se mide pidiendo a producción, no comprimiendo el HTML local: el borde
 comprime al vuelo con otra calidad y el número local no sirve para comparar.
 
 Desde una terminal admite opciones:
@@ -117,8 +117,8 @@ Commit y push a `main`. **Push a main = deploy**. Ambos envoltorios llaman a
    excluidos ni el `node_modules` local. Si falla, **no commitea ni sube**. Comprueba que rama,
    HEAD e index sigan siendo los revisados antes del commit. Si un hook altera
    el árbol del commit, lo deja local y no hace push.
-7. Commit y `git push origin main:main`; recuerda correr el smoke cuando Vercel
-   termine. Vacía los tokens heredados `GH_TOKEN` y `GITHUB_TOKEN` sólo en los
+7. Commit y `git push origin main:main`; recuerda correr el smoke cuando
+   termine la publicación. Vacía los tokens heredados `GH_TOKEN` y `GITHUB_TOKEN` sólo en los
    procesos hijos para usar las credenciales guardadas.
 
 Si se cancela o falla el check después de preparar la selección, queda staged
@@ -180,9 +180,8 @@ está entrando nadie, o está entrando y se pierde en el camino?** Junta en una
 pantalla las tres cosas que hoy viven en tres paneles distintos:
 
 - **clics a WhatsApp** día por día, con el desglose por dispositivo y desde qué
-  páginas se toca (Vercel Analytics, en vivo);
-- **las consultas que entraron de verdad** al formulario (Supabase, en vivo);
-- **los abandonos del formulario**, con último campo y motivo observable (Vercel Analytics, desde el deploy que lo incorpora);
+  páginas se toca (D1, tabla `whatsapp_clicks`);
+- **las consultas que entraron de verdad** al formulario (D1, tabla `consultas`);
 - **el tráfico que llega desde Google**, contra el período anterior (Search
   Console).
 
@@ -207,8 +206,8 @@ Dos cosas que el informe avisa solo:
   fila de prueba borrada a mano y un envío justo en el borde de la ventana dan
   la misma diferencia, y el aviso lo dice.
 
-Las tres fuentes usan credenciales que ya están en la máquina: el token de la
-CLI de Vercel (`npx vercel login`) y la service account
+Las tres fuentes usan credenciales que ya están en la máquina: el acceso a la D1 por
+wrangler, `CF_ANALYTICS_TOKEN` y la service account
 de Search Console. **Si falta alguna, esa sección sale como no disponible y el
 resto se muestra igual**; sólo sale con código 1 si no se pudo leer ninguna.
 
@@ -217,8 +216,7 @@ npm run leads              # últimos 14 días
 npm run leads -- --dias=30
 ```
 
-El tope son 62 días: es el máximo que la API de Vercel Analytics acepta con
-granularidad diaria.
+El tope son 62 días.
 
 ## Vigilancia automática (sin doble clic)
 
@@ -353,7 +351,7 @@ la ruta del proyecto (`~/.claude/projects/<ruta con guiones>/memory`), así que 
 de Windows no le sirve a Linux; el script la recalcula.
 
 Lo que no se puede empaquetar porque es un login, lo lista al terminar:
-`vercel login`, `supabase login`, `gh auth login` y el alta del MCP de Search
+`gh auth login` y el alta del MCP de Search
 Console.
 
 Tampoco viajan las skills de Codex: en la máquina nueva se reponen con

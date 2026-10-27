@@ -6,8 +6,8 @@
  * directas. La fecha por defecto es **ayer** en hora argentina, no el día en
  * curso: el cron corre a las 09:00 y con el día en curso se perdía la noche.
  *
- * «Usuarios activos» venía de Vercel Analytics y no se reimplementó: al dejar
- * Vercel esa fuente desaparece. Queda como dato opcional que se agrega sólo si
+ * «Usuarios activos» no se reimplementó: al dejar
+ * la plataforma anterior esa fuente desapareció. Queda como dato opcional que se agrega sólo si
  * hay un lector configurado.
  */
 

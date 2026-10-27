@@ -12,8 +12,7 @@ import { usuariosActivos } from '../src/operativa/analytics.ts';
  * cerrado, ni lista blanca de destinatarios. Los secretos y la base llegan por
  * bindings del Worker, nunca por el paquete.
  *
- * La única excepción es la dirección temporal `*.workers.dev`, que existe sólo
- * mientras el dominio real sigue apuntando a Vercel: ahí se agrega
+ * La única excepción es la dirección temporal `*.workers.dev`: ahí se agrega
  * `X-Robots-Tag: noindex` y un `robots.txt` cerrado para que esa copia no compita
  * con el sitio publicado. En el dominio real no se toca nada.
  *
@@ -89,7 +88,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     // El dominio ápice no sirve contenido: manda a `www` con 308 y conserva la
-    // ruta y la query, como hacía Vercel.
+    // ruta y la query.
     if (url.hostname === RAIZ) {
       const destino = new URL(request.url);
       destino.hostname = CANONICO;

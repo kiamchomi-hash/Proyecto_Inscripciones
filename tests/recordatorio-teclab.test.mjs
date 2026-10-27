@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { mensajeRecordatorioTeclab, sinIntroNueva } from '../lib/recordatorio-teclab.ts';
 
 // Recordatorio semanal de los seguimientos de fondo de Teclab (`docs/rutinas.md`),
-// que el cron de Vercel manda por Telegram.
+// que el cron manda por Telegram.
 
 const conIntro = { nombre: 'Tecnicatura Superior en Seguros', descripcion: 'Estudiá seguros a distancia y formate. Salida.' };
 const sinIntro = { nombre: 'Tecnicatura Superior en Algo Nuevo', descripcion: 'Aprendé algo. Podés trabajar en empresas.' };
@@ -54,7 +54,7 @@ test('recuerda la revisión de datos de ambos tests vocacionales', () => {
 });
 
 test('el cron semanal está declarado en el Worker', () => {
-  // Hasta el 27/10/2026 vivía en `vercel.json`. El corte a Cloudflare lo movió al
+  // Hasta el 27/10/2026 vivía en un cron aparte. El corte a Cloudflare lo movió al
   // Worker de producción: `recordatorio` en `CRONES` corre con esta expresión.
   const config = JSON.parse(readFileSync(new URL('../cloudflare/produccion/wrangler.json', import.meta.url), 'utf8'));
   assert.ok(config.triggers.crons.includes('0 12 * * 1'));

@@ -57,8 +57,7 @@ test('un IndexNow caído no lanza ni manda nada vacío', async () => {
   }
 });
 
-test('la revalidación avisa a IndexNow después de responder y sólo en producción', () => {
+test('la revalidación ya no dispara IndexNow: el aviso automático se fue con la app anterior', () => {
   const route = readFileSync('app/api/revalidar/route.ts', 'utf8');
-  assert.match(route, /process\.env\.VERCEL_ENV === 'production'/);
-  assert.match(route, /after\(async \(\) => \{\s*const estado = await avisarIndexNow\(urls\)/);
+  assert.doesNotMatch(route, /avisarIndexNow/);
 });

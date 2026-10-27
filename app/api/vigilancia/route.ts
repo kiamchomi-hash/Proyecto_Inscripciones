@@ -1,4 +1,4 @@
-// Vigilancia de produccion, corriendo en Vercel cada 6 horas (vercel.json).
+// Vigilancia de produccion, corriendo cada 6 horas.
 //
 // Es el mismo chequeo que herramientas/smoke.mjs pero sin depender de que la
 // maquina de casa este prendida: el watchdog local deja un aviso en el
@@ -10,7 +10,7 @@
 // chequeo es de rendimiento, no de caida, y sigue viviendo en smoke.mjs.
 //
 // Solo avisa cuando encuentra algo. Si el cron mismo dejara de correr, eso se ve
-// en el tab Cron Jobs del proyecto en Vercel, no aca.
+// en la configuracion del proyecto, no aca.
 //
 // Con ?prueba=1 manda un aviso de prueba y no corre ningun chequeo, para poder
 // confirmar que el canal de Telegram sigue vivo sin esperar a que algo falle.

@@ -39,7 +39,7 @@ const dmSans = DM_Sans({
   display: 'swap',
 });
 
-// 24 h, no 1 h: son ~96 paginas y cada regeneracion es un ISR Write de Vercel.
+// 24 h, no 1 h: son ~96 paginas y cada regeneracion es un ISR Write.
 // A 3600 el techo era ~69.000 writes/mes solo por reloj, sobre 200.000 de cuota
 // gratuita. Los datos de carreras cambian una vez por mes; si hace falta que un
 // cambio de Supabase se vea antes, un redeploy fuerza la regeneracion.

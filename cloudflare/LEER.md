@@ -553,8 +553,8 @@ catálogo sale de D1 con `listarCatalogoPublico()` y la taxonomía compartida, y
 excluye `Identidad Argentina` como en la home vigente (`src/datos/home.ts`).
 
 **Shims de Next, no bifurcaciones.** `astro.config.mjs` resuelve `next/link`,
-`next/image`, `next/navigation`, `next/dynamic`, `@next/third-parties/google` y
-`@vercel/analytics` contra `src/entrega/`. Son deliberadamente mínimos: `<a>`,
+`next/image`, `next/navigation`, `next/dynamic` y `@next/third-parties/google`
+contra `src/entrega/`, y `@/lib/analytics-destino` contra el registrador local. Son deliberadamente mínimos: `<a>`,
 `<img>` sin optimizador, `usePathname` por contexto (sin router de cliente),
 `dynamic` con `import()` al montar y helpers de analítica sin efecto. Los
 componentes del sitio siguen siendo los mismos archivos; cualquier diferencia de
@@ -654,8 +654,7 @@ Requisitos y límites del harness, para no romperlo sin querer:
   porque el navegador necesita un puerto real. Se siembra un D1 efímero por
   perfil en `.local/e2e-d1-*` y los servidores con site key o demo usan
   `--var`, sin escribir `.dev.vars`.
-- El Next en dev pide los dos scripts de depuración de Vercel Analytics
-  (`va.vercel-scripts.com`); el e2e los aborta como cualquier host externo.
+- Ni Next ni Astro piden hosts externos: la analítica es local.
 - **No** se comparan: el HTML de los scripts, ni el cuerpo del 404, ni los bytes
   de CSS. Las capturas comparan el estado sin captcha (los dos servidores de la
   comparación van sin site key).
@@ -838,8 +837,8 @@ Redirecciones migradas: `src/entrega/redirects.ts` concentra la lista global,
 `src/entrega/redirects-carreras.ts` las fichas y `src/middleware.ts` las aplica
 antes de resolver la ruta. Conservan el código de `next.config.ts` (308 para
 `permanent: true` y para el apex/alias, 301/302 donde el config los fija), la
-query y la normalización de barra final. El apex y el alias `.vercel.app` se
-prueban como función pura: el harness no puede cambiar el host del pedido y el
+query y la normalización de barra final. El apex se
+prueba como función pura: el harness no puede cambiar el host del pedido y el
 DNS/zona de producción no se configuran en este paquete. El harness de pruebas
 sigue redirecciones por defecto: los casos que miran el código usan
 `{ redirect: 'manual' }`.

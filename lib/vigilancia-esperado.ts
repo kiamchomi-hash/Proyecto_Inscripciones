@@ -56,16 +56,15 @@ export const NOINDEX: Array<[string, RegExp]> = [
  *
  * El caso testigo es de agosto de 2026. `next.config.ts` declara el apex con
  * `permanent: true`, o sea 308, pero produccion devolvia **307**: el redirect no
- * lo hacia Next sino Vercel a nivel de dominio, que corre en el borde antes que
- * la app y traia `redirectStatusCode: 307` de fabrica. La regla del repo nunca
- * se ejecutaba. Un 307 le dice a Google que la mudanza es temporal, asi que
- * nunca consolidaba el apex en www y seguia gastando un pedido por cada URL sin
- * www que tenia anotada — la inspeccion de URLs mostraba `referringUrls:
- * ["https://siglo21sur.com/sitemap.xml"]`, apex, en fichas que nunca llego a
- * rastrear. Se corrigio en el dominio, no en el codigo.
+ * lo hacia la app sino el borde, que corre antes y traia 307 de fabrica. La
+ * regla del repo nunca se ejecutaba. Un 307 le dice a Google que la mudanza es
+ * temporal, asi que nunca consolidaba el apex en www y seguia gastando un
+ * pedido por cada URL sin www que tenia anotada — la inspeccion de URLs mostraba
+ * `referringUrls: ["https://siglo21sur.com/sitemap.xml"]`, apex, en fichas que
+ * nunca llego a rastrear. Se corrigio en el borde, no en el codigo.
  *
- * Por eso queda fijado aca: si alguien lo vuelve a mover desde el panel de
- * Vercel, los dos vigilantes lo cantan.
+ * Por eso queda fijado aca: si alguien lo vuelve a mover desde el panel, los dos
+ * vigilantes lo cantan.
  */
 export function redirectsEsperados(base: string): Array<[string, string, number?]> {
   return [

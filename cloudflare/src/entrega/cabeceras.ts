@@ -3,7 +3,7 @@
 // la lista que vigila producción vive en `lib/vigilancia-esperado.ts`.
 //
 // La CSP conserva sólo los orígenes que este paquete usa: no carga Supabase,
-// Google Analytics ni Vercel Analytics, así que no se autorizan. Sí necesita
+// Google Analytics ni un proveedor de analítica externo, así que no se autorizan. Sí necesita
 // `challenges.cloudflare.com` para Turnstile, que Next también declara, y
 // `static.cloudflareinsights.com` para el beacon de Cloudflare Web Analytics:
 // sin ese origen la CSP bloquea el script y el sitio queda sin medición de

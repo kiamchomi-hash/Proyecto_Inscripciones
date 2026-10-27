@@ -24,7 +24,6 @@ export default defineConfig([
     'output/**',
     '.playwright-cli/**',
     '.playwright-mcp/**',
-    '.vercel/**',
     'notas-locales/**',
     'screenshots/**',
     'tmp/**',

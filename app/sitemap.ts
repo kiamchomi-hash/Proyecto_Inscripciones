@@ -6,7 +6,7 @@ import { esTeclab, getPortadaTeclab } from '@/components/index/teclab';
 import { getPortada } from '@/components/carreras/career-content';
 
 // `sitemap.ts` es un Route Handler que Next puede cachear por defecto. En
-// producción la caché de Vercel conservaba esta metadata route aunque
+// producción la caché del host conservaba esta metadata route aunque
 // `revalidatePath('/sitemap.xml')` marcara su tag, así que altas, bajas y
 // `lastmod` podían quedar viejos hasta un deploy. Se genera en cada petición:
 // la respuesta es chica y la frescura es prioritaria.

@@ -1,4 +1,4 @@
-// Newsletter de Teclab y Siglo 21: cron de Vercel, una vez por día (vercel.json).
+// Newsletter de Teclab y Siglo 21: cron, una vez por día.
 //
 // A cada suscripción activa a una carrera de Teclab le manda, cada 7 días, el
 // mail de la plantilla aprobada (`armarMailPrecio` con `tipo: 'newsletter'`)

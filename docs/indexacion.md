@@ -63,8 +63,8 @@ Buscando por qué esas dos fichas no se rastrean se descartó todo lo demás —
 una sola cosa en pie: **`siglo21sur.com` redirigía a `www` con 307 Temporary**, aunque
 `next.config.ts` declara ese redirect con `permanent: true`.
 
-La regla del repo nunca se ejecutaba: Vercel tiene su propio redirect a nivel de dominio,
-corre en el borde antes que la app y traía `redirectStatusCode: 307` de fábrica. El código
+La regla del repo nunca se ejecutaba: el borde tiene su propio redirect de dominio,
+corre antes que la app y traía 307 de fábrica. El código
 decía una cosa y producción hacía otra, sin que ningún diff lo mostrara.
 
 Que importe no es teórico: la API de inspección devuelve, para las tres fichas que se

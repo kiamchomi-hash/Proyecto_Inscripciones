@@ -30,8 +30,8 @@ test('se conservan exactamente las demás reglas de redirección', async () => {
   // Huella de las 23 reglas anteriores: rutas, destinos, códigos y condiciones.
   // La última vez se volvió a tomar el 27/10/2026, cuando Energías Renovables de
   // Teclab pasó de apuntar a la ficha renombrada a la home: el renombre quedó
-  // como regla propia. Ese mismo día se dio de baja Vercel y se fue la regla de
-  // host del alias `.vercel.app`, así que ahora son 23.
+  // como regla propia. Ese mismo día se fue la regla de
+  // host del alias viejo, así que ahora son 23.
   const hash = createHash('sha256').update(JSON.stringify(redirects)).digest('hex');
   assert.equal(hash, 'f3235773f5f1fc78a8be76a08a776e69065fed4af693e958efd64369e2deae2c');
   for (const source of [

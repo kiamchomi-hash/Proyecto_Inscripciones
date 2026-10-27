@@ -2,6 +2,11 @@
 
 Documento de referencia para reutilizar patrones, stack y decisiones en futuros proyectos.
 
+**Describe la app Next de `app/`, que ya no se publica.** El sitio vigente es el
+Worker de Cloudflare (Astro + islas de React sobre D1): su mapa está en
+[`cloudflare/LEER.md`](../cloudflare/LEER.md). Lo de acá sirve como patrón de la
+versión anterior, no como estado actual.
+
 ---
 
 ## Stack principal
@@ -12,8 +17,8 @@ Documento de referencia para reutilizar patrones, stack y decisiones en futuros 
 | UI | React | 19 | `use client` solo donde hay interactividad |
 | Estilos | Tailwind CSS v4 | via `@tailwindcss/postcss` | CSS custom properties para colores de marca |
 | Base de datos | Supabase (PostgreSQL) | SDK v2 | Client en `lib/supabase.ts`, sin ORM |
-| Hosting | Vercel | — | Deploy automático desde `main` |
-| Analytics | Vercel Analytics + Speed Insights + Google Analytics | — | GA via `@next/third-parties` |
+| Hosting | Cloudflare Workers (Astro + D1) | — | Deploy manual desde Actions; la app Next no se publica |
+| Analytics | Local en el Worker + Google Analytics | — | GA via `@next/third-parties` en la app anterior |
 | Validación | A mano en el handler | — | Regex de email/teléfono y chequeos de forma en `/api/formularios`, sin librería |
 | Tareas programadas | `pg_cron` (Supabase) | — | Limpieza de clases pasadas y digest diario de clicks |
 | CAPTCHA | Cloudflare Turnstile | componente propio | `components/turnstile-widget.tsx`, verificación server-side en `lib/turnstile.ts` |
@@ -64,7 +69,7 @@ Pre-renderiza todas las rutas conocidas en build time. Nuevas rutas se generan o
 - Fonts (variables CSS `--font-inter`, `--font-unbounded`)
 - `<Navbar />` compartido
 - Scroll-to-top
-- Analytics (GA, Vercel Analytics, Speed Insights)
+- Analytics (GA; la del Worker es local)
 - Schema.org JSON-LD (WebSite + EducationalOrganization)
 - Skip link de accesibilidad
 
@@ -164,9 +169,9 @@ Clases CSS custom para fondos premium: `.grain-overlay`, `.texture-suede`, `.tex
 ### Content Security Policy
 
 Configurada en `next.config.ts` → `headers()`:
-- `script-src`: self + Cloudflare Turnstile + Google Tag Manager + Vercel scripts
+- `script-src`: self + Cloudflare Turnstile + Google Tag Manager
 - `img-src`: self + Supabase Storage + Unsplash
-- `connect-src`: self + Supabase + GA + Vercel + Turnstile
+- `connect-src`: self + Supabase + GA + Turnstile
 - `frame-src`: Turnstile + Google Maps embeds
 
 ### Protección de rutas
@@ -236,7 +241,7 @@ Sin GitHub Actions: los cron viven en `pg_cron` dentro de Supabase (limpieza de 
 
 ---
 
-## Vercel — Configuración
+## Configuración de la app anterior (Next)
 
 ### `next.config.ts` highlights
 
@@ -269,7 +274,7 @@ images: {
 
 ### MCP Servers usados
 
-- **Google Search Console** (`gsc`) — el único configurado hoy: analytics de búsqueda, inspección de URLs, sitemaps. Supabase y Vercel se operan por sus CLIs (`npx supabase`, `npx vercel`), ya autenticadas.
+- **Google Search Console** (`gsc`) — el único configurado hoy: analytics de búsqueda, inspección de URLs, sitemaps. Supabase se opera por su CLI (`npx supabase`), ya autenticada.
 
 ---
 
@@ -279,7 +284,7 @@ images: {
 
 - [ ] `npx create-next-app@latest` con App Router + TypeScript + Tailwind
 - [ ] Supabase: crear proyecto, configurar tablas, RLS policies
-- [ ] Vercel: conectar repo, configurar dominio, env vars
+- [ ] Cloudflare: crear el Worker, configurar dominio y variables
 - [ ] `next.config.ts`: CSP headers, image domains, redirects
 - [ ] `app/layout.tsx`: fonts, metadata global, OG, JSON-LD, analytics
 - [ ] `app/globals.css`: variables CSS de marca, reset mínimo
@@ -328,7 +333,7 @@ public/
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_GA_ID=
-SUPABASE_SERVICE_ROLE_KEY=  # solo server-side (marcada Sensitive en Vercel)
+SUPABASE_SERVICE_ROLE_KEY=  # solo server-side (marcada Sensitive)
 ```
 
 ---

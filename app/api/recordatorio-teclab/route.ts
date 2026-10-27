@@ -1,4 +1,4 @@
-// Cron semanal de Vercel (lunes 9:00 de Argentina): manda por Telegram el
+// Cron semanal (lunes 9:00 de Argentina): manda por Telegram el
 // recordatorio de los seguimientos de fondo de Teclab. Ver `lib/recordatorio-teclab.ts`.
 
 import { NextRequest, NextResponse } from 'next/server';
