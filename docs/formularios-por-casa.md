@@ -60,7 +60,7 @@ El modal de Teclab cambia el mail por el precio de la carrera. Va por el mismo e
 
 ## Newsletter de Teclab: `GET /api/newsletter`
 
-Cron de Vercel (`vercel.json`, `0 13 * * *`: todos los días a las 10 de Argentina) que le manda a cada suscripción el mail de la plantilla aprobada con el precio vigente de su carrera. No es un formulario: no pasa por `/api/formularios` y escribe con la service role.
+Cron del Worker (`cloudflare/produccion/wrangler.json`, `0 13 * * *`: todos los días a las 10 de Argentina) que le manda a cada suscripción el mail de la plantilla aprobada con el precio vigente de su carrera. No es un formulario: no pasa por `/api/formularios`.
 
 - **Cadencia**: si nunca se le mandó (`ultimo_envio_at` vacío), en la primera corrida con precio vigente: quien se suscribió cuando no había precio o estaba vencido lo recibe apenas se actualiza. Después, cada 7 días desde el último envío. El mail de resumen de «Ver precio» marca `ultimo_envio_at` si la persona está suscripta a esa carrera, así no se repite al día siguiente. La regla va en la consulta (`or` de PostgREST). Volver a suscribirse renueva el consentimiento pero no borra el último envío.
 - **Alcance**: suscripciones activas a carreras de Teclab activas con precio `vigente` hoy. Las carreras se leen primero y las suscripciones se filtran por ellas en la misma consulta, para que las que no pueden salir no ocupen el tope todos los días. Siglo 21, Identidad y las generales (sin carrera) quedan afuera hasta tener plantilla. Tope de 50 por corrida, de a una; lo que no entra sale al día siguiente.

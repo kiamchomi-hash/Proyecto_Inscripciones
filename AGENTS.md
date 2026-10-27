@@ -204,7 +204,7 @@ El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada
 
 La plantilla completa está en `.env.example` y el reparto de cuál usa Next, cuál las Edge Functions y cuál las herramientas, en `docs/variables-de-entorno.md`.
 
-Lo que hay que tener presente siempre: **el `.env.local` de esta máquina no tiene `SUPABASE_SERVICE_ROLE_KEY`** (está marcada Sensitive y `vercel env pull` no la trae). Alcanza para levantar el sitio y leer de la base, pero **un POST válido a `/api/formularios` devuelve 503 en local** (un sobre inválido devuelve 400 antes de consultar la base). Para recorrer los formularios en local sin escribir está el modo demo (`NEXT_PUBLIC_FORMULARIOS_DEMO=1`, sólo con `next dev`, ver `lib/formularios-demo.ts`): valida igual, saltea el captcha y no guarda nada. Para probar de punta a punta hay que pegar la clave a mano desde el gestor de contraseñas.
+Lo que hay que tener presente siempre: **el `.env.local` de esta máquina ya no tiene las claves de Supabase** (`NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY`), porque esa base se dio de baja. La app Next de `app/` no puede leer ni escribir: sirve para lo que revisa `npm run check`. Los datos del sitio publicado están en D1 y se editan con `npm run db:d1`. Para recorrer los formularios en local sin escribir está el modo demo (`NEXT_PUBLIC_FORMULARIOS_DEMO=1`, sólo con `next dev`, ver `lib/formularios-demo.ts`).
 
 ## Base de datos
 
