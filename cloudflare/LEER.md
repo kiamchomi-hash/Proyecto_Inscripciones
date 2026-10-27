@@ -1032,3 +1032,32 @@ Lo que no hace, a propósito: no aplica migraciones (`wrangler d1 migrations
 apply --remote` es una decisión aparte), no administra secretos (un deploy no los
 pisa) y no revierte solo; si el smoke falla después de publicar, la vuelta atrás
 es un deploy de la versión anterior, decidido por una persona.
+
+## Medición de clics a WhatsApp (27/10/2026)
+
+El corte dejó sin medir la conversión más transitada del sitio. No era sólo que
+Vercel Analytics se hubiera dado de baja: `WhatsappReparto` —el componente que
+escucha el clic— vivía en `app/layout.tsx`, y al portar a Astro no se montó en
+`Sitio.astro`. Desde el corte y hasta este arreglo no se registró un solo clic ni
+salió un solo aviso de Telegram del móvil.
+
+- `migrations/0012_whatsapp_clicks.sql` agrega `whatsapp_clicks (fecha, origen,
+  movil, clicks)`: agregados por día, página y dispositivo, nunca filas por
+  visita. `fecha` es el día argentino, igual que `career_clicks`.
+- El navegador manda el evento en los dos dispositivos a
+  `POST /api/alertas-analytics`; el Worker cuenta siempre y manda Telegram sólo
+  si es móvil. Si el cupo de la IP corta el clic, tampoco avisa: no se alerta de
+  algo que el informe no va a mostrar.
+- `src/datos/whatsapp.ts` valida el origen (pathname, sin query ni hash), deriva
+  la clave de cuota con SHA-256 y usa el cupo `whatsapp:<digest>` (60 / 600 s).
+- `npm run leads` lee los clics y las consultas de D1; las visitas salen de
+  Cloudflare Web Analytics con `CF_ANALYTICS_TOKEN` o con el archivo privado
+  `cloudflare/.local/produccion/cf-analytics.key`. La conciliación de envíos
+  ahora compara las consultas con los avisos del outbox.
+
+**La base de producción no tiene historial de migraciones.** Se cargó con un
+import y `d1_migrations` quedó con cero filas, así que `wrangler d1 migrations
+apply --remote` intenta reaplicar 0001 y falla con «table carreras already
+exists». Las migraciones nuevas se aplican con `d1 execute --file=<archivo>` y el
+archivo es el registro. Para volver a `migrations apply` hay que cargar antes el
+historial de lo ya aplicado; no alcanza con reintentar.
