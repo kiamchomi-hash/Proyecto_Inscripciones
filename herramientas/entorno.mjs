@@ -186,8 +186,6 @@ function importar(desde, forzar) {
   console.log(`  Instaladas ${instaladas}, salteadas ${salteadas}.`);
   console.log('');
   console.log('  Falta lo que no se puede empaquetar, que es todo login:');
-  console.log('    npx vercel login');
-  console.log('    npx supabase login');
   console.log('    gh auth login');
   console.log('');
   // En una sola linea a proposito: la continuacion con "\" no existe en cmd ni

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildConsultaMessage, formatDate } from '../supabase/functions/notificar/mensajes.ts';
+import { buildConsultaMessage, formatDate } from '../cloudflare/src/operativa/mensajes.ts';
 import { buildAperturasDirectasDigest } from '../lib/apertura-directa.ts';
 
 const base = { created_at: '2026-08-23T22:00:00Z', nombre: 'Ana', apellido: 'Diaz', email: 'ana@x.com' };

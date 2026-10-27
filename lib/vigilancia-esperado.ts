@@ -4,7 +4,7 @@
 //
 //   herramientas/smoke.mjs   a mano, desde una maquina, con sockets crudos
 //                            para poder medir los bytes que viajan de verdad.
-//   app/api/vigilancia       el cron de Vercel, cada 6 horas, con fetch.
+//   cloudflare/src/api/vigilancia  el cron del Worker, cada 6 horas, con fetch.
 //
 // El transporte de cada uno es distinto y esta bien que lo sea; lo que no puede
 // duplicarse es la lista de que se espera, porque entonces uno de los dos queda

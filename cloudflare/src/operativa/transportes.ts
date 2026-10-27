@@ -1,7 +1,7 @@
 import { armarMailPrecio, REMITENTE_MAIL, SMTP2GO_URL } from '../../../components/formularios/mail-precio.ts';
 import {
   buildConsultaMessage, buildFaqMessage, buildSolicitudClaseMessage,
-} from '../../../supabase/functions/notificar/mensajes.ts';
+} from './mensajes.ts';
 import {
   ErrorAmbiguo, ErrorRechazo,
   type PedidoLeadSede, type PedidoMail, type PedidoTelegram,

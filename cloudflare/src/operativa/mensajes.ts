@@ -1,11 +1,9 @@
-// Los textos de los avisos de Telegram, sin nada de Deno adentro para que
-// `tests/avisos.test.mjs` los pueda correr con Node.
+// Los textos de los avisos de Telegram, sin nada de Deno ni de red adentro para
+// que `tests/avisos.test.mjs` los pueda correr con Node.
 //
 // El aviso de consulta NO lleva una lista fija de campos: recorre lo que trajo
-// la fila. Esta función vive en Deno y no puede importar
-// `components/formularios/casas.ts`, así que una lista acá sería una copia
-// envejeciendo en paralelo — y una columna nueva quedaría fuera del aviso sin
-// que nadie se entere.
+// la fila. Una lista acá sería una copia de las columnas envejeciendo en
+// paralelo, y una columna nueva quedaría fuera del aviso sin que nadie se entere.
 
 type Fila = Record<string, unknown>;
 
