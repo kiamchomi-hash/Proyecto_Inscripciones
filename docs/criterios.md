@@ -229,19 +229,15 @@ carreras activas de Teclab, salía con código 1 y la corrida diaria daba por fa
 
 ## El entorno: lo que ya costó descubrir
 
-### El plan de Vercel es del team, no de la cuenta
+### El sitio ya no corre en Vercel
 
-El team **IUY's projects** (`iuys-projects-18eed4e5`) está en **Pro** desde el
-06/08/2026, y ahí vive `proyecto-inscripciones` → `www.siglo21sur.com`. La cuenta
-personal sigue en hobby y no tiene proyectos. De Pro salen el cron cada 6 h (hobby
-permite uno por día), los runtime logs de un día en vez de una hora, el WAF con
-reglas propias y el uso comercial, que hobby no permite.
+Hasta el 27/10/2026 vivía en un proyecto del team **IUY's projects** (Pro), que se
+dio de baja cuando producción pasó al Worker de Cloudflare. Ya no hay crons, WAF,
+variables de entorno ni analytics de Vercel que mantener: los crons y las
+variables están en `cloudflare/produccion/wrangler.json` y el resto, en el
+dashboard de Cloudflare.
 
-Cambiar una env var **no** afecta a los deployments existentes: hay que redeployar
-con `npx vercel redeploy <url> --target production`. Nunca `vercel --prod`, que
-subiría el working tree con los cambios sin commitear.
-
-### El `deny` del WAF bloquea el sitio entero
+### Un `deny` de WAF bloquea el sitio entero
 
 Probado en producción: una regla de rate limit con condición sobre
 `/api/formularios` y mitigación `deny` deja a esa IP afuera de **todo** el sitio,
@@ -249,17 +245,13 @@ no sólo de la ruta que la disparó. Y el público del CAU entra mucho desde mó
 donde el CGNAT de las operadoras hace que muchos compartan una IP pública: con
 `deny`, un solo bot dejaba afuera a todos.
 
-Para reglas sobre formularios va `challenge` con duración corta (1 m). Dos
-trampas más: `--rate-limit-action` se ignora en `vercel firewall rules edit` (hay
-que pasar el rule completo con `--json`), y a una IP ya bloqueada no la liberan ni
-`rules disable` ni `publish` — hay que esperar la duración o
-`vercel firewall system-bypass add <ip>`.
+Para reglas sobre formularios va `challenge` con duración corta (1 m).
 
 ### Nunca disparar un evento de analytics contra producción
 
-**No se puede borrar.** Vercel no tiene endpoint ni botón para purgar eventos, y
-lo único que los saca es apagar y prender Web Analytics, que borra el historial
-entero del proyecto. Ya quedó un evento `whatsapp` de prueba adentro.
+La analítica del Worker es local y no sale a la red, pero un evento de prueba
+igual ensucia lo que después se mide. Los eventos de prueba se emiten en local,
+nunca contra producción.
 
 El `track()` se prueba en local (el paquete loguea en consola en vez de mandar) o
 contra un preview. Detalle que confunde: el script arranca descartando a

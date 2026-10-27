@@ -74,7 +74,7 @@ retroactivamente la historia ya publicada y depende de la referencia remota
 local. Un barrido histórico puede encontrar credenciales ya revocadas: revisar
 cada caso, no silenciar todo el historial.
 
-**CI corre después del push y no impide un deploy automático de Vercel.** La
+**CI corre después del push y no publica el sitio.** Publicar el Worker es una decisión aparte (el workflow `Publicar el Worker`, disparado a mano), así que un push con secretos no los pone en producción, pero sí queda en el historial público. La
 prevención anterior a la salida está en el publicador guiado y en el hook local descrito abajo; `git commit` o
 `git push` manuales sin el hook instalado pueden saltearlo. No se instalaron hooks globales ni se
 cambiaron permisos remotos. Gitleaks detecta patrones conocidos, no certifica

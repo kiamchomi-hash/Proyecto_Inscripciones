@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Sitio de **Universidad Siglo 21 — CAU Villa Lugano**, un centro de aprendizaje a distancia. Publica la oferta académica (Siglo 21, Teclab e Identidad Argentina), capta inscripciones y gestiona las clases de apoyo. Producción: `https://www.siglo21sur.com`, servida desde el 27/10/2026 por el Worker de Cloudflare `cau-produccion-20261026`: Astro con islas de React sobre D1, código en `cloudflare/`.
 
-La app Next.js 16 (App Router) + Supabase de `app/`, `components/` y `lib/` es **la versión anterior**: sigue en el repo y es lo que revisa `npm run check`, pero ya no sirve producción y su base se dio de baja. Para el sitio publicado, la referencia es [`cloudflare/LEER.md`](cloudflare/LEER.md); el corte está en [`cloudflare/CORTE.md`](cloudflare/CORTE.md) y el estado de las bajas de Vercel y Supabase, en [`cloudflare/PRODUCCION-PREPARACION.md`](cloudflare/PRODUCCION-PREPARACION.md).
+La app Next.js 16 (App Router) + Supabase de `app/`, `components/` y `lib/` es **la versión anterior**: sigue en el repo y es lo que revisa `npm run check`, pero ya no sirve producción y su base se dio de baja. Para el sitio publicado, la referencia es [`cloudflare/LEER.md`](cloudflare/LEER.md); el corte está en [`cloudflare/CORTE.md`](cloudflare/CORTE.md) y el estado de las bajas, en [`cloudflare/PRODUCCION-PREPARACION.md`](cloudflare/PRODUCCION-PREPARACION.md).
 
 Todo el texto de interfaz, los comentarios de código y la documentación están en español (es-AR).
 
@@ -51,11 +51,11 @@ Las pruebas de integración de la app anterior se retiraron junto con el arnés 
 
 **La vigilancia de producción ya existe, son dos y no se duplican**: el cron del Worker cada 6 horas (`0 */6`, `cloudflare/src/api/vigilancia.ts`, avisa por Telegram con la máquina apagada) y `herramientas/vigilancia.mjs` en la máquina de casa, disparado por cron. **Antes de proponer cualquier monitoreo o alerta, está hecho.** Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos: rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más.
 
-**El detalle de cada script, las banderas que aceptan, los dos vigilantes y los generadores (`og:teclab`, y sin script npm `generar-og`, `generar-secretos`, `generar-favicon`) están en `docs/herramientas.md`.** Leerlo antes de correr o tocar cualquiera de ellos.
+**El detalle de cada script, las banderas que aceptan, los dos vigilantes y los generadores (`og:teclab`, y sin script npm `generar-og`, `generar-favicon`) están en `docs/herramientas.md`.** Leerlo antes de correr o tocar cualquiera de ellos.
 
 ### Deploy
 
-**Push a `main` ya no publica el sitio.** Versiona y dispara CI, pero producción es el Worker de Cloudflare y el dominio no apunta a Vercel. Se publica con un solo publicador, desde dos lugares:
+**Push a `main` ya no publica el sitio.** Versiona y dispara CI, pero producción es el Worker de Cloudflare y el dominio apunta ahí. Se publica con un solo publicador, desde dos lugares:
 
 - **CI, lo recomendado**: el workflow `Publicar el Worker` (`.github/workflows/publicar.yml`), disparado a mano desde Actions. Pide `ensayo` (por defecto) o `produccion`, se niega a correr fuera de `main` y usa el secreto de repositorio `CLOUDFLARE_API_TOKEN`. Así no hay credencial de producción en ninguna máquina y queda registrado quién publicó y con qué commit. Verifica rutas fijas, cabeceras y redirects: el barrido de las 123 URLs del sitemap no se corre desde el runner porque el borde lo rechaza con 403 (es una ráfaga de IP de datacenter), y de eso se encargan `herramientas/vigilancia.mjs` y la máquina.
 - **Local**, desde `cloudflare/`:
@@ -107,7 +107,7 @@ Qué puede escribir cada rol (definido en `sql/2026-07-20_seguridad_*.sql`):
 
 - **`anon`** (visitante sin sesión) es de sólo lectura. `INSERT` sobre `consultas`, `faq_preguntas` y `solicitudes_clase` está revocado tanto para `anon` como para `authenticated`; por eso los formularios públicos van sí o sí por la service role.
 - **`authenticated`** (profesor logueado y aprobado) **sí escribe** con la misma anon key: `UPDATE` sobre `materias` (policy `materias_approved_update`) e `INSERT` de su propia fila en `profesores` (`profesores_register_pending`). Hoy no hay panel que lo consuma, pero las policies y la tabla siguen en la base.
-- La service role está marcada Sensitive en Vercel, así que **desde la máquina local no está la credencial que saltea todo**. El contenido se edita en la base publicada, que es D1, con `npm run db:d1` (ver *Escribir contenido desde local*, más abajo).
+- La service role de Supabase ya no existe: se dio de baja con la base. El contenido se edita en la base publicada, que es D1, con `npm run db:d1` (ver *Escribir contenido desde local*, más abajo).
 
 ### Invariante: los formularios públicos no escriben directo en la base
 
@@ -141,7 +141,7 @@ Como `net.http_post` encola sin bloquear, **el `INSERT` responde 201 aunque la n
 
 Cada vez que se toque `WEBHOOK_SECRET`, la función `notificar` o el trigger, hay que verificar a mano — el procedimiento SQL está en [las notas operativas](docs/notas-operativas.md) y en `sql/2026-08-28_rotar_secretos.sql`. Un `401` en `net._http_response` significa que los secretos no coinciden. **Verificar ahí y no por lo que responde el formulario**, que da 201 igual.
 
-**El secreto ya no vive en el cuerpo del trigger sino en el Vault** (`sql/2026-08-28_secretos_al_vault.sql`, 28/08/2026): las dos funciones lo leen de `vault.decrypted_secrets` y por eso las dos son `SECURITY DEFINER`. `WEBHOOK_SECRET` lo validan **dos** Edge Functions, `notificar` y `digest-clicks`; rotarlo obliga a probar las dos. `alerta-firewall` no entra: usa `VERCEL_WEBHOOK_SECRET`, que es otro secreto.
+**El secreto ya no vive en el cuerpo del trigger sino en el Vault** (`sql/2026-08-28_secretos_al_vault.sql`, 28/08/2026): las dos funciones lo leen de `vault.decrypted_secrets` y por eso las dos son `SECURITY DEFINER`. `WEBHOOK_SECRET` lo validan **dos** Edge Functions, `notificar` y `digest-clicks`; rotarlo obliga a probar las dos. `alerta-firewall` no entra: usa un secreto distinto.
 
 ### Revalidación on-demand
 
@@ -158,7 +158,7 @@ Hay una **segunda familia de triggers**, que no tiene nada que ver con los aviso
 
 El endpoint no recibe la fila entera sino los campos con los que arma las rutas (`slug`, `nombre`, `prefix`, `nivel` y los anteriores, para cubrir el renombre). El mapeo tabla → rutas vive en `rutasA()`; **una tabla nueva sin mapear devuelve 400 a propósito**, para que el trigger no dispare contra la nada en silencio. `tabla: 'todo'` rehace el sitio entero, sin deploy.
 
-Se autentica con `REVALIDATE_SECRET` (Vercel), que tiene que coincidir con el que guarda el Vault de Supabase — hasta el 28/08/2026 estaba escrito como literal en el cuerpo del trigger, que es donde cualquier rol con conexión podía leerlo. Igual que con los avisos, `net.http_post` encola: si esto falla el `UPDATE` responde ok lo mismo y la página queda vieja. Se diagnostica en `net._http_response` — 401 secretos distintos, 503 falta la variable en Vercel, 400 tabla sin mapear.
+Se autenticaba con `REVALIDATE_SECRET`, el mismo valor que guardaba el Vault de Supabase — hasta el 28/08/2026 estaba escrito como literal en el cuerpo del trigger, que es donde cualquier rol con conexión podía leerlo. Igual que con los avisos, `net.http_post` encolaba: si fallaba, el `UPDATE` respondía ok lo mismo y la página quedaba vieja. Se diagnosticaba en `net._http_response` — 401 secretos distintos, 503 faltaba la variable, 400 tabla sin mapear.
 
 ### Taxonomía de carreras
 

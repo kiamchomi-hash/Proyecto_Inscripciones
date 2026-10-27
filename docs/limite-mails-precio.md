@@ -10,7 +10,7 @@ por eso este límite no garantiza un máximo conjunto entre esos canales.
 
 La RPC `reservar_mail_precio` usa un `INSERT ... ON CONFLICT DO UPDATE` condicional:
 la clave primaria arbitra pedidos concurrentes en PostgreSQL. El reloj y el
-plazo se resuelven en la base. No se utiliza memoria de una instancia Vercel.
+plazo se resuelven en la base. No se utiliza memoria de una instancia.
 La tabla tiene RLS, sin acceso directo para los roles de aplicación. Sólo
 `service_role` puede ejecutar la RPC, con `search_path` cerrado.
 

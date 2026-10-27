@@ -48,7 +48,7 @@ Cinco pasos, ninguno tarda. Los resultados van a la bitácora de abajo.
 1. `npm audit` y `npm audit --omit=dev`. Si aparece algo, el agente `auditor-dependencias` decide qué conviene actualizar. Ojo con los `overrides`: ya fueron la causa una vez.
 2. `node --test tests/security.test.mjs` (o `npm run check`, que lo incluye).
 3. `npm run smoke`, que verifica contra producción las cabeceras declaradas en `lib/vigilancia-esperado.ts`, y una mirada a la CSP servida por si algún servicio nuevo quedó sin declarar.
-4. `npx vercel firewall overview`, más el ruleset de OWASP en el dashboard (los `active: true` de los grupos no evalúan nada si el ruleset está apagado).
+4. Firewall de Cloudflare: revisar en el dashboard el WAF y las reglas de la zona `siglo21sur.com`. El sitio ya no pasa por Vercel, así que su firewall y su ruleset de OWASP no aplican.
 5. Barrido de credenciales: buscar valores en el repo, que es público; revisar los PAT de Supabase en `supabase.com/dashboard/account/tokens`, que no vencen nunca y alcanzan todos los proyectos de la cuenta; y borrar las claves de servicios que se dejaron de usar.
 6. **Los avisos públicos de los proveedores, que es el paso que `npm audit` no cubre.** Next.js publica security releases mensuales en `nextjs.org/blog` (desde julio de 2026 con preanuncio), Vercel abre un bulletin en `vercel.com/kb/bulletin/` cuando le pasa algo a la plataforma, y Supabase avisa por el dashboard. Se comprobó el 29/08/2026 que `npm audit` daba **cero** con dos RCE críticos publicados cuatro días antes contra la versión que teníamos: el registry no siempre tiene el advisory cargado, así que la versión de Next se compara a mano contra el último release.
 
