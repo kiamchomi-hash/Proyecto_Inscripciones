@@ -49,13 +49,13 @@ test('los eventos de conversión conservan origen y los avisos no llevan datos p
   ]);
   await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(avisos.filter(aviso => ['whatsapp', 'clase-whatsapp', 'formulario-fallo'].includes(aviso.cuerpo.evento)), [
-    { url: '/api/alertas-analytics', cuerpo: { evento: 'whatsapp', datos: { origen: '/teclab' } } },
+    { url: '/api/alertas-analytics', cuerpo: { evento: 'whatsapp', datos: { origen: '/teclab', movil: 1 } } },
     { url: '/api/alertas-analytics', cuerpo: { evento: 'clase-whatsapp', datos: { materia: 'matematica' } } },
     { url: '/api/alertas-analytics', cuerpo: { evento: 'formulario-fallo', datos: { origen: 'contacto', motivo: 'servidor' } } },
   ]);
 });
 
-test('el aviso general de WhatsApp se limita a dispositivos móviles sin enviar datos del dispositivo', async t => {
+test('el aviso de WhatsApp viaja en los dos dispositivos y sólo marca si es móvil, sin datos del dispositivo', async t => {
   const avisos = [];
   const ventanaAnterior = globalThis.window;
   const fetchAnterior = globalThis.fetch;
@@ -82,7 +82,8 @@ test('el aviso general de WhatsApp se limita a dispositivos móviles sin enviar 
 
   await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(avisos, [
-    { evento: 'whatsapp', datos: { origen: '/movil-sin-client-hints' } },
+    { evento: 'whatsapp', datos: { origen: '/escritorio', movil: 0 } },
+    { evento: 'whatsapp', datos: { origen: '/movil-sin-client-hints', movil: 1 } },
   ]);
 });
 
