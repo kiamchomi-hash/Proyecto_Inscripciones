@@ -1,7 +1,7 @@
 # Controles automáticos
 
 `npm run calidad` ejecuta código, dependencias, contenido, Search Console, medición,
-producción, SEO de todas las páginas, integraciones y navegador. Cada control deja
+producción, SEO de todas las páginas y navegador. Cada control deja
 su log en `herramientas/vigilancia-logs/calidad/<fecha>/` y se ejecutan todos aunque
 uno falle. Un código 2 significa que falta una fuente o no se pudo verificar; nunca
 se convierte en un aprobado. `npm run leads -- --estricto` exige las tres fuentes.
@@ -21,7 +21,6 @@ la fuente queda no disponible.
 | `npm run seo` | Indexación y rendimiento en Search Console |
 | `npm run leads -- --estricto` | Disponibilidad de las tres fuentes y discrepancias entre eventos y filas |
 | `npm run calidad:seo` | Todas las URLs del sitemap: title, descripción, canónica, idioma, h1, JSON-LD e imágenes sociales accesibles |
-| `npm run calidad:integraciones` | Acceso anónimo al panel/API; columnas reales, RLS, grants, triggers y respuestas recientes de pg_net, con transacción de sólo lectura |
 | `npm run calidad:web` | Chromium: 360, 390, 768 y 1440 px, desbordes, errores JS, axe WCAG A/AA, catálogo, diálogos, foco, contacto y presupuestos de rendimiento |
 
 El navegador incluye las rutas públicas principales y una muestra descubierta desde
@@ -86,9 +85,6 @@ La corrida incluye Chromium completo y los recorridos principales en Firefox y W
 - Axe y capturas no certifican la calidad del diseño ni conformidad WCAG completa.
 - La vigencia académica requiere contrastar fuentes oficiales; detectar un campo
   lleno no significa que su dato siga vigente.
-- pg_net reciente no prueba que **cada** integración haya enviado hoy; puede no
-  haber actividad o haber sólo una familia de eventos. Sin observaciones queda
-  explícitamente no verificado. No se inventan consultas para producir actividad.
 - Los recorridos reales de profesor/admin requieren cuentas de prueba autorizadas.
 - Turnstile real, recepción en WhatsApp y entrega de Telegram se verifican con sus
   procedimientos existentes; no se saltean protecciones ni se crean triggers.
@@ -96,5 +92,5 @@ La corrida incluye Chromium completo y los recorridos principales en Firefox y W
   ingresados. La diferencia con envíos es orientativa, no abandono por paso o sesión;
   no existe historial previo a su publicación. No se emiten eventos de prueba a producción.
 
-Resultados técnicos: `.agents/reports/web-quality.json`, `seo-paginas.json` e
-`integraciones.json`. No publicar estos archivos con datos de entornos privados.
+Resultados técnicos: `.agents/reports/web-quality.json` y `seo-paginas.json`. No
+publicar estos archivos con datos de entornos privados.

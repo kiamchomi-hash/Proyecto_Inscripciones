@@ -24,7 +24,7 @@ Workflow para cargar los slides JSON de una carrera **de Siglo 21** en la tabla 
    ```
    El nombre en DB puede diferir del completo (ej: "Informática" en vez de "Licenciatura en Informática").
 5. **Armar slides** (portada + plan_estudios + cierre; los 3 explícitos).
-6. **Escribir un SQL fechado** en `sql/AAAA-MM-DD_<carrera>.sql` con el `UPDATE` (o el `INSERT` si es alta) y correrlo con `npm run db -- --archivo sql/<archivo>.sql` (rol `cau_editor`, ver [docs/rol-editor.md](../../../docs/rol-editor.md)). Mostrar el SQL antes de correrlo.
+6. **Escribir un SQL fechado** en `sql/AAAA-MM-DD_<carrera>.sql` con el `UPDATE` (o el `INSERT` si es alta) y correrlo contra la D1 publicada con `npm run db:d1 -- --archivo sql/<archivo>.sql --escribir`. Mostrar el SQL antes de correrlo.
 7. **Verificar** (ver abajo) y **ajustar imagen** si el usuario lo pide: otro `UPDATE` de `imagen_desktop_position` o `imagen_brightness`.
 
 El trigger `on_carreras_revalidar` publica el cambio al instante: no hace falta deploy. Por lo mismo, **si el alta necesita código nuevo** (área, `SEO_ESPECIFICO`, `COVER_OVERRIDES`), primero va el push y después la fila; si no, producción muestra la carrera a medio armar.

@@ -45,7 +45,7 @@ GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` e
 
 `check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.sh` de doble clic al lado de cada `.mjs` (la lógica se toca en el `.mjs`; el envoltorio no tiene lógica propia, y nada de esa carpeta entra al bundle): `npm run auditar` (contenido faltante en la base D1 de producción), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.
 
-`npm run calidad` es la auditoría ampliada: corre todos los controles (código, dependencias, contenido, Search Console, producción, SEO de cada URL del sitemap, integraciones y navegador) aunque uno falle, y tiene comandos por área (`calidad:web`, `calidad:seo`, `calidad:integraciones`). Un código 2 es que faltó una fuente, nunca un aprobado. Detalle en [`docs/controles-automaticos.md`](docs/controles-automaticos.md); el agente `auditor-web` interpreta la corrida.
+`npm run calidad` es la auditoría ampliada: corre todos los controles (código, dependencias, contenido, Search Console, producción, SEO de cada URL del sitemap y navegador) aunque uno falle, y tiene comandos por área (`calidad:web`, `calidad:seo`). Un código 2 es que faltó una fuente, nunca un aprobado. Detalle en [`docs/controles-automaticos.md`](docs/controles-automaticos.md); el agente `auditor-web` interpreta la corrida.
 
 Las pruebas de integración de la app anterior se retiraron junto con el arnés local de Supabase: el sitio publicado no usa Supabase y `npm run check` no necesita nada de eso.
 
@@ -107,7 +107,7 @@ Qué puede escribir cada rol (definido en `sql/2026-07-20_seguridad_*.sql`):
 
 - **`anon`** (visitante sin sesión) es de sólo lectura. `INSERT` sobre `consultas`, `faq_preguntas` y `solicitudes_clase` está revocado tanto para `anon` como para `authenticated`; por eso los formularios públicos van sí o sí por la service role.
 - **`authenticated`** (profesor logueado y aprobado) **sí escribe** con la misma anon key: `UPDATE` sobre `materias` (policy `materias_approved_update`) e `INSERT` de su propia fila en `profesores` (`profesores_register_pending`). Hoy no hay panel que lo consuma, pero las policies y la tabla siguen en la base.
-- La service role está marcada Sensitive en Vercel, así que **desde la máquina local no está la credencial que saltea todo**. Para editar contenido desde acá está el rol acotado `cau_editor` (ver *Escribir contenido desde local*, más abajo); lo que quede fuera de su alcance sigue yendo por el SQL Editor del dashboard.
+- La service role está marcada Sensitive en Vercel, así que **desde la máquina local no está la credencial que saltea todo**. El contenido se edita en la base publicada, que es D1, con `npm run db:d1` (ver *Escribir contenido desde local*, más abajo).
 
 ### Invariante: los formularios públicos no escriben directo en la base
 
@@ -220,13 +220,13 @@ Tablas de infraestructura, sin acceso desde `anon` ni `authenticated` (sólo ser
 
 No hay backups programados ni PITR (plan Free); el estado de la recuperación está en [`docs/recuperacion-supabase.md`](docs/recuperacion-supabase.md).
 
-### Escribir contenido desde local: el rol `cau_editor`
+### Escribir contenido desde local
 
-`npm run db "<sql>"` (o `npm run db -- --archivo x.sql`) corre SQL contra la base con un rol de Postgres acotado: escribe en las tablas de contenido (`carreras`, `novedades`, `materias`, y `faq_preguntas` por columna) y en `precios_privados`, y sobre `consultas` sólo lee y borra. Contra el resto de las tablas de formularios responde `permission denied`, y eso es el rol funcionando: esa consulta va al SQL Editor del dashboard. `herramientas/db.mjs` además frena los `UPDATE` y `DELETE` sin `WHERE`.
+`npm run db:d1 "<sql>"` (o `--archivo ruta.sql` con `--escribir`) corre SQL contra la D1 de producción: lee sin ceremonia, exige `--escribir` para cualquier escritura y frena los `UPDATE` y `DELETE` sin `WHERE` (`--sin-red` los deja pasar). El esquema vivo está en `cloudflare/migrations/`.
 
-**El alcance tabla por tabla, la cadena de conexión, el certificado de Supabase y qué hacer si la máquina no tiene IPv6 están en `docs/rol-editor.md`.**
+El rol `cau_editor` y `herramientas/db.mjs` se retiraron el 27/10/2026 con el Supabase que los respaldaba.
 
-Los archivos de `sql/` **no son migraciones automáticas** — se corren a mano en el SQL Editor de Supabase, en orden de fecha. Hay jobs de `pg_cron` (limpieza de clases pasadas, digest diario de clicks) que se programan desde ahí.
+Los archivos de `sql/` **no son migraciones automáticas** y ya no se aplican en ningún lado: describen el esquema de la app anterior y se conservan como referencia del modelo. Hay jobs de `pg_cron` (limpieza de clases pasadas, digest diario de clicks) que vivían ahí.
 
 ## Convenciones
 

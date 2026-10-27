@@ -51,7 +51,7 @@ function resolverEscritorio() {
 
 const CHEQUEOS = {
   calidad: {
-    titulo: 'Calidad web (accesibilidad, SEO, recorridos e integraciones)',
+    titulo: 'Calidad web (accesibilidad, SEO y recorridos)',
     comando: 'npm run calidad -- --solo-web --visual',
     agente: 'auditor-web',
     necesitaRed: true,
@@ -152,7 +152,6 @@ const NOMBRES_CALIDAD = {
   'medicion': 'la medicion de leads',
   'produccion': 'produccion (rutas, cabeceras y redirects)',
   'SEO de paginas': 'el SEO de las paginas',
-  'integraciones': 'las integraciones',
   'Chromium': 'la revision en Chromium (accesibilidad, recorridos y diseno)',
   'firefox': 'la revision en Firefox',
   'webkit': 'la revision en WebKit (Safari)',

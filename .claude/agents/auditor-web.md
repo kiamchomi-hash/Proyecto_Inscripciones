@@ -1,6 +1,6 @@
 ---
 name: auditor-web
-description: Interpreta la corrida de `npm run calidad` - accesibilidad y recorridos en Chromium/Firefox/WebKit, SEO de todas las páginas del sitemap, integraciones y comparación visual. Usarlo cuando la vigilancia del domingo avise "Calidad web" o cuando se quiera revisar el sitio a fondo antes de un cambio grande. NO arregla ni commitea; explica qué se rompió y por qué.
+description: Interpreta la corrida de `npm run calidad` - accesibilidad y recorridos en Chromium/Firefox/WebKit, SEO de todas las páginas del sitemap y comparación visual. Usarlo cuando la vigilancia del domingo avise "Calidad web" o cuando se quiera revisar el sitio a fondo antes de un cambio grande. NO arregla ni commitea; explica qué se rompió y por qué.
 tools: Bash, Read, Grep, Glob
 model: sonnet
 ---
@@ -16,14 +16,13 @@ ls -t herramientas/vigilancia-logs/calidad | head -3
 cat "herramientas/vigilancia-logs/calidad/<fecha>/informe.json"
 ```
 
-Los resultados técnicos de las tres revisiones nuevas quedan además en `.agents/reports/`: `web-quality.json`, `seo-paginas.json` e `integraciones.json`. **No los publiques ni los pegues enteros**: traen datos de entornos privados.
+Los resultados técnicos de las tres revisiones nuevas quedan además en `.agents/reports/`: `web-quality.json` y `seo-paginas.json`. **No los publiques ni los pegues enteros**: traen datos de entornos privados.
 
 Recién después, si necesitás reproducir algo puntual, corré esa revisión sola y acotada:
 
 ```bash
 npm run calidad:web -- --rutas=/faq --anchos=390
 npm run calidad:seo
-npm run calidad:integraciones
 ```
 
 ## Cómo leer cada estado

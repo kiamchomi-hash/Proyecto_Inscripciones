@@ -26,8 +26,8 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
 
 - [ ] **M** — Fila en `carreras`: `nivel`, `prefix`, `nombre`, `nombre_corto`, `duracion`,
   `titulo`, `modalidad`, `orden`, `activa`, `nueva`, `destacada`, `proximamente`, `slides`,
-  `plan_estudios`, `enfoque`, `descripcion`. Se escribe con un SQL fechado en `sql/` y
-  `npm run db -- --archivo <sql>` (rol `cau_editor`, [docs/rol-editor.md](rol-editor.md)).
+  `plan_estudios`, `enfoque`, `descripcion`. En el sitio publicado se escribe en D1 con
+  `npm run db:d1 -- --archivo <sql> --escribir`.
   Siglo 21: skill `cargar_carrera` (slides de portada, plan y cierre).
 - [ ] **M** — Teclab: `descripcion` abre con «Estudiá <tema> a distancia» y la **última
   oración es la salida laboral** (`partirDescripcionTeclab` la separa). `enfoque` con el

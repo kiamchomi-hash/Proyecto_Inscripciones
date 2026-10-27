@@ -14,7 +14,6 @@
     "secretos": "node herramientas/secretos.mjs",
     "calidad:web": "node herramientas/calidad-web.mjs",
     "calidad:seo": "node herramientas/seo-paginas.mjs",
-    "calidad:integraciones": "node --env-file-if-exists=.env.local herramientas/integraciones.mjs",
     "calidad": "node --env-file-if-exists=.env.local herramientas/calidad.mjs",
     "auditar": "node --env-file-if-exists=.env.local herramientas/auditar-contenido.mjs",
     "og:teclab": "node --env-file-if-exists=.env.local herramientas/generar-og-teclab.mjs",

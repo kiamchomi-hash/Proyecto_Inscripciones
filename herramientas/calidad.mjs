@@ -12,7 +12,6 @@ const tareas = [
   ...(!soloWeb ? [['código', ['npm', 'run', 'check']], ['dependencias', ['npm', 'audit']], ['contenido', ['npm', 'run', 'auditar']], ['SEO Search Console', ['npm', 'run', 'seo']], ['medición', ['npm', 'run', 'leads', '--', '--estricto']]] : []),
   ...(!soloWeb ? [['producción', ['node', 'herramientas/smoke.mjs', ...(base ? [base] : [])]]] : []),
   ['SEO de páginas', ['node', 'herramientas/seo-paginas.mjs', ...(base ? [base] : [])]],
-  ['integraciones', ['node', '--env-file-if-exists=.env.local', 'herramientas/integraciones.mjs', ...(base ? [base] : [])]],
   ['Chromium', ['node', 'herramientas/calidad-web.mjs', ...(base ? [base] : []), ...(visual ? ['--visual'] : [])]],
   ...['firefox', 'webkit'].map(motor => [motor, ['node', 'herramientas/calidad-web.mjs', `--navegador=${motor}`, '--rutas=/,/contacto,/faq', '--anchos=390,1440', ...(base ? [base] : [])]]),
 ];

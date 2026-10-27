@@ -32,11 +32,12 @@ Este ensayo sólo verifica PostgreSQL ficticio: no Auth, Storage, Vault,
 servicios Supabase ni una copia real. Los tiempos no son un RPO/RTO de producción.
 
 Próximo paso concreto: obtener acceso de respaldo completo desde una fuente
-privada autorizada (esta máquina sólo tiene `EDITOR_DATABASE_URL`, cuyo rol no
-cubre toda la base), preparar custodia cifrada fuera del repo y un destino local
-aislado, y obtener autorización específica para copiar datos reales. La contraseña
-se proporciona por un medio privado, nunca en chat ni en archivos versionados.
-Sin esa credencial y custodia no se puede crear ni restaurar una copia completa.
+privada autorizada (el proyecto se dio de baja el 27/10/2026 y con él la única
+credencial acotada que había en esta máquina), preparar custodia cifrada fuera
+del repo y un destino local aislado, y obtener autorización específica para
+copiar datos reales. La contraseña se proporciona por un medio privado, nunca en
+chat ni en archivos versionados. Sin esa credencial y custodia no se puede crear
+ni restaurar una copia completa.
 
 ## Antes de restaurar
 
@@ -45,8 +46,8 @@ Sin esa credencial y custodia no se puede crear ni restaurar una copia completa.
 No se encontró uso de la contraseña de `postgres` en el sitio, Edge Functions,
 herramientas versionadas o scripts comerciales locales revisados. El sitio y
 las funciones usan la API con anon/service role; las conexiones PostgreSQL de
-`db.mjs`, `leads.mjs` e `integraciones.mjs` usan `EDITOR_DATABASE_URL`, cuyo
-usuario comprobado es `cau_editor`. Vercel (`proyecto-inscripciones`, scope
+`db.mjs`, `leads.mjs` e `integraciones.mjs` usaban `EDITOR_DATABASE_URL`, cuyo
+usuario comprobado era `cau_editor` (ninguna de las tres existe hoy). Vercel (`proyecto-inscripciones`, scope
 `iuys-projects-18eed4e5`) no tiene variables de conexión PostgreSQL entre las
 variables listadas de producción, preview y desarrollo.
 
@@ -87,7 +88,7 @@ sobre el proyecto original para probar.
 | Vault | Un dump lógico no transporta automáticamente la clave raíz: seguir transferencia privada oficial y comprobar descifrado sin mostrar valores. La clonación física documentada sí copia esa clave. |
 | Servicios y secretos | Edge Functions, configuración y secretos Supabase/Vercel se recuperan aparte desde fuentes privadas autorizadas. Usar el [inventario de variables](variables-de-entorno.md) y [notas operativas](notas-operativas.md), sin copiar valores al repo. |
 
-El rol [cau_editor](rol-editor.md) no permite un respaldo completo.
+El rol `cau_editor` (retirado con el proyecto el 27/10/2026) no permitía un respaldo completo.
 Un snapshot del buscador/contenido y la exportación del entorno de las máquinas
 tampoco recuperan todo Supabase.
 

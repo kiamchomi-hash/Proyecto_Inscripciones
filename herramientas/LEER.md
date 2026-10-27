@@ -221,7 +221,7 @@ Dos cosas que el informe avisa solo:
   la misma diferencia, y el aviso lo dice.
 
 Las tres fuentes usan credenciales que ya están en la máquina: el token de la
-CLI de Vercel (`npx vercel login`), `EDITOR_DATABASE_URL` y la service account
+CLI de Vercel (`npx vercel login`) y la service account
 de Search Console. **Si falta alguna, esa sección sale como no disponible y el
 resto se muestra igual**; sólo sale con código 1 si no se pudo leer ninguna.
 
