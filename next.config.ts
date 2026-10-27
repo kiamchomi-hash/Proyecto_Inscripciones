@@ -126,10 +126,18 @@ const nextConfig: NextConfig = {
       },
       // Energías Renovables de Teclab se publicó como «Próximamente» con nombre
       // provisorio (09/10/2026); el oficial agrega «Gestión de».
+      // La carrera se dio de baja de la oferta (27/10/2026): las dos URLs van a
+      // la home en un solo salto, como el resto de las bajas. El renombre a
+      // «Gestión de» quedaba apuntando a una ficha inexistente.
       {
         source: '/carreras/tecnicatura-superior-en-energias-renovables',
-        destination: '/carreras/tecnicatura-superior-en-gestion-de-energias-renovables',
-        permanent: true,
+        destination: '/',
+        statusCode: 301,
+      },
+      {
+        source: '/carreras/tecnicatura-superior-en-gestion-de-energias-renovables',
+        destination: '/',
+        statusCode: 301,
       },
       // Fintech, Acompañamiento Terapéutico y Producto Digital se publicaron como
       // «Próximamente» el 09/10/2026 por un anuncio del Dashboard Comercial de

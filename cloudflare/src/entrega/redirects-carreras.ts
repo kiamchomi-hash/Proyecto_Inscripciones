@@ -5,13 +5,18 @@ const BAJAS_301 = [
   'curso-en-actualizacion-profesional-en-inteligencia-artificial',
   'licenciatura-en-agroinformatica', 'licenciatura-en-nutricion', 'licenciatura-en-sociologia',
   'tecnicatura-superior-en-venta-directa',
+  // Energías Renovables de Teclab se dio de baja de la oferta (27/10/2026). El
+  // renombre a «Gestión de Energías Renovales» quedó apuntando a una ficha que
+  // ya no existe: la URL vieja hacía 308 y el destino respondía 404. Ahora las
+  // dos van a la home, como el resto de las bajas, en un solo salto.
+  'tecnicatura-superior-en-energias-renovables',
+  'tecnicatura-superior-en-gestion-de-energias-renovables',
 ];
 const BAJAS_308 = ['tecnicatura-superior-en-fintech', 'tecnicatura-superior-en-acompanamiento-terapeutico', 'tecnicatura-superior-en-producto-digital'];
 const BAJAS_302 = ['diplomatura-en-bienestar-integral-herramientas-para-transformar-te',
   'diplomatura-en-inteligencia-artificial', 'diplomatura-en-marketing-para-emprendedores-y-duenos-de-negocios',
   'diplomatura-en-management-hotelero'];
 const RENOMBRES: Record<string, [string, 301 | 308]> = {
-  'tecnicatura-superior-en-energias-renovables': ['tecnicatura-superior-en-gestion-de-energias-renovables', 308],
   'tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching': ['tecnicatura-superior-en-agile-coaching', 308],
   'diplomatura-en-fraude-financiero-y-digital': ['diplomatura-en-prevencion-de-fraude-financiero-y-digital', 301],
   'tecnicatura-en-diseno-y-desarrollo-de-videojuegos': ['tecnicatura-en-videojuegos', 301],

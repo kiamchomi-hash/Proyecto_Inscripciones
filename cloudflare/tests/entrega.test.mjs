@@ -56,8 +56,8 @@ test('redirects: códigos exactos, barra final y query conservada', () => {
     ['/carreras/licenciatura-en-agroinformatica', '/', 301],
     ['/carreras/tecnicatura-superior-en-fintech', '/', 308],
     ['/carreras/diplomatura-en-inteligencia-artificial', '/', 302],
-    ['/carreras/tecnicatura-superior-en-energias-renovables',
-      '/carreras/tecnicatura-superior-en-gestion-de-energias-renovables', 308],
+    ['/carreras/tecnicatura-superior-en-energias-renovables', '/', 301],
+    ['/carreras/tecnicatura-superior-en-gestion-de-energias-renovables', '/', 301],
     ['/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos',
       '/carreras/tecnicatura-en-videojuegos', 301],
   ];
@@ -304,8 +304,8 @@ test('redirects y códigos reales desde el Worker, con query y sin seguir el sal
     ['/novedades/articulo/teclab-tecnicaturas-online?z=2', 301, '/teclab?z=2'],
     ['/carreras/licenciatura-en-agroinformatica?q=1', 301, '/?q=1'],
     ['/carreras/diplomatura-en-inteligencia-artificial', 302, '/'],
-    ['/carreras/tecnicatura-superior-en-energias-renovables', 308,
-      '/carreras/tecnicatura-superior-en-gestion-de-energias-renovables'],
+    ['/carreras/tecnicatura-superior-en-energias-renovables', 301, '/'],
+    ['/carreras/tecnicatura-superior-en-gestion-de-energias-renovables', 301, '/'],
     ['/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos', 301,
       '/carreras/tecnicatura-en-videojuegos'],
   ];
