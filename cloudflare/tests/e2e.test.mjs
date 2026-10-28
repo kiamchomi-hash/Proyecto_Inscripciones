@@ -10,6 +10,8 @@ import {
 } from './helpers/servidores.mjs';
 import { sqlCatalogo } from './fixtures/catalogo-home.mjs';
 import { CAMPOS, camposDe } from '../../components/formularios/casas.ts';
+import { leerReferenciaVisual } from './helpers/bandas-webp.mjs';
+import sharp from 'sharp';
 
 // E2E real con Chromium (Playwright de la raíz) sobre los dos servidores en
 // loopback: el build de Astro en `wrangler dev` y el Next del sitio en
@@ -36,6 +38,7 @@ const CONFIG = 'dist/server/wrangler.json';
 const WRANGLER = join(PAQUETE, 'node_modules', 'wrangler', 'bin', 'wrangler.js');
 const LOCAL = join(PAQUETE, '.local');
 const CAPTURAS = join(LOCAL, 'capturas');
+const REFERENCIAS = join(PAQUETE, 'tests', 'fixtures', 'visuales-next');
 
 /** Tolerancia de la comparación visual: píxeles y distancia media por canal. */
 const TOLERANCIA_PIXELES = 2; // % de píxeles con algún canal a más de 32
@@ -265,8 +268,24 @@ async function abrirPagina(navegador, base, opciones = {}) {
   await pagina.evaluate(() => document.fonts.ready.then(() => true));
   await pagina.waitForFunction(() => [...document.querySelectorAll('astro-island')]
     .every(isla => !isla.hasAttribute('ssr')));
-  if (opciones.ruta !== '/imagenes') await recorrer(pagina);
+  if (opciones.ruta !== '/imagenes') {
+    await recorrer(pagina);
+    // Las fichas cargan el formulario diferido con IntersectionObserver. En la
+    // primera visita de Next el módulo se compila y puede llegar después del
+    // scroll: sin esta espera la captura mide la página sin los dos formularios
+    // (3442 px en vez de 4472) y falla por «distinta medida».
+    if (await esperarFormularioDiferido(pagina)) await recorrer(pagina);
+  }
   return { contexto, pagina, externos, respuestasMalas };
+}
+
+/** Espera a que el hueco del formulario diferido se reemplace por los formularios. */
+async function esperarFormularioDiferido(pagina) {
+  const hayHueco = await pagina.evaluate(() => Boolean(document.querySelector('.deferred-enrollment-placeholder')));
+  if (!hayHueco) return false;
+  await pagina.waitForFunction(() => !document.querySelector('.deferred-enrollment-placeholder'),
+    null, { timeout: 30_000 });
+  return true;
 }
 
 async function capturarDocumento(navegador, pagina, ruta) {
@@ -443,7 +462,7 @@ async function compararCapturas(navegador, bufferA, bufferB, margenAlto = 0) {
   }
 }
 
-test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_200_000 }, async t => {
+test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_400_000 }, async t => {
   assert.ok(existsSync(join(PAQUETE, CONFIG)),
     'Falta el build de Astro: correr `npm --prefix cloudflare run build` antes de test:e2e.');
   assert.ok(existsSync(NEXT),
@@ -497,6 +516,19 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
         servidores[nombre].registro().slice(-4000)}`);
     }
   }
+
+  await t.test('el comparador rechaza una alteración y respeta el margen vertical', async () => {
+    const imagen = (alto, color) => sharp({ create: { width: 100, height: alto, channels: 4, background: color } }).png().toBuffer();
+    const original = await imagen(100, '#000000');
+    const alterada = await imagen(100, '#ffffff');
+    const distinto = await compararCapturas(navegador, original, alterada);
+    assert.ok(distinto.porcentaje > TOLERANCIA_PIXELES);
+    assert.ok(distinto.media > TOLERANCIA_MEDIA);
+    const unPixel = await imagen(101, '#000000');
+    assert.equal((await compararCapturas(navegador, original, unPixel)).mismos, false);
+    assert.equal((await compararCapturas(navegador, original, unPixel, 1)).mismos, true);
+    assert.equal((await compararCapturas(navegador, original, await imagen(102, '#000000'), 1)).mismos, false);
+  });
 
   await t.test('las fuentes son las de Next, cargadas y sin fallback del sistema', async () => {
     const metricas = {};
@@ -642,6 +674,11 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
         await contexto.close();
       }
       const comparacion = await compararCapturas(navegador, capturas.next, capturas.astro);
+      const referencia = await leerReferenciaVisual(REFERENCIAS, `home-${perfil.id}`);
+      const estable = await compararCapturas(navegador, referencia, capturas.astro);
+      assert.equal(estable.mismos, true, `home ${perfil.id}: referencia de distinta medida`);
+      assert.ok(estable.porcentaje <= TOLERANCIA_PIXELES && estable.media <= TOLERANCIA_MEDIA,
+        `home ${perfil.id}: no coincide con la referencia visual`);
       assert.equal(comparacion.mismos, true,
         `${perfil.id}: las capturas tienen distinta medida (${comparacion.anchoA}x${comparacion.altoA} vs ${comparacion.anchoB}x${comparacion.altoB})`);
       assert.ok(comparacion.alto > 1500,
@@ -739,7 +776,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
     await contexto.close();
   });
 
-  await t.test('capturas de Teclab y contacto, comparadas con la misma tolerancia', { timeout: 900_000 }, async () => {
+  await t.test('capturas de Teclab y contacto, comparadas con la misma tolerancia', { timeout: 1_800_000 }, async () => {
     mkdirSync(CAPTURAS, { recursive: true });
     const sello = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 16);
     const salida = join(CAPTURAS, `${sello}-paginas`);
@@ -770,6 +807,12 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 1_
         }
         const comparacion = await compararCapturas(navegador, capturas.next, capturas.astro,
           ruta === '/sobre-nosotros' ? 1 : 0);
+        const referencia = await leerReferenciaVisual(REFERENCIAS, `${nombreRuta}-${perfil.id}`);
+        const estable = await compararCapturas(navegador, referencia, capturas.astro,
+          ruta === '/sobre-nosotros' ? 1 : 0);
+        assert.equal(estable.mismos, true, `${ruta} ${perfil.id}: referencia de distinta medida`);
+        assert.ok(estable.porcentaje <= TOLERANCIA_PIXELES && estable.media <= TOLERANCIA_MEDIA,
+          `${ruta} ${perfil.id}: no coincide con la referencia visual (${estable.porcentaje.toFixed(2)}%, media ${estable.media.toFixed(2)})`);
         if (!comparacion.mismos) t.diagnostic(JSON.stringify({ruta, perfil: perfil.id, cajas}));
         assert.equal(comparacion.mismos, true,
           `${ruta} ${perfil.id}: las capturas tienen distinta medida `

@@ -9,6 +9,7 @@ import {
 import {
   canonical, decodificar, diferencias, enlacesDe, idioma, jsonLd, metas, textoPrincipal, titulo,
 } from './helpers/html.mjs';
+import { RUTAS_REFERENCIA } from './helpers/referencias-rutas.mjs';
 
 // Paridad de la home: el HTML del build Astro (workerd local) contra el del
 // Next vigente (dev en loopback). La red externa no se usa: el Next apunta a un
@@ -187,6 +188,11 @@ const RUTAS_NUEVAS = [
 ];
 
 test('las páginas migradas coinciden con Next en encabezado, texto y enlaces', async t => {
+  assert.deepEqual(
+    RUTAS_REFERENCIA.map(({ ruta, sinMain = false, sinNavbar = false, sinPie = false }) => ({ ruta, sinMain, sinNavbar, sinPie })),
+    RUTAS_NUEVAS.map(({ ruta, sinMain = false, sinNavbar = false, sinPie = false }) => ({ ruta, sinMain, sinNavbar, sinPie })),
+    'las referencias deben cubrir las mismas rutas y regiones que la paridad viva',
+  );
   assert.ok(existsSync(CONFIG),
     'Falta el build de Astro: correr `npm --prefix cloudflare run build` antes de test:paridad.');
   assert.ok(existsSync(NEXT),
@@ -474,7 +480,7 @@ test('las fuentes de marca se sirven autoalojadas, sin pedir nada a Google', asy
     assert.match(texto, /SIL OPEN FONT LICENSE Version 1\.1/i, licencia);
   }
 
-  const css = readFileSync(new URL('../src/estilos/fuentes.css', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../../estilos/fuentes.css', import.meta.url), 'utf8');
   assert.doesNotMatch(css, /fonts\.(googleapis|gstatic)\.com/, 'ningún origen externo de fuentes');
   // Las dos familias se llaman como en Next: el CSS compartido las pide por
   // nombre literal (`body { font-family: 'Inter' }`, navbar `'Unbounded'`).

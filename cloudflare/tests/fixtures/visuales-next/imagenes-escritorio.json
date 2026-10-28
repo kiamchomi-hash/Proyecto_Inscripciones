@@ -1,0 +1,21 @@
+{
+  "ancho": 1440,
+  "alto": 27930,
+  "bandas": [
+    {
+      "archivo": "imagenes-escritorio-0.webp",
+      "y": 0,
+      "alto": 12000
+    },
+    {
+      "archivo": "imagenes-escritorio-12000.webp",
+      "y": 12000,
+      "alto": 12000
+    },
+    {
+      "archivo": "imagenes-escritorio-24000.webp",
+      "y": 24000,
+      "alto": 3930
+    }
+  ]
+}

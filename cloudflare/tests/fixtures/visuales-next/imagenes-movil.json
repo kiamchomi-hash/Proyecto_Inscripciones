@@ -1,0 +1,21 @@
+{
+  "ancho": 390,
+  "alto": 32471,
+  "bandas": [
+    {
+      "archivo": "imagenes-movil-0.webp",
+      "y": 0,
+      "alto": 12000
+    },
+    {
+      "archivo": "imagenes-movil-12000.webp",
+      "y": 12000,
+      "alto": 12000
+    },
+    {
+      "archivo": "imagenes-movil-24000.webp",
+      "y": 24000,
+      "alto": 8471
+    }
+  ]
+}

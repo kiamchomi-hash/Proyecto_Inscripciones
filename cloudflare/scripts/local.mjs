@@ -75,7 +75,7 @@ export function comandoLocal(nombre) {
     // la raíz. Levanta Next dev en loopback con un stub de PostgREST; nada sale
     // de 127.0.0.1. El contrato de `/api/carreras-detalle` también corre acá
     // porque usa el mismo build y un D1 efímero.
-    paridad: ['--test', '--test-concurrency=1', 'tests/carreras-detalle.test.mjs', 'tests/fijas.test.mjs', 'tests/paginas-carreras.test.mjs', 'tests/novedades.test.mjs', 'tests/paridad.test.mjs'],
+    paridad: ['--test', '--test-concurrency=1', 'tests/carreras-detalle.test.mjs', 'tests/fijas.test.mjs', 'tests/paginas-carreras.test.mjs', 'tests/novedades.test.mjs', 'tests/paridad.test.mjs', 'tests/referencia-home.test.mjs', 'tests/bandas-webp.test.mjs'],
     // E2E real con el Playwright de la raíz: servidores en loopback, capturas y
     // Turnstile interceptado. Requiere build previo y Chromium instalado.
     e2e: ['--test', '--test-concurrency=1', 'tests/e2e.test.mjs'],
