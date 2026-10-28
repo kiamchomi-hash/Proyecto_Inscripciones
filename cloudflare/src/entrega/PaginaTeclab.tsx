@@ -5,6 +5,7 @@ import {
 } from '@/components/index/types';
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
 import CareersCatalog from '@/components/index/careers-catalog';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 import FormularioLead from '@/components/formularios/formulario-lead';
 import { jsonLdScript } from '@/lib/json-ld';
 import { ContextoTurnstile, type ConfigTurnstile } from './turnstile-contexto';
@@ -129,7 +130,7 @@ export default function PaginaTeclab(
               <div className="teclab-hero-mosaico" aria-hidden="true">
                 {MOSAICO.map((src, i) => (
                   <div key={src}>
-                    <Image src={src} alt="" fill sizes="(max-width: 760px) 45vw, 24vw" preload={i === 0} />
+                    <ImagenResponsiva ruta={src} alt="" fill sizes="(max-width: 760px) 45vw, 24vw" priority={i === 0} />
                   </div>
                 ))}
               </div>

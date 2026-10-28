@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { sanitizeContent } from '@/lib/sanitize-content';
 import { MAPS_URL } from '@/lib/sede';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 import LandingAnalytics from './landing-analytics';
 
 // La portada empieza directamente con las materias: el contexto ya está dado
@@ -83,7 +83,7 @@ export default function ClasesApoyoLanding({ materias }: { materias: MateriaCard
 
       <section className="ca-ubicacion" aria-labelledby="ca-ubicacion-titulo">
         <div className="ca-ubicacion-imagen">
-          <Image src="/imagenes/imagenes_cau/Foto-entrada.webp" alt="Entrada del CAU Villa Lugano en Guaminí 4876" fill sizes="(max-width: 760px) 100vw, 44vw" />
+          <ImagenResponsiva ruta="/imagenes/imagenes_cau/Foto-entrada.webp" alt="Entrada del CAU Villa Lugano en Guaminí 4876" fill sizes="(max-width: 760px) 100vw, 44vw" />
         </div>
         <div className="ca-ubicacion-contenido">
           <span className="ca-eyebrow">Estamos cerca</span>

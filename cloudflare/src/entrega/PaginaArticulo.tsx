@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import CopyLinkButton from '@/components/novedades/copy-link-button';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 import type { Articulo } from '../datos/novedades';
 
 // Cuerpo de app/novedades/articulo/[slug]/page.tsx. El servidor entrega HTML ya
@@ -21,7 +22,7 @@ export default function PaginaArticulo({ novedad, contenido }: {
       </Link>
       <article className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.1)' }}>
         {novedad.imagen_url && <div className="relative w-full h-[240px] sm:h-[360px] overflow-hidden">
-          <Image src={novedad.imagen_url} alt={novedad.titulo} fill className="object-cover" sizes="(max-width: 768px) 100vw, 720px" quality={90} priority />
+          <ImagenResponsiva ruta={novedad.imagen_url} alt={novedad.titulo} fill className="object-cover" sizes="(max-width: 768px) 100vw, 720px" priority />
         </div>}
         <div className="p-6 sm:p-10">
           <div className="flex flex-wrap items-center gap-3 mb-4">

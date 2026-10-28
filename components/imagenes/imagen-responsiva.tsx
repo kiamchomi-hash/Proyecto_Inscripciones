@@ -12,24 +12,47 @@ import { srcSetDe } from '@/lib/imagenes/responsivas';
  * Cloudflare ese shim no optimiza nada.
  */
 type Props = {
-  /** Ruta tal como está guardada (`/imagenes/Modales/...`), con tildes y espacios. */
+  /** Ruta tal como está guardada (`/imagenes/...`), con tildes y espacios. */
   ruta: string;
   alt: string;
-  sizes: string;
+  sizes?: string;
+  /** Ocupa todo el contenedor, como `fill` de next/image. */
+  fill?: boolean;
+  width?: number;
+  height?: number;
+  priority?: boolean;
   className?: string;
   style?: CSSProperties;
   loading?: 'lazy' | 'eager';
   fetchPriority?: 'high' | 'low' | 'auto';
 };
 
-export default function ImagenResponsiva({ ruta, alt, sizes, className, style, loading, fetchPriority }: Props) {
+export default function ImagenResponsiva({
+  ruta, alt, sizes, fill, width, height, priority, className, style, loading, fetchPriority,
+}: Props) {
   const src = encodeImagePath(ruta);
   const candidatos = srcSetDe(ruta);
 
+  const relleno: CSSProperties | undefined = fill
+    ? { position: 'absolute', inset: 0, width: '100%', height: '100%', ...style }
+    : style;
+
   // `<img>` a propósito: en el paquete de Cloudflare `next/image` es un shim que
   // no optimiza nada, y el `srcset` ya elige el derivado más chico.
-  // eslint-disable-next-line @next/next/no-img-element
-  const respaldo = <img src={src} alt={alt} className={className} style={style} loading={loading} fetchPriority={fetchPriority} />;
+  const respaldo = (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      style={relleno}
+      sizes={sizes}
+      width={!fill && width !== undefined ? width : undefined}
+      height={!fill && height !== undefined ? height : undefined}
+      loading={loading ?? (priority ? 'eager' : undefined)}
+      fetchPriority={fetchPriority ?? (priority ? 'high' : undefined)}
+    />
+  );
 
   if (!candidatos) return respaldo;
 

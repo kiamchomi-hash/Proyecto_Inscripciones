@@ -834,14 +834,18 @@ proveedor de analítica elegido explícitamente; nada de eso está autorizado.
 **27/10/2026 — imágenes:** el optimizador dejó de ser un pendiente en lo que
 importa. `herramientas/derivar-imagenes.mjs` genera derivados webp (480/960/1440)
 de las fotos de `public/imagenes/`, con el hash del contenido en el nombre, y
-`components/imagenes/imagen-responsiva.tsx` los sirve con `<picture>`/`srcset` en
-los modales del catálogo; `/derivados/*` va `immutable`. La foto de 3,7 MB de
-Relaciones Laborales pasa a 13 KB en un celular. Lo que **sigue** igual: el shim
-`next/image` no optimiza, así que las fotos que pasan por él (modales de Teclab,
-Identidad, portadas de novedades) se sirven enteras; para cubrirlas hay que
-pasarlas a `ImagenResponsiva` o meter el manifiesto en el shim, que hoy lo
-cargaría en todas las páginas. Detalle en
-[`docs/herramientas.md`](../docs/herramientas.md).
+`components/imagenes/imagen-responsiva.tsx` los sirve con `<picture>`/`srcset`;
+`/derivados/*` va `immutable`. La foto de 3,7 MB de Relaciones Laborales pasa a
+13 KB en un celular.
+
+Alcanza a las fotos que se ven en el sitio: los cinco slides del carrusel de
+carreras, el hero de `/carreras/[slug]`, el fondo del cierre de Teclab, el
+mosaico de `/teclab`, la portada de los artículos de novedades, el collage de
+`/contacto`, la entrada de clases de apoyo y la navegación entre materias. El
+shim `next/image` **sigue sin optimizar**: lo que se dejó ahí son logos y SVG,
+que no ganan nada. La biblioteca de `/imagenes` tampoco los usa, a propósito:
+muestra la ruta y el peso real del archivo que se copia.
+Detalle en [`docs/herramientas.md`](../docs/herramientas.md).
 
 Redirecciones migradas: `src/entrega/redirects.ts` concentra la lista global,
 `src/entrega/redirects-carreras.ts` las fichas y `src/middleware.ts` las aplica

@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
 import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackConsulta, trackInicioFormulario } from '@/lib/analytics';
@@ -480,10 +481,11 @@ export default function ContactoPageContent() {
                   </div>
                   {/* Image */}
                   <div className="relative h-[280px] overflow-hidden" style={{ background: '#111' }}>
-                    <Image
-                      src={post.image}
+                    <ImagenResponsiva
+                      ruta={post.image}
                       alt={post.alt}
                       fill
+                      sizes="(max-width: 640px) 100vw, 320px"
                       className="object-contain transition-transform duration-500"
                     />
                   </div>
@@ -579,10 +581,11 @@ export default function ContactoPageContent() {
                   </div>
                   {/* Image */}
                   <div className="relative h-[280px] overflow-hidden" style={{ background: '#111' }}>
-                    <Image
-                      src={post.image}
+                    <ImagenResponsiva
+                      ruta={post.image}
                       alt={post.alt}
                       fill
+                      sizes="(max-width: 640px) 100vw, 320px"
                       className="object-contain transition-transform duration-500"
                     />
                   </div>

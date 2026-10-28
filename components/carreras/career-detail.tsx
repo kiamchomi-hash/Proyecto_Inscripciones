@@ -4,6 +4,7 @@
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import Image from 'next/image';
 import Link from 'next/link';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Carrera, CarreraEnlace } from '@/components/index/types';
 import { carreraToSlug, carreraFullName } from '@/components/index/types';
@@ -276,13 +277,12 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
         {!isIA && (
           <>
             <div className="career-hero-media" aria-hidden="true">
-              <Image
+              <ImagenResponsiva
                 className="career-hero-image"
-                src={heroImage}
+                ruta={heroImage}
                 alt=""
                 fill
                 priority
-                quality={90}
                 sizes="100vw"
                 style={{
                   filter: portada?.imagen_brightness

@@ -15,15 +15,6 @@ const { SlideCierreView } = cargarTypescript('components/index/carousel-modal.ts
   './modal-shell': {}, './use-foco-modal': {},
   '@/components/formularios/elegir-carrera': {},
   '@/components/formularios/casas': casas,
-  // Los modales piden las fotos a `ImagenResponsiva`: acá se resuelve con un
-  // <img> pelado para no arrastrar el manifiesto de derivadas al transpilar.
-  '@/lib/imagenes/rutas': { encodeImagePath: ruta => ruta.split('/').map(encodeURIComponent).join('/') },
-  '@/components/imagenes/imagen-responsiva': {
-    default: ({ ruta, alt, className, style }) => React.createElement('img', {
-      src: ruta.split('/').map(encodeURIComponent).join('/'), alt, className, style,
-    }),
-    __esModule: true,
-  },
   './ver-precio-teclab': { AccesoVerPrecio: () => React.createElement(React.Fragment, null,
     React.createElement('button', { className: 'vp-boton' }, 'Ver precio'),
     React.createElement('a', { className: 'vp-whatsapp vp-whatsapp-lleno', href: '#whatsapp' }, 'Consultar por WhatsApp')) },

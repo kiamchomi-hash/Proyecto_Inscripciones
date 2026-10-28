@@ -9,17 +9,6 @@ import * as adaptadores from '../lib/datos/carrera-detalle.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
 const vacio = () => null;
-// Los modales piden las fotos a `ImagenResponsiva`; acá se resuelve con un <img>
-// para no arrastrar el manifiesto de derivadas al transpilar el módulo.
-const imagenesResponsivas = {
-  '@/lib/imagenes/rutas': { encodeImagePath: (ruta) => ruta.split('/').map(encodeURIComponent).join('/') },
-  '@/components/imagenes/imagen-responsiva': {
-    default: ({ ruta, alt, className, style }) => React.createElement('img', {
-      src: ruta.split('/').map(encodeURIComponent).join('/'), alt, className, style,
-    }),
-    __esModule: true,
-  },
-};
 const dependencias = {
   '@/components/index/types': tipos,
   '@/components/index/teclab': teclab,
@@ -69,7 +58,6 @@ test('FAQ no suma pantallas vacías al carrusel ni cambia el modal Teclab', () =
     './use-compartir': {}, './icono-compartir': {}, '@/components/formularios/elegir-carrera': {},
     './ver-precio-teclab': {}, '@/components/formularios/casas': {},
     './flechas-de-scroll': {}, './modal-shell': {}, './use-foco-modal': {},
-    ...imagenesResponsivas,
   });
   const portada = { type: 'portada', bullets: [] };
   assert.deepEqual(carousel.slidesDelCarrusel([portada, faq, { type: 'modalidad' }, { type: 'evaluacion' }]), [portada]);

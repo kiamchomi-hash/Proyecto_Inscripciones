@@ -15,6 +15,7 @@ import { useFocoModal } from './use-foco-modal';
 
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import Image from 'next/image';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { type Carrera, carreraToSlug } from './types';
 import { mensajeWhatsAppInfo, mensajeWhatsAppPrecioVisto, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
@@ -671,7 +672,7 @@ function SlideCierre({
           y bajo un velo tinta */}
       {fondo && (
         <div className="teclab-cierre-fondo" aria-hidden="true">
-          <Image src={fondo} alt="" fill quality={90} sizes="(max-width: 768px) 100vw, 64rem" className="object-cover" />
+          <ImagenResponsiva ruta={fondo} alt="" fill sizes="(max-width: 768px) 100vw, 64rem" className="object-cover" />
           <div className="teclab-cierre-velo" />
         </div>
       )}

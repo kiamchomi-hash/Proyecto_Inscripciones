@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { MateriaNav } from '@/components/clases-apoyo/tipos';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 
 // Navegación de las páginas de materia. Cada materia es una página propia, así
 // que se navega como en cualquier otra: apila historial y sube al tope.
@@ -35,7 +35,7 @@ export function OtrasMaterias({ materias, actual }: { materias: MateriaOtra[]; a
             <Link href={`/clases-apoyo/${m.slug}`} className={`ca-otra${m.foto ? '' : ' ca-otra-sin-foto'}`}>
               <span className="ca-otra-imagen">
                 {m.foto && (
-                  <Image src={m.foto} alt="" fill sizes="(max-width: 640px) 100vw, 280px" className="ca-otra-foto" />
+                  <ImagenResponsiva ruta={m.foto} alt="" fill sizes="(max-width: 640px) 100vw, 280px" className="ca-otra-foto" />
                 )}
                 {m.en_construccion && <span className="ca-otra-pronto">Próximamente</span>}
               </span>
