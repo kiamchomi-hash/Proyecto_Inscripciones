@@ -2,10 +2,9 @@
    y de material comercial, y generaba utilidades para clases que ya no existen
    en el sitio. Con source(none) solo el codigo vivo genera CSS. */
 @import "tailwindcss" source(none);
-/* Código vivo del sitio: componentes compartidos, cuerpos de página del Worker
-   y su layout. `paginas/` queda afuera a propósito porque sus utilidades no
-   están generadas en producción y aplicarlas cambia el espaciado publicado. */
+/* Código vivo del sitio, incluidos los cuerpos de página que importa el Worker. */
 @source "../components";
+@source "../paginas";
 @source "../cloudflare/src/entrega";
 @source "../cloudflare/src/layouts";
 

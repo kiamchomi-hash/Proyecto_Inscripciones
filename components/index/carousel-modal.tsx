@@ -996,6 +996,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
           {slide.imagen_mobile ? (
             <>
               <ImagenResponsiva
+                original
                 ruta={slide.imagen_mobile}
                 alt={carrera.nombre}
                 sizes="100vw"
@@ -1040,6 +1041,7 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
       {slide.imagen_desktop && (
         <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-s21/20 relative" style={{ width: '42%' }}>
           <ImagenResponsiva
+            original
             ruta={slide.imagen_desktop!}
             alt={carrera.nombre}
             sizes="(max-width: 768px) 100vw, 27rem"
@@ -1058,6 +1060,7 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
       {slide.imagen && (
         <div className="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,calc(var(--alto-modal)*0.2),12rem)] md:h-full">
           <ImagenResponsiva
+            original
             ruta={slide.imagen!}
             alt="Modalidad"
             sizes="(max-width: 768px) 100vw, 27rem"
@@ -1170,14 +1173,14 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
       {/* Mobile top banner */}
       {imagen && (
         <div className="md:hidden relative h-[calc(var(--alto-modal)*0.26)] shrink-0 overflow-hidden">
-          <ImagenResponsiva ruta={imagen!} alt={altImagen} sizes="100vw" className="absolute inset-0 w-full h-full object-cover object-center" />
+          <ImagenResponsiva original ruta={imagen!} alt={altImagen} sizes="100vw" className="absolute inset-0 w-full h-full object-cover object-center" />
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 55%, #011f17 100%)' }} />
         </div>
       )}
       {/* Desktop side image */}
       {imagen && (
         <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
-          <ImagenResponsiva ruta={imagen!} alt={altImagen} sizes="(max-width: 768px) 100vw, 27rem" className="absolute inset-0 w-full h-full object-cover object-left-bottom" style={esSiglo21 ? { objectPosition: 'center' } : undefined} />
+          <ImagenResponsiva original ruta={imagen!} alt={altImagen} sizes="100vw" className="absolute inset-0 w-full h-full object-cover object-left-bottom" style={esSiglo21 ? { objectPosition: 'center' } : undefined} />
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}

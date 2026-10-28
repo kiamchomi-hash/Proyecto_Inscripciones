@@ -25,13 +25,15 @@ type Props = {
   style?: CSSProperties;
   loading?: 'lazy' | 'eager';
   fetchPriority?: 'high' | 'low' | 'auto';
+  /** Conserva la imagen original cuando el recorte exige la máxima calidad. */
+  original?: boolean;
 };
 
 export default function ImagenResponsiva({
-  ruta, alt, sizes, fill, width, height, priority, className, style, loading, fetchPriority,
+  ruta, alt, sizes, fill, width, height, priority, className, style, loading, fetchPriority, original,
 }: Props) {
   const src = encodeImagePath(ruta);
-  const candidatos = srcSetDe(ruta);
+  const candidatos = original ? undefined : srcSetDe(ruta);
 
   const relleno: CSSProperties | undefined = fill
     ? { position: 'absolute', inset: 0, width: '100%', height: '100%', ...style }
