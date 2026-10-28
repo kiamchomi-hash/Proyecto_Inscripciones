@@ -4,7 +4,7 @@ import Sitio from '../../layouts/Sitio.astro';
 import NovedadesPage from '@/components/novedades/novedades-page';
 import SiteFooter from '@/components/footer';
 import { listarNovedades } from '../../datos/novedades';
-import '@/app/novedades/novedades.css';
+import '@/estilos/novedades/novedades.css';
 const datos = await listarNovedades(env.DB, Astro.params.page!);
 if (!datos) return new Response(null, { status: 404 });
 const ruta = `/novedades/${Astro.params.page}`;

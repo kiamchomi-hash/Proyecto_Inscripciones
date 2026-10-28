@@ -15,7 +15,7 @@ import Herramientas, { Programacion } from './herramientas';
    de sistema con barra y botones, bordes de píxel con las esquinas vacías,
    sombras de bloque y la paleta del folleto. La reserva es la misma de todas
    las materias; acá se arma con la foto y el calendario arriba y los horarios
-   debajo. Estilos en app/clases-apoyo/computacion.css (variables --cp-*). */
+   debajo. Estilos en estilos/clases-apoyo/computacion.css (variables --cp-*). */
 
 /* La M de Silkscreen tiene el pico tan corto que se lee como H. Se reemplaza
    por la M del folleto: la misma grilla de 7 × 5 celdas que dibujó para su

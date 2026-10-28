@@ -7,8 +7,8 @@ import AnalyticsInteractions from '@/components/analytics-interactions';
 import WhatsappReparto from '@/components/whatsapp-reparto';
 import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
-import './globals.css';
-import './navbar.css';
+import '@/estilos/globals.css';
+import '@/estilos/navbar.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const unbounded = Unbounded({ subsets: ['latin'], variable: '--font-unbounded', weight: ['400', '600', '700', '800', '900'] });

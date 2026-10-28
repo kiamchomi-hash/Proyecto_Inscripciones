@@ -2,7 +2,7 @@
  * Identidad de la sede en Google Maps y datos postales.
  *
  * Fuente única: hasta julio de 2026 estos valores estaban copiados a mano en
- * `app/layout.tsx`, `app/sobre-nosotros/page.tsx`, `components/faq-page.tsx` y
+ * `app/layout.tsx`, `paginas/sobre-nosotros/index.tsx`, `components/faq-page.tsx` y
  * `components/contacto/contacto-page.tsx`. Google tiene dos fichas del mismo
  * lugar — "Siglo 21" (la correcta) y "Centro de Capacitacion Lugano" — y al
  * corregir sólo dos de los cuatro archivos, `/faq` y `/contacto` quedaron

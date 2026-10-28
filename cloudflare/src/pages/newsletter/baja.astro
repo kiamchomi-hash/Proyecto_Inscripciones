@@ -1,7 +1,7 @@
 ---
 import Sitio from '../../layouts/Sitio.astro';
 import { esIdSuscripcion } from '@/components/formularios/mail-precio';
-import '@/app/newsletter/baja/baja.css';
+import '@/estilos/newsletter/baja/baja.css';
 // Next recibe string[] ante parámetros repetidos: no tomamos el primero.
 const unico = (clave: string) => { const valores = Astro.url.searchParams.getAll(clave); return valores.length === 1 ? valores[0] : undefined; };
 const id = unico('id');

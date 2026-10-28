@@ -9,9 +9,9 @@ import TextoMateria from '@/components/clases-apoyo/texto-materia';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { supabase } from '@/lib/supabase';
-import '../clases-apoyo.css';
-import '../reserva-clase.css';
-import '../computacion.css';
+import '@/estilos/clases-apoyo/clases-apoyo.css';
+import '@/estilos/clases-apoyo/reserva-clase.css';
+import '@/estilos/clases-apoyo/computacion.css';
 
 const BASE_URL = 'https://www.siglo21sur.com';
 

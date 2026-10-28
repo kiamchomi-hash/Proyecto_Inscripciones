@@ -12,7 +12,7 @@ import CareersCatalog from '@/components/index/careers-catalog';
 // Dynamic imports for components below the fold
 const FormularioLead = dynamic(() => import('@/components/formularios/formulario-lead'));
 const SiteFooter = dynamic(() => import('@/components/footer'));
-import './index.css';
+import '@/estilos/index.css';
 
 export const metadata: Metadata = {
   title: { absolute: `Universidad Siglo 21 | CAU Online | Oferta académica ${new Date().getFullYear()}` },

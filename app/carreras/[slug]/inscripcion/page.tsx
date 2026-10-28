@@ -18,8 +18,8 @@ import {
 import { casaDeCarrera } from '@/components/formularios/casas';
 import FormularioLead from '@/components/formularios/formulario-lead';
 import { jsonLdScript } from '@/lib/json-ld';
-import '../../career-detail.css';
-import './inscripcion.css';
+import '@/estilos/carreras/career-detail.css';
+import '@/estilos/carreras/[slug]/inscripcion/inscripcion.css';
 
 // Igual que la ficha: los datos de carreras cambian una vez por mes y cada
 // regeneracion es un ISR Write. Publicar un cambio lo revalida el trigger de

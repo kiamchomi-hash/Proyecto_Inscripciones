@@ -3,7 +3,7 @@ import { env } from 'cloudflare:workers';
 import Sitio from '../layouts/Sitio.astro';
 import Test from '@/components/test-vocacional/test-vocacional';
 import { opcionesVocacional } from '../datos/vocacional';
-import '../../../app/test-vocacional/test-vocacional.css';
+import '@/estilos/test-vocacional/test-vocacional.css';
 const carreras = await opcionesVocacional(env.DB);
 ---
 <Sitio titulo="Test vocacional: descubrí qué carrera va con vos | Siglo 21"

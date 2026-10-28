@@ -671,11 +671,11 @@ modales. La home los importa explícitamente en `index.astro`, en el mismo orden
 Si se suman hojas por esa vía, importarlas también acá; los dos avisos de
 PostCSS siguen apareciendo porque el archivo de la raíz no se toca.
 
-Inter y Unbounded se autoalojan: `src/estilos/fuentes.css` declara las mismas
+Inter y Unbounded se autoalojan: `../estilos/fuentes.css` declara las mismas
 familias, pesos, `unicode-range` `latin` y fallbacks que genera `next/font`, con
 `font-display: swap`, y `Sitio.astro` precarga los dos `.woff2`. Los archivos
 están en `public/fuentes/` de la raíz; origen, licencia OFL y cómo regenerarlos,
-en `src/estilos/fuentes.md`.
+en `../estilos/fuentes.md`.
 
 Verificación de cierre 4A (24/10/2026): `npm --prefix cloudflare run check` con
 142/142 pruebas, sin fallos, cancelaciones ni skips; tipos sin errores,
@@ -708,7 +708,7 @@ hereda `locale` ni `siteName`; `keywords` se une con coma y sin espacio.
 `/teclab/inscripcion` no renderiza navbar ni pie en Next —`esRutaPreinscripcion`
 los oculta— y acá tampoco: el navbar es una isla que recibe la ruta y el pie no
 se monta. Poppins, la tipografía de marca, se autoaloja en
-`src/estilos/poppins.css` (importada sólo por esas dos páginas) con los tres
+`../estilos/poppins.css` (importada sólo por esas dos páginas) con los tres
 `.woff2` que `next/font` sirve en el sitio; `fuente-poppins` reemplaza a
 `poppins.variable` y declara `--font-poppins`. Los logos, fotos y el mosaico del
 hero salen de `../public` como en la home.
@@ -903,7 +903,7 @@ No se presenta la caída del servicio como un estado confirmado de inscripción.
 Silkscreen y DM Sans conservan sus avisos originales, consultados en google/fonts;
 los binarios vienen sólo de la caché local existente de Next. Los avisos acompañan
 el código y se sirven en `/licencias/{silkscreen,dm-sans}.txt` en el build. Origen y
-huellas en `src/estilos/{silkscreen,dm-sans}.md`; enlaces en [REFERENCIAS-4E.md](REFERENCIAS-4E.md).
+huellas en `../estilos/{silkscreen,dm-sans}.md`; enlaces en [REFERENCIAS-4E.md](REFERENCIAS-4E.md).
 
 Resultados definitivos, capturas y límites:
 [seguimiento 4E](SEGUIMIENTO-4C.md#continuación-4e-carreras-e-inscripción).

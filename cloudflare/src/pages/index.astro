@@ -5,8 +5,8 @@ import PaginaHome from '../entrega/PaginaHome';
 import SiteFooter from '@/components/footer';
 import { carrerasDeHome } from '../datos/home.ts';
 import { configTurnstile } from '../entrega/entorno-publico.ts';
-import '@/app/index.css';
-// `app/index.css` termina con dos `@import` después de reglas, que el pipeline
+import '@/estilos/index.css';
+// `estilos/index.css` termina con dos `@import` después de reglas, que el pipeline
 // de Astro descarta (CSS exige los `@import` al principio y PostCSS sólo avisa).
 // En Next sí entran, así que se importan acá en el mismo orden para que la
 // cascade sea la misma: sin esto faltaban el panel del contacto y los modales.

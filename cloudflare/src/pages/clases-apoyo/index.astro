@@ -6,7 +6,7 @@ import SiteFooter from '@/components/footer';
 import { listarMateriasPublicas } from '../../datos/materias';
 import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
-import '@/app/clases-apoyo/clases-apoyo.css';
+import '@/estilos/clases-apoyo/clases-apoyo.css';
 const BASE_URL = 'https://www.siglo21sur.com';
 const materias = await listarMateriasPublicas(env.DB);
 const servicioSchema = {

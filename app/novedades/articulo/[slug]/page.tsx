@@ -8,7 +8,7 @@ import { sanitizeContent } from '@/lib/sanitize-content';
 import { jsonLdScript } from '@/lib/json-ld';
 import CopyLinkButton from '@/components/novedades/copy-link-button';
 import SiteFooter from '@/components/footer';
-import '../../articulo.css';
+import '@/estilos/novedades/articulo.css';
 
 // 24 h para no gastar ISR Writes: ver el comentario en novedades/[page].
 export const revalidate = 86400;

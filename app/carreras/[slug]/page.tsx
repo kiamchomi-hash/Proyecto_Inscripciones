@@ -16,9 +16,9 @@ import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
 import { duracionISO } from '@/lib/duracion-iso';
 import ogTeclab from '@/components/carreras/og-teclab.json';
-import '../career-detail.css';
-import '../career-detail-teclab.css';
-import '../career-detail-siglo21.css';
+import '@/estilos/carreras/career-detail.css';
+import '@/estilos/carreras/career-detail-teclab.css';
+import '@/estilos/carreras/career-detail-siglo21.css';
 
 // Poppins es la fuente de marca de Teclab. Sin preload: las fichas de Siglo 21
 // no la usan y no tienen que pagar una precarga. Se aplica solo a las de Teclab.

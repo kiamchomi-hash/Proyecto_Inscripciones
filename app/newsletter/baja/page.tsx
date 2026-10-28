@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { esIdSuscripcion } from '@/components/formularios/mail-precio';
-import './baja.css';
+import '@/estilos/newsletter/baja/baja.css';
 
 // La baja del newsletter, a la que lleva «Anular suscripción» del pie
 // del mail. Abrirla no da de baja: los escáneres de enlaces de los correos

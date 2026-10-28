@@ -151,7 +151,7 @@ secretos, dotenv, datos reales ni servicios remotos. D1 sigue detrás del servid
   existentes; inactiva/inexistente 404, construcción sin reserva/Service y con
   robots `noindex, follow`. JSON incorrecto o esquema ausente no se oculta con
   fallback a una ficha vacía. No hace falta una migración de esquema nueva.
-- `src/entrega/next-font.ts`, `src/estilos/silkscreen.css`, `src/assets/`: Silkscreen
+- `src/entrega/next-font.ts`, `../estilos/silkscreen.css`, `src/assets/`: Silkscreen
   latin 400/700 son los binarios ya cacheados del Next local, sin descarga. Se
   conserva nombre, fallback y métricas declaradas por su CSS. El shim sólo soporta
   esta fuente, no implementa una API genérica de Google Fonts.
@@ -236,7 +236,7 @@ Las capturas son del estado inicial; los envíos y errores se verifican mediante
 interacción, no mediante PNG de cada paso. Maps y otros proveedores quedan abortados.
 Resta mostrar las capturas al usuario desde la sesión principal. El pendiente del
 aviso original de Silkscreen se resolvió en 4E, como detalla
-[Silkscreen local](src/estilos/silkscreen.md).
+[Silkscreen local](../estilos/silkscreen.md).
 Carreras, novedades, sitemap y demás familias diferidas no se migraron en este lote.
 
 La primera corrida completa **falló, exit 1**: SSR 14/14, pero E2E 12/15. Vite
@@ -292,7 +292,7 @@ a avisos originales de licencia de Google Fonts.
   respuesta privada; para todas las demás respuestas mantiene el valor anterior.
   No se migraron las cabeceras de producción ni se removieron guardas locales.
 - `src/assets/{dm-sans-latin.woff2,OFL-DMSans.txt,OFL-Silkscreen.txt}`,
-  `src/estilos/{dm-sans.css,dm-sans.md,silkscreen.md}` y
+  `../estilos/{dm-sans.css,dm-sans.md,silkscreen.md}` y
   `src/pages/licencias/*.txt.ts`: fuente DM Sans ya cacheada, no descargada;
   avisos originales completos de las dos familias, servidos también por el build.
   El pendiente de licencia Silkscreen de 4D queda resuelto, sin alterar sus binarios.

@@ -5,8 +5,8 @@ import type { Carrera } from '@/components/index/types';
 import { SITIO, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 import FormularioLead from '@/components/formularios/formulario-lead';
 import { jsonLdScript } from '@/lib/json-ld';
-import '../../carreras/career-detail.css';
-import '../../carreras/[slug]/inscripcion/inscripcion.css';
+import '@/estilos/carreras/career-detail.css';
+import '@/estilos/carreras/[slug]/inscripcion/inscripcion.css';
 
 // La inscripción a Teclab sin carrera elegida: el mismo formulario que la página
 // de inscripción de cada carrera (`/carreras/<slug>/inscripcion`), con el

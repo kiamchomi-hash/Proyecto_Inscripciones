@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { esCarreraVisible } from '@/components/index/types';
 import { esTeclab } from '@/components/index/teclab';
 import TestVocacionalTeclab, { type CarreraTestTeclab } from '@/components/test-vocacional-teclab/test-vocacional-teclab';
-import './test-vocacional-teclab.css';
+import '@/estilos/teclab/test-vocacional/test-vocacional-teclab.css';
 
 const URL = 'https://www.siglo21sur.com/teclab/test-vocacional';
 

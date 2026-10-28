@@ -15,8 +15,8 @@ import CareersCatalog from '@/components/index/careers-catalog';
 import FormularioLead from '@/components/formularios/formulario-lead';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
-import '../index.css';
-import './teclab.css';
+import '@/estilos/index.css';
+import '@/estilos/teclab/teclab.css';
 
 const URL = 'https://www.siglo21sur.com/teclab';
 

@@ -6,7 +6,7 @@ import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { listarFaqPublicas } from '../datos/faq';
 import { configTurnstile } from '../entrega/entorno-publico';
-import '@/app/faq/faq.css';
+import '@/estilos/faq/faq.css';
 const preguntas = await listarFaqPublicas(env.DB);
 const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
 const descripcion = 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano. La universidad cerca de Celina y todo Zona Sur/Oeste.';

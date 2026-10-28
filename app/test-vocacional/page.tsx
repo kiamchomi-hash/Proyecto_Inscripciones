@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import { esCarreraVisible, type Carrera } from '@/components/index/types';
 import TestVocacional from '@/components/test-vocacional/test-vocacional';
-import './test-vocacional.css';
+import '@/estilos/test-vocacional/test-vocacional.css';
 
 export const metadata: Metadata = {
   title: 'Test vocacional: descubrí qué carrera va con vos',

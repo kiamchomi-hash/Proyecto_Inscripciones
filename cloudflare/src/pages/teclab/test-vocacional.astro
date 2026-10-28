@@ -3,8 +3,8 @@ import { env } from 'cloudflare:workers';
 import Sitio from '../../layouts/Sitio.astro';
 import Test from '@/components/test-vocacional-teclab/test-vocacional-teclab';
 import { opcionesVocacionalTeclab } from '../../datos/vocacional';
-import '../../../../app/teclab/test-vocacional/test-vocacional-teclab.css';
-import '../../estilos/poppins.css';
+import '@/estilos/teclab/test-vocacional/test-vocacional-teclab.css';
+import '@/estilos/poppins.css';
 const carreras = await opcionesVocacionalTeclab(env.DB);
 ---
 <Sitio titulo="Test vocacional Teclab: qué tecnicatura va con vos"

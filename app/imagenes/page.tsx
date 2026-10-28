@@ -8,7 +8,7 @@ import BibliotecaImagenes, { type Imagen } from '@/components/imagenes/bibliotec
 // Sólo los campos que pide el cruce: los helpers de types.ts reciben Pick<>,
 // no la Carrera entera, y traer la fila completa acá no aporta nada.
 type CarreraMinima = { nombre: string; prefix: string | null; nivel: string };
-import './imagenes.css';
+import '@/estilos/imagenes/imagenes.css';
 
 // Herramienta interna: catálogo de todo lo que hay en public/imagenes, para
 // encontrar una foto y copiar su ruta sin abrir el explorador de archivos.

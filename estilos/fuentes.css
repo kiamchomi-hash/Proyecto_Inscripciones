@@ -3,7 +3,7 @@
    declara `app/layout.tsx`). Los `.woff2` viven en `public/fuentes/` de la
    raíz, así el paquete no duplica binarios y las dos implementaciones los
    sirven desde la misma URL. Origen, licencia y cómo regenerarlos:
-   `cloudflare/src/estilos/fuentes.md`.
+   `estilos/fuentes.md`.
 
    Las dos familias se llaman igual que en Next (`Inter`, `Unbounded`) porque
    `app/globals.css` y `components/navbar.tsx` las piden por ese nombre

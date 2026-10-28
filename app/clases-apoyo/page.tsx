@@ -5,7 +5,7 @@ import { COLUMNAS_MATERIA_CARD, materiaACard } from '@/lib/datos/materia';
 import { jsonLdScript } from '@/lib/json-ld';
 import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
 import { supabase } from '@/lib/supabase';
-import './clases-apoyo.css';
+import '@/estilos/clases-apoyo/clases-apoyo.css';
 
 const BASE_URL = 'https://www.siglo21sur.com';
 

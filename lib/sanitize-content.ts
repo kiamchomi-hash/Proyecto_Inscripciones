@@ -1,7 +1,7 @@
 import sanitizeHtml from 'sanitize-html';
 
 // Las novedades se maquetan desde la base con estas clases (ver
-// app/novedades/articulo.css). El comodin las deja pasar sin tener que tocar
+// estilos/novedades/articulo.css). El comodin las deja pasar sin tener que tocar
 // este archivo cada vez que se agrega una variante, y sin abrir la puerta a
 // clases arbitrarias: nada fuera del prefijo `art-` sobrevive.
 const CLASES_ARTICULO = ['art-*'];

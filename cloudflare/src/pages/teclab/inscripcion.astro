@@ -4,14 +4,14 @@ import Sitio from '../../layouts/Sitio.astro';
 import PaginaInscripcionTeclab from '../../entrega/PaginaInscripcionTeclab';
 import { opcionesInscripcionTeclab } from '../../datos/teclab.ts';
 import { configTurnstile } from '../../entrega/entorno-publico.ts';
-import '../../estilos/poppins.css';
-import '@/app/carreras/career-detail.css';
+import '@/estilos/poppins.css';
+import '@/estilos/carreras/career-detail.css';
 // `career-detail.css` termina con los mismos dos `@import` después de reglas
-// que `app/index.css`; Astro los descarta y Next sí los aplica, así que se
+// que `estilos/index.css`; Astro los descarta y Next sí los aplica, así que se
 // importan explícitos en el mismo orden.
 import '@/components/index/modales.css';
 import '@/components/formularios/formulario-lead.css';
-import '@/app/carreras/[slug]/inscripcion/inscripcion.css';
+import '@/estilos/carreras/[slug]/inscripcion/inscripcion.css';
 
 // `/teclab/inscripcion` paritaria con `app/teclab/inscripcion/page.tsx`: mismo
 // título absoluto, descripción, Open Graph, Twitter, JSON-LD y el mismo

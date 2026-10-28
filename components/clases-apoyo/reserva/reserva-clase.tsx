@@ -8,7 +8,7 @@ import type { MateriaDB } from '@/components/clases-apoyo/tipos';
 /* Bloque de reserva de clases de apoyo: calendario, horarios y contacto.
    La lógica se movió tal cual desde la app vieja de materias; sólo cambió el
    contenedor, que ahora es una tarjeta autónoma con estilo propio
-   (app/clases-apoyo/reserva-clase.css) para verse igual en todas las materias. */
+   (estilos/clases-apoyo/reserva-clase.css) para verse igual en todas las materias. */
 
 /* ── Monthly Calendar ── */
 function MonthlyCalendar({ selectedDays, onToggleDay, locked, diasBloqueados, materiaSlug }: { selectedDays: Set<string>; onToggleDay: (key: string, dayInfo: { num: string; month: string; past: boolean }) => void; locked?: boolean; diasBloqueados?: string[]; materiaSlug: string }) {

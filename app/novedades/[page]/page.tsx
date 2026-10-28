@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import NovedadesPage from '@/components/novedades/novedades-page';
 import type { Novedad } from '@/components/novedades/novedades-page';
 import SiteFooter from '@/components/footer';
-import '../novedades.css';
+import '@/estilos/novedades/novedades.css';
 
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;

@@ -4,7 +4,7 @@ import { jsonLdScript } from '@/lib/json-ld';
 import { supabase } from '@/lib/supabase';
 import type { FaqPregunta } from '@/lib/types';
 import SiteFooter from '@/components/footer';
-import './faq.css';
+import '@/estilos/faq/faq.css';
 
 export const metadata: Metadata = {
   title: 'Preguntas Frecuentes',
