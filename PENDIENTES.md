@@ -29,6 +29,8 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 6. Sitio y diseño
 
+- [ ] **Aprovechar la visibilidad del calendario académico para llevar a la oferta de carreras** (28/10/2026): `/calendario-academico` trae búsquedas estacionales («calendario Siglo 21 2026») y hoy no empuja hacia las fichas. Primero medir lo que ya existe: `lib/analytics.ts` registra `calendario-salida` con destino `inicio` o `carreras` (`components/analytics-interactions.tsx`). Después evaluar enlaces contextuales desde las fechas —inicio de cursado, inscripción a materias— hacia las carreras y la preinscripción, sin inventar condiciones de cursada.
+
 - [ ] **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (28/10/2026): es el sitio de GRUPO BTC S.A. (Av. Córdoba 1551, CABA), no el oficial de la universidad, y resuelve la ficha de otra manera. Ejemplo anotado: [Licenciatura en Finanzas](https://siglo21online.com.ar/licenciatura-en-finanzas-detalle/). Lo que se vio ahí y vale evaluar: datos duros arriba y en una línea (duración, modalidad, título, validez con número de resolución), «¿Qué vas a lograr?» con cuatro resultados en tarjetas, comparación explícita de las dos modalidades de cursada (Educación Distribuida y Home) con encuentros y aperturas, plan de estudios plegado por año y cuatrimestre, y un bloque de «más posibilidades» con doble titulación, título intermedio y ámbitos profesionales. El formulario de WhatsApp ya llega con la carrera elegida. Revisar el resto de sus fichas antes de copiar cualquier cosa y decidir qué entra a `cloudflare/` sin inventar condiciones de cursada.
 
 - [ ] **Dar a Teclab alcance en México y Chile por el SEO** (27/10/2026): Teclab se ofrece principalmente en México y Chile, no sólo en Argentina, y hoy el sitio no lo dice. Sumar esos países al contenido y a las páginas de Teclab (títulos, descripciones y texto visible) para que se lo encuentre buscando desde ahí. Sin inventar condiciones de cursada, precios ni modalidad que no estén confirmados: las condiciones por país las aporta el usuario.
@@ -37,11 +39,14 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 7. Bot, leads y comercial
 
+- [ ] **Revisar los dos PowerPoints nuevos de Teclab** (28/10/2026): uno de Gestión y el otro del último bloque de carreras.
+
 - [ ] **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas. No es una tarea de ejecución inmediata.
 
 - [ ] **Confirmar el ingreso con usuario a La Nube 21**. El 17/10/2026 sólo se comprobó que la portada responde. [Revisión de acceso](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
+- [ ] **Estudiar la venta exitosa de seguros** (28/10/2026): ver cómo se vende un seguro —recorrido del asesor, objeciones, cierre y seguimiento— y qué se puede traer al trato con los leads del CAU. Sin detalle todavía.
 - [ ] **Ampliar la app de HubSpot** (18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición; no ejecutar todavía. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
 - [ ] **HubSpot leads — mejoras de panel y operaciones** (20/10/2026):
   - **Agregar check de WhatsApp**: casilla manual para marcar envío donde falte (ej. en Activity).
