@@ -30,6 +30,11 @@
 }
 
 /* ── Hero ─────────────────────────────────────────────── */
+/* La portada y su contenido aparecen completos desde el primer cuadro. */
+.career-page--teclab :is(.career-hero-media, .career-all-careers, .career-breadcrumb, .career-hero-marca, .career-kicker, .career-hero-intro, .career-aviso-inicio, .career-hero-actions) {
+  animation: none;
+}
+
 /* Sin linea al pie: el hero ya se funde con el fondo y el borde de 1 px
    quedaba como un corte suelto entre los botones y los datos. */
 .career-page--teclab .career-hero {
