@@ -28,6 +28,7 @@ type EntornoRuntime = {
   SMTP2GO_API_KEY?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
+  ALERTA_CLOUDFLARE_SECRETO?: string;
 };
 
 const runtime = env as unknown as EntornoRuntime;
@@ -42,6 +43,13 @@ export const bindingCola = (): ProductorCola | undefined =>
   runtime.APP_STAGE === 'local' || runtime.APP_STAGE === 'produccion' ? runtime.EFECTOS : undefined;
 
 export const secretoCron = (): string | undefined => runtime.CRON_SECRET;
+
+/**
+ * Secreto del destino webhook de Cloudflare Notifications («Telegram CAU»).
+ * Cloudflare lo manda en `cf-webhook-auth` y sin él el endpoint no reenvía
+ * nada: es público y cualquiera podría llenar el chat de Telegram.
+ */
+export const secretoAlertaCloudflare = (): string | undefined => runtime.ALERTA_CLOUDFLARE_SECRETO;
 
 export const secretoRevalidar = (): string | undefined => runtime.REVALIDATE_SECRET;
 

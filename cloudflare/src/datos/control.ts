@@ -29,6 +29,10 @@ const FORMULARIOS = ['consulta', 'faq', 'clase', 'precio'];
 const MAXIMOS_ALERTA = {
   whatsapp: 5, 'clase-whatsapp': 5, 'formulario-fallo': 5,
   'formulario-intento': 12, 'formulario-abandonado': 12,
+  // El destino webhook de Cloudflare Notifications reenvía a Telegram. El tope
+  // no protege del uso normal (una alerta de facturación llega una vez al mes):
+  // protege del caso en que el secreto se filtre y alguien llene el chat.
+  'alerta-cloudflare': 5,
 } as const;
 
 async function claveHash(prefijo: string, ip: string) {
