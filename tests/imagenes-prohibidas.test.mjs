@@ -9,7 +9,7 @@ const PROHIBIDAS = ['Header_1920x450-1'];
 
 // sql/ y la fixture de las cinco altas quedan afuera: son el registro de lo
 // que se corrió en su momento, no lo que se publica hoy.
-const CARPETAS = ['app', 'components', 'lib'];
+const CARPETAS = ['components', 'lib', 'paginas'];
 const EXTENSIONES = new Set(['.ts', '.tsx', '.js', '.mjs', '.css', '.json']);
 
 function archivos(dir) {

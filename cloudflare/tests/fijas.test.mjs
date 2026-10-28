@@ -1,7 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
 import { opcionesVocacional, opcionesVocacionalTeclab } from '../src/datos/vocacional.ts';
 import { bibliotecaImagenes } from '../src/datos/imagenes.ts';
 import { crearD1, insertarCarrera } from './helpers/d1.mjs';
@@ -37,13 +35,3 @@ test('biblioteca cruza sólo carreras visibles y calcula faltantes de Siglo 21',
   assert.deepEqual(datos.sinFoto, ['Derecho']);
 });
 
-test('Next de pruebas rechaza dotenv y red externa sin leer ni enviar nada', () => {
-  const preload = fileURLToPath(new URL('./helpers/aislar-next.cjs', import.meta.url));
-  const resultado = spawnSync(process.execPath, ['--require', preload, '-e', `
-    const assert = require('node:assert/strict');
-    assert.throws(() => require('node:fs').readFileSync('.env.local'), {code:'ENOENT'});
-    assert.throws(() => require('node:net').connect({host:'example.invalid',port:443}), /Red externa/);
-    assert.throws(() => fetch('https://example.invalid'), /Red externa/);
-  `], { encoding: 'utf8', env: { PATH: process.env.PATH } });
-  assert.equal(resultado.status, 0, resultado.stderr);
-});

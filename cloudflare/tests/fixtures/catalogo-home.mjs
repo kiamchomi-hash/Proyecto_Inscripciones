@@ -73,18 +73,12 @@ const FILAS_BASE = [
   },
 ];
 
-// `updated_at` viaja en el fixture para que el sitemap de las dos plataformas
-// produzca el mismo `<lastmod>`. Next lo lee de Supabase y D1 lo devuelve de su
-// columna, con la misma forma ISO.
+// `updated_at` viaja en el fixture para que el sitemap produzca un `<lastmod>`
+// estable: D1 lo devuelve de su columna, con la misma forma ISO.
 export const FILAS = FILAS_BASE.map((fila, indice) => ({
   ...fila,
   updated_at: `2026-10-${String(10 + indice).padStart(2, '0')}T12:00:00.000Z`,
 }));
-
-/** Respuesta que el stub devuelve en lugar de PostgREST. */
-export function filasPostgrest() {
-  return FILAS;
-}
 
 /** Carga las mismas filas en el D1 local, con su codificación de columnas. */
 export async function insertarCatalogo(db) {

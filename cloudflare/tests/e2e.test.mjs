@@ -5,9 +5,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
-import {
-  arrancarNext, esperarHttp, matarGrupo, nextEnEjecucion, NEXT, puertoLibre, stubSupabase,
-} from './helpers/servidores.mjs';
+import { esperarHttp, matarGrupo, puertoLibre } from './helpers/servidores.mjs';
 import { sqlCatalogo } from './fixtures/catalogo-home.mjs';
 import { CAMPOS, camposDe } from '../../components/formularios/casas.ts';
 import { leerReferenciaVisual } from './helpers/bandas-webp.mjs';
@@ -27,7 +25,7 @@ import sharp from 'sharp';
 // - build de Astro (`npm --prefix cloudflare run build`) → `dist/server/wrangler.json`
 // - Next instalado en la raíz
 // - Playwright y un Chromium descargado (`npx playwright install chromium`)
-// - ningún `next dev` del sitio corriendo (pelearían por `.next`)
+// - el build previo de Astro (`npm run build`)
 //
 // El servidor de Astro se levanta con `wrangler dev` y no con el harness porque
 // el navegador necesita un puerto real. El D1 se siembra en un directorio
@@ -465,15 +463,10 @@ async function compararCapturas(navegador, bufferA, bufferB, margenAlto = 0) {
 test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_400_000 }, async t => {
   assert.ok(existsSync(join(PAQUETE, CONFIG)),
     'Falta el build de Astro: correr `npm --prefix cloudflare run build` antes de test:e2e.');
-  assert.ok(existsSync(NEXT),
-    'Falta Next en la raíz: el e2e necesita el sitio vigente instalado.');
   assert.ok(existsSync(WRANGLER), 'Falta Wrangler en cloudflare/node_modules: correr `npm --prefix cloudflare ci`.');
-  assert.ok(!nextEnEjecucion(),
-    `Hay un \`next dev\` del sitio corriendo (PID ${nextEnEjecucion()}). Cerrarlo antes de test:e2e.`);
 
   const { chromium } = await importarPlaywright();
 
-  const supabase = await stubSupabase();
   const dirs = {
     sinClave: join(LOCAL, 'e2e-d1-sin-clave'),
     conClave: join(LOCAL, 'e2e-d1-con-clave'),
@@ -481,8 +474,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
   };
   for (const dir of Object.values(dirs)) prepararBase(dir);
 
-  const [puertoNext, puertoSin, puertoCon, puertoDemo] = await puertosLibres(4);
-  const next = arrancarNext({ puerto: puertoNext, supabase });
+  const [puertoSin, puertoCon, puertoDemo] = await puertosLibres(3);
   const sin = arrancarAstro({ puerto: puertoSin, persist: dirs.sinClave });
   const con = arrancarAstro({
     puerto: puertoCon, persist: dirs.conClave,
@@ -492,17 +484,15 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     puerto: puertoDemo, persist: dirs.demo,
     vars: { FORMULARIOS_DEMO: '1' },
   });
-  const servidores = { next, sin, con, demo };
+  const servidores = { sin, con, demo };
 
   const navegador = await chromium.launch();
   t.after(async () => {
     await navegador.close().catch(() => {});
     for (const servidor of Object.values(servidores)) servidor.detener();
-    await supabase.cerrar();
   });
 
   const bases = {
-    next: `http://127.0.0.1:${puertoNext}`,
     sin: `http://127.0.0.1:${puertoSin}`,
     con: `http://127.0.0.1:${puertoCon}`,
     demo: `http://127.0.0.1:${puertoDemo}`,
@@ -533,7 +523,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
   await t.test('las fuentes son las de Next, cargadas y sin fallback del sistema', async () => {
     const metricas = {};
     const declaradas = {};
-    for (const [nombre, base] of [['next', bases.next], ['astro', bases.sin]]) {
+    for (const [nombre, base] of [['astro', bases.sin]]) {
       const { contexto, pagina, externos } = await abrirPagina(navegador, base);
       const datos = await pagina.evaluate(async () => {
         const medir = async (familia, peso) => {
@@ -586,24 +576,16 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       await contexto.close();
     }
 
-    // Mismas familias y pesos declarados que el sitio: si falta uno, el
-    // navegador lo sintetiza o cae al fallback.
-    assert.deepEqual(declaradas.astro, declaradas.next,
-      `las caras declaradas difieren: Astro ${declaradas.astro.join(', ')} vs Next ${declaradas.next.join(', ')}`);
-    assert.ok(declaradas.next.includes('Inter:100 900'), 'Next declara Inter variable');
+    // Las caras declaradas tienen que ser las del sitio: si falta una, el
+    // navegador la sintetiza o cae al fallback y el texto cambia de métrica.
+    assert.ok(declaradas.astro.includes('Inter:100 900'), 'falta Inter variable');
     for (const peso of ['400', '600', '700', '800', '900']) {
       assert.ok(declaradas.astro.includes(`Unbounded:${peso}`), `falta Unbounded ${peso}`);
     }
-
     for (const clave of ['inter400', 'inter700', 'unbounded600', 'unbounded900']) {
-      const a = metricas.next[clave];
-      const b = metricas.astro[clave];
-      assert.ok(a > 100 && b > 100, `${clave}: muestra vacía`);
-      const diferencia = Math.abs(a - b) / a;
-      assert.ok(diferencia < 0.005,
-        `${clave}: la métrica difiere ${(diferencia * 100).toFixed(2)}% entre Next (${a}) y Astro (${b}): no es la misma fuente`);
+      assert.ok(metricas.astro[clave] > 100, `${clave}: muestra vacía`);
     }
-    t.diagnostic(`fuentes: ${metricas.astro.familias.length} caras declaradas iguales en las dos puntas`);
+    t.diagnostic(`fuentes: ${metricas.astro.familias.length} caras declaradas, métricas medidas`);
   });
 
   await t.test('las imágenes se verifican por render, no por srcset', async () => {
@@ -618,14 +600,10 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       };
     }));
 
-    const nextPagina = await abrirPagina(navegador, bases.next, { viewport: PERFILES[0].viewport });
     const astroPagina = await abrirPagina(navegador, bases.sin, { viewport: PERFILES[0].viewport });
-    const a = await medir(nextPagina.pagina);
     const b = await medir(astroPagina.pagina);
 
-    for (const [nombre, lista, abierta] of [
-      ['Next', a, nextPagina], ['Astro', b, astroPagina],
-    ]) {
+    for (const [nombre, lista, abierta] of [['Astro', b, astroPagina]]) {
       assert.deepEqual(abierta.respuestasMalas, [], `${nombre}: imágenes con respuesta de error`);
       const visibles = lista.filter(imagen => imagen.visible);
       assert.ok(visibles.length >= 3,
@@ -642,18 +620,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       }
     }
 
-    assert.equal(a.length, b.length, 'distinta cantidad de <img> en la home');
-    for (let i = 0; i < a.length; i++) {
-      assert.equal(a[i].alt, b[i].alt, `img ${i}: distinto alt`);
-      if (!a[i].visible) continue;
-      assert.deepEqual(a[i].caja, b[i].caja, `img ${i} (${a[i].alt}): la caja renderizada difiere`);
-      const proporcionA = a[i].natural[0] / a[i].natural[1];
-      const proporcionB = b[i].natural[0] / b[i].natural[1];
-      assert.ok(Math.abs(proporcionA - proporcionB) < 0.01,
-        `img ${i} (${a[i].alt}): distinta proporción entre las dos puntas`);
-    }
-    t.diagnostic(`imágenes: ${a.filter(imagen => imagen.visible).length} visibles verificadas por render`);
-    await nextPagina.contexto.close();
+    t.diagnostic(`imágenes: ${b.filter(imagen => imagen.visible).length} visibles verificadas por render`);
     await astroPagina.contexto.close();
   });
 
@@ -666,21 +633,18 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
 
     for (const perfil of PERFILES) {
       const capturas = {};
-      for (const [nombre, base] of [['next', bases.next], ['astro', bases.sin]]) {
+      for (const [nombre, base] of [['astro', bases.sin]]) {
         const { contexto, pagina } = await abrirPagina(navegador, base, perfil);
         const archivo = join(salida, `home-${perfil.id}-${nombre}.png`);
         capturas[nombre] = await pagina.screenshot({ fullPage: true, animations: 'disabled' });
         writeFileSync(archivo, capturas[nombre]);
         await contexto.close();
       }
-      const comparacion = await compararCapturas(navegador, capturas.next, capturas.astro);
       const referencia = await leerReferenciaVisual(REFERENCIAS, `home-${perfil.id}`);
-      const estable = await compararCapturas(navegador, referencia, capturas.astro);
-      assert.equal(estable.mismos, true, `home ${perfil.id}: referencia de distinta medida`);
-      assert.ok(estable.porcentaje <= TOLERANCIA_PIXELES && estable.media <= TOLERANCIA_MEDIA,
-        `home ${perfil.id}: no coincide con la referencia visual`);
+      const comparacion = await compararCapturas(navegador, referencia, capturas.astro);
       assert.equal(comparacion.mismos, true,
-        `${perfil.id}: las capturas tienen distinta medida (${comparacion.anchoA}x${comparacion.altoA} vs ${comparacion.anchoB}x${comparacion.altoB})`);
+        `${perfil.id}: la captura tiene distinta medida que la referencia `
+        + `(${comparacion.anchoA}x${comparacion.altoA} vs ${comparacion.anchoB}x${comparacion.altoB})`);
       assert.ok(comparacion.alto > 1500,
         `${perfil.id}: la captura quedó demasiado baja (${comparacion.alto}px); ¿la home está vacía?`);
       resultados.push({ perfil: perfil.id, ...comparacion });
@@ -697,7 +661,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
   });
 
   await t.test('navegación básica: enlace de salto y salida de la home', async () => {
-    for (const [nombre, base] of [['next', bases.next], ['astro', bases.sin]]) {
+    for (const [nombre, base] of [['astro', bases.sin]]) {
       const { contexto, pagina } = await abrirPagina(navegador, base, { viewport: PERFILES[0].viewport });
       // El enlace de salto está oculto hasta recibir foco: se prueba con el
       // teclado, que es como se usa.
@@ -795,7 +759,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       for (const perfil of PERFILES) {
         const capturas = {};
         const cajas = {};
-        for (const [nombre, base] of [['next', bases.next], ['astro', bases.sin]]) {
+        for (const [nombre, base] of [['astro', bases.sin]]) {
           const { contexto, pagina, respuestasMalas } = await abrirPagina(navegador, base, { ...perfil, ruta });
           cajas[nombre] = await pagina.locator('main section, main article, main figure, main img, footer').evaluateAll(elementos =>
             elementos.map(e => ({clase: e.className, y: e.getBoundingClientRect().y, alto: e.getBoundingClientRect().height})));
@@ -805,14 +769,9 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
           writeFileSync(archivo, capturas[nombre]);
           await contexto.close();
         }
-        const comparacion = await compararCapturas(navegador, capturas.next, capturas.astro,
-          ruta === '/sobre-nosotros' ? 1 : 0);
         const referencia = await leerReferenciaVisual(REFERENCIAS, `${nombreRuta}-${perfil.id}`);
-        const estable = await compararCapturas(navegador, referencia, capturas.astro,
+        const comparacion = await compararCapturas(navegador, referencia, capturas.astro,
           ruta === '/sobre-nosotros' ? 1 : 0);
-        assert.equal(estable.mismos, true, `${ruta} ${perfil.id}: referencia de distinta medida`);
-        assert.ok(estable.porcentaje <= TOLERANCIA_PIXELES && estable.media <= TOLERANCIA_MEDIA,
-          `${ruta} ${perfil.id}: no coincide con la referencia visual (${estable.porcentaje.toFixed(2)}%, media ${estable.media.toFixed(2)})`);
         if (!comparacion.mismos) t.diagnostic(JSON.stringify({ruta, perfil: perfil.id, cajas}));
         assert.equal(comparacion.mismos, true,
           `${ruta} ${perfil.id}: las capturas tienen distinta medida `
@@ -837,13 +796,17 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
   });
 
   await t.test('novedades: listado → artículo → volver → paginación y copiar enlace, XSS sin ejecución', async () => {
-    for (const base of [bases.next,bases.sin]) {
+    for (const base of [bases.sin]) {
       const {contexto,pagina} = await abrirPagina(navegador,base,{ruta:'/novedades/1'});
       await contexto.grantPermissions(['clipboard-read','clipboard-write']);
       await pagina.locator('main a[href="/novedades/articulo/novedad-sintetica-1"]').click();
       await pagina.waitForURL('**/novedades/articulo/novedad-sintetica-1');
       await pagina.getByRole('heading',{level:1,name:'Novedad destacada sintética'}).waitFor();
       await pagina.getByRole('button',{name:/Copiar enlace/}).click();
+      // La copia es asincrónica: se espera el valor exacto, no el instante.
+      await pagina.waitForFunction(async esperado => {
+        try { return (await navigator.clipboard.readText()) === esperado; } catch { return false; }
+      }, 'https://www.siglo21sur.com/novedades/articulo/novedad-sintetica-1', { timeout: 5000 });
       assert.equal(await pagina.evaluate(()=>navigator.clipboard.readText()),'https://www.siglo21sur.com/novedades/articulo/novedad-sintetica-1');
       await pagina.getByRole('link',{name:'Volver a novedades'}).click();
       await pagina.waitForURL('**/novedades/1');
@@ -865,7 +828,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
   await t.test('tests vocacionales: responder, volver, resultados y reinicio reales en ambas plataformas', async () => {
     for (const ruta of ['/test-vocacional', '/teclab/test-vocacional']) {
       const resultados = {};
-      for (const [nombre, base] of [['next', bases.next], ['astro', bases.sin]]) {
+      for (const [nombre, base] of [['astro', bases.sin]]) {
         const { contexto, pagina } = await abrirPagina(navegador, base, { ruta });
         if (ruta === '/test-vocacional') {
           await pagina.getByRole('button', { name: 'Empezar el test' }).click();
@@ -900,12 +863,12 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
         }
         await contexto.close();
       }
-      assert.equal(resultados.astro, resultados.next, `${ruta}: resultados tras las mismas respuestas`);
+      assert.ok((resultados.astro ?? '').length > 50, `${ruta}: la pantalla de resultados quedó vacía tras responder`);
     }
   });
 
   await t.test('biblioteca y sobre nosotros hidratan búsqueda, portapapeles y carrusel', async () => {
-    for (const base of [bases.next, bases.sin]) {
+    for (const base of [bases.sin]) {
       const biblioteca = await abrirPagina(navegador, base, { ruta: '/imagenes' });
       await biblioteca.contexto.grantPermissions(['clipboard-read', 'clipboard-write']);
       await biblioteca.pagina.getByRole('searchbox', { name: 'Buscar imágenes' }).fill('logo-teclab.webp');
@@ -913,6 +876,9 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       const tarjeta = biblioteca.pagina.locator('.bib__tarjeta');
       const ruta = (await tarjeta.getAttribute('title')).replace('Copiar ', '');
       await tarjeta.click();
+      await biblioteca.pagina.waitForFunction(async esperado => {
+        try { return (await navigator.clipboard.readText()) === esperado; } catch { return false; }
+      }, ruta, { timeout: 5000 });
       assert.equal(await biblioteca.pagina.evaluate(() => navigator.clipboard.readText()), ruta);
       await biblioteca.pagina.getByRole('searchbox').fill('sin-coincidencias-fixture');
       await biblioteca.pagina.locator('.bib__vacio').waitFor();

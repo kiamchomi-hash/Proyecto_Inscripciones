@@ -2,8 +2,12 @@
    y de material comercial, y generaba utilidades para clases que ya no existen
    en el sitio. Con source(none) solo el codigo vivo genera CSS. */
 @import "tailwindcss" source(none);
-@source "../app";
+/* Código vivo del sitio: componentes compartidos, cuerpos de página del Worker
+   y su layout. `paginas/` queda afuera a propósito porque sus utilidades no
+   están generadas en producción y aplicarlas cambia el espaciado publicado. */
 @source "../components";
+@source "../cloudflare/src/entrega";
+@source "../cloudflare/src/layouts";
 
 /* Tokens de Tailwind para los modales de carrera. Cada valor reemplaza a un
    valor arbitrario que se repetía en los cuatro modales, con la misma medida:

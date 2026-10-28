@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import config from '../next.config.ts';
-import { resolverRutaSeo, consolidarFilasSeo } from '../herramientas/seo-rutas.mjs';
+import { buscarRedireccion } from '../cloudflare/src/entrega/redirects.ts';
+import { resolverRutaSeo, resolverConBusqueda, consolidarFilasSeo } from '../herramientas/seo-rutas.mjs';
 
 const base = 'https://www.siglo21sur.com';
-const resolver = resolverRutaSeo(await config.redirects());
+const resolver = resolverConBusqueda(buscarRedireccion);
 
 test('los redirects reales consolidan renombres y conservan las bajas fuera de la home', () => {
   assert.equal(resolver('/carreras/diplomatura-en-fraude-financiero-y-digital'), '/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital');
@@ -33,4 +33,7 @@ test('una cadena hacia la home o un ciclo no absorbe filas de bajas', () => {
   assert.equal(r('/a'), '/a');
   const ciclo = resolverRutaSeo([{ source: '/a', destination: '/b' }, { source: '/b', destination: '/a' }]);
   assert.equal(ciclo('/a'), '/a');
+  // Mismo criterio con el buscador del Worker, que es la fuente vigente.
+  const mapa = new Map([['/a', '/b'], ['/b', '/']]);
+  assert.equal(resolverConBusqueda(ruta => mapa.has(ruta) ? { destino: mapa.get(ruta) } : null)('/a'), '/a');
 });

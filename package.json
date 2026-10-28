@@ -3,12 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
     "imagenes:derivar": "node herramientas/derivar-imagenes.mjs",
     "predev": "node herramientas/derivar-imagenes.mjs",
     "prebuild": "node herramientas/derivar-imagenes.mjs",
-    "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit --pretty false",
     "test": "node --test tests/*.test.mjs",
@@ -42,7 +39,6 @@
   "homepage": "https://github.com/kiamchomi-hash/Proyecto_Inscripciones#readme",
   "dependencies": {
     "@next/third-parties": "^16.4.2",
-    "@supabase/supabase-js": "^2.110.7",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/sanitize-html": "^2.16.0",
     "jspdf": "^4.2.1",

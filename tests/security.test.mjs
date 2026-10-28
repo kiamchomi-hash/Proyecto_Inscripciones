@@ -58,7 +58,7 @@ test('no quedan rutas ni helpers del panel de administración', async () => {
     '@/lib/supabase-server',
     '@/lib/auth/exigir-admin',
   ];
-  for (const directory of ['app', 'components', 'lib']) {
+  for (const directory of ['components', 'lib', 'cloudflare/src']) {
     const files = await sourceFiles(directory).catch(() => []);
     for (const file of files) {
       const source = await readFile(path.join(root, file), 'utf8');
@@ -84,7 +84,7 @@ test('el JSON-LD escapa el contenido que viene de la base', async () => {
 });
 
 test('ningún bloque de datos estructurados se serializa sin escapar', async () => {
-  const files = (await sourceFiles('app')).concat(await sourceFiles('components'));
+  const files = (await sourceFiles('components')).concat(await sourceFiles('paginas'));
   const crudos = [];
   for (const file of files) {
     const source = await readFile(path.join(root, file), 'utf8');

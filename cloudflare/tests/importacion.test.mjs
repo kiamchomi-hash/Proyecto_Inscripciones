@@ -85,13 +85,15 @@ test('batch fallido no deja tablas públicas parcialmente importadas', async t =
   assert.equal(await db.prepare('SELECT count(*) AS n FROM carreras').first('n'),0);
 });
 
-test('excepciones SEO de Cloud Administration y Gestión Hotelera coinciden con Next', () => {
-  const fuente = readFileSync(new URL('../../app/carreras/[slug]/page.tsx',import.meta.url),'utf8');
-  const destino = readFileSync(new URL('../src/entrega/carrera-seo.ts',import.meta.url),'utf8');
-  for (const nombre of ['Tecnicatura Superior en Cloud Administration','Tecnicatura Superior en Gestión Hotelera']) {
-    const extraer = s => { const i = s.indexOf(`'${nombre}': {`); assert.ok(i>=0); return s.slice(i,s.indexOf('}',i)+1).replace(/\s+/g,' '); };
-    assert.equal(extraer(destino),extraer(fuente));
-  }
+test('las excepciones SEO de Cloud Administration y Gestión Hotelera conservan su texto', () => {
+  // Antes se comparaban contra el port de Next; ese sitio ya no existe, así que
+  // se fijan los valores para que un cambio accidental siga fallando acá.
+  const fuente = readFileSync(new URL('../src/entrega/carrera-seo.ts', import.meta.url), 'utf8');
+  const esperados = [
+    "Técnico Superior en Cloud Administration online | Teclab",
+    "Tecnicatura Superior en Gestión Hotelera | Teclab · Siglo 21",
+  ];
+  for (const titulo of esperados) assert.ok(fuente.includes(`title: '${titulo}'`), titulo);
 });
 
 test('GET público no sigue redirects, no pasa claves al sitio y rechaza rutas/credenciales privadas', async () => {

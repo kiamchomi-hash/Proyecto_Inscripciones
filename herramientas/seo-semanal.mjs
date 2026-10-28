@@ -18,8 +18,8 @@
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { acceso, consultar as consultarGsc } from './gsc.mjs';
-import nextConfig from '../next.config.ts';
-import { resolverRutaSeo, consolidarFilasSeo } from './seo-rutas.mjs';
+import { buscarRedireccion } from '../cloudflare/src/entrega/redirects.ts';
+import { resolverConBusqueda, consolidarFilasSeo } from './seo-rutas.mjs';
 
 const RAIZ = path.resolve(import.meta.dirname, '..');
 const LOGS = path.join(RAIZ, 'herramientas', 'vigilancia-logs');
@@ -267,7 +267,7 @@ async function main() {
   // ── Paginas ───────────────────────────────────────────────────────────────
 
   const oferta = await slugsDeLaOferta();
-  const resolver = resolverRutaSeo(await nextConfig.redirects());
+  const resolver = resolverConBusqueda(buscarRedireccion);
   const consolidar = (filas, indice) => consolidarFilasSeo(filas, indice, resolver, BASE);
   const paginasAhora = consolidar(await consultar({ ...PERIODO_ACTUAL, dimensions: ['page'], rowLimit: 500 }), 0);
   const paginasAntes = consolidar(await consultar({ ...PERIODO_PREVIO, dimensions: ['page'], rowLimit: 500 }), 0);

@@ -4,18 +4,29 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { crearD1, insertarCarrera } from './helpers/d1.mjs';
 import { carrerasPublicas, carreraPorSlug } from '../src/datos/carreras.ts';
 import { redirectCarrera } from '../src/entrega/redirects-carreras.ts';
-import nextConfig from '../../next.config.ts';
 
-test('redirects de fichas conservan todos los destinos y códigos de Next, sin ampliar a otras familias', async () => {
-  const reglas = (await nextConfig.redirects()).filter(r => r.source.startsWith('/carreras/'));
-  assert.ok(reglas.length > 15);
-  for (const r of reglas) {
-    const esperado = {destino:r.destination, status:r.statusCode ?? (r.permanent ? 308 : 307)};
-    const slug = r.source.replace('/carreras/', '');
-    assert.deepEqual(redirectCarrera(slug), esperado);
-    assert.deepEqual(redirectCarrera(slug.toUpperCase()), esperado);
+test('redirects de fichas conservan destinos y códigos, sin ampliar a otras familias', () => {
+  // La lista salió de next.config.ts cuando se migró; ese sitio ya no existe y
+  // el Worker es la fuente. Estos casos fijan el contrato publicado.
+  const casos = [
+    ['curso-de-actualizacion-profesional-en-inteligencia-artificial', '/', 301],
+    ['curso-en-actualizacion-profesional-en-inteligencia-artificial', '/', 301],
+    ['licenciatura-en-agroinformatica', '/', 301],
+    ['tecnicatura-superior-en-venta-directa', '/', 301],
+    ['tecnicatura-superior-en-energias-renovables', '/', 301],
+    ['diplomatura-en-bienestar-integral-herramientas-para-transformar-te', '/', 302],
+    ['diplomatura-en-inteligencia-artificial', '/', 302],
+    ['tecnicatura-superior-en-fintech', '/', 308],
+    ['tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching', '/carreras/tecnicatura-superior-en-agile-coaching', 308],
+    ['tecnicatura-en-diseno-y-desarrollo-de-videojuegos', '/carreras/tecnicatura-en-videojuegos', 301],
+    ['tecnicatura-superior-en-customer-experience', '/carreras/tecnicatura-superior-en-experiencia-del-cliente', 301],
+  ];
+  for (const [slug, destino, status] of casos) {
+    assert.deepEqual(redirectCarrera(slug), { destino, status }, slug);
+    assert.deepEqual(redirectCarrera(slug.toUpperCase()), { destino, status }, `${slug} en mayúsculas`);
   }
   assert.equal(redirectCarrera('inexistente'), null);
+  assert.equal(redirectCarrera('licenciatura-en-administracion'), null);
 });
 
 test('fichas: proyección explícita, taxonomía, slug viejo y validación de slides', async t => {

@@ -9,6 +9,7 @@ import * as adaptadores from '../lib/datos/carrera-detalle.ts';
 import { carreraHubspotDe } from '../components/formularios/casas.ts';
 import { perfilDe } from '../components/test-vocacional-teclab/puntaje.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
+import { buscarRedireccion } from '../cloudflare/src/entrega/redirects.ts';
 
 // Las nueve tecnicaturas nuevas de Teclab de los bloques 2 y 3 (capacitaciones
 // de admisión del 16/10/2026). Entran con inscripción abierta: ficha, página de
@@ -178,14 +179,12 @@ test('cada fila trae descripción, enfoque, plan, competencias y FAQ con el form
   }
 });
 
-test('ningún redirect de next.config.ts tapa los slugs nuevos', async () => {
-  const { default: config } = await import('../next.config.ts');
-  const fuentes = new Set((await config.redirects()).map(r => r.source));
+test('ningún redirect tapa los slugs nuevos', () => {
   const slugs = new Set();
   for (const fila of filasDelSql()) {
     const slug = tipos.carreraToSlug({ ...fila, nombre: nombreActual(fila.nombre) });
-    assert.ok(!fuentes.has(`/carreras/${slug}`), slug);
-    assert.ok(!fuentes.has(`/carreras/${slug}/inscripcion`), slug);
+    assert.equal(buscarRedireccion(`/carreras/${slug}`), null, slug);
+    assert.equal(buscarRedireccion(`/carreras/${slug}/inscripcion`), null, slug);
     slugs.add(slug);
   }
   assert.equal(slugs.size, NUEVAS.length);
@@ -230,8 +229,10 @@ test('cada una tiene página de inscripción con un título que entra', () => {
   }
 });
 
-test('el slug largo de Agile Coaching redirige al corto', async () => {
-  const { readFileSync } = await import('node:fs');
-  const config = readFileSync(new URL('../next.config.ts', import.meta.url), 'utf8');
-  assert.match(config, /source: '\/carreras\/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',\s*destination: '\/carreras\/tecnicatura-superior-en-agile-coaching'/);
+test('el slug largo de Agile Coaching redirige al corto', () => {
+  assert.deepEqual(buscarRedireccion('/carreras/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching'), {
+    origen: '/carreras/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',
+    destino: '/carreras/tecnicatura-superior-en-agile-coaching',
+    estado: 308,
+  });
 });

@@ -5,6 +5,29 @@ export function resolverRutaSeo(redirects) {
     .filter(r => !r.has && !r.missing && !r.source.includes(':') &&
       r.destination.startsWith('/') && !r.destination.startsWith('//'))
     .map(r => [r.source, r.destination]));
+  return resolverDesdeMapa(mapa);
+}
+
+/**
+ * Misma consolidación, pero resolviendo contra el buscador del Worker: así la
+ * fuente única son los redirects que se sirven de verdad y no una copia.
+ */
+export function resolverConBusqueda(buscar) {
+  return ruta => {
+    const visitadas = new Set();
+    let destino = ruta;
+    while (visitadas.size <= 20) {
+      const redireccion = buscar(destino);
+      if (!redireccion) break;
+      if (visitadas.has(destino)) return ruta;
+      visitadas.add(destino);
+      destino = redireccion.destino;
+    }
+    return destino === '/' ? ruta : destino;
+  };
+}
+
+function resolverDesdeMapa(mapa) {
   return ruta => {
     const visitadas = new Set();
     let destino = ruta;
