@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { writeFile } from 'node:fs/promises';
 import { pluginInventario } from './scripts/inventario-imagenes.mjs';
 import { cabecerasAssets } from './src/entrega/cabeceras.ts';
+import { generar as generarDerivadas } from '../herramientas/derivar-imagenes.mjs';
 
 // El paquete reutiliza módulos puros del sitio (plantilla del mail, mensajes,
 // validadores) que importan con el alias `@/` de la raíz. El alias es de
@@ -34,6 +35,17 @@ const integracionCabecerasAssets = {
   },
 };
 
+// Las fotos con derivados (`/derivados/*`) se generan antes de compilar y antes
+// de levantar el servidor local: si faltan, el `srcset` apuntaría a archivos que
+// no existen. Es idempotente: con el manifiesto al día no reescribe nada.
+const integracionDerivadas = {
+  name: 'derivadas-imagenes',
+  hooks: {
+    'astro:build:start': () => generarDerivadas(),
+    'astro:server:start': () => generarDerivadas(),
+  },
+};
+
 const reemplazos = [
   { find: 'next/font/google', replacement: `${aqui}src/entrega/next-font.ts` },
   { find: /^@\/components\/turnstile-widget$/, replacement: `${aqui}src/entrega/TurnstileWidget.tsx` },
@@ -50,7 +62,7 @@ export default defineConfig({
   output: 'server',
   publicDir: publico,
   adapter: cloudflare({ imageService: 'passthrough', remoteBindings: false }),
-  integrations: [react(), integracionCabecerasAssets],
+  integrations: [react(), integracionCabecerasAssets, integracionDerivadas],
   session: false,
   devToolbar: { enabled: false },
   // Las fuentes pequeñas deben salir como assets del mismo origen: la CSP no

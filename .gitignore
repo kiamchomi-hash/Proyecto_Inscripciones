@@ -10,6 +10,9 @@ build/
 public/styles.css
 public/rellenar_carreras.html
 public/tools/
+# Derivados webp de las fotos: artefactos de build, se rehacen con
+# `node herramientas/derivar-imagenes.mjs`. El manifiesto de lib/ sí se versiona.
+public/derivados/
 components/index/_carrera-navigation-arrows.tsx.bak
 scripts/explore-*.mjs
 scripts/debug_*.mjs

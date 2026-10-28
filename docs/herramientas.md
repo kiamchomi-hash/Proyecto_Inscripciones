@@ -105,6 +105,27 @@ También en `herramientas/`, sin script npm: `generar-og.mjs` produce por cada n
 
 `generar-favicon.mjs`, también sin script npm, rehace `public/favicon.ico` (16/32/48), `public/icon.png` (48), `public/icon-192.png`, `public/icon-512.png` y `public/apple-touch-icon.png` (180) recortando el isologo del vector `public/imagenes/imagenes_cau/siglo21-marca.svg` — el panel del "21" es un cuadrado exacto de 268 unidades ahí adentro, y el favicon es ese cuadrado con los colores invertidos. **No copiar a mano el favicon de 21.edu.ar**: el que publican es un JPEG de 48×48 con el "1" cortado y no hay versión más grande (`?width=` de HubSpot no agranda, y no tienen `apple-touch-icon` ni manifest).
 
+### Derivados de las fotos
+
+`npm run imagenes:derivar` (`herramientas/derivar-imagenes.mjs`) genera las versiones chicas de las fotos de `public/imagenes/` para que el navegador no baje una foto de 3000 px en un celular. Sale de la mano de `imageService: 'passthrough'` del adaptador de Cloudflare: ahí `next/image` es un `<img>` sin optimizador, así que hasta el 27/10/2026 las fotos de los modales se servían enteras —la peor pesaba 3,7 MB—.
+
+- **Salida:** `public/derivados/<hash>-<ancho>.webp`, con el hash del original en el nombre. Está fuera de Git: se genera al compilar y al levantar el servidor (integración `derivadas-imagenes` de `cloudflare/astro.config.mjs`, más `predev`/`prebuild` de la raíz).
+- **Manifiesto:** `lib/imagenes/derivadas.ts`, generado y **sí versionado**. Dice qué anchos existen para cada ruta; sin entrada, el componente sirve el original como siempre. `tests/imagenes-derivadas.test.mjs` falla si el manifiesto quedó viejo o si falta un archivo, así que cambiar una foto sin correr el generador no llega a producción.
+- **Uso:** `components/imagenes/imagen-responsiva.tsx` arma `<picture>` con `srcset`; `lib/imagenes/responsivas.ts` resuelve la URL de un derivado para el prefetch del catálogo.
+- **Caché:** `/derivados/*` sale `immutable` porque el nombre cambia con el contenido (`cloudflare/src/entrega/cabeceras.ts`). `/imagenes/*` sigue con un día, que es lo correcto para una ruta estable que se puede reemplazar en el lugar.
+- **Detalle de las fotos:** se ofrecen 480, 960 y 1440 px, nunca se agranda, y se saltean las que pesan menos de 40 KB. Una foto chica en píxeles pero pesada (PNG de más de 120 KB) igual se convierte a webp a su ancho original.
+
+El generador usa el `sharp` de la raíz, así que compilar `cloudflare/` requiere las dependencias de la raíz instaladas: es la misma dependencia cruzada que ya tienen Tailwind y PostCSS en ese paquete.
+
+## Respaldo de la base
+
+`npm run db:respaldo` (`herramientas/respaldo-d1.mjs`) exporta la D1 de producción a `cloudflare/.local/respaldos/` (fuera de Git, permisos 0700), verifica que el archivo tenga filas y borra los de más de 30 días. Usa la sesión de wrangler del perfil, así que no necesita variables de entorno.
+
+Lo corre un timer de systemd de usuario todos los días a las 08:30 de Argentina, con `Persistent=true` para que se recupere si la PC estaba apagada. Las unidades están en `herramientas/sistema/` y no se instalan solas: el comando está en el encabezado del `.timer`. Comprobar con `systemctl --user list-timers cau-respaldo-d1.timer` y `systemctl --user status cau-respaldo-d1.service`; probar una corrida con `systemctl --user start cau-respaldo-d1.service`.
+
+Time Travel de D1 (7 días en el plan Free) no reemplaza esta copia: vive en la misma cuenta y no se puede sacar de ahí.
+
+
 ## Control preventivo de secretos y archivos privados
 
 Antes del diff, commit y push, el publicador revisa la selección Git y los

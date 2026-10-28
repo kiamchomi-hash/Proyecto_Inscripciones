@@ -1,0 +1,27 @@
+# Todos los días a las 08:30 (hora de Buenos Aires). Persistent=true: si la PC
+# estaba apagada, corre apenas vuelve a prender, así el respaldo no depende de
+# que alguien se acuerde de ejecutarlo.
+#
+# Instalación (no se instala sola):
+#   mkdir -p ~/.config/systemd/user
+#   cp herramientas/sistema/cau-respaldo-d1.service herramientas/sistema/cau-respaldo-d1.timer ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now cau-respaldo-d1.timer
+# Ver la próxima corrida: systemctl --user list-timers cau-respaldo-d1.timer
+# Ver la última: journalctl --user -u cau-respaldo-d1.service -n 100
+# Probarla ahora: systemctl --user start cau-respaldo-d1.service
+#
+# Los archivos quedan en cloudflare/.local/respaldos (fuera de Git, permisos
+# 0700) y el script borra los de más de 30 días. Time Travel de D1 no reemplaza
+# esta copia: vive en la misma cuenta y no se puede sacar de ahí.
+[Unit]
+Description=Respaldo diario de la base D1 de produccion del CAU
+
+[Timer]
+OnCalendar=*-*-* 08:30:00 America/Argentina/Buenos_Aires
+Persistent=true
+AccuracySec=1min
+Unit=cau-respaldo-d1.service
+
+[Install]
+WantedBy=timers.target

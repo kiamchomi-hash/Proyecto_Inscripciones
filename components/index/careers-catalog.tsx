@@ -8,6 +8,8 @@ import { bajarDetalle, completar, useDetalleCarreras } from './detalle-carreras'
 import { getEscuelaIA } from './identidad-argentina';
 import { CATEGORIAS_TECNOLOGIA, esCursoTeclab, getCategoriaTeclabTecnologia, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
 import CareerInfoModal from './career-info-modal';
+import { encodeImagePath } from '@/lib/imagenes/rutas';
+import { derivadaDe } from '@/lib/imagenes/responsivas';
 
 // Levenshtein distance for fuzzy search
 function levenshtein(a: string, b: string): number {
@@ -877,7 +879,9 @@ async function prefetchImages(carrera: CarreraCatalogo) {
       const link = document.createElement('link');
       link.rel = 'prefetch';
       link.as = 'image';
-      link.href = src.split('/').map((s: string) => encodeURIComponent(s)).join('/');
+      // Prefiere el derivado: el original puede pesar megas y esto corre al
+      // pasar el mouse, antes de que nadie haya pedido abrir la ficha.
+      link.href = derivadaDe(src, 960) ?? encodeImagePath(src);
       document.head.appendChild(link);
     }
   }

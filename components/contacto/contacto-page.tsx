@@ -337,7 +337,7 @@ export default function ContactoPageContent() {
                 <div className="flex items-center gap-2 px-3 py-2" style={{ background: '#075e54' }}>
                   <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
                     style={{ background: '#ffffff', padding: '1px' }}>
-                    <Image src="/imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU" width={24} height={24} />
+                    <Image src="/imagenes/imagenes_cau/logo_cau-160.webp" alt="Logo CAU" width={24} height={24} />
                   </div>
                   <span className="text-[10px] font-bold text-white/90">CAU Villa Lugano</span>
                   <span className="ml-auto text-[8px] text-white/50">en línea</span>
@@ -467,7 +467,7 @@ export default function ContactoPageContent() {
                     <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
                       style={{ background: '#ffffff', padding: '1px' }}>
                       <Image
-                        src="/imagenes/imagenes_cau/logo_cau.png"
+                        src="/imagenes/imagenes_cau/logo_cau-160.webp"
                         alt="Logo CAU"
                         width={30}
                         height={30}
@@ -569,7 +569,7 @@ export default function ContactoPageContent() {
                     <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
                       style={{ background: '#ffffff', padding: '1px' }}>
                       <Image
-                        src="/imagenes/imagenes_cau/logo_cau.png"
+                        src="/imagenes/imagenes_cau/logo_cau-160.webp"
                         alt="Logo CAU"
                         width={30}
                         height={30}
@@ -601,7 +601,7 @@ export default function ContactoPageContent() {
                     <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3"
                       style={{ background: 'linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)', padding: '2px' }}>
                       <div className="w-full h-full rounded-full flex items-center justify-center" style={{ background: '#122e2e' }}>
-                        <Image src="/imagenes/imagenes_cau/logo_cau.png" alt="Logo CAU" width={36} height={36} className="brightness-0 invert" />
+                        <Image src="/imagenes/imagenes_cau/logo_cau-160.webp" alt="Logo CAU" width={36} height={36} className="brightness-0 invert" />
                       </div>
                     </div>
                     <p className="text-sm font-bold text-white">@centroeducativovillalugano</p>

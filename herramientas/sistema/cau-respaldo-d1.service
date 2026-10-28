@@ -1,0 +1,16 @@
+# Respaldo diario de la base D1 de producción. Lo dispara cau-respaldo-d1.timer.
+# No lleva secretos: usa la sesión de wrangler ya guardada en el perfil
+# (~/.config/.wrangler), la misma con la que corre `npm run db:respaldo` a mano.
+# Instalación: ver el encabezado del .timer.
+[Unit]
+Description=Respaldo de la base D1 de produccion del CAU
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Escritorio/proyecto-cau
+# La versión de Node sigue a nvm: si se actualiza, corregir esta línea.
+ExecStart=%h/.nvm/versions/node/v24.22.1/bin/node %h/Escritorio/proyecto-cau/herramientas/respaldo-d1.mjs
+TimeoutStartSec=15min
+UMask=0077

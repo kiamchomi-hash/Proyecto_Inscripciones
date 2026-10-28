@@ -134,6 +134,9 @@ test('_headers de assets lleva seguridad y cache, sin cabeceras de HTML', () => 
   assert.match(contenido, /Strict-Transport-Security: max-age=63072000/);
   assert.match(contenido, /X-Content-Type-Options: nosniff/);
   assert.match(contenido, /\/_astro\/\*\n  Cache-Control: public, max-age=31536000, immutable/);
+  // Los derivados llevan el hash del original en el nombre: pueden ser inmutables.
+  assert.match(contenido, /\/derivados\/\*\n  Cache-Control: public, max-age=31536000, immutable/);
+  assert.match(contenido, /\/imagenes\/\*\n  Cache-Control: public, max-age=86400/);
   assert.doesNotMatch(contenido, /X-Robots-Tag|no-store/i);
 });
 

@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "imagenes:derivar": "node herramientas/derivar-imagenes.mjs",
+    "predev": "node herramientas/derivar-imagenes.mjs",
+    "prebuild": "node herramientas/derivar-imagenes.mjs",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit --pretty false",

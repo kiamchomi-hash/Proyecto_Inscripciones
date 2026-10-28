@@ -102,7 +102,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
             ) : (
               <div className="flex items-center justify-center gap-3.5 lg:justify-start lg:gap-3">
                 <Image
-                  src="/imagenes/imagenes_cau/logo_cau.png"
+                  src="/imagenes/imagenes_cau/logo_cau-160.webp"
                   alt=""
                   width={48}
                   height={48}

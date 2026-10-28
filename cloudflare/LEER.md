@@ -827,9 +827,21 @@ del seguimiento y en la sección 4G de abajo.
 La continuación 4H incorpora los siete endpoints pendientes y la analítica local:
 el shim vacío pasó a un registrador acotado, sin Vercel ni Google ni tokens en el
 cliente; los envíos externos siguen siendo puertos inyectados. Su matriz,
-evidencia y límites están en la sección 4H del seguimiento. Quedan pendientes el
-optimizador de imágenes, R2, la habilitación externa de cron/transportes y un
+evidencia y límites están en la sección 4H del seguimiento. Quedan pendientes
+R2, la habilitación externa de cron/transportes y un
 proveedor de analítica elegido explícitamente; nada de eso está autorizado.
+
+**27/10/2026 — imágenes:** el optimizador dejó de ser un pendiente en lo que
+importa. `herramientas/derivar-imagenes.mjs` genera derivados webp (480/960/1440)
+de las fotos de `public/imagenes/`, con el hash del contenido en el nombre, y
+`components/imagenes/imagen-responsiva.tsx` los sirve con `<picture>`/`srcset` en
+los modales del catálogo; `/derivados/*` va `immutable`. La foto de 3,7 MB de
+Relaciones Laborales pasa a 13 KB en un celular. Lo que **sigue** igual: el shim
+`next/image` no optimiza, así que las fotos que pasan por él (modales de Teclab,
+Identidad, portadas de novedades) se sirven enteras; para cubrirlas hay que
+pasarlas a `ImagenResponsiva` o meter el manifiesto en el shim, que hoy lo
+cargaría en todas las páginas. Detalle en
+[`docs/herramientas.md`](../docs/herramientas.md).
 
 Redirecciones migradas: `src/entrega/redirects.ts` concentra la lista global,
 `src/entrega/redirects-carreras.ts` las fichas y `src/middleware.ts` las aplica

@@ -11,17 +11,12 @@ import IconoCompartir from './icono-compartir';
 import { PanelVerPrecio, AccesoVerPrecio } from './ver-precio-teclab';
 import { carreraConPrecio, casaDeCarrera } from '@/components/formularios/casas';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
+import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 
 interface Props {
   carrera: Carrera;
   onClose: () => void;
   initiallyVisible?: boolean;
-}
-
-// Encode path segments with special chars (tildes, spaces) while preserving slashes
-function encodeImagePath(path: string): string {
-  if (!path) return path;
-  return path.split('/').map(segment => encodeURIComponent(segment)).join('/');
 }
 
 const ICON_PATHS: Record<string, string> = {
@@ -1000,9 +995,10 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
         <div className="s21-portada-foto md:hidden relative w-full h-[max(7rem,calc(var(--alto-modal)*0.24))] rounded-xl overflow-hidden border border-s21/15 mt-3">
           {slide.imagen_mobile ? (
             <>
-              <img
-                src={encodeImagePath(slide.imagen_mobile)}
+              <ImagenResponsiva
+                ruta={slide.imagen_mobile}
                 alt={carrera.nombre}
+                sizes="100vw"
                 className="absolute inset-0 w-full h-full object-cover object-center"
               />
               <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 70%, rgba(1,31,23,0.55) 100%)' }} />
@@ -1043,7 +1039,13 @@ function SlidePortadaView({ slide, carrera }: { slide: import('./types').SlidePo
       </div>
       {slide.imagen_desktop && (
         <div className="hidden md:flex flex-none h-full overflow-hidden border-l border-s21/20 relative" style={{ width: '42%' }}>
-          <img src={encodeImagePath(slide.imagen_desktop!)} alt={carrera.nombre} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: slide.imagen_desktop_position || 'top', filter: slide.imagen_brightness ? `brightness(${slide.imagen_brightness})` : undefined }} />
+          <ImagenResponsiva
+            ruta={slide.imagen_desktop!}
+            alt={carrera.nombre}
+            sizes="(max-width: 768px) 100vw, 27rem"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: slide.imagen_desktop_position || 'top', filter: slide.imagen_brightness ? `brightness(${slide.imagen_brightness})` : undefined }}
+          />
         </div>
       )}
     </div>
@@ -1055,7 +1057,12 @@ function SlideModalidadView({ slide }: { slide: import('./types').SlideModalidad
     <div className="h-full flex flex-col md:flex-row overflow-hidden">
       {slide.imagen && (
         <div className="w-full hidden min-[400px]:block md:w-[42%] shrink-0 relative overflow-hidden h-[clamp(4.5rem,calc(var(--alto-modal)*0.2),12rem)] md:h-full">
-          <img src={encodeImagePath(slide.imagen!)} alt="Modalidad" className="absolute inset-0 w-full h-full object-cover object-[center_15%]" />
+          <ImagenResponsiva
+            ruta={slide.imagen!}
+            alt="Modalidad"
+            sizes="(max-width: 768px) 100vw, 27rem"
+            className="absolute inset-0 w-full h-full object-cover object-[center_15%]"
+          />
           <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-[#1c2f31] to-transparent z-20 pointer-events-none" />
         </div>
       )}
@@ -1163,14 +1170,14 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
       {/* Mobile top banner */}
       {imagen && (
         <div className="md:hidden relative h-[calc(var(--alto-modal)*0.26)] shrink-0 overflow-hidden">
-          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-center" />
+          <ImagenResponsiva ruta={imagen!} alt={altImagen} sizes="100vw" className="absolute inset-0 w-full h-full object-cover object-center" />
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, transparent 55%, #011f17 100%)' }} />
         </div>
       )}
       {/* Desktop side image */}
       {imagen && (
         <div className="hidden md:block w-[42%] shrink-0 relative overflow-hidden bg-[#0c2b24] z-10">
-          <img src={encodeImagePath(imagen!)} alt={altImagen} className="absolute inset-0 w-full h-full object-cover object-left-bottom" style={esSiglo21 ? { objectPosition: 'center' } : undefined} />
+          <ImagenResponsiva ruta={imagen!} alt={altImagen} sizes="(max-width: 768px) 100vw, 27rem" className="absolute inset-0 w-full h-full object-cover object-left-bottom" style={esSiglo21 ? { objectPosition: 'center' } : undefined} />
           <div className="absolute inset-0 z-20 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent 60%, #011f17 100%)' }} />
         </div>
       )}

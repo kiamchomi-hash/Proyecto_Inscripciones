@@ -173,7 +173,7 @@ export default function SobreNosotrosPage() {
                   <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Villa Lugano, CABA</h2>
                 </div>
                 <Image
-                  src="/imagenes/imagenes_cau/logo_cau.png"
+                  src="/imagenes/imagenes_cau/logo_cau-160.webp"
                   alt="Logo CAU"
                   width={64}
                   height={64}
@@ -356,7 +356,7 @@ export default function SobreNosotrosPage() {
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-6">
                 <Image
-                  src="/imagenes/imagenes_cau/logo_cau.png"
+                  src="/imagenes/imagenes_cau/logo_cau-160.webp"
                   alt="Logo Centro Educativo Villa Lugano"
                   width={64}
                   height={64}
@@ -400,7 +400,7 @@ export default function SobreNosotrosPage() {
               style={{ background: 'rgba(0,199,177,0.08)', border: '1px solid rgba(0,199,177,0.2)', backdropFilter: 'blur(8px)' }}
             >
               <Image
-                src="/imagenes/imagenes_cau/logo_cau.png"
+                src="/imagenes/imagenes_cau/logo_cau-160.webp"
                 alt="Logo Centro Educativo Villa Lugano"
                 width={72}
                 height={72}
