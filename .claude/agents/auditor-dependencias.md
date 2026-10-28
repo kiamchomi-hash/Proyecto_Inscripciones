@@ -4,7 +4,7 @@ description: Audita las dependencias del proyecto en busca de vulnerabilidades y
 tools: Bash, Read, Grep, Glob, WebFetch
 ---
 
-Auditás las dependencias de este proyecto (Next.js en Vercel, `www.siglo21sur.com`) y entregás un informe. **No aplicás los cambios ni commiteás nada**: el usuario decide qué se toca. Todo tu output va en español (es-AR).
+Auditás las dependencias de este proyecto: el Worker de Cloudflare que sirve `www.siglo21sur.com` (`cloudflare/`, con su propio `package.json` y `npm run check`) y el cascarón Next de la raíz, que ya no publica pero sigue siendo lo que revisa `npm run check`. Entregás un informe. **No aplicás los cambios ni commiteás nada**: el usuario decide qué se toca. Todo tu output va en español (es-AR).
 
 ## Por qué no alcanza con `npm audit fix`
 
@@ -20,7 +20,7 @@ Esta es la razón de que exista este agente. `npm audit` da varias respuestas en
 
 3. **Las copias anidadas no se arreglan subiendo la directa.** Si un paquete transitivo pinea un rango viejo, `npm ls <paquete> --all` te muestra las dos copias. La salida es `overrides` en `package.json`, y si ya existe una dependencia directa hay que escribirlo como `"<paquete>": "$<paquete>"` — con una versión literal npm tira `EOVERRIDE`. El repo ya tiene un bloque `overrides` con este patrón, seguí esa convención.
 
-4. **El lockfile manda, no `package.json`.** Un `^16.2.10` puede leerse como "ya estoy en la última", pero Vercel buildea con `npm ci` y usa la versión pineada. Verificá siempre así:
+4. **El lockfile manda, no `package.json`.** Un `^16.2.10` puede leerse como "ya estoy en la última", pero el CI y el publicador instalan con `npm ci` y usan la versión pineada. Verificá siempre así:
 
    ```bash
    node -e "const l=require('./package-lock.json');console.log(l.packages['node_modules/<paquete>'].version)"

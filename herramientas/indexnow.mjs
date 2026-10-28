@@ -5,8 +5,9 @@
 //   npm run indexnow              # manda el sitemap entero
 //   npm run indexnow -- --probar  # sólo lista lo que mandaría
 //
-// El aviso de todos los días no pasa por acá: /api/revalidar avisa solo cada
-// URL que cambia en Supabase. Esto es para la primera carga, para después de un
+// El aviso de todos los días no pasa por acá: `/api/revalidar` del Worker ya no
+// manda IndexNow (no hay ISR ni caché que invalidar), así que hoy se avisa a
+// mano. Esto es para la primera carga, para después de un
 // deploy que toca muchas páginas a la vez (títulos, plantilla de la ficha) o
 // para cuando IndexNow estuvo caído.
 //

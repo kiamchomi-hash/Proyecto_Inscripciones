@@ -32,11 +32,9 @@ output/
 docs/guias/
 TUTORIAL_ADMIN.md
 DOCUMENTACION_PROYECTO.md
-.vercel
 .env*
 !.env.example
 .agents/
-supabase/.temp/
 # Credenciales de service accounts (Search Console, etc). Nunca al repo.
 *service_account*.json
 *gsc*.json

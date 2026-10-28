@@ -15,7 +15,7 @@ la fuente queda no disponible.
 |---|---|
 | `npm run check` | ESLint, TypeScript, tests de API, campos, resiliencia, roles, eventos y taxonomía |
 | `npm audit` | Vulnerabilidades del árbol instalado |
-| `npm run auditar` | Faltantes y consistencia de contenido en Supabase |
+| `npm run auditar` | Faltantes y consistencia de contenido en la D1 de producción |
 | `npm run smoke` | Rutas, cabeceras, redirects, sitemap y compresión |
 | `npm run seo` | Indexación y rendimiento en Search Console |
 | `npm run leads -- --estricto` | Disponibilidad de las tres fuentes y discrepancias entre eventos y filas |

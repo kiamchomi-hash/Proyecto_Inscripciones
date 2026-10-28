@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Informe semanal de SEO: baja los datos de Search Console, los cruza con el
-// sitemap y con la oferta real de Supabase, y deja un .md con los hallazgos
+// sitemap y con la oferta real de la base publicada, y deja un .md con los hallazgos
 // duros. No propone nada — eso es criterio y lo pone el agente `estratega-seo`,
 // que lee este informe cuando se lo invoca a mano.
 //

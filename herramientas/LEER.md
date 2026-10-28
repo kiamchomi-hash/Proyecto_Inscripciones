@@ -14,11 +14,10 @@ se toca una sola vez.
 
 | Archivo | Qué hace | Cuándo |
 |---|---|---|
-| `1 - Auditar contenido.bat` | Lee Supabase y lista lo que falta cargar | Después de tocar carreras o novedades |
+| `1 - Auditar contenido.bat` | Lee la base publicada y lista lo que falta cargar | Después de tocar carreras o novedades |
 | `2 - Smoke de produccion.bat` | Revisa el sitio publicado de punta a punta | Después de cada deploy |
 | `3 - Capturas del sitio.bat` | PNG desktop + mobile de 6 páginas | Para revisar un cambio visual |
-| `4 - Verificar avisos (SQL).bat` | Copia el SQL y abre el editor de Supabase | Al tocar `WEBHOOK_SECRET`, la función `notificar` o el trigger |
-| `5 - Subir cambios (deploy).bat` | Commit + push a main, o sea **deploy** | Cuando el cambio está listo |
+| `5 - Subir cambios (deploy).bat` | Commit + push a main | Cuando el cambio está listo |
 | `6 - Informe SEO.bat` | Baja Search Console y deja el informe de la semana | Una vez por semana (ya corre solo los lunes) |
 | `8 - De donde vienen los leads.bat` | Clics a WhatsApp, consultas y tráfico, juntos | Cuando parece que no está entrando nada |
 | `publicar-informe.mjs` | Sube el informe a un repo privado, para leerlo desde el celular | Lo llama solo el informe SEO |
@@ -42,7 +41,8 @@ cada vez que alguien abría una ficha vacía, y se eliminó el 01/08/2026.
 Las carreras marcadas `proximamente` bajan a aviso: todavía no tienen temario
 publicado, no es un error.
 
-Lee con la anon key, así que no necesita credenciales extra.
+Lee la D1 de producción con el mismo wrangler que publica el Worker, así que no
+necesita una credencial aparte.
 
 ### 2 — Smoke de producción
 
@@ -93,7 +93,7 @@ salen ahora del outbox del Worker (`cloudflare/src/operativa/outbox.ts`) y
 
 ### 5 — Subir cambios
 
-Commit y push a `main`. **Push a main = deploy**. Ambos envoltorios llaman a
+Commit y push a `main`. **Push no publica**: versiona y dispara el CI, pero el Worker sale a producción sólo cuando se corre el workflow `Publicar el Worker` o, desde local, `cd cloudflare && npm run publicar:produccion`. Ambos envoltorios llaman a
 `deploy.mjs`: selecciona archivos propios, no agrega todo el working tree.
 
 1. Exige `main` y la referencia local `origin/main`. Si falta, ejecutar
@@ -117,8 +117,8 @@ Commit y push a `main`. **Push a main = deploy**. Ambos envoltorios llaman a
    excluidos ni el `node_modules` local. Si falla, **no commitea ni sube**. Comprueba que rama,
    HEAD e index sigan siendo los revisados antes del commit. Si un hook altera
    el árbol del commit, lo deja local y no hace push.
-7. Commit y `git push origin main:main`; recuerda correr el smoke cuando
-   termine la publicación. Vacía los tokens heredados `GH_TOKEN` y `GITHUB_TOKEN` sólo en los
+7. Commit y `git push origin main:main`. El smoke se corre después de publicar
+   el Worker, no después del push. Vacía los tokens heredados `GH_TOKEN` y `GITHUB_TOKEN` sólo en los
    procesos hijos para usar las credenciales guardadas.
 
 Si se cancela o falla el check después de preparar la selección, queda staged
@@ -155,7 +155,7 @@ Baja los datos de Search Console con la service account de
 Las carreras que salieron de la oferta **quedan fuera del informe**: siguen
 recibiendo tráfico y redirigen a la home, y está bien que así sea, pero si no se
 filtran copan la lista (hoy la página con más clics del sitio es una de esas).
-Para saber cuáles son lee la oferta vigente de Supabase con la anon key, así que
+Para saber cuáles son lee la oferta vigente de la D1 de producción, así que
 sigue sola los cambios de catálogo.
 
 La ventana termina tres días antes de hoy a propósito: Search Console consolida
@@ -337,8 +337,8 @@ Para eso está `entorno.mjs`. En la máquina que ya funciona:
 node herramientas/entorno.mjs exportar
 ```
 
-Deja `entorno-cau.tar.gz` en el home — fuera del repo, porque adentro van la
-anon key de Supabase y la service account de Search Console. **No subirlo a
+Deja `entorno-cau.tar.gz` en el home — fuera del repo, porque adentro van las
+credenciales del Worker y de la D1 y la service account de Search Console. **No subirlo a
 ningún lado.** Del otro lado, con el repo ya clonado:
 
 ```bash

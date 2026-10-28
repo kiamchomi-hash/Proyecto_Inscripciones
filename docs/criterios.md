@@ -28,7 +28,7 @@ lo que se rompió; eso no es verbosidad.
 
 ### Revisar antes de preguntar
 
-Si el dato está en Vercel, en el sitio publicado, en git o en la base, se mira.
+Si el dato está en Cloudflare, en el sitio publicado, en git o en la base, se mira.
 Las credenciales están puestas justo para eso. El menú de opciones le pide
 exactamente lo que no tiene: trabaja solo y muchas veces no se acuerda del
 detalle.

@@ -1,9 +1,9 @@
 ---
 name: cargar-carrera
-description: Cargar o actualizar los slides de una carrera de Siglo 21 en la tabla carreras de Supabase - portada, plan de estudios y cierre, con la imagen local y su encuadre. Usar cuando se pida dar de alta una carrera de Siglo 21, completarle el plan de estudios o corregirle la ficha a partir de una URL de 21.edu.ar. Para el resto del alta (áreas, formularios, bot, SEO) y para Teclab o Identidad, manda docs/alta-de-carrera.md.
+description: Cargar o actualizar los slides de una carrera de Siglo 21 en la tabla carreras de la D1 publicada - portada, plan de estudios y cierre, con la imagen local y su encuadre. Usar cuando se pida dar de alta una carrera de Siglo 21, completarle el plan de estudios o corregirle la ficha a partir de una URL de 21.edu.ar. Para el resto del alta (áreas, formularios, bot, SEO) y para Teclab o Identidad, manda docs/alta-de-carrera.md.
 ---
 
-# Skill: Cargar Carrera en Supabase
+# Skill: Cargar Carrera en D1
 
 Workflow para cargar los slides JSON de una carrera **de Siglo 21** en la tabla `carreras`.
 
@@ -20,14 +20,14 @@ Workflow para cargar los slides JSON de una carrera **de Siglo 21** en la tabla 
 3. **Buscar imagen local**: `public/imagenes/Modales/[Nombre Carrera]/**/*`.
 4. **Verificar nombre en DB**:
    ```bash
-   npm run db "SELECT id, nombre, prefix, nombre_corto, nivel, duracion, titulo, enfoque, slides IS NOT NULL AS tiene_slides FROM carreras WHERE nombre ILIKE '%...%' AND activa = true"
+   npm run db:d1 "SELECT id, nombre, prefix, nombre_corto, nivel, duracion, titulo, enfoque, slides IS NOT NULL AS tiene_slides FROM carreras WHERE nombre ILIKE '%...%' AND activa = true"
    ```
    El nombre en DB puede diferir del completo (ej: "Informática" en vez de "Licenciatura en Informática").
 5. **Armar slides** (portada + plan_estudios + cierre; los 3 explícitos).
 6. **Escribir un SQL fechado** en `sql/AAAA-MM-DD_<carrera>.sql` con el `UPDATE` (o el `INSERT` si es alta) y correrlo contra la D1 publicada con `npm run db:d1 -- --archivo sql/<archivo>.sql --escribir`. Mostrar el SQL antes de correrlo.
 7. **Verificar** (ver abajo) y **ajustar imagen** si el usuario lo pide: otro `UPDATE` de `imagen_desktop_position` o `imagen_brightness`.
 
-El trigger `on_carreras_revalidar` publica el cambio al instante: no hace falta deploy. Por lo mismo, **si el alta necesita código nuevo** (área, `SEO_ESPECIFICO`, `COVER_OVERRIDES`), primero va el push y después la fila; si no, producción muestra la carrera a medio armar.
+Las páginas leen D1 en cada pedido y salen `no-store`, así que el cambio se ve en la próxima visita: no hace falta revalidar ni deployar. Por lo mismo, **si el alta necesita código nuevo** (área, `SEO_ESPECIFICO`, `COVER_OVERRIDES`), primero se publica el Worker y después se carga la fila; si no, producción muestra la carrera a medio armar.
 
 ## Formato de slides
 

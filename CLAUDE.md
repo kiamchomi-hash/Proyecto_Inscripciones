@@ -198,7 +198,7 @@ Es una prioridad activa del proyecto, no un detalle; `docs/indexacion.md` lleva 
 
 `experimental.inlineCss: true` está activo a propósito: mete el CSS en el HTML para sacar dos `<link>` de la ruta crítica (~450 ms en móvil según PSI). Ya se midió A/B — apagarlo da peor resultado, aunque el HTML pese más. Requiere el `'unsafe-inline'` que la CSP ya permite.
 
-El CSS es por página: `app/globals.css` y `app/navbar.css` en el layout, y cada página importa el suyo (`app/index.css`, `app/faq/faq.css`, etc.).
+El CSS vive en `estilos/`, compartido por el Worker y el cascarón Next: `estilos/globals.css` y `estilos/navbar.css` en el layout, y cada página importa el suyo (`estilos/index.css`, `estilos/faq/faq.css`, etc.). Las páginas que el Worker importa directamente viven en `paginas/`.
 
 ### Variables de entorno
 
@@ -218,7 +218,7 @@ Tablas de precios, inscripción y newsletter: `precios_carreras`, `precios_meta`
 
 Tablas de infraestructura, sin acceso desde `anon` ni `authenticated` (sólo service role, vía RPC): `form_rate_limits` (respalda `check_form_rate_limit`) y `career_clicks` (respalda `registrar_click_carrera` y el digest diario).
 
-No hay backups programados ni PITR (plan Free); el estado de la recuperación está en [`docs/recuperacion-supabase.md`](docs/recuperacion-supabase.md).
+No hay backups programados ni PITR (plan Free); ese estado quedó como registro histórico en [`docs/recuperacion-supabase.md`](docs/recuperacion-supabase.md) y el respaldo vigente es el de D1 (`npm run db:respaldo`).
 
 ### Escribir contenido desde local
 
@@ -231,7 +231,7 @@ Los archivos de `sql/` **no son migraciones automáticas** y ya no se aplican en
 
 - Alias `@/*` → raíz del proyecto.
 - El contenido HTML que viene de la base (novedades) pasa siempre por `lib/sanitize-content.ts` antes de renderizarse.
-- Colores en `app/globals.css` `:root` — fondo `--color-deep-dark-bg: #013729`, acento `--color-highlight: #00c7b1`, tarjetas `--color-card-bg: #1c2f31`, dorado `--color-gold: #e69b05`, marca `--cau-brand-blue: #005587` / `--cau-brand-green: #058c70`.
+- Colores en `estilos/globals.css` `:root` — fondo `--color-deep-dark-bg: #013729`, acento `--color-highlight: #00c7b1`, tarjetas `--color-card-bg: #1c2f31`, dorado `--color-gold: #e69b05`, marca `--cau-brand-blue: #005587` / `--cau-brand-green: #058c70`.
 - `docs/textos-whatsapp.md` son las respuestas institucionales para copiar y pegar al atender un lead a mano. **No las usa el bot**, que contesta desde `ventas/corpus/`. No llevan precios ni fechas a propósito.
 - [`PENDIENTES.md`](PENDIENTES.md) es la lista breve de tareas abiertas. Sus rutinas ([`docs/rutinas.md`](docs/rutinas.md)), detalles, historial y procedimientos están enlazados desde ahí; no mezclar esos registros con la lista rápida.
 - `docs/seguridad.md` es el historial de seguridad: qué se endureció y cuándo, el mapa de qué defiende cada pieza, los cinco pasos de una revisión y la bitácora de las que se hicieron. Antes de proponer un endurecimiento, mirar ahí si ya está hecho; después de revisar, anotar el resultado.

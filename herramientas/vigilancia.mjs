@@ -8,7 +8,7 @@
 //
 //   node herramientas/vigilancia.mjs deps        (npm audit)
 //   node herramientas/vigilancia.mjs smoke       (produccion)
-//   node herramientas/vigilancia.mjs contenido   (Supabase)
+//   node herramientas/vigilancia.mjs contenido   (D1)
 
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
@@ -77,7 +77,7 @@ const CHEQUEOS = {
     necesitaRed: true,
   },
   contenido: {
-    titulo: 'Contenido (Supabase)',
+    titulo: 'Contenido (D1)',
     comando: 'npm run auditar',
     agente: 'auditor-contenido',
     necesitaRed: true,

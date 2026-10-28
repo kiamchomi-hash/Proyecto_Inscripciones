@@ -95,8 +95,8 @@ test('ningún bloque de datos estructurados se serializa sin escapar', async () 
 });
 
 test('el endpoint no escribe nombres de columna a mano', async () => {
-  const source = await readFile(path.join(root, 'app/api/formularios/route.ts'), 'utf8');
-  const insert = source.slice(source.indexOf('function insertConsulta'), source.indexOf('function insertFaq'));
+  const source = await readFile(path.join(root, 'cloudflare/src/api/filas.ts'), 'utf8');
+  const insert = source.slice(source.indexOf('function asignarCampo'), source.indexOf('/** La pregunta validada'));
 
   assert.doesNotMatch(
     insert,
@@ -106,7 +106,8 @@ test('el endpoint no escribe nombres de columna a mano', async () => {
 });
 
 test('la consulta guarda de que casa y de que formulario vino', async () => {
-  const source = await readFile(path.join(root, 'app/api/formularios/route.ts'), 'utf8');
-  assert.match(source, /casa:/);
-  assert.match(source, /tipo_formulario:/);
+  const { filaConsulta } = await import('../cloudflare/src/api/filas.ts');
+  const fila = filaConsulta({ casa: 'siglo21', tipoFormulario: 'contacto', email: 'prueba@example.com' });
+  assert.equal(fila.casa, 'siglo21');
+  assert.equal(fila.tipo_formulario, 'contacto');
 });

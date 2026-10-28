@@ -1,5 +1,11 @@
 # Recuperar Supabase sin afectar producción
 
+> **Registro histórico.** Supabase se dio de baja el 27/10/2026 con el corte a
+> Cloudflare; el contenido vive en D1 y el respaldo vigente es
+> `npm run db:respaldo` ([herramientas](herramientas.md#respaldo-de-la-base)).
+> Este documento conserva el ensayo del 01/10/2026 y **no es un procedimiento a
+> seguir**.
+
 **Estado al 01/10/2026: dashboard comprobado y ensayo ficticio aprobado;
 recuperación de producción NO verificada.** Docker ya funciona en Linux.
 

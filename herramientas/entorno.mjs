@@ -8,7 +8,7 @@
 //   node herramientas/entorno.mjs importar --desde=~/entorno-cau.tar.gz
 //
 // El paquete sale del repo (al home), nunca adentro: lleva la service account
-// de Search Console y las claves de Supabase.
+// de Search Console y las credenciales de la D1.
 
 import {
   copyFileSync,
@@ -55,7 +55,7 @@ function copiar(origen, destino) {
 const PIEZAS = [
   {
     nombre: '.env.local',
-    detalle: 'URL y anon key de Supabase, id de Analytics',
+    detalle: 'credenciales del Worker, de la D1 y de Search Console',
     ruta: () => path.join(RAIZ, '.env.local'),
     dentro: 'env.local',
   },

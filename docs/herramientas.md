@@ -8,7 +8,7 @@ pruebas de navegador, CI y límites están en [controles automáticos](controles
 `check` sólo mira el código. En `herramientas/` están las que miran los datos y el sitio publicado, cada una con un `.bat` (Windows) y un `.sh` (Linux) de doble clic al lado (`LEER.md` explica cada una). Los envoltorios son dos, el `.mjs` que hace el trabajo es uno solo: la lógica se toca ahí. Nada de esa carpeta entra al bundle de Next. Las tres primeras salen con código 1 si encuentran algo:
 
 ```bash
-npm run auditar      # contenido faltante en Supabase (lee con la anon key, corre local)
+npm run auditar      # contenido faltante en la base publicada (lee la D1 de producción)
 npm run smoke        # producción: rutas, cabeceras, redirects, sitemap y peso real del HTML
 npm run capturas     # PNG desktop + mobile a screenshots/<AAAAMMDD-HHMM>/
 npm run seo          # informe semanal de Search Console (mide; no propone)
@@ -23,7 +23,7 @@ npm run leads        # de dónde vienen los leads: WhatsApp, formulario y Google
 
 **Separa consultas de marca de consultas genéricas, y eso cambia todo el informe.** Quien escribe "martillero publico siglo 21" quiere 21.edu.ar: nos ve quinto y nos saltea. Medido en agosto de 2026, la marca se lleva el 78% de las impresiones nombradas y clickea a un tercio de lo que predice la curva de CTR. Sin separarlas, el informe encabezaba cada semana con nueve páginas de marca (77% a 96% de sus consultas con "siglo 21" adentro) prometiendo ~190 clics inalcanzables, y tapaba las pocas genéricas con margen. Ahora los dos factores se **miden en cada corrida** contra la curva —no hay ningún número fijo en el código— y el CTR esperado de cada página se corrige por su propia mezcla. Ojo con la muestra: Search Console anonimiza la cola larga, así que las filas nombradas cubren ~27% de las impresiones y el share de marca que sale de ahí es un techo.
 
-Acepta `--rapido` (saltea la inspección URL por URL), `--dias=` y `--sitio=`. La ventana termina tres días antes de hoy porque GSC consolida con atraso. **Las carreras fuera de la oferta quedan afuera del informe**: redirigen a la home y está bien, pero si no se filtran copan la lista — para saber cuáles son lee la oferta vigente de Supabase. Sale con código 1 sólo ante algo roto (página caída del índice, canónica cambiada por Google, caída fuerte de tráfico), no ante una sugerencia. El criterio de qué hacer con los números lo pone el agente `estratega-seo`, que lo lee cuando se lo invoca a mano.
+Acepta `--rapido` (saltea la inspección URL por URL), `--dias=` y `--sitio=`. La ventana termina tres días antes de hoy porque GSC consolida con atraso. **Las carreras fuera de la oferta quedan afuera del informe**: redirigen a la home y está bien, pero si no se filtran copan la lista — para saber cuáles son lee la oferta vigente de la D1 de producción. Sale con código 1 sólo ante algo roto (página caída del índice, canónica cambiada por Google, caída fuerte de tráfico), no ante una sugerencia. El criterio de qué hacer con los números lo pone el agente `estratega-seo`, que lo lee cuando se lo invoca a mano.
 
 Los renombres se resuelven desde los redirects locales exactos de `next.config.ts`, sin duplicar la lista. `seo-rutas.mjs` consolida las dos ventanas y las consultas por destino: suma clics e impresiones, recalcula CTR y pondera posición por impresiones. Las cadenas que terminan en `/` conservan la ruta original para excluir las bajas sin atribuir su tráfico a la home. Las reglas condicionadas por host y las rutas parametrizadas no se usan como alias de contenido.
 

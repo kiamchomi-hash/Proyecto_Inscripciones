@@ -338,7 +338,7 @@ test('si la base falla, la baja responde 500', async t => {
 // ── La página ──
 
 const { default: PaginaBaja, metadata } = cargarTypescript('app/newsletter/baja/page.tsx', {
-  './baja.css': {},
+  '@/estilos/newsletter/baja/baja.css': {},
   '@/components/formularios/mail-precio': mailPrecio,
 });
 

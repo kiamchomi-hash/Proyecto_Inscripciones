@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.." || exit 1
 
 echo
 echo "  AUDITORIA DE CONTENIDO"
-echo "  Busca lo que falta cargar en Supabase."
+echo "  Busca lo que falta cargar en la base publicada."
 echo
 
 node --env-file-if-exists=.env.local herramientas/auditar-contenido.mjs

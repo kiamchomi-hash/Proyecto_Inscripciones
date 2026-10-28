@@ -6,6 +6,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 ## Bajas
 
+- **Recuperación de Supabase, 28/10/2026.** Se descarta la tarea que pedía completar Auth, permisos/RLS, Vault y Storage en Supabase: la base se dio de baja con el corte a Cloudflare y el contenido vive en D1. [`docs/recuperacion-supabase.md`](recuperacion-supabase.md) queda como registro histórico del ensayo del 01/10/2026 y **no es un procedimiento vigente**. El respaldo que sí corre es el de D1: `npm run db:respaldo` todos los días a las 08:30 ([herramientas](herramientas.md#respaldo-de-la-base)).
 - **Autoinscripción de Teclab, 27/10/2026.** Se dio de baja el flujo completo: el carrusel «Inscribirme» del formulario, `kind: 'autoinscripcion'`, el pase HMAC, el enlace `/inscripcion/<código>`, la cola `robot_autoinscripciones`, la API `/api/robot/autoinscripciones`, el chequeo de vigilancia de la cola y el repo privado `cau-robot-teclab` en GitHub. El formulario de Teclab vuelve a ser una preinscripción como las otras: se guarda la consulta, avisa por Telegram y ofrece «Ver precio» después de confirmar, con la atención a mano. La migración `0011` borra las dos tablas (estaban vacías). [Tarea](../odd/tasks/autoinscripcion-teclab.md).
 
 ## Cierres y descartes trasladados de la lista activa, 23/10/2026

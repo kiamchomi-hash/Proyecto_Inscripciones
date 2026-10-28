@@ -18,11 +18,11 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   están, la carrera entra como `proximamente` (ver [la de Teclab](../odd/tasks/teclab-carreras-proximamente.md)).
 - [ ] **El slug no choca con un redirect viejo** de `next.config.ts`. Hotelera quedó
   tapada por un 301 a la home de una baja anterior (`tests/redirect-hotelera.test.mjs`).
-- [ ] **Orden de publicación**: primero el código (push y deploy), después la fila. El
-  trigger de `carreras` revalida al instante, así que la fila sin el código publicado se
-  ve rota en producción.
+- [ ] **Orden de publicación**: primero el código (publicar el Worker), después la fila.
+  Las páginas leen D1 en cada pedido y salen `no-store`, así que la fila se ve en la
+  próxima visita; sin el código publicado se ve rota en producción.
 
-## 1. La fila en Supabase (las tres casas)
+## 1. La fila en D1 (las tres casas)
 
 - [ ] **M** — Fila en `carreras`: `nivel`, `prefix`, `nombre`, `nombre_corto`, `duracion`,
   `titulo`, `modalidad`, `orden`, `activa`, `nueva`, `destacada`, `proximamente`, `slides`,

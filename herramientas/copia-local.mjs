@@ -117,15 +117,17 @@ function paginasDeArchivos(archivos) {
   const paginas = new Set();
   for (const archivo of archivos) {
     const limpio = archivo.replaceAll('\\', '/');
-    if (/^(app\/layout\.tsx|app\/globals\.css|components\/(navbar|footer)\.tsx)$/.test(limpio)) paginas.add('*');
-    if (limpio.startsWith('components/index/') || limpio === 'app/index.css') paginas.add('/');
-    if (limpio.startsWith('components/carreras/') || limpio.startsWith('app/carreras/')) paginas.add('/carreras/[slug]');
+    if (/^(app\/layout\.tsx|estilos\/globals\.css|components\/(navbar|footer)\.tsx)$/.test(limpio)) paginas.add('*');
+    if (limpio.startsWith('components/index/') || limpio === 'estilos/index.css') paginas.add('/');
+    if (limpio.startsWith('components/carreras/') || limpio.startsWith('app/carreras/') || limpio.startsWith('estilos/carreras/')) paginas.add('/carreras/[slug]');
     if (limpio === 'components/faq-page.tsx') paginas.add('/faq');
-    if (limpio.startsWith('components/clases-apoyo/')) paginas.add('/clases-apoyo');
+    if (limpio.startsWith('components/clases-apoyo/') || limpio.startsWith('estilos/clases-apoyo/')) paginas.add('/clases-apoyo');
 
-    const app = limpio.match(/^app\/(?!api\/)(.+?)\/(?:page\.tsx|[^/]+\.css)$/);
-    if (app && !limpio.startsWith('app/carreras/')) {
-      const segmentos = app[1].split('/').filter(s => !/^\(.+\)$/.test(s));
+    // El CSS y las páginas que comparten Next y el Worker viven en `estilos/` y
+    // `paginas/`; su carpeta es la ruta del sitio, igual que en `app/`.
+    const compartido = limpio.match(/^(?:app|estilos|paginas)\/(?!api\/)(.+?)\/(?:page|index)\.tsx$|^(?:estilos|paginas)\/(?!api\/)(.+?)\/[^/]+\.css$/);
+    if (compartido && !limpio.startsWith('app/carreras/') && !limpio.startsWith('estilos/carreras/')) {
+      const segmentos = (compartido[1] ?? compartido[2]).split('/').filter(s => !/^\(.+\)$/.test(s));
       paginas.add('/' + segmentos.join('/'));
     }
   }

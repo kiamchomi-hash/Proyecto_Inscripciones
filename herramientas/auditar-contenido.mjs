@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Auditoria de contenido contra Supabase: busca filas publicadas a las que les
+// Auditoria de contenido contra la base publicada: busca filas publicadas a las que les
 // falta algo, para que el desfasaje entre la base y las fuentes reales se note
 // solo. Fue lo que no paso con los planes de estudio de Identidad Argentina
 // (162 puntos del temario faltantes, descubierto de casualidad).
