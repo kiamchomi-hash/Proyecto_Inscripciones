@@ -227,6 +227,14 @@ simulador lo sigue cotizando, `publicar-precios.mjs` no lo encontraba entre las
 carreras activas de Teclab, salía con código 1 y la corrida diaria daba por fallida
 **toda** la carga de Teclab e Identidad (no rearmaba ni publicaba el buscador).
 
+### La landing de HubSpot de la sede se carga a mano
+
+Decidido el 27/10/2026, al dar de baja la autoinscripción de Teclab. El efecto
+`lead-sede` queda en el código pero **sin emisor**: ningún alta lo encola. La
+persona encargada carga el lead en la landing de la sede con los datos que ya
+llegan por Telegram, así que **no hay que volver a proponer encolarlo en
+`registrarConsulta`**.
+
 ## El entorno: lo que ya costó descubrir
 
 ### El sitio ya no corre en Vercel
