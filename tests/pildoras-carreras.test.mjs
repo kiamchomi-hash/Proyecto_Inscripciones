@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const componente = readFileSync(new URL('../components/index/careers-catalog.tsx', import.meta.url), 'utf8');
-const estilos = readFileSync(new URL('../app/index.css', import.meta.url), 'utf8');
+const estilos = readFileSync(new URL('../estilos/index.css', import.meta.url), 'utf8');
 
 test('en Teclab todo badge (Nueva, Más buscada y Próximamente) acompaña la duración en la cabecera sin modificar la prioridad de Nueva', () => {
   assert.match(componente, /const badge = carrera\.proximamente \? 'Próximamente' : carrera\.nueva \? 'Nueva' : carrera\.destacada \? 'Más buscada' : null/);

@@ -15,7 +15,7 @@ test('todas las fichas comparten el título renderizado en el servidor', async (
 });
 
 test('el título de las fichas es visible desde el primer render sin animación de entrada', async () => {
-  const css = await leer('app/carreras/career-detail.css');
+  const css = await leer('estilos/carreras/career-detail.css');
   const regla = css.match(/\.career-hero h1\s*\{([^}]+)\}/)?.[1];
   assert.ok(regla, 'Debe existir la regla compartida del título');
   assert.match(regla, /animation:\s*none\s*;/);

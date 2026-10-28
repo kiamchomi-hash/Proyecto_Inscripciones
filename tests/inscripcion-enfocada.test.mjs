@@ -126,7 +126,7 @@ test('el contacto compacto sólo se activa en las páginas dedicadas', () => {
   assert.match(formulario, /esPreinscripcion \? \(\s*<p className=\{ROTULO_BLOQUE\}>\{ROTULO_GRUPO\.contacto\}<\/p>\s*\) : !alinearAlLlegar && \(/);
   assert.match(formulario, /role="group" aria-label="Datos de contacto"/);
   assert.match(formulario, /<label htmlFor=\{\x60\$\{prefijo\}-newsletter\x60\}/);
-  const estilos = readFileSync('app/carreras/[slug]/inscripcion/inscripcion.css', 'utf8');
+  const estilos = readFileSync('estilos/carreras/[slug]/inscripcion/inscripcion.css', 'utf8');
   assert.match(estilos, /\.inscripcion-page \.form-contacto-compacto \.form-field-error:empty\s*\{\s*display: none;/);
 });
 

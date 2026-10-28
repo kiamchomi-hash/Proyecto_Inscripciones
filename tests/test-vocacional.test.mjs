@@ -51,7 +51,7 @@ test('el porcentaje de afinidad es consistente entre cifra y medidor', () => {
 
 test('las preguntas mantienen ambos botones y la última concluye al elegir', () => {
   const componente = readFileSync(new URL('../components/test-vocacional/test-vocacional.tsx', import.meta.url), 'utf8');
-  const estilos = readFileSync(new URL('../app/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
+  const estilos = readFileSync(new URL('../estilos/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
   assert.match(componente, /const ultimaPregunta = paso === PREGUNTAS\.length - 1/);
   assert.match(componente, /setSeleccion\(\[indice\]\)/);
   assert.match(componente, /ultimaPregunta \? avanzar\(\[indice\]\)/);
@@ -76,7 +76,7 @@ test('muestra carreras de varias áreas de afinidad sin forzar una principal', (
 
 test('la selección múltiple usa casillas visibles y avanza con Siguiente', () => {
   const componente = readFileSync(new URL('../components/test-vocacional/test-vocacional.tsx', import.meta.url), 'utf8');
-  const estilos = readFileSync(new URL('../app/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
+  const estilos = readFileSync(new URL('../estilos/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
   assert.doesNotMatch(componente, /Elegí hasta .* opciones y después continuá/);
   assert.match(componente, /aria-pressed=\{seleccion\.includes\(indice\)\}/);
   assert.match(componente, /vocacional-option-check/);
@@ -88,7 +88,7 @@ test('la selección múltiple usa casillas visibles y avanza con Siguiente', () 
 
 test('el resultado conserva la tarjeta con áreas seleccionables, carreras y acciones', () => {
   const componente = readFileSync(new URL('../components/test-vocacional/test-vocacional.tsx', import.meta.url), 'utf8');
-  const estilos = readFileSync(new URL('../app/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
+  const estilos = readFileSync(new URL('../estilos/test-vocacional/test-vocacional.css', import.meta.url), 'utf8');
   for (const clase of ['vocacional-areas', 'vocacional-area-nav', 'vocacional-careers-heading', 'vocacional-careers', 'vocacional-career-actions', 'vocacional-actions']) {
     assert.match(componente, new RegExp(`className=["\\x60]${clase}`));
     assert.match(estilos, new RegExp(`\\.${clase}\\s*\\{`));

@@ -258,7 +258,7 @@ test('ambas páginas explican los próximos pasos sin competir con el formulario
 });
 
 test('el bloque de próximos pasos tiene una única columna de lectura centrada', () => {
-  const css = readFileSync('app/carreras/[slug]/inscripcion/inscripcion.css', 'utf8');
+  const css = readFileSync('estilos/carreras/[slug]/inscripcion/inscripcion.css', 'utf8');
   const bloque = css.slice(css.indexOf('.inscripcion-proximos-contenido'));
   assert.match(bloque, /max-width: 48rem/);
   assert.match(bloque, /margin-inline: auto/);

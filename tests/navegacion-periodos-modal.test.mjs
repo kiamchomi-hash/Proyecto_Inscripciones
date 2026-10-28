@@ -18,7 +18,7 @@ test('el indicador flota sobre el área de lectura y no reserva una columna', ()
   const shell = readFileSync('components/index/modal-shell.tsx', 'utf8');
   const flecha = readFileSync('components/index/flechas-de-scroll.tsx', 'utf8');
   const modales = readFileSync('components/index/modales.css', 'utf8');
-  const global = readFileSync('app/globals.css', 'utf8');
+  const global = readFileSync('estilos/globals.css', 'utf8');
   assert.doesNotMatch(shell, /modal-carril-lectura/);
   assert.doesNotMatch(modales, /modal-carril-lectura/);
   assert.match(global, /\.flechas-scroll\s*\{[^}]*pointer-events: none/);

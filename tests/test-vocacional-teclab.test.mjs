@@ -159,7 +159,7 @@ test('ninguna tecnicatura queda favorecida: cada una gana sola entre 2,1% y 4,2%
 
 test('el componente avanza con un toque, reserva el lugar y lleva a la ficha y a WhatsApp', () => {
   const componente = readFileSync(new URL('../components/test-vocacional-teclab/test-vocacional-teclab.tsx', import.meta.url), 'utf8');
-  const estilos = readFileSync(new URL('../app/teclab/test-vocacional/test-vocacional-teclab.css', import.meta.url), 'utf8');
+  const estilos = readFileSync(new URL('../estilos/teclab/test-vocacional/test-vocacional-teclab.css', import.meta.url), 'utf8');
   assert.match(componente, /numeroWhatsAppDe\('teclab'\)/);
   assert.match(componente, /mensajeWhatsAppInfo\(/);
   assert.match(componente, /\/carreras\/\$\{carreraToSlug\(/);

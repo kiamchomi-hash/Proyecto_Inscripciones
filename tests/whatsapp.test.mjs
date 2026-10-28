@@ -49,7 +49,7 @@ test('navbar móvil y escritorio ofrecen el destino Teclab con la misma marca co
   assert.equal(cau.length, 2);
   for (const enlace of teclab) assert.equal(enlace[1], '5491166522722');
   for (const enlace of cau) assert.equal(enlace[1], '5491132973801');
-  const css = readFileSync('app/navbar.css', 'utf8');
+  const css = readFileSync('estilos/navbar.css', 'utf8');
   assert.match(css, /\.navbar-social-icon\.marca-teclab,\s*\.menu-footer-social a\.marca-teclab \{ display: none; \}/);
   assert.match(css, /body:has\(\.teclab-page, \.ficha-teclab, \.tvt-page\) \.navbar-social-icon\.marca-teclab,\s*body:has\(\.teclab-page, \.ficha-teclab, \.tvt-page\) \.menu-footer-social a\.marca-teclab \{ display: flex; \}/);
   assert.match(css, /body:has\(\.teclab-page, \.ficha-teclab, \.tvt-page\) \.marca-cau \{ display: none; \}/);

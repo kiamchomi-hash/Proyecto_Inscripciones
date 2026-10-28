@@ -57,7 +57,7 @@ test('computación no escribe el teléfono a mano: sale de la base', async () =>
 });
 
 test('el CSS de clases de apoyo ya no tiene el shell de la app', async () => {
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
 
   assert.doesNotMatch(css, /\.ca-sidebar\b/);
   assert.doesNotMatch(css, /\.ca-mobile-tabs\b/);
@@ -67,7 +67,7 @@ test('el CSS de clases de apoyo ya no tiene el shell de la app', async () => {
 test('computación integra el regreso y presenta su descripción después de la reserva', async () => {
   const computacion = await leer('components/clases-apoyo/computacion/computacion-pixel.tsx');
   const page = await leer('app/clases-apoyo/[materia]/page.tsx');
-  const css = await leer('app/clases-apoyo/computacion.css');
+  const css = await leer('estilos/clases-apoyo/computacion.css');
 
   assert.match(computacion, /<header className="cp-encabezado">[\s\S]*?<VolverAClases compacto \/>[\s\S]*?<h1/);
   assert.ok(computacion.indexOf('<Herramientas />') < computacion.indexOf('<ReservaClase'));
@@ -92,7 +92,7 @@ test('programación usa logos locales seguros para cada tecnología', async () =
 test('computación presenta consultas primero y programación con las mismas superficies que herramientas', async () => {
   const computacion = await leer('components/clases-apoyo/computacion/computacion-pixel.tsx');
   const herramientas = await leer('components/clases-apoyo/computacion/herramientas.tsx');
-  const css = await leer('app/clases-apoyo/computacion.css');
+  const css = await leer('estilos/clases-apoyo/computacion.css');
   assert.match(computacion, /<\/header>\s*<div className="cp-contacto">[\s\S]*?<Herramientas \/>/);
   assert.equal((computacion.match(/<WhatsappClase/g) ?? []).length, 1);
   assert.doesNotMatch(css, /\.pg \.hr-ficha-logo/);
@@ -121,20 +121,20 @@ test('programación selecciona la ficha superior desde sus rectángulos', async 
 
 test('otras materias separa la foto del pie y no desplaza sus enlaces', async () => {
   const nav = await leer('components/clases-apoyo/navegacion-materia.tsx');
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
   assert.match(nav, /className="ca-otra-imagen"[\s\S]*?<Image[\s\S]*?<\/span>\s*<span className="ca-otra-pie"/);
   assert.doesNotMatch(css, /\.ca-otra:hover[^}]*transform:\s*(?!none)[a-zA-Z]/);
   assert.doesNotMatch(css, /\.ca-otra:hover \.ca-otra-(?:foto|flecha)[^}]*transform:\s*(?!none)[a-zA-Z]/);
 });
 
 test('el título de la tarjeta de apoyo dispone del ancho completo', async () => {
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
   const tarjetas = css.slice(css.indexOf('.ca-materias-seccion {\n  padding-top:'));
   assert.match(tarjetas, /\.ca-materia-titulo\s*\{[^}]*grid-column:\s*1 \/ -1;[^}]*grid-row:\s*1;/);
 });
 
 test('los íconos de materias son sellos recortados a la izquierda, sin chip ni movimiento', async () => {
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
   const sello = css.match(/\/\* Sello de materia:[\s\S]*?(?=\/\* ══ Página de materia)/)?.[0];
   assert.ok(sello, 'la capa decorativa tiene reglas propias');
   assert.match(sello, /position:\s*absolute/);
@@ -150,7 +150,7 @@ test('los íconos de materias son sellos recortados a la izquierda, sin chip ni 
 
 
 test('ver horarios tiene un contenedor sólido de color compartido', async () => {
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
   const accion = [...css.matchAll(/\.ca-materia-accion\s*\{([^}]*)\}/g)].at(-1)?.[1];
   assert.ok(accion);
   assert.match(accion, /background:\s*#2b2b2f/);
@@ -162,7 +162,7 @@ test('ver horarios tiene un contenedor sólido de color compartido', async () =>
 
 
 test('las tarjetas muestran sólo el título centrado en el cuerpo y la acción al pie', async () => {
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
   const tarjetas = css.slice(css.indexOf('.ca-materias-seccion {\n  padding-top:'));
   assert.match(tarjetas, /\.ca-materia\s*\{[^}]*grid-template-rows:\s*1fr auto;/);
   assert.match(tarjetas, /\.ca-materia-titulo\s*\{[^}]*grid-row:\s*1;[^}]*align-self:\s*center;/);
@@ -173,7 +173,7 @@ test('las tarjetas muestran sólo el título centrado en el cuerpo y la acción 
 
 
 test('la acción centra su texto sin que la flecha lo desplace y el título tiene relieve leve', async () => {
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
   const accion = [...css.matchAll(/\.ca-materia-accion\s*\{([^}]*)\}/g)].at(-1)?.[1];
   assert.match(accion, /justify-content:\s*center/);
   assert.match(accion, /position:\s*relative/);
@@ -184,7 +184,7 @@ test('la acción centra su texto sin que la flecha lo desplace y el título tien
 
 // Un tamaño raíz ampliado no debe forzar cortes internos en nombres completos.
 test('los títulos de materias respetan las palabras y el ancho real de la tarjeta', async () => {
-  const css = await leer('app/clases-apoyo/clases-apoyo.css');
+  const css = await leer('estilos/clases-apoyo/clases-apoyo.css');
   const tarjetas = css.slice(css.indexOf('.ca-materias-seccion {\n  padding-top:'));
   const titulo = tarjetas.match(/\.ca-materia-titulo\s*\{([^}]*)\}/)?.[1];
   assert.match(tarjetas, /\.ca-materia\s*\{[^}]*container-type:\s*inline-size;/);
