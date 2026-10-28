@@ -460,6 +460,18 @@ async function compararCapturas(navegador, bufferA, bufferB, margenAlto = 0) {
   }
 }
 
+// La copia es asincrónica y el portapapeles puede leerse vacío un instante: se
+// sondea hasta el valor esperado y, si no llega, se compara el último leído.
+async function esperarPortapapeles(pagina, esperado) {
+  let ultimo = null;
+  for (let i = 0; i < 50; i++) {
+    ultimo = await pagina.evaluate(() => navigator.clipboard.readText().catch(() => null));
+    if (ultimo === esperado) return;
+    await pagina.waitForTimeout(100);
+  }
+  assert.equal(ultimo, esperado);
+}
+
 test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_400_000 }, async t => {
   assert.ok(existsSync(join(PAQUETE, CONFIG)),
     'Falta el build de Astro: correr `npm --prefix cloudflare run build` antes de test:e2e.');
@@ -802,12 +814,11 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       await pagina.locator('main a[href="/novedades/articulo/novedad-sintetica-1"]').click();
       await pagina.waitForURL('**/novedades/articulo/novedad-sintetica-1');
       await pagina.getByRole('heading',{level:1,name:'Novedad destacada sintética'}).waitFor();
+      // El clic sólo sirve con el botón hidratado: bajo carga el HTML llega antes que el JS.
+      await pagina.waitForFunction(() => [...document.querySelectorAll('astro-island')].every(i => !i.hasAttribute('ssr')));
       await pagina.getByRole('button',{name:/Copiar enlace/}).click();
-      // La copia es asincrónica: se espera el valor exacto, no el instante.
-      await pagina.waitForFunction(async esperado => {
-        try { return (await navigator.clipboard.readText()) === esperado; } catch { return false; }
-      }, 'https://www.siglo21sur.com/novedades/articulo/novedad-sintetica-1', { timeout: 5000 });
-      assert.equal(await pagina.evaluate(()=>navigator.clipboard.readText()),'https://www.siglo21sur.com/novedades/articulo/novedad-sintetica-1');
+      await pagina.getByRole('button',{name:'¡Copiado!'}).waitFor({timeout:5000});
+      await esperarPortapapeles(pagina, 'https://www.siglo21sur.com/novedades/articulo/novedad-sintetica-1');
       await pagina.getByRole('link',{name:'Volver a novedades'}).click();
       await pagina.waitForURL('**/novedades/1');
       await pagina.locator('main a[href="/novedades/2"]').first().click();
@@ -876,10 +887,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       const tarjeta = biblioteca.pagina.locator('.bib__tarjeta');
       const ruta = (await tarjeta.getAttribute('title')).replace('Copiar ', '');
       await tarjeta.click();
-      await biblioteca.pagina.waitForFunction(async esperado => {
-        try { return (await navigator.clipboard.readText()) === esperado; } catch { return false; }
-      }, ruta, { timeout: 5000 });
-      assert.equal(await biblioteca.pagina.evaluate(() => navigator.clipboard.readText()), ruta);
+      await esperarPortapapeles(biblioteca.pagina, ruta);
       await biblioteca.pagina.getByRole('searchbox').fill('sin-coincidencias-fixture');
       await biblioteca.pagina.locator('.bib__vacio').waitFor();
       await biblioteca.contexto.close();
