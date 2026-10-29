@@ -24,6 +24,15 @@ test('cada canal aparece sólo con su credencial completa', () => {
   assert.deepEqual(configEnvios({ HUBSPOT_HABILITADO: 'si' }), { hubspot: { habilitado: true } });
 });
 
+test('el binding de correo habilita el canal sin clave y convive con SMTP2GO', () => {
+  const email = { send: async () => ({ messageId: 'x' }) };
+  assert.deepEqual(configEnvios({ EMAIL: email }), { email });
+  // Con los dos configurados, el transporte prefiere el binding; la clave queda
+  // como respaldo hasta que se borre.
+  assert.deepEqual(configEnvios({ EMAIL: email, SMTP2GO_API_KEY: 'k' }),
+    { email, smtp: { clave: 'k' } });
+});
+
 test('la operativa exige etapa de producción y la cola autorizada', async () => {
   const db = { prepare() { throw new Error('no debe consultar'); } };
   const lote = { queue: COLA_EFECTOS, messages: [] };

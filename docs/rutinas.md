@@ -14,6 +14,8 @@ Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se an
 
 - [ ] **Actualizar fuentes comerciales cuando cambien.** Revisar los dashboards y comunicaciones oficiales de Siglo 21, Teclab e Identidad Argentina; actualizar precios, cuotas, fechas, financiación, modalidad y oferta sólo con fuente verificable. Regenerar los artefactos derivados y correr los tests de ventas.
 
+- [ ] **Renovar `precios_privados`.** Las 83 filas comparten el mismo `vigente_hasta` y la actualización corre de madrugada. Entre el vencimiento y esa corrida hay una ventana sin precios vigentes en la que `mail-precio` responde `sin-precio-vigente` y el newsletter no encuentra candidatas. **Es esperado**: no es una caída del sitio ni un precio faltante.
+
 - [ ] **Controlar leads y canales.** Revisar consultas recibidas, clics de WhatsApp y el embudo de `npm run leads`; verificar que el número de WhatsApp, los formularios y los avisos por Telegram sigan funcionando. Para avisos, mirar `net._http_response`: un formulario que responde `201` no confirma que Telegram haya recibido el mensaje.
 
 - [ ] **Revisar producción después de cada deploy o cambio sensible.** Ejecutar `npm run smoke` y, cuando corresponda, `npm run seo`; comprobar rutas, redirects, cabeceras, noindex del admin, sitemap, formularios y panel. Si se toca CSP, secretos, triggers o Edge Functions, seguir además el procedimiento documentado y hacer la prueba manual correspondiente.

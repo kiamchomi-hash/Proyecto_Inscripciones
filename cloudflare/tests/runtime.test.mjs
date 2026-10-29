@@ -232,11 +232,11 @@ test('crons compilados: secreto correcto, SMTP/Telegram ausente y revalidación'
   });
   assert.equal(revalidarOtro.status, 401);
 
-  const sinSmtp = await server.fetch('/api/newsletter', {
+  const sinCorreo = await server.fetch('/api/newsletter', {
     headers: { authorization: 'Bearer cron-sintetico' },
   });
-  assert.equal(sinSmtp.status, 503);
-  assert.match((await sinSmtp.json()).error, /SMTP2GO_API_KEY sin configurar/);
+  assert.equal(sinCorreo.status, 503);
+  assert.match((await sinCorreo.json()).error, /transporte de correo sin configurar/);
 
   // Sin Telegram el recordatorio responde igual que el handler vigente.
   const recordatorio = await server.fetch('/api/recordatorio-teclab', {

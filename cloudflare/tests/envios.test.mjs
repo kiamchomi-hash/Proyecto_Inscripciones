@@ -10,7 +10,7 @@ import { insertarMateria, MATERIA_ID } from './helpers/materias.mjs';
 // sintético (`example.invalid`).
 
 registrarAlias();
-const { crearTransporteMail, crearTransportes, TIMEOUT_TELEGRAM_MS } = await import('../src/operativa/transportes.ts');
+const { crearTransporteMail, crearTransportes, remitenteEstructurado, TIMEOUT_TELEGRAM_MS } = await import('../src/operativa/transportes.ts');
 const {
   consumirEfecto, consumirPendientes, ErrorAmbiguo, ErrorRechazo,
 } = await import('../src/operativa/consumidores.ts');
@@ -241,6 +241,110 @@ test('smtp2go: sin clave no hay envío y la fila sigue pendiente', async t => {
   assert.equal(await consumirEfecto(db, id, crearTransportes({}, buscar, db)), 'sin-transporte');
   assert.equal(llamadas.length, 0);
   assert.equal((await filaOutbox(db, id)).estado, 'pendiente');
+});
+
+// ── Binding de correo (Cloudflare Email Sending) ──
+
+/** Un binding `send_email` de mentira: registra los mensajes y hace lo que se le pida. */
+function bindingCorreo(comportamiento) {
+  const enviados = [];
+  return {
+    enviados,
+    email: {
+      async send(mensaje) {
+        enviados.push(mensaje);
+        if (comportamiento) return comportamiento(mensaje);
+        return { messageId: 'mensaje-sintetico' };
+      },
+    },
+  };
+}
+
+test('remitente: el nombre y la dirección salen del mismo dueño', () => {
+  assert.deepEqual(remitenteEstructurado('CAU Online <inscripciones@siglo21sur.com>'),
+    { email: 'inscripciones@siglo21sur.com', name: 'CAU Online' });
+  assert.deepEqual(remitenteEstructurado('inscripciones@siglo21sur.com'),
+    { email: 'inscripciones@siglo21sur.com' });
+  assert.deepEqual(remitenteEstructurado('<solo@example.invalid>'), { email: 'solo@example.invalid' });
+});
+
+test('binding: manda por Cloudflare sin clave y con el remitente estructurado', async t => {
+  const { db } = await crearD1(t);
+  const { id } = await escenarioMail(db);
+  const { email, enviados } = bindingCorreo();
+  const { buscar, llamadas } = espia();
+  const transportes = crearTransportes({ email }, buscar, db);
+
+  assert.equal(await consumirEfecto(db, id, transportes), 'enviado');
+  // El binding no usa `fetch`: si se llamara, no habría forma de verlo acá.
+  assert.equal(llamadas.length, 0);
+  assert.equal(enviados.length, 1);
+  assert.equal(enviados[0].to, 'fixture@example.invalid');
+  assert.deepEqual(enviados[0].from, { email: 'inscripciones@siglo21sur.com', name: 'CAU Online' });
+  assert.match(enviados[0].subject, /Precios/);
+  assert.ok(enviados[0].html.length > 0 && enviados[0].text.length > 0);
+  assert.equal(enviados[0].headers, undefined);
+});
+
+test('binding: el error con código es rechazo y sin código es ambiguo', async t => {
+  const { db } = await crearD1(t);
+  await prepararPrecio(db);
+
+  const rechazado = bindingCorreo(() => {
+    throw Object.assign(new Error('sin remitente verificado'), { code: 'E_SENDER_NOT_VERIFIED' });
+  });
+  const { id } = await mailPendiente(db);
+  assert.equal(await consumirEfecto(db, id, crearTransportes({ email: rechazado.email }, espia().buscar, db)), 'error');
+  assert.equal((await filaOutbox(db, id)).ultimo_error, 'E_SENDER_NOT_VERIFIED');
+
+  const roto = bindingCorreo(() => { throw new TypeError('falla del runtime'); });
+  const otro = await mailPendiente(db);
+  assert.equal(await consumirEfecto(db, otro.id, crearTransportes({ email: roto.email }, espia().buscar, db)), 'ambiguo');
+  assert.equal((await filaOutbox(db, otro.id)).estado, 'ambiguo');
+});
+
+test('binding: tiene prioridad sobre la clave de SMTP2GO', async t => {
+  const { db } = await crearD1(t);
+  const { id } = await escenarioMail(db);
+  const { email, enviados } = bindingCorreo();
+  const { buscar, llamadas } = espia(() => respuestaSmtp({ succeeded: 1, failed: 0 }));
+
+  const transportes = crearTransportes({ email, smtp: { clave: 'clave-sintetica' } }, buscar, db);
+  assert.equal(await consumirEfecto(db, id, transportes), 'enviado');
+  assert.equal(enviados.length, 1);
+  assert.equal(llamadas.length, 0);
+});
+
+test('binding: el newsletter pasa los encabezados RFC 8058 como objeto', async t => {
+  const { email, enviados } = bindingCorreo();
+  const mail = crearTransporteMail({ email }, espia().buscar);
+  const bajaUrl = 'https://www.siglo21sur.com/newsletter/baja?id=11111111-1111-4111-8111-111111111111';
+
+  assert.equal(await mail({
+    para: 'sintetico@example.invalid',
+    carrera: {
+      id: 1, nombre: 'Carrera sintética', nivel: 'Teclab - Tecnología',
+      prefix: null, duracion: '2 años', nombre_corto: 'Sintética',
+    },
+    precio: { estado: 'vigente', precio: {
+      conceptos: [{ concepto: 'Matrícula', monto: '$ 1', descuento: null }],
+      total: '$ 1', nota: null, vigenteHasta: '2099-01-01',
+    } },
+    limitar: false,
+    newsletter: {
+      bajaUrl,
+      encabezados: [
+        { header: 'List-Unsubscribe', value: `<${bajaUrl}>` },
+        { header: 'List-Unsubscribe-Post', value: 'List-Unsubscribe=One-Click' },
+      ],
+    },
+  }), 'enviado');
+
+  assert.deepEqual(enviados[0].headers, {
+    'List-Unsubscribe': `<${bajaUrl}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  });
+  assert.match(enviados[0].text, /Anular suscripción/);
 });
 
 // ── HubSpot ──

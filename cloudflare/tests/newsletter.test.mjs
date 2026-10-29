@@ -51,11 +51,11 @@ test('newsletter: autenticación, configuración ausente y base caída fallan ce
   assert.equal(otro.status, 401);
   assert.deepEqual(await otro.json(), { error: 'no autorizado' });
 
-  const sinSmtp = await manejarNewsletter(pedir({ authorization: 'Bearer secreto-sintetico' }), db, {
+  const sinCorreo = await manejarNewsletter(pedir({ authorization: 'Bearer secreto-sintetico' }), db, {
     secretoCron: 'secreto-sintetico', ahora: () => AHORA,
   });
-  assert.equal(sinSmtp.status, 503);
-  assert.match((await sinSmtp.json()).error, /SMTP2GO_API_KEY/);
+  assert.equal(sinCorreo.status, 503);
+  assert.match((await sinCorreo.json()).error, /transporte de correo/);
 
   const sinBase = await manejarNewsletter(pedir({ authorization: 'Bearer secreto-sintetico' }), null, entorno(mail));
   assert.equal(sinBase.status, 500);

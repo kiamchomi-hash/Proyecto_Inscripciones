@@ -3,7 +3,7 @@ import { resolverDb } from '../datos/binding.ts';
 import type { EntornoFormularios } from './formularios.ts';
 import { verificarTurnstile } from './turnstile.ts';
 import type { ProductorCola } from '../operativa/colas.ts';
-import { crearTransporteMail, type Buscar } from '../operativa/transportes.ts';
+import { crearTransporteMail, type Buscar, type CorreoBinding } from '../operativa/transportes.ts';
 import {
   enviarTelegramDirecto, enviarTelegramSeguro, type ConfigTelegram,
 } from '../operativa/telegram.ts';
@@ -25,6 +25,7 @@ type EntornoRuntime = {
   FORMULARIOS_PRUEBA_LOCAL?: string;
   CRON_SECRET?: string;
   REVALIDATE_SECRET?: string;
+  EMAIL?: CorreoBinding;
   SMTP2GO_API_KEY?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
@@ -62,10 +63,16 @@ export const configTelegram = (): ConfigTelegram | undefined => {
 
 export const buscarRed: Buscar = (url, init) => fetch(url, init);
 
-/** El transporte de SMTP2GO sólo existe si hay clave; nunca se interpola. */
-export const transporteMail = () => runtime.SMTP2GO_API_KEY
-  ? crearTransporteMail({ smtp: { clave: runtime.SMTP2GO_API_KEY } }, buscarRed)
-  : undefined;
+/**
+ * El transporte de correo: binding de Cloudflare si está, si no SMTP2GO con su
+ * clave. Nunca se interpola el entorno completo.
+ */
+export const transporteMail = () => {
+  if (runtime.EMAIL) return crearTransporteMail({ email: runtime.EMAIL }, buscarRed);
+  return runtime.SMTP2GO_API_KEY
+    ? crearTransporteMail({ smtp: { clave: runtime.SMTP2GO_API_KEY } }, buscarRed)
+    : undefined;
+};
 
 export const telegramCron = (texto: string, timeoutMs?: number) =>
   enviarTelegramSeguro(configTelegram(), buscarRed, texto, timeoutMs);

@@ -1,4 +1,5 @@
 import { armarMailPrecio, REMITENTE_MAIL, SMTP2GO_URL } from '../../../components/formularios/mail-precio.ts';
+import type { PrecioDelMail } from '../../../components/formularios/mail-precio.ts';
 import {
   buildConsultaMessage, buildFaqMessage, buildSolicitudClaseMessage,
 } from './mensajes.ts';
@@ -13,6 +14,10 @@ import {
 // y el `buscar` desde el Worker. Las pruebas usan un `buscar` simulado, así que
 // ningún test sale a la red ni manda un mail o un aviso real.
 //
+// El correo tiene dos caminos: el binding `send_email` de Cloudflare (sin clave,
+// tiene prioridad) y SMTP2GO con su clave. Cómo se activa el binding, con qué
+// orden y qué pasa con el SPF: `docs/correo-cloudflare.md`.
+//
 // Regla de ambigüedad: una respuesta HTTP no-2xx es un rechazo conocido y se
 // puede reintentar; una excepción de red o un timeout después de enviar no
 // permiten saber si el proveedor aceptó, así que se marca `ambiguo` y no se
@@ -22,8 +27,28 @@ export const TIMEOUT_TELEGRAM_MS = 8_000;
 export const TIMEOUT_SMTP_MS = 8_000;
 export const TIMEOUT_HUBSPOT_MS = 5_000;
 
+/**
+ * Lo mínimo del binding `send_email` de Cloudflare que necesita el adaptador.
+ *
+ * Se declara acá, estructural, y no importando el tipo generado: así el módulo
+ * se prueba en Node sin el runtime del Worker, y `wrangler types` puede cambiar
+ * sin tocar este archivo. La forma es la documentada para `env.EMAIL.send()`.
+ */
+export interface CorreoBinding {
+  send(mensaje: {
+    to: string;
+    from: { email: string; name?: string };
+    subject: string;
+    html?: string;
+    text?: string;
+    headers?: Record<string, string>;
+  }): Promise<{ messageId?: string }>;
+}
+
 export interface ConfigEnvios {
   telegram?: { token: string; chatId: string };
+  /** Correo por el binding de Cloudflare: no hay clave que custodiar. */
+  email?: CorreoBinding;
   smtp?: { clave: string };
   /** La URL viaja en el pedido, armada desde `casas.ts`; acá sólo se habilita. */
   hubspot?: { habilitado: boolean };
@@ -96,33 +121,87 @@ function transportarTelegram(
 }
 
 /**
- * SMTP2GO: mismo endpoint, remitente y forma de confirmación que
- * `mandarPorSmtp2go`. La plantilla es `armarMailPrecio`, no una copia.
+ * `'CAU Online <inscripciones@siglo21sur.com>'` → las dos partes que pide el
+ * binding. Se parsea en vez de escribir la dirección dos veces: el remitente
+ * sigue teniendo un solo dueño, `REMITENTE_MAIL`.
  */
-function transportarMail(config: ConfigEnvios, buscar: Buscar): NonNullable<Transportes['mail']> {
-  return async (pedido: PedidoMail) => {
-    if (!config.smtp?.clave) return 'sin-configurar';
-    if (pedido.precio.estado !== 'vigente') throw new ErrorRechazo('sin-precio-vigente');
-    // La misma plantilla del resumen transaccional; el newsletter sólo le suma
-    // el pie con la baja y los encabezados de un clic (RFC 8058).
-    const mail = pedido.newsletter
-      ? armarMailPrecio({
-        carrera: pedido.carrera,
-        precio: pedido.precio.precio,
-        hoy: new Date(),
-        tipo: 'newsletter',
-        bajaUrl: pedido.newsletter.bajaUrl,
-      })
-      : armarMailPrecio({
-        carrera: pedido.carrera,
-        precio: pedido.precio.precio,
-        hoy: new Date(),
-      });
+export function remitenteEstructurado(remitente: string): { email: string; name?: string } {
+  const partes = /^\s*(.*?)\s*<([^>]+)>\s*$/.exec(remitente);
+  if (!partes) return { email: remitente.trim() };
+  return partes[1] ? { email: partes[2].trim(), name: partes[1] } : { email: partes[2].trim() };
+}
+
+/** Código de error del binding (`E_SENDER_NOT_VERIFIED`, …), si lo trae. */
+const codigoDeError = (error: unknown): string | null => {
+  if (error === null || typeof error !== 'object') return null;
+  const codigo = (error as { code?: unknown }).code;
+  return typeof codigo === 'string' && codigo.length > 0 ? codigo : null;
+};
+
+/** El mail armado; la plantilla es la misma para los dos caminos de salida. */
+function armarMailDelPrecio(pedido: PedidoMail, precio: PrecioDelMail) {
+  // La misma plantilla del resumen transaccional; el newsletter sólo le suma
+  // el pie con la baja y los encabezados de un clic (RFC 8058).
+  return pedido.newsletter
+    ? armarMailPrecio({
+      carrera: pedido.carrera,
+      precio,
+      hoy: new Date(),
+      tipo: 'newsletter',
+      bajaUrl: pedido.newsletter.bajaUrl,
+    })
+    : armarMailPrecio({
+      carrera: pedido.carrera,
+      precio,
+      hoy: new Date(),
+    });
+}
+
+type MailArmado = { asunto: string; html: string; texto: string };
+
+/**
+ * Correo por el binding de Cloudflare. La diferencia con SMTP2GO no es sólo de
+ * credencial: el binding devuelve `messageId` cuando aceptó el mensaje y, si
+ * falla, lanza un error con `code`. Un error con código es un rechazo conocido
+ * (nada salió); uno sin código es una falla del runtime y se trata como
+ * ambigua, igual que una excepción de red en los demás transportes.
+ */
+async function porBinding(
+  binding: CorreoBinding, pedido: PedidoMail, mail: MailArmado,
+): Promise<ResultadoTransporte> {
+  try {
+    await binding.send({
+      to: pedido.para,
+      from: remitenteEstructurado(REMITENTE_MAIL),
+      subject: mail.asunto,
+      html: mail.html,
+      text: mail.texto,
+      ...(pedido.newsletter
+        ? { headers: Object.fromEntries(pedido.newsletter.encabezados.map(({ header, value }) => [header, value])) }
+        : {}),
+    });
+  } catch (error) {
+    const codigo = codigoDeError(error);
+    if (codigo) throw new ErrorRechazo(codigo);
+    throw new ErrorAmbiguo(error instanceof Error ? error.name : 'correo');
+  }
+  return 'enviado';
+}
+
+/**
+ * SMTP2GO: mismo endpoint, remitente y forma de confirmación que
+ * `mandarPorSmtp2go`. Se conserva mientras la clave siga cargada; el binding
+ * tiene prioridad.
+ */
+function porSmtp2go(
+  clave: string, buscar: Buscar, pedido: PedidoMail, mail: MailArmado,
+): Promise<ResultadoTransporte> {
+  return (async (): Promise<ResultadoTransporte> => {
     let respuesta: Response;
     try {
       respuesta = await buscar(SMTP2GO_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Smtp2go-Api-Key': config.smtp.clave },
+        headers: { 'Content-Type': 'application/json', 'X-Smtp2go-Api-Key': clave },
         body: JSON.stringify({
           sender: REMITENTE_MAIL,
           to: [pedido.para],
@@ -146,6 +225,22 @@ function transportarMail(config: ConfigEnvios, buscar: Buscar): NonNullable<Tran
     const fallidos = typeof datos.failed === 'number' ? datos.failed : 0;
     if (enviados < 1 || fallidos > 0) throw new ErrorRechazo(codigo ?? 'sin-destinatario');
     return 'enviado';
+  })();
+}
+
+/**
+ * El correo sale por el binding de Cloudflare si está, y si no por SMTP2GO con
+ * la clave. Sin ninguno de los dos devuelve `sin-configurar`: la intención queda
+ * pendiente en el outbox y la levanta un barrido posterior.
+ */
+function transportarMail(config: ConfigEnvios, buscar: Buscar): NonNullable<Transportes['mail']> {
+  return async (pedido: PedidoMail) => {
+    const binding = config.email;
+    const clave = config.smtp?.clave;
+    if (!binding && !clave) return 'sin-configurar';
+    if (pedido.precio.estado !== 'vigente') throw new ErrorRechazo('sin-precio-vigente');
+    const mail = armarMailDelPrecio(pedido, pedido.precio.precio);
+    return binding ? porBinding(binding, pedido, mail) : porSmtp2go(clave!, buscar, pedido, mail);
   };
 }
 

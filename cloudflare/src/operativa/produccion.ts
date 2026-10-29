@@ -1,5 +1,5 @@
 import { barridoDeEfectos, manejarLote, type LoteCola, type ProductorCola } from './colas.ts';
-import { crearTransportes, type Buscar, type ConfigEnvios } from './transportes.ts';
+import { crearTransportes, type Buscar, type ConfigEnvios, type CorreoBinding } from './transportes.ts';
 import type { Transportes } from './consumidores.ts';
 import { manejarNewsletter, type EntornoNewsletter } from '../api/newsletter.ts';
 import { manejarRecordatorio } from '../api/recordatorio-teclab.ts';
@@ -21,6 +21,8 @@ export interface EntornoProduccion {
   EFECTOS?: ProductorCola;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
+  /** Binding `send_email` de Cloudflare. Si está, manda por acá y no hay clave. */
+  EMAIL?: CorreoBinding;
   SMTP2GO_API_KEY?: string;
   HUBSPOT_HABILITADO?: string;
 }
@@ -33,6 +35,7 @@ export function configEnvios(entorno: EntornoProduccion): ConfigEnvios {
   if (entorno.TELEGRAM_BOT_TOKEN && entorno.TELEGRAM_CHAT_ID) {
     config.telegram = { token: entorno.TELEGRAM_BOT_TOKEN, chatId: entorno.TELEGRAM_CHAT_ID };
   }
+  if (entorno.EMAIL) config.email = entorno.EMAIL;
   if (entorno.SMTP2GO_API_KEY) config.smtp = { clave: entorno.SMTP2GO_API_KEY };
   if (entorno.HUBSPOT_HABILITADO === 'si') config.hubspot = { habilitado: true };
   return config;
@@ -107,6 +110,8 @@ export interface ContextoProgramado {
   mail?: EntornoNewsletter['mail'];
   usuariosActivos?: (fecha: string) => Promise<number>;
   telegramConfig?: { token: string; chatId: string };
+  /** Binding de correo; si viene, el barrido manda por acá y no por SMTP2GO. */
+  correo?: CorreoBinding;
   smtpClave?: string;
 }
 
@@ -126,17 +131,18 @@ export async function manejarProgramado(
 
   if (tarea === 'efectos') {
     if (!contexto.db) throw new Error('Barrido sin base');
+    const canales: ConfigEnvios = {
+      ...(contexto.telegram ? { telegram: contexto.telegramConfig! } : {}),
+      ...(contexto.mail
+        ? {
+          ...(contexto.correo ? { email: contexto.correo } : {}),
+          ...(contexto.smtpClave ? { smtp: { clave: contexto.smtpClave } } : {}),
+        }
+        : {}),
+    };
     const resumen = await barridoDeEfectos(
       contexto.db,
-      contexto.telegram || contexto.mail
-        ? crearTransportes(
-          {
-            ...(contexto.telegram ? { telegram: contexto.telegramConfig! } : {}),
-            ...(contexto.mail ? { smtp: { clave: contexto.smtpClave! } } : {}),
-          },
-          contexto.buscar, contexto.db,
-        )
-        : {},
+      Object.keys(canales).length > 0 ? crearTransportes(canales, contexto.buscar, contexto.db) : {},
     );
     return { tarea, status: 200, cuerpo: resumen };
   }

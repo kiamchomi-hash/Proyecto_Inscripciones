@@ -49,6 +49,12 @@
       "0 12 * * *"
     ]
   },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_sender_addresses": ["inscripciones@siglo21sur.com"]
+    }
+  ],
   "routes": [
     { "pattern": "www.siglo21sur.com", "custom_domain": true },
     { "pattern": "siglo21sur.com", "custom_domain": true }

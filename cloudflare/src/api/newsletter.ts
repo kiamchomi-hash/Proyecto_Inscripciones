@@ -22,7 +22,7 @@ import { rechazoBearer } from './auth.ts';
  * no se reintenta solo; un rechazo conocido queda en `error` y se puede volver
  * a intentar en la próxima corrida.
  *
- * Sin `CRON_SECRET` o sin `SMTP2GO_API_KEY` no se lee la base ni se manda nada:
+ * Sin `CRON_SECRET` o sin transporte de correo no se lee la base ni se manda nada:
  * no hay respuesta de éxito ficticia.
  */
 
@@ -149,8 +149,8 @@ export async function manejarNewsletter(
 
   const resumen = resumenVacio();
   if (!entorno.mail) {
-    console.warn('[newsletter] Corrida omitida: falta SMTP2GO_API_KEY');
-    return respuesta({ error: 'SMTP2GO_API_KEY sin configurar', ...resumen }, 503);
+    console.warn('[newsletter] Corrida omitida: falta el transporte de correo');
+    return respuesta({ error: 'transporte de correo sin configurar', ...resumen }, 503);
   }
   // Sin base no hay candidatas: es el 500 de la lectura vigente, no un éxito.
   if (!db) return respuesta({ error: 'No se pudo leer la base', ...resumen }, 500);
@@ -180,7 +180,7 @@ export async function manejarNewsletter(
   resumen.candidatas = candidatas.length;
   const reloj = entorno.ahora ? async () => (entorno.ahora!().toISOString()) : () => leerRelojBase(db);
 
-  // De a uno: SMTP2GO limita la tasa y un fallo no frena al resto.
+  // De a uno: el proveedor de correo limita la tasa y un fallo no frena al resto.
   for (const suscripcion of candidatas) {
     const datos = vigentes.get(suscripcion.carrera_id);
     if (!datos || Date.now() - arranque > PLAZO_MS) {
@@ -232,7 +232,7 @@ export async function manejarNewsletter(
         console.error('[newsletter] No se pudo registrar el fallo', { code: codigoDe(marcaError) });
       }
       resumen.fallidos += 1;
-      console.error('[newsletter] SMTP2GO no confirmó un envío', { codigo });
+      console.error('[newsletter] el proveedor de correo no confirmó un envío', { codigo });
       continue;
     }
 
