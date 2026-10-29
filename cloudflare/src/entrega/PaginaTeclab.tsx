@@ -99,10 +99,10 @@ export default function PaginaTeclab(
             <div className="teclab-hero-decir">
               <Image
                 className="teclab-hero-logo"
-                src="/imagenes/teclab/logo-teclab-siglo21.webp"
+                src="/imagenes/teclab/logo-teclab-siglo21-hero.webp"
                 alt="Teclab, Instituto Técnico Superior, y Universidad Siglo 21"
-                width={380}
-                height={69}
+                width={1273}
+                height={275}
                 preload
               />
               <h1 id="teclab-title">

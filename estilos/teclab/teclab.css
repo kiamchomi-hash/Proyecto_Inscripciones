@@ -324,6 +324,7 @@
 .teclab-hero-logo {
   width: clamp(13rem, 17vw, 17rem);
   height: auto;
+  filter: brightness(0) invert(1);
   margin-bottom: clamp(0.85rem, 1.8vh, 1.15rem);
 }
 
