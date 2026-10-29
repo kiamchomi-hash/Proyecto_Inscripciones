@@ -106,7 +106,7 @@ test('los enlaces son absolutos: la inscripción dedicada y WhatsApp de Teclab',
   assert.match(html, />Quiero inscribirme</);
 
   const wa = `https://wa.me/${whatsapp.numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(`Hola, quiero consultar por la ${nombreCompleto}`)}`;
-  assert.equal(whatsapp.numeroWhatsAppDe('teclab'), '5491166522722');
+  assert.equal(whatsapp.numeroWhatsAppDe('teclab'), '5491132973801');
   assert.ok(texto.includes(wa), texto);
   assert.ok(html.includes(`href="${wa}"`));
   assert.match(html, />Consultar por WhatsApp</);
@@ -215,8 +215,9 @@ test('el id de la suscripción se valida como UUID', () => {
 });
 
 // Restaurar Teclab no debe cambiar el destino de las otras casas.
-test('WhatsApp conserva los destinos de Identidad y Siglo 21', () => {
-  assert.equal(whatsapp.numeroWhatsAppDe('identidad'), '5491166522722');
+test('WhatsApp de Identidad y Siglo 21 apunta al número del CAU', () => {
+  assert.equal(whatsapp.numeroWhatsAppDe('identidad'), '5491132973801');
+  assert.equal(whatsapp.NUMERO_TECLAB_IDENTIDAD, '5491132973801');
   for (const casa of ['siglo21', null, undefined]) {
     assert.equal(whatsapp.numeroWhatsAppDe(casa), '5491132973801');
   }
