@@ -1,3 +1,8 @@
+/* La capa fija global es verde; en Teclab debe acompañar el fondo azul. */
+body:has(.teclab-page)::before {
+  background: #0c1824;
+}
+
 .teclab-page {
   /* Paleta oficial de Teclab (skill piezas_teclab): azul, navy, cian, blanco y
      gris claro. Los tonos intermedios salen de esos cinco y viven aca, no en
@@ -242,37 +247,18 @@
   padding: clamp(1.75rem, 2.8vw, 2.5rem) clamp(1.25rem, 6vw, 5rem);
 }
 
-/* Desde tablet: el logo arriba y pegado al titulo, los dos centrados sobre la
-   columna; los botones abajo, a la altura de las marcas cocreadoras. El aire
-   que sobra queda entre el titulo y los botones. */
+/* Título, acciones y marcas centrados en la misma columna. */
 @media (min-width: 761px) {
   .teclab-hero-decir {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
   }
 
-  /* Con el contenedor adelante: `.teclab-hero h1 { margin: 0 }` va mas abajo
-     y a igual especificidad lo pisaba. */
   .teclab-hero .teclab-hero-decir h1 {
-    position: relative;
-    margin-top: 0.7rem;
-    margin-bottom: auto;
+    margin: 0;
     text-align: center;
-  }
-
-  /* Separacion entre el logo y el titulo: una linea fina posicionada en el
-     margen, que no suma alto. Mide lo mismo que el logo y se funde en las
-     puntas. El hero no tiene animaciones de entrada: todo aparece quieto. */
-  .teclab-hero .teclab-hero-decir h1::before {
-    content: "";
-    position: absolute;
-    top: -0.35rem;
-    left: 50%;
-    width: clamp(19rem, 30vw, 28rem);
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
-    transform: translate(-50%, -50%);
   }
 
   .teclab-hero-decir .teclab-hero-logo,
@@ -281,11 +267,13 @@
   }
 
   .teclab-hero-decir .teclab-hero-actions {
-    padding-top: 1rem;
+    padding-top: 0.8rem;
   }
 
   .teclab-hero-decir .teclab-hero-logo {
     width: min(100%, clamp(19rem, 30vw, 28rem));
+    margin-top: 0;
+    padding-top: 1rem;
   }
 
   /* Las marcas siempre al pie de la columna de las fotos, aunque la del
@@ -322,10 +310,25 @@
 /* El lockup Teclab + Siglo 21 es mas ancho que el logo solo (5,5:1 contra
    3:1): este ancho le da el mismo alto que tenia el de Teclab. */
 .teclab-hero-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
   width: clamp(13rem, 17vw, 17rem);
   height: auto;
-  filter: brightness(0) invert(1);
   margin-bottom: clamp(0.85rem, 1.8vh, 1.15rem);
+}
+
+.teclab-hero-logo img {
+  width: auto;
+  height: clamp(2.75rem, 4vw, 3.6rem);
+  max-width: 45%;
+}
+
+.teclab-hero-logo-mas {
+  flex: none;
+  width: 1.2rem;
+  color: #fff;
 }
 
 .teclab-eyebrow {
@@ -347,30 +350,19 @@
   text-wrap: balance;
 }
 
-/* Resaltado de marcador, de la pieza titular-resaltados-inclinados-loopster
-   del UIverse local: las dos promesas de la oferta van dentro de un bloque
-   solido, girado un grado para cada lado, como marcador puesto a mano. El
-   texto va en blanco, asi que el bloque no puede ser el cian de Teclab (1,5:1
-   de contraste): "dos años" usa un petroleo de su misma familia y "100%
-   online" el azul de la marca. */
+/* Los acentos conservan el color sin competir con los botones. */
 .teclab-resalte {
   display: inline-block;
-  padding: 0.02em 0.22em;
-  border-radius: 0.2em;
   white-space: nowrap;
-  background: var(--resalte-fondo);
-  color: #fff;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .teclab-resalte--cian {
-  --resalte-fondo: #0b7a80;
-  transform: rotate(-1deg);
+  color: #fff;
 }
 
 .teclab-resalte--azul {
-  --resalte-fondo: var(--tl-azul);
-  transform: rotate(1deg);
+  color: #a5d9e2;
 }
 
 .teclab-hero-actions {

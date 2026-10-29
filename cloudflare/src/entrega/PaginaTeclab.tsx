@@ -97,14 +97,6 @@ export default function PaginaTeclab(
 
           <div className="teclab-hero-content">
             <div className="teclab-hero-decir">
-              <Image
-                className="teclab-hero-logo"
-                src="/imagenes/teclab/logo-teclab-siglo21-hero.webp"
-                alt="Teclab, Instituto Técnico Superior, y Universidad Siglo 21"
-                width={1273}
-                height={275}
-                preload
-              />
               <h1 id="teclab-title">
                 {/* El "de" no se ve pero se lee: el titulo visible es mas corto y el
                     H1 sigue diciendo la frase completa. */}
@@ -121,6 +113,13 @@ export default function PaginaTeclab(
                 <a className="teclab-button teclab-button--secundario" href="#preinscripcion">
                   Quiero inscribirme <span aria-hidden="true">→</span>
                 </a>
+              </div>
+              <div className="teclab-hero-logo">
+                <Image src="/imagenes/teclab/logo-teclab-oficial.svg" alt="Teclab, Instituto Técnico Superior" width={147} height={51} />
+                <svg aria-hidden="true" viewBox="0 0 20 20" className="teclab-hero-logo-mas">
+                  <path d="M10 3v14M3 10h14" fill="none" stroke="currentColor" strokeWidth="3" />
+                </svg>
+                <Image src="/imagenes/imagenes_cau/siglo21-ilumno-blanco.svg" alt="Universidad Siglo 21" width={192} height={82} />
               </div>
             </div>
 
