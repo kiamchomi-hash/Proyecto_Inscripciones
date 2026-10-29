@@ -5,7 +5,7 @@
 import type { Carrera } from './types';
 
 // Escuela a la que pertenece cada programa, segun la ficha oficial.
-// La clave es una palabra distintiva del nombre en Supabase; la etiqueta va
+// La clave es una palabra distintiva del nombre en D1; la etiqueta va
 // abreviada para que entre en el chip de la tarjeta.
 const ESCUELAS: { match: string; escuela: string }[] = [
   { match: 'oratoria', escuela: 'Liderazgo' },

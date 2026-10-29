@@ -1,4 +1,4 @@
-import type { Json, Tables } from '@/lib/database.types';
+import type { Json, Tables } from '@/lib/tipos-datos';
 import type { Carrera, CarreraDetalle, CarreraSlide } from '@/components/index/types';
 
 // Literales: PostgREST debe inferir cada columna, no devolver un resultado genérico.

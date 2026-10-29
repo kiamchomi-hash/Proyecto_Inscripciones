@@ -9,7 +9,7 @@
 - [Inscripción por código Next](../app/inscripcion/[codigo]/page.tsx) — capacidad privada, resumen enmascarado, estados indistinguibles y demo explícito.
 - [Contrato por casa](../docs/formularios-por-casa.md) y [contratos puros](../components/formularios/casas.ts) — campos, consentimiento, validaciones, consumo y proyección.
 - [Redirects vigentes](../next.config.ts) — sólo los de la familia `/carreras/[slug]`, no los de otras familias.
-- [Plan aprobado](../docs/plans/2026-10-24-cloudflare.md) — bloque 4 local; no autoriza corte ni integraciones externas.
+- Plan aprobado — bloque 4 local; no autoriza corte ni integraciones externas.
 
 No se consultaron servicios operativos, producción ni contenidos privados. Las
 únicas peticiones públicas de este lote fueron los dos archivos de licencia.

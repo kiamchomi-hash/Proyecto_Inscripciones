@@ -6,4 +6,3 @@
 - https://github.com/advisories/GHSA-2883-xcg3-v3hh — versión corregida de js-yaml.
 - https://github.com/advisories/GHSA-rgj7-g3m4-5g8c — actualización de sharp con bibliotecas de imagen corregidas.
 - https://nextjs.org/docs/app/api-reference/functions/generate-metadata — se consultó la copia de esta guía en node_modules/next/dist/docs; openGraph de una página reemplaza el del layout.
-- https://vercel.com/docs/cli/api — la CLI administra la autenticación; se reutiliza para renovar las sesiones OAuth vencidas antes de leer Analytics.

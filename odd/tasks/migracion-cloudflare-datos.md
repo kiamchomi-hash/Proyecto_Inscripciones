@@ -564,7 +564,7 @@ Fuentes locales: [criterios](../../docs/criterios.md),
 [variables](../../docs/variables-de-entorno.md),
 [herramientas](../../docs/herramientas.md),
 [seguridad](../../docs/seguridad.md),
-[bloque 5](../../docs/plans/2026-10-24-cloudflare.md#bloque-5-gate-de-respaldo-inventario-y-ensayo-de-datos-reales),
+bloque 5,
 [paquete local](../../cloudflare/LEER.md) y
 [seguimiento de paridad](../../cloudflare/SEGUIMIENTO-4C.md).
 La continuación de inventario no consultó fuentes web nuevas; la de staging sí

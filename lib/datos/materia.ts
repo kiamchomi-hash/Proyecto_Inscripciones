@@ -1,4 +1,4 @@
-import type { Json, Tables } from '@/lib/database.types';
+import type { Json, Tables } from '@/lib/tipos-datos';
 import type { MateriaCard } from '@/components/clases-apoyo/clases-apoyo-landing';
 import type { MateriaDB } from '@/components/clases-apoyo/tipos';
 import type { MateriaOtra } from '@/components/clases-apoyo/navegacion-materia';

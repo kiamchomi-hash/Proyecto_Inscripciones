@@ -101,5 +101,5 @@ seguridad, el historial y las referencias. Verificación proporcional: lectura
 estructural y `git diff --check`; no se repitieron pruebas de código por estos
 cambios documentales. Sin commit ni push de este registro. No quedan tareas
 T1–T4 abiertas; las limitaciones indicadas no se presentan como pruebas hechas.
-[Enlaces utilizados](../../referencias/2026-10-21-permisos-supabase-auth.md).
+Enlaces utilizados.
 

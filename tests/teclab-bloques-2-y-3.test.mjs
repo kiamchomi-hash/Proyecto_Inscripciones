@@ -15,7 +15,7 @@ import { buscarRedireccion } from '../cloudflare/src/entrega/redirects.ts';
 // de admisión del 16/10/2026). Entran con inscripción abierta: ficha, página de
 // inscripción, catálogo y los dos tests vocacionales.
 
-const SQL = 'sql/2026-10-16_teclab_bloques_2_y_3.sql';
+const FIXTURE = new URL('./fixtures/teclab-bloques-2-y-3.json', import.meta.url);
 
 // nombre, nivel, área del catálogo, tipo (Gestión) o categoría (Tecnología)
 const NUEVAS = [
@@ -110,41 +110,16 @@ test('el test vocacional general tiene una ruta específica para cada una', () =
   }
 });
 
-// ── SQL de alta ──
+// ── Datos de las fichas para las pruebas ──
 
-function filasDelSql() {
-  const sql = readFileSync(SQL, 'utf8');
-  const bloques = sql.split(/insert into public\.carreras/).slice(1);
-  return bloques.map(bloque => {
-    const [, nombre, nivel, nombreCorto, descripcion, duracion, titulo] = bloque.match(
-      /select\s+'([^']+)', '([^']+)', 'Tecnicatura Superior en',\s+'([^']+)',\s+'([^']+)',\s+'100% Online',\s+'([^']+)',\s+'([^']+)',/,
-    ) ?? [];
-    const literal = texto => texto.replace(/'\s*\n\s*'/g, '').replace(/\\n/g, '\n');
-    const enfoque = literal(bloque.match(/E'(Modalidad:[^']*)'/)?.[1] ?? '');
-    const plan = literal(bloque.match(/E'(Primer Año[\s\S]*?)',\s*'\[/)?.[1] ?? '');
-    const faq = JSON.parse(bloque.match(/'(\[\{"type": "faq"[\s\S]*?\]\}\])'::jsonb/)?.[1] ?? 'null');
-    const competencias = literal(bloque.match(/E'(• [\s\S]*?)',\s*null,/)?.[1] ?? '');
-    const flags = bloque.match(/(\d+), (true|false), (true|false), (true|false), (true|false)\s*where not exists/);
-    return {
-      id: 9600, nombre, nivel, prefix: 'Tecnicatura Superior en', nombre_corto: nombreCorto, descripcion,
-      modalidad: '100% Online', duracion, titulo, enfoque, plan_estudios: plan, slides: faq,
-      seccion_modalidad: competencias, seccion_duracion: null,
-      orden: Number(flags?.[1]), activa: flags?.[2] === 'true', destacada: flags?.[3] === 'true',
-      nueva: flags?.[4] === 'true', proximamente: flags?.[5] === 'true',
-      idempotente: bloque.includes(`where not exists (\n  select 1 from public.carreras where nombre = '${nombre}'\n)`),
-    };
-  });
-}
+const filasDeFixture = () => JSON.parse(readFileSync(FIXTURE, 'utf8'));
 
-test('el SQL da de alta las nueve con inscripción abierta, sin duplicar', () => {
-  const sql = readFileSync(SQL, 'utf8');
-  assert.doesNotMatch(sql.replace(/^--.*$/gm, ''), /\b(update|drop|truncate|alter)\b|^\s*delete\b/im);
-  const filas = filasDelSql();
+test('las nueve fichas históricas conservan sus datos de alta', () => {
+  const filas = filasDeFixture();
   assert.deepEqual(filas.map(f => nombreActual(f.nombre)), NUEVAS.map(n => n.nombre));
   assert.deepEqual(filas.map(f => f.orden), [1109, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1117]);
   for (const [i, fila] of filas.entries()) {
     assert.equal(fila.nivel, NUEVAS[i].nivel, fila.nombre);
-    assert.ok(fila.idempotente, `${fila.nombre}: falta where not exists por nombre`);
     assert.deepEqual([fila.activa, fila.destacada, fila.nueva, fila.proximamente], [true, false, true, false], fila.nombre);
     assert.equal(fila.duracion, '2 años');
     assert.equal(fila.titulo, fila.nombre.replace('Tecnicatura Superior en', 'Técnico Superior en'));
@@ -154,7 +129,7 @@ test('el SQL da de alta las nueve con inscripción abierta, sin duplicar', () =>
 });
 
 test('cada fila trae descripción, enfoque, plan, competencias y FAQ con el formato de Teclab', () => {
-  for (const fila of filasDelSql()) {
+  for (const fila of filasDeFixture()) {
     const { perfil, salida } = teclab.partirDescripcionTeclab(fila.descripcion);
     assert.match(perfil, /^Estudiá .+ a distancia/, fila.nombre);
     assert.ok(salida.length > 20, `${fila.nombre}: falta la salida laboral al final`);
@@ -181,7 +156,7 @@ test('cada fila trae descripción, enfoque, plan, competencias y FAQ con el form
 
 test('ningún redirect tapa los slugs nuevos', () => {
   const slugs = new Set();
-  for (const fila of filasDelSql()) {
+  for (const fila of filasDeFixture()) {
     const slug = tipos.carreraToSlug({ ...fila, nombre: nombreActual(fila.nombre) });
     assert.equal(buscarRedireccion(`/carreras/${slug}`), null, slug);
     assert.equal(buscarRedireccion(`/carreras/${slug}/inscripcion`), null, slug);
@@ -212,7 +187,7 @@ dependencias['./inscripcion-carrera'] = inscripcion;
 const CareerDetail = cargarTypescript('components/carreras/career-detail.tsx', dependencias).default;
 
 test('la ficha muestra el plan y no promete la articulación', () => {
-  for (const fila of filasDelSql()) {
+  for (const fila of filasDeFixture()) {
     const html = renderToStaticMarkup(React.createElement(CareerDetail, { carrera: adaptadores.carreraAPublica(fila), relacionadas: [] }));
     assert.doesNotMatch(html, /\bnull\b|undefined|A confirmar/, fila.nombre);
     assert.doesNotMatch(html, /career-oficial-articulacion|Después podés seguir en Universidad Siglo 21/, fila.nombre);
@@ -221,7 +196,7 @@ test('la ficha muestra el plan y no promete la articulación', () => {
 });
 
 test('cada una tiene página de inscripción con un título que entra', () => {
-  for (const fila of filasDelSql()) {
+  for (const fila of filasDeFixture()) {
     assert.ok(inscripcion.tieneInscripcionPropia(fila), fila.nombre);
     const titulo = inscripcion.tituloInscripcion(fila);
     assert.ok(titulo.length <= 66, titulo);

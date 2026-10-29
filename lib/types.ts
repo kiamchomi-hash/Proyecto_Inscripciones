@@ -1,4 +1,4 @@
-import type { Tables } from '@/lib/database.types';
+import type { Tables } from '@/lib/tipos-datos';
 
 /** Proyección de FAQ que se publica sin datos de contacto. */
 export type FaqPregunta = Pick<Tables<'faq_preguntas'>,

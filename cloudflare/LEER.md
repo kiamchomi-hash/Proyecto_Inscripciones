@@ -856,16 +856,10 @@ prueba como función pura: el harness no puede cambiar el host del pedido y el
 DNS/zona de producción no se configuran en este paquete. El harness de pruebas
 sigue redirecciones por defecto: los casos que miran el código usan
 `{ redirect: 'manual' }`.
-El 25/10 se autorizó trasladar sólo contenido público real, sin historial privado,
-manteniendo Supabase/Vercel intactos. Ese alcance sustituye el gate de respaldo
-completo para esta copia pública, no acredita recuperación de toda la base.
-Scripts, evidencia y límites: [datos públicos](../odd/tasks/migracion-cloudflare-datos.md).
-`exportar:publico` hace sólo lecturas remotas; `verificar:publico` importa en un D1
-nuevo efímero sin salidas externas, cron ni Queues. Los snapshots/informes quedan
-en `.local/datos-publicos/`, ignorados y con permisos restrictivos, nunca en Git.
-Deploy/DNS/corte siguen requiriendo aprobación explícita. Ver [plan](../docs/plans/2026-10-24-cloudflare.md),
-[diseño aprobado](../docs/plans/2026-10-24-cloudflare-design.md) y
-[seguimiento](../odd/tasks/migracion-cloudflare.md).
+`exportar:publico` lee únicamente el contenido público de D1 y las páginas
+públicas del sitio. `verificar:publico` importa esa copia en un D1 efímero sin
+salidas externas, cron ni colas. Los snapshots e informes quedan en
+`.local/datos-publicos/`, ignorados y con permisos restrictivos, nunca en Git.
 
 ## Continuación 4E: carreras e inscripción
 

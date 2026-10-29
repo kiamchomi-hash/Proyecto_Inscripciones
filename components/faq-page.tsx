@@ -722,7 +722,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
-/* ── User Questions Section (from Supabase) ──────────── */
+/* ── Preguntas de usuarios ──────────── */
 
 function UserQuestionItem({ q, displayIndex, isOpen, onToggle }: { q: UserQuestion; displayIndex: number; isOpen: boolean; onToggle: () => void }) {
   const contentRef = useRef<HTMLDivElement>(null);

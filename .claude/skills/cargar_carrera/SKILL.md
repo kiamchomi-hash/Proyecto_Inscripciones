@@ -84,7 +84,7 @@ El frontend **no** lo genera: va siempre en el JSON.
 ```
 Un ícono desconocido cae en `star` (`ICON_PATHS`, `components/index/carousel-modal.tsx`).
 
-Existen además los tipos `modalidad`, `evaluacion` y `faq` (uno solo por carrera). La FAQ se carga aparte; ver `sql/2026-10-05_faq_tres_carreras.sql`.
+Existen además los tipos `modalidad`, `evaluacion` y `faq` (uno solo por carrera). La FAQ se carga aparte en D1.
 
 ## Reglas IMPORTANTES
 

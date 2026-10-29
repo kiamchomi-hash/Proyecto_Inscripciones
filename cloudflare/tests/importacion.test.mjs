@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validarSnapshot, importarPublico as importarConGuardas, verificarPublico, resumenTablas } from '../scripts/importar-datos.mjs';
-import { paginarPublico } from '../scripts/exportar-datos.mjs';
 import { crearD1 } from './helpers/d1.mjs';
 import { CONTRATO } from '../scripts/datos-publicos.mjs';
 import { readFileSync } from 'node:fs';
 import { lectorPublico, urlsSitemap } from '../scripts/exportar-datos.mjs';
+import { extraerDatosPublicos } from '../scripts/copia-datos-publicos.mjs';
 import { aislarRed, referenciasImagenes } from '../scripts/verificar-datos.mjs';
 import { spawnSync } from 'node:child_process';
 
@@ -29,15 +29,6 @@ test('snapshot público rechaza tablas privadas, columnas ajenas y versiones des
   }
 });
 
-test('paginación estable recorre más de 200 y rechaza páginas repetidas o truncadas', async () => {
-  let llamadas = 0;
-  const leer = async ultimo => { llamadas++; return Array.from({ length: Math.min(100, 253 - (ultimo ?? 0)) }, (_, i) => ({ id: (ultimo ?? 0) + i + 1 })); };
-  assert.equal((await paginarPublico(leer, 253)).length, 253);
-  assert.equal(llamadas, 4);
-  await assert.rejects(paginarPublico(async () => [{ id: 1 }], 2));
-  await assert.rejects(paginarPublico(async () => [], 1));
-});
-
 test('D1 nuevo: importación vacía, repetición idéntica y tablas privadas vacías', async t => {
   const { db } = await crearD1(t);
   const s = snapshot();
@@ -47,6 +38,13 @@ test('D1 nuevo: importación vacía, repetición idéntica y tablas privadas vac
   assert.ok(Object.values(r.privadas).every(n => n === 0));
   assert.deepEqual(r.tablas, resumenTablas(s.tablas));
   assert.deepEqual(r.fk, []);
+});
+
+test('la exportación lee de D1 sólo las tablas públicas del contrato', async t => {
+  const { db } = await crearD1(t);
+  const s = snapshot(); s.tablas.carreras = [carrera(42)];
+  await importarPublico(db, s);
+  assert.deepEqual(await extraerDatosPublicos(db), s);
 });
 
 test('rechaza un destino con datos privados y no los altera', async t => {
@@ -97,17 +95,13 @@ test('las excepciones SEO de Cloud Administration y Gestión Hotelera conservan 
 });
 
 test('GET público no sigue redirects, no pasa claves al sitio y rechaza rutas/credenciales privadas', async () => {
-  const origen = 'https://fixture.supabase.co';
-  const anon = 'eyJ.'+Buffer.from(JSON.stringify({role:'anon'})).toString('base64url')+'.fixture';
   const llamadas = [];
-  const leer = lectorPublico(origen,anon,async (u,opts)=>{ llamadas.push({url:u.href,...opts}); return new Response('',{status:302,headers:{location:'https://no-autorizado.invalid'}}); });
+  const leer = lectorPublico(async (u,opts)=>{ llamadas.push({url:u.href,...opts}); return new Response('',{status:302,headers:{location:'https://no-autorizado.invalid'}}); });
   await leer('https://www.siglo21sur.com/');
-  assert.deepEqual(llamadas[0].headers,{});
+  assert.equal(llamadas[0].headers,undefined);
   assert.equal(llamadas[0].method,'GET');assert.equal(llamadas[0].redirect,'manual');
-  await assert.rejects(leer(origen+'/rest/v1/consultas',true));
   await assert.rejects(leer('https://no-autorizado.invalid/'));
   await assert.rejects(leer('https://www.siglo21sur.com/api/newsletter'));
-  assert.throws(()=>lectorPublico(origen,'eyJ.'+Buffer.from(JSON.stringify({role:'service_role'})).toString('base64url')+'.fixture'));
   assert.throws(()=>urlsSitemap('<url><loc>https://www.siglo21sur.com/inscripcion/codigo</loc></url>'));
   assert.deepEqual(referenciasImagenes(['/_next/image?url=%2Fimagenes%2Fa.webp&w=100&q=80']),
     referenciasImagenes(['/imagenes/a.webp?dpl=fixture']));

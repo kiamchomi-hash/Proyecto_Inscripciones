@@ -119,7 +119,7 @@ resultados se contrastan mediante interacción y texto, no mediante PNG aparte.
 
 ## Fuentes utilizadas
 
-- [Plan existente, bloque 4](../docs/plans/2026-10-24-cloudflare.md).
+- Plan existente, bloque 4.
 - [Criterios aprobados](../docs/criterios.md).
 - [Sobre nosotros](../app/sobre-nosotros/page.tsx), [calendario](../app/calendario-academico/page.tsx).
 - [Biblioteca de imágenes](../app/imagenes/page.tsx), [UI de biblioteca](../components/imagenes/biblioteca.tsx).
@@ -250,7 +250,7 @@ en spans para la M pixel). Ninguno fue un problema de cuota o de modelo.
 
 Fuentes locales adicionales: [FAQ](../app/faq/page.tsx),
 [clases](../app/clases-apoyo/page.tsx), [materia](../app/clases-apoyo/[materia]/page.tsx),
-[diseño de materias](../docs/plans/2026-09-26-materias-independientes-design.md),
+diseño de materias,
 [baja GET](../app/newsletter/baja/page.tsx),
 [baja POST](../app/api/newsletter/baja/route.ts),
 [validador UUID](../components/formularios/mail-precio.ts).

@@ -11,8 +11,8 @@ escrituras a Supabase. Cambios ajenos preservados; no se exploró `contenidos/`.
 La aprobación de la migración completa y el gate previo al corte constan en
 `docs/criterios.md`; producción no cambia durante estas pruebas locales.
 
-- [Diseño aprobado](../../docs/plans/2026-10-24-cloudflare-design.md).
-- [Plan por bloques](../../docs/plans/2026-10-24-cloudflare.md).
+- Diseño aprobado.
+- Plan por bloques.
 - [Fuentes](../../referencias/2026-10-24-migracion-cloudflare.md).
 
 ## Primer incremento
@@ -358,7 +358,7 @@ El límite histórico de 3D sobre wiring/claim/barrido queda resuelto para uso l
   y medir CPU SSR antes de decidir. No se contrató ni activó nada.
 
 Detalles, límites y recuperación manual: [operativa local](../../cloudflare/OPERATIVA-LOCAL.md).
-[Plan ejecutado](../../docs/plans/2026-10-24-cloudflare-colas-locales.md) y
+Plan ejecutado y
 [fuentes oficiales](../../referencias/2026-10-24-cloudflare-colas-locales.md).
 Pendientes al cierre de ese incremento (pruebas locales resueltas en la sección
 siguiente): crash/recuperación del isolate y vencimiento/DLQ extremo a extremo.

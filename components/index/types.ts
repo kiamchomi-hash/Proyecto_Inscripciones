@@ -108,7 +108,7 @@ export type CarreraCatalogo = Omit<Carrera, (typeof COLUMNAS_DETALLE)[number]>
   & { tieneSlides: boolean };
 
 // Las columnas que sí van en el HTML. Se listan a mano para que agregar una
-// columna pesada a Supabase no la meta sola en la home.
+// columna pesada a la base no la meta sola en la home.
 // Literal para que PostgREST pueda inferir la proyección en TypeScript.
 export const COLUMNAS_CATALOGO = 'id, nombre, nivel, duracion, titulo, modalidad, prefix, nombre_corto, orden, activa, destacada, nueva, proximamente' as const;
 
@@ -132,7 +132,7 @@ export const CATEGORIES: CarreraCategory[] = [
   { id: 'teclab_gestion', label: 'Teclab Gestión', sublabel: 'Tecnicaturas', niveles: ['Teclab - Gestión'], featured: true },
 ];
 
-// Mapping from Supabase nivel to display categories
+// Correspondencia del nivel en D1 con las categorías visibles
 export function getCategoryForCarrera(c: Pick<Carrera, 'nivel'>): string {
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';
   if (c.nivel === 'Pregrado') return 'tecnicaturas';
@@ -162,7 +162,7 @@ export function categoriasPresentes<T extends Pick<Carrera, 'nivel'>>(carreras: 
 
 // Las que van arriba de la lista, en este orden. Editar aca es todo lo que hace
 // falta para cambiar la vidriera del formulario: el nombre tiene que coincidir
-// exacto con la columna `nombre` de Supabase, y si una carrera se da de baja
+// exacto con la columna `nombre` de D1, y si una carrera se da de baja
 // simplemente no aparece (no rompe nada).
 export const DESTACADAS_FORMULARIO: string[] = [
   'Abogacía',
@@ -188,7 +188,7 @@ const PESO_CATEGORIA: Record<string, number> = {
   identidad_argentina: 4,
 };
 
-// El `orden` de Supabase arranca en 1 dentro de cada nivel, asi que ordenar solo
+// El `orden` en D1 arranca en 1 dentro de cada nivel, asi que ordenar solo
 // por esa columna intercala las diplomaturas de Identidad Argentina entre las
 // primeras licenciaturas (Abogacía 1, Oratoria 1, Escribanía 2...). Esto reordena
 // sin tocar la base. El sort de JS es estable, asi que dentro de cada categoria
@@ -222,7 +222,7 @@ export const AREAS = [
 
 export type AreaId = (typeof AREAS)[number]['id'];
 
-// La carrera figura en singular y en plural según la fuente: Supabase la llama
+// La carrera figura en singular y en plural según la fuente: la base la llama
 // "Ciencias de Datos" y el KB de la universidad "Ciencia de Datos", así que las
 // dos formas están. Con una sola, la que use la otra queda sin área.
 //

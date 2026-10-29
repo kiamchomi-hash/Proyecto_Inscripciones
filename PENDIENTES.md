@@ -139,4 +139,4 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 - [Historial de pendientes cerrados](docs/historial-pendientes.md): tareas terminadas y registros anteriores, con su evidencia.
 - [Notas y procedimientos operativos](docs/notas-operativas.md): webhook, secretos, correo, incidentes y límites conocidos.
 
-Las notas históricas no reemplazan [los criterios vigentes](docs/criterios.md). Los planes de `docs/plans/` tampoco son el backlog.
+Las notas históricas no reemplazan [los criterios vigentes](docs/criterios.md).

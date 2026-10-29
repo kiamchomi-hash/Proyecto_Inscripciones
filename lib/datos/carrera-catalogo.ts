@@ -1,4 +1,4 @@
-import type { Tables } from '@/lib/database.types';
+import type { Tables } from '@/lib/tipos-datos';
 import type { CarreraCatalogo } from '@/components/index/types';
 
 type FilaCatalogo = Pick<Tables<'carreras'>,

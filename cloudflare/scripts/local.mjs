@@ -97,12 +97,14 @@ export function comandoLocal(nombre) {
   return comandos[nombre];
 }
 
+export const PASOS_CHECK = ['seguridad', 'preparacion', 'publicacion', 'tipos', 'build', 'diagnostico', 'datos', 'control', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'build', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'e2e'];
+
 export function ejecutar(nombre) {
   verificarArchivosLocales(raiz);
   const env = entornoLocal(process.env, raiz);
   mkdirSync(env.HOME, { recursive: true });
   const pasos = nombre === 'check'
-    ? ['seguridad', 'preparacion', 'publicacion', 'tipos', 'diagnostico', 'datos', 'control', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'build', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'e2e']
+    ? PASOS_CHECK
     : [nombre];
   for (const paso of pasos) {
     const resultado = spawnSync(process.execPath, comandoLocal(paso), {

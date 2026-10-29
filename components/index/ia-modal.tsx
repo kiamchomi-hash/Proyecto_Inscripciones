@@ -30,7 +30,7 @@ const AMARILLO = '#f1cf1c';
 // que los rotulos usan esta version aclarada.
 const AZUL_CLARO = '#7ecbe6';
 
-// ── Parsers de los campos que llegan de Supabase ──
+// ── Parsers de los campos que llegan de D1 ──
 
 /** enfoque: "Cursada: ...\nModalidad: ...\nDuración: ...\nCertificación: ..." */
 function parseEnfoque(enfoque: string | null) {

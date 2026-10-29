@@ -2,7 +2,7 @@
 
 Este inventario no es una configuración publicable. No contiene IDs ficticios,
 credenciales, dominios nuevos ni un comando de deploy. Producción actual sigue
-intacta. [Plan existente](../docs/plans/2026-10-24-cloudflare.md).
+intacta. Plan existente.
 
 Lo que hoy está comprobado en staging es **un formulario de contacto con captcha
 real, persistencia en D1 y su aviso pendiente**. No acredita integraciones

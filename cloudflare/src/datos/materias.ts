@@ -2,7 +2,7 @@ import {
   COLUMNAS_MATERIA_CARD, COLUMNAS_MATERIA_NAV, COLUMNAS_MATERIA_FICHA,
   materiaACard, materiaANavegacion, materiaAFicha,
 } from '../../../lib/datos/materia.ts';
-import type { Json, Tables } from '../../../lib/database.types.ts';
+import type { Json, Tables } from '../../../lib/tipos-datos.ts';
 
 type Materia = Tables<'materias'>;
 type Booleanos = 'en_construccion' | 'modo_manana';
@@ -17,8 +17,8 @@ type Ficha = Card | Nav | 'nombre_profesor' | 'whatsapp' | 'telefono_display' | 
 
 const jsonDe = (valor: string | null): Json => valor === null ? null : JSON.parse(valor) as Json;
 
-// Misma proyección y validación de JSON que Next, sin cliente Supabase ni React
-// en runtime. Los imports de componentes del módulo compartido son sólo tipos.
+// Proyección y validación de JSON compartidas. Los imports de componentes del
+// módulo compartido son sólo tipos y no incorporan React al runtime.
 export async function listarMateriasPublicas(db: D1Database) {
   const filas = await db.prepare(`SELECT ${COLUMNAS_MATERIA_CARD} FROM materias
     WHERE activa = 1 ORDER BY orden, id`).all<Fila<Card>>();

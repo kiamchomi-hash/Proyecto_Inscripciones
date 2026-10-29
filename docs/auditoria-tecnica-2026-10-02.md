@@ -76,7 +76,7 @@ detalle completo y materias, tipar el armado dinámico de consultas y validar JS
 No se presenta el genérico
 `Database` como validación en runtime ni como reemplazo de las pruebas RLS.
 [Procedimiento y límites](tipos-supabase.md),
-[fuentes](../referencias/2026-10-02-tipos-supabase.md). Cambios locales sin publicar.
+fuentes. Cambios locales sin publicar.
 
 En la continuación **A3-D1** se validó el detalle completo de carreras mediante
 un adaptador puro. API y página usan proyecciones literales inferidas, sin casts

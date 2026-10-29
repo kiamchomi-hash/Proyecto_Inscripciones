@@ -1,5 +1,5 @@
 /**
- * Resumen diario de clics de tarjetas, equivalente al `digest-clicks` de Supabase.
+ * Resumen diario de clics de tarjetas.
  *
  * El texto es el mismo contrato: encabezado con la fecha, total, top 10 con
  * medallas y escape de Markdown; y un segundo mensaje sólo si hubo aperturas

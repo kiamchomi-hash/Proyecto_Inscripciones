@@ -1,8 +1,8 @@
 import { COLUMNAS_CATALOGO, esCarreraVisible } from '../../../components/index/types.ts';
-import type { Tables } from '../../../lib/database.types.ts';
+import type { Tables } from '../../../lib/tipos-datos.ts';
 import { leerRelojBase } from './reloj.ts';
 
-// Se comparten los contratos puros, no los clientes ni credenciales Supabase.
+// Se comparten los contratos puros, sin clientes ni credenciales externos.
 export type CarreraCatalogoPublico = Pick<Tables<'carreras'>,
   'id' | 'nombre' | 'nivel' | 'duracion' | 'titulo' | 'modalidad' | 'prefix' |
   'nombre_corto' | 'orden' | 'activa' | 'destacada' | 'nueva' | 'proximamente'>

@@ -1,6 +1,6 @@
 import { COLUMNAS_FICHA_DETALLE, carreraADetalle } from '../../../lib/datos/carrera-detalle.ts';
 import { esCarreraVisible, type CarreraDetalle } from '../../../components/index/types.ts';
-import type { Json, Tables } from '../../../lib/database.types.ts';
+import type { Json, Tables } from '../../../lib/tipos-datos.ts';
 
 // El detalle que abre cada modal del catálogo (`/api/carreras-detalle`). Son
 // las seis columnas de `COLUMNAS_DETALLE`, ni una más: la fila completa tiene

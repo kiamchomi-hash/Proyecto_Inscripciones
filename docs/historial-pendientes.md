@@ -31,7 +31,7 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 - [x] **Aplicar el SQL de permisos en producción.** Con autorización del usuario y su sesión del dashboard, se confirmó el proyecto y se ejecutó `sql/2026-10-21_endurecer_storage_y_policies.sql` dentro de una transacción. SQL Editor devolvió éxito; el catálogo posterior mostró 5 policies objetivo con `private.current_user_is_admin()`, ninguna policy antigua objetivo, ningún EXECUTE de las funciones de trigger para `anon`/`authenticated` y ningún INSERT directo de formularios. No hubo prueba HTTP de Storage ni datos de prueba.
 - [x] **Revisar Auth: protección de contraseñas, OTP y MFA.** Lectura del dashboard sin cambiar ajustes: protección de contraseñas filtradas desactivada y limitada a Pro por la interfaz (proyecto Free), OTP de 3600 segundos y 8 caracteres, proveedor TOTP habilitado. Habilitar el proveedor no demuestra usuarios enrolados ni MFA exigido por la aplicación. La revisión está completa; los posibles cambios de configuración requieren autorización independiente.
 
-[Estado completo y límites](seguridad.md#21102026-permisos-aplicados-en-producción-y-auth-revisado), [seguimiento](../odd/tasks/permisos-supabase-2026-10-21.md), [enlaces](../referencias/2026-10-21-permisos-supabase-auth.md).
+[Estado completo y límites](seguridad.md#21102026-permisos-aplicados-en-producción-y-auth-revisado), [seguimiento](../odd/tasks/permisos-supabase-2026-10-21.md), enlaces.
 
 ## Tipos — contrato de consultas y detalle de carreras, 18/10/2026
 

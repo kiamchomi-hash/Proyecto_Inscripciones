@@ -52,7 +52,7 @@ export function textoSobreAcentoTeclab(acento: string): string {
 
 // Tipo de cada programa, tal como se rotula en el render. Es lo que alimenta
 // las pildoras de la seccion de gestion y el chip de cada tarjeta.
-// La clave es una palabra distintiva del nombre en Supabase.
+// La clave es una palabra distintiva del nombre en D1.
 const TIPOS: { match: string; tipo: string }[] = [
   { match: 'marketing digital', tipo: 'Marketing' },
   { match: 'inbound marketing', tipo: 'Marketing' },
@@ -197,9 +197,9 @@ export interface TeclabFicha {
   partner?: { nombre: string; logo?: string };
 }
 
-// La clave es una palabra distintiva del nombre en Supabase, como en TIPOS.
+// La clave es una palabra distintiva del nombre en D1, como en TIPOS.
 // El partner sale de la ficha oficial, que manda sobre el campo "Cocreación" de
-// Supabase: ahi quedaron valores genericos ("Perfil laboral", "Sector
+// la base: ahi quedaron valores genericos ("Perfil laboral", "Sector
 // financiero") que no son empresas.
 const FICHAS: { match: string; ficha: TeclabFicha }[] = [
   {
@@ -411,7 +411,7 @@ export function getFichaTeclab(carrera: Pick<Carrera, 'nombre'> & Partial<Pick<C
  * sigue estando en la pagina de cada carrera.
  *
  * Se identifican por como empiezan y no por su posicion, asi reordenar la
- * ficha en Supabase no cambia cual se muestra.
+ * ficha en D1 no cambia cual se muestra.
  */
 const DESTACADAS: Record<string, string[]> = {
   'programación': ['Escribir el código', 'Desarrollar sitios web modulares', 'Analizar y gestionar bases de datos'],
@@ -460,7 +460,7 @@ export function destacarCompetencias(competencias: string[], carrera: Pick<Carre
   return elegidas.slice(0, 3);
 }
 
-// ── Parsers de los campos de texto que llegan de Supabase ──
+// ── Parsers de los campos de texto que llegan de D1 ──
 
 /** enfoque: "Modalidad: ...\nDuración: ...\nTítulo: ...\nCertificado intermedio: ...\nCocreación: ..." */
 export function parseEnfoqueTeclab(enfoque: string | null) {

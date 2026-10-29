@@ -1,6 +1,6 @@
 import { COLUMNAS_CARRERA_PUBLICA, carreraAPublica } from '../../../lib/datos/carrera-detalle.ts';
 import { esCarreraVisible, carreraToSlug, type Carrera } from '../../../components/index/types.ts';
-import type { Tables } from '../../../lib/database.types.ts';
+import type { Tables } from '../../../lib/tipos-datos.ts';
 
 type Fila = Omit<Tables<'carreras'>, 'slides' | 'activa' | 'destacada' | 'nueva' | 'proximamente'> & {
   slides: string | null; activa: number; destacada: number; nueva: number; proximamente: number;

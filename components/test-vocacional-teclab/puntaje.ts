@@ -3,7 +3,7 @@
  *
  * A diferencia del test general, acá no se puntúan las áreas de Siglo 21 sino
  * cada carrera de Teclab: cada opción le suma puntos directo a los perfiles que
- * le corresponden. Las carreras salen de Supabase; este módulo sólo sabe cómo
+ * le corresponden. Las carreras salen de D1; este módulo sólo sabe cómo
  * reconocerlas por el nombre (igual que `getFichaTeclab`), así que una carrera
  * nueva sin perfil no rompe nada: queda fuera del resultado hasta que se le
  * agregue uno. `tests/test-vocacional-teclab.test.mjs` exige que cada carrera

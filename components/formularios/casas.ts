@@ -1,10 +1,10 @@
-import type { TablesInsert } from '@/lib/database.types';
+import type { TablesInsert } from '@/lib/tipos-datos';
 
 // Qué pide cada casa en cada formulario, y dónde se guarda cada dato.
 //
 // Este archivo es la fuente de verdad de los formularios: lo leen el componente
 // (para pintar los campos) y `app/api/formularios/route.ts` (para armar la fila
-// que va a `consultas`). Que la columna de Supabase viva acá, al lado del campo,
+// que va a `consultas`). Que la columna de D1 viva acá, al lado del campo,
 // es lo que impide repetir el incidente del 23/08/2026: el endpoint escribía
 // nueve columnas que no existían y PostgREST rechaza la fila entera cuando una
 // no existe (PGRST204), así que dejaron de entrar TODAS las consultas del sitio.
@@ -327,7 +327,7 @@ export function armarPayload(
 // El modal de Teclab ofrece ver el precio a cambio del mail. El registro
 // entra en `consultas` como cualquier lead —así llega el aviso de Telegram— y
 // recién después la API lee el precio de una tabla privada
-// (`sql/2026-10-02_precios_carrera.sql`). Vive acá y no en un módulo aparte por
+// de D1. Vive acá y no en un módulo aparte por
 // la misma razón que el resto del archivo: los tests corren estos `.ts` con
 // Node, que no resuelve imports de valor entre módulos sin extensión.
 
@@ -454,7 +454,7 @@ export function resultadoPrecio(fila: FilaPrecio | null, hoy: string): Resultado
 // `CAMPOS` a propósito: no se guarda en `consultas` sino en
 // `suscripciones_newsletter`, así que `insertConsulta` nunca lo ve. La
 // suscripción va con la carrera cuando el formulario tiene una, o general
-// (carrera en null, una por mail: `sql/2026-10-02_newsletter_general.sql`).
+// (carrera en null, una por mail).
 
 export const TABLA_NEWSLETTER = 'suscripciones_newsletter';
 
@@ -651,4 +651,3 @@ export function pedidoLeadSede(datos: DatosLeadSede) {
   if (!fields) return null;
   return { url: LEAD_SEDE_URL, body: { fields, context: { ...LEAD_SEDE_CONTEXTO } } };
 }
-

@@ -204,10 +204,8 @@ freno es de negocio, no técnico: son 171 páginas nuevas de golpe sobre un siti
 119 URLs, con una campaña de indexación en curso. **No proponer retomarlo por
 iniciativa propia.**
 
-Si el usuario lo levanta: `git merge programas-posgrado` **y además** correr
-`sql/2026-08-10_alta_programas.sql` en el SQL Editor, que es lo que crea las filas
-—sin eso `/programas` sale vacía—. La rama es local: no viaja a Linux por git ni
-por `entorno.mjs`.
+Si el usuario lo retoma, hay que revisar la implementación y preparar el alta
+para el sitio actual y D1; la rama antigua no se puede aplicar directamente.
 
 ### Dos carreras están apagadas a propósito
 

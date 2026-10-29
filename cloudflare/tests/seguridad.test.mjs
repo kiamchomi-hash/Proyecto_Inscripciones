@@ -3,7 +3,12 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { comandoLocal, entornoLocal, verificarArchivosLocales } from '../scripts/local.mjs';
+import { comandoLocal, entornoLocal, PASOS_CHECK, verificarArchivosLocales } from '../scripts/local.mjs';
+
+test('el check genera el entry de staging antes de revisar tipos', () => {
+  assert.ok(PASOS_CHECK.indexOf('build') < PASOS_CHECK.indexOf('diagnostico'));
+  assert.ok(PASOS_CHECK.includes('diagnostico'));
+});
 
 test('los ejecutables locales coinciden con los paquetes instalados', () => {
   for (const nombre of ['tipos', 'diagnostico', 'build', 'dev', 'preview']) {

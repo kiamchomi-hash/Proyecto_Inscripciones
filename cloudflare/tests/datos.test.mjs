@@ -105,3 +105,21 @@ test('un batch fallido revierte también la escritura anterior', async t => {
   ]), /FOREIGN KEY/);
   assert.equal(await db.prepare('SELECT count(*) AS n FROM carreras').first('n'), 0);
 });
+
+// Los contratos compartidos deben referirse a columnas presentes en D1.
+test('los tipos compartidos coinciden con columnas del esquema D1', async t => {
+  const ts = await import('typescript');
+  const { readFileSync } = await import('node:fs');
+  const codigo = readFileSync(new URL('../../lib/tipos-datos.ts', import.meta.url), 'utf8');
+  const arbol = ts.createSourceFile('tipos-datos.ts', codigo, ts.ScriptTarget.Latest, true);
+  const { db } = await crearD1(t);
+  for (const nombre of ['Filas', 'Altas']) {
+    const contrato = arbol.statements.find(n => ts.isInterfaceDeclaration(n) && n.name.text === nombre);
+    assert.ok(contrato, nombre);
+    for (const tabla of contrato.members) {
+      const columnas = (await db.prepare(`PRAGMA table_info(${tabla.name.text})`).all()).results;
+      const existentes = new Set(columnas.map(c => c.name));
+      for (const campo of tabla.type.members) assert.ok(existentes.has(campo.name.text), `${tabla.name.text}.${campo.name.text}`);
+    }
+  }
+});
