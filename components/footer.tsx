@@ -170,12 +170,12 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
                 entra la mayoria de las consultas. El clic lo escucha
                 `WhatsappReparto`, que mide el lead y reparte el numero si hay
                 mas de un asesor (hoy no: ver `lib/whatsapp.ts`). */}
-            <div>
+            <div className="text-center lg:text-left">
             <a
               href={redes[0].href}
               target="_blank"
               rel="noopener nofollow"
-              className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-bold text-white transition-all hover:brightness-125 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25d366] lg:min-h-0 lg:w-auto lg:rounded-full lg:py-2 lg:text-xs"
+              className="mt-5 inline-flex min-h-11 w-auto items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-bold text-white transition-all hover:brightness-125 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25d366] lg:min-h-0 lg:w-auto lg:rounded-full lg:py-2 lg:text-xs"
               style={{ background: 'rgba(37, 211, 102, 0.16)', border: '1px solid rgba(37, 211, 102, 0.45)' }}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d={REDES[0].path} /></svg>

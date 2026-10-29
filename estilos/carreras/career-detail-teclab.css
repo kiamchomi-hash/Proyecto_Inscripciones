@@ -145,19 +145,42 @@
   color: var(--teclab-papel);
 }
 
+/* ── Ritmo vertical ───────────────────────────────────── */
+/* La ficha de Teclab es larga: con el aire del resto del sitio entre secciones
+   quedaba casi una pantalla en blanco entre la salida laboral, el aviso y el
+   plan. Acá los bloques van más seguidos y sin revelado al hacer scroll: la
+   ficha entra completa, sin desplazamientos mientras se lee. */
+.career-page--teclab .career-section {
+  margin-bottom: clamp(2.25rem, 3.5vw, 3rem);
+}
+
+.career-page--teclab .career-section-heading {
+  margin-bottom: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+.career-page--teclab .career-aviso-inicio {
+  margin-bottom: 1.5rem;
+}
+
+.career-page--teclab .career-oficial {
+  margin-top: 1.75rem;
+}
+
+.career-page--teclab .career-reveal {
+  animation: none;
+  transform: none;
+}
+
 /* ── Botones ──────────────────────────────────────────── */
 .career-page--teclab .career-button {
   border-radius: 999px;
   font-weight: 600;
 }
 
+/* El relleno y el halo salen del bloque compartido del CTA (más abajo): acá
+   sólo queda la tinta, que va en navy para no perder contraste AA. */
 .career-page--teclab .career-button--primary {
-  background: var(--career-accent);
   color: var(--teclab-navy);
-}
-
-.career-page--teclab .career-button--primary:hover {
-  background: var(--career-accent-bright);
 }
 
 .career-page--teclab .career-button--ghost,
@@ -474,51 +497,48 @@
   font-weight: 600;
 }
 
-/* Borde degradado que gira: cian → azul → violeta de Teclab. El degradé vive
-   en border-box y el relleno en padding-box, así sólo se ve por los 2 px del
-   borde. Mecánica tomada de «Tarjetas de precio con borde aurora» de UIverse
-   (biblioteca/mias/tarjetas-precio-borde-aurora-graphite). Sin @property el
-   borde queda fijo en vez de girar. */
-@property --teclab-cta-angulo {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
+/* Degradé en movimiento con halo que respira, compartido por el CTA del
+   encabezado y el del panel lateral. El relleno se queda en la familia del
+   cian: el texto va en navy y sobre azul puro no llegaría a contraste AA. El
+   azul aparece en el halo, no debajo de las letras. */
+@keyframes teclab-cta-degrade {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
 }
 
-@keyframes teclab-cta-giro {
-  from { --teclab-cta-angulo: 0deg; }
-  to { --teclab-cta-angulo: 360deg; }
+@keyframes teclab-cta-halo {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+      0 8px 24px -8px rgba(74, 226, 231, 0.45);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+      0 10px 34px -6px rgba(74, 226, 231, 0.8),
+      0 0 22px -4px rgba(0, 85, 240, 0.55);
+  }
 }
 
-.career-page--teclab .career-aside-cta > a:first-of-type {
-  border: 3px solid transparent;
-  background:
-    linear-gradient(var(--career-accent), var(--career-accent)) padding-box,
-    conic-gradient(
-        from var(--teclab-cta-angulo),
-        var(--teclab-azul),
-        #8e2cf2,
-        var(--career-accent-bright),
-        var(--teclab-azul)
-      )
-      border-box;
+.career-page--teclab :is(.career-button--primary, .career-aside-cta > a:first-of-type) {
+  background-image: linear-gradient(
+    100deg,
+    #1ec8e6 0%,
+    var(--career-accent) 30%,
+    var(--career-accent-bright) 52%,
+    var(--career-accent) 72%,
+    #1ec8e6 100%
+  );
+  background-size: 220% 100%;
+  background-position: 0% 50%;
   color: var(--teclab-navy);
-  box-shadow: none;
-  animation: teclab-cta-giro 9s linear infinite;
+  animation:
+    teclab-cta-degrade 6s ease-in-out infinite alternate,
+    teclab-cta-halo 3.4s ease-in-out infinite;
 }
 
-.career-page--teclab .career-aside-cta > a:first-of-type:hover {
-  background:
-    linear-gradient(var(--career-accent-bright), var(--career-accent-bright)) padding-box,
-    conic-gradient(
-        from var(--teclab-cta-angulo),
-        var(--teclab-azul),
-        #a45cff,
-        #d9fbff,
-        var(--teclab-azul)
-      )
-      border-box;
-}
+/* Sin cambio de color en hover: el degradé y el halo siguen igual, así el
+   movimiento no se corta ni "salta" al pasar el puntero. */
 
 /* El verde de WhatsApp se mantiene (es el de la plataforma). */
 
@@ -640,7 +660,7 @@
     transform: none;
   }
 
-  /* El borde degradado queda fijo: el color está, el giro no. */
+  /* El halo y el degradé quedan quietos: el color está, el movimiento no. */
   .career-page--teclab .career-aside-cta > a:first-of-type {
     animation: none;
   }
