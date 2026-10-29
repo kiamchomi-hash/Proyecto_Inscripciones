@@ -37,6 +37,11 @@ const WRANGLER = join(PAQUETE, 'node_modules', 'wrangler', 'bin', 'wrangler.js')
 const LOCAL = join(PAQUETE, '.local');
 const CAPTURAS = join(LOCAL, 'capturas');
 const REFERENCIAS = join(PAQUETE, 'tests', 'fixtures', 'visuales-next');
+// Estas dos páginas recuperaron utilidades de Tailwind que faltaban en Next.
+// Las referencias históricas se conservan, pero la regresión se mide contra
+// las capturas de la versión corregida, con la misma tolerancia que antes.
+const REFERENCIAS_CORREGIDAS = join(PAQUETE, 'tests', 'fixtures', 'visuales-corregidas');
+const RUTAS_CORREGIDAS = new Set(['/sobre-nosotros', '/calendario-academico']);
 
 /** Tolerancia de la comparación visual: píxeles y distancia media por canal. */
 const TOLERANCIA_PIXELES = 2; // % de píxeles con algún canal a más de 32
@@ -781,7 +786,10 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
           writeFileSync(archivo, capturas[nombre]);
           await contexto.close();
         }
-        const referencia = await leerReferenciaVisual(REFERENCIAS, `${nombreRuta}-${perfil.id}`);
+        const referencia = await leerReferenciaVisual(
+          RUTAS_CORREGIDAS.has(ruta) ? REFERENCIAS_CORREGIDAS : REFERENCIAS,
+          `${nombreRuta}-${perfil.id}`,
+        );
         const comparacion = await compararCapturas(navegador, referencia, capturas.astro,
           ruta === '/sobre-nosotros' ? 1 : 0);
         if (!comparacion.mismos) t.diagnostic(JSON.stringify({ruta, perfil: perfil.id, cajas}));
