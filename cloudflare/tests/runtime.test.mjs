@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createTestHarness } from 'wrangler';
 import { setTimeout } from 'node:timers/promises';
 import { insertarCatalogo } from './fixtures/catalogo-home.mjs';
@@ -260,9 +260,16 @@ test('crons compilados: secreto correcto, SMTP/Telegram ausente y revalidación'
   assert.match((await tablaRara.json()).error, /tabla sin rutas asociadas/);
 });
 
-test('newsletter compilado con clave y base vacía no inventa envíos', async t => {
-  const server = createTestHarness({ workers: [{ configPath, vars: {
-    CRON_SECRET: 'cron-sintetico', SMTP2GO_API_KEY: 'clave-sintetica',
+test('newsletter compilado con binding y base vacía no inventa envíos', async t => {
+  // El binding viaja en la configuración, no en `vars`: se arma una copia al
+  // lado de la compilada para no romper las rutas relativas del build.
+  const conBinding = './dist/server/wrangler-newsletter.json';
+  const config = JSON.parse(readFileSync(configPath, 'utf8'));
+  writeFileSync(conBinding, JSON.stringify({ ...config, send_email: [{ name: 'EMAIL' }] }));
+  t.after(() => rmSync(conBinding, { force: true }));
+
+  const server = createTestHarness({ workers: [{ configPath: conBinding, vars: {
+    CRON_SECRET: 'cron-sintetico',
   } }] });
   t.after(() => server.close());
   await server.listen();

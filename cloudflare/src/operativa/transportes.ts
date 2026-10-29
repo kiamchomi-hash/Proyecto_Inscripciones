@@ -1,4 +1,4 @@
-import { armarMailPrecio, REMITENTE_MAIL, SMTP2GO_URL } from '../../../components/formularios/mail-precio.ts';
+import { armarMailPrecio, REMITENTE_MAIL } from '../../../components/formularios/mail-precio.ts';
 import type { PrecioDelMail } from '../../../components/formularios/mail-precio.ts';
 import {
   buildConsultaMessage, buildFaqMessage, buildSolicitudClaseMessage,
@@ -9,14 +9,14 @@ import {
   type ResultadoTransporte, type Transportes,
 } from './consumidores.ts';
 
-// Adaptadores HTTP de los cuatro proveedores externos. Este módulo no lee
-// variables de entorno ni llama a `fetch` por su cuenta: recibe la configuración
-// y el `buscar` desde el Worker. Las pruebas usan un `buscar` simulado, así que
+// Adaptadores de los proveedores externos. Este módulo no lee variables de
+// entorno ni llama a `fetch` por su cuenta: recibe la configuración y el
+// `buscar` desde el Worker. Las pruebas usan un `buscar` simulado, así que
 // ningún test sale a la red ni manda un mail o un aviso real.
 //
-// El correo tiene dos caminos: el binding `send_email` de Cloudflare (sin clave,
-// tiene prioridad) y SMTP2GO con su clave. Cómo se activa el binding, con qué
-// orden y qué pasa con el SPF: `docs/correo-cloudflare.md`.
+// El correo sale por el binding `send_email` de Cloudflare. SMTP2GO se retiró el
+// 29/10/2026: cómo se activó el binding, con qué orden y qué pasa con el SPF,
+// está en `docs/correo-cloudflare.md`.
 //
 // Regla de ambigüedad: una respuesta HTTP no-2xx es un rechazo conocido y se
 // puede reintentar; una excepción de red o un timeout después de enviar no
@@ -24,7 +24,6 @@ import {
 // reintenta solo. Es la misma regla de la reserva de 168 h y del diseño.
 
 export const TIMEOUT_TELEGRAM_MS = 8_000;
-export const TIMEOUT_SMTP_MS = 8_000;
 export const TIMEOUT_HUBSPOT_MS = 5_000;
 
 /**
@@ -49,7 +48,6 @@ export interface ConfigEnvios {
   telegram?: { token: string; chatId: string };
   /** Correo por el binding de Cloudflare: no hay clave que custodiar. */
   email?: CorreoBinding;
-  smtp?: { clave: string };
   /** La URL viaja en el pedido, armada desde `casas.ts`; acá sólo se habilita. */
   hubspot?: { habilitado: boolean };
 }
@@ -58,9 +56,6 @@ export type Buscar = (url: string, init: RequestInit) => Promise<Response>;
 
 /** Sólo el estado HTTP: el cuerpo del proveedor puede traer datos del lead. */
 const codigoHttp = (respuesta: Response) => `http-${respuesta.status}`;
-
-const registro = (valor: unknown): Record<string, unknown> | null =>
-  valor !== null && typeof valor === 'object' && !Array.isArray(valor) ? valor as Record<string, unknown> : null;
 
 /**
  * Ejecuta el pedido y traduce el resultado. Un no-2xx es rechazo conocido; una
@@ -189,58 +184,16 @@ async function porBinding(
 }
 
 /**
- * SMTP2GO: mismo endpoint, remitente y forma de confirmación que
- * `mandarPorSmtp2go`. Se conserva mientras la clave siga cargada; el binding
- * tiene prioridad.
+ * El correo sale por el binding de Cloudflare. Sin binding devuelve
+ * `sin-configurar`: la intención queda pendiente en el outbox y la levanta un
+ * barrido posterior.
  */
-function porSmtp2go(
-  clave: string, buscar: Buscar, pedido: PedidoMail, mail: MailArmado,
-): Promise<ResultadoTransporte> {
-  return (async (): Promise<ResultadoTransporte> => {
-    let respuesta: Response;
-    try {
-      respuesta = await buscar(SMTP2GO_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Smtp2go-Api-Key': clave },
-        body: JSON.stringify({
-          sender: REMITENTE_MAIL,
-          to: [pedido.para],
-          subject: mail.asunto,
-          html_body: mail.html,
-          text_body: mail.texto,
-          ...(pedido.newsletter ? { custom_headers: pedido.newsletter.encabezados } : {}),
-        }),
-        signal: AbortSignal.timeout(TIMEOUT_SMTP_MS),
-      });
-    } catch (error) {
-      throw new ErrorAmbiguo(error instanceof Error ? error.name : 'red');
-    }
-
-    const cuerpo = registro(await respuesta.json().catch(() => null));
-    const datos = registro(cuerpo?.data);
-    const codigo = typeof datos?.error_code === 'string' ? datos.error_code : null;
-    if (!respuesta.ok) throw new ErrorRechazo(codigo ?? codigoHttp(respuesta));
-    if (!datos) throw new ErrorAmbiguo('respuesta-ilegible');
-    const enviados = typeof datos.succeeded === 'number' ? datos.succeeded : 0;
-    const fallidos = typeof datos.failed === 'number' ? datos.failed : 0;
-    if (enviados < 1 || fallidos > 0) throw new ErrorRechazo(codigo ?? 'sin-destinatario');
-    return 'enviado';
-  })();
-}
-
-/**
- * El correo sale por el binding de Cloudflare si está, y si no por SMTP2GO con
- * la clave. Sin ninguno de los dos devuelve `sin-configurar`: la intención queda
- * pendiente en el outbox y la levanta un barrido posterior.
- */
-function transportarMail(config: ConfigEnvios, buscar: Buscar): NonNullable<Transportes['mail']> {
+function transportarMail(config: ConfigEnvios): NonNullable<Transportes['mail']> {
   return async (pedido: PedidoMail) => {
     const binding = config.email;
-    const clave = config.smtp?.clave;
-    if (!binding && !clave) return 'sin-configurar';
+    if (!binding) return 'sin-configurar';
     if (pedido.precio.estado !== 'vigente') throw new ErrorRechazo('sin-precio-vigente');
-    const mail = armarMailDelPrecio(pedido, pedido.precio.precio);
-    return binding ? porBinding(binding, pedido, mail) : porSmtp2go(clave!, buscar, pedido, mail);
+    return porBinding(binding, pedido, armarMailDelPrecio(pedido, pedido.precio.precio));
   };
 }
 
@@ -264,14 +217,14 @@ function transportarHubspot(config: ConfigEnvios, buscar: Buscar): NonNullable<T
 export function crearTransportes(config: ConfigEnvios, buscar: Buscar, db: D1Database): Transportes {
   return {
     telegram: transportarTelegram(db, config, buscar),
-    mail: transportarMail(config, buscar),
+    mail: transportarMail(config),
     hubspot: transportarHubspot(config, buscar),
   };
 }
 
 /** El mismo transporte de mail, sin exigir una base para los otros canales. */
 export function crearTransporteMail(
-  config: ConfigEnvios, buscar: Buscar,
+  config: ConfigEnvios, _buscar: Buscar,
 ): NonNullable<Transportes['mail']> {
-  return transportarMail(config, buscar);
+  return transportarMail(config);
 }

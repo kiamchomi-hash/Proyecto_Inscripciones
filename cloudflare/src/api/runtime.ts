@@ -26,7 +26,6 @@ type EntornoRuntime = {
   CRON_SECRET?: string;
   REVALIDATE_SECRET?: string;
   EMAIL?: CorreoBinding;
-  SMTP2GO_API_KEY?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
   ALERTA_CLOUDFLARE_SECRETO?: string;
@@ -64,15 +63,12 @@ export const configTelegram = (): ConfigTelegram | undefined => {
 export const buscarRed: Buscar = (url, init) => fetch(url, init);
 
 /**
- * El transporte de correo: binding de Cloudflare si está, si no SMTP2GO con su
- * clave. Nunca se interpola el entorno completo.
+ * El transporte de correo, sólo con el binding de Cloudflare. Sin él no hay
+ * transporte y la intención queda pendiente en el outbox.
  */
-export const transporteMail = () => {
-  if (runtime.EMAIL) return crearTransporteMail({ email: runtime.EMAIL }, buscarRed);
-  return runtime.SMTP2GO_API_KEY
-    ? crearTransporteMail({ smtp: { clave: runtime.SMTP2GO_API_KEY } }, buscarRed)
-    : undefined;
-};
+export const transporteMail = () => runtime.EMAIL
+  ? crearTransporteMail({ email: runtime.EMAIL }, buscarRed)
+  : undefined;
 
 export const telegramCron = (texto: string, timeoutMs?: number) =>
   enviarTelegramSeguro(configTelegram(), buscarRed, texto, timeoutMs);

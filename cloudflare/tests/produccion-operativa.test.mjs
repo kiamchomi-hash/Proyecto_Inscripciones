@@ -19,18 +19,16 @@ test('sin credenciales no se arma ningún transporte: nada sale por defecto', ()
 test('cada canal aparece sólo con su credencial completa', () => {
   assert.deepEqual(configEnvios({ TELEGRAM_BOT_TOKEN: 't', TELEGRAM_CHAT_ID: 'c' }),
     { telegram: { token: 't', chatId: 'c' } });
-  assert.deepEqual(configEnvios({ SMTP2GO_API_KEY: 'k' }), { smtp: { clave: 'k' } });
+  assert.deepEqual(configEnvios({ SMTP2GO_API_KEY: 'k' }), {});
   assert.deepEqual(configEnvios({ HUBSPOT_HABILITADO: 'no' }), {});
   assert.deepEqual(configEnvios({ HUBSPOT_HABILITADO: 'si' }), { hubspot: { habilitado: true } });
 });
 
-test('el binding de correo habilita el canal sin clave y convive con SMTP2GO', () => {
+test('el binding de correo es el único camino: habilita el canal y nada más', () => {
   const email = { send: async () => ({ messageId: 'x' }) };
   assert.deepEqual(configEnvios({ EMAIL: email }), { email });
-  // Con los dos configurados, el transporte prefiere el binding; la clave queda
-  // como respaldo hasta que se borre.
-  assert.deepEqual(configEnvios({ EMAIL: email, SMTP2GO_API_KEY: 'k' }),
-    { email, smtp: { clave: 'k' } });
+  // Una clave vieja de SMTP2GO ya no arma ningún canal.
+  assert.deepEqual(configEnvios({ EMAIL: email, SMTP2GO_API_KEY: 'k' }), { email });
 });
 
 test('la operativa exige etapa de producción y la cola autorizada', async () => {
@@ -51,7 +49,7 @@ test('un lote vacío no envía nada aunque haya credenciales', async () => {
   let red = 0;
   const resumen = await manejarColaProduccion(
     { queue: COLA_EFECTOS, messages: [] },
-    { APP_STAGE: 'produccion', DB: db, SMTP2GO_API_KEY: 'k' },
+    { APP_STAGE: 'produccion', DB: db, EMAIL: { send: async () => ({}) } },
     async () => { red += 1; return new Response('{}'); },
   );
   assert.equal(red, 0);

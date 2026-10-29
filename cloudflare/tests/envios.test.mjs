@@ -168,7 +168,7 @@ test('fallos: el transporte traduce a las dos clases de error, sin mensaje del p
   );
 });
 
-// ── SMTP2GO ──
+// ── Correo ──
 
 async function prepararPrecio(db) {
   await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnicatura', nombre: 'Carrera sintética', prefix: null });
@@ -183,58 +183,7 @@ async function escenarioMail(db) {
   return mailPendiente(db);
 }
 
-const respuestaSmtp = (datos) => json({ data: { error_code: 'E_0000', ...datos } });
-
-test('smtp2go: manda la plantilla compartida con la clave en la cabecera', async t => {
-  const { db } = await crearD1(t);
-  const { id } = await escenarioMail(db);
-  const { buscar, llamadas } = espia(() => respuestaSmtp({ succeeded: 1, failed: 0 }));
-  const transportes = crearTransportes({ smtp: { clave: 'clave-sintetica' } }, buscar, db);
-
-  assert.equal(await consumirEfecto(db, id, transportes), 'enviado');
-  assert.equal(llamadas.length, 1);
-  assert.equal(llamadas[0].url, 'https://api.smtp2go.com/v3/email/send');
-  assert.equal(llamadas[0].init.headers['X-Smtp2go-Api-Key'], 'clave-sintetica');
-  const cuerpo = JSON.parse(llamadas[0].init.body);
-  assert.deepEqual(cuerpo.to, ['fixture@example.invalid']);
-  assert.equal(cuerpo.sender, 'CAU Online <inscripciones@siglo21sur.com>');
-  assert.match(cuerpo.subject, /Precios/);
-  assert.ok(cuerpo.html_body.length > 0 && cuerpo.text_body.length > 0);
-});
-
-test('smtp2go: rechazo con código del proveedor, respuesta ilegible ambigua', async t => {
-  const { db } = await crearD1(t);
-  await prepararPrecio(db);
-  const { id } = await mailPendiente(db);
-
-  const rechazado = crearTransportes(
-    { smtp: { clave: 'k' } },
-    espia(() => json({ data: { error_code: 'E_0011', succeeded: 0, failed: 1 } })).buscar, db,
-  );
-  assert.equal(await consumirEfecto(db, id, rechazado), 'error');
-  assert.equal((await filaOutbox(db, id)).ultimo_error, 'E_0011');
-
-  const sinDestinatario = crearTransportes(
-    { smtp: { clave: 'k' } },
-    espia(() => json({ data: { succeeded: 0, failed: 0 } })).buscar, db,
-  );
-  const otro = await mailPendiente(db);
-  assert.equal(await consumirEfecto(db, otro.id, sinDestinatario), 'error');
-  assert.equal((await filaOutbox(db, otro.id)).ultimo_error, 'sin-destinatario');
-
-  const ilegible = crearTransportes({ smtp: { clave: 'k' } }, espia(() => new Response('no json')).buscar, db);
-  const tercero = await mailPendiente(db);
-  assert.equal(await consumirEfecto(db, tercero.id, ilegible), 'ambiguo');
-
-  const http = crearTransportes(
-    { smtp: { clave: 'k' } }, espia(() => json({ data: { error_code: 'E_2200' } }, 400)).buscar, db,
-  );
-  const cuarto = await mailPendiente(db);
-  assert.equal(await consumirEfecto(db, cuarto.id, http), 'error');
-  assert.equal((await filaOutbox(db, cuarto.id)).ultimo_error, 'E_2200');
-});
-
-test('smtp2go: sin clave no hay envío y la fila sigue pendiente', async t => {
+test('sin binding de correo no hay envío y la fila sigue pendiente', async t => {
   const { db } = await crearD1(t);
   const { id } = await escenarioMail(db);
   const { buscar, llamadas } = espia();
@@ -301,18 +250,6 @@ test('binding: el error con código es rechazo y sin código es ambiguo', async 
   const otro = await mailPendiente(db);
   assert.equal(await consumirEfecto(db, otro.id, crearTransportes({ email: roto.email }, espia().buscar, db)), 'ambiguo');
   assert.equal((await filaOutbox(db, otro.id)).estado, 'ambiguo');
-});
-
-test('binding: tiene prioridad sobre la clave de SMTP2GO', async t => {
-  const { db } = await crearD1(t);
-  const { id } = await escenarioMail(db);
-  const { email, enviados } = bindingCorreo();
-  const { buscar, llamadas } = espia(() => respuestaSmtp({ succeeded: 1, failed: 0 }));
-
-  const transportes = crearTransportes({ email, smtp: { clave: 'clave-sintetica' } }, buscar, db);
-  assert.equal(await consumirEfecto(db, id, transportes), 'enviado');
-  assert.equal(enviados.length, 1);
-  assert.equal(llamadas.length, 0);
 });
 
 test('binding: el newsletter pasa los encabezados RFC 8058 como objeto', async t => {
@@ -494,39 +431,4 @@ test('api: sin cola no publica nada y la respuesta no cambia', async t => {
   const respuesta = await pedir({ kind: 'consulta', token: 't', payload: legajo() }, { db });
   assert.equal(respuesta.status, 201);
   assert.equal(await db.prepare(`SELECT count(*) AS n FROM outbox`).first('n'), 1);
-});
-
-test('smtp2go: el newsletter usa la plantilla con baja y los encabezados RFC 8058', async t => {
-  const { buscar, llamadas } = espia(() => respuestaSmtp({ succeeded: 1, failed: 0 }));
-  const mail = crearTransporteMail({ smtp: { clave: 'clave-sintetica' } }, buscar);
-  const bajaUrl = 'https://www.siglo21sur.com/newsletter/baja?id=11111111-1111-4111-8111-111111111111';
-  const resultado = await mail({
-    para: 'sintetico@example.invalid',
-    carrera: {
-      id: 1, nombre: 'Carrera sintética', nivel: 'Teclab - Tecnología',
-      prefix: null, duracion: '2 años', nombre_corto: 'Sintética',
-    },
-    precio: { estado: 'vigente', precio: {
-      conceptos: [{ concepto: 'Matrícula', monto: '$ 1', descuento: null }],
-      total: '$ 1', nota: null, vigenteHasta: '2099-01-01',
-    } },
-    limitar: false,
-    newsletter: {
-      bajaUrl,
-      encabezados: [
-        { header: 'List-Unsubscribe', value: `<${bajaUrl}>` },
-        { header: 'List-Unsubscribe-Post', value: 'List-Unsubscribe=One-Click' },
-      ],
-    },
-  });
-
-  assert.equal(resultado, 'enviado');
-  assert.equal(llamadas.length, 1);
-  const cuerpo = JSON.parse(llamadas[0].init.body);
-  assert.equal(cuerpo.custom_headers[0].header, 'List-Unsubscribe');
-  assert.equal(cuerpo.custom_headers[0].value, `<${bajaUrl}>`);
-  assert.equal(cuerpo.custom_headers[1].value, 'List-Unsubscribe=One-Click');
-  assert.match(cuerpo.subject, /Precios - Sintética - Teclab/);
-  assert.match(cuerpo.text_body, /Anular suscripción/);
-  assert.match(cuerpo.text_body, new RegExp(bajaUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 });

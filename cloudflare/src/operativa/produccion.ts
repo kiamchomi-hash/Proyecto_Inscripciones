@@ -23,7 +23,6 @@ export interface EntornoProduccion {
   TELEGRAM_CHAT_ID?: string;
   /** Binding `send_email` de Cloudflare. Si está, manda por acá y no hay clave. */
   EMAIL?: CorreoBinding;
-  SMTP2GO_API_KEY?: string;
   HUBSPOT_HABILITADO?: string;
 }
 
@@ -36,7 +35,6 @@ export function configEnvios(entorno: EntornoProduccion): ConfigEnvios {
     config.telegram = { token: entorno.TELEGRAM_BOT_TOKEN, chatId: entorno.TELEGRAM_CHAT_ID };
   }
   if (entorno.EMAIL) config.email = entorno.EMAIL;
-  if (entorno.SMTP2GO_API_KEY) config.smtp = { clave: entorno.SMTP2GO_API_KEY };
   if (entorno.HUBSPOT_HABILITADO === 'si') config.hubspot = { habilitado: true };
   return config;
 }
@@ -110,9 +108,8 @@ export interface ContextoProgramado {
   mail?: EntornoNewsletter['mail'];
   usuariosActivos?: (fecha: string) => Promise<number>;
   telegramConfig?: { token: string; chatId: string };
-  /** Binding de correo; si viene, el barrido manda por acá y no por SMTP2GO. */
+  /** Binding de correo; si viene, el barrido manda por acá. */
   correo?: CorreoBinding;
-  smtpClave?: string;
 }
 
 const tareaDe = (expresion: string): NombreCron | null =>
@@ -133,12 +130,7 @@ export async function manejarProgramado(
     if (!contexto.db) throw new Error('Barrido sin base');
     const canales: ConfigEnvios = {
       ...(contexto.telegram ? { telegram: contexto.telegramConfig! } : {}),
-      ...(contexto.mail
-        ? {
-          ...(contexto.correo ? { email: contexto.correo } : {}),
-          ...(contexto.smtpClave ? { smtp: { clave: contexto.smtpClave } } : {}),
-        }
-        : {}),
+      ...(contexto.mail && contexto.correo ? { email: contexto.correo } : {}),
     };
     const resumen = await barridoDeEfectos(
       contexto.db,

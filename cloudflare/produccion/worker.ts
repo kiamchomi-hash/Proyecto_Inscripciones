@@ -2,7 +2,7 @@ import aplicacion from '../dist/server/entry.mjs';
 import { manejarColaProduccion, manejarProgramado } from '../src/operativa/produccion.ts';
 import { resolverDb } from '../src/datos/binding.ts';
 import { enviarTelegramSeguro } from '../src/operativa/telegram.ts';
-import { crearTransportes, type ConfigEnvios, type CorreoBinding } from '../src/operativa/transportes.ts';
+import { crearTransportes, type CorreoBinding } from '../src/operativa/transportes.ts';
 import { usuariosActivos } from '../src/operativa/analytics.ts';
 import {
   CANONICO, claveDeCache, copiaParaGuardar, normalizarParaCache, servirDesdeCopia,
@@ -90,7 +90,7 @@ export default {
     const entorno = crudo as unknown as {
       DB?: D1Database; APP_STAGE?: string; DB_STAGE?: string; DB_NAME?: string;
       CRON_SECRET?: string; TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string;
-      EMAIL?: CorreoBinding; SMTP2GO_API_KEY?: string;
+      EMAIL?: CorreoBinding;
       CF_ANALYTICS_TOKEN?: string; CF_ACCOUNT_TAG?: string; CF_RUM_SITE_TAG?: string;
     };
     const db = resolverDb(entorno);
@@ -98,12 +98,7 @@ export default {
     const telegramConfig = entorno.TELEGRAM_BOT_TOKEN && entorno.TELEGRAM_CHAT_ID
       ? { token: entorno.TELEGRAM_BOT_TOKEN, chatId: entorno.TELEGRAM_CHAT_ID }
       : undefined;
-    // El binding de correo, si está configurado, tiene prioridad sobre la clave
-    // de SMTP2GO: no hay credencial que custodiar ni rotar.
-    const correo: ConfigEnvios = {
-      ...(entorno.EMAIL ? { email: entorno.EMAIL } : {}),
-      ...(entorno.SMTP2GO_API_KEY ? { smtp: { clave: entorno.SMTP2GO_API_KEY } } : {}),
-    };
+    // El correo sale por el binding; no hay clave que custodiar ni rotar.
     await manejarProgramado(evento.cron, {
       db,
       secretoCron: entorno.CRON_SECRET,
@@ -111,10 +106,9 @@ export default {
       buscar,
       telegramConfig,
       correo: entorno.EMAIL,
-      smtpClave: entorno.SMTP2GO_API_KEY,
       telegram: (texto, timeoutMs) => enviarTelegramSeguro(telegramConfig, buscar, texto, timeoutMs),
-      mail: Object.keys(correo).length > 0
-        ? crearTransportes(correo, buscar, db!).mail
+      mail: entorno.EMAIL
+        ? crearTransportes({ email: entorno.EMAIL }, buscar, db!).mail
         : undefined,
       usuariosActivos: (fecha) => usuariosActivos(fecha, {
         token: entorno.CF_ANALYTICS_TOKEN,

@@ -1,13 +1,10 @@
 # Correo saliente por Cloudflare Email Service
 
-**Estado al 29/10/2026: activado y probado.** Email Sending está habilitado en
-`siglo21sur.com`, un mail real salió desde `inscripciones@siglo21sur.com` y
-llegó, y el binding `send_email` está en `cloudflare/produccion/wrangler.json`
-con el remitente restringido. Falta publicarlo.
-
-Mientras el binding no viaje al Worker, el correo sale por SMTP2GO si existe
-`SMTP2GO_API_KEY`; sin ninguna de las dos cosas queda `sin-configurar` y la
-intención espera en el outbox.
+**Estado al 29/10/2026: activado, probado y publicado.** Email Sending está
+habilitado en `siglo21sur.com`, un mail real salió desde
+`inscripciones@siglo21sur.com` y llegó. El binding `send_email` está desplegado
+en producción con el remitente restringido. **SMTP2GO se retiró el mismo día:**
+el código y la clave ya no existen.
 
 ## Por qué
 
@@ -29,8 +26,10 @@ credencial no existe como dato que custodiar ni rotar.
 
 Reglas que se conservan del diseño vigente:
 
-- **El binding tiene prioridad sobre la clave.** Con los dos configurados manda
-  Cloudflare; SMTP2GO queda como respaldo hasta que se borre la clave.
+- **Un solo camino.** El correo sale por el binding. Sin él no hay transporte:
+  `sin-configurar` y la intención espera en el outbox, que la levanta el barrido.
+  SMTP2GO y su `SMTP2GO_API_KEY` se retiraron: ya no hay clave que rotar ni dos
+  caminos que puedan divergir.
 - **Un error del binding con `code`** (`E_SENDER_NOT_VERIFIED`,
   `E_RECIPIENT_NOT_ALLOWED`, …) es un rechazo conocido: la fila queda `error` y
   se puede reintentar a mano.
@@ -112,8 +111,8 @@ Sin mandar nada:
 cd cloudflare && npm run test:envios
 ```
 
-Cubre envío por binding, remitente, prioridad sobre SMTP2GO, rechazo con código,
-ambiguo sin código y los encabezados del newsletter.
+Cubre envío por binding, remitente, rechazo con código, ambiguo sin código y
+los encabezados del newsletter.
 
 Para probar de verdad hace falta un envío real, y conviene que sea a una
 dirección propia:
