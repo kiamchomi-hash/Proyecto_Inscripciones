@@ -18,7 +18,6 @@ test('redirects de fichas conservan destinos y códigos, sin ampliar a otras fam
     ['diplomatura-en-inteligencia-artificial', '/', 302],
     ['tecnicatura-superior-en-fintech', '/', 308],
     ['tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching', '/carreras/tecnicatura-superior-en-agile-coaching', 308],
-    ['tecnicatura-en-diseno-y-desarrollo-de-videojuegos', '/carreras/tecnicatura-en-videojuegos', 301],
     ['tecnicatura-superior-en-customer-experience', '/carreras/tecnicatura-superior-en-experiencia-del-cliente', 301],
   ];
   for (const [slug, destino, status] of casos) {
@@ -26,6 +25,8 @@ test('redirects de fichas conservan destinos y códigos, sin ampliar a otras fam
     assert.deepEqual(redirectCarrera(slug.toUpperCase()), { destino, status }, `${slug} en mayúsculas`);
   }
   assert.equal(redirectCarrera('inexistente'), null);
+  assert.equal(redirectCarrera('tecnicatura-en-diseno-y-desarrollo-de-videojuegos'), null);
+  assert.equal(redirectCarrera('tecnicatura-en-videojuegos'), null);
   assert.equal(redirectCarrera('licenciatura-en-administracion'), null);
 });
 

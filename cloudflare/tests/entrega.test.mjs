@@ -58,8 +58,6 @@ test('redirects: códigos exactos, barra final y query conservada', () => {
     ['/carreras/diplomatura-en-inteligencia-artificial', '/', 302],
     ['/carreras/tecnicatura-superior-en-energias-renovables', '/', 301],
     ['/carreras/tecnicatura-superior-en-gestion-de-energias-renovables', '/', 301],
-    ['/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos',
-      '/carreras/tecnicatura-en-videojuegos', 301],
   ];
   for (const [ruta, destino, estado] of casos) {
     const redireccion = buscarRedireccion(ruta);
@@ -309,8 +307,6 @@ test('redirects y códigos reales desde el Worker, con query y sin seguir el sal
     ['/carreras/diplomatura-en-inteligencia-artificial', 302, '/'],
     ['/carreras/tecnicatura-superior-en-energias-renovables', 301, '/'],
     ['/carreras/tecnicatura-superior-en-gestion-de-energias-renovables', 301, '/'],
-    ['/carreras/tecnicatura-en-diseno-y-desarrollo-de-videojuegos', 301,
-      '/carreras/tecnicatura-en-videojuegos'],
   ];
   for (const [ruta, estado, destino] of casos) {
     const respuesta = await astro.fetch(ruta, { redirect: 'manual' });

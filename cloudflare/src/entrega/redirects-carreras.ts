@@ -19,7 +19,6 @@ const BAJAS_302 = ['diplomatura-en-bienestar-integral-herramientas-para-transfor
 const RENOMBRES: Record<string, [string, 301 | 308]> = {
   'tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching': ['tecnicatura-superior-en-agile-coaching', 308],
   'diplomatura-en-fraude-financiero-y-digital': ['diplomatura-en-prevencion-de-fraude-financiero-y-digital', 301],
-  'tecnicatura-en-diseno-y-desarrollo-de-videojuegos': ['tecnicatura-en-videojuegos', 301],
   'tecnicatura-superior-en-customer-experience': ['tecnicatura-superior-en-experiencia-del-cliente', 301],
   'curso-de-mindfulness-y-tecnicas-de-gestion-del-estres': ['diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos', 301],
 };

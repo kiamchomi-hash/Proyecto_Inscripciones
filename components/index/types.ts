@@ -343,11 +343,9 @@ export function carreraFullName(carrera: Pick<Carrera, 'nombre' | 'prefix'>): st
 // Slug-friendly name for share URLs: remove accents, lowercase, spaces → -
 export function carreraToSlug(carrera: Pick<Carrera, 'nombre' | 'prefix'> | string): string {
   const fullName = typeof carrera === 'string' ? carrera : carreraFullName(carrera);
-  // Esta ficha estuvo descubierta pero nunca rastreada durante más de un mes.
-  // Se le da una URL nueva y corta sin cambiar el nombre académico que ve la
-  // persona en la ficha.
+  // URL elegida para la nueva ficha de Siglo 21; no afecta la carrera de Teclab.
   if (fullName === 'Tecnicatura en Diseño y Desarrollo de Videojuegos') {
-    return 'tecnicatura-en-videojuegos';
+    return 'siglo-21-video-juegos';
   }
   return fullName
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
