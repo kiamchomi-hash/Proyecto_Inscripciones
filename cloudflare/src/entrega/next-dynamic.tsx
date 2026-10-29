@@ -5,20 +5,20 @@ import { useEffect, useReducer, type ComponentType } from 'react';
 // mientras tanto no pinta nada. En el servidor siempre rinde vacío: los modales
 // de carrera no forman parte del HTML sin JavaScript, igual que en el sitio
 // vigente con `ssr: true` y `loading: null` implícito.
-export default function dynamic(
-  cargador: () => Promise<{ default: ComponentType<Record<string, unknown>> }>,
-): ComponentType<Record<string, unknown>> {
-  let Cargado: ComponentType<Record<string, unknown>> | null = null;
-  let pedido: Promise<{ default: ComponentType<Record<string, unknown>> }> | null = null;
+export default function dynamic<P extends object>(
+  cargador: () => Promise<{ default: ComponentType<P> }>,
+): ComponentType<P> {
+  let Cargado: ComponentType<P> | null = null;
+  let pedido: Promise<{ default: ComponentType<P> }> | null = null;
 
-  return function Dinamico(props: Record<string, unknown>) {
+  return function Dinamico(props: P) {
     const [, forzar] = useReducer((n: number) => n + 1, 0);
     useEffect(() => {
       if (Cargado) return;
       let vivo = true;
       pedido ??= cargador();
       pedido.then(modulo => {
-        Cargado = modulo.default ?? (modulo as unknown as ComponentType<Record<string, unknown>>);
+        Cargado = modulo.default ?? (modulo as unknown as ComponentType<P>);
         if (vivo) forzar();
       }).catch(() => {});
       return () => { vivo = false; };

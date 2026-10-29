@@ -3,13 +3,12 @@
  * para saltar entre versiones sin perder la página en la que estás.
  *
  * Son tres bloques:
- *   main          lo que está publicado
+ *   main          último commit de origin/main (no necesariamente publicado)
  *   ramas/<rama>  una carpeta por cada rama de GitHub que no sea main,
  *                 con su propio submenú; se descubren solas desde origin
  *   experimental  el banco de pruebas, que vive sólo en local
  *
- * Por qué un snapshot renderizado y no `next export`: el proyecto tiene rutas
- * `/api/*`, que `output: 'export'` no admite. Y por qué el menú va
+ * Se captura el Worker con D1 local y contenido público. El menú va
  * inyectado en cada página en vez de un marco que las envuelva: la CSP declara
  * `frame-ancestors 'none'`, así que el sitio no entra en un iframe.
  *
@@ -17,8 +16,8 @@
  * origen `null`, así que las fichas de carrera quedan sin el texto largo (lo
  * trae `/api/carreras-detalle`) y los formularios no envían. Como además se
  * quitan los scripts, la página es un snapshot: se ve igual pero no reacciona.
- * La maquetación y las tipografías quedan intactas porque el CSS ya viaja
- * inline en el HTML (`experimental.inlineCss`).
+ * Los recursos locales necesarios se copian para poder abrir la captura offline.
+ * No se garantiza que recursos externos estén disponibles sin conexión.
  *
  * Uso:
  *   node herramientas/copia-local.mjs
@@ -28,6 +27,7 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import net from 'node:net';
 import { chromium } from 'playwright';
 
 /** Las páginas que vale la pena comparar. Se puede cambiar con --rutas=. */
@@ -42,8 +42,6 @@ const RUTAS = [
   '/calendario-academico',
 ];
 
-const PUERTO = 3900;
-
 const args = process.argv.slice(2);
 const flag = (n, def) => {
   const a = args.find(x => x.startsWith(`--${n}=`));
@@ -53,39 +51,28 @@ const flag = (n, def) => {
 let rutas = flag('rutas', '').trim()
   ? flag('rutas', '').split(',').map(r => (r.startsWith('/') ? r : `/${r}`))
   : RUTAS;
-const salida = path.resolve(flag('salida', path.join(os.homedir(), 'Desktop', 'CAU-copia')));
+const escritorio = fs.existsSync(path.join(os.homedir(), 'Escritorio')) ? 'Escritorio' : 'Desktop';
+const destino = path.resolve(flag('salida', path.join(os.homedir(), escritorio, 'CAU-copia')));
+let salida;
+
+if (fs.existsSync(destino)) throw new Error('La copia local no sobrescribe el destino existente; elegí otra carpeta con --salida.');
 
 const sh = (cmd, cmdArgs, opts = {}) =>
   new Promise((res, rej) => {
-    const p = spawn(cmd, cmdArgs, { stdio: 'pipe', shell: true, ...opts });
-    let out = '';
+    const p = spawn(cmd, cmdArgs, { stdio: 'pipe', ...opts });
+    let out = '', error = '';
     p.stdout?.on('data', d => { out += d; });
-    p.stderr?.on('data', d => { out += d; });
-    p.on('close', c => (c === 0 ? res(out) : rej(new Error(`${cmd} salió ${c}\n${out.slice(-1500)}`))));
+    p.stderr?.on('data', d => { error += d; });
+    p.on('error', rej);
+    p.on('close', c => (c === 0 ? res(out) : rej(new Error(`${cmd} salió ${c}\n${error.slice(-1500)}\n${out.slice(-1500)}`))));
   });
 
-// En Windows `child.kill()` sobre un spawn con `shell: true` mata el cmd.exe
-// y deja `next start` huerfano ocupando el puerto: el build siguiente le pisa
-// el .next por debajo y todas las versiones terminan capturadas del primer
-// servidor. Hay que matar por puerto y esperar a que quede libre de verdad.
-async function liberarPuerto(puerto) {
-  if (process.platform === 'win32') {
-    const out = await sh('netstat', ['-ano']).catch(() => '');
-    const pids = out.split('\n')
-      .filter(l => l.includes(':' + puerto) && l.includes('LISTENING'))
-      .map(l => l.trim().split(/\s+/).pop())
-      .filter(p => /^[0-9]+$/.test(p));
-    for (const pid of new Set(pids)) {
-      await sh('taskkill', ['/PID', pid, '/T', '/F']).catch(() => {});
-    }
-  } else {
-    await sh('bash', ['-c', 'lsof -ti:' + puerto + ' | xargs -r kill -9']).catch(() => {});
-  }
-  for (let i = 0; i < 40; i++) {
-    try { await fetch('http://localhost:' + puerto + '/'); } catch { return; }
-    await new Promise(r => setTimeout(r, 500));
-  }
-  throw new Error('El puerto ' + puerto + ' sigue ocupado despues de 20s');
+async function puertoLibre() {
+  const servidor = net.createServer();
+  await new Promise((resolver, rechazar) => servidor.once('error', rechazar).listen(0, '127.0.0.1', resolver));
+  const puerto = servidor.address().port;
+  await new Promise((resolver, rechazar) => servidor.close(e => e ? rechazar(e) : resolver()));
+  return puerto;
 }
 
 /** El nombre de archivo de una ruta: `/` → index.html, `/a/b` → a-b.html */
@@ -154,7 +141,7 @@ async function descubrirVersiones(sucio, ramaActual) {
 
   const versiones = [{
     grupo: 'main', id: 'main', rama: 'main', ref: 'origin/main', dir: 'main',
-    nombre: 'Producción', detalle: 'lo que está publicado',
+    nombre: 'main', detalle: 'último commit de origin/main',
   }];
 
   for (const refRemota of remotas.filter(r => r !== 'origin' && r !== 'origin/HEAD' && r !== 'origin/main')) {
@@ -256,7 +243,8 @@ function menuLateral(actual, ruta, versiones) {
 
 // ── Captura ─────────────────────────────────────────────────────────────────
 async function capturar(pagina, ruta, base, version, versiones, assets) {
-  await pagina.goto(base + ruta, { waitUntil: 'load', timeout: 60000 });
+  const respuesta = await pagina.goto(base + ruta, { waitUntil: 'load', timeout: 60000 });
+  if (!respuesta?.ok()) throw new Error(`${ruta}: HTTP ${respuesta?.status() ?? 'sin respuesta'}`);
   // `networkidle` no llega nunca en las páginas con Turnstile, igual que en
   // capturas.mjs. Un recorrido hasta el pie despierta las imágenes diferidas.
   await pagina.waitForTimeout(1500);
@@ -287,23 +275,36 @@ async function capturar(pagina, ruta, base, version, versiones, assets) {
   // Cada imagen o fuente se baja una sola vez a _assets/, compartida por todas
   // las versiones, y el HTML apunta ahí con una ruta relativa.
   const arriba = '../'.repeat(version.dir.split('/').length);
+  async function guardarAsset(direccion, desde = base + '/') {
+    const url = new URL(direccion.replace(/&amp;/g, '&'), desde);
+    if (url.origin !== base || url.pathname === '/') return null;
+    const clave = `${version.id}\0${url.href}`;
+    if (assets.has(clave)) return assets.get(clave);
+    const extension = path.extname(url.pathname).slice(0, 10).replace(/[^.a-z0-9]/gi, '') || '.bin';
+    const nombre = `a${assets.size.toString().padStart(5, '0')}${extension}`;
+    assets.set(clave, nombre);
+    const r = await pagina.request.get(url.href);
+    if (!r.ok()) throw new Error(`Recurso ${url.pathname}: HTTP ${r.status()}`);
+    let datos = await r.body();
+    if (/\.css$/i.test(url.pathname)) {
+      let css = datos.toString('utf8');
+      for (const m of [...css.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/g)]) {
+        const referencia = m[1].trim();
+        if (/^(?:data:|https?:|#|%23)/i.test(referencia)) continue;
+        const local = await guardarAsset(referencia, url.href);
+        if (local) css = css.replace(m[0], `url("${local}")`);
+      }
+      datos = Buffer.from(css);
+    }
+    fs.writeFileSync(path.join(salida, '_assets', nombre), datos);
+    return nombre;
+  }
   const urls = [...new Set([
-    ...[...html.matchAll(/(?:src|href)="(\/_next\/image\?[^"]+|\/_next\/static\/media\/[^"]+|\/imagenes\/[^"]+)"/g)].map(m => m[1]),
-    ...[...html.matchAll(/url\((\/_next\/static\/media\/[^)"']+|\/imagenes\/[^)"']+)\)/g)].map(m => m[1]),
+    ...[...html.matchAll(/(?:src|href)="(\/(?:_astro|imagenes|derivados|fuentes|folletos)\/[^"#]+)"/g)].map(m => m[1]),
+    ...[...html.matchAll(/url\(["']?(\/(?:_astro|imagenes|derivados|fuentes|folletos)\/[^)"']+)/g)].map(m => m[1]),
   ])];
   for (const url of urls) {
-    const limpia = url.replace(/&amp;/g, '&');
-    const claveAsset = `${version.id}\0${limpia}`;
-    if (!assets.has(claveAsset)) {
-      const ext = (limpia.match(/\.(webp|png|jpe?g|svg|avif|woff2?|ico)/i) || [, 'webp'])[1];
-      const nombre = `a${assets.size.toString().padStart(3, '0')}.${ext}`;
-      try {
-        const r = await pagina.request.get(base + limpia);
-        if (r.ok()) { fs.writeFileSync(path.join(salida, '_assets', nombre), await r.body()); assets.set(claveAsset, nombre); }
-        else assets.set(claveAsset, null);
-      } catch { assets.set(claveAsset, null); }
-    }
-    const local = assets.get(claveAsset);
+    const local = await guardarAsset(url);
     if (local) html = html.split(url).join(`${arriba}_assets/${local}`);
   }
   // El srcset queda con URLs sin reescribir: se saca para que mande el src.
@@ -316,7 +317,16 @@ async function capturar(pagina, ruta, base, version, versiones, assets) {
 // ── Programa ────────────────────────────────────────────────────────────────
 const ramaOriginal = (await sh('git', ['rev-parse', '--abbrev-ref', 'HEAD'])).trim();
 const sucio = (await sh('git', ['status', '--porcelain', '--untracked-files=no'])).trim();
-const versiones = await descubrirVersiones(sucio, ramaOriginal);
+const descubiertas = await descubrirVersiones(sucio, ramaOriginal);
+const versiones = [];
+for (const version of descubiertas) {
+  if (!version.actual) {
+    try { await sh('git', ['cat-file', '-e', `${version.ref}:cloudflare/scripts/local.mjs`], { cwd: process.cwd() }); }
+    catch { console.log(`Se omite ${version.rama}: no contiene el Worker.`); continue; }
+  }
+  versiones.push(version);
+}
+if (!versiones.length) throw new Error('No hay versiones compatibles con el Worker.');
 if (!flag('rutas', '').trim()) {
   const adicionales = versiones.flatMap(v => v.rutasCambio ?? [])
     .filter(r => r !== '*')
@@ -324,90 +334,90 @@ if (!flag('rutas', '').trim()) {
   rutas = [...new Set([...rutas, ...adicionales])];
 }
 
-fs.rmSync(salida, { recursive: true, force: true });
+// El directorio temporal pertenece a esta ejecución. Nunca se elimina ni
+// reemplaza la copia anterior, y sólo se terminan procesos iniciados acá.
+const raiz = process.cwd();
+const temporalBase = path.join(os.homedir(), '.cache', 'cau-copia');
+fs.mkdirSync(temporalBase, { recursive: true, mode: 0o700 });
+const temporal = fs.mkdtempSync(path.join(temporalBase, 'ejecucion-'));
+salida = path.join(temporal, 'salida');
 fs.mkdirSync(path.join(salida, '_assets'), { recursive: true });
-
+const sql = path.join(temporal, 'publico.sql');
+try {
+  const datos = await sh(process.execPath, ['--experimental-transform-types', path.join(raiz, 'cloudflare/scripts/copia-datos-publicos.mjs'), '--sql'], { cwd: raiz });
+  fs.writeFileSync(sql, datos, { mode: 0o600 });
+} catch (error) {
+  fs.rmSync(temporal, { recursive: true, force: true });
+  throw error;
+}
 const assets = new Map();
-const navegador = await chromium.launch();
-
-console.log(`\nCopia local → ${salida}`);
-console.log(`${rutas.length} páginas × ${versiones.length} versiones: ${versiones.map(v => v.nombre).join(', ')}\n`);
-if (sucio) console.log('Los cambios pendientes se agregan como Trabajo actual; las ramas se compilan aisladas.\n');
+let navegador;
+try { navegador = await chromium.launch(); }
+catch (error) { fs.rmSync(temporal, { recursive: true, force: true }); throw error; }
+const entorno = Object.fromEntries(['PATH', 'LANG', 'LC_ALL', 'TZ'].filter(k => process.env[k] !== undefined).map(k => [k, process.env[k]]));
+Object.assign(entorno, { HOME: path.join(temporal, 'home'), CI: '1', ASTRO_TELEMETRY_DISABLED: '1', WRANGLER_SEND_METRICS: 'false', CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: 'false', CLOUDFLARE_INCLUDE_PROCESS_ENV: 'false' });
+fs.mkdirSync(entorno.HOME, { recursive: true });
 
 try {
-  for (const version of versiones) {
+  for (const [indice, version] of versiones.entries()) {
+    console.log(`── ${version.nombre} (${version.rama})`);
     fs.mkdirSync(path.join(salida, version.dir), { recursive: true });
-    console.log(`── ${version.nombre}  (${version.rama})`);
-
-    // Cada ref commiteada se compila en un worktree temporal. Así Producción,
-    // las ramas y Experimental pueden convivir aunque la carpeta principal tenga
-    // trabajo sin guardar. Trabajo actual, en cambio, usa esta carpeta tal cual.
-    let carpetaBuild = process.cwd();
-    let worktree = null;
-    let worktreeRaiz = null;
-    if (!version.actual) {
-      worktreeRaiz = fs.mkdtempSync(path.join(os.tmpdir(), 'cau-copia-'));
-      worktree = path.join(worktreeRaiz, 'repo');
-      await sh('git', ['worktree', 'add', '--detach', worktree, version.ref]);
-      const modulos = path.join(worktree, 'node_modules');
-      fs.symlinkSync(path.join(process.cwd(), 'node_modules'), modulos, process.platform === 'win32' ? 'junction' : 'dir');
-      for (const archivoEntorno of ['.env.local', '.env']) {
-        const origenEntorno = path.join(process.cwd(), archivoEntorno);
-        if (fs.existsSync(origenEntorno)) fs.copyFileSync(origenEntorno, path.join(worktree, archivoEntorno));
-      }
-      carpetaBuild = worktree;
-    }
-
+    let carpetaBuild = raiz, worktree = null, hijo = null, contexto = null;
     try {
-      await liberarPuerto(PUERTO);
-
-      process.stdout.write('   compilando… ');
-      await sh('npx', ['next', 'build', ...(version.actual ? [] : ['--webpack'])], { cwd: carpetaBuild });
-      console.log('ok');
-
-      spawn('npx', ['next', 'start', '-p', String(PUERTO)], { cwd: carpetaBuild, shell: true, stdio: 'ignore' });
-      const base = `http://localhost:${PUERTO}`;
-      let vivo = false;
-      for (let i = 0; i < 60; i++) {
-        try { await fetch(base + '/'); vivo = true; break; } catch { await new Promise(r => setTimeout(r, 1000)); }
-      }
-      if (!vivo) throw new Error('El servidor no levanto en el puerto ' + PUERTO);
-
-      const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
-      const pagina = await ctx.newPage();
-      for (const ruta of rutas) {
-        try {
-          await capturar(pagina, ruta, base, version, versiones, assets);
-          console.log(`   ok     ${ruta}`);
-        } catch (e) {
-          console.log(`   FALLO  ${ruta} — ${e.message.split('\n')[0]}`);
+      if (!version.actual) {
+        worktree = path.join(temporal, `repo-${indice}`);
+        await sh('git', ['worktree', 'add', '--detach', worktree, version.ref], { cwd: raiz });
+        carpetaBuild = worktree;
+        for (const modulo of ['node_modules', 'cloudflare/node_modules']) {
+          const enlace = path.join(worktree, modulo);
+          if (!fs.existsSync(path.dirname(enlace))) throw new Error(`${version.rama}: no contiene el Worker de Cloudflare`);
+          fs.symlinkSync(path.join(raiz, modulo), enlace, 'dir');
         }
       }
-      await ctx.close();
-      await liberarPuerto(PUERTO);
-    } finally {
-      await liberarPuerto(PUERTO).catch(() => {});
-      if (worktree) {
-        // Quitar primero el enlace: en Windows, borrar el worktree con la
-        // junction adentro puede seguirla y vaciar el node_modules original.
-        const enlaceModulos = path.join(worktree, 'node_modules');
-        if (fs.existsSync(enlaceModulos)) fs.unlinkSync(enlaceModulos);
-        await sh('git', ['worktree', 'remove', '--force', worktree]).catch(() => {});
+      const paquete = path.join(carpetaBuild, 'cloudflare');
+      if (!fs.existsSync(path.join(paquete, 'scripts/local.mjs'))) throw new Error(`${version.rama}: versión incompatible con el Worker`);
+      const persist = path.join(temporal, `d1-${indice}`);
+      const wrangler = path.join(paquete, 'node_modules/wrangler/bin/wrangler.js');
+      await sh(process.execPath, ['scripts/local.mjs', 'build'], { cwd: paquete, env: entorno });
+      await sh(process.execPath, [wrangler, 'd1', 'migrations', 'apply', 'DB', '--local', '--persist-to', persist, '--config', 'wrangler.json'], { cwd: paquete, env: entorno });
+      await sh(process.execPath, [wrangler, 'd1', 'execute', 'DB', '--local', '--persist-to', persist, '--config', 'wrangler.json', '--file', sql], { cwd: paquete, env: entorno });
+      const puerto = await puertoLibre();
+      const base = `http://127.0.0.1:${puerto}`;
+      hijo = spawn(process.execPath, [wrangler, 'dev', '--config', 'dist/server/wrangler.json', '--persist-to', persist, '--ip', '127.0.0.1', '--port', String(puerto), '--inspector-port', '0', '--show-interactive-dev-session=false', '--log-level', 'warn'], { cwd: paquete, env: entorno, detached: true, stdio: 'ignore' });
+      let listo = false;
+      for (let i = 0; i < 90; i++) {
+        if (hijo.exitCode !== null) throw new Error(`Worker terminó antes de iniciar (${hijo.exitCode})`);
+        try { const r = await fetch(base + '/'); if (r.ok) { listo = true; break; } } catch { /* aún no arrancó */ }
+        await new Promise(r => setTimeout(r, 1000));
       }
-      if (worktreeRaiz) fs.rmdirSync(worktreeRaiz, { maxRetries: 3, retryDelay: 200 });
+      if (!listo) throw new Error('El Worker local no inició');
+      contexto = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+      await contexto.route('**/*', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort());
+      const pagina = await contexto.newPage();
+      for (const ruta of rutas) {
+        await capturar(pagina, ruta, base, version, versiones, assets);
+        console.log(`   ok ${ruta}`);
+      }
+    } finally {
+      await contexto?.close();
+      if (hijo?.pid) { try { process.kill(-hijo.pid, 'SIGTERM'); } catch { /* ya terminó */ } }
+      if (worktree) {
+        for (const modulo of ['node_modules', 'cloudflare/node_modules']) {
+          const enlace = path.join(worktree, modulo);
+          if (fs.existsSync(enlace) && fs.lstatSync(enlace).isSymbolicLink()) fs.unlinkSync(enlace);
+        }
+        await sh('git', ['worktree', 'remove', '--force', worktree], { cwd: raiz });
+      }
     }
   }
+  const entrada = `${versiones[0].dir}/${archivoDe(rutas[0])}`;
+  fs.writeFileSync(path.join(salida, 'ABRIR.html'), `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=${entrada}"><a href="${entrada}">Abrir copia</a>`, 'utf8');
+  fs.mkdirSync(destino); // Exclusivo: si apareció mientras trabajábamos, no se pisa.
+  for (const nombre of fs.readdirSync(salida)) {
+    fs.cpSync(path.join(salida, nombre), path.join(destino, nombre), { recursive: true, errorOnExist: true, force: false });
+  }
+  console.log(`Listo: ${path.join(destino, 'ABRIR.html')}`);
 } finally {
   await navegador.close();
-  await liberarPuerto(PUERTO).catch(() => {});
+  fs.rmSync(temporal, { recursive: true, force: true });
 }
-
-const entrada = `${versiones[0].dir}/index.html`;
-fs.writeFileSync(path.join(salida, 'ABRIR.html'),
-  `<!doctype html><meta charset="utf-8"><title>Copia local del CAU</title>
-<meta http-equiv="refresh" content="0; url=${entrada}">
-<p style="font-family:system-ui;padding:2rem">Abriendo la copia local…
-<a href="${entrada}">entrar</a></p>`, 'utf8');
-
-console.log(`\n${assets.size} archivos en _assets/`);
-console.log(`Listo. Doble clic en ${path.join(salida, 'ABRIR.html')}\n`);

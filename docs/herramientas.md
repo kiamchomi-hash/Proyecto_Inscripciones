@@ -1,5 +1,24 @@
 # Las verificaciones de `herramientas/` y la vigilancia de producción
 
+### Copia local para comparar versiones
+
+`herramientas/7 - Copia local del sitio.sh` captura las páginas de `origin/main`,
+las ramas compatibles con el Worker y, si hay cambios pendientes, el trabajo
+actual. `origin/main` no significa que ese commit esté publicado. Las ramas
+anteriores al Worker se informan y omiten.
+
+Requiere Node, dependencias de la raíz y de `cloudflare/`, Chromium de Playwright,
+conexión y acceso de lectura a D1 de producción mediante Wrangler. Consulta sólo
+contenido público, compara dos lecturas y lo carga en una D1 local efímera; no
+copia consultas ni otras tablas privadas. Los formularios y componentes
+interactivos no funcionan en la captura.
+
+La salida es `Escritorio/CAU-copia` (o `Desktop/CAU-copia` si no existe la
+primera). **Nunca se sobrescribe:** mover la copia anterior o indicar una carpeta
+nueva con `node herramientas/copia-local.mjs --salida=/ruta/nueva`. Para limitar
+las páginas, agregar `--rutas=/,/teclab`. Un fallo interrumpe la generación y no
+toca la copia anterior; recursos externos pueden no estar disponibles offline.
+
 Sale de `CLAUDE.md`, que sólo deja el puntero. Acá está el detalle de cada script y de los dos vigilantes.
 
 La auditoría ampliada (`npm run calidad`), sus comandos por área, referencias visuales,

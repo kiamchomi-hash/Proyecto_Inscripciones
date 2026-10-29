@@ -4,7 +4,15 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
-    "paths": { "@/*": ["../*"] }
+    "paths": {
+      "@/*": ["../*"],
+      "next/link": ["./src/entrega/next-link.tsx"],
+      "next/image": ["./src/entrega/next-image.tsx"],
+      "next/navigation": ["./src/entrega/next-navigation.ts"],
+      "next/dynamic": ["./src/entrega/next-dynamic.tsx"],
+      "next/font/google": ["./src/entrega/next-font.ts"],
+      "@next/third-parties/google": ["./src/entrega/next-third-parties.ts"]
+    }
   },
   "include": [".astro/types.d.ts", "worker-configuration.d.ts", "src/**/*", "staging/**/*.ts"],
   "exclude": ["dist", "node_modules"]

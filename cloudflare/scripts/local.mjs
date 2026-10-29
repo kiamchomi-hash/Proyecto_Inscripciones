@@ -83,7 +83,7 @@ export function comandoLocal(nombre) {
     // variables públicas declaradas. Nunca pasa secretos al entorno del hijo.
     'exportar-publico': ['--experimental-transform-types', 'scripts/exportar-datos.mjs'],
     'verificar-publico': ['--experimental-transform-types', 'scripts/verificar-datos.mjs'],
-    importacion: ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/importacion.test.mjs'],
+    importacion: ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/importacion.test.mjs', 'tests/copia-datos-publicos.test.mjs'],
     preparacion: ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/preparacion.test.mjs'],
     // Contrato del publicador y de produccion/wrangler.json: sin red y sin credenciales.
     publicacion: ['--test', 'tests/publicacion.test.mjs'],

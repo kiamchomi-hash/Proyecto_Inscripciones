@@ -7,6 +7,7 @@
       "esnext"
     ],
     "allowJs": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -17,23 +18,22 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
+      "next/link": ["./cloudflare/src/entrega/next-link.tsx"],
+      "next/image": ["./cloudflare/src/entrega/next-image.tsx"],
+      "next/navigation": ["./cloudflare/src/entrega/next-navigation.ts"],
+      "next/dynamic": ["./cloudflare/src/entrega/next-dynamic.tsx"],
+      "next/font/google": ["./cloudflare/src/entrega/next-font.ts"],
+      "@next/third-parties/google": ["./cloudflare/src/entrega/next-third-parties.ts"],
       "@/*": [
         "./*"
       ]
     }
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    "**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
