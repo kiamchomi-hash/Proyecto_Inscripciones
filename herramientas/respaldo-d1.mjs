@@ -15,6 +15,7 @@ const CF = path.join(PROYECTO, 'cloudflare');
 const WRANGLER = path.join(CF, 'node_modules', 'wrangler', 'bin', 'wrangler.js');
 const BASE = process.env.D1_PRODUCCION || 'cau-produccion';
 const DIR = path.join(CF, '.local', 'respaldos');
+const BUCKET = 'cau-respaldos-d1';
 // Con el timer diario son 30 corridas; a ~600 KB cada una, ~18 MB en disco.
 const DIAS_DE_HISTORIA = 30;
 
@@ -31,6 +32,12 @@ if (bytes < 1024 || filas === 0) {
   console.error(`Respaldo sospechoso: ${bytes} bytes, ${filas} INSERT. Revisar antes de confiar en él.`);
   process.exit(1);
 }
+// Sólo se sube una exportación validada. Si falla R2, se conserva la copia
+// local y el servicio falla para que el error no se confunda con un respaldo OK.
+execFileSync(process.execPath, [WRANGLER, 'r2', 'object', 'put',
+  `${BUCKET}/d1/${path.basename(destino)}`, '--remote', '--file', destino,
+  '--content-type', 'application/sql'],
+  { cwd: CF, stdio: ['ignore', 'pipe', 'inherit'] });
 console.log(JSON.stringify({ archivo: path.relative(PROYECTO, destino), bytes, filas }));
 
 // Poda: sólo los d1-*.sql de este directorio, y nunca el que se acaba de escribir.

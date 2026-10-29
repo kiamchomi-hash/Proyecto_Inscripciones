@@ -140,9 +140,13 @@ El generador usa el `sharp` de la raíz, así que compilar `cloudflare/` requier
 
 `npm run db:respaldo` (`herramientas/respaldo-d1.mjs`) exporta la D1 de producción a `cloudflare/.local/respaldos/` (fuera de Git, permisos 0700), verifica que el archivo tenga filas y borra los de más de 30 días. Usa la sesión de wrangler del perfil, así que no necesita variables de entorno.
 
+Desde el 29/10/2026, después de validar el archivo también lo sube al bucket privado R2 `cau-respaldos-d1`, bajo `d1/`. Si la subida falla, conserva la copia local y el servicio termina con error. R2 elimina esas copias a los 365 días mediante una regla de ciclo de vida; la copia local sigue conservándose 30 días. El timer depende de que la computadora esté encendida o que vuelva a encenderse: no es un respaldo independiente de la máquina para su ejecución. R2 y D1 pertenecen a la misma cuenta Cloudflare.
+
+Para recuperar una copia de R2, descargarla con `wrangler r2 object get cau-respaldos-d1/d1/<nombre>.sql --remote --file <archivo>` y ensayar su importación en una base aislada antes de cualquier restauración de producción. La exportación contiene datos privados: proteger y borrar el archivo temporal después del ensayo.
+
 Lo corre un timer de systemd de usuario todos los días a las 08:30 de Argentina, con `Persistent=true` para que se recupere si la PC estaba apagada. Las unidades están en `herramientas/sistema/` y no se instalan solas: el comando está en el encabezado del `.timer`. Comprobar con `systemctl --user list-timers cau-respaldo-d1.timer` y `systemctl --user status cau-respaldo-d1.service`; probar una corrida con `systemctl --user start cau-respaldo-d1.service`.
 
-Time Travel de D1 (7 días en el plan Free) no reemplaza esta copia: vive en la misma cuenta y no se puede sacar de ahí.
+Time Travel de D1 conserva hasta 30 días en Workers Paid (7 en Free); no reemplaza la copia local: vive en la misma cuenta. Restaurarlo sobrescribe la base de producción.
 
 
 ## Control preventivo de secretos y archivos privados
