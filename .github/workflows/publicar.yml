@@ -1,8 +1,7 @@
 name: Publicar el Worker
 
-# El deploy de producción se dispara a mano, desde la pestaña Actions. No corre
-# en cada push a propósito: publicar el sitio es una decisión, no un efecto
-# secundario del commit.
+# El push a main publica automáticamente después de pasar Verificaciones.
+# Este workflow conserva el ensayo y el deploy manual desde Actions.
 #
 # La credencial es el secreto de repositorio CLOUDFLARE_API_TOKEN, acotado a esta
 # cuenta y a la zona del sitio. No hay token de producción en ninguna notebook.
@@ -30,9 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment:
-      # El entorno `produccion` tiene revisores obligatorios: publicar espera
-      # una aprobación humana, y eso está bien. El ensayo no toca el sitio, así
-      # que usa un entorno propio sin reglas y no frena a nadie.
+      # El ensayo no toca el sitio y usa su propio entorno.
       name: ${{ inputs.modo == 'produccion' && 'produccion' || 'ensayo' }}
     steps:
       # `workflow_dispatch` deja elegir la rama. Publicar desde otra rama sería
@@ -71,6 +68,13 @@ jobs:
           MODO: ${{ inputs.modo }}
         run: |
           if [ "$MODO" = "produccion" ]; then
+            set -euo pipefail
+            referencia="$(git ls-remote --exit-code origin refs/heads/main)"
+            read -r actual _ <<< "$referencia"
+            if [ "$actual" != "$GITHUB_SHA" ]; then
+              echo "::error::El commit ya no es la punta de main; no se publica."
+              exit 1
+            fi
             # `--smoke-rapido`: desde un runner de GitHub el barrido de las 123
             # URLs del sitemap recibe 403 del borde (Browser Integrity Check).
             # La verificación fija alcanza para cerrar el deploy; el barrido

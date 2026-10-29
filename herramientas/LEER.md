@@ -93,7 +93,7 @@ salen ahora del outbox del Worker (`cloudflare/src/operativa/outbox.ts`) y
 
 ### 5 — Subir cambios
 
-Commit y push a `main`. **Push no publica**: versiona y dispara el CI, pero el Worker sale a producción sólo cuando se corre el workflow `Publicar el Worker` o, desde local, `cd cloudflare && npm run publicar:produccion`. Ambos envoltorios llaman a
+Commit y push a `main`. **El push publica:** dispara `Verificaciones`, y si pasan los dos trabajos de control, el mismo workflow despliega ese commit con el publicador y corre el smoke rápido. Un push nuevo espera su propia verificación; un commit que dejó de ser la punta de `main` no se publica. El workflow manual `Publicar el Worker` sigue disponible para ensayo o producción explícita y, desde local, con `cd cloudflare && npm run publicar:produccion`. Los envoltorios llaman a
 `deploy.mjs`: selecciona archivos propios, no agrega todo el working tree.
 
 1. Exige `main` y la referencia local `origin/main`. Si falta, ejecutar

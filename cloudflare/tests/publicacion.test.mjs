@@ -12,6 +12,19 @@ import { entornoWrangler, leerConfig, revisar, tokenDelEntorno } from '../script
 
 const raiz = fileURLToPath(new URL('../', import.meta.url));
 
+test('el push publica sólo tras ambos controles y no despliega un commit viejo', () => {
+  const workflow = readFileSync(join(raiz, '../.github/workflows/verificar.yml'), 'utf8');
+  assert.match(workflow, /needs:\s*\[codigo,\s*worker\]/);
+  assert.match(workflow, /github\.event_name\s*==\s*'push'/);
+  assert.match(workflow, /group:\s*publicar-worker/);
+  assert.match(workflow, /git ls-remote --exit-code origin refs\/heads\/main/);
+  assert.match(workflow, /node scripts\/publicar\.mjs --publicar --smoke-rapido/);
+  const manual = readFileSync(join(raiz, '../.github/workflows/publicar.yml'), 'utf8');
+  assert.match(manual, /group:\s*publicar-worker/);
+  assert.match(manual, /git ls-remote --exit-code origin refs\/heads\/main/);
+  assert.match(manual, /node scripts\/publicar\.mjs --ensayo/);
+});
+
 /** Los cron de `CRONES` tal como están escritos en el código, sin importarlo. */
 function cronsDelCodigo() {
   const fuente = readFileSync(join(raiz, 'src', 'operativa', 'produccion.ts'), 'utf8');

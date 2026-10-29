@@ -105,7 +105,7 @@ export async function runDeploy({ cwd, ask, print = console.log, check = checkLo
     }
     print('[3/3] Subiendo a GitHub.');
     await push(cwd);
-    print('Publicado. Producción se publica aparte: workflow "Publicar el Worker" o npm run publicar:produccion en cloudflare/.');
+    print('Subido a GitHub. El sitio se publica cuando pasen las verificaciones del push.');
     return 0;
   } catch (error) {
     print(`No se completó la publicación: ${error.message}`);

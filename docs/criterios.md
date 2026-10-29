@@ -172,6 +172,12 @@ El ahorro todavía no está medido: Workers Paid parte de USD 5 por mes, pero fa
 comparar con la factura real de Vercel y Supabase y sumar el costo de mantenimiento.
 La rama local `exp/cloudflare` (`5841d28`) es antecedente, no punto de partida.
 
+**Publicación, decidida el 29/10/2026:** el usuario trabaja solo y quiere que un
+push a `main` publique sin un paso manual. `Verificaciones` publica ese mismo
+commit si pasan sus dos controles, comprueba que siga siendo la punta de `main`
+y comparte la concurrencia del publicador manual, que queda para ensayo o deploy
+explícito. No volver a proponer el deploy sólo a mano.
+
 ### Identidad Argentina se migra a otro sitio
 
 Decidido el 23/08/2026: su oferta no lleva página propia en `siglo21sur.com`. **No

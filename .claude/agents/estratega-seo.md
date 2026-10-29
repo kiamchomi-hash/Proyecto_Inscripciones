@@ -35,7 +35,7 @@ Antes de proponer un cambio de texto, ubicá de dónde sale:
 - **Contenido de una carrera** (descripción, plan, slides): viene de la D1 de producción. Se escribe con un `UPDATE` en un archivo fechado de `sql/` y `npm run db:d1 -- --archivo <archivo> --escribir`; un `UPDATE` sin `WHERE` se rechaza. Vos no lo corrés: dejás el SQL propuesto y el usuario decide.
 - **Novedades**: el HTML vive en la base y pasa por `lib/sanitize-content.ts` al renderizarse.
 - **Enlaces internos entre fichas**: la página de carrera enlaza 6 del mismo nivel más 2 de otro. Las tres primeras del nivel y la primera cruzada salen del **área** de la carrera (`getAreaForCarrera()`); el resto de una rotación por `id` que pasa por todas, para que ninguna ficha quede sin enlaces entrantes. Es determinístico a propósito, para no romper el caché. Si proponés cambiarlo, decí cómo se mantiene esa propiedad **y simulá el grafo**: contá enlaces entrantes por ficha con el algoritmo viejo y con el nuevo, porque es fácil dejar una huérfana sin darse cuenta.
-- **Publicar el cambio**: el HTML sale `no-store` y las páginas leen D1 en cada pedido, así que un cambio de fila se ve en la próxima visita, sin revalidar ni deployar. Un cambio de código necesita publicar el Worker (workflow `Publicar el Worker` o `cd cloudflare && npm run publicar:produccion`); un push a `main` no publica.
+- **Publicar el cambio**: el HTML sale `no-store` y las páginas leen D1 en cada pedido, así que un cambio de fila se ve en la próxima visita, sin revalidar ni deployar. Un cambio de código se publica solo cuando el push a `main` pasa `Verificaciones`; también se puede disparar el workflow `Publicar el Worker` o `cd cloudflare && npm run publicar:produccion`.
 
 ## Lo que no es un problema
 

@@ -7,7 +7,9 @@ permissions:
   contents: read
 concurrency:
   group: verificar-${{ github.ref }}
-  cancel-in-progress: true
+  # Un push nuevo no puede interrumpir un deploy que ya empezó. GitHub conserva
+  # sólo el pendiente más reciente y el job de publicación vuelve a mirar main.
+  cancel-in-progress: false
 jobs:
   codigo:
     name: Código y dependencias
@@ -41,3 +43,43 @@ jobs:
       # produccion/wrangler.json se verifica leyendo el repo, no instalando.
       - run: node --test tests/publicacion.test.mjs
         working-directory: cloudflare
+  publicar:
+    name: Publicar Worker después de verificar
+    needs: [codigo, worker]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: produccion
+    concurrency:
+      group: publicar-worker
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            cloudflare/package-lock.json
+      - name: Dependencias del sitio
+        run: npm ci
+      - name: Dependencias del Worker
+        run: npm ci
+        working-directory: cloudflare
+      - name: Publicar el commit verificado
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          set -euo pipefail
+          referencia="$(git ls-remote --exit-code origin refs/heads/main)"
+          read -r actual _ <<< "$referencia"
+          if [ "$actual" != "$GITHUB_SHA" ]; then
+            echo "Este commit ya no es la punta de main; no se publica."
+            exit 0
+          fi
+          node scripts/publicar.mjs --publicar --smoke-rapido

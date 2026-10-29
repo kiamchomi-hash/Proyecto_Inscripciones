@@ -9,7 +9,7 @@ Verificás que producción (`https://www.siglo21sur.com`) esté sana. **No arreg
 
 ## Procedimiento
 
-1. **No hay build que esperar.** Un push a `main` ya no publica: el Worker se publica a mano, desde el workflow `Publicar el Worker` (`.github/workflows/publicar.yml`) o, desde local, con `cd cloudflare && npm run publicar:produccion`. Si el usuario acaba de publicar, el smoke ya mide la versión nueva. No hay endpoint que informe qué commit está sirviendo: si hay duda de si el deploy llegó, preguntá por el resultado de la corrida y no inventes un estado.
+1. **El deploy sale del push.** Un push a `main` dispara `Verificaciones`; si pasan sus dos controles, ese mismo commit se publica y corre el smoke rápido. También se puede publicar desde el workflow `Publicar el Worker` (`.github/workflows/publicar.yml`) o, desde local, con `cd cloudflare && npm run publicar:produccion`. No hay endpoint que informe qué commit está sirviendo: si hay duda de si el deploy llegó, preguntá por el resultado de la corrida y no inventes un estado.
 
 2. **Corré el smoke.** `npm run smoke` prueba rutas, cabeceras de seguridad, `noindex` donde corresponde, redirects, sitemap (~119 URLs) y peso del HTML. Sale con código 1 si encuentra algo.
 

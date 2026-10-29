@@ -33,6 +33,6 @@ Todo lo de arriba es de la app anterior. El sitio publicado se despliega desde `
 
 - `CLOUDFLARE_API_TOKEN`: token acotado a esta cuenta, guardado en `.env.local` (no versionado) o pasado por el entorno. Permisos: `Workers Scripts:Edit`, `Workers Routes:Edit` de la zona `siglo21sur.com` y `Queues:Edit`; `D1:Edit` sólo si además se van a aplicar migraciones. `npm run publicar:ensayo` funciona sin él porque no sale a la red; `npm run publicar:produccion` se niega a publicar sin credencial.
 
-El camino recomendado es publicar desde CI: `.github/workflows/publicar.yml` usa el secreto de repositorio `CLOUDFLARE_API_TOKEN` (mismos permisos) y se dispara a mano desde Actions. La variable local queda para trabajar en la máquina.
+El camino normal es el push a `main`: el workflow `Verificaciones` corre los controles y, si pasan, publica ese mismo commit con el secreto de repositorio `CLOUDFLARE_API_TOKEN` (mismos permisos). `.github/workflows/publicar.yml` queda para el ensayo y el deploy manual desde Actions. La variable local queda para trabajar en la máquina.
 
 El publicador (`cloudflare/scripts/publicar.mjs`) le pasa a wrangler **sólo** el `PATH`, el `HOME` y ese token: la service role de Supabase, `SMTP2GO_API_KEY`, `TELEGRAM_*` y las credenciales de ventas que comparten el archivo no entran al proceso que publica. La alternativa a la variable es `wrangler login`, que guarda el OAuth en texto plano en `~/.wrangler/config/default.toml`; sirve, pero no se acota por permiso ni por Worker y no deja rastro de quién publicó.
