@@ -237,7 +237,7 @@ export type AreaId = (typeof AREAS)[number]['id'];
 // que es el de la lista del filtro.
 const AREA_KEYWORDS: Record<AreaId, string[]> = {
   derecho: ['abogacía', 'escribanía', 'procurador', 'criminología', 'crimen', 'seguridad privada', 'forense', 'constitución de sociedades', 'martillero', 'corredor'],
-  tecnologia: ['informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'ciencia de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad', 'producto digital', 'experiencia de usuario'],
+  tecnologia: ['tecnicatura superior en desarrollo de videojuegos', 'informática', 'inteligencia artificial', 'robótica', 'seguridad informática', 'ciencias de datos', 'ciencia de datos', 'redes informáticas', 'telecomunicaciones', 'prompt engineering', 'programación', 'data science', 'quality assurance', 'cloud administration', 'fraude financiero', 'prevención del fraude', 'ciberseguridad', 'producto digital', 'experiencia de usuario'],
   exactas: ['estadística'],
   gobierno: ['ciencia política', 'administración pública', 'políticas públicas', 'relaciones internacionales'],
   negocios: ['administración', 'finanzas', 'negocios digitales', 'comercio internacional', 'actuario', 'emprendimiento', 'contador', 'contable', 'impositiva', 'empresas familiares', 'negocios inmobiliarios', 'propiedad horizontal', 'equipo de venta', 'equipos de venta', 'e-commerce', 'business analysis', 'customer experience', 'experiencia del cliente', 'seguros', 'logística', 'comercio exterior', 'marketing para emprendedores', 'compliance', 'management hotelero'],

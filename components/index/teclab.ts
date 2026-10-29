@@ -107,7 +107,7 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
   // Diseño de Producto Digital y Diseño UX van en Desarrollo: son parte del
   // equipo que construye la aplicación. No se matchea 'producto digital' a secas
   // para no revivir la anunciada de baja (id 245).
-  if (nombre.includes('programación') || nombre.includes('quality assurance')
+  if (nombre.includes('programación') || nombre.includes('quality assurance') || nombre.includes('videojuegos')
     || nombre.includes('diseño de producto digital') || nombre.includes('experiencia de usuario')) return 'Desarrollo';
   return null;
 }
@@ -131,6 +131,8 @@ export function getCategoriaTeclabTecnologia(carrera: Pick<Carrera, 'nombre' | '
 // que Teclab lo confirme no se promete la continuidad.
 const SIN_ARTICULACION_CONFIRMADA = [
   'seguros',
+  'gestión ambiental',
+  'desarrollo de videojuegos',
   'administración de empresas',
   'negocios digitales financieros',
   'logística',
@@ -202,6 +204,22 @@ export interface TeclabFicha {
 // la base: ahi quedaron valores genericos ("Perfil laboral", "Sector
 // financiero") que no son empresas.
 const FICHAS: { match: string; ficha: TeclabFicha }[] = [
+  {
+    match: 'desarrollo de videojuegos',
+    ficha: {
+      url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-desarrollo-de-videojuegos/',
+      imagen: '/imagenes/teclab/carreras/desarrollo-de-videojuegos.webp',
+      imagenCierre: '/imagenes/teclab/carreras/desarrollo-de-videojuegos.webp',
+    },
+  },
+  {
+    match: 'gestión ambiental',
+    ficha: {
+      url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-gestion-ambiental/',
+      imagen: '/imagenes/teclab/carreras/gestion-ambiental.webp',
+      imagenCierre: '/imagenes/teclab/carreras/gestion-ambiental.webp',
+    },
+  },
   {
     match: 'programación',
     ficha: {

@@ -19,7 +19,7 @@ export type PerfilId =
   | 'experiencia-cliente' | 'contable' | 'seguros' | 'agraria' | 'alimentos' | 'mineria'
   | 'ambiental' | 'higiene-seguridad' | 'relaciones-laborales' | 'hotelera' | 'eventos' | 'periodismo'
   | 'administracion' | 'finanzas-digitales' | 'logistica' | 'comercio-exterior' | 'riesgos'
-  | 'producto-digital' | 'experiencia-usuario' | 'equipos-agiles' | 'recursos-humanos';
+  | 'producto-digital' | 'experiencia-usuario' | 'equipos-agiles' | 'recursos-humanos' | 'videojuegos';
 
 type Puntos = Partial<Record<PerfilId, number>>;
 export type Opcion = { texto: string; puntos: Puntos };
@@ -32,6 +32,7 @@ type CarreraConNombre = { id: number; nombre: string; nombre_corto?: string | nu
  * específico va antes (Seguridad Informática antes que Higiene y Seguridad).
  */
 export const PERFILES: { id: PerfilId; match: string[] }[] = [
+  { id: 'videojuegos', match: ['desarrollo de videojuegos'] },
   { id: 'programacion', match: ['programacion'] },
   { id: 'data-science', match: ['data science'] },
   { id: 'quality-assurance', match: ['quality assurance'] },
@@ -78,7 +79,7 @@ export const PREGUNTAS: Pregunta[] = [
     eje: 'Mundo',
     pregunta: '¿Qué mundo te atrae más?',
     opciones: [
-      { texto: 'Programas, apps y datos', puntos: { programacion: 5, 'quality-assurance': 4, 'data-science': 2, 'producto-digital': 3, 'experiencia-usuario': 3 } },
+      { texto: 'Programas, apps y datos', puntos: { programacion: 5, videojuegos: 5, 'quality-assurance': 4, 'data-science': 2, 'producto-digital': 3, 'experiencia-usuario': 3 } },
       { texto: 'Redes, servidores y ciberseguridad', puntos: { redes: 3, cloud: 3, 'seguridad-informatica': 6 } },
       { texto: 'Marcas, ventas y clientes', puntos: { 'marketing-digital': 6, 'inbound-marketing': 7, 'experiencia-cliente': 4 } },
       { texto: 'Empresas, números y equipos', puntos: { contable: 6, 'relaciones-laborales': 4, seguros: 3, administracion: 5, 'finanzas-digitales': 3, 'recursos-humanos': 1, 'equipos-agiles': 5, riesgos: 3 } },
@@ -90,7 +91,7 @@ export const PREGUNTAS: Pregunta[] = [
     eje: 'Tarea',
     pregunta: '¿Qué te gustaría hacer en un día de trabajo?',
     opciones: [
-      { texto: 'Escribir código y crear aplicaciones', puntos: { programacion: 5 } },
+      { texto: 'Escribir código y crear aplicaciones', puntos: { programacion: 5, videojuegos: 5 } },
       { texto: 'Probar sistemas y encontrar errores', puntos: { 'quality-assurance': 6 } },
       { texto: 'Analizar datos para tomar decisiones', puntos: { 'data-science': 7, contable: 4, administracion: 6, 'finanzas-digitales': 4, 'producto-digital': 7 } },
       { texto: 'Configurar redes, servidores y la nube', puntos: { redes: 5, cloud: 2 } },
@@ -126,7 +127,7 @@ export const PREGUNTAS: Pregunta[] = [
     eje: 'Material',
     pregunta: '¿Con qué preferís trabajar?',
     opciones: [
-      { texto: 'Código, apps y pantallas', puntos: { programacion: 6, 'quality-assurance': 6, 'experiencia-usuario': 3, 'producto-digital': 4 } },
+      { texto: 'Código, apps y pantallas', puntos: { programacion: 6, videojuegos: 6, 'quality-assurance': 6, 'experiencia-usuario': 3, 'producto-digital': 4 } },
       { texto: 'Servidores, redes y la nube', puntos: { cloud: 6, redes: 4 } },
       { texto: 'Números y documentos', puntos: { contable: 7, 'comercio-exterior': 7, riesgos: 4, 'finanzas-digitales': 5, logistica: 5 } },
       { texto: 'Recursos naturales y alimentos', puntos: { mineria: 6, agraria: 3, alimentos: 4, 'energias-renovables': 2 } },
@@ -144,6 +145,7 @@ export const PREGUNTAS: Pregunta[] = [
       { texto: 'Minería y energía', puntos: { mineria: 8, 'energias-renovables': 7 } },
       { texto: 'Finanzas y seguros', puntos: { seguros: 7, contable: 1, 'finanzas-digitales': 5, riesgos: 4 } },
       { texto: 'Cuidado del ambiente', puntos: { ambiental: 5 } },
+      { texto: 'Desarrollo de videojuegos', puntos: { videojuegos: 8 } },
     ],
   },
   {

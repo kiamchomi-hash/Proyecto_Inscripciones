@@ -128,6 +128,7 @@ export const DERIVADAS: Record<string, Derivadas> = {
   "/imagenes/teclab/carreras/customer-experience.webp": { hash: '5d5c7da0', anchos: [480, 960] },
   "/imagenes/teclab/carreras/data-science-cierre.webp": { hash: '1eb74459', anchos: [480, 960] },
   "/imagenes/teclab/carreras/data-science.webp": { hash: '51f69b05', anchos: [480, 960, 1080] },
+  "/imagenes/teclab/carreras/desarrollo-de-videojuegos.webp": { hash: '56aeb53f', anchos: [480] },
   "/imagenes/teclab/carreras/diseno-de-experiencia-de-usuario.webp": { hash: '9b12b3f2', anchos: [480, 960, 1440] },
   "/imagenes/teclab/carreras/diseno-de-producto-digital.webp": { hash: '9f0e7c32', anchos: [480, 960, 1440] },
   "/imagenes/teclab/carreras/energias-renovables.webp": { hash: '993df4fd', anchos: [480, 960, 1440] },
