@@ -206,9 +206,9 @@ test('check recibe bytes Git, no cambios posteriores, archivos ignorados ni cred
   writeFileSync(join(cwd, 'propio.txt'), 'revisado\n');
   writeFileSync(join(cwd, '.git', 'info', 'exclude'), '.env.local\n');
   writeFileSync(join(cwd, '.env.local'), 'fixture local sin publicar');
-  const prior = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  process.env.SUPABASE_SERVICE_ROLE_KEY = 'fixture-no-debe-heredarse';
-  t.after(() => { if (prior === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = prior; });
+  const prior = process.env.SECRETO_AJENO_DE_PRUEBA;
+  process.env.SECRETO_AJENO_DE_PRUEBA = 'fixture-no-debe-heredarse';
+  t.after(() => { if (prior === undefined) delete process.env.SECRETO_AJENO_DE_PRUEBA; else process.env.SECRETO_AJENO_DE_PRUEBA = prior; });
   const answers = ['1', 'fix: revisado', 'S'];
   let snapshotPath;
   const result = await run(cwd, [], {
@@ -224,7 +224,7 @@ test('check recibe bytes Git, no cambios posteriores, archivos ignorados ni cred
       assert.equal(readFileSync(join(snapshot, 'ajeno.txt'), 'utf8'), 'base\n');
       assert.throws(() => readFileSync(join(snapshot, '.env.local')), /ENOENT/);
       assert.throws(() => readFileSync(join(snapshot, '.git', 'config')), /ENOENT/);
-      assert.equal(env.SUPABASE_SERVICE_ROLE_KEY, undefined);
+      assert.equal(env.SECRETO_AJENO_DE_PRUEBA, undefined);
       assert.equal(env.NODE_OPTIONS, undefined);
       assert.notEqual(env.HOME, process.env.HOME);
     },
@@ -261,7 +261,7 @@ test('check real pasa con A y B seleccionados y no ejecuta hooks npm', async t =
     check: 'node validar.cjs', precheck: 'node -e "process.exit(9)"', postcheck: 'node -e "process.exit(9)"', postinstall: 'node -e "process.exit(9)"',
   } }));
   writeFileSync(join(cwd, 'package-lock.json'), JSON.stringify({ name: 'fixture-check', version: '1.0.0', lockfileVersion: 3, packages: { '': { name: 'fixture-check', version: '1.0.0' } } }));
-  writeFileSync(join(cwd, 'validar.cjs'), "const fs = require('node:fs'); const assert = require('node:assert/strict'); assert.equal(fs.readFileSync('propio.txt', 'utf8'), fs.readFileSync('ajeno.txt', 'utf8')); assert.equal(process.env.SUPABASE_SERVICE_ROLE_KEY, undefined);\n");
+  writeFileSync(join(cwd, 'validar.cjs'), "const fs = require('node:fs'); const assert = require('node:assert/strict'); assert.equal(fs.readFileSync('propio.txt', 'utf8'), fs.readFileSync('ajeno.txt', 'utf8')); assert.equal(process.env.SECRETO_AJENO_DE_PRUEBA, undefined);\n");
   git(cwd, 'add', '--', 'package.json', 'package-lock.json', 'validar.cjs');
   git(cwd, 'commit', '-m', 'test: preparar check real');
   git(cwd, 'update-ref', 'refs/remotes/origin/main', 'HEAD');

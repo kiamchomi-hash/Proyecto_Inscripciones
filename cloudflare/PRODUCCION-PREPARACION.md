@@ -1,5 +1,9 @@
 # Configuración operativa pendiente, sólo preparación local
 
+> **Registro histórico anterior al corte.** Las tareas y los estados que siguen
+> no describen necesariamente producción actual. Para publicar, consultar
+> `AGENTS.md` y `cloudflare/produccion/wrangler.json`.
+
 Este inventario no es una configuración publicable. No contiene IDs ficticios,
 credenciales, dominios nuevos ni un comando de deploy. Producción actual sigue
 intacta. Plan existente.

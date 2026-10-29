@@ -156,21 +156,10 @@ sobre y nadie actualiza el SPF, esos mails se pierden sin aviso. Hoy ningún env
 legítimo usa el raíz (SMTP2GO usa el subdominio `em776964`). No reproponerlo salvo
 que se deje de usar DMARC en `reject`.
 
-### Migración a Cloudflare: aprobada, se hace después de cerrar las pruebas locales
+### Producción en Cloudflare
 
-Aprobada por el usuario el 24/10/2026: se deja Vercel, Supabase y Next.js por
-Cloudflare (Astro + React sobre Workers, D1 y R2). Reemplaza la decisión del
-18/10/2026 de no migrar, que se tomó sólo por costo y se basaba en la
-[prueba de factibilidad](../odd/tasks/factibilidad-cloudflare.md).
-
-Orden: primero terminar las pruebas locales del prototipo en `cloudflare/`
-(bloque 3 en adelante, paridad de páginas, respaldo de Supabase restaurable) y
-recién después el plan de corte, que requiere aprobación explícita antes de
-tocar DNS, deploy, facturación o datos reales. Hasta entonces producción no cambia.
-
-El ahorro todavía no está medido: Workers Paid parte de USD 5 por mes, pero falta
-comparar con la factura real de Vercel y Supabase y sumar el costo de mantenimiento.
-La rama local `exp/cloudflare` (`5841d28`) es antecedente, no punto de partida.
+El sitio pasó a Cloudflare el 27/10/2026: Astro y React sobre Workers, con D1.
+El ahorro de la migración no está medido.
 
 **Publicación, decidida el 29/10/2026:** el usuario trabaja solo y quiere que un
 push a `main` publique sin un paso manual. `Verificaciones` publica ese mismo

@@ -7,7 +7,7 @@
 //   npm run db:d1 -- --archivo ruta.sql --escribir
 //
 // Dos frenos, no uno: un UPDATE o DELETE sin WHERE se rechaza siempre (salvo
-// `--sin-red`, igual que en el script de Supabase), y cualquier sentencia que no
+// `--sin-red`), y cualquier sentencia que no
 // sea de lectura exige `--escribir` explícito. No hay transacciones visibles acá:
 // D1 aplica cada `execute` como un lote.
 import { execFileSync } from 'node:child_process';

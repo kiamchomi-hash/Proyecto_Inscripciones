@@ -12,10 +12,7 @@ para los avisos, las tres de Turnstile y `NEXT_PUBLIC_GA_ID`. Las banderas
 desarrollo y producción las ignora.
 
 El `.env.local` de esta máquina conserva además credenciales que no son del
-sitio: los portales de precios, HubSpot y Search Console. Las de Supabase
-(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-`SUPABASE_SERVICE_ROLE_KEY`, `EDITOR_DATABASE_URL`) quedaron cuando se dio de
-baja esa base y ya no las lee nada del sitio.
+sitio: los portales de precios, HubSpot y Search Console.
 
 El robot de Teclab se dio de baja el 27/10/2026: ya no existen `ROBOT_SECRET`, `ROBOT_GITHUB_TOKEN` ni `ROBOT_GITHUB_REPO`, y `/api/robot/autoinscripciones` tampoco. Detalle en `odd/tasks/autoinscripcion-teclab.md`.
 
@@ -35,4 +32,4 @@ Todo lo de arriba es de la app anterior. El sitio publicado se despliega desde `
 
 El camino normal es el push a `main`: el workflow `Verificaciones` corre los controles y, si pasan, publica ese mismo commit con el secreto de repositorio `CLOUDFLARE_API_TOKEN` (mismos permisos). `.github/workflows/publicar.yml` queda para el ensayo y el deploy manual desde Actions. La variable local queda para trabajar en la máquina.
 
-El publicador (`cloudflare/scripts/publicar.mjs`) le pasa a wrangler **sólo** el `PATH`, el `HOME` y ese token: la service role de Supabase, `SMTP2GO_API_KEY`, `TELEGRAM_*` y las credenciales de ventas que comparten el archivo no entran al proceso que publica. La alternativa a la variable es `wrangler login`, que guarda el OAuth en texto plano en `~/.wrangler/config/default.toml`; sirve, pero no se acota por permiso ni por Worker y no deja rastro de quién publicó.
+El publicador (`cloudflare/scripts/publicar.mjs`) le pasa a wrangler **sólo** el `PATH`, el `HOME` y ese token: `SMTP2GO_API_KEY`, `TELEGRAM_*` y las credenciales de ventas que comparten el archivo no entran al proceso que publica. La alternativa a la variable es `wrangler login`, que guarda el OAuth en texto plano en `~/.wrangler/config/default.toml`; sirve, pero no se acota por permiso ni por Worker y no deja rastro de quién publicó.

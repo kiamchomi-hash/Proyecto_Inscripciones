@@ -43,13 +43,10 @@ La política de rutas privadas está en `esRutaPrivada()` de
 sigue siendo una comodidad para trabajar: no constituye una prueba de que un
 archivo no haya sido agregado a Git.
 
-La excepción automática acotada es un JWT de clave pública Supabase con
-`iss: supabase`, `role: anon` y sin `sub`, en la regla `jwt`. La clave anon
-está diseñada para el cliente público; no se permite `service_role` ni sesiones
-`authenticated`. La configuración de Gitleaks sale del árbol seleccionado; si todavía no existe
+Los JWT detectados no tienen excepciones automáticas por proveedor. La
+configuración de Gitleaks sale del árbol seleccionado; si todavía no existe
 allí, se usan sólo sus reglas oficiales. Un config no seleccionado no puede
-relajar la revisión. El filtro usa los bytes del mismo árbol o commit inspeccionado,
-no la copia editable. Las excepciones para otros ejemplos públicos deben ser
+relajar la revisión. Las excepciones para ejemplos públicos deben ser
 valores exactos en `.gitleaks.toml`, con motivo escrito; no excluir una carpeta
 ni marcar una credencial real como ejemplo.
 

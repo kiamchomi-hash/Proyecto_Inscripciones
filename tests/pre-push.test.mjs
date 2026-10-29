@@ -63,10 +63,10 @@ test('force push revisa historia divergente y eliminación no agrega blobs', t =
   assert.notEqual(push(cwd, '--force', 'otra').status, 0);
   assert.equal(push(cwd, '--delete', 'otra').status, 0);
 });
-test('clave anon legítima permite push', t => {
+test('un JWT bloquea el push', t => {
   const { cwd } = fixture(t);
-  const jwt = [Buffer.from('{"alg":"HS256"}').toString('base64url'), Buffer.from('{"iss":"supabase","role":"anon"}').toString('base64url'), randomBytes(32).toString('base64url')].join('.');
-  writeFileSync(join(cwd, 'publico.txt'), `anon=${jwt}\n`); commit(cwd); assert.equal(push(cwd, 'main').status, 0);
+  const jwt = [Buffer.from('{"alg":"HS256"}').toString('base64url'), Buffer.from('{"iss":"fixture","role":"anon"}').toString('base64url'), randomBytes(32).toString('base64url')].join('.');
+  writeFileSync(join(cwd, 'publico.txt'), `anon=${jwt}\n`); commit(cwd); assert.notEqual(push(cwd, 'main').status, 0);
 });
 test('instalador no reemplaza hook ajeno ni hooksPath', t => {
   const { cwd } = fixture(t); const path = join(cwd, '.git/hooks/pre-push'); writeFileSync(path, '#!/bin/sh\nexit 0\n'); const bytes = readFileSync(path);

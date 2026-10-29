@@ -66,12 +66,10 @@ test('referencia base inexistente falla cerrado sin tocar index', t => {
 });
 
 
-test('clave anon pública Supabase no bloquea, service_role y sesiones sí', t => {
+test('los JWT se bloquean sin excepciones por proveedor', t => {
   const cwd = fixture(t);
-  const jwt = role => [Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'), Buffer.from(JSON.stringify({ iss: 'supabase', role, ref: 'fixture-publico', iat: 1700000000, exp: 2000000000 })).toString('base64url'), randomBytes(32).toString('base64url')].join('.');
-  writeFileSync(join(cwd, 'publico.txt'), `anon=${jwt('anon')}\n`); git(cwd, 'add', '.');
-  assert.doesNotThrow(() => revisarSecretos({ cwd }));
-  for (const role of ['service_role', 'authenticated']) {
+  const jwt = role => [Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'), Buffer.from(JSON.stringify({ iss: 'fixture', role, ref: 'fixture-publico', iat: 1700000000, exp: 2000000000 })).toString('base64url'), randomBytes(32).toString('base64url')].join('.');
+  for (const role of ['anon', 'service_role', 'authenticated']) {
     writeFileSync(join(cwd, 'publico.txt'), `key=${jwt(role)}\n`); git(cwd, 'add', '.');
     assert.throws(() => revisarSecretos({ cwd }), /jwt/);
   }
@@ -100,9 +98,9 @@ test('configuración no seleccionada del working tree no puede ocultar secretos'
   writeFileSync(join(cwd, '.gitleaks.toml'), `[extend]\nuseDefault = true\n[[allowlists]]\nregexes = ['${secret}']\n`);
   assert.throws(() => revisarSecretos({ cwd }), /github-pat/);
 });
-test('service_role borrada no se confunde con anon en el mismo renglón', t => {
+test('un JWT borrado sigue detectándose en la historia pendiente', t => {
   const cwd = fixture(t);
-  const jwt = role => [Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'), Buffer.from(JSON.stringify({ iss: 'supabase', role, ref: 'fixture-publico', iat: 1700000000, exp: 2000000000 })).toString('base64url'), randomBytes(32).toString('base64url')].join('.');
+  const jwt = role => [Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'), Buffer.from(JSON.stringify({ iss: 'fixture', role, ref: 'fixture-publico', iat: 1700000000, exp: 2000000000 })).toString('base64url'), randomBytes(32).toString('base64url')].join('.');
   writeFileSync(join(cwd, 'publico.txt'), `key=${jwt('service_role')}\n`); git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: alta');
   writeFileSync(join(cwd, 'publico.txt'), `key=${jwt('anon')}\n`); git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: reemplazo');
   assert.throws(() => revisarSecretos({ cwd }), /jwt/);

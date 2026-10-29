@@ -1,5 +1,5 @@
 /* ── Cuerpo de artículo de novedades ──────────────────────────────────────
-   El contenido llega como HTML desde Supabase y se inyecta con
+   El contenido llega como HTML desde la base y se inyecta con
    dangerouslySetInnerHTML, así que ninguna utilidad de Tailwind lo alcanza:
    sin estas reglas el preflight deja los <h2> del tamaño de un párrafo y a
    las listas sin viñeta, y todo el artículo se lee como texto corrido.

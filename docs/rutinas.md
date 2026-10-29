@@ -40,4 +40,4 @@ Los problemas concretos que aparezcan vuelven a [Pendientes](../PENDIENTES.md) c
 
 ## CSS de la home al actualizar Next
 
-Retirada el 17/10/2026: la tercera copia sale del `global-error` interno de Next y con el Brotli de Vercel no cuesta en el cable (0,1 KB). No hace falta remedirla en cada actualización. [Causa y medición](historial-pendientes.md#css-de-la-home--tercera-copia-cerrada-17102026).
+Retirada el 17/10/2026. No hace falta remedirla en cada actualización. [Causa y medición](historial-pendientes.md#css-de-la-home--tercera-copia-cerrada-17102026).

@@ -6,8 +6,8 @@
 //
 //   npm run auditar
 //
-// Lee con la anon key, asi que corre en local sin credenciales extra. Sale con
-// codigo 1 si encontro algun problema, 0 si esta limpio.
+// Consulta D1 con las credenciales locales de Cloudflare. Sale con codigo 1 si
+// encontro algun problema, 0 si esta limpio.
 //
 // Importa esCarreraVisible() del modulo real (Node 24 strippea los tipos): si
 // manana se agrega una categoria, la auditoria la toma sola.
@@ -17,9 +17,7 @@ import { consultar } from './d1-consulta.mjs';
 import { carreraToSlug, esCarreraVisible, getCategoryForCarrera } from '../components/index/types.ts';
 import { esCursoTeclab } from '../components/index/teclab.ts';
 
-// Lee de la base de producción en Cloudflare (D1). Antes leía Supabase con la
-// anon key; ese proyecto se dio de baja. D1 guarda los booleanos como 0/1 y el
-// JSON como texto: se normaliza acá para que el resto del script no cambie.
+// D1 guarda los booleanos como 0/1 y el JSON como texto: se normaliza acá.
 const json = (valor) => {
   if (typeof valor !== 'string') return valor;
   try { return JSON.parse(valor); } catch { return valor; }

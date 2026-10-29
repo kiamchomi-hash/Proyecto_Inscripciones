@@ -32,7 +32,7 @@ const AUTOMATICOS = {
 };
 
 // Ejecuta el módulo real, reemplazando sólo sus dependencias externas. Permite
-// probar rutas Next sin servidor ni escrituras en Supabase.
+// probar rutas sin servidor ni escrituras en la base.
 export function cargarTypescript(archivo, dependencias, resto = require) {
   const codigo = ts.transpileModule(readFileSync(archivo, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },

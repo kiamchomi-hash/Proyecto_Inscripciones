@@ -88,7 +88,7 @@ function capa(carrera, acento, acentoTexto, etiqueta) {
   </svg>`;
 }
 
-// Lee de la base de producción en Cloudflare (D1): Supabase se dio de baja.
+// Lee de la base de producción en Cloudflare (D1).
 let data;
 try {
   data = consultar(`SELECT nombre, prefix, nombre_corto, nivel, duracion, activa

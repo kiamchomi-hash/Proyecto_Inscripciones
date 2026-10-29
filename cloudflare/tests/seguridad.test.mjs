@@ -54,7 +54,7 @@ test('el entrypoint no conecta transportes; runtime sólo proyecta configuració
 test('el proceso hijo no hereda secretos, flags de Node ni configuración remota', () => {
   const env = entornoLocal({
     PATH: '/bin', HOME: '/otro', LANG: 'es_AR.UTF-8',
-    SUPABASE_SERVICE_ROLE_KEY: 'centinela-no-publicar',
+    SECRETO_AJENO_DE_PRUEBA: 'centinela-no-publicar',
     VITE_TOKEN: 'centinela-no-publicar', PUBLIC_TOKEN: 'centinela-no-publicar',
     CLOUDFLARE_API_TOKEN: 'centinela-no-publicar', CLOUDFLARE_ENV: 'production',
     NODE_OPTIONS: '--import=remoto', NODE_EXTRA_CA_CERTS: '/otro/certificado',
@@ -65,7 +65,7 @@ test('el proceso hijo no hereda secretos, flags de Node ni configuración remota
   assert.equal(env.HOME, join('/aislado', '.local', 'home'));
   assert.equal(env.CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV, 'false');
   assert.equal(env.CLOUDFLARE_INCLUDE_PROCESS_ENV, 'false');
-  for (const key of ['SUPABASE_SERVICE_ROLE_KEY', 'VITE_TOKEN', 'PUBLIC_TOKEN',
+  for (const key of ['SECRETO_AJENO_DE_PRUEBA', 'VITE_TOKEN', 'PUBLIC_TOKEN',
     'CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ENV', 'NODE_OPTIONS', 'NODE_EXTRA_CA_CERTS']) {
     assert.equal(env[key], undefined);
   }

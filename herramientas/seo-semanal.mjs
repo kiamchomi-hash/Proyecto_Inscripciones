@@ -119,8 +119,7 @@ async function enTanda(items, tamano, fn) {
 // a la home. Eso esta bien y no es un problema, pero si no se filtran copan el
 // informe: hoy la pagina con mas clics del sitio es una de esas.
 async function slugsDeLaOferta() {
-  // Lee de la base de producción en Cloudflare (D1). Antes salía de Supabase, que
-  // se dio de baja: sin esto el informe no separa la oferta vigente de lo viejo.
+  // Lee D1 para separar la oferta vigente de lo viejo en el informe.
   try {
     const { consultar } = await import('./d1-consulta.mjs');
     const { carreraToSlug, esCarreraVisible } = await import('../components/index/types.ts');

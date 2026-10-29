@@ -83,10 +83,6 @@ export async function manejarProgramadoProduccion(
  * una expresión desconocida falla. Todos los handlers exigen el mismo
  * `CRON_SECRET` que protege las rutas del Worker: si falta, responden 401 y no
  * hacen nada, en vez de correr sin autenticación.
- *
- * El resumen diario de clics (`digest-clicks` en Supabase) todavía no está
- * implementado: produce números que se avisan, así que hay que leer su contrato
- * antes de reescribirlo. Ese cron no se declara.
  */
 export const CRONES = {
   /** Barrido del outbox: recupera lo que no llegó a la cola. */

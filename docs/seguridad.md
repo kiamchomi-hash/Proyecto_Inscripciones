@@ -95,9 +95,9 @@ antes de mostrar el diff, commitear o pushear. Gitleaks 8.30.1, instalado desde
 la release oficial con SHA256 fijo, inspecciona el árbol del index y los commits
 pendientes, incluidos secretos agregados y borrados entre commits. Los informes
 se redactan y eliminan; sólo se muestran ruta, línea y regla. CI usa el mismo
-scanner y política. La clave pública anon de Supabase tiene una excepción
-semántica acotada; service_role y sesiones siguen bloqueadas. No se instalaron
-hooks, no se cambiaron permisos remotos ni se auditó toda la historia publicada.
+scanner y política. Los JWT detectados no tienen excepciones automáticas por
+proveedor. En esa revisión no se instalaron hooks, no se cambiaron permisos
+remotos ni se auditó toda la historia publicada.
 [Procedimiento y límites](publicacion-sin-secretos.md).
 
 ### 02/10/2026, autorización junto a escrituras de profesores

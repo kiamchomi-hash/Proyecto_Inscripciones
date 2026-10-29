@@ -88,7 +88,7 @@ test('el token sale de .env.local sin arrastrar el resto de las credenciales', (
   try {
     const archivo = join(carpeta, '.env.local');
     writeFileSync(archivo, [
-      'SUPABASE_SERVICE_ROLE_KEY=no-viaja',
+      'SECRETO_AJENO_DE_PRUEBA=no-viaja',
       'CLOUDFLARE_API_TOKEN="token-de-prueba"',
       'SMTP2GO_API_KEY=tampoco',
       '',
@@ -97,7 +97,7 @@ test('el token sale de .env.local sin arrastrar el resto de las credenciales', (
     assert.deepEqual(credencial, { origen: 'CLOUDFLARE_API_TOKEN de .env.local', token: 'token-de-prueba' });
 
     const entorno = entornoWrangler(credencial, {
-      PATH: '/usr/bin', HOME: carpeta, SUPABASE_SERVICE_ROLE_KEY: 'no-viaja', SMTP2GO_API_KEY: 'tampoco',
+      PATH: '/usr/bin', HOME: carpeta, SECRETO_AJENO_DE_PRUEBA: 'no-viaja', SMTP2GO_API_KEY: 'tampoco',
     });
     assert.equal(entorno.CLOUDFLARE_API_TOKEN, 'token-de-prueba');
     assert.deepEqual(Object.keys(entorno).sort(), ['CLOUDFLARE_API_TOKEN', 'HOME', 'PATH'].sort());

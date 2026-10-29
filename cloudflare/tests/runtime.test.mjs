@@ -11,7 +11,7 @@ const CENTINELA = 'cau-centinela-ficticia-no-publicar';
 test('build sin variables del padre ni secretos en los artefactos', () => {
   assert.equal(process.env.PUBLIC_CF_CENTINELA, undefined);
   assert.equal(process.env.CLOUDFLARE_API_TOKEN, undefined);
-  assert.equal(process.env.SUPABASE_SERVICE_ROLE_KEY, undefined);
+  assert.equal(process.env.SECRETO_AJENO_DE_PRUEBA, undefined);
   function revisar(directorio) {
     for (const entry of readdirSync(directorio, { withFileTypes: true })) {
       const path = new URL(entry.name, directorio);
@@ -46,7 +46,7 @@ test('Astro compilado responde en workerd con guardas locales y catálogo de D1'
 
   const runtime = await server.getWorker().getEnv();
   assert.equal(runtime.APP_STAGE, 'local');
-  assert.equal(runtime.SUPABASE_SERVICE_ROLE_KEY, undefined);
+  assert.equal(runtime.SECRETO_AJENO_DE_PRUEBA, undefined);
   assert.equal(runtime.CLOUDFLARE_API_TOKEN, undefined);
   assert.equal(runtime.PUBLIC_CF_CENTINELA, undefined);
 
@@ -76,7 +76,7 @@ test('Astro compilado responde en workerd con guardas locales y catálogo de D1'
     else {
       const html = await respuesta.text();
       assert.match(html, /<html lang="es(-AR)?">/);
-      assert.doesNotMatch(html, /centinela|supabase/i);
+      assert.doesNotMatch(html, /centinela/i);
       assert.doesNotMatch(html, /googletagmanager\.com|google-analytics\.com/i);
       if (path === '/') assert.match(html, /Licenciatura en Administración/);
       else assert.match(html, /<main><\/main>/);

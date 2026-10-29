@@ -58,7 +58,7 @@ Las tres fuentes usan credenciales que ya están en la máquina —el acceso a l
 
 ChatGPT busca sobre el índice de Bing, así que una ficha que Bing no tiene no aparece en sus respuestas aunque esté bien en Google. Desde el 20/10/2026 el sitio le avisa a IndexNow (Bing, Yandex y los demás buscadores del protocolo) cada URL que cambia:
 
-- **Solo, en cada cambio de contenido**: ya no pasa. El `/api/revalidar` del Worker no manda IndexNow —no hay ISR ni caché que invalidar— y el aviso automático vivía en la app Next, con `VERCEL_ENV=production`, así que se fue con ella. Hoy IndexNow se avisa a mano.
+- **Solo, en cada cambio de contenido**: no pasa. El `/api/revalidar` del Worker no manda IndexNow —no hay ISR ni caché que invalidar—. Hoy IndexNow se avisa a mano.
 - **A mano, el sitemap entero**: `npm run indexnow` (`herramientas/indexnow.mjs`), para la primera carga o después de un deploy que toca muchas páginas a la vez. `--probar` lista sin mandar. Antes de mandar confirma que la clave esté publicada, y sale con código 1 si IndexNow no aceptó.
 
 La clave vive en `lib/indexnow.ts` y en `public/<clave>.txt`, con el mismo contenido. **No es un secreto**: el protocolo la pide pública para comprobar que el aviso viene del dueño del dominio. Cambiarla obliga a renombrar el archivo en el mismo commit; `tests/indexnow.test.mjs` falla si no coinciden.
@@ -81,7 +81,7 @@ node herramientas/ventas/publicar-precios-d1.mjs --casa todo --escribir   # escr
 - Siglo 21: sólo finales verificados vigentes. La identidad pública manda por la ficha local cuando coincide con el catálogo; si esa ficha ya no está en el catálogo, la carrera se informa como `sin cotizar` y no frena a las demás. Dos candidatos por nombre sí son error.
 - Escribe con Wrangler contra la base remota, con el `D1_PRODUCCION` (por defecto `cau-produccion`), y **verifica la lectura de vuelta**: si lo escrito no vuelve igual, sale con código 1.
 - `--dry-run` (el modo por defecto) no escribe y consulta D1 para emparejar.
-- Desde el 27/10/2026 los publicadores de Supabase quedaron fuera de servicio: `publicar-precios.mjs` y `publicar-precios-siglo21.mjs` conservan el parseo y la preparación que usa este script, pero su CLI ya no escribe (el proyecto viejo se dio de baja).
+- `publicar-precios.mjs` y `publicar-precios-siglo21.mjs` conservan el parseo y la preparación que usa este script, pero su CLI no escribe en la base.
 
 ## Publicar sólo archivos revisados
 

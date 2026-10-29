@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 // Consulta de sólo lectura contra la base de producción de Cloudflare (D1).
-// La usan las herramientas locales que antes leían Supabase.
 //
 //   node herramientas/d1-consulta.mjs "select id, nombre from carreras limit 3"
 //

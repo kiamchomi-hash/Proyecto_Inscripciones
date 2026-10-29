@@ -67,20 +67,6 @@ function scanner(args, report, cwd, config) {
   return findings;
 }
 
-function quitarAnonPublica(findings, leer) {
-  return findings.filter(f => {
-    if (f.RuleID !== 'jwt' || f.StartLine !== f.EndLine) return true;
-    const line = leer(f).map(text => text.split(/\r?\n/)[f.StartLine - 1] || '').join('\n');
-    const tokens = line.match(/ey[A-Za-z0-9_-]+\.ey[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g) || [];
-    // Sólo JWT de la clave pública anon de Supabase, no sesiones ni service_role.
-    return !tokens.length || tokens.some(token => {
-      try {
-        const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
-        return payload.iss !== 'supabase' || payload.role !== 'anon' || 'sub' in payload;
-      } catch { return true; }
-    });
-  });
-}
 export function revisarSecretos({ cwd, tree = valor(cwd, 'write-tree'), base = valor(cwd, 'rev-parse', '--verify', 'refs/remotes/origin/main'), head = valor(cwd, 'rev-parse', 'HEAD') }) {
   verificarBinario();
   const rango = base ? `${base}..${head}` : head;
@@ -117,16 +103,8 @@ export function revisarSecretos({ cwd, tree = valor(cwd, 'write-tree'), base = v
     const config = join(dir, 'politica.toml');
     const policy = join(snapshot, '.gitleaks.toml');
     writeFileSync(config, existsSync(policy) ? readFileSync(policy) : '[extend]\nuseDefault = true\n');
-    let findings = quitarAnonPublica(scanner(['dir', snapshot], join(dir, 'seleccion.json'), cwd, config), f => [readFileSync(f.File, 'utf8')]);
-    if (commits.length) findings = findings.concat(quitarAnonPublica(scanner(['git', '--log-opts', rango, cwd], join(dir, 'historia.json'), cwd, config), f => {
-      // Gitleaks incluye líneas borradas. Mirar también padres; no confundir
-      // una service_role borrada con una anon agregada en su lugar.
-      const refs = [f.Commit, ...valor(cwd, 'rev-list', '--parents', '-n', '1', f.Commit).split(' ').slice(1)];
-      return refs.flatMap(ref => {
-        try { return [git(cwd, 'show', ref + ':' + f.File).toString('utf8')]; }
-        catch { return []; }
-      });
-    }));
+    let findings = scanner(['dir', snapshot], join(dir, 'seleccion.json'), cwd, config);
+    if (commits.length) findings = findings.concat(scanner(['git', '--log-opts', rango, cwd], join(dir, 'historia.json'), cwd, config));
     if (findings.length) {
       const safe = findings.map(f => ({ ...f, File: resolve(f.File).startsWith(snapshot + sep) ? relative(snapshot, f.File).replaceAll('\\', '/') : f.File })).map(f => `${JSON.stringify(f.File)}:${Number(f.StartLine)} (${String(f.RuleID)})`);
       throw new Error(`Posibles secretos: ${safe.join(', ')}. No publicar. Si son credenciales reales, revocarlas/rotarlas antes de retirarlas del código; si son ejemplos públicos, documentar una excepción exacta en .gitleaks.toml.`);

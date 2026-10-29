@@ -25,7 +25,7 @@ async function fileExists(relative) {
   }
 }
 
-test('los formularios públicos no escriben directo en Supabase', async () => {
+test('los formularios públicos no escriben directo en la base', async () => {
   const files = await sourceFiles('components');
   const publicWrites = [];
   for (const file of files) {
@@ -49,13 +49,9 @@ test('no quedan rutas ni helpers del panel de administración', async () => {
   assert.equal(await fileExists('app/admin'), false, 'app/admin debería haberse eliminado');
   assert.equal(await fileExists('app/api/admin'), false, 'app/api/admin debería haberse eliminado');
   assert.equal(await fileExists('proxy.ts'), false, 'proxy.ts debería haberse eliminado');
-  assert.equal(await fileExists('lib/supabase-auth.ts'), false, 'lib/supabase-auth.ts debería haberse eliminado');
-  assert.equal(await fileExists('lib/supabase-server.ts'), false, 'lib/supabase-server.ts debería haberse eliminado');
   assert.equal(await fileExists('lib/auth/exigir-admin.ts'), false, 'lib/auth/exigir-admin.ts debería haberse eliminado');
 
   const forbiddenImports = [
-    '@/lib/supabase-auth',
-    '@/lib/supabase-server',
     '@/lib/auth/exigir-admin',
   ];
   for (const directory of ['components', 'lib', 'cloudflare/src']) {
