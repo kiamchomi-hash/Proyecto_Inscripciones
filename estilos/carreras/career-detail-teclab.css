@@ -474,19 +474,50 @@
   font-weight: 600;
 }
 
-/* Sin la sombra dura desplazada: se leía como un bloque neobrutalista. El
-   borde claro es lo que separa la acción del panel navy y mantiene el foco
-   donde tiene que estar. */
+/* Borde degradado que gira: cian → azul → violeta de Teclab. El degradé vive
+   en border-box y el relleno en padding-box, así sólo se ve por los 2 px del
+   borde. Mecánica tomada de «Tarjetas de precio con borde aurora» de UIverse
+   (biblioteca/mias/tarjetas-precio-borde-aurora-graphite). Sin @property el
+   borde queda fijo en vez de girar. */
+@property --teclab-cta-angulo {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes teclab-cta-giro {
+  from { --teclab-cta-angulo: 0deg; }
+  to { --teclab-cta-angulo: 360deg; }
+}
+
 .career-page--teclab .career-aside-cta > a:first-of-type {
-  border: 1px solid var(--teclab-papel);
-  background: var(--career-accent);
+  border: 3px solid transparent;
+  background:
+    linear-gradient(var(--career-accent), var(--career-accent)) padding-box,
+    conic-gradient(
+        from var(--teclab-cta-angulo),
+        var(--teclab-azul),
+        #8e2cf2,
+        var(--career-accent-bright),
+        var(--teclab-azul)
+      )
+      border-box;
   color: var(--teclab-navy);
   box-shadow: none;
+  animation: teclab-cta-giro 9s linear infinite;
 }
 
 .career-page--teclab .career-aside-cta > a:first-of-type:hover {
-  border-color: var(--career-accent-bright);
-  background: var(--career-accent-bright);
+  background:
+    linear-gradient(var(--career-accent-bright), var(--career-accent-bright)) padding-box,
+    conic-gradient(
+        from var(--teclab-cta-angulo),
+        var(--teclab-azul),
+        #a45cff,
+        #d9fbff,
+        var(--teclab-azul)
+      )
+      border-box;
 }
 
 /* El verde de WhatsApp se mantiene (es el de la plataforma). */
@@ -607,6 +638,11 @@
   .career-page--teclab .career-related li > a:hover,
   .career-page--teclab .career-aside nav a:hover {
     transform: none;
+  }
+
+  /* El borde degradado queda fijo: el color está, el giro no. */
+  .career-page--teclab .career-aside-cta > a:first-of-type {
+    animation: none;
   }
 }
 
