@@ -1,22 +1,5 @@
 /* ── Novedades — Solo estilos que NO se pueden hacer con Tailwind ── */
 
-/* Entrance animation */
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.news-animate {
-  opacity: 0;
-  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-.news-animate--d1 { animation-delay: 0.08s; }
-.news-animate--d2 { animation-delay: 0.18s; }
-.news-animate--d3 { animation-delay: 0.28s; }
-.news-animate--d4 { animation-delay: 0.38s; }
-.news-animate--d5 { animation-delay: 0.48s; }
-.news-animate--d6 { animation-delay: 0.58s; }
-
 /* Card hover — sin movimiento: la tarjeta se queda donde esta y lo unico que
    cambia es el borde, la sombra y el color del titulo. */
 .news-card {
@@ -99,22 +82,5 @@
   .page-btn--nav span,
   .page-btn--back span {
     display: none;
-  }
-}
-
-/* ── Movimiento reducido ──────────────────────────────────
-   `.news-animate` arranca con `opacity: 0` y solo se ve cuando corre la
-   animacion. La regla global de app/globals.css pisa animation-duration pero
-   no animation-delay, asi que sin esto las tarjetas quedan invisibles hasta
-   0,58s y despues aparecen de golpe: quien pide menos movimiento se queda sin
-   la animacion y con la espera igual.
-
-   Se apaga la animacion entera, como en app/teclab/teclab.css, en vez de poner
-   el delay en cero. */
-@media (prefers-reduced-motion: reduce) {
-  .news-animate {
-    animation: none;
-    opacity: 1;
-    transform: none;
   }
 }
