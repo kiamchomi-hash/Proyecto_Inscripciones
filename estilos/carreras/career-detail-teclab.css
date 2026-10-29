@@ -474,10 +474,19 @@
   font-weight: 600;
 }
 
+/* Sin la sombra dura desplazada: se leía como un bloque neobrutalista. El
+   borde claro es lo que separa la acción del panel navy y mantiene el foco
+   donde tiene que estar. */
 .career-page--teclab .career-aside-cta > a:first-of-type {
+  border: 1px solid var(--teclab-papel);
   background: var(--career-accent);
   color: var(--teclab-navy);
-  box-shadow: 0 4px 0 var(--teclab-azul);
+  box-shadow: none;
+}
+
+.career-page--teclab .career-aside-cta > a:first-of-type:hover {
+  border-color: var(--career-accent-bright);
+  background: var(--career-accent-bright);
 }
 
 /* El verde de WhatsApp se mantiene (es el de la plataforma). */

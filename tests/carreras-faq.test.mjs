@@ -80,6 +80,21 @@ test('Gestión Contable informa equivalencias evaluadas sin cambiar otras articu
   assert.doesNotMatch(renderToStaticMarkup(React.createElement(CareerDetail, { carrera: seguros, relacionadas: [] })), /career-oficial-articulacion/);
 });
 
+test('la preinscripción sigue a las preguntas frecuentes y las carreras relacionadas quedan al final', () => {
+  const teclabCarrera = { ...carrera, nombre: 'Tecnicatura Superior en Programación', nivel: 'Teclab - Tecnología', slides: [faq] };
+  const html = renderToStaticMarkup(React.createElement(CareerDetail, {
+    carrera: teclabCarrera,
+    relacionadas: [{ id: 1, nombre: 'Data Science', prefix: null }],
+    preinscripcion: React.createElement('div', { id: 'prueba-preinscripcion' }),
+    contacto: React.createElement('div', { id: 'prueba-contacto' }),
+  }));
+  const posicion = texto => html.indexOf(texto);
+  assert.ok(posicion('career-facts') < posicion('career-layout'));
+  assert.ok(posicion('preguntas-frecuentes') < posicion('prueba-preinscripcion'));
+  assert.ok(posicion('prueba-preinscripcion') < posicion('prueba-contacto'));
+  assert.ok(posicion('prueba-contacto') < posicion('career-related'));
+});
+
 test('el WhatsApp del precio ya mostrado dice que la persona lo vio', () => {
   const contenido = dependencias['./career-content'];
   const enTeclab = { nombre: 'Tecnicatura Superior en Programación', prefix: null, nivel: 'Teclab Tecnología' };

@@ -141,7 +141,7 @@ function CheckIcon() {
   );
 }
 
-export default function CareerDetail({ carrera, relacionadas, equivalente = null }: Props) {
+export default function CareerDetail({ carrera, relacionadas, equivalente = null, preinscripcion, contacto }: Props & { preinscripcion?: ReactNode; contacto?: ReactNode }) {
   const isIA = carrera.nivel === 'Identidad Argentina';
   const isTeclabCourse = esCursoTeclab(carrera);
   // Las carreras de Teclab traen su material de la ficha oficial del instituto:
@@ -748,6 +748,9 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
           </div>
         </aside>
       </div>
+
+      {preinscripcion}
+      {contacto}
 
       {(relacionadas.length > 0 || equivalente) && (
         <section className="career-related career-reveal">

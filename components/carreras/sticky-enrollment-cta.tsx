@@ -9,7 +9,7 @@ interface Props {
 
 /**
  * Mantiene la accion principal al alcance en movil solamente durante el tramo
- * en que ya quedo atras el CTA del hero y el formulario todavia esta abajo.
+ * en que ya quedó atrás el CTA del hero y el formulario no está visible.
  */
 export default function StickyEnrollmentCta({ destino, texto }: Props) {
   const [visible, setVisible] = useState(false);
@@ -29,8 +29,9 @@ export default function StickyEnrollmentCta({ destino, texto }: Props) {
         }
 
         const heroQuedoAtras = ctaDelHero.getBoundingClientRect().bottom <= 0;
-        const formularioEstaAbajo = formulario.getBoundingClientRect().top >= window.innerHeight;
-        setVisible(heroQuedoAtras && formularioEstaAbajo);
+        const rect = formulario.getBoundingClientRect();
+        const formularioFueraDeVista = rect.top >= window.innerHeight || rect.bottom <= 0;
+        setVisible(heroQuedoAtras && formularioFueraDeVista);
       });
     };
 

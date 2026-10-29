@@ -64,8 +64,11 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumb) }} />
     <main className={teclab ? 'flex-1 ficha-teclab fuente-poppins' : ia ? 'flex-1' : 'flex-1 fuente-dm-sans'}>
       <DirectCareerOpenTracker carrera={carreraFullName(carrera)} />
-      <CareerDetail carrera={carrera} relacionadas={relacionadas} equivalente={equivalente} />
-      <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} />
+      <CareerDetail carrera={carrera} relacionadas={relacionadas} equivalente={equivalente}
+        preinscripcion={teclab ? <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} modoUnico="preinscripcion" /> : undefined}
+        contacto={teclab ? <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} modoUnico="contacto" /> : undefined}
+      />
+      {!teclab && <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} />}
     </main>
     <SiteFooter casa={teclab ? 'teclab' : 'cau'} fuente={teclab ? 'fuente-poppins' : ''} />
   </ContextoTurnstile.Provider>;

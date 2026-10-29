@@ -17,6 +17,7 @@ interface Props {
    * quien baja desde "Quiero inscribirme" ya dijo a qué se quiere anotar.
    */
   carreraInicial?: number;
+  modoUnico?: Modo;
 }
 
 // El formulario no fija casa: la ficha ofrece toda la oferta en su buscador, así
@@ -47,7 +48,7 @@ function Hueco({ id, titulo }: { id: string; titulo: string }) {
   );
 }
 
-export default function DeferredEnrollmentForm({ carreras, carreraInicial }: Props) {
+export default function DeferredEnrollmentForm({ carreras, carreraInicial, modoUnico }: Props) {
   const placeholderRef = useRef<HTMLElement>(null);
   const [Form, setForm] = useState<ComponentType<FormProps> | null>(null);
 
@@ -86,27 +87,37 @@ export default function DeferredEnrollmentForm({ carreras, carreraInicial }: Pro
     if (Form) return;
     const alTocar = (event: MouseEvent) => {
       const enlace = (event.target as Element | null)?.closest?.('a[href="#formulario"], a[href="#preinscripcion"]');
-      if (enlace) loadForm();
+      if (enlace && (!modoUnico || enlace.getAttribute('href') === (modoUnico === 'contacto' ? '#formulario' : '#preinscripcion'))) loadForm();
     };
     document.addEventListener('click', alTocar, true);
     return () => document.removeEventListener('click', alTocar, true);
-  }, [Form, loadForm]);
+  }, [Form, loadForm, modoUnico]);
 
   useEffect(() => {
     if (!Form) return;
     const destino = window.location.hash;
     if (destino !== '#formulario' && destino !== '#preinscripcion') return;
+    if (modoUnico && destino !== (modoUnico === 'contacto' ? '#formulario' : '#preinscripcion')) return;
     document.getElementById(destino.slice(1))?.scrollIntoView({ behavior: 'smooth' });
-  }, [Form]);
+  }, [Form, modoUnico]);
 
   // Los dos, igual que en la home: el contacto es la puerta general y la
   // preinscripción arma el legajo. "Quiero inscribirme" baja a la segunda.
   if (Form) {
+    if (modoUnico) return <Form carreras={carreras} modo={modoUnico} carreraInicial={carreraInicial} />;
     return (
       <>
         <Form carreras={carreras} modo="contacto" carreraInicial={carreraInicial} />
         <Form carreras={carreras} modo="preinscripcion" carreraInicial={carreraInicial} />
       </>
+    );
+  }
+
+  if (modoUnico) {
+    return (
+      <section ref={placeholderRef} aria-label={modoUnico === 'contacto' ? 'Formulario de contacto' : 'Preinscripción'}>
+        <Hueco id={modoUnico === 'contacto' ? 'formulario' : 'preinscripcion'} titulo={modoUnico === 'contacto' ? 'Formulario de contacto' : 'Preinscripción'} />
+      </section>
     );
   }
 
