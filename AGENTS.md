@@ -37,6 +37,14 @@ npm run publicar # plan del deploy, sin publicar (ver «Deploy»)
 
 GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` el control de secretos, `npm run check` y `npm audit --omit=dev`, más un trabajo corto que verifica el contrato de `cloudflare/produccion/wrangler.json` contra el código.
 
+Para cambios sólo visuales, verificar la página en escritorio y celular y correr
+`npm run build` en `cloudflare/`, además del `check` de la raíz antes de
+commitear. No ejecutar por defecto el `check` completo de `cloudflare/`: incluye
+pruebas extensas de datos, API y crons que no hacen falta para cada ajuste visual.
+Si cambia esa lógica, ejecutar las pruebas del área afectada; reservar el control
+completo para cambios amplios o cuando corresponda una revisión integral. GitHub
+no ejecuta ese `check` completo: no presentarlo como si lo hiciera.
+
 ### Verificaciones que no cubre `npm run check`
 
 `check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.sh` de doble clic al lado de cada `.mjs` (la lógica se toca en el `.mjs`; el envoltorio no tiene lógica propia, y nada de esa carpeta entra al bundle): `npm run auditar` (contenido faltante en la base D1 de producción), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.

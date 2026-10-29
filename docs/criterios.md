@@ -167,6 +167,14 @@ commit si pasan sus dos controles, comprueba que siga siendo la punta de `main`
 y comparte la concurrencia del publicador manual, que queda para ensayo o deploy
 explícito. No volver a proponer el deploy sólo a mano.
 
+**Controles para ajustes visuales, acordado el 29/10/2026:** verificar en
+escritorio y celular y compilar el Worker, además del `check` de la raíz antes
+del commit. No correr por rutina el `check` completo de `cloudflare/`, que
+incluye pruebas extensas ajenas al cambio. Si se modifica lógica de datos o API,
+se prueban las áreas afectadas; el control integral queda para cambios amplios.
+GitHub verifica el código de la raíz y el contrato del publicador, no el `check`
+completo de Cloudflare.
+
 ### Identidad Argentina se migra a otro sitio
 
 Decidido el 23/08/2026: su oferta no lleva página propia en `siglo21sur.com`. **No

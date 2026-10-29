@@ -67,10 +67,10 @@ HTTPS desde un puerto HTTP. Las demás directivas se conservan; producción no s
 
 ## Ejecución recurrente
 
-GitHub Actions ejecuta `check` y `npm audit` en cada push a main. Publicar el Worker
-es una decisión aparte, disparada a mano: un push no pone nada en producción. Los
-workflows se activan cuando el archivo está publicado en GitHub, no por existir en
-la carpeta local.
+GitHub Actions ejecuta el `check` de la raíz y `npm audit` en cada push a main,
+además del contrato de publicación del Worker. Si pasan, publica ese commit en
+producción; el `check` completo de `cloudflare/` no forma parte de ese workflow.
+El workflow manual sigue disponible para ensayo o publicación explícita.
 
 La vigilancia existente incorpora la opción `calidad`, que ejecuta
 `npm run calidad -- --solo-web --visual`. No agrega otro cron ni duplica
