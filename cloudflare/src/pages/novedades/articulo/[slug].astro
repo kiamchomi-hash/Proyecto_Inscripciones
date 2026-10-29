@@ -17,11 +17,12 @@ const novedad = await leerArticulo(env.DB, slug);
 if (!novedad) return new Response(null, { status: 404 });
 const ruta = `/novedades/articulo/${slug}`;
 const shareUrl = `https://www.siglo21sur.com${ruta}`;
-const og = `/imagenes/og/${slug}.jpg`;
+// La foto sin rótulos no conserva títulos antiguos ni referencias a la sede.
+const og = novedad.imagen_url || '/imagenes/og/default.jpg';
 // Next completa las descripciones sociales indefinidas con la descripción
 // resuelta de la página, también cuando no hay extracto.
 const descripcion = novedad.extracto || `${novedad.titulo} — Universidad Siglo 21.`;
-const editor = { '@type': 'EducationalOrganization', name: 'CAU Villa Lugano - Universidad Siglo 21', url: 'https://www.siglo21sur.com' };
+const editor = { '@type': 'EducationalOrganization', name: 'CAU Siglo 21', url: 'https://www.siglo21sur.com' };
 const articuloSchema = {
   '@context': 'https://schema.org', '@type': 'BlogPosting', headline: novedad.titulo,
   mainEntityOfPage: { '@type': 'WebPage', '@id': shareUrl }, url: shareUrl,
@@ -49,5 +50,5 @@ const publica = { titulo: novedad.titulo, slug: novedad.slug, fecha: novedad.fec
   <script type="application/ld+json" set:html={jsonLdScript(articuloSchema)} />
   <script type="application/ld+json" set:html={jsonLdScript(breadcrumbSchema)} />
   <PaginaArticulo novedad={publica} contenido={contenido} client:load />
-  <SiteFooter />
+  <SiteFooter sinUbicacion />
 </Sitio>

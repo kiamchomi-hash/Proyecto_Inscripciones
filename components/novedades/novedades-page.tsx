@@ -252,7 +252,7 @@ export default function NovedadesPage({ pinnedItem, items, currentPage, totalPag
 
   return (
     <main className="max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-28 sm:pb-0">
-      <h1 className="sr-only">Novedades del CAU Villa Lugano</h1>
+      <h1 className="sr-only">Novedades</h1>
 
       {/* Acá había una segunda paginación, igual a la de abajo. Se sacó: era lo
           primero de la página y en móvil se comía ~150px antes del primer

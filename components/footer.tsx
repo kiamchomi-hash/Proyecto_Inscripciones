@@ -57,8 +57,9 @@ const COLUMNA = 'py-7 border-t border-[rgba(0,199,177,0.12)] lg:py-0 lg:border-t
  * porque una direccion se lee como un requisito de asistencia y frena al lead
  * que vive lejos. WhatsApp usa el número de la casa; el teléfono conserva el de la sede.
  */
-export default function SiteFooter({ casa = 'cau', fuente = '' }: {
+export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = false }: {
   casa?: 'cau' | 'teclab';
+  sinUbicacion?: boolean;
   /** Clase que expone la tipografía de la casa (`--font-poppins` en Teclab). */
   fuente?: string;
 } = {}) {
@@ -110,7 +111,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
                   loading="lazy"
                 />
                 <div className="text-left">
-                  <p className="text-[17px] font-black text-white uppercase tracking-tight leading-none lg:text-base">CAU Villa Lugano</p>
+                  <p className="text-[17px] font-black text-white uppercase tracking-tight leading-none lg:text-base">{sinUbicacion ? 'CAU' : 'CAU Villa Lugano'}</p>
                   <p className="text-[13px] text-[#48b3a4] mt-1.5 lg:text-xs">Universidad Siglo 21</p>
                 </div>
               </div>
@@ -118,7 +119,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
             <p className="mx-auto mt-5 max-w-md text-[15px] leading-7 text-[#c0d5d0] lg:mx-0 lg:mt-4 lg:max-w-sm lg:text-sm lg:leading-relaxed">
               {teclab
                 ? 'Tecnicaturas y cursos del Instituto Técnico Superior Teclab, 100% online y con articulación a Universidad Siglo 21. Te acompañamos de la inscripción al título.'
-                : 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual y acompañamiento presencial en Villa Lugano.'}
+                : sinUbicacion ? 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual.' : 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual y acompañamiento presencial en Villa Lugano.'}
             </p>
           </div>
 
@@ -142,8 +143,8 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
               en cada mitad. */}
           <div className={COLUMNA}>
             <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:-ml-8 lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Contacto</h2>
-            <ul className={`grid w-full items-center text-left text-[13px] lg:block lg:w-auto lg:space-y-4 lg:text-sm ${teclab ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
-              {!teclab && (
+            <ul className={`grid w-full items-center text-left text-[13px] lg:block lg:w-auto lg:space-y-4 lg:text-sm ${teclab || sinUbicacion ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
+              {!teclab && !sinUbicacion && (
               <li className="grid min-w-0 place-items-center border-r border-[rgba(0,199,177,0.12)] px-2 lg:block lg:justify-items-start lg:border-r-0 lg:px-0">
                 <div className="flex w-full min-w-0 flex-col items-center gap-2 text-center lg:w-fit lg:flex-row lg:items-start lg:gap-3 lg:text-left">
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 lg:w-8 lg:h-8 lg:rounded-lg" style={{ background: 'rgba(0, 199, 177, 0.1)', border: '1px solid rgba(0, 199, 177, 0.2)' }}>
@@ -215,7 +216,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
           style={{ borderTop: '1px solid rgba(0, 199, 177, 0.12)' }}
         >
           <p className="max-w-sm text-center text-xs leading-5 text-[#7ca19b]/80 sm:text-left sm:text-[11px] sm:leading-normal sm:text-[#7ca19b]/70">
-            &copy; {new Date().getFullYear()} {teclab ? 'Teclab' : 'CAU Villa Lugano'} &mdash; Universidad Siglo 21. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} {teclab ? 'Teclab' : sinUbicacion ? 'CAU' : 'CAU Villa Lugano'} &mdash; Universidad Siglo 21. Todos los derechos reservados.
           </p>
 
           <div className="flex items-center gap-3 sm:gap-2.5">
