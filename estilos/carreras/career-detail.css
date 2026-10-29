@@ -767,6 +767,11 @@
   background: rgba(255,255,255,.03);
 }
 
+/* La franja puede desplazarse durante su entrada; reservar espacio antes de la FAQ. */
+.career-oficial + .career-faq {
+  margin-top: clamp(3rem, 5vw, 4rem);
+}
+
 .career-oficial img {
   width: auto;
   height: 2.2rem;

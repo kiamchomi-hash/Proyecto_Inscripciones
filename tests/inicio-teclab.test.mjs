@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { inicioTeclab, fechaArgentina } from '../components/index/inicio-teclab.ts';
+import { inicioTeclab, fechaArgentina, avisoSinFechaTeclab } from '../components/index/inicio-teclab.ts';
 import { esCursoTeclab, esTeclab } from '../components/index/teclab.ts';
 
 const tecnicatura = { nivel: 'Teclab - Tecnología' };
@@ -94,4 +94,13 @@ test('una carrera nueva sin fecha confirmada no muestra inicio', () => {
   assert.equal(inicioTeclab(nueva, dia('2026-10-20')), null);
   const conFecha = { nivel: 'Teclab - Gestión', nombre: 'Tecnicatura Superior en Seguros' };
   assert.equal(inicioTeclab(conFecha, dia('2026-10-20'))?.inicio, '2026-10-14');
+});
+
+test('las seis altas nuevas no heredan las fechas de octubre y noviembre', () => {
+  for (const nombre of ['Gestión Ambiental', 'Desarrollo de Videojuegos', 'Gestión de Inteligencia Artificial y Transformación Digital', 'Diseño y Desarrollo de Inteligencia Artificial', 'Comunicación Digital', 'Comercio Electrónico (e-commerce)']) {
+    const carrera = { nivel: 'Teclab - Tecnología', nombre: `Tecnicatura Superior en ${nombre}` };
+    assert.equal(inicioTeclab(carrera, dia('2026-10-29')), null, nombre);
+    assert.equal(avisoSinFechaTeclab(carrera), true, nombre);
+  }
+  assert.equal(avisoSinFechaTeclab({ nivel: 'Teclab - Gestión', nombre: 'Tecnicatura Superior en Seguros' }), false);
 });

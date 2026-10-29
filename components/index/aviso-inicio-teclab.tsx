@@ -8,7 +8,7 @@
 
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { Carrera } from './types';
-import { inicioTeclab, type InicioTeclab } from './inicio-teclab';
+import { avisoSinFechaTeclab, inicioTeclab, type InicioTeclab } from './inicio-teclab';
 
 export default function AvisoInicioTeclab({
   carrera,
@@ -26,7 +26,8 @@ export default function AvisoInicioTeclab({
     setInicio(inicioTeclab({ nivel, nombre }, new Date()));
   }, [nivel, nombre]);
 
-  if (!inicio) return null;
+  const avisoSinFecha = avisoSinFechaTeclab(carrera);
+  if (!inicio && !avisoSinFecha) return null;
 
   return (
     <p
@@ -35,7 +36,9 @@ export default function AvisoInicioTeclab({
     >
       {/* Con las clases ya empezadas la fecha que importa es el cierre: el
           inicio pasa a ser el dato secundario. */}
-      {inicio.empezo ? (
+      {avisoSinFecha ? (
+        <strong className="aviso-inicio-teclab-cta">Todavía estás a tiempo de inscribirte</strong>
+      ) : inicio?.empezo ? (
         <>
           <span className="aviso-inicio-teclab-fecha">
             Las clases empezaron el <time dateTime={inicio.inicio}>{inicio.inicioTexto}</time>
@@ -44,14 +47,14 @@ export default function AvisoInicioTeclab({
             Tenés tiempo hasta el <time dateTime={inicio.hasta}>{inicio.hastaTexto}</time>
           </strong>
         </>
-      ) : (
+      ) : inicio ? (
         <>
           <span className="aviso-inicio-teclab-fecha">
             Inicio de clases: <time dateTime={inicio.inicio}>{inicio.inicioTexto}</time>
           </span>
           <strong className="aviso-inicio-teclab-cta">Todavía estás a tiempo de inscribirte</strong>
         </>
-      )}
+      ) : null}
     </p>
   );
 }

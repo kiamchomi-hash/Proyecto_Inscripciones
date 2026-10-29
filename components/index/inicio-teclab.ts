@@ -23,6 +23,20 @@ const EDICIONES_CURSO = [
 const NIVELES_TECNICATURA = ['Teclab - Tecnología', 'Teclab - Gestión'];
 const NIVEL_CURSO = 'Teclab - Curso';
 
+// Las seis altas no comparten el calendario del bimestre anterior.
+const ALTAS_SIN_FECHA = new Set([
+  'Tecnicatura Superior en Gestión Ambiental',
+  'Tecnicatura Superior en Desarrollo de Videojuegos',
+  'Tecnicatura Superior en Gestión de Inteligencia Artificial y Transformación Digital',
+  'Tecnicatura Superior en Diseño y Desarrollo de Inteligencia Artificial',
+  'Tecnicatura Superior en Comunicación Digital',
+  'Tecnicatura Superior en Comercio Electrónico (e-commerce)',
+]);
+
+export function avisoSinFechaTeclab(carrera: Pick<Carrera, 'nivel'> & Partial<Pick<Carrera, 'nombre'>>): boolean {
+  return NIVELES_TECNICATURA.includes(carrera.nivel) && !!carrera.nombre && ALTAS_SIN_FECHA.has(carrera.nombre);
+}
+
 // Altas de los bloques 2 y 3 (16/10/2026): abiertas, pero sin fecha de inicio
 // confirmada. Sacarlas de aca cuando Teclab publique su bimestre.
 const SIN_FECHA_CONFIRMADA = new Set([
@@ -93,7 +107,7 @@ export function inicioTeclab(
   ahora: Date,
 ): InicioTeclab | null {
   const hoy = fechaArgentina(ahora);
-  if (carrera.nombre && SIN_FECHA_CONFIRMADA.has(carrera.nombre)) return null;
+  if (avisoSinFechaTeclab(carrera) || (carrera.nombre && SIN_FECHA_CONFIRMADA.has(carrera.nombre))) return null;
 
   if (carrera.nivel === NIVEL_CURSO) {
     const edicion = EDICIONES_CURSO.find(e => e.ventaDesde <= hoy && hoy <= e.ventaHasta);
