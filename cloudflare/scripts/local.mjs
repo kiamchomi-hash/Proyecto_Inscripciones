@@ -43,7 +43,7 @@ export function comandoLocal(nombre) {
     build: ['node_modules/astro/bin/astro.mjs', 'build'],
     dev: ['node_modules/astro/bin/astro.mjs', 'dev', '--host', '127.0.0.1', '--port', '4329'],
     preview: ['node_modules/astro/bin/astro.mjs', 'preview', '--host', '127.0.0.1', '--port', '4329'],
-    seguridad: ['--test', 'tests/seguridad.test.mjs'],
+    seguridad: ['--test', 'tests/seguridad.test.mjs', 'tests/bloqueo.test.mjs'],
     runtime: ['--test', 'tests/runtime.test.mjs'],
     // Sitemap, robots, redirects y cabeceras sobre el build compilado. Las
     // funciones puras se prueban antes; la integración usa workerd y D1 vacío

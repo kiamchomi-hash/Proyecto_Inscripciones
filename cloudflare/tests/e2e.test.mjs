@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import { esperarHttp, matarGrupo, puertoLibre } from './helpers/servidores.mjs';
+import { tomarBloqueo } from './helpers/bloqueo.mjs';
 import { sqlCatalogo } from './fixtures/catalogo-home.mjs';
 import { CAMPOS, camposDe } from '../../components/formularios/casas.ts';
 import { leerReferenciaVisual } from './helpers/bandas-webp.mjs';
@@ -478,6 +479,8 @@ async function esperarPortapapeles(pagina, esperado) {
 }
 
 test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_400_000 }, async t => {
+  const liberar = tomarBloqueo(join(LOCAL, 'e2e-en-curso'));
+  t.after(liberar);
   assert.ok(existsSync(join(PAQUETE, CONFIG)),
     'Falta el build de Astro: correr `npm --prefix cloudflare run build` antes de test:e2e.');
   assert.ok(existsSync(WRANGLER), 'Falta Wrangler en cloudflare/node_modules: correr `npm --prefix cloudflare ci`.');
