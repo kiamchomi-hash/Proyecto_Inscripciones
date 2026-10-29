@@ -26,6 +26,8 @@ type EntornoRuntime = {
   CRON_SECRET?: string;
   REVALIDATE_SECRET?: string;
   EMAIL?: CorreoBinding;
+  CORREO_PRUEBA_SECRETO?: string;
+  CORREO_PRUEBA_DESTINO?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
   ALERTA_CLOUDFLARE_SECRETO?: string;
@@ -69,6 +71,13 @@ export const buscarRed: Buscar = (url, init) => fetch(url, init);
 export const transporteMail = () => runtime.EMAIL
   ? crearTransporteMail({ email: runtime.EMAIL }, buscarRed)
   : undefined;
+
+/** El binding crudo, para la prueba de `/api/correo-prueba`. */
+export const bindingCorreo = (): CorreoBinding | undefined => runtime.EMAIL;
+
+export const secretoCorreoPrueba = (): string | undefined => runtime.CORREO_PRUEBA_SECRETO;
+
+export const destinoCorreoPrueba = (): string | undefined => runtime.CORREO_PRUEBA_DESTINO;
 
 export const telegramCron = (texto: string, timeoutMs?: number) =>
   enviarTelegramSeguro(configTelegram(), buscarRed, texto, timeoutMs);

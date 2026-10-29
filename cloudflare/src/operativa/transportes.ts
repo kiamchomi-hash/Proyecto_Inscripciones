@@ -155,32 +155,55 @@ function armarMailDelPrecio(pedido: PedidoMail, precio: PrecioDelMail) {
 type MailArmado = { asunto: string; html: string; texto: string };
 
 /**
- * Correo por el binding de Cloudflare. La diferencia con SMTP2GO no es sólo de
- * credencial: el binding devuelve `messageId` cuando aceptó el mensaje y, si
- * falla, lanza un error con `code`. Un error con código es un rechazo conocido
- * (nada salió); uno sin código es una falla del runtime y se trata como
- * ambigua, igual que una excepción de red en los demás transportes.
+ * Un mensaje al binding y su traducción de errores. El binding devuelve
+ * `messageId` cuando aceptó y lanza un error con `code` cuando rechazó: un error
+ * con código es un rechazo conocido (nada salió) y uno sin código es una falla
+ * del runtime, que se trata como ambigua igual que una excepción de red en los
+ * demás transportes.
  */
-async function porBinding(
-  binding: CorreoBinding, pedido: PedidoMail, mail: MailArmado,
+async function enviarPorBinding(
+  binding: CorreoBinding, mensaje: Parameters<CorreoBinding['send']>[0],
 ): Promise<ResultadoTransporte> {
   try {
-    await binding.send({
-      to: pedido.para,
-      from: remitenteEstructurado(REMITENTE_MAIL),
-      subject: mail.asunto,
-      html: mail.html,
-      text: mail.texto,
-      ...(pedido.newsletter
-        ? { headers: Object.fromEntries(pedido.newsletter.encabezados.map(({ header, value }) => [header, value])) }
-        : {}),
-    });
+    await binding.send(mensaje);
   } catch (error) {
     const codigo = codigoDeError(error);
     if (codigo) throw new ErrorRechazo(codigo);
     throw new ErrorAmbiguo(error instanceof Error ? error.name : 'correo');
   }
   return 'enviado';
+}
+
+/** Correo del pedido, con la plantilla del precio y los encabezados del newsletter. */
+function porBinding(
+  binding: CorreoBinding, pedido: PedidoMail, mail: MailArmado,
+): Promise<ResultadoTransporte> {
+  return enviarPorBinding(binding, {
+    to: pedido.para,
+    from: remitenteEstructurado(REMITENTE_MAIL),
+    subject: mail.asunto,
+    html: mail.html,
+    text: mail.texto,
+    ...(pedido.newsletter
+      ? { headers: Object.fromEntries(pedido.newsletter.encabezados.map(({ header, value }) => [header, value])) }
+      : {}),
+  });
+}
+
+/**
+ * Correo fijo para `/api/correo-prueba`: mismo binding, mismo remitente y misma
+ * traducción de errores que un envío real, sin carrera, precio ni plantilla.
+ */
+export function enviarCorreoDePrueba(
+  binding: CorreoBinding, para: string,
+): Promise<ResultadoTransporte> {
+  return enviarPorBinding(binding, {
+    to: para,
+    from: remitenteEstructurado(REMITENTE_MAIL),
+    subject: 'Prueba de correo del Worker del CAU',
+    text: 'Correo de prueba del envío saliente del sitio. Sale del Worker de producción por el binding de Cloudflare.',
+    html: '<p>Correo de prueba del envío saliente del sitio. Sale del Worker de producción por el binding de Cloudflare.</p>',
+  });
 }
 
 /**

@@ -11,6 +11,7 @@ import { insertarMateria, MATERIA_ID } from './helpers/materias.mjs';
 
 registrarAlias();
 const { crearTransporteMail, crearTransportes, remitenteEstructurado, TIMEOUT_TELEGRAM_MS } = await import('../src/operativa/transportes.ts');
+const { manejarCorreoPrueba } = await import('../src/api/correo-prueba.ts');
 const {
   consumirEfecto, consumirPendientes, ErrorAmbiguo, ErrorRechazo,
 } = await import('../src/operativa/consumidores.ts');
@@ -431,4 +432,74 @@ test('api: sin cola no publica nada y la respuesta no cambia', async t => {
   const respuesta = await pedir({ kind: 'consulta', token: 't', payload: legajo() }, { db });
   assert.equal(respuesta.status, 201);
   assert.equal(await db.prepare(`SELECT count(*) AS n FROM outbox`).first('n'), 1);
+});
+
+// ── Prueba de correo desde el Worker ──
+
+const pedirPrueba = (autorizacion, entorno) => manejarCorreoPrueba(
+  new Request('https://www.siglo21sur.com/api/correo-prueba', {
+    method: 'POST',
+    ...(autorizacion ? { headers: { authorization: `Bearer ${autorizacion}` } } : {}),
+  }),
+  entorno,
+);
+
+test('correo-prueba: sin secreto 503 y con otro bearer 401', async () => {
+  const sinSecreto = await pedirPrueba(null, { destino: 'x@example.invalid', mail: async () => 'enviado' });
+  assert.equal(sinSecreto.status, 503);
+  assert.deepEqual(await sinSecreto.json(), { error: 'CORREO_PRUEBA_SECRETO sin configurar' });
+
+  const otro = await pedirPrueba('otro', {
+    secreto: 's', destino: 'x@example.invalid', mail: async () => 'enviado',
+  });
+  assert.equal(otro.status, 401);
+});
+
+test('correo-prueba: sin destino o sin transporte no manda nada', async () => {
+  const sinDestino = await pedirPrueba('s', { secreto: 's', mail: async () => 'enviado' });
+  assert.equal(sinDestino.status, 503);
+  assert.match((await sinDestino.json()).error, /CORREO_PRUEBA_DESTINO/);
+
+  let llamadas = 0;
+  const sinTransporte = await pedirPrueba('s', {
+    secreto: 's', destino: 'x@example.invalid', mail: undefined,
+  });
+  assert.equal(sinTransporte.status, 503);
+  assert.equal(llamadas, 0);
+});
+
+test('correo-prueba: manda al destino fijo y no inventa un ok ajeno', async () => {
+  const enviados = [];
+  const ok = await pedirPrueba('s', {
+    secreto: 's',
+    destino: 'destino-fijo@example.invalid',
+    mail: async (para) => { enviados.push(para); return 'enviado'; },
+  });
+  assert.equal(ok.status, 200);
+  assert.deepEqual(await ok.json(), { ok: true });
+  assert.deepEqual(enviados, ['destino-fijo@example.invalid']);
+
+  const omitido = await pedirPrueba('s', {
+    secreto: 's', destino: 'x@example.invalid', mail: async () => 'sin-configurar',
+  });
+  assert.equal(omitido.status, 503);
+  assert.deepEqual(await omitido.json(), { ok: false, resultado: 'sin-configurar' });
+});
+
+test('correo-prueba: rechazo con código 502 y ambiguo 504, sin mensaje del proveedor', async () => {
+  const rechazo = await pedirPrueba('s', {
+    secreto: 's',
+    destino: 'x@example.invalid',
+    mail: async () => { throw new ErrorRechazo('E_SENDER_NOT_VERIFIED'); },
+  });
+  assert.equal(rechazo.status, 502);
+  assert.deepEqual(await rechazo.json(), { error: 'E_SENDER_NOT_VERIFIED' });
+
+  const ambiguo = await pedirPrueba('s', {
+    secreto: 's',
+    destino: 'x@example.invalid',
+    mail: async () => { throw new ErrorAmbiguo('TypeError'); },
+  });
+  assert.equal(ambiguo.status, 504);
+  assert.deepEqual(await ambiguo.json(), { error: 'TypeError' });
 });

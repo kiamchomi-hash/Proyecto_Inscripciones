@@ -128,6 +128,29 @@ npx wrangler email sending send \
 Los cupos de la base no se tocan con esto: es correo directo, no pasa por el
 outbox.
 
+## Probar el binding dentro del Worker
+
+`POST /api/correo-prueba` manda un correo fijo a un destino fijo. No lee cuerpo
+ni query, no acepta destinatario ni contenido, no toca D1 ni el outbox.
+
+Existe porque `wrangler email sending send` prueba la API, no el binding del
+Worker: hasta que `env.EMAIL.send` corre de verdad, un binding roto se descubre
+con un lead esperando un precio que no llega.
+
+Necesita dos secretos del Worker:
+
+- `CORREO_PRUEBA_SECRETO`: el bearer que autoriza la llamada.
+- `CORREO_PRUEBA_DESTINO`: la única casilla a la que puede mandar.
+
+```bash
+curl -X POST https://www.siglo21sur.com/api/correo-prueba \
+  -H "Authorization: Bearer $CORREO_PRUEBA_SECRETO"
+```
+
+`200 { ok: true }` es que el binding aceptó. `502` trae el `code` del proveedor
+(`E_SENDER_NOT_VERIFIED`, `E_RECIPIENT_NOT_ALLOWED`, …), `504` es ambiguo y `503`
+es que falta configuración. Sin los dos secretos responde 503 y no manda nada.
+
 ## Qué no cambia
 
 El outbox, los estados, el reclamo durable del newsletter, las reservas de 168 h
