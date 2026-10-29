@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gemelo en Linux de "8 - De donde vienen los leads.bat". Mismo informe, mismo
+# Envoltorio de doble clic para Linux. Mismo informe, mismo
 # codigo de salida. Doble clic (el escritorio pregunta si ejecutar en terminal)
 # o:
 #   bash "herramientas/8 - De donde vienen los leads.sh"

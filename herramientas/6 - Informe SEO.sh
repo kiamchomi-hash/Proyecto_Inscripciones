@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gemelo en Linux de "6 - Informe SEO.bat". Mismo informe, mismo codigo de
+# Envoltorio de doble clic para Linux. Mismo informe, mismo codigo de
 # salida. Doble clic (el escritorio pregunta si ejecutar en terminal) o:
 #   bash "herramientas/6 - Informe SEO.sh"
 set -u

@@ -28,12 +28,10 @@ async function run(cwd, answers, overrides = {}) {
   return { result, output: output.join('\n'), pushes };
 }
 
-test('los envoltorios delegan y no agregan todos los archivos', () => {
-  for (const extension of ['bat', 'sh']) {
-    const text = readFileSync(new URL(`../herramientas/5 - Subir cambios (deploy).${extension}`, import.meta.url), 'utf8');
-    assert.doesNotMatch(text, /git add -A/);
-    assert.match(text, /deploy\.mjs/);
-  }
+test('el envoltorio de deploy delega y no agrega todos los archivos', () => {
+  const text = readFileSync(new URL('../herramientas/5 - Subir cambios (deploy).sh', import.meta.url), 'utf8');
+  assert.doesNotMatch(text, /git add -A/);
+  assert.match(text, /deploy\.mjs/);
 });
 
 test('sólo commitea el archivo elegido y muestra el diff antes de confirmar', async t => {

@@ -23,7 +23,7 @@
 //   INFORMES_TOKEN=github_pat_...   (fine-grained, permiso Contents: read/write
 //                                    SOLO sobre ese repo)
 //
-// Sin configurar sale con codigo 0 y un aviso: asi el .bat del informe puede
+// Sin configurar sale con codigo 0 y un aviso: asi el envoltorio del informe puede
 // llamarlo siempre, sin que la falta de configuracion parezca un error.
 
 import { readFileSync, existsSync } from 'node:fs';

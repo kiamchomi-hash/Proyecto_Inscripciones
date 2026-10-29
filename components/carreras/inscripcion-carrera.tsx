@@ -33,7 +33,7 @@ export function conArticulo(c: Pick<Carrera, 'nombre' | 'prefix' | 'nivel'>, nom
 }
 
 // Mismo presupuesto que el <title> y la description de la ficha
-// (app/carreras/[slug]/page.tsx explica de donde salen los numeros).
+// (cloudflare/src/entrega/carrera-seo.ts explica de donde salen los numeros).
 const MAX_TITULO = 61;
 const TOLERANCIA_TITULO = 66;
 const MAX_DESCRIPCION = 165;
@@ -100,7 +100,7 @@ export function descripcionInscripcion(c: Pick<Carrera, 'nombre' | 'prefix' | 'n
 
 /**
  * Miniatura para compartir: la misma que la ficha (ogCarrera en
- * app/carreras/[slug]/page.tsx). Las de Teclab llevan la portada de su familia.
+ * cloudflare/src/entrega/carrera-seo.ts). Las de Teclab llevan la portada de su familia.
  */
 export function ogInscripcion(c: Pick<Carrera, 'nivel'>): string {
   const familia = getFamiliaTeclab(c);

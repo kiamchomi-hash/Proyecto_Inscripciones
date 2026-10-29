@@ -136,11 +136,14 @@ UIverse van con su URL de `uiverse.io`, no con la ruta local.
 ### El OWASP Core Ruleset de Vercel no se paga
 
 Decidido el 08/08/2026. Vercel lo cobra por request inspeccionado y el valor
-marginal acá es bajo: no se arma SQL a mano en ningún lado (todo va por PostgREST
-parametrizado), el HTML de novedades pasa por `lib/sanitize-content.ts`, hay CSP
-completa en `next.config.ts` y no hay stack PHP/Java contra el que apunten las
-firmas de LFI/RFI. El escaneo genérico ya lo corta el firewall de plataforma, que
-es gratis. No reproponerlo salvo que cambie el modelo de datos.
+marginal acá es bajo: no se arma SQL a mano en ningún lado, el HTML de novedades
+pasa por `lib/sanitize-content.ts`, hay CSP completa en
+`cloudflare/src/entrega/cabeceras.ts` y no hay stack PHP/Java contra el que
+apunten las firmas de LFI/RFI. El escaneo genérico ya lo corta el firewall de
+plataforma, que es gratis. No reproponerlo salvo que cambie el modelo de datos.
+
+Desde el 27/10/2026 el sitio no corre en Vercel: lo de arriba queda como registro
+de la decisión que se tomó entonces.
 
 Ojo con el diagnóstico: la API devuelve los grupos `crs` con `active: true`, pero
 **eso no significa que estén evaluando** — el ruleset está apagado a nivel
@@ -214,7 +217,8 @@ No proponer reactivarlas ni completarles el plan de estudios:
 | Tec. Sup. en Venta Directa | 07/08/2026 | Teclab dejó de dictarla |
 | Curso de IA (Actualización Profesional en Inteligencia Artificial) | 21/10/2026 | el CAU no lo ofrece |
 
-Las dos con `activa = false` en Supabase y un 301 a la home en `next.config.ts`.
+Las tres con `activa = false` en la D1 de producción y un 301 a la home en
+`cloudflare/src/entrega/redirects-carreras.ts`.
 Traían algo de tráfico, pero es tráfico que no se puede vender: que redirijan a la
 home está bien y **no es un problema a reportar** en el informe de Search Console.
 
@@ -278,7 +282,9 @@ rebota, y agregar `include:_spf.google.com` al SPF no arregla nada — el SPF se
 evalúa sobre el dominio del sobre, no sobre el del `From:`. La alineación la da el
 return-path de SMTP2GO. Los tres CNAME en Cloudflare **van con la nube gris**:
 proxeados, el return-path devuelve IPs de Cloudflare y el DMARC deja de alinear.
-El detalle completo está en [las notas operativas](notas-operativas.md). Ningún código del sitio manda mails.
+El detalle completo está en [las notas operativas](notas-operativas.md). El correo
+del sitio (mail de precio y newsletter) no usa SMTP2GO: sale por el binding
+`send_email` de Cloudflare ([detalle](correo-cloudflare.md)).
 
 ### Abrir una URL en Windows va por `explorer`
 

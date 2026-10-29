@@ -29,7 +29,7 @@ export const RUTAS = [
   '/sitemap.xml',
 ];
 
-/** Cabeceras de seguridad de next.config.ts, medidas sobre la home. */
+/** Cabeceras de seguridad de `cloudflare/src/entrega/cabeceras.ts`, medidas sobre la home. */
 export const CABECERAS_ESPERADAS: Record<string, RegExp> = {
   'content-security-policy': /frame-ancestors 'none'/,
   'x-content-type-options': /^nosniff$/,
@@ -47,14 +47,14 @@ export const NOINDEX: Array<[string, RegExp]> = [
 ];
 
 /**
- * Redirects declarados en next.config.ts. Solo se prueban contra el dominio
- * propio: contra localhost o un preview no existen.
+ * Redirects declarados en `cloudflare/src/entrega/redirects.ts`. Solo se prueban
+ * contra el dominio propio: contra localhost o un preview no existen.
  *
  * El tercer elemento, cuando esta, fija el codigo exacto y no solo "algun 3xx".
  * Se usa donde el codigo lo decide algo que no vive en este repo y por lo tanto
  * puede cambiar sin que nadie lo note en un diff: hoy, el apex.
  *
- * El caso testigo es de agosto de 2026. `next.config.ts` declara el apex con
+ * El caso testigo es de agosto de 2026. El repo declaraba el apex con
  * `permanent: true`, o sea 308, pero produccion devolvia **307**: el redirect no
  * lo hacia la app sino el borde, que corre antes y traia 307 de fabrica. La
  * regla del repo nunca se ejecutaba. Un 307 le dice a Google que la mudanza es

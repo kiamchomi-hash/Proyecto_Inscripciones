@@ -4,22 +4,20 @@ Verificaciones que no cubre `npm run check`. Nada de esto llega al sitio
 publicado: producción es el Worker de Cloudflare y estos archivos no entran en el
 bundle, así que se pueden correr y editar sin miedo a romper producción.
 
-**Doble clic en el `.bat`** y listo. La ventana queda abierta al terminar.
+**Doble clic en el `.sh`** (o `bash "herramientas/1 - Auditar contenido.sh"`) y listo.
+La ventana queda abierta al terminar.
 
-En Linux, al lado de cada `.bat` hay un `.sh` con el mismo nombre y el mismo
-comportamiento (`bash "herramientas/1 - Auditar contenido.sh"`, o doble clic si
-el escritorio ofrece «Ejecutar en una terminal»). Son envoltorios: los `.mjs` que
-hacen el trabajo son los mismos en los dos sistemas, así que un cambio de fondo
-se toca una sola vez.
+Cada envoltorio es sólo eso: el `.mjs` que hace el trabajo es uno solo, así que un
+cambio de fondo se toca una sola vez.
 
 | Archivo | Qué hace | Cuándo |
 |---|---|---|
-| `1 - Auditar contenido.bat` | Lee la base publicada y lista lo que falta cargar | Después de tocar carreras o novedades |
-| `2 - Smoke de produccion.bat` | Revisa el sitio publicado de punta a punta | Después de cada deploy |
-| `3 - Capturas del sitio.bat` | PNG desktop + mobile de 6 páginas | Para revisar un cambio visual |
-| `5 - Subir cambios (deploy).bat` | Commit + push a main | Cuando el cambio está listo |
-| `6 - Informe SEO.bat` | Baja Search Console y deja el informe de la semana | Una vez por semana (ya corre solo los lunes) |
-| `8 - De donde vienen los leads.bat` | Clics a WhatsApp, consultas y tráfico, juntos | Cuando parece que no está entrando nada |
+| `1 - Auditar contenido.sh` | Lee la base publicada y lista lo que falta cargar | Después de tocar carreras o novedades |
+| `2 - Smoke de produccion.sh` | Revisa el sitio publicado de punta a punta | Después de cada deploy |
+| `3 - Capturas del sitio.sh` | PNG desktop + mobile de 6 páginas | Para revisar un cambio visual |
+| `5 - Subir cambios (deploy).sh` | Commit + push a main | Cuando el cambio está listo |
+| `6 - Informe SEO.sh` | Baja Search Console y deja el informe de la semana | Una vez por semana (ya corre solo los lunes) |
+| `8 - De donde vienen los leads.sh` | Clics a WhatsApp, consultas y tráfico, juntos | Cuando parece que no está entrando nada |
 | `publicar-informe.mjs` | Sube el informe a un repo privado, para leerlo desde el celular | Lo llama solo el informe SEO |
 
 Las tres primeras salen con código 1 si encontraron algo, así que también sirven
@@ -221,9 +219,9 @@ El tope son 62 días.
 ## Vigilancia automática (sin doble clic)
 
 Los numerados son para usar a mano: abren una ventana y esperan una tecla
-al terminar. Aparte de esos está `vigilancia.bat` (y su `vigilancia.sh`), que es
-lo contrario — corre solo, sin ventana, y devuelve el código de salida de verdad.
-Es el que usan las tareas programadas de Windows:
+al terminar. Aparte de esos está `vigilancia.sh`, que es lo contrario — corre solo,
+sin ventana, y devuelve el código de salida de verdad. Es el que usan las tareas
+programadas:
 
 | Tarea programada | Cuándo | Qué corre |
 |---|---|---|
@@ -234,7 +232,7 @@ Es el que usan las tareas programadas de Windows:
 
 **Esto no gasta créditos de Claude.** Los cuatro chequeos son programas de Node
 que no llaman a ningún modelo; corren gratis las veces que haga falta. Los agentes
-de `.claude/agents/` entran después, a mano, y sólo cuando hay algo que interpretar.
+de revisión entran después, a mano, y sólo cuando hay algo que interpretar.
 
 El de SEO es el único que **deja algo aunque esté todo bien**: el informe de la
 semana queda en `vigilancia-logs/seo-ultimo.md` para leerlo cuando haya ganas.
@@ -327,9 +325,10 @@ Dos cosas que ya costaron un rato:
 
 ## Mudarse a otra máquina
 
-`git clone` trae el código, `CLAUDE.md`, los agentes de `.claude/agents/` y las
-skills de `.claude/skills/`. Lo que **no** trae es lo que está gitignoreado a
-propósito: las credenciales, la memoria de Claude Code y las preferencias.
+`git clone` trae el código, `CLAUDE.md`, las instrucciones de los agentes
+(`~/.config/opencode/agents/`, fuera del repo) y las skills de `.claude/skills/`.
+Lo que **no** trae es lo que está gitignoreado a propósito: las credenciales, la
+memoria de Claude Code y las preferencias.
 
 Para eso está `entorno.mjs`. En la máquina que ya funciona:
 

@@ -971,11 +971,14 @@ el resto responde 405 con `Allow`.
   compartidos se resuelve a `undefined` en el build y el helper de terceros deja
   el evento local.
 
-`CRON_SECRET`, `REVALIDATE_SECRET`, `SMTP2GO_API_KEY`, `TELEGRAM_BOT_TOKEN` y
-`TELEGRAM_CHAT_ID` se leen sólo en runtime y no están en `wrangler.json` ni en
-archivos de entorno del paquete. Sin ellas cada endpoint falla cerrado (503 o
-502) o responde «sin configurar», nunca un éxito ficticio. Las pruebas las
-inyectan como puertos.
+Los secretos viven en Cloudflare y se leen sólo en runtime, nunca en
+`wrangler.json` ni en archivos de entorno del paquete: `CRON_SECRET`,
+`TURNSTILE_SECRET_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`,
+`ALERTA_CLOUDFLARE_SECRETO`, `CF_ANALYTICS_TOKEN`, `CORREO_PRUEBA_SECRETO` y
+`CORREO_PRUEBA_DESTINO`. `REVALIDATE_SECRET` se lee igual pero hoy no está
+cargado: `/api/revalidar` responde 503 y ningún trigger lo dispara. Sin secreto
+cada endpoint falla cerrado (503 o 502) o responde «sin configurar», nunca un
+éxito ficticio. Las pruebas las inyectan como puertos.
 
 Verificación local: `npm --prefix cloudflare run check` **233/233, exit 0**,
 112 archivos sin diagnósticos, build/runtime workerd y E2E **19/19**. La matriz

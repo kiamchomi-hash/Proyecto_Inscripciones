@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gemelo en Linux de "7 - Copia local del sitio.bat".
+# Envoltorio de doble clic para Linux.
 set -u
 cd "$(dirname "$0")/.." || exit 1
 
@@ -26,7 +26,7 @@ if [ "$salida" -ne 0 ]; then
   exit "$salida"
 fi
 
-# El .bat abre la carpeta con "start"; aca el equivalente es xdg-open. Si el
+# La carpeta se abre con xdg-open. Si el
 # entorno no lo tiene, no es un error: la copia ya esta escrita.
 if [ -d "$HOME/Escritorio" ]; then
   destino="$HOME/Escritorio/CAU-copia/ABRIR.html"

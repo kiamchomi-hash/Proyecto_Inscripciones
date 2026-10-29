@@ -41,8 +41,10 @@ se envió, y colas, cron, precios, R2, SEO productivo y cachés siguen sin proba
 
 **P2 — después del corte, con su propia autorización.** Bajas de Vercel/Supabase,
 facturación, limpieza y cualquier borrado de recursos. **Vercel se dio de baja el
-27/10/2026**: el proyecto se cerró y `vercel.json` se retiró del repo. Queda
-Supabase.
+27/10/2026**: el proyecto se cerró y `vercel.json` se retiró del repo. **Supabase
+también se dio de baja en el mismo corte**: el host del proyecto ya no resuelve y
+el contenido vive en D1. Queda sólo la parte administrativa de esas bajas, que no
+toca el sitio.
 
 ## Corte reversible, no ejecutado
 
@@ -106,15 +108,11 @@ carga. Eso es lo esperado: los precios de Teclab se actualizan con frecuencia
 (`carreras/teclab/carreras-externas.json`), y «Ver precio» deja de cotizar cuando
 la fila vence. No se inventó ni extendió ninguna vigencia.
 
-**Consecuencia para la migración:** hoy esa actualización escribe en Supabase con
-el rol `cau_editor` (`herramientas/ventas/publicar-precios.mjs`). Después del
-corte tiene que apuntar a la D1 de producción. Queda como pendiente propio, no
-como parte del corte de DNS.
-
-**Consecuencia para la migración:** hoy esa actualización diaria escribe en
-Supabase con el rol `cau_editor` (`herramientas/ventas/publicar-precios.mjs`).
-Después del corte tiene que apuntar a la D1 de producción. Queda como pendiente
-propio, no como parte del corte de DNS.
+**Consecuencia para la migración, cerrada el 27/10/2026:** la actualización diaria
+de precios ya escribe en la D1 de producción con
+`herramientas/ventas/publicar-precios-d1.mjs`. Los scripts que usaban el rol
+`cau_editor` de Supabase se conservan sólo por sus pruebas de lectura de vuelta y
+se cortan solos (`publicar-precios*.mjs`).
 
 Sigue sin trasladarse nada más: ni precios de otras casas, ni descuentos, ni
 `precios_meta`.

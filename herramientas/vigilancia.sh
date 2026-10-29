@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gemelo en Linux de vigilancia.bat, el que usan las tareas automaticas. A
+# Envoltorio de vigilancia para Linux, el que usan las tareas automaticas. A
 # diferencia de los .sh numerados NO espera una tecla: corre solo y devuelve el
 # codigo de salida del chequeo.
 #

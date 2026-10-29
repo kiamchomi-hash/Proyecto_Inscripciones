@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gemelo en Linux de "2 - Smoke de produccion.bat".
+# Envoltorio de doble clic para Linux.
 set -u
 cd "$(dirname "$0")/.." || exit 1
 

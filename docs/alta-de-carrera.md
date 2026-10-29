@@ -16,7 +16,8 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
 
 - [ ] **Datos oficiales a mano**: nombre exacto, duración, título, plan, modalidad. Si no
   están, la carrera entra como `proximamente` (ver [la de Teclab](../odd/tasks/teclab-carreras-proximamente.md)).
-- [ ] **El slug no choca con un redirect viejo** de `next.config.ts`. Hotelera quedó
+- [ ] **El slug no choca con un redirect viejo** de
+  `cloudflare/src/entrega/redirects-carreras.ts`. Hotelera quedó
   tapada por un 301 a la home de una baja anterior (`tests/redirect-hotelera.test.mjs`).
 - [ ] **Orden de publicación**: primero el código (publicar el Worker), después la fila.
   Las páginas leen D1 en cada pedido y salen `no-store`, así que la fila se ve en la
@@ -64,7 +65,7 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   - [ ] **M** — `articulaConSiglo21`: articulan todas menos las `proximamente` y las de
     `SIN_ARTICULACION_CONFIRMADA` (Seguros y las altas del 16/10/2026). Si la fuente no
     dice con qué licenciatura sigue, la nueva va en esa lista.
-  - [ ] **M** — `/teclab`: `PARTNERS` y `MOSAICO` (`app/teclab/page.tsx`), en sincronía
+  - [ ] **M** — `/teclab`: `PARTNERS` y `MOSAICO` (`cloudflare/src/entrega/PaginaTeclab.tsx`), en sincronía
     con `FICHAS.partner`.
 - [ ] **M** — Identidad: `ESCUELAS` (`components/index/identidad-argentina.ts`); sin
   entrada la tarjeta sale sin escuela.
@@ -73,8 +74,9 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
 
 - [ ] **A** — Página, sitemap, JSON-LD `Course` y `BreadcrumbList`, OG por familia y
   relacionadas.
-- [ ] **M, si hace falta** — `SEO_ESPECIFICO` (`app/carreras/[slug]/page.tsx`) cuando el
-  título automático pasa de 61 caracteres o sale feo.
+- [ ] **M, si hace falta** — `ESPECIFICOS` (`cloudflare/src/entrega/carrera-seo.ts`) cuando el
+  título automático pasa de 61 caracteres o sale feo. El título se emite tal cual: el
+  override tiene que llevar la marca.
 - [ ] **M** — Imagen del hero: Teclab en `public/imagenes/teclab/carreras/`, Siglo 21 en
   los `slides` (`public/imagenes/Modales/<Carrera>/`). Sin imagen cae en la genérica del
   sitio. Encuadre opcional en `HERO_POSITIONS` y similares
@@ -153,7 +155,8 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
 - [ ] **M** — Pedir la indexación en Search Console y anotarla en
   [indexacion.md](indexacion.md), según [rutinas.md](rutinas.md). Una semana después,
   `npm run seo`.
-- [ ] **M, al renombrar** — Redirect del slug viejo en `next.config.ts` y, si se quiere
+- [ ] **M, al renombrar** — Redirect del slug viejo en
+  `cloudflare/src/entrega/redirects-carreras.ts` y, si se quiere
   vigilar, en `lib/vigilancia-esperado.ts`.
 - [ ] `npm run check` antes de commitear.
 

@@ -24,7 +24,7 @@ Sale de `CLAUDE.md`, que sólo deja el puntero. Acá está el detalle de cada sc
 La auditoría ampliada (`npm run calidad`), sus comandos por área, referencias visuales,
 pruebas de navegador, CI y límites están en [controles automáticos](controles-automaticos.md).
 
-`check` sólo mira el código. En `herramientas/` están las que miran los datos y el sitio publicado, cada una con un `.bat` (Windows) y un `.sh` (Linux) de doble clic al lado (`LEER.md` explica cada una). Los envoltorios son dos, el `.mjs` que hace el trabajo es uno solo: la lógica se toca ahí. Nada de esa carpeta entra al bundle de Next. Las tres primeras salen con código 1 si encuentran algo:
+`check` sólo mira el código. En `herramientas/` están las que miran los datos y el sitio publicado, cada una con un `.sh` de doble clic al lado (`LEER.md` explica cada una). El envoltorio es uno solo por herramienta y el `.mjs` que hace el trabajo es uno solo: la lógica se toca ahí. Nada de esa carpeta entra al bundle del sitio. Las tres primeras salen con código 1 si encuentran algo:
 
 ```bash
 npm run auditar      # contenido faltante en la base publicada (lee la D1 de producción)
@@ -44,7 +44,7 @@ npm run leads        # de dónde vienen los leads: WhatsApp, formulario y Google
 
 Acepta `--rapido` (saltea la inspección URL por URL), `--dias=` y `--sitio=`. La ventana termina tres días antes de hoy porque GSC consolida con atraso. **Las carreras fuera de la oferta quedan afuera del informe**: redirigen a la home y está bien, pero si no se filtran copan la lista — para saber cuáles son lee la oferta vigente de la D1 de producción. Sale con código 1 sólo ante algo roto (página caída del índice, canónica cambiada por Google, caída fuerte de tráfico), no ante una sugerencia. El criterio de qué hacer con los números lo pone el agente `estratega-seo`, que lo lee cuando se lo invoca a mano.
 
-Los renombres se resuelven desde los redirects locales exactos de `next.config.ts`, sin duplicar la lista. `seo-rutas.mjs` consolida las dos ventanas y las consultas por destino: suma clics e impresiones, recalcula CTR y pondera posición por impresiones. Las cadenas que terminan en `/` conservan la ruta original para excluir las bajas sin atribuir su tráfico a la home. Las reglas condicionadas por host y las rutas parametrizadas no se usan como alias de contenido.
+Los renombres se resuelven desde los redirects locales exactos de `cloudflare/src/entrega/redirects.ts`, sin duplicar la lista. `seo-rutas.mjs` consolida las dos ventanas y las consultas por destino: suma clics e impresiones, recalcula CTR y pondera posición por impresiones. Las cadenas que terminan en `/` conservan la ruta original para excluir las bajas sin atribuir su tráfico a la home. Las reglas condicionadas por host y las rutas parametrizadas no se usan como alias de contenido.
 
 - **`leads`** (`herramientas/leads.mjs`) junta las tres fuentes que contestan "¿por qué no me llegan mensajes?": los clics a WhatsApp día por día (D1 de producción, tabla `whatsapp_clicks`), las consultas que entraron de verdad (D1, tabla `consultas`) y el tráfico desde Google (Search Console). Cierra con el embudo: personas que entraron, que tocaron WhatsApp, cuántas desde el móvil y cuántas dejaron el formulario. Acepta `--dias=` (tope 62) y `--sitio=`.
 

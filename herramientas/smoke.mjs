@@ -8,7 +8,7 @@
 //
 // Que verifica:
 //   1. Rutas fijas devuelven 200.
-//   2. Las cabeceras de seguridad de next.config.ts estan puestas.
+//   2. Las cabeceras de seguridad de cloudflare/src/entrega/cabeceras.ts estan puestas.
 //   3. /api lleva X-Robots-Tag noindex.
 //   4. Los redirects declarados siguen vivos (solo contra el dominio propio).
 //   5. Todas las URLs del sitemap responden 200.

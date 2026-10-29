@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gemelo en Linux de "3 - Capturas del sitio.bat".
+# Envoltorio de doble clic para Linux.
 set -u
 cd "$(dirname "$0")/.." || exit 1
 
@@ -12,7 +12,7 @@ echo
 node herramientas/capturas.mjs
 salida=$?
 
-# El .bat abre la carpeta con "start"; aca el equivalente es xdg-open. Si el
+# La carpeta se abre con xdg-open. Si el
 # entorno no lo tiene (una sesion por SSH, por ejemplo), no es un error: la
 # carpeta ya esta escrita y se avisa la ruta.
 echo
