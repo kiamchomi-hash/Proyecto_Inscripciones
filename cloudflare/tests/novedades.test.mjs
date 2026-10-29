@@ -119,7 +119,7 @@ test('SSR compilado: listado vacío, sin fijada, sólo fijada, fuera de rango y 
   // El listado es público: como en Next, no lleva X-Robots-Tag. El noindex
   // queda para APIs, rutas privadas y el 404 (ver tests/entrega.test.mjs).
   assert.equal(vacio.headers.get('x-robots-tag'), null);
-  assert.match(await vacio.text(), /Novedades del CAU Villa Lugano/);
+  assert.match(await vacio.text(), /<h1 class="sr-only">Novedades<\/h1>/);
   assert.equal((await astro.fetch('/novedades/2')).status,404);
   await insertarNovedades(db,[NOVEDADES[0]]);
   assert.match(await (await astro.fetch('/novedades/1')).text(), /Novedad destacada sintética/);

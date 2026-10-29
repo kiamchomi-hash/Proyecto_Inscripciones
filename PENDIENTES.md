@@ -37,6 +37,20 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 - [ ] **Revisar las páginas oficiales de Teclab para ver los cambios de frontend** (21/10/2026): recorrer el sitio de Teclab y anotar qué cambió en su diseño (colores, tipografía, componentes, disposición), para evaluar si conviene actualizar de acá las piezas y las fichas.
 
+- [ ] **Arreglar las páginas de carreras de Teclab y los logos de `/teclab`** (29/10/2026): **son dos referencias distintas y se revisan las dos**, no una sola fuente:
+  1. **Sitio oficial de Teclab** — `https://teclab.edu.ar/carrera/<slug>/` para cada carrera (datos, plan, título, salidas, modalidad). Es la fuente del contenido.
+  2. **`https://siglo21online.com.ar/teclab`** — es otro sitio, de GRUPO BTC S.A., no el oficial de la universidad. Es el modelo de ficha terminada: cómo arma la página de cada carrera y cómo presenta la marca de Teclab.
+
+  Donde las dos se contradigan, manda la oficial. No se copia texto de ninguna de las dos: se compara.
+
+  Dos frentes:
+  - **Fichas de carreras:** revisar qué falta o está mal en las páginas de cada carrera de Teclab, contra las dos referencias.
+  - **Logos de `/teclab`:** corregir los que se ven mal; hoy salen de `cloudflare/src/entrega/PaginaTeclab.tsx` (`/imagenes/teclab/logo-teclab-siglo21.webp` y los de `partners/`: AWS Academy, Google, Microsoft, HubSpot, Zendesk y Avenga). Falta que el usuario diga cuáles y cómo se ven (tamaño, encuadre, calidad del archivo) antes de tocar los assets.
+
+  Se apoya en las dos tareas de arriba: la revisión de frontend oficial y las fichas de `siglo21online.com.ar`.
+
+- [ ] **Cambiar el botón «Ver horarios» de clases de apoyo** (29/10/2026): es el pie de cada tarjeta de la landing, `components/clases-apoyo/clases-apoyo-landing.tsx` (`.ca-materia-accion`, hoy una superficie grafito sólida con texto blanco y flecha). Sin detalle del cambio todavía: falta que el usuario diga qué quiere. El historial de lo que ya se cambió en ese botón y en las tarjetas está en [`odd/tasks/clases-apoyo-tarjetas.md`](odd/tasks/clases-apoyo-tarjetas.md).
+
 ## 7. Bot, leads y comercial
 
 - [ ] **Confirmar con Teclab el reparto de resoluciones de Programación y Gestión Contable** (28/10/2026): el sitio publica Resolución 2127/22 + Dictamen 2662/22 para Programación y 2357/22 + 2657/22 para Gestión Contable, pero el Boletín Oficial de CABA (Res. 2357/MEDGC/22, 16/05/2022) aprueba el plan de la Tecnicatura Superior en Programación en virtud del Dictamen 2.657/22. Los números ya están en el corpus (`carreras/teclab/resoluciones-teclab.json`, marcador `{resoluciones}`); falta que Secretaría Académica confirme cuál corresponde antes de citarlos para un trámite.

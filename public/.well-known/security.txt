@@ -1,0 +1,4 @@
+Contact: mailto:inscripciones@siglo21sur.com
+Expires: 2027-10-29T00:00:00Z
+Canonical: https://www.siglo21sur.com/.well-known/security.txt
+Preferred-Languages: es
