@@ -120,20 +120,20 @@ export default function CalendarioAcademicoPage() {
       </section>
 
       {/* ─── INSCRIPCIÓN 2027 ─────────────────────────────── */}
-      {/* Franja y no tarjeta: un recuadro con borde entre dos bloques leía como
-          un sobrante. Sin fechas del ciclo: el calendario 2027 lo publica la
-          universidad antes del inicio de clases y no se extrapola el de 2026. */}
+      {/* Sin caja, sin borde de acento y sin degradé: el bloque es texto y un
+          botón sobre el fondo de la página. El usuario descartó las tarjetas
+          translúcidas y las barras laterales como señal de vibecoding
+          (docs/criterios.md). Tampoco hay fechas del ciclo: el calendario 2027
+          lo publica la universidad y no se extrapola el de 2026. */}
       <section className="ca-franja">
-        <div>
-          <p className="ca-franja-etiqueta">
-            <span className="ca-franja-punto" aria-hidden="true" />
-            Inscripción 2027 abierta
-          </p>
-          <p className="ca-franja-detalle">
-            Ya podés anotarte para cursar en 2027. La universidad abre la cursada en{' '}
-            <strong>{APERTURAS.slice(0, -1).join(', ')} y {APERTURAS[APERTURAS.length - 1]}</strong>.
-          </p>
-        </div>
+        <p className="ca-franja-etiqueta">
+          <span className="ca-franja-punto" aria-hidden="true" />
+          Inscripción 2027 abierta
+        </p>
+        <p className="ca-franja-detalle">
+          Ya podés anotarte para cursar en 2027. La universidad abre la cursada en{' '}
+          <strong>{APERTURAS.slice(0, -1).join(', ')} y {APERTURAS[APERTURAS.length - 1]}</strong>.
+        </p>
         <Link href="/?casa=siglo21#filtros-categoria" className="ca-carreras ca-franja-cta">
           Ver las carreras
         </Link>

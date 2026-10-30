@@ -178,6 +178,20 @@ se prueban las áreas afectadas; el control integral queda para cambios amplios.
 GitHub verifica el código de la raíz y el contrato del publicador, no el `check`
 completo de Cloudflare.
 
+### Nada de glassmorfismo ni bordes de acento como decoración
+
+Decidido el 30/10/2026, textual del usuario: «ese borde es una señal de
+vibecoding, y odio el glassmorfismo». Las piezas nuevas no llevan vidrio
+esmerilado (fondos translúcidos con degradé y desenfoque), ni barra vertical de
+acento al costado de un bloque, ni tarjetas flotando entre dos secciones sólo
+para contener dos líneas. Si un bloque necesita jerarquía, se resuelve con
+tipografía, espacio y una superficie plana de la paleta; no con bordes, brillos
+ni transparencias.
+
+Esto **no** reabre las tarjetas que ya existen en todo el sitio
+(`.ca-card`, `.news-card`, el panel de beneficios): se tocan sólo si se pide. La
+regla es para lo nuevo y para lo que se rediseñe.
+
 ### Identidad Argentina se migra a otro sitio
 
 Decidido el 23/08/2026: su oferta no lleva página propia en `siglo21sur.com`. **No
