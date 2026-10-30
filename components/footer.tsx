@@ -170,7 +170,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
                 entra la mayoria de las consultas. El clic lo escucha
                 `WhatsappReparto`, que mide el lead y reparte el numero si hay
                 mas de un asesor (hoy no: ver `lib/whatsapp.ts`). */}
-            <div className="text-center lg:text-left">
+            <div className="text-center">
             <a
               href={redes[0].href}
               target="_blank"
