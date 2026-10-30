@@ -160,9 +160,11 @@ function ContactForm() {
   return (
     <div className="ct-channel-card rounded-2xl overflow-hidden relative">
       {/* El cartel de éxito va superpuesto, no en lugar del formulario: si lo
-          reemplazara, la tarjeta se achicaría y volvería a crecer a los 4 s. */}
+          reemplazara, la tarjeta se achicaría y volvería a crecer a los 4 s.
+          La clase `ct-aviso-exito` es la que le da `position: absolute` (ver
+          contacto.css): el `absolute` de Tailwind solo no alcanza. */}
       {success && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
+        <div className="ct-aviso-exito absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
           <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: '#00c7b1' }}>
             <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

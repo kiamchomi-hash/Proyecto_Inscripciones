@@ -48,6 +48,18 @@
   z-index: 1;
 }
 
+/* El cartel de éxito del formulario de /contacto se superpone a la tarjeta y
+   necesita esta regla propia: `.ct-channel-card > *` de arriba le fuerza
+   `position: relative` a todos los hijos y, como este archivo va suelto, le
+   gana al `absolute` de Tailwind (que vive dentro de @layer utilities). Sin
+   esto el aviso cae al flujo normal, aparece arriba de la tarjeta y la estira
+   unos 50 px mientras el formulario invisible se empuja hacia abajo. */
+.ct-channel-card > .ct-aviso-exito {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
 /* ── WhatsApp card ────────────────────────────────────── */
 .ct-channel-whatsapp {
   background: linear-gradient(160deg, rgba(28, 47, 49, 0.8) 0%, rgba(22, 47, 46, 0.5) 100%);

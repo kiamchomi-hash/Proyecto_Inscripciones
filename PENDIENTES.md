@@ -16,8 +16,6 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 3. Urgente: leads y precios
 
-- [ ] **Arreglar el formulario de `/contacto`** (27/10/2026): hace «movimientos raros» al usarlo y hay que ajustarlo. Reproducirlo primero en el sitio publicado (`cloudflare/`, con `cd cloudflare && npm run dev`) y anotar qué se mueve o salta antes de tocar `cloudflare/src/entrega/PaginaContacto`; después verificar el envío real contra `/api/formularios` y revisar que la consulta entre en D1. Sin detalle del síntoma todavía.
-
 - [ ] **Investigar cuotas, intereses y cargos de otros medios de pago de Teclab** (23/10/2026): MercadoPago con dinero en cuenta, GoCuotas, WiBond, PagoFácil y Rapipago. El mismo total inicial no confirma las condiciones de financiación. [Detalle y límite de acceso](odd/tasks/teclab-extractor-dashboard.md#medios-de-pago-adicionales-condiciones-pendientes).
 
 ## 5. Siglo 21
