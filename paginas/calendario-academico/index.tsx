@@ -1,49 +1,45 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { jsonLdScript } from '@/lib/json-ld';
-import ProximoHito from './proximo-hito';
 import SiteFooter from '@/components/footer';
 import {
-  PERIODOS,
-  CUATRIMESTRALES,
-  FERIADOS,
   PREGUNTAS,
-  PDF_OFICIAL,
-  formatearFecha,
-  formatearCorto,
+  APERTURAS,
+  REGLAMENTO,
+  SEMANAS_DEL_TRAMO,
+  SEMANAS_POR_TRAMO,
+  TRAMOS_POR_SEMESTRE,
+  MATERIAS_CUATRIMESTRALES,
+  ENTREGAS,
 } from './datos';
 import '@/estilos/calendario-academico/calendario-academico.css';
 
-// Estatica pura, como /faq y /sobre-nosotros: las fechas del ano ya estan
-// publicadas y no cambian. Lo unico relativo a hoy es <ProximoHito>, que corre
-// en el cliente.
+// Estática pura, como /faq y /sobre-nosotros. Desde el 30/10/2026 la página es
+// del ciclo 2027: la universidad todavía no publicó ese calendario, así que acá
+// no hay fechas de 2027 y sí la estructura del año, que sale del reglamento y no
+// cambia de un ciclo a otro.
 
 export const metadata: Metadata = {
-  // La consulta que trae las impresiones es "calendario siglo 21 2026" y sus
-  // variantes, asi que el ano va en el titulo si o si. Absolute para no
-  // arrastrar el template del layout. Desde el 30/10/2026 la pagina tambien
-  // atiende "calendario 2027": se anuncio la inscripcion 2027, sin fechas de ese
-  // ano, que la universidad todavia no publico.
-  title: { absolute: 'Calendario Académico 2026 e Inscripción 2027 | Siglo 21 a Distancia' },
+  // La consulta estacional es "calendario siglo 21 2027" y sus variantes. El año
+  // va en el título si o si, y sin prometer fechas que todavía no existen.
+  title: { absolute: 'Calendario Académico 2027 Siglo 21 a Distancia | Cursada' },
   description:
-    'Fechas del Calendario Académico 2026 de Universidad Siglo 21 a distancia e inscripción 2027 abierta: inicio de cursada, cierre de inscripción a materias, integradores y feriados. CAU Villa Lugano.',
+    'Cómo se organiza el ciclo 2027 de Universidad Siglo 21 a distancia: dos semestres, cuatro tramos de nueve semanas, parciales, entregas de trabajos prácticos y materias cuatrimestrales. Inscripción 2027 abierta en el CAU Villa Lugano.',
   keywords: [
-    'calendario académico 2026',
-    'calendario siglo 21 2026',
     'calendario académico 2027',
+    'calendario siglo 21 2027',
     'inscripción 2027 siglo 21',
-    'universidad siglo 21',
-    'inicio de clases 2026',
-    'inscripción a materias',
+    'inicio de clases 2027',
+    'parciales siglo 21',
     'modalidad distancia',
   ],
   alternates: {
     canonical: '/calendario-academico',
   },
   openGraph: {
-    title: 'Calendario Académico 2026 e Inscripción 2027 — Universidad Siglo 21 a Distancia',
+    title: 'Calendario Académico 2027 — Universidad Siglo 21 a Distancia',
     description:
-      'Inicio de cursada, cierre de inscripción a materias, integradores y feriados del ciclo 2026, con la inscripción 2027 abierta.',
+      'Semestres, tramos de nueve semanas, parciales, entregas y materias cuatrimestrales del ciclo 2027, con la inscripción abierta.',
     url: '/calendario-academico',
     type: 'article',
     images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'Universidad Siglo 21 — CAU Online' }],
@@ -63,7 +59,7 @@ const BREADCRUMB = {
     {
       '@type': 'ListItem',
       position: 2,
-      name: 'Calendario Académico 2026',
+      name: 'Calendario Académico 2027',
       item: 'https://www.siglo21sur.com/calendario-academico',
     },
   ],
@@ -83,10 +79,10 @@ const FAQ = {
   })),
 };
 
-export default function CalendarioAcademicoPage() {
-  const primerSemestre = PERIODOS.filter(p => p.semestre === 'Primer semestre');
-  const segundoSemestre = PERIODOS.filter(p => p.semestre === 'Segundo semestre');
+/** "1 a 4", "9" o "10 a 17": la ventana de semanas de cada instancia. */
+const semanas = (desde: string, hasta: string) => (desde === hasta ? `semana ${desde}` : `semanas ${desde} a ${hasta}`);
 
+export default function CalendarioAcademicoPage() {
   return (
     <>
     <main className="max-w-5xl mx-auto px-5 sm:px-8 pb-14">
@@ -113,25 +109,25 @@ export default function CalendarioAcademicoPage() {
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] mb-4">
           <span className="block text-white">Calendario Académico</span>
-          <span className="ca-titulo-degrade block">2026</span>
+          <span className="ca-titulo-degrade block">2027</span>
         </h1>
 
         <p className="max-w-2xl mx-auto text-sm sm:text-base leading-relaxed" style={{ color: '#c8dedd' }}>
-          Todas las fechas del ciclo lectivo de <strong className="font-semibold text-white">Universidad Siglo 21</strong>{' '}
-          en modalidad a distancia: cuándo empiezan las clases, hasta cuándo te podés
-          anotar a materias y cuándo caen los integradores.
+          Cómo se organiza el ciclo lectivo de <strong className="font-semibold text-white">Universidad
+          Siglo 21</strong> en modalidad a distancia: los semestres, los tramos de nueve semanas y
+          cuándo cae cada parcial y cada entrega.
         </p>
       </section>
 
       {/* ─── INSCRIPCIÓN 2027 ─────────────────────────────── */}
-      {/* El calendario publicado es el 2026, pero la inscripción que se atiende
-          hoy es la de 2027. Sin fechas de 2027 a la vista: el calendario de ese
-          año lo publica la universidad, y no se extrapola el de 2026. */}
+      {/* Sin fechas del ciclo: el calendario 2027 lo publica la universidad antes
+          del inicio de clases y no se extrapola el de 2026. */}
       <section className="ca-inscripcion rounded-2xl p-5 sm:p-6 mb-8">
         <p className="ca-inscripcion-etiqueta">Inscripción 2027 abierta</p>
         <p className="text-sm sm:text-base leading-relaxed mb-4" style={{ color: '#c8dedd' }}>
-          Ya podés anotarte para cursar en 2027. Las fechas de inicio de cursada de ese
-          año se confirman con el calendario oficial de la universidad.
+          Ya podés anotarte para cursar en 2027. La universidad abre la cursada en{' '}
+          <strong className="text-white font-semibold">{APERTURAS.slice(0, -1).join(', ')} y {APERTURAS[APERTURAS.length - 1]}</strong>;
+          las fechas exactas de ese ciclo se confirman con el calendario oficial.
         </p>
         <Link
           href="/?casa=siglo21#filtros-categoria"
@@ -141,99 +137,119 @@ export default function CalendarioAcademicoPage() {
         </Link>
       </section>
 
-      <ProximoHito />
-
-      {/* ─── LOS CUATRO TRAMOS ────────────────────────────── */}
+      {/* ─── CÓMO SE ORGANIZA EL AÑO ──────────────────────── */}
       <section className="mb-10">
-        <h2 className="ca-h2">Fechas de cursada</h2>
+        <h2 className="ca-h2">Cómo se organiza el año</h2>
         <p className="text-sm leading-relaxed mb-5" style={{ color: '#c8dedd' }}>
-          El año se divide en cuatro tramos de nueve semanas, dos por semestre.
-          Cada uno abre su propia inscripción a materias, así que hay{' '}
-          <strong className="text-white font-semibold">cuatro momentos al año</strong> para sumar materias.
+          El año se divide en dos semestres y cada uno en {TRAMOS_POR_SEMESTRE} tramos de{' '}
+          {SEMANAS_POR_TRAMO} semanas. Cada tramo abre su propia inscripción a materias, así que hay{' '}
+          <strong className="text-white font-semibold">cuatro momentos al año</strong> para sumar
+          materias.
         </p>
 
-        {[
-          { titulo: 'Primer semestre', periodos: primerSemestre },
-          { titulo: 'Segundo semestre', periodos: segundoSemestre },
-        ].map(bloque => (
-          <div key={bloque.titulo} className="mb-6">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#00c7b1' }}>
-              {bloque.titulo}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {bloque.periodos.map(p => (
-                <article key={p.inicio} className="ca-card rounded-2xl p-5 sm:p-6">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#7ca19b' }}>
-                    Empiezan las clases
-                  </p>
-                  <p className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-4">
-                    {formatearFecha(p.inicio)}
-                  </p>
-                  <dl className="ca-datos">
-                    <div>
-                      <dt>Inscripción a materias hasta</dt>
-                      <dd>{formatearFecha(p.inscripcion)}</dd>
-                    </div>
-                    <div>
-                      <dt>Recuperatorio e integrador</dt>
-                      <dd>{formatearCorto(p.integradorDesde)} al {formatearCorto(p.fin)}</dd>
-                    </div>
-                    <div>
-                      <dt>Termina la cursada</dt>
-                      <dd>{formatearFecha(p.fin)}</dd>
-                    </div>
-                  </dl>
-                </article>
-              ))}
-            </div>
-          </div>
-        ))}
-        <p className="text-sm leading-relaxed mt-4" style={{ color: '#c8dedd' }}>
-          Si todavía no empezaste una carrera, las{' '}
-          <Link href="/?casa=siglo21#filtros-categoria" className="ca-link">
-            carreras de Siglo 21
-          </Link>{' '}
-          se cursan con este mismo calendario.
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {['Primer semestre', 'Segundo semestre'].map(semestre => (
+            <article key={semestre} className="ca-card rounded-2xl p-5 sm:p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#7ca19b' }}>
+                {semestre}
+              </p>
+              <p className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-4">
+                {TRAMOS_POR_SEMESTRE} tramos
+              </p>
+              <dl className="ca-datos">
+                <div>
+                  <dt>Duración de cada tramo</dt>
+                  <dd>{SEMANAS_POR_TRAMO} semanas</dd>
+                </div>
+                <div>
+                  <dt>Cursado</dt>
+                  <dd>Semanas 1 a 8</dd>
+                </div>
+                <div>
+                  <dt>Recuperatorio e integrador</dt>
+                  <dd>Semana {SEMANAS_POR_TRAMO}</dd>
+                </div>
+              </dl>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── PARCIALES DENTRO DEL TRAMO ───────────────────── */}
+      <section className="mb-10">
+        <h2 className="ca-h2">Parciales dentro del tramo</h2>
+        <p className="text-sm leading-relaxed mb-5" style={{ color: '#c8dedd' }}>
+          Los parciales no tienen una fecha única: se rinden dentro de una ventana de semanas y
+          elegís día y horario cuando te inscribís al examen.
         </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {SEMANAS_DEL_TRAMO.map(p => (
+            <article key={p.instancia} className="ca-card rounded-2xl p-5 sm:p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#7ca19b' }}>
+                {semanas(p.desde, p.hasta)}
+              </p>
+              <p className="text-lg sm:text-xl font-black text-white tracking-tight">{p.instancia}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* ─── CUATRIMESTRALES ──────────────────────────────── */}
       <section className="mb-10">
         <h2 className="ca-h2">Materias cuatrimestrales</h2>
         <p className="text-sm leading-relaxed mb-5" style={{ color: '#c8dedd' }}>
-          Algunas materias no entran en un tramo de nueve semanas y se cursan a lo
-          largo de todo el semestre. Arrancan junto con el primer tramo y cierran
-          con el segundo.
+          Las materias de Intervención Profesional no entran en un tramo de nueve semanas: se cursan
+          a lo largo de todo el semestre, {MATERIAS_CUATRIMESTRALES.semanas} semanas, con sus propias
+          ventanas de parcial.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {CUATRIMESTRALES.map(c => (
-            <article key={c.inicio} className="ca-card rounded-2xl p-5 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {MATERIAS_CUATRIMESTRALES.instancias.map(p => (
+            <article key={p.instancia} className="ca-card rounded-2xl p-5 sm:p-6">
               <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#7ca19b' }}>
-                {c.semestre}
+                {semanas(p.desde, p.hasta)}
               </p>
-              <p className="text-xl sm:text-2xl font-black text-white tracking-tight mb-1">
-                {formatearFecha(c.inicio)} al {formatearFecha(c.fin)}
-              </p>
-              <p className="text-sm" style={{ color: '#c8dedd' }}>{c.semanas} semanas de cursada</p>
+              <p className="text-lg sm:text-xl font-black text-white tracking-tight">{p.instancia}</p>
             </article>
           ))}
         </div>
       </section>
 
-      {/* ─── FERIADOS ─────────────────────────────────────── */}
+      {/* ─── ENTREGAS ─────────────────────────────────────── */}
       <section className="mb-10">
-        <h2 className="ca-h2">Feriados del ciclo 2026</h2>
+        <h2 className="ca-h2">Entregas de trabajos prácticos</h2>
         <p className="text-sm leading-relaxed mb-5" style={{ color: '#c8dedd' }}>
-          Los que caen sobre semanas de cursada según el calendario oficial.
+          Cada tipología de materia tiene su calendario de entregas, contado por semana de cursada.
+          Entregar después de la fecha descuenta 5% de la nota del trabajo por día, con un tope de
+          50 puntos.
         </p>
-        <ul className="ca-feriados">
-          {FERIADOS.map((f, i) => (
-            <li key={`${f.fecha}-${i}`}>
-              <span className="ca-feriado-fecha">{formatearCorto(f.fecha)}</span>
-              <span className="ca-feriado-nombre">{f.nombre}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="ca-entregas">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th className="ca-entregas-detalle">Materia</th>
+                <th>TP1</th>
+                <th>TP2</th>
+                <th>TP3</th>
+                <th>TP4</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ENTREGAS.map(e => (
+                <tr key={e.tipo}>
+                  <td className="ca-entregas-tipo">{e.tipo}</td>
+                  <td className="ca-entregas-detalle">{e.detalle}</td>
+                  {e.semanas.map((semana, i) => (
+                    <td key={i} className="ca-entregas-semana">S.{semana}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs mt-3 leading-relaxed" style={{ color: '#7ca19b' }}>
+          MIA: entregas únicas. MEC: se pueden rehacer hasta la semana 9.
+        </p>
       </section>
 
       {/* ─── PREGUNTAS ────────────────────────────────────── */}
@@ -292,12 +308,13 @@ export default function CalendarioAcademicoPage() {
         </div>
 
         <p className="text-xs mt-6 leading-relaxed" style={{ color: '#7ca19b' }}>
-          Fechas tomadas del calendario académico oficial de Universidad Siglo 21
-          para modalidad distancia (ED + EDH).{' '}
-          <a href={PDF_OFICIAL} target="_blank" rel="noopener nofollow" className="ca-link">
-            Ver el PDF de la universidad
+          Estructura tomada del reglamento de Universidad Siglo 21 para modalidad distancia (ED +
+          EDH).{' '}
+          <a href={REGLAMENTO} target="_blank" rel="noopener nofollow" className="ca-link">
+            Ver el reglamento de la universidad
           </a>
-          . Teclab maneja un calendario propio.
+          . Las fechas del ciclo 2027 se publican en el calendario académico oficial antes del
+          inicio de clases. Teclab maneja un calendario propio.
         </p>
       </section>
     </main>

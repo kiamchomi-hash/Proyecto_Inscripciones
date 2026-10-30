@@ -1086,6 +1086,15 @@ historial de lo ya aplicado; no alcanza con reintentar.
 
 ## Salidas del calendario hacia la oferta (30/10/2026)
 
+El 30/10/2026 la página pasó a ser la del **ciclo 2027**: la universidad todavía
+no publicó ese calendario —`lanube.21.edu.ar` sigue mostrando el 2026— así que
+no hay fechas de 2027 publicadas. Lo que la página explica es la estructura que
+fija el reglamento (dos semestres, cuatro tramos de nueve semanas, ventanas de
+parciales, entregas de TP por tipología y materias cuatrimestrales de 18
+semanas), las aperturas que anuncian las fichas oficiales de cada carrera
+(marzo, mayo, agosto y octubre) y el aviso de que las fechas exactas se
+confirman con el calendario oficial. No se extrapola el calendario 2026.
+
 `/calendario-academico` es la segunda página con más clics de Google (54 clics y
 2.883 impresiones en 28 días al 29/10/2026) y sus enlaces hacia las carreras no
 dejaban rastro: `calendario-salida` se emitía sólo en memoria del navegador

@@ -1,4 +1,4 @@
-/* Calendario Academico 2026 — /calendario-academico
+/* Calendario Académico 2027 — /calendario-academico
    Mismo lenguaje visual que /sobre-nosotros: tarjetas de vidrio sobre el fondo
    verde oscuro, acento #00c7b1 y titulos en Unbounded. */
 
@@ -26,25 +26,6 @@
 
 @media (min-width: 640px) {
   .ca-h2 { font-size: 1.875rem; }
-}
-
-/* ── El cartel de la proxima fecha ─────────────────────── */
-
-.ca-destacado {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, rgba(0, 199, 177, .12) 0%, rgba(0, 255, 225, .05) 100%);
-  border: 1px solid rgba(0, 199, 177, .28);
-}
-
-.ca-destacado-pulso {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 14rem;
-  height: 14rem;
-  pointer-events: none;
-  background: radial-gradient(circle at top right, rgba(0, 199, 177, .14) 0%, transparent 70%);
 }
 
 /* ── Tarjetas de periodo ───────────────────────────────── */
@@ -82,45 +63,59 @@
   white-space: nowrap;
 }
 
-/* ── Feriados ──────────────────────────────────────────── */
+/* ── Entregas de trabajos prácticos ────────────────────── */
 
-.ca-feriados {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: .5rem;
-}
-
-@media (min-width: 640px) {
-  .ca-feriados { grid-template-columns: 1fr 1fr; }
-}
-
-.ca-feriados li {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  padding: .6rem .9rem;
-  border-radius: .6rem;
+.ca-entregas {
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 199, 177, .12);
   background: rgba(28, 47, 49, .55);
-  border: 1px solid rgba(0, 199, 177, .07);
 }
 
-.ca-feriado-fecha {
-  flex-shrink: 0;
-  min-width: 3rem;
+.ca-entregas table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: .8125rem;
+}
+
+.ca-entregas th,
+.ca-entregas td {
+  padding: .7rem .75rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ca-entregas thead th {
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #7ca19b;
+  border-bottom: 1px solid rgba(0, 199, 177, .14);
+}
+
+.ca-entregas tbody tr + tr td {
+  border-top: 1px solid rgba(0, 199, 177, .07);
+}
+
+.ca-entregas-tipo {
   font-weight: 800;
   color: #00c7b1;
 }
 
-.ca-feriado-nombre {
-  font-size: .8125rem;
+.ca-entregas-detalle {
   color: #c8dedd;
-  line-height: 1.35;
+  white-space: normal;
+}
+
+.ca-entregas-semana {
+  font-weight: 700;
+  color: #fff;
 }
 
 /* ── Inscripción 2027 ──────────────────────────────────
-   El calendario publicado es el 2026 y la inscripción que se atiende es la de
-   2027: este bloque lo dice arriba de las fechas y lleva a la oferta. */
+   La página es la del ciclo 2027 y la inscripción de ese año es la que se
+   atiende: este bloque lo dice arriba de todo y lleva a la oferta. */
 
 .ca-inscripcion {
   background: linear-gradient(160deg, rgba(0, 199, 177, .14) 0%, rgba(28, 47, 49, .6) 100%);
