@@ -21,13 +21,17 @@ import '@/estilos/calendario-academico/calendario-academico.css';
 export const metadata: Metadata = {
   // La consulta que trae las impresiones es "calendario siglo 21 2026" y sus
   // variantes, asi que el ano va en el titulo si o si. Absolute para no
-  // arrastrar el template del layout.
-  title: { absolute: 'Calendario Académico 2026 Siglo 21 a Distancia | Fechas' },
+  // arrastrar el template del layout. Desde el 30/10/2026 la pagina tambien
+  // atiende "calendario 2027": se anuncio la inscripcion 2027, sin fechas de ese
+  // ano, que la universidad todavia no publico.
+  title: { absolute: 'Calendario Académico 2026 e Inscripción 2027 | Siglo 21 a Distancia' },
   description:
-    'Fechas del Calendario Académico 2026 de Universidad Siglo 21 a distancia: inicio de cursada, cierre de inscripción a materias, integradores y feriados. CAU Villa Lugano.',
+    'Fechas del Calendario Académico 2026 de Universidad Siglo 21 a distancia e inscripción 2027 abierta: inicio de cursada, cierre de inscripción a materias, integradores y feriados. CAU Villa Lugano.',
   keywords: [
     'calendario académico 2026',
     'calendario siglo 21 2026',
+    'calendario académico 2027',
+    'inscripción 2027 siglo 21',
     'universidad siglo 21',
     'inicio de clases 2026',
     'inscripción a materias',
@@ -37,9 +41,9 @@ export const metadata: Metadata = {
     canonical: '/calendario-academico',
   },
   openGraph: {
-    title: 'Calendario Académico 2026 — Universidad Siglo 21 a Distancia',
+    title: 'Calendario Académico 2026 e Inscripción 2027 — Universidad Siglo 21 a Distancia',
     description:
-      'Inicio de cursada, cierre de inscripción a materias, integradores y feriados del ciclo 2026.',
+      'Inicio de cursada, cierre de inscripción a materias, integradores y feriados del ciclo 2026, con la inscripción 2027 abierta.',
     url: '/calendario-academico',
     type: 'article',
     images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'Universidad Siglo 21 — CAU Online' }],
@@ -119,14 +123,23 @@ export default function CalendarioAcademicoPage() {
         </p>
       </section>
 
-      <div className="flex justify-center mb-8">
+      {/* ─── INSCRIPCIÓN 2027 ─────────────────────────────── */}
+      {/* El calendario publicado es el 2026, pero la inscripción que se atiende
+          hoy es la de 2027. Sin fechas de 2027 a la vista: el calendario de ese
+          año lo publica la universidad, y no se extrapola el de 2026. */}
+      <section className="ca-inscripcion rounded-2xl p-5 sm:p-6 mb-8">
+        <p className="ca-inscripcion-etiqueta">Inscripción 2027 abierta</p>
+        <p className="text-sm sm:text-base leading-relaxed mb-4" style={{ color: '#c8dedd' }}>
+          Ya podés anotarte para cursar en 2027. Las fechas de inicio de cursada de ese
+          año se confirman con el calendario oficial de la universidad.
+        </p>
         <Link
-          href="/#filtros-categoria"
+          href="/?casa=siglo21#filtros-categoria"
           className="ca-carreras inline-flex items-center justify-center min-h-11 px-6 py-3 rounded-full font-bold text-sm"
         >
-          Explorá las carreras
+          Ver las carreras
         </Link>
-      </div>
+      </section>
 
       <ProximoHito />
 
@@ -175,6 +188,13 @@ export default function CalendarioAcademicoPage() {
             </div>
           </div>
         ))}
+        <p className="text-sm leading-relaxed mt-4" style={{ color: '#c8dedd' }}>
+          Si todavía no empezaste una carrera, las{' '}
+          <Link href="/?casa=siglo21#filtros-categoria" className="ca-link">
+            carreras de Siglo 21
+          </Link>{' '}
+          se cursan con este mismo calendario.
+        </p>
       </section>
 
       {/* ─── CUATRIMESTRALES ──────────────────────────────── */}
@@ -228,6 +248,11 @@ export default function CalendarioAcademicoPage() {
               <p className="text-sm leading-relaxed" style={{ color: '#c8dedd' }}>
                 {p.respuesta}
               </p>
+              {p.enlace && (
+                <Link href={p.enlace.href} className="ca-link mt-2 inline-block text-sm font-semibold">
+                  {p.enlace.texto}
+                </Link>
+              )}
             </article>
           ))}
         </div>
@@ -244,6 +269,12 @@ export default function CalendarioAcademicoPage() {
           de lunes a viernes de 8:00 a 20:00.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
+          <Link
+            href="/?casa=siglo21#filtros-categoria"
+            className="ca-cta-secundario inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm"
+          >
+            Ver las carreras
+          </Link>
           <a
             href="https://wa.me/5491132973801?text=Hola%2C%20quiero%20consultar%20por%20la%20inscripci%C3%B3n"
             target="_blank"

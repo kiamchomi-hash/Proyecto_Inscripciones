@@ -88,8 +88,17 @@ async function leerClicksWhatsapp() {
     ORDER BY fecha, clicks DESC`);
 }
 
-// ── D1: las consultas que entraron de verdad ────────────────────────────────
+// ── D1: las salidas del calendario hacia la oferta ──────────────────────────
 
+async function leerSalidasCalendario() {
+  return consultar(`SELECT destino, sum(salidas) AS salidas
+    FROM calendario_salidas
+    WHERE fecha BETWEEN '${DESDE}' AND '${HASTA}'
+    GROUP BY destino
+    ORDER BY salidas DESC`);
+}
+
+// ── D1: las consultas que entraron de verdad ────────────────────────────────
 async function leerConsultas() {
   return consultar(`SELECT strftime('%d/%m %H:%M', created_at, '-3 hours') AS cuando,
       date(created_at, '-3 hours') AS dia_utc,
@@ -218,12 +227,13 @@ console.log(`LEADS - ultimos ${DIAS} dias (${dm(DESDE)} al ${dm(HASTA)})`);
 // Cada fuente se lee aparte: son tres servicios distintos y ninguno depende de
 // otro. El error se guarda como valor en vez de cortar, para que la caida de
 // uno no se lleve puestos los otros.
-const [clicks, avisosLeidos, consultas, visitas, google] = await Promise.all([
+const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario] = await Promise.all([
   leerClicksWhatsapp().then(d => (fuentesLeidas.push('d1'), d), e => e),
   leerAvisos().catch(e => e),
   leerConsultas().catch(e => e),
   leerVisitas().then(d => (fuentesLeidas.push('cloudflare'), d), e => e),
   leerGoogle().then(d => (fuentesLeidas.push('gsc'), d), e => e),
+  leerSalidasCalendario().catch(e => e),
 ]);
 
 // ── 1. Clics a WhatsApp ─────────────────────────────────────────────────────
@@ -279,7 +289,26 @@ if (clicks instanceof Error) {
   console.log('  queda ahi: el numero que predice mensajes recibidos es el del movil.');
 }
 
-// ── 2. Consultas del formulario ─────────────────────────────────────────────
+// ── 2. Calendario académico hacia la oferta ─────────────────────────────────
+
+titulo('Calendario académico hacia la oferta', 'D1, en vivo');
+
+if (salidasCalendario instanceof Error) {
+  noDisponible(salidasCalendario);
+} else if (salidasCalendario.length === 0) {
+  console.log('  Ninguna salida en la ventana.');
+  if (DESDE < DESDE_QUE_SE_MIDE) {
+    console.log(`  Ojo: las salidas se guardan desde el ${dm(DESDE_QUE_SE_MIDE)}.`);
+  }
+} else {
+  for (const fila of salidasCalendario) {
+    console.log(`  ${String(num(fila.salidas)).padStart(5)}  ${fila.destino}`);
+  }
+  console.log(`  Total  ${plural(salidasCalendario.reduce((a, f) => a + Number(f.salidas), 0), 'salida', 'salidas')}`);
+  console.log('  Son los enlaces del calendario que llevan a la oferta: el destino dice a dónde fue cada uno.');
+}
+
+// ── 3. Consultas del formulario ─────────────────────────────────────────────
 
 titulo('Consultas del formulario', 'D1, en vivo');
 
@@ -304,7 +333,7 @@ if (consultas instanceof Error) {
   }
 }
 
-// ── 3. Trafico desde Google ─────────────────────────────────────────────────
+// ── 4. Trafico desde Google ─────────────────────────────────────────────────
 
 titulo(
   'Trafico desde Google',
@@ -335,7 +364,7 @@ if (google instanceof Error) {
   }
 }
 
-// ── 4. El embudo ────────────────────────────────────────────────────────────
+// ── 5. El embudo ────────────────────────────────────────────────────────────
 
 titulo('Embudo', `${dm(DESDE)} al ${dm(HASTA)}`);
 
@@ -348,6 +377,9 @@ if (clicksTotal !== null) {
   fila(clicksTotal, `tocaron el boton de WhatsApp${visitantes ? `  (${pct(clicksTotal, visitantes)})` : ''}`);
 }
 if (clicksMovil !== null) fila(clicksMovil, 'de esos clics, desde el movil');
+if (!(salidasCalendario instanceof Error) && salidasCalendario.length) {
+  fila(salidasCalendario.reduce((a, f) => a + Number(f.salidas), 0), 'salieron del calendario hacia la oferta');
+}
 if (!(consultas instanceof Error)) {
   fila(consultas.length, `dejaron el formulario${visitantes ? `  (${pct(consultas.length, visitantes)})` : ''}`);
 }

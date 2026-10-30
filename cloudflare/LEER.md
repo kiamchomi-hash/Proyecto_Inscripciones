@@ -607,6 +607,14 @@ byte a byte), el texto visible completo de `<main>`, los enlaces de `main`,
 navbar y footer, el código 200, y el 404 de una ruta inexistente. La home se
 siembra igual en D1 y en el stub, así los conteos del catálogo coinciden.
 
+Cuando una página cambia a propósito, la referencia se actualiza entrada por
+entrada y sólo la que cambió: `node scripts/actualizar-referencia-ruta.mjs
+/calendario-academico` reescribe ese bloque de `tests/fixtures/paridad/rutas.json`
+con lo que devuelve el build local. `node scripts/comparar-referencias.mjs` dice
+qué rutas y qué campos están fuera de referencia, sin escribir nada; conviene
+correrlo antes para confirmar que la diferencia es la esperada y no una
+regresión. Los dos necesitan el build hecho.
+
 `tests/e2e.test.mjs` agrega lo que el HTML no puede probar, con dos servidores
 reales en loopback y Chromium:
 
@@ -1075,3 +1083,27 @@ apply --remote` intenta reaplicar 0001 y falla con «table carreras already
 exists». Las migraciones nuevas se aplican con `d1 execute --file=<archivo>` y el
 archivo es el registro. Para volver a `migrations apply` hay que cargar antes el
 historial de lo ya aplicado; no alcanza con reintentar.
+
+## Salidas del calendario hacia la oferta (30/10/2026)
+
+`/calendario-academico` es la segunda página con más clics de Google (54 clics y
+2.883 impresiones en 28 días al 29/10/2026) y sus enlaces hacia las carreras no
+dejaban rastro: `calendario-salida` se emitía sólo en memoria del navegador
+(`src/entrega/analitica.ts`), igual que el resto de los eventos `track()`.
+
+- `migrations/0013_calendario_salidas.sql` agrega `calendario_salidas (fecha,
+  destino, salidas)`: agregados por día y destino, nunca filas por visita.
+- El destino lo clasifica `destinoDesdeCalendario` en `lib/analytics.ts`:
+  `oferta`, `teclab`, `carrera`, `preinscripcion` o `contacto`. La lista está
+  cerrada en los dos lados y el test compara las dos.
+- `src/datos/calendario.ts` valida el destino, deriva la clave de cuota con
+  SHA-256 (`calendario:<digest>`, 60 cada 600 s) y suma la salida del día.
+- `POST /api/alertas-analytics` la cuenta sin aviso de Telegram: un aviso por
+  cada enlace tocado en el calendario sería ruido.
+- `npm run leads` muestra el total por destino y lo suma al embudo.
+
+**Ya aplicada en producción** con `node herramientas/d1.mjs --archivo
+cloudflare/migrations/0013_calendario_salidas.sql --escribir` el 30/10/2026. El
+helper corta con «Unexpected token» al leer la salida de un DDL, pero la tabla
+queda creada: se comprueba con un `SELECT` a `sqlite_master`.
+

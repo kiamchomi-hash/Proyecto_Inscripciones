@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { sendGAEvent } from '@next/third-parties/google';
-import { type Carrera, type CarreraCatalogo, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup, MARCA_MODAL } from './types';
+import { type Carrera, type CarreraCatalogo, CATEGORIES, getCategoryForCarrera, findCarreraBySlug, carreraToSlug, carreraFullName, AREAS, type AreaId, getAreaForCarrera, DURATION_GROUPS, type DurationGroupId, getDurationGroup, MARCA_MODAL, CASAS, type CasaId, casaDelNivel, casaDelParametro, nivelesDeCasa } from './types';
 import { bajarDetalle, completar, useDetalleCarreras } from './detalle-carreras';
 import { getEscuelaIA } from './identidad-argentina';
 import { CATEGORIAS_TECNOLOGIA, esCursoTeclab, getCategoriaTeclabTecnologia, getFamiliaTeclab, getTipoTeclab, TIPOS_GESTION, type TeclabFamilia } from './teclab';
@@ -124,9 +124,12 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
   const [pillsOpen, setPillsOpen] = useState(false);
   const [filterArea, setFilterArea] = useState<AreaId | null>(null);
   const [filterDuration, setFilterDuration] = useState<DurationGroupId | null>(null);
+  // Casa pedida por la URL (`?casa=siglo21`). Se lee al montar porque el
+  // componente es cliente y el enlace llega desde otra página.
+  const [filterCasa, setFilterCasa] = useState<CasaId | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
-  const hasFilters = filterArea !== null || filterDuration !== null || activeCategory !== 'all';
-  const filterCount = (activeCategory !== 'all' ? 1 : 0) + (filterArea ? 1 : 0) + (filterDuration ? 1 : 0);
+  const hasFilters = filterArea !== null || filterDuration !== null || filterCasa !== null || activeCategory !== 'all';
+  const filterCount = (activeCategory !== 'all' ? 1 : 0) + (filterArea ? 1 : 0) + (filterDuration ? 1 : 0) + (filterCasa ? 1 : 0);
   // Responsive placeholder
   useEffect(() => {
     const updatePlaceholder = () => {
@@ -141,7 +144,27 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
     return () => window.removeEventListener('resize', updatePlaceholder);
   }, []);
 
-  // Close filter dropdown on click outside
+  // `?casa=siglo21` llega desde el calendario academico: esa pagina es solo de
+  // Siglo 21 y no tiene sentido que el enlace abra las tres casas.
+  useEffect(() => {
+    const casa = casaDelParametro(new URLSearchParams(window.location.search).get('casa'));
+    if (casa) setFilterCasa(casa);
+  }, []);
+
+  // Tambien cierra el filtro de casa: los enlaces con `?casa=` (el calendario
+  // academico, por ejemplo) abren el catalogo acotado y sin esto no habia forma
+  // de volver a ver la oferta entera.
+  const limpiarFiltros = useCallback(() => {
+    setFilterArea(null);
+    setFilterDuration(null);
+    setFilterCasa(null);
+    setActiveCategory('all');
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('casa')) {
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.hash}`);
+    }
+  }, []);
+
+  // Cierra filter dropdown on click outside
   useEffect(() => {
     if (!showFilters) return;
     const handler = (e: MouseEvent) => {
@@ -215,9 +238,10 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
   const visibleCategories = useMemo(() => {
     return categoriasFiltro.filter(cat => {
       if (cat.id === 'all') return true;
+      if (filterCasa && !cat.niveles.some(nivel => nivelesDeCasa(filterCasa).includes(nivel))) return false;
       return carreras.some(c => cat.niveles.includes(c.nivel));
     });
-  }, [carreras, categoriasFiltro]);
+  }, [carreras, categoriasFiltro, filterCasa]);
 
   // Desktop filter dropdown sub-sections
   const [desktopFilterSection, setDesktopFilterSection] = useState<'area' | 'duracion' | null>(null);
@@ -230,6 +254,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
     for (const [key, items] of Object.entries(grouped)) {
       const filtered = items.filter(c => {
         if (activeCategory !== 'all' && nivelesActivos && !nivelesActivos.includes(c.nivel)) return false;
+        if (filterCasa && casaDelNivel(c.nivel) !== filterCasa) return false;
         if (filterArea && getAreaForCarrera(c) !== filterArea) return false;
         if (filterDuration && getDurationGroup(c.duracion) !== filterDuration) return false;
         return true;
@@ -237,7 +262,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
       if (filtered.length > 0) result[key] = filtered;
     }
     return result;
-  }, [grouped, filterArea, filterDuration, activeCategory, categoriasFiltro, hasFilters]);
+  }, [grouped, filterArea, filterDuration, activeCategory, categoriasFiltro, hasFilters, filterCasa]);
 
   // Search results
   const searchResults = useMemo(() => {
@@ -245,10 +270,11 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
     let results = carreras.filter(c => fuzzyMatch(c.nombre, searchQuery.trim()));
     const nivelesActivos = categoriasFiltro.find(cat => cat.id === activeCategory)?.niveles;
     if (activeCategory !== 'all' && nivelesActivos) results = results.filter(c => nivelesActivos.includes(c.nivel));
+    if (filterCasa) results = results.filter(c => casaDelNivel(c.nivel) === filterCasa);
     if (filterArea) results = results.filter(c => getAreaForCarrera(c) === filterArea);
     if (filterDuration) results = results.filter(c => getDurationGroup(c.duracion) === filterDuration);
     return results;
-  }, [carreras, searchQuery, filterArea, filterDuration, activeCategory, categoriasFiltro]);
+  }, [carreras, searchQuery, filterArea, filterDuration, activeCategory, categoriasFiltro, filterCasa]);
 
   // Sections to display (filtered by category)
   const sectionsToShow = useMemo(() => {
@@ -441,7 +467,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                 </button>
                 {/* Desktop: limpiar filtros al lado del buscador */}
                 <button
-                  onClick={() => { if (hasFilters) { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); } }}
+                  onClick={() => { if (hasFilters) limpiarFiltros(); }}
                   className={`filter-toggle-btn desktop-clear-filters ${hasFilters ? 'filter-clear-btn-red-full' : 'filter-clear-disabled'}`}
                   title="Limpiar filtros"
                   aria-disabled={!hasFilters}
@@ -502,7 +528,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                     </>)}
                     {hasFilters && (
                       <button
-                        onClick={() => { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); }}
+                        onClick={() => limpiarFiltros()}
                         className="filter-clear-btn-red"
                       >
                         ✕ Limpiar filtros
@@ -517,7 +543,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
             {/* Mobile: limpiar filtros (entre buscador y píldoras) */}
             {hasFilters && (
               <button
-                onClick={() => { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); }}
+                onClick={limpiarFiltros}
                 className="mobile-clear-filters"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -617,6 +643,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
             {hasFilters && !searchResults && (
               <div className="flex flex-wrap items-center gap-2 mb-4 text-sm">
                 <span className="text-[var(--catalogo-texto-suave)] font-semibold uppercase tracking-wider text-xs">Filtros:</span>
+                {filterCasa && (
+                  <span className="filter-active-tag">Casa: {CASAS.find(c => c.id === filterCasa)?.label}</span>
+                )}
                 {activeCategory !== 'all' && (
                   <span className="filter-active-tag">Tipo: {sectionLabels[activeCategory]?.titleFiltrado ?? sectionLabels[activeCategory]?.title}</span>
                 )}
@@ -626,7 +655,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                 {filterDuration && (
                   <span className="filter-active-tag">Duración: {DURATION_GROUPS.find(d => d.id === filterDuration)?.label}</span>
                 )}
-                <button onClick={() => { setFilterArea(null); setFilterDuration(null); setActiveCategory('all'); }} className="filter-clear-btn-red filter-clear-btn-inline">
+                <button onClick={limpiarFiltros} className="filter-clear-btn-red filter-clear-btn-inline">
                   ✕ Limpiar filtros
                 </button>
               </div>

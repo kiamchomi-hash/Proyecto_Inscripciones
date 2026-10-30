@@ -118,6 +118,24 @@
   line-height: 1.35;
 }
 
+/* ── Inscripción 2027 ──────────────────────────────────
+   El calendario publicado es el 2026 y la inscripción que se atiende es la de
+   2027: este bloque lo dice arriba de las fechas y lleva a la oferta. */
+
+.ca-inscripcion {
+  background: linear-gradient(160deg, rgba(0, 199, 177, .14) 0%, rgba(28, 47, 49, .6) 100%);
+  border: 1px solid rgba(0, 199, 177, .35);
+}
+
+.ca-inscripcion-etiqueta {
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #00ffe1;
+  margin-bottom: .5rem;
+}
+
 /* ── Cierre ────────────────────────────────────────────── */
 
 .ca-cierre {

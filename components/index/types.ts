@@ -132,6 +132,35 @@ export const CATEGORIES: CarreraCategory[] = [
   { id: 'teclab_gestion', label: 'Teclab Gestión', sublabel: 'Tecnicaturas', niveles: ['Teclab - Gestión'], featured: true },
 ];
 
+// ── Filtro por casa ──
+//
+// El catálogo agrupa por nivel, no por institución, así que una casa ocupa más
+// de una píldora: Siglo 21 son Licenciaturas y Tecnicaturas. `?casa=` acota el
+// conjunto completo para que un enlace que nace en una página de una sola casa
+// —el calendario académico, que es sólo de Siglo 21— no abra el catálogo entero
+// y obligue a filtrar a mano.
+export type CasaId = 'siglo21' | 'teclab' | 'identidad';
+
+export const CASAS: { id: CasaId; label: string; niveles: string[] }[] = [
+  { id: 'siglo21', label: 'Siglo 21', niveles: ['Grado', 'Grado (CCC)', 'Pregrado'] },
+  { id: 'teclab', label: 'Teclab', niveles: ['Teclab - Tecnología', 'Teclab - Curso', 'Teclab - Gestión'] },
+  { id: 'identidad', label: 'Identidad Argentina', niveles: ['Identidad Argentina'] },
+];
+
+/** Niveles de D1 que pertenecen a esa casa. */
+export function nivelesDeCasa(casa: CasaId): string[] {
+  return CASAS.find(c => c.id === casa)?.niveles ?? [];
+}
+
+export function casaDelNivel(nivel: string): CasaId | null {
+  return CASAS.find(casa => casa.niveles.includes(nivel))?.id ?? null;
+}
+
+/** El valor de `?casa=`; cualquier otra cosa deja el catálogo como estaba. */
+export function casaDelParametro(valor: string | null | undefined): CasaId | null {
+  return CASAS.find(casa => casa.id === valor)?.id ?? null;
+}
+
 // Correspondencia del nivel en D1 con las categorías visibles
 export function getCategoryForCarrera(c: Pick<Carrera, 'nivel'>): string {
   if (c.nivel === 'Grado' || c.nivel === 'Grado (CCC)') return 'licenciaturas';

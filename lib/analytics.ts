@@ -34,22 +34,36 @@ export function destinoDesdeCalendario(
   paginaActual: string,
   href: string,
   origen: string,
-): 'inicio' | 'carreras' | null {
+): 'oferta' | 'teclab' | 'carrera' | 'preinscripcion' | 'contacto' | null {
   if (paginaActual !== '/calendario-academico') return null;
   const destino = new URL(href, origen);
   if (destino.origin !== new URL(origen).origin) return null;
-  if (destino.pathname.startsWith('/carreras/')) return 'carreras';
-  if (destino.pathname !== '/') return null;
-  return destino.hash === '#filtros-categoria' ? 'carreras' : 'inicio';
+  const ruta = destino.pathname;
+  if (/^\/carreras\/[^/]+\/inscripcion$/.test(ruta)) return 'preinscripcion';
+  if (ruta.startsWith('/carreras/')) return 'carrera';
+  if (ruta === '/teclab') return 'teclab';
+  if (ruta === '/contacto') return 'contacto';
+  if (ruta !== '/') return null;
+  return 'oferta';
 }
 
-export function trackSalidaCalendario(destino: 'inicio' | 'carreras') {
+/**
+ * El calendario académico es la página que más visitas trae después de las
+ * fichas, y hasta ahora sus salidas hacia la oferta sólo vivían en memoria del
+ * navegador: no había forma de saber si esa visita termina en una carrera. Va
+ * por el mismo camino que el clic de WhatsApp, que el servidor cuenta en D1 sin
+ * mandar aviso a Telegram.
+ */
+export function trackSalidaCalendario(
+  destino: 'oferta' | 'teclab' | 'carrera' | 'preinscripcion' | 'contacto',
+) {
   track('calendario-salida', { origen: 'calendario', destino });
+  enviarEventoServidor('calendario-salida', { destino });
 }
 
 export function trackIntentoFormulario(origen: OrigenConsulta, modo: string, resultado: string) {
   track('formulario-intento', { origen, modo, resultado });
-  if (resultado !== 'valido') avisarTelegram('formulario-intento', { origen, modo, resultado });
+  if (resultado !== 'valido') enviarEventoServidor('formulario-intento', { origen, modo, resultado });
 }
 
 /**
@@ -71,7 +85,7 @@ export function trackAbandonoFormulario(
     motivo,
     campos_completados: camposCompletados,
   });
-  avisarTelegram('formulario-abandonado', {
+  enviarEventoServidor('formulario-abandonado', {
     origen,
     modo,
     ultimo_campo: ultimoCampo || 'sin campo',
@@ -80,7 +94,12 @@ export function trackAbandonoFormulario(
   });
 }
 
-function avisarTelegram(evento: string, datos: Record<string, string | number>) {
+/**
+ * Manda el evento al servidor, que decide qué guarda y qué avisa: suma el clic
+ * de WhatsApp en cualquier dispositivo, cuenta las salidas del calendario y sólo
+ * alerta por Telegram en los casos que la allowlist permite.
+ */
+function enviarEventoServidor(evento: string, datos: Record<string, string | number>) {
   if (typeof window === 'undefined') return;
   void fetch('/api/alertas-analytics', {
     method: 'POST',
@@ -148,7 +167,7 @@ export function trackHorarioClase(materia: string, horario: string) {
 
 export function trackWhatsappClase(materia: string) {
   track('clase-whatsapp', { materia });
-  avisarTelegram('clase-whatsapp', { materia });
+  enviarEventoServidor('clase-whatsapp', { materia });
 }
 
 /** Avisa sólo fallos de infraestructura; validaciones, captcha y cuota no llaman a esta función. */
@@ -156,7 +175,7 @@ export function avisarFalloFormularioContacto(
   origen: OrigenConsulta,
   motivo: 'red' | 'servidor',
 ) {
-  avisarTelegram('formulario-fallo', { origen, motivo });
+  enviarEventoServidor('formulario-fallo', { origen, motivo });
 }
 
 /** Clasifica sólo fallos técnicos; 4xx esperables no generan avisos. */
@@ -190,7 +209,7 @@ export function trackWhatsapp(origen: string) {
   // cualquier dispositivo y sólo alerta por Telegram cuando es móvil. Si el
   // aviso se filtrara acá —como antes—, los clics de escritorio no existirían
   // para el informe de leads.
-  avisarTelegram('whatsapp', { origen, movil: esDispositivoMovil() ? 1 : 0 });
+  enviarEventoServidor('whatsapp', { origen, movil: esDispositivoMovil() ? 1 : 0 });
 }
 
 /** Embudo vocacional sin respuestas ni avisos de Telegram. */

@@ -119,7 +119,7 @@ export function formatearCorto(iso: string): string {
  * copias de la misma fecha se desincronizan el dia que cambia el calendario, y
  * la que quedaria vieja es justamente la que Google levanta como respuesta.
  */
-export const PREGUNTAS: { pregunta: string; respuesta: string }[] = (() => {
+export const PREGUNTAS: { pregunta: string; respuesta: string; enlace?: { texto: string; href: string } }[] = (() => {
   const inicios = PERIODOS.map(p => formatearFecha(p.inicio));
   const cierres = PERIODOS.map(p => formatearFecha(p.inscripcion));
   const enumerar = (xs: string[]) => `${xs.slice(0, -1).join(', ')} y ${xs[xs.length - 1]}`;
@@ -136,6 +136,7 @@ export const PREGUNTAS: { pregunta: string; respuesta: string }[] = (() => {
         `En 2026 hay ${cuantos} fechas de inicio: ${enumerar(inicios)}. La modalidad a ` +
         `distancia divide el año en ${cuantos} tramos de nueve semanas y cada uno abre su ` +
         'propia inscripción, así que no hace falta esperar a marzo para empezar.',
+      enlace: { texto: 'Ver las carreras', href: '/?casa=siglo21#filtros-categoria' },
     },
     {
       pregunta: '¿Hasta cuándo me puedo inscribir a materias?',
@@ -167,7 +168,8 @@ export const PREGUNTAS: { pregunta: string; respuesta: string }[] = (() => {
         'No. Estas fechas son las de Universidad Siglo 21 en modalidad a distancia (ED y ' +
         'EDH). Teclab Instituto Técnico Superior maneja un calendario propio, con sus ' +
         'propias fechas de inicio y de inscripción. Si la carrera que te interesa es de ' +
-        'Teclab, escribinos y te pasamos las suyas.',
+        'Teclab, la oferta y el contacto están en su página.',
+      enlace: { texto: 'Ver Teclab', href: '/teclab' },
     },
   ];
 })();

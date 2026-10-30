@@ -1,11 +1,19 @@
 import { consumirCupoAlerta } from '../datos/control.ts';
+import { registrarSalidaCalendario } from '../datos/calendario.ts';
 import { registrarClickWhatsapp } from '../datos/whatsapp.ts';
 import { ipConfiable } from './ip.ts';
 
 /**
- * Alertas del embudo por Telegram. Copia la allowlist del handler vigente
- * (`app/api/alertas-analytics/route.ts`): por evento y por campo, con valores
- * cerrados y textos recortados. Ningún dato fuera de la lista llega al aviso.
+ * Alertas del embudo por Telegram y contadores de navegación.
+ *
+ * Copia la allowlist del handler vigente (`app/api/alertas-analytics/route.ts`):
+ * por evento y por campo, con valores cerrados y textos recortados. Ningún dato
+ * fuera de la lista llega al aviso.
+ *
+ * Dos eventos se cuentan en D1 sin avisar: el clic a WhatsApp de cualquier
+ * dispositivo y las salidas del calendario académico hacia la oferta. El aviso
+ * de Telegram sigue siendo sólo del clic móvil a WhatsApp y de los casos de la
+ * allowlist.
  *
  * El envío es un puerto: sin configuración responde 502 `{ ok: false }`, un
  * rechazo del proveedor también, y una excepción de red la absorbe el `catch`
@@ -109,6 +117,16 @@ export async function manejarAlertaAnalytics(
     if (!esRegistro(cuerpo)) return respuesta({ ok: false }, 400);
     const evento = textoSeguro(cuerpo.evento, 40);
     if (!esRegistro(cuerpo.datos)) return respuesta({ ok: false }, 400);
+
+    // Salidas del calendario: se cuentan siempre, en cualquier dispositivo, y no
+    // generan aviso. No pasan por la allowlist de Telegram porque un aviso por
+    // cada enlace tocado en una página de 2.900 impresiones al mes es ruido.
+    if (evento === 'calendario-salida') {
+      if (!db) return respuesta({ ok: false });
+      const contado = await registrarSalidaCalendario(db, cuerpo.datos.destino, ipConfiable(request));
+      return respuesta({ ok: contado });
+    }
+
     const alerta = prepararAlerta(evento, cuerpo.datos);
     if (!alerta) return respuesta({ ok: false }, 400);
 
