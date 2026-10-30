@@ -56,7 +56,7 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 - [ ] **Confirmar el ingreso con usuario a La Nube 21**. El 17/10/2026 sólo se comprobó que la portada responde. [Revisión de acceso](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 
-- [ ] **Regenerar el plan de Teclab del bot con los PDF vigentes** (30/10/2026): `carreras/teclab/planes-teclab.json` se generó con los PDF de agosto y quedó viejo en dos carreras. **Seguridad Informática** lista 18 materias cuando el programa vigente tiene 16: el bot responde con «Inserción y Desarrollo Profesional» y «Learning Agility», que ya no están. **Redes Informáticas** dice «Práctica Profesional» dos veces en lugar de «Práctica Profesional I» y «II». Las otras 14 coinciden. Hay que correr `herramientas/ventas/extraer-planes-teclab.py` (necesita PyMuPDF, que no está instalado en esta máquina) y volver a aplicar el corpus.
+- [ ] **Sumar Gestión Ambiental y Desarrollo de Videojuegos al catálogo del bot** (30/10/2026): están publicadas en el sitio desde el 29/10 pero **no figuran en `carreras/teclab/carreras-externas.json`**, que es de donde el bot saca la oferta, el temario y la ficha de cada carrera. Hoy el bot no puede contestar por ellas: no las lista en {ofertaTeclab} ni les llena {contenidos}. Faltan sus datos de externas y el precio.
 
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
 - [ ] **Estudiar la venta exitosa de seguros** (28/10/2026): ver cómo se vende un seguro —recorrido del asesor, objeciones, cierre y seguimiento— y qué se puede traer al trato con los leads del CAU. Sin detalle todavía.
