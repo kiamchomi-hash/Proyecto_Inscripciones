@@ -141,9 +141,9 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
               centra dentro de su mitad: con un `max-w` sobre el <ul> las dos
               columnas quedaban pegadas al centro de la pantalla en vez de una
               en cada mitad. */}
-          <div className={COLUMNA}>
-            <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:-ml-8 lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Contacto</h2>
-            <ul className={`grid w-full items-center text-left text-[13px] lg:block lg:w-auto lg:space-y-4 lg:text-sm ${teclab || sinUbicacion ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
+          <div className={`${COLUMNA} lg:!pl-0`}>
+            <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Contacto</h2>
+            <ul className={`grid w-full items-center text-left text-[13px] lg:mx-auto lg:block lg:w-fit lg:space-y-4 lg:text-sm ${teclab || sinUbicacion ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
               {!teclab && !sinUbicacion && (
               <li className="grid min-w-0 place-items-center border-r border-[rgba(0,199,177,0.12)] px-2 lg:block lg:justify-items-start lg:border-r-0 lg:px-0">
                 <div className="flex w-full min-w-0 flex-col items-center gap-2 text-center lg:w-fit lg:flex-row lg:items-start lg:gap-3 lg:text-left">
