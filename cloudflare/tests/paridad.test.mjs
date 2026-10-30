@@ -42,6 +42,29 @@ test('baja compilada: GET/HEAD no escriben, POST confirma D1, inválidos y fallo
   assert.deepEqual(await fallo.json(), { error: 'No se pudo procesar la baja' });
 });
 
+test('baja compilada: en producción escribe en D1 y no queda en 503', async t => {
+  // Regresión: el adaptador gateaba la base a `APP_STAGE=local`, así que el sitio
+  // publicado respondía 503 a toda baja. Con las etiquetas de producción la base
+  // se resuelve igual y la baja se aplica.
+  const astro = createTestHarness({
+    workers: [{
+      configPath: CONFIG,
+      vars: { APP_STAGE: 'produccion', DB_STAGE: 'produccion', DB_NAME: 'cau-produccion' },
+    }],
+  });
+  t.after(() => astro.close());
+  await astro.listen();
+  const worker = astro.getWorker();
+  await worker.applyD1Migrations('DB');
+  const { DB } = await worker.getEnv();
+  const id = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+  await DB.prepare('INSERT INTO suscripciones_newsletter(id,email) VALUES (?,?)').bind(id, 'baja-produccion@example.invalid').run();
+  const r = await astro.fetch(`/api/newsletter/baja?id=${id}`, { method: 'POST', body: 'List-Unsubscribe=One-Click' });
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), { ok: true });
+  assert.equal(await DB.prepare('SELECT activo FROM suscripciones_newsletter').first('activo'), 0);
+});
+
 test('fichas compiladas: sin datos privados públicos, no-store y la ruta del enlace ya no existe', async t => {
   const astro = createTestHarness({ workers: [{ configPath: CONFIG }] });
   t.after(() => astro.close());
