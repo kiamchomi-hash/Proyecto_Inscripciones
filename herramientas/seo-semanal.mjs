@@ -36,6 +36,9 @@ const DIAS = Number(opcion('dias', '28'));
 const SITIO = opcion('sitio', 'sc-domain:siglo21sur.com');
 const BASE = opcion('base', 'https://www.siglo21sur.com');
 
+const INSPECCION = opcion('inspeccion', null);
+
+
 // Search Console consolida con dos o tres dias de atraso. Si la ventana llega
 // hasta hoy, los ultimos dias entran a medias y toda comparacion contra el
 // periodo anterior exagera la caida.
@@ -105,7 +108,15 @@ async function inspeccionar(url) {
 
 // De a cinco: la cuota son 600 inspecciones por minuto y ~115 URLs entran
 // comodas, pero de a una sola el barrido tarda varios minutos.
-async function enTanda(items, tamano, fn) {
+
+// Inspección puntual de una URL: reemplaza la que se hacía desde el MCP de
+// Search Console, cuyas 21 herramientas costaban ~11 KB de prompt en cada turno.
+//   npm run seo -- --inspeccion=https://www.siglo21sur.com/calendario-academico
+if (INSPECCION) {
+  ACCESO = await acceso();
+  console.log(JSON.stringify(await inspeccionar(INSPECCION), null, 1));
+  process.exit(0);
+}async function enTanda(items, tamano, fn) {
   const salida = [];
   for (let i = 0; i < items.length; i += tamano) {
     salida.push(...await Promise.all(items.slice(i, i + tamano).map(fn)));

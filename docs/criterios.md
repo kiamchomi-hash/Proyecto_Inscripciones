@@ -25,9 +25,21 @@ Medido el 30/10/2026: antes de escribir la primera palabra, cada turno cargaba
 - El `system` del agente `general` (en `opencode.jsonc` global) ya no repite la
   tabla de trabajadores: la nombra y manda a `AGENTS.md`, que se carga igual.
 
-Lo que no se puede recortar desde acá: las instrucciones del MCP de codegraph
-(~4,5 KB, las fija el servidor) y el servidor remoto de Cloudflare, que expone
-3.792 herramientas (el catálogo muestra 7 y el resto va por `search`).
+Lo que se midió, y con qué se quedó cada servidor:
+
+| Servidor MCP | Costo por turno | Decisión |
+| --- | --- | --- |
+| Engram | 19 herramientas, 10.270 B ≈ 2.568 tokens | Acotado a **6 herramientas** (guardar, buscar, contexto, resumen, lectura, juez): 6.200 B ≈ 1.550 |
+| Search Console | 21 herramientas, 11.225 B ≈ 2.806 tokens | **Desactivado**; la inspección de una URL se hace con `npm run seo -- --inspeccion=<url>` |
+| codegraph | 1.377 B de instrucciones + 599 B de su única herramienta = 1.976 B ≈ 494 | **Se queda**: ese es todo su costo, y evita decenas de lecturas y `grep` |
+| Cloudflare | servidor remoto con 3.792 endpoints | **Se queda**: usa Code Mode con `search()`/`execute()` y cuesta ~1.000 tokens fijos, no uno por endpoint (doc oficial) |
+
+El costo de un servidor MCP se mide así, sin adivinar: se le manda `initialize`
+y `tools/list` por stdio y se suman `instructions` y las descripciones. Con
+Engram: `engram mcp --tools=<lista>` elige las herramientas una por una.
+
+Al buscar en memoria, `limit` chico y `response_format: compact` ahorran ~26%
+de la respuesta (5,7 KB contra 7,7 KB en una consulta de prueba).
 
 ### La memoria no se llena de resúmenes
 
