@@ -583,10 +583,13 @@ existe en este paquete. La variable no está en `wrangler.json` a propósito: se
 provee en runtime y, sin ella, no se carga el script ni se entrega token.
 
 Con site key, el HTML del servidor ya trae el marcador «Verificación de
-seguridad» y reserva los 71 px del iframe (140 px y `size='compact'` debajo de
+seguridad» y reserva los 71 px del iframe (146 px y `size='compact'` debajo de
 300 px de ancho, con redibujo al cruzar el umbral y descarte del token
-anterior). El marcador se retira recién cuando el iframe dispara `load`, con tope
-de 10 s, igual que el sitio. Desmontar llama a `remove` y descarta tokens
+anterior). El marcador mide lo mismo que el widget que reemplaza: ancho completo
+en flexible y 150 x 146 centrado en compacto. Se retira en cuanto Cloudflare
+inserta el input oculto del widget, porque el iframe queda dentro de un shadow
+root y su `load` no llega nunca; el tope de 10 s queda como respaldo. Desmontar
+llama a `remove` y descarta tokens
 posteriores; desmontar antes de que cargue no dibuja. En modo demo —sólo con
 `APP_STAGE=local` y `FORMULARIOS_DEMO=1`, el mismo gate que la API— no se pide
 nada a Cloudflare y se entrega `demo` al formulario. `src/middleware.ts` mantiene
