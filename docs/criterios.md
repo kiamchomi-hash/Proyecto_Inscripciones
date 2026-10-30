@@ -9,6 +9,19 @@ esto es **cómo se trabaja en él**. [`PENDIENTES.md`](../PENDIENTES.md) es la l
 
 ## Cómo escribir
 
+### La memoria no se llena de resúmenes
+
+Decidido el 30/10/2026, después de auditar la base de Engram: había 2306
+observaciones y **1210 eran resúmenes de sesión** (1093 con el mismo título),
+1022 relaciones pendientes que nadie juzgaba y 15 proyectos de directorios
+temporales. La memoria dejó de servir para buscar.
+
+- Un `mem_session_summary` **por sesión**, no por tarea. El cierre de cada tema
+  es un `mem_save` de cinco líneas (Qué / Por qué / Dónde / Aprendido).
+- Los handoffs largos van a `odd/tasks/` o a `docs/`; en memoria, un puntero.
+- Lo durable —cómo se trabaja, qué está decidido— vive en `docs/criterios.md`,
+  no en memoria: la memoria es por máquina y por herramienta, y no cruza.
+
 ### Si es ambiguo, se pregunta
 
 Decidido el 30/10/2026, textual del usuario: «no vuelvas a inventar cosas, si no
