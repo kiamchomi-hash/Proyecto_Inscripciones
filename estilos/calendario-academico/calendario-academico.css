@@ -112,18 +112,31 @@
 }
 
 /* ── Inscripción 2027 ──────────────────────────────────
-   Texto y botón sobre el fondo de la página: sin caja, sin borde de acento y
-   sin degradé. Los bloques translúcidos y las barras laterales leen como
-   vibecoding (docs/criterios.md). */
+   Bloque plano: superficie sólida de la paleta, esquinas redondeadas y aire.
+   Sin vidrio, sin borde de acento y sin degradé (docs/criterios.md). */
 
 .ca-franja {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: .9rem;
-  margin: 0 auto 2.75rem;
-  max-width: 42rem;
-  text-align: center;
+  gap: 1.1rem;
+  margin: 0 0 2.5rem;
+  padding: 1.35rem 1.5rem;
+  border-radius: 1rem;
+  background: #162f2e;
+}
+
+@media (min-width: 640px) {
+  .ca-franja {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.5rem 1.9rem;
+  }
+}
+
+.ca-franja-texto {
+  min-width: 0;
 }
 
 .ca-franja-etiqueta {
@@ -135,6 +148,7 @@
   letter-spacing: .14em;
   text-transform: uppercase;
   color: #00c7b1;
+  margin-bottom: .45rem;
 }
 
 .ca-franja-punto {
@@ -146,7 +160,7 @@
 }
 
 .ca-franja-detalle {
-  font-size: 1rem;
+  font-size: .9375rem;
   line-height: 1.55;
   color: #c8dedd;
 }
@@ -157,6 +171,7 @@
 }
 
 .ca-franja-cta {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;

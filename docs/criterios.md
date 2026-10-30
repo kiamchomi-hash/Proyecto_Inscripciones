@@ -182,11 +182,12 @@ completo de Cloudflare.
 
 Decidido el 30/10/2026, textual del usuario: «ese borde es una señal de
 vibecoding, y odio el glassmorfismo». Las piezas nuevas no llevan vidrio
-esmerilado (fondos translúcidos con degradé y desenfoque), ni barra vertical de
-acento al costado de un bloque, ni tarjetas flotando entre dos secciones sólo
-para contener dos líneas. Si un bloque necesita jerarquía, se resuelve con
-tipografía, espacio y una superficie plana de la paleta; no con bordes, brillos
-ni transparencias.
+esmerilado (fondos translúcidos, degradés de relleno, desenfoque) ni barra
+vertical de acento al costado de un bloque.
+
+Un contenedor sí va cuando el bloque lo necesita: superficie **plana** de la
+paleta (`#162f2e` sobre `#013729`), esquinas redondeadas y aire. Lo que no va es
+el efecto: ni transparencia, ni degradé, ni borde de color, ni sombra.
 
 Esto **no** reabre las tarjetas que ya existen en todo el sitio
 (`.ca-card`, `.news-card`, el panel de beneficios): se tocan sólo si se pide. La
