@@ -120,19 +120,21 @@ export default function CalendarioAcademicoPage() {
       </section>
 
       {/* ─── INSCRIPCIÓN 2027 ─────────────────────────────── */}
-      {/* Sin fechas del ciclo: el calendario 2027 lo publica la universidad antes
-          del inicio de clases y no se extrapola el de 2026. */}
-      <section className="ca-inscripcion rounded-2xl p-5 sm:p-6 mb-8">
-        <p className="ca-inscripcion-etiqueta">Inscripción 2027 abierta</p>
-        <p className="text-sm sm:text-base leading-relaxed mb-4" style={{ color: '#c8dedd' }}>
-          Ya podés anotarte para cursar en 2027. La universidad abre la cursada en{' '}
-          <strong className="text-white font-semibold">{APERTURAS.slice(0, -1).join(', ')} y {APERTURAS[APERTURAS.length - 1]}</strong>;
-          las fechas exactas de ese ciclo se confirman con el calendario oficial.
-        </p>
-        <Link
-          href="/?casa=siglo21#filtros-categoria"
-          className="ca-carreras inline-flex items-center justify-center min-h-11 px-6 py-3 rounded-full font-bold text-sm"
-        >
+      {/* Franja y no tarjeta: un recuadro con borde entre dos bloques leía como
+          un sobrante. Sin fechas del ciclo: el calendario 2027 lo publica la
+          universidad antes del inicio de clases y no se extrapola el de 2026. */}
+      <section className="ca-franja">
+        <div>
+          <p className="ca-franja-etiqueta">
+            <span className="ca-franja-punto" aria-hidden="true" />
+            Inscripción 2027 abierta
+          </p>
+          <p className="ca-franja-detalle">
+            Ya podés anotarte para cursar en 2027. La universidad abre la cursada en{' '}
+            <strong>{APERTURAS.slice(0, -1).join(', ')} y {APERTURAS[APERTURAS.length - 1]}</strong>.
+          </p>
+        </div>
+        <Link href="/?casa=siglo21#filtros-categoria" className="ca-carreras ca-franja-cta">
           Ver las carreras
         </Link>
       </section>

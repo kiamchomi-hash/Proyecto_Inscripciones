@@ -113,22 +113,85 @@
   color: #fff;
 }
 
-/* ── Inscripción 2027 ──────────────────────────────────
-   La página es la del ciclo 2027 y la inscripción de ese año es la que se
-   atiende: este bloque lo dice arriba de todo y lleva a la oferta. */
+/* ── Franja de inscripción 2027 ────────────────────────
+   Va sin recuadro: una tarjeta con borde entre el hero y el primer bloque leía
+   como un sobrante. La franja se apoya en el borde izquierdo de acento y lleva
+   el botón al extremo en escritorio. */
 
-.ca-inscripcion {
-  background: linear-gradient(160deg, rgba(0, 199, 177, .14) 0%, rgba(28, 47, 49, .6) 100%);
-  border: 1px solid rgba(0, 199, 177, .35);
+.ca-franja {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 0 2.5rem;
+  padding: .25rem 0 .25rem 1.1rem;
+  border-left: 3px solid #00c7b1;
+  background: linear-gradient(90deg, rgba(0, 199, 177, .09) 0%, rgba(0, 199, 177, 0) 85%);
 }
 
-.ca-inscripcion-etiqueta {
+@media (min-width: 640px) {
+  .ca-franja {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: .35rem 0 .35rem 1.35rem;
+  }
+}
+
+.ca-franja-etiqueta {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
   font-size: .6875rem;
-  font-weight: 700;
-  letter-spacing: .12em;
+  font-weight: 800;
+  letter-spacing: .14em;
   text-transform: uppercase;
   color: #00ffe1;
-  margin-bottom: .5rem;
+  margin-bottom: .45rem;
+}
+
+.ca-franja-punto {
+  width: .5rem;
+  height: .5rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: #00ffe1;
+  box-shadow: 0 0 0 0 rgba(0, 255, 225, .55);
+  animation: ca-pulso 2.4s ease-out infinite;
+}
+
+@keyframes ca-pulso {
+  0% { box-shadow: 0 0 0 0 rgba(0, 255, 225, .5); }
+  70% { box-shadow: 0 0 0 .55rem rgba(0, 255, 225, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 255, 225, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-franja-punto { animation: none; }
+}
+
+.ca-franja-detalle {
+  font-size: .9375rem;
+  line-height: 1.55;
+  color: #c8dedd;
+}
+
+.ca-franja-detalle strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.ca-franja-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: .7rem 1.6rem;
+  border-radius: 9999px;
+  font-size: .875rem;
+  font-weight: 800;
+  text-align: center;
 }
 
 /* ── Cierre ────────────────────────────────────────────── */
