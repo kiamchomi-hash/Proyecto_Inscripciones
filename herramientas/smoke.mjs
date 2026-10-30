@@ -10,9 +10,11 @@
 //   1. Rutas fijas devuelven 200.
 //   2. Las cabeceras de seguridad de cloudflare/src/entrega/cabeceras.ts estan puestas.
 //   3. /api lleva X-Robots-Tag noindex.
-//   4. Los redirects declarados siguen vivos (solo contra el dominio propio).
-//   5. Todas las URLs del sitemap responden 200.
-//   6. Peso real comprimido del HTML de la home, medido contra el server: el borde
+//   4. Los endpoints de escritura declarados como sonda responden lo esperado con
+//      datos inexistentes: la baja del newsletter no vuelve a quedar en 503.
+//   5. Los redirects declarados siguen vivos (solo contra el dominio propio).
+//   6. Todas las URLs del sitemap responden 200.
+//   7. Peso real comprimido del HTML de la home, medido contra el server: el borde
 //      comprime al vuelo, asi que gzipear el HTML local da otro numero.
 //
 // Sale con codigo 1 si algo fallo.
@@ -28,6 +30,7 @@ import {
   HSTS_ESPERADO,
   NOINDEX,
   RUTAS,
+  SONDAS,
   redirectsEsperados,
 } from '../lib/vigilancia-esperado.ts';
 
@@ -51,7 +54,7 @@ function ok(que, detalle = '') {
 
 // Pedido crudo: no descomprime, asi podemos contar los bytes que viajan de
 // verdad y ver los redirects sin que fetch los siga solo.
-function pedir(url, { metodo = 'GET', encoding = 'br, gzip' } = {}) {
+function pedir(url, { metodo = 'GET', encoding = 'br, gzip', cuerpo, tipo } = {}) {
   const u = new URL(url);
   const fn = u.protocol === 'https:' ? httpsRequest : httpRequest;
   return new Promise((resolve, reject) => {
@@ -63,6 +66,7 @@ function pedir(url, { metodo = 'GET', encoding = 'br, gzip' } = {}) {
           'accept-encoding': encoding,
           'user-agent': 'smoke-siglo21sur/1.0',
           accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          ...(tipo ? { 'content-type': tipo, 'content-length': Buffer.byteLength(cuerpo) } : {}),
         },
       },
       res => {
@@ -82,7 +86,7 @@ function pedir(url, { metodo = 'GET', encoding = 'br, gzip' } = {}) {
     );
     req.on('error', reject);
     req.setTimeout(30000, () => req.destroy(new Error('timeout')));
-    req.end();
+    req.end(cuerpo);
   });
 }
 
@@ -146,7 +150,25 @@ for (const [ruta, esperado] of NOINDEX) {
   }
 }
 
-// ── 4. Redirects declarados ─────────────────────────────────────────────────
+// ── 4. Sondas que no son GET ────────────────────────────────────────────────
+
+console.log('\nSondas de escritura');
+for (const sonda of SONDAS) {
+  try {
+    const r = await pedir(BASE + sonda.ruta, {
+      metodo: sonda.metodo,
+      cuerpo: sonda.cuerpo,
+      tipo: sonda.tipo,
+      encoding: 'identity',
+    });
+    if (r.status === sonda.esperado) ok(`${sonda.etiqueta} → HTTP ${r.status}`);
+    else fallo(sonda.etiqueta, `HTTP ${r.status} (esperaba ${sonda.esperado}) — ${sonda.problema}`);
+  } catch (e) {
+    fallo(sonda.etiqueta, e.message);
+  }
+}
+
+// ── 5. Redirects declarados ─────────────────────────────────────────────────
 
 if (esProd) {
   console.log('\nRedirects');
@@ -168,7 +190,7 @@ if (esProd) {
   notas.push('Redirects salteados: solo se prueban contra el dominio propio.');
 }
 
-// ── 5. Barrido del sitemap ──────────────────────────────────────────────────
+// ── 6. Barrido del sitemap ──────────────────────────────────────────────────
 
 if (!RAPIDO) {
   console.log('\nSitemap');
@@ -198,7 +220,7 @@ if (!RAPIDO) {
   notas.push('Sitemap salteado por --rapido.');
 }
 
-// ── 6. Peso real del HTML ───────────────────────────────────────────────────
+// ── 7. Peso real del HTML ───────────────────────────────────────────────────
 
 console.log('\nPeso de la home');
 const kb = n => `${(n / 1024).toFixed(1)} KB`;

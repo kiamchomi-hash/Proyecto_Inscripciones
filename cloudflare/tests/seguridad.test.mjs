@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { comandoLocal, entornoLocal, PASOS_CHECK, verificarArchivosLocales } from '../scripts/local.mjs';
@@ -49,6 +49,34 @@ test('el entrypoint no conecta transportes; runtime sólo proyecta configuració
   assert.match(runtime, /export const secretoCron/);
   assert.match(runtime, /export const transporteMail/);
   assert.match(runtime, /export const configTelegram/);
+});
+
+test('los adaptadores de la API resuelven la base con bindingDb y no con la etiqueta del entorno', () => {
+  // El 30/10/2026 la baja del newsletter tomaba `env.DB` sólo si
+  // `APP_STAGE === 'local'`: en producción el handler recibía null y toda baja
+  // respondía 503. Qué base se expone lo decide `src/datos/binding.ts`; ningún
+  // adaptador puede decidirlo por su cuenta, ni con una etiqueta ni con un binding
+  // directo. Un adaptador que no toca la base (estado, revalidar, correo-prueba)
+  // queda fuera de la regla solo, sin lista de excepciones que mantener.
+  const carpeta = new URL('../src/pages/api/', import.meta.url);
+  const archivos = readdirSync(carpeta, { recursive: true, encoding: 'utf8' })
+    .filter(nombre => nombre.endsWith('.ts'))
+    .map(nombre => nombre.replace(/\\/g, '/'));
+  assert.ok(archivos.includes('newsletter/baja.ts'), archivos.join(', '));
+  assert.ok(archivos.length >= 10, `adaptadores encontrados: ${archivos.length}`);
+
+  // La sonda de estado lee `APP_STAGE` a propósito: sólo existe en local.
+  const sinBase = new Set(['estado.ts']);
+  for (const nombre of archivos) {
+    const fuente = readFileSync(new URL(nombre, carpeta), 'utf8');
+    assert.doesNotMatch(fuente, /\.\s*DB\b/, `${nombre}: la base no se toma del binding`);
+    if (!sinBase.has(nombre)) {
+      assert.doesNotMatch(fuente, /APP_STAGE/, `${nombre}: la etiqueta del entorno no decide la base`);
+    }
+    if (/bindingDb|\b(?:db|DB)\b|D1Database/.test(fuente)) {
+      assert.match(fuente, /bindingDb\(\)/, `${nombre}: la base se pide a bindingDb()`);
+    }
+  }
 });
 
 test('el proceso hijo no hereda secretos, flags de Node ni configuración remota', () => {

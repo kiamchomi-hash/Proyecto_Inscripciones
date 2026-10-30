@@ -47,6 +47,40 @@ export const NOINDEX: Array<[string, RegExp]> = [
 ];
 
 /**
+ * Sondas que no son GET, declaradas aca por el mismo motivo que RUTAS: los dos
+ * vigilantes tienen que probar lo mismo.
+ *
+ * Cada sonda manda datos que no existen, asi que la corrida no escribe nada: lo
+ * que se mide es que el endpoint siga resolviendo su base y no responda 503.
+ *
+ * El caso testigo es del 30/10/2026. La baja del newsletter tomaba la base solo
+ * con `APP_STAGE=local`, de modo que en produccion respondia 503 a toda baja, y
+ * ninguno de los dos vigilantes podia verlo porque solo probaban GET: el sitio
+ * estuvo tres dias sin permitir darse de baja sin que sonara una alarma.
+ */
+export const SONDAS: Array<{
+  etiqueta: string;
+  ruta: string;
+  metodo: 'POST';
+  tipo: string;
+  cuerpo: string;
+  esperado: number;
+  /** Que significa el fallo, en una linea para el aviso de Telegram. */
+  problema: string;
+}> = [
+  {
+    etiqueta: 'baja del newsletter',
+    // UUID con formato valido que no existe: la baja responde 200 y no escribe.
+    ruta: '/api/newsletter/baja?id=00000000-0000-4000-8000-000000000000',
+    metodo: 'POST',
+    tipo: 'application/x-www-form-urlencoded',
+    cuerpo: 'List-Unsubscribe=One-Click',
+    esperado: 200,
+    problema: 'La baja del newsletter no funciona: quien pide dejar de recibir los mails no puede darse de baja y va a seguir recibiéndolos. Revisar ese endpoint en el sitio publicado.',
+  },
+];
+
+/**
  * Redirects declarados en `cloudflare/src/entrega/redirects.ts`. Solo se prueban
  * contra el dominio propio: contra localhost o un preview no existen.
  *

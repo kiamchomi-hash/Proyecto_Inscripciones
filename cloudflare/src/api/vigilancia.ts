@@ -1,5 +1,5 @@
 import {
-  BASE_PROD, CABECERAS_ESPERADAS, HSTS_ESPERADO, NOINDEX, RUTAS, redirectsEsperados,
+  BASE_PROD, CABECERAS_ESPERADAS, HSTS_ESPERADO, NOINDEX, RUTAS, SONDAS, redirectsEsperados,
 } from '../../../lib/vigilancia-esperado.ts';
 import { preciosVencidos } from '../../../lib/vigilancia-precios.ts';
 import type { Buscar } from '../operativa/telegram.ts';
@@ -71,6 +71,9 @@ function mensajeParaTelegram(fallo: string) {
 
   if (que === 'precios vencidos') return detalle;
 
+  const sonda = SONDAS.find(s => s.etiqueta === que);
+  if (sonda) return `${sonda.problema} (${detalle})`;
+
   if (que.startsWith('/')) {
     return `La página ${que} no está disponible. Revisar el sitio publicado.`;
   }
@@ -103,7 +106,7 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
   const fallos: string[] = [];
   const falla = (que: string, detalle: string) => fallos.push(`${que} — ${detalle}`);
 
-  const pedir = (url: string) => {
+  const pedir = (url: string, init: RequestInit = {}) => {
     validarDestino(url);
     return buscar(url, {
       redirect: 'manual',
@@ -113,6 +116,7 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
         'user-agent': 'vigilancia-siglo21sur/1.0',
         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       },
+      ...init,
     });
   };
 
@@ -207,7 +211,26 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
 
   const ahora = opciones.ahora?.() ?? new Date();
 
-  // 6. Precios vencidos hace más de un día.
+  // 6. Sondas que no son GET. Mandan datos inexistentes: no escriben nada y lo
+  // que se mide es que el endpoint resuelva su base en vez de devolver 503.
+  await enTandas(SONDAS, async sonda => {
+    try {
+      const r = await pedir(base + sonda.ruta, {
+        method: sonda.metodo,
+        body: sonda.cuerpo,
+        headers: {
+          'user-agent': 'vigilancia-siglo21sur/1.0',
+          'content-type': sonda.tipo,
+          accept: 'application/json',
+        },
+      });
+      if (r.status !== sonda.esperado) falla(sonda.etiqueta, `HTTP ${r.status}`);
+    } catch (e) {
+      falla(sonda.etiqueta, motivo(e));
+    }
+  });
+
+  // 7. Precios vencidos hace más de un día.
   if (!opciones.precios) {
     falla('precios vencidos', 'No se pudo revisar la vigencia de los precios: sin lector');
   } else {

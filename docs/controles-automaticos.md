@@ -16,7 +16,7 @@ la fuente queda no disponible.
 | `npm run check` | ESLint, TypeScript, tests de API, campos, resiliencia, roles, eventos y taxonomía |
 | `npm audit` | Vulnerabilidades del árbol instalado |
 | `npm run auditar` | Faltantes y consistencia de contenido en la D1 de producción |
-| `npm run smoke` | Rutas, cabeceras, redirects, sitemap y compresión |
+| `npm run smoke` | Rutas, cabeceras, sondas de escritura, redirects, sitemap y compresión |
 | `npm run seo` | Indexación y rendimiento en Search Console |
 | `npm run leads -- --estricto` | Disponibilidad de las tres fuentes y discrepancias entre eventos y filas |
 | `npm run calidad:seo` | Todas las URLs del sitemap: title, descripción, canónica, idioma, h1, JSON-LD e imágenes sociales accesibles |

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BASE_PROD, RUTAS, NOINDEX, redirectsEsperados } from '../../lib/vigilancia-esperado.ts';
+import { BASE_PROD, RUTAS, NOINDEX, SONDAS, redirectsEsperados } from '../../lib/vigilancia-esperado.ts';
 import { correrChequeos, manejarVigilancia } from '../src/api/vigilancia.ts';
 
 // Todo el transporte HTTP es un doble: ninguna prueba audita producción. Las
@@ -28,12 +28,19 @@ function mapaRedirecciones() {
   return mapa;
 }
 
-function redEscenario({ falloFaq = false, homeSinCsp = false, sitemap = SITEMAP, evil = false } = {}) {
+function redEscenario({ falloFaq = false, homeSinCsp = false, sitemap = SITEMAP, evil = false, bajaRota = false } = {}) {
   const redirecciones = mapaRedirecciones();
   const llamadas = [];
   const buscar = async (url, init) => {
     llamadas.push({ url, init });
     if (evil && url.includes('evil.example')) return new Response('no', { status: 200 });
+    const sonda = SONDAS.find(s => url === `${BASE_PROD}${s.ruta}`);
+    if (sonda) {
+      return new Response(JSON.stringify({ ok: !bajaRota }), {
+        status: bajaRota ? 503 : sonda.esperado,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
     if (url === `${BASE_PROD}/sitemap.xml`) {
       return new Response(sitemap, { status: 200, headers: { 'content-type': 'application/xml' } });
     }
@@ -106,6 +113,35 @@ test('vigilancia: corrida limpia sin avisos y dentro del dominio propio', async 
     assert.match(llamada.url, /^https:\/\/(?:www\.)?siglo21sur\.com\//);
     assert.ok(llamada.init.signal instanceof AbortSignal);
   }
+  // La sonda de la baja no es un GET: manda datos inexistentes y no escribe.
+  const sonda = llamadas.find(l => l.url.includes('/api/newsletter/baja'));
+  assert.equal(sonda.init.method, 'POST');
+  assert.equal(sonda.init.body, 'List-Unsubscribe=One-Click');
+  assert.equal(sonda.init.headers['content-type'], 'application/x-www-form-urlencoded');
+});
+
+test('vigilancia: una baja que responde 503 se informa con su consecuencia', async t => {
+  // Es el fallo del 30/10/2026: el endpoint existía, pero resolvía la base sólo
+  // en local y en producción devolvía 503. Antes ningún chequeo lo veía.
+  const { buscar } = redEscenario({ bajaRota: true });
+  const textos = [];
+  const respuesta = await manejarVigilancia(
+    pedir('/api/vigilancia', { authorization: 'Bearer secreto-sintetico' }),
+    {
+      secretoCron: 'secreto-sintetico',
+      buscar,
+      telegram: telegramOk(textos),
+      precios: async () => [],
+      ahora: () => new Date('2026-10-25T12:00:00.000Z'),
+    },
+  );
+  const cuerpo = await respuesta.json();
+  assert.equal(cuerpo.ok, false);
+  assert.ok(cuerpo.fallos.some(f => f === 'baja del newsletter — HTTP 503'));
+  assert.equal(textos.length, 1);
+  assert.match(textos[0], /La baja del newsletter no funciona/);
+  assert.match(textos[0], /HTTP 503/);
+  assert.match(textos[0], /no puede darse de baja/);
 });
 
 test('vigilancia: los fallos se explican y se avisan una sola vez', async t => {

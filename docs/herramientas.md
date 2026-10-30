@@ -28,14 +28,14 @@ pruebas de navegador, CI y límites están en [controles automáticos](controles
 
 ```bash
 npm run auditar      # contenido faltante en la base publicada (lee la D1 de producción)
-npm run smoke        # producción: rutas, cabeceras, redirects, sitemap y peso real del HTML
+npm run smoke        # producción: rutas, cabeceras, sondas, redirects, sitemap y peso real del HTML
 npm run capturas     # PNG desktop + mobile a screenshots/<AAAAMMDD-HHMM>/
 npm run seo          # informe semanal de Search Console (mide; no propone)
 npm run leads        # de dónde vienen los leads: WhatsApp, formulario y Google
 ```
 
 - **`auditar`** (`herramientas/auditar-contenido.mjs`) busca el desfasaje entre la base y las fuentes reales: carreras visibles sin plan de estudios (ni en la columna ni en un slide `plan_estudios`, mismo criterio que el `hasPlan` de `career-detail.tsx`), carreras sin slides —que abren una ficha vacía—, slugs duplicados, niveles desconocidos y novedades publicadas sin `imagen_url` (og:image vacío al compartir). Las carreras `proximamente` bajan a aviso: todavía no tienen temario publicado. Importa `esCarreraVisible()` del módulo real (Node 24 strippea los tipos), así que sigue sola los cambios de taxonomía.
-- **`smoke`** (`herramientas/smoke.mjs`) acepta `--base=http://localhost:3000` y `--rapido` (saltea el barrido de las ~119 URLs del sitemap). Los redirects sólo se prueban contra el dominio propio. Mide el peso pidiendo a prod, no comprimiendo local: el borde comprime el HTML al vuelo con otra calidad.
+- **`smoke`** (`herramientas/smoke.mjs`) acepta `--base=http://localhost:3000` y `--rapido` (saltea el barrido de las ~119 URLs del sitemap). Los redirects sólo se prueban contra el dominio propio. Mide el peso pidiendo a prod, no comprimiendo local: el borde comprime el HTML al vuelo con otra calidad. Las **sondas de escritura** se declaran en `lib/vigilancia-esperado.ts` y mandan datos que no existen (hoy: la baja del newsletter con un UUID inexistente), así que verifican que el endpoint siga resolviendo su base sin escribir nada.
 - **`capturas`** (`herramientas/capturas.mjs`) acepta `--base=`, `--rutas=/faq,/contacto`, `--solo=mobile|desktop` y `--viewport` (sólo la primera pantalla). Usa `devices['iPhone 13']` de Playwright: `chrome --headless --window-size` **no** da un viewport CSS del ancho pedido e inventa recortes falsos en móvil. Navega con `waitUntil: 'load'` porque `networkidle` nunca llega en las páginas con formulario (Turnstile deja tráfico abierto). Desde Git Bash las rutas con `/` inicial se mangean: usar PowerShell o `--rutas=faq,contacto`.
 
 - **`seo`** (`herramientas/seo-semanal.mjs`) baja Search Console firmando un JWT con la service account de `~/.gsc/service_account.json` (la misma del MCP `gsc`), así que no agrega ninguna dependencia. Deja `herramientas/vigilancia-logs/seo-ultimo.md` con páginas cuyo CTR está por debajo de lo esperable **para su posición y para su mezcla de intención**, consultas cerca de los primeros lugares con la página que las recibe, racimos de consultas genéricas fuera del top 10, caídas de posición y URLs del sitemap sin indexar.
@@ -107,7 +107,7 @@ están en [Herramientas, sección 5](../herramientas/LEER.md#5--subir-cambios).
 |---|---|---|
 | Cuándo | cada 6 horas, declarado en `cloudflare/produccion/wrangler.json` | cuando lo dispara el Programador de tareas |
 | Dónde | en la nube, con la máquina apagada | en la máquina de casa |
-| Qué mira | rutas, cabeceras, noindex, redirects, el sitemap entero y los precios vencidos hace más de un día | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
+| Qué mira | rutas, cabeceras, noindex, sondas de escritura, redirects, el sitemap entero y los precios vencidos hace más de un día | eso mismo vía `smoke`, más `deps`, `contenido` y `seo` |
 | Cómo avisa | Telegram | archivo `REVISAR-SITIO.txt` en el escritorio + Telegram |
 
 El del Worker es el que cubre las caídas de verdad, porque no depende de que la PC esté prendida. Se autentica con `CRON_SECRET` y **con `?prueba=1` manda un aviso de prueba sin correr los chequeos**, que es la forma de confirmar que el canal de Telegram sigue vivo sin esperar a que algo se rompa. No mide el peso comprimido del HTML a propósito: eso necesita leer los bytes del socket sin descomprimir y `fetch` descomprime solo, así que ese chequeo vive únicamente en `smoke.mjs`.
@@ -116,7 +116,9 @@ Los precios de `precios_privados` vencen a la medianoche y la corrida diaria de 
 
 El local avisa por Telegram **sólo en los cambios de estado** (`ok → problema` y `problema → ok`), no en cada corrida: un chequeo diario que falla una semana tiene que ser un mensaje, no siete. Su chequeo `smoke` lleva `avisaCron: true` y queda fuera del aviso, porque el cron ya manda ese mensaje — sin eso, una caída llegaría dos veces. Necesita `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` en `.env.local`; si faltan, el aviso queda sólo en el escritorio y el chequeo no se rompe.
 
-Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos (`smoke.mjs` lo carga con Node pelado, que strippea los tipos). Rutas, cabeceras, HSTS, noindex y redirects se tocan ahí y nada más: duplicar esa lista deja a uno de los dos viejo sin que nadie se entere.
+Lo que se espera de producción lo declara **un solo archivo, `lib/vigilancia-esperado.ts`**, que leen los dos (`smoke.mjs` lo carga con Node pelado, que strippea los tipos). Rutas, cabeceras, HSTS, noindex, sondas y redirects se tocan ahí y nada más: duplicar esa lista deja a uno de los dos viejo sin que nadie se entere.
+
+La lista de chequeos era sólo de GET, y por eso el 30/10/2026 nadie vio que la baja del newsletter respondía 503 en producción: el endpoint existía, la página se veía bien y el enlace del mail moría. Las **sondas** (`SONDAS`) cubren ese hueco con POST sobre datos inexistentes; sumar una es declararla ahí, con su etiqueta y su frase para el aviso.
 
 Los redirects llevan un tercer campo opcional con el **código exacto**, en vez de aceptar cualquier 3xx. Se usa donde el código lo decide algo que no vive en el repo. Hoy es el apex: el borde lo resuelve antes que la app, así que el código queda fijado acá para que no cambie en silencio. En Cloudflare el apex lo redirige el Worker desde `cloudflare/src/entrega/redirects.ts`.
 
