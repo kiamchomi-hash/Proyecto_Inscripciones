@@ -56,8 +56,6 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 - [ ] **Confirmar el ingreso con usuario a La Nube 21**. El 17/10/2026 sólo se comprobó que la portada responde. [Revisión de acceso](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 
-- [ ] **Sumar Gestión Ambiental y Desarrollo de Videojuegos al catálogo del bot** (30/10/2026): están publicadas en el sitio desde el 29/10 pero **no figuran en `carreras/teclab/carreras-externas.json`**, que es de donde el bot saca la oferta, el temario y la ficha de cada carrera. Hoy el bot no puede contestar por ellas: no las lista en {ofertaTeclab} ni les llena {contenidos}. Faltan sus datos de externas y el precio.
-
 - [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
 - [ ] **Estudiar la venta exitosa de seguros** (28/10/2026): ver cómo se vende un seguro —recorrido del asesor, objeciones, cierre y seguimiento— y qué se puede traer al trato con los leads del CAU. Sin detalle todavía.
 - [ ] **Ampliar la app de HubSpot** (18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición; no ejecutar todavía. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
