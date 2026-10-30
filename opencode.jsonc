@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Solo lo que se usa en este proyecto. Cada skill instalada mete su
+  // descripción en el prompt de todos los turnos: con 62 skills eran ~20 KB
+  // (≈5.100 tokens) por turno, y la mayoría no aplica acá.
+  //
+  // Se niega todo y se habilita la lista de abajo (la última sentencia que
+  // coincide gana). OpenCode 2.1.2 todavía no conoce `skill.use`: usa
+  // `integration.use` con el prefijo `skill:`. Al pasar a 2.3 o más hay que
+  // migrar a `{ "action": "skill.use", "resource": "<id>" }`.
+  "policies": [
+    { "action": "integration.use", "resource": "skill:*", "effect": "deny" },
+    { "action": "integration.use", "resource": "skill:cau_brand", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:cau_design_patterns", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:cargar_carrera", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:bot_respuestas", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:piezas_siglo21", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:piezas_teclab", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:piezas_teclab2", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:piezas-para-el-publico", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:lienzo-de-diseno", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:remotion", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:calcar-imagenes", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:diseno-uiverse", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:tests-daypo", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:pdf", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:seo-audit", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:web-perf", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:cloudflare", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:wrangler", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:workers-best-practices", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:durable-objects", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:turnstile-spin", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:brainstorming", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:writing-plans", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:executing-plans", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:systematic-debugging", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:webapp-testing", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:opencode", "effect": "allow" },
+  ]
+}

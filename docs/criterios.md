@@ -9,6 +9,26 @@ esto es **cómo se trabaja en él**. [`PENDIENTES.md`](../PENDIENTES.md) es la l
 
 ## Cómo escribir
 
+### El prompt se paga en cada turno
+
+Medido el 30/10/2026: antes de escribir la primera palabra, cada turno cargaba
+~61 KB (≈15.400 tokens) de instrucciones fijas. Lo que se hizo:
+
+- `opencode.jsonc` de la raíz niega todas las skills y habilita 27 (las que se
+  usan acá). Eran 62: las descripciones costaban 20,3 KB y ahora 6,3 KB. Para
+  sumar una, agregarla a las excepciones; para no repetir el error, no instalar
+  skills «por si acaso».
+  Con OpenCode 2.1.2 las policies van como `integration.use` + `skill:<id>`;
+  desde 2.3 son `skill.use` con el id suelto.
+- El bloque de Engram de `~/.config/opencode/AGENTS.md` quedó en cuatro líneas:
+  el protocolo completo ya lo manda el servidor MCP y estaba duplicado.
+- El `system` del agente `general` (en `opencode.jsonc` global) ya no repite la
+  tabla de trabajadores: la nombra y manda a `AGENTS.md`, que se carga igual.
+
+Lo que no se puede recortar desde acá: las instrucciones del MCP de codegraph
+(~4,5 KB, las fija el servidor) y el servidor remoto de Cloudflare, que expone
+3.792 herramientas (el catálogo muestra 7 y el resto va por `search`).
+
 ### La memoria no se llena de resúmenes
 
 Decidido el 30/10/2026, después de auditar la base de Engram: había 2306
@@ -19,6 +39,9 @@ temporales. La memoria dejó de servir para buscar.
 - Un `mem_session_summary` **por sesión**, no por tarea. El cierre de cada tema
   es un `mem_save` de cinco líneas (Qué / Por qué / Dónde / Aprendido).
 - Los handoffs largos van a `odd/tasks/` o a `docs/`; en memoria, un puntero.
+- Al buscar, `limit` chico y `response_format: compact`: cada resultado arrastra
+  el JSON de sus relaciones (~1,5 KB por resultado) que nadie lee.
+  `mem_get_observation` sólo cuando hace falta el texto completo.
 - Lo durable —cómo se trabaja, qué está decidido— vive en `docs/criterios.md`,
   no en memoria: la memoria es por máquina y por herramienta, y no cruza.
 
