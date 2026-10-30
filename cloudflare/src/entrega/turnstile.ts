@@ -191,10 +191,21 @@ function esperarIframe(contenedor: unknown, alListo: () => void): () => void {
 
   const enganchar = () => {
     const encontrado = nodo.querySelector?.('iframe') as NodoConIframe | null;
-    if (typeof encontrado?.addEventListener !== 'function') return false;
-    iframe = encontrado;
-    encontrado.addEventListener('load', listo, { once: true });
-    return true;
+    if (typeof encontrado?.addEventListener === 'function') {
+      iframe = encontrado;
+      encontrado.addEventListener('load', listo, { once: true });
+      return true;
+    }
+    // El widget actual de Cloudflare no deja el iframe en el DOM liviano: queda
+    // dentro de un shadow root y su `load` no llega nunca. Se detecta el input
+    // oculto que inserta al dibujarse, que sí está en el contenedor. Sin esto el
+    // marcador se quedaba encima hasta el tope de 10 s, tapando un widget que ya
+    // estaba listo y sin poder marcarlo.
+    if (nodo.querySelector?.('input[name="cf-turnstile-response"]')) {
+      listo();
+      return true;
+    }
+    return false;
   };
 
   // También cubre el iframe que render() insertó sincrónicamente.

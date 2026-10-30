@@ -338,3 +338,42 @@ test('la configuración pública del captcha sale del entorno de runtime', () =>
   // Una variable vacía no es una site key: el widget queda cerrado.
   assert.deepEqual(configTurnstile({ PUBLIC_TURNSTILE_SITE_KEY: '   ' }), { sitio: null, demo: false });
 });
+
+test('el marcador se saca cuando aparece el input del widget, aunque el iframe no esté en el DOM liviano', async () => {
+  // Cloudflare deja el iframe dentro de un shadow root: su `load` no llega y
+  // antes el marcador quedaba encima hasta el tope de 10 s.
+  const Original = globalThis.MutationObserver;
+  let observar = null;
+  globalThis.MutationObserver = class {
+    constructor(fn) { observar = fn; }
+    observe() {}
+    disconnect() {}
+  };
+  try {
+    const { documento } = documentoFalso();
+    const { api } = apiFalsa();
+    let hayInput = false;
+    const contenedor = {
+      querySelector: selector => (selector === 'iframe' ? null : hayInput ? { input: true } : null),
+    };
+    let montado = false;
+    const control = montarTurnstile({
+      sitio: 'clave-publica-ficticia',
+      contenedor,
+      documento,
+      ventana: {},
+      cargar: async () => api,
+      onVerify: () => {},
+      onMontado: () => { montado = true; },
+    });
+    await esperar(0);
+    assert.equal(montado, false, 'sin widget dibujado el marcador sigue');
+
+    hayInput = true;
+    observar?.();
+    assert.equal(montado, true, 'con el input del widget el marcador se retira');
+    control.desmontar();
+  } finally {
+    globalThis.MutationObserver = Original;
+  }
+});
