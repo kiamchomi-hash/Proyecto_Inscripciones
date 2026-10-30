@@ -93,6 +93,13 @@ detalle.
 Y si no queda rastro, decirlo así: «no está configurado; si fue una acción de una
 sola vez, no deja huella» es una respuesta útil. «¿Qué era?» a secas, no.
 
+### Se publica sin pedir permiso, salvo que toque dinero o la base
+
+Desde el 30/10/2026: al resolver un pendiente, commitear y pushear a `main` sin
+esperar aprobación, y avisar después. La excepción son los cambios que tocan
+dinero (precios, aranceles, importes, financiación, medios de pago) y la base D1
+(esquema, migraciones, escrituras): en esos dos casos se pide antes.
+
 ### No avisar sobre la máquina Windows
 
 Desde el 19/10/2026 trabaja sólo desde Linux. No cerrar respuestas con avisos de
