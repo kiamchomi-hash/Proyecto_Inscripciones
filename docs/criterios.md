@@ -9,6 +9,15 @@ esto es **cómo se trabaja en él**. [`PENDIENTES.md`](../PENDIENTES.md) es la l
 
 ## Cómo escribir
 
+### Si es ambiguo, se pregunta
+
+Decidido el 30/10/2026, textual del usuario: «no vuelvas a inventar cosas, si no
+sabes algo, o te parece ambiguo, preguntalo». No se completan huecos con la
+suposición más razonable: un dato que falta, una preferencia a medio decir o un
+pedido que admite dos lecturas se pregunta antes de tocar nada. Vale para
+contenido, fechas, diseño y alcance. Una pregunta corta cuesta menos que un
+commit que hay que revertir.
+
 ### Todo cambio estético se muestra en el chat
 
 Después de cualquier cambio estético, mostrar cómo quedó con capturas visibles
