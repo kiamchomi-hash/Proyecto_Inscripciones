@@ -242,6 +242,16 @@ se prueban las áreas afectadas; el control integral queda para cambios amplios.
 GitHub verifica el código de la raíz y el contrato del publicador, no el `check`
 completo de Cloudflare.
 
+### Las piezas gráficas de Siglo 21 van con el material oficial
+
+Decidido el 30/10/2026: Siglo 21 pidió que se use sólo su material oficial. No
+se invierte más tiempo en armar folletos ni afiches de esa casa, y las tareas de
+pieza que siguen abiertas pasan a ser secundarias. La única excepción es lo que
+se manda por WhatsApp, que se sigue armando.
+
+No se rehacen las piezas que ya están en `contenidos/siglo21/` sin un pedido
+concreto, ni se proponen nuevas por iniciativa propia.
+
 ### Nada de glassmorfismo ni bordes de acento como decoración
 
 Decidido el 30/10/2026, textual del usuario: «ese borde es una señal de

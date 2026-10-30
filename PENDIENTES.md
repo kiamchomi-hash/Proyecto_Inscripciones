@@ -16,14 +16,11 @@ Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas
 
 ## 3. Urgente: leads y precios
 
-- [ ] **Investigar cuotas, intereses y cargos de otros medios de pago de Teclab** (23/10/2026): MercadoPago con dinero en cuenta, GoCuotas, WiBond, PagoFácil y Rapipago. El mismo total inicial no confirma las condiciones de financiación. [Detalle y límite de acceso](odd/tasks/teclab-extractor-dashboard.md#medios-de-pago-adicionales-condiciones-pendientes).
+- [ ] **Investigar cuotas, intereses y cargos de otros medios de pago de Teclab** (23/10/2026): MercadoPago con dinero en cuenta, GoCuotas, WiBond, PagoFácil y Rapipago. El mismo total inicial no confirma las condiciones de financiación. **Parcial (30/10/2026):** el usuario confirmó que MercadoPago, PagoFácil y Rapipago son **1 pago**, sin cuotas, y ya está en el corpus y en «Formas de pago» del buscador. Falta GoCuotas y WiBond, y si ese 1 pago tiene el mismo total que el de tarjeta. [Detalle y límite de acceso](odd/tasks/teclab-extractor-dashboard.md#medios-de-pago-adicionales-condiciones-pendientes).
 
 ## 5. Siglo 21
 
-- [ ] **Revisar parciales en carreras cuatrimestrales y bimestrales** (20/10/2026):
-  - **Carreras cuatrimestrales** (Abogacía, Contador, Licenciatura en Informática): regla de un parcial por cuatrimestre.
-  - **Carreras bimestrales**: regla de un parcial por bimestre.
-  - Contrastar contra el corpus y respuestas (`ventas/corpus/siglo21.json`), que hoy describen dos parciales por materia.
+- Las piezas gráficas de esta casa quedaron **secundarias el 30/10/2026**: sólo material oficial y, como excepción, lo que se manda por WhatsApp ([criterio](docs/criterios.md#las-piezas-gráficas-de-siglo-21-van-con-el-material-oficial)). Sus pendientes abiertos viven en las secciones 6 y 7.
 
 ## 6. Sitio y diseño
 
@@ -94,7 +91,7 @@ Los pedidos ya redactados y el destino de cada dato están en [las notas operati
 
 ## Al fondo de la cola
 
-Postergado por el usuario el 16/10/2026; se retoma después de los pendientes anteriores.
+Postergado por el usuario el 16/10/2026; se retoma después de los pendientes anteriores. **Las piezas gráficas de Siglo 21 quedaron secundarias el 30/10/2026**: sólo material oficial, y lo que se manda por WhatsApp sigue su curso ([criterio](docs/criterios.md#las-piezas-gráficas-de-siglo-21-van-con-el-material-oficial)).
 
 - [ ] **06/11/2026: segunda revisión del embudo del test vocacional** (general y Teclab). Primera lectura el 20/10/2026 (16 al 20/10): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron; la caída está en las preguntas 1 a 3 y después nadie abandona. El de Teclab no tuvo ninguna visita. Muestra demasiado chica para tocar pasos; si sigue en cero, revisar cómo se llega al de Teclab. [Cómo leerlo](docs/medicion-test-vocacional.md).
 
@@ -112,9 +109,9 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 
 - [ ] **Bloque 4 de carreras nuevas de Teclab**: cuando llegue su capacitación de admisión, darlas de alta como los bloques 2 y 3 (16/10/2026). [Detalle](odd/tasks/teclab-bloques-2-y-3.md).
 
-- [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso**. Empezar por Teclab; después Siglo 21, Identidad Argentina y clases de apoyo.
+- [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso** — *secundaria en Siglo 21 desde el 30/10/2026*. Empezar por Teclab; después Identidad Argentina y clases de apoyo.
 
-- [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab**.
+- [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab** — *secundaria desde el 30/10/2026, salvo la versión de WhatsApp*.
 
 - [ ] **Fichas de carreras de Teclab**: las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
 
@@ -130,11 +127,11 @@ Postergado por el usuario el 16/10/2026; se retoma después de los pendientes an
 
 - [ ] **6. Mejorar con IA las imágenes de algunos modales de carreras**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
-- [ ] **2. Mejorar las páginas de clases y crear sus folletos e imágenes**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+- [ ] **2. Mejorar las páginas de clases y crear sus folletos e imágenes** — *los folletos, secundarios desde el 30/10/2026, salvo la versión de WhatsApp*. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
 - [ ] **7. Mejorar la página de materias en base a los folletos creados**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
-- [ ] **11. Crear un folleto de carreras relevantes**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+- [ ] **11. Crear un folleto de carreras relevantes** — *secundaria en Siglo 21 desde el 30/10/2026, salvo la versión de WhatsApp*. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
 - [ ] **8. Rediseñar Identidad Argentina: los modales y la página principal**. Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
 
