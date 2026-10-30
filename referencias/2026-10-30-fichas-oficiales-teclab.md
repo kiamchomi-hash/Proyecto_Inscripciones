@@ -48,13 +48,19 @@ salida profesional; plan por año en acordeones con botón «Descargar Programa�
 ## Cómo se cotejaron los planes
 
 Se bajaron los 22 programas de `teclab.edu.ar` y se extrajeron con
-`pdftotext -layout`, tomando la tabla de cuatrimestres de cada PDF. Después se
-compararon, materia por materia, contra el `plan_estudios` que publica D1. Las
-tres fuentes locales que interesan: `carreras/teclab/pdfs/` (los PDF),
-`carreras/teclab/planes-teclab.json` (lo extraído, al día) y
+`pdftotext -bbox-layout`: cada materia es un bloque con su posición, así que se
+arma cada cuatrimestre por la columna y la altura de su cabecera («1º
+Cuatrimestre»…) en vez de partir el año en dos. Eso importa: el JSON del bot
+(`carreras/teclab/planes-teclab.json`, generado por
+`herramientas/ventas/extraer-planes-teclab.py`) agrupa por año y divide en
+mitades, y con eso no se reconstruyen los cuatrimestres. Las tres fuentes
+locales que interesan: `carreras/teclab/pdfs/` (los PDF),
+`carreras/teclab/planes-teclab.json` (lo que usa el bot) y
 `carreras/teclab/contenidos-teclab.json` (lo escrito a mano, que pisa al
-anterior). Resultado: resoluciones y valideces coinciden en las 22; los planes
-difieren en 13.
+anterior).
+
+Resultado: resoluciones y valideces coincidían en las 22; los planes no, en 17.
+Se corrigieron en D1 el 30/10/2026 y quedaron iguales a los PDF.
 
 ## Descartado
 
