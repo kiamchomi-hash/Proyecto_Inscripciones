@@ -37,7 +37,7 @@ export const CABECERAS_SEGURIDAD: Readonly<Record<string, string>> = {
 
 const API = /^\/api(?:\/|$)/;
 const IMAGENES = /^\/imagenes\/?$/;
-const INSCRIPCION_CARRERA = /^\/carreras\/[^/]+\/inscripcion\/?$/;
+const INSCRIPCION = /^\/(?:carreras\/[^/]+\/inscripcion|teclab\/inscripcion)\/?$/;
 
 /**
  * `X-Robots-Tag` por ruta, como los bloques de `headers()` de `next.config.ts`.
@@ -49,7 +49,7 @@ export function robotsDeRuta(ruta: string, estado: number): string | null {
   if (estado === 404) return 'noindex, nofollow';
   if (API.test(ruta)) return 'noindex';
   if (IMAGENES.test(ruta)) return 'noindex, nofollow';
-  if (INSCRIPCION_CARRERA.test(ruta)) return 'noindex, follow';
+  if (INSCRIPCION.test(ruta)) return 'noindex, follow';
   return null;
 }
 

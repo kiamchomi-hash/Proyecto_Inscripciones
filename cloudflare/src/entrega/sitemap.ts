@@ -108,7 +108,6 @@ export function construirSitemap(datos: DatosSitemap): EntradaSitemap[] {
       priority: 0.8,
       images: [`${BASE}/imagenes/teclab/carreras/marketing-digital.webp`],
     },
-    { url: `${BASE}/teclab/inscripcion`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/teclab/test-vocacional`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE}/clases-apoyo`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/contacto`, changeFrequency: 'monthly', priority: 0.5 },

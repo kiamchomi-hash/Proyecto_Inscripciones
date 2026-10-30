@@ -101,6 +101,7 @@ test('X-Robots-Tag se decide por ruta: público sin noindex, privado y 404 con n
     ['/api/formularios', 405, 'noindex'],
     ['/imagenes', 200, 'noindex, nofollow'],
     ['/carreras/licenciatura-en-administracion/inscripcion', 200, 'noindex, follow'],
+    ['/teclab/inscripcion', 200, 'noindex, follow'],
     ['/no-existe', 404, 'noindex, nofollow'],
   ];
   for (const [ruta, estado, esperado] of casos) {
@@ -160,7 +161,6 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.deepEqual(locales, [
     'https://www.siglo21sur.com',
     'https://www.siglo21sur.com/teclab',
-    'https://www.siglo21sur.com/teclab/inscripcion',
     'https://www.siglo21sur.com/teclab/test-vocacional',
     'https://www.siglo21sur.com/clases-apoyo',
     'https://www.siglo21sur.com/contacto',
@@ -274,7 +274,6 @@ test('sitemap con D1 vacío: sólo las páginas fijas y /novedades/1', async t =
   assert.deepEqual(locales, [
     'https://www.siglo21sur.com',
     'https://www.siglo21sur.com/teclab',
-    'https://www.siglo21sur.com/teclab/inscripcion',
     'https://www.siglo21sur.com/teclab/test-vocacional',
     'https://www.siglo21sur.com/clases-apoyo',
     'https://www.siglo21sur.com/contacto',
