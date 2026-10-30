@@ -279,11 +279,14 @@ export function montarTurnstile(opciones: OpcionesMontaje): ControlTurnstile {
       size: compacto ? 'compact' : 'flexible',
       ...(invisible ? { appearance: 'interaction-only' as const } : {}),
     });
-    // Cada dibujo vuelve a mostrar el marcador hasta que el iframe carga.
+    // Cada dibujo vuelve a mostrar el marcador hasta que el widget está puesto.
+    // El aviso del tamaño va antes de esperar al widget: la detección puede
+    // resolverse en el acto (Cloudflare ya insertó su input) y, si `onDibujado`
+    // viniera después, volvería a tapar el widget que acaba de aparecer.
     montadoAvisado = false;
     cancelarEspera?.();
-    cancelarEspera = esperarIframe(contenedor, avisarMontado);
     opciones.onDibujado?.(compacto);
+    cancelarEspera = esperarIframe(contenedor, avisarMontado);
   };
 
   onEstado?.('cargando');

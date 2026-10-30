@@ -377,3 +377,34 @@ test('el marcador se saca cuando aparece el input del widget, aunque el iframe n
     globalThis.MutationObserver = Original;
   }
 });
+
+test('si el widget ya está puesto al dibujar, el montado se avisa después del tamaño', async () => {
+  // Cloudflare inserta su input en el mismo render: la detección se resuelve ahí
+  // y el aviso de tamaño no puede venir después, o volvería a poner el marcador.
+  const Original = globalThis.MutationObserver;
+  globalThis.MutationObserver = class {
+    constructor(fn) { this.fn = fn; }
+    observe() {}
+    disconnect() {}
+  };
+  try {
+    const { documento } = documentoFalso();
+    const { api } = apiFalsa();
+    const orden = [];
+    const control = montarTurnstile({
+      sitio: 'clave-publica-ficticia',
+      contenedor: { querySelector: selector => (selector === 'iframe' ? null : { input: true }) },
+      documento,
+      ventana: {},
+      cargar: async () => api,
+      onVerify: () => {},
+      onDibujado: () => orden.push('dibujado'),
+      onMontado: () => orden.push('montado'),
+    });
+    await esperar(0);
+    assert.deepEqual(orden, ['dibujado', 'montado']);
+    control.desmontar();
+  } finally {
+    globalThis.MutationObserver = Original;
+  }
+});
