@@ -17,7 +17,7 @@
 
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import { acceso, consultar as consultarGsc } from './gsc.mjs';
+import { acceso, consultar as consultarGsc, sitemaps } from './gsc.mjs';
 import { buscarRedireccion } from '../cloudflare/src/entrega/redirects.ts';
 import { resolverConBusqueda, consolidarFilasSeo } from './seo-rutas.mjs';
 
@@ -115,6 +115,23 @@ async function inspeccionar(url) {
 if (INSPECCION) {
   ACCESO = await acceso();
   console.log(JSON.stringify(await inspeccionar(INSPECCION), null, 1));
+  process.exit(0);
+}
+
+// Lo que Google tiene registrado de los sitemaps de la propiedad: última
+// descarga y URLs indexadas por sitemap. Era el único dato del MCP `gsc` que
+// ningún script cubría.
+//   npm run seo -- --sitemaps
+if (args.includes('--sitemaps')) {
+  const lista = await sitemaps(await acceso(), SITIO);
+  const filas = lista.map(s => ({
+    ruta: s.path,
+    ultimaDescarga: s.lastDownloaded ?? null,
+    estado: s.errors ? `errores: ${s.errors}` : (s.isPending ? 'pendiente' : 'procesado'),
+    indexadas: s.contents?.[0]?.indexed ?? null,
+    enviadas: s.contents?.[0]?.submitted ?? null,
+  }));
+  console.log(JSON.stringify(filas, null, 1));
   process.exit(0);
 }async function enTanda(items, tamano, fn) {
   const salida = [];

@@ -55,6 +55,21 @@ export async function acceso() {
 }
 
 /**
+ * Los sitemaps que Google conoce de la propiedad, con la última descarga y las
+ * URLs indexadas. Reemplaza `get_sitemaps` del MCP de Search Console, que se
+ * apagó por costo de prompt: era el único dato que no estaba cubierto por los
+ * scripts.
+ */
+export async function sitemaps(token, sitio) {
+  const r = await fetch(
+    `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(sitio)}/sitemaps`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!r.ok) throw new Error(`sitemaps ${r.status}: ${await r.text()}`);
+  return (await r.json()).sitemap ?? [];
+}
+
+/**
  * Una consulta a searchAnalytics. `dataState: 'final'` deja afuera los datos
  * que Google todavia esta consolidando: son los que despues cambian y hacen
  * parecer que el trafico cayo.
