@@ -100,4 +100,6 @@ Relevamiento de checkout comunicado por el coordinador el 23/10/2026: MercadoPag
 
 - [ ] P1 Investigar, para cada uno de los cinco medios, cantidad y periodicidad de cuotas, intereses, CFT, cargos administrativos y condiciones de acceso. Contrastar las condiciones mostradas antes de cualquier confirmación; no inferirlas del total inicial del checkout.
 
+**Avance del 30/10/2026:** el usuario confirmó que **MercadoPago, PagoFácil y Rapipago se pagan en 1 pago** y no ofrecen cuotas. Ya está en el corpus (`medios-de-pago-teclab`, `sin-tarjeta-teclab*`) y en la sección «Formas de pago» del buscador de carreras (`otrosMediosUnPago` en `formasDePagoTeclab`). Queda abierto: **GoCuotas y WiBond** (cuotas, interés y cargos) y si el total del 1 pago por esos tres canales coincide con el de tarjeta en 1 pago — hoy no se afirma ninguna de las dos cosas.
+
 El acceso inicial con las credenciales configuradas fue rechazado; posteriormente el usuario inició sesión manualmente en el navegador integrado y se recorrieron los cinco medios hasta Datos de Facturación. No se pulsó Pagar ni se verificaron condiciones finales dentro de los proveedores. No hay un bloqueo de autenticación confirmado vigente. Este seguimiento es independiente del extractor, que queda resuelto.

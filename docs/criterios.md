@@ -197,6 +197,21 @@ UIverse van con su URL de `uiverse.io`, no con la ruta local.
 
 ## Decisiones tomadas: no volver a proponerlas
 
+### No se muestran precios en el formulario de preinscripción
+
+Decidido el 30/10/2026. El precio se muestra en las fichas, en el buscador y en
+los mensajes de WhatsApp, pero no dentro de los pasos del formulario de
+preinscripción. La tarea que pedía llevarlo ahí queda cerrada en Siglo 21 y
+Teclab como están publicadas y no se extiende a Identidad Argentina. No
+reproponerla.
+
+### La autoinscripción de Siglo 21 no se hace
+
+Decidido el 30/10/2026. Sólo agrega fricción: el formulario registra la solicitud
+y la atención sigue a mano, a cargo del usuario. No es una baja de
+implementación como la de la autoinscripción de Teclab del 27/10/2026, que sí
+existió y se retiró; acá simplemente no se construye.
+
 ### El OWASP Core Ruleset de Vercel no se paga
 
 Decidido el 08/08/2026. Vercel lo cobra por request inspeccionado y el valor
@@ -266,6 +281,28 @@ el efecto: ni transparencia, ni degradé, ni borde de color, ni sombra.
 Esto **no** reabre las tarjetas que ya existen en todo el sitio
 (`.ca-card`, `.news-card`, el panel de beneficios): se tocan sólo si se pide. La
 regla es para lo nuevo y para lo que se rediseñe.
+
+### Las cifras no van incrustadas en la bajada
+
+Decidido el 30/10/2026, textual del usuario: «la B es horrible, no lo vuelvas a
+sugerir». La cifra grande metida dentro de una frase («Más de **32** años en la
+zona», con el 32 a 38 pt entre dos textos de 16) rompe la línea de base y no se
+vuelve a proponer.
+
+Si un número tiene que tener peso, va solo, en su propia línea o columna, o en
+una frase con el mismo cuerpo que el resto.
+
+### Nada de círculos decorativos
+
+Decidido el 30/10/2026, textual del usuario: «no me gusta ese circulo en casi
+ningún caso». Se refiere al anillo o círculo de relleno puesto detrás de un
+número, de un título o para tapar un hueco de la composición —no al sello del
+CAU ni a los íconos redondos de una lista, que son marca o función—.
+
+Nació de la hoja institucional del 30/10/2026: ahí el anillo no venía de ninguna
+referencia, se agregó para llenar el aire a la derecha de la franja verde y se
+notó. Si una zona queda vacía, se resuelve con tipografía, con aire o con un
+dato; no con una figura.
 
 ### Identidad Argentina se migra a otro sitio
 
