@@ -50,7 +50,9 @@ test('FAQ se renderiza en HTML SSR, escapada y con controles nativos sin JavaScr
   assert.match(html, /&lt;script&gt;un procurador&lt;\/script&gt;/);
   assert.match(html, /expedientes &amp; documentación/);
   assert.doesNotMatch(html, /<script>un procurador/);
-  assert.match(html, /href="#preguntas-frecuentes"/);
+  // El índice del lateral quedó con «Cómo inscribirte» nomás (31/10/2026): la
+  // FAQ se alcanza bajando, no por atajo.
+  assert.doesNotMatch(html, /href="#preguntas-frecuentes"/);
   assert.doesNotMatch(readFileSync('components/carreras/career-detail.tsx', 'utf8'), /^['"]use client['"]/);
   assert.doesNotMatch(renderToStaticMarkup(React.createElement(CareerDetail, { carrera, relacionadas: [] })), /preguntas-frecuentes|<details/);
 });

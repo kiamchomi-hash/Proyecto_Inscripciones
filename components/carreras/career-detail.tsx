@@ -24,7 +24,6 @@ import {
 } from '@/components/index/teclab';
 import { getResolucionesTeclab } from '@/components/index/resoluciones-teclab';
 import { getPlanOficialTeclab } from '@/components/index/planes-teclab';
-import AvisoInicioTeclab from '@/components/index/aviso-inicio-teclab';
 import CareerInfoButton from './career-info-button';
 import StickyEnrollmentCta from './sticky-enrollment-cta';
 import ResaltarInscripcion from './resaltar-inscripcion';
@@ -462,14 +461,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
 
       <div className="career-layout">
         <div className="career-content">
-          {/* Aviso de inicio de Teclab, justo arriba del plan (o de "Como se
-              cursa" en el curso): ahi se decide si anotarse, no en el hero. Una
-              anunciada no tiene fecha de inicio: el aviso diria "todavia estas a
-              tiempo de inscribirte" en una carrera que no abrio. */}
-          {conMaterialTeclab && !carrera.proximamente && (
-            <AvisoInicioTeclab carrera={carrera} acento={accent} className="career-aviso-inicio" />
-          )}
-
           {/* Reemplaza al plan de estudios en los cursos: no tienen temario por
               cuatrimestre, pero si hay que contar como es la cursada. */}
           {cursada.length > 0 && (
@@ -764,14 +755,8 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
         <aside className="career-aside" aria-label="Navegación y contacto">
           <div className="career-aside-inner">
             <nav>
-              {/* El orden del índice sigue el de la página: el plan primero. */}
-              {cursada.length > 0 && <a href="#plan">Cómo se cursa</a>}
-              {hasPlan && <a href="#plan">Plan de estudios</a>}
-              {((portada?.bullets.length ?? 0) > 0 || teclabCompetencias.length > 0) && (
-                <a href="#perfil">{isTeclabCourse ? 'Qué vas a aprender' : 'Perfil profesional'}</a>
-              )}
-              {teclabCompetencias.length === 0 && teclabSalida && <a href="#perfil">Salida laboral</a>}
-              {faq && <a href="#preguntas-frecuentes">Preguntas frecuentes</a>}
+              {/* Sólo el atajo de inscripción: el resto de la página se lee
+                  corriendo y las cuatro píldoras competían con el formulario. */}
               {inscripcionHref && (
                 <a href="#preinscripcion">Cómo inscribirte</a>
               )}
