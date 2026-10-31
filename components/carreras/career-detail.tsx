@@ -595,98 +595,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
             </section>
           )}
 
-          {/* Franja institucional: la diplomatura la dicta la Academia.
-              Sin enlace a su sitio, igual que la de Teclab: el contacto se hace
-              por WhatsApp o por el formulario de esta pagina. */}
-          {isIA && (
-            <section className="career-oficial career-oficial--ia career-reveal">
-              <IsotipoIA className="career-oficial-isotipo" />
-              <p>
-                Propuesta académica de Academia Identidad Argentina, independiente de Universidad
-                Siglo 21. También disponible a través del Centro Educativo Villa Lugano. Se cursa
-                por la plataforma Innova Virtual, con certificación nacional e internacional.
-              </p>
-              <a href="#formulario">
-                Solicitar información
-                <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </a>
-            </section>
-          )}
-
-          {/* Franja de marca: el titulo lo emite Teclab y el CAU es el centro
-              que acompaña la cursada. Sin enlace al sitio del instituto: el
-              contacto se hace por WhatsApp o por el formulario de esta pagina. */}
-          {ficha && (
-            <section className="career-oficial career-reveal">
-              <Image
-                src="/imagenes/teclab/logo-teclab-siglo21.webp"
-                alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
-                width={380}
-                height={69}
-              />
-              <p>
-                {isTeclabCourse ? 'Curso oficial de Teclab' : 'Carrera oficial de Teclab'}
-                {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Te acompañamos en la
-                inscripción y durante toda la cursada.
-                {inscripcionHref && (
-                  <>
-                    {' '}Mirá{' '}
-                    {/* Enlace de texto dentro del parrafo: `.career-oficial a`
-                        lo pintaria como un segundo boton al lado de "Solicitar
-                        informacion", que es el que tiene que ganar. */}
-                    <Link
-                      href="#preinscripcion"
-                      prefetch={false}
-                      style={{
-                        display: 'inline',
-                        padding: 0,
-                        border: 0,
-                        fontSize: 'inherit',
-                        textDecoration: 'underline',
-                        textUnderlineOffset: '.2em',
-                      }}
-                    >
-                      cómo inscribirte
-                    </Link>
-                    , paso a paso.
-                  </>
-                )}
-              </p>
-              {/* El titulo no es un punto final: es la mitad de una licenciatura
-                  ya cursada. Va aca y no en el hero porque se lee despues del
-                  plan de estudios, que es cuando la pregunta aparece sola. */}
-              {articula && (
-                <p className="career-oficial-articulacion">
-                  <strong>Después podés seguir en Universidad Siglo 21.</strong>{' '}
-                  {carrera.id === 227 ? (
-                    <>Podés consultar la articulación con Contador Público. Las equivalencias se evalúan según tu trayectoria académica; no son automáticas. Consultá las opciones en el{' '}</>
-                  ) : (
-                    <>El título articula con las licenciaturas de la universidad reconociendo todas las materias de la tecnicatura: no repetís ninguna. Mirá cuáles te corresponden en el{' '}</>
-                  )}
-                  {/* Unico enlace externo de la ficha, y es a un dominio de la
-                      propia universidad -- no al sitio del instituto. Ahi se
-                      carga el titulo previo y sale la lista de licenciaturas con
-                      equivalencia, que es lo que no podemos contestar desde aca:
-                      depende de cada plan. */}
-                  <a
-                    href="https://tusestudiosprevios.21.edu.ar/explorar-equivalencia"
-                    target="_blank"
-                    rel="noopener nofollow"
-                  >
-                    simulador de equivalencias de Siglo 21
-                  </a>.
-                </p>
-              )}
-              <a href="#formulario">
-                Solicitar información
-                <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </a>
-            </section>
-          )}
           {/* Las listas con tilde van abajo de los formularios (ver el final del
               componente): son lectura de cierre, no parte del recorrido. */}
           {faq && (
@@ -793,6 +701,102 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               <div className="career-salida">
                 <p>{teclabSalida}</p>
               </div>
+            </section>
+          )}
+
+          {/* Las franjas de marca cierran la página: quién emite el título y con
+              qué sigue después. Van abajo de las competencias, último bloque
+              antes de «Otras carreras». */}
+          {/* Franja institucional: la diplomatura la dicta la Academia.
+              Sin enlace a su sitio, igual que la de Teclab: el contacto se hace
+              por WhatsApp o por el formulario de esta pagina. */}
+          {isIA && (
+            <section className="career-oficial career-oficial--ia career-reveal">
+              <IsotipoIA className="career-oficial-isotipo" />
+              <p>
+                Propuesta académica de Academia Identidad Argentina, independiente de Universidad
+                Siglo 21. También disponible a través del Centro Educativo Villa Lugano. Se cursa
+                por la plataforma Innova Virtual, con certificación nacional e internacional.
+              </p>
+              <a href="#formulario">
+                Solicitar información
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
+            </section>
+          )}
+
+          {/* Franja de marca: el titulo lo emite Teclab y el CAU es el centro
+              que acompaña la cursada. Sin enlace al sitio del instituto: el
+              contacto se hace por WhatsApp o por el formulario de esta pagina. */}
+          {ficha && (
+            <section className="career-oficial career-reveal">
+              <Image
+                src="/imagenes/teclab/logo-teclab-siglo21.webp"
+                alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
+                width={380}
+                height={69}
+              />
+              <p>
+                {isTeclabCourse ? 'Curso oficial de Teclab' : 'Carrera oficial de Teclab'}
+                {ficha.partner ? `, cocreada con ${ficha.partner.nombre}` : ''}. Te acompañamos en la
+                inscripción y durante toda la cursada.
+                {inscripcionHref && (
+                  <>
+                    {' '}Mirá{' '}
+                    {/* Enlace de texto dentro del parrafo: `.career-oficial a`
+                        lo pintaria como un segundo boton al lado de "Solicitar
+                        informacion", que es el que tiene que ganar. */}
+                    <Link
+                      href="#preinscripcion"
+                      prefetch={false}
+                      style={{
+                        display: 'inline',
+                        padding: 0,
+                        border: 0,
+                        fontSize: 'inherit',
+                        textDecoration: 'underline',
+                        textUnderlineOffset: '.2em',
+                      }}
+                    >
+                      cómo inscribirte
+                    </Link>
+                    , paso a paso.
+                  </>
+                )}
+              </p>
+              {/* El titulo no es un punto final: es la mitad de una licenciatura
+                  ya cursada. Va aca y no en el hero porque se lee despues del
+                  plan de estudios, que es cuando la pregunta aparece sola. */}
+              {articula && (
+                <p className="career-oficial-articulacion">
+                  <strong>Después podés seguir en Universidad Siglo 21.</strong>{' '}
+                  {carrera.id === 227 ? (
+                    <>Podés consultar la articulación con Contador Público. Las equivalencias se evalúan según tu trayectoria académica; no son automáticas. Consultá las opciones en el{' '}</>
+                  ) : (
+                    <>El título articula con las licenciaturas de la universidad reconociendo todas las materias de la tecnicatura: no repetís ninguna. Mirá cuáles te corresponden en el{' '}</>
+                  )}
+                  {/* Unico enlace externo de la ficha, y es a un dominio de la
+                      propia universidad -- no al sitio del instituto. Ahi se
+                      carga el titulo previo y sale la lista de licenciaturas con
+                      equivalencia, que es lo que no podemos contestar desde aca:
+                      depende de cada plan. */}
+                  <a
+                    href="https://tusestudiosprevios.21.edu.ar/explorar-equivalencia"
+                    target="_blank"
+                    rel="noopener nofollow"
+                  >
+                    simulador de equivalencias de Siglo 21
+                  </a>.
+                </p>
+              )}
+              <a href="#formulario">
+                Solicitar información
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
             </section>
           )}
         </div>
