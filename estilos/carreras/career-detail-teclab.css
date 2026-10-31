@@ -609,9 +609,9 @@
   gap: 0.6rem;
 }
 
-/* El captcha invisible sólo se dibuja cuando Cloudflare decide pedir el desafío.
-   Centrado y sin reservar alto: en el caso normal no ocupa lugar. */
-.career-page--teclab .career-form-rapido form > div {
+/* El captcha invisible sólo se dibuja cuando Cloudflare decide pedir el desafío,
+   y recién después del primer «Enviar». Centrado: la tarjeta es angosta. */
+.career-page--teclab .career-form-rapido-captcha {
   display: flex;
   justify-content: center;
   min-height: 0;

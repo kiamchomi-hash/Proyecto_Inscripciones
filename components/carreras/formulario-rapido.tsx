@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 
 /**
@@ -10,6 +10,10 @@ import TurnstileWidget from '@/components/turnstile-widget';
  * al mismo endpoint, con la carrera de esta ficha ya puesta— así que el lead
  * llega con su contexto y pasa por el mismo aviso y el mismo captcha. No manda
  * `newsletter`: sin la casilla a la vista no hay consentimiento.
+ *
+ * El captcha se monta recién al primer «Enviar»: en la tarjeta angosta, el
+ * widget visible desarmaba la composición, y en el caso normal (verificación
+ * invisible) no hace falta mostrarlo mientras se completa.
  */
 export default function FormularioRapido({
   casa,
@@ -22,6 +26,7 @@ export default function FormularioRapido({
 }) {
   const [valores, setValores] = useState({ nombre: '', apellido: '', email: '', telefono: '' });
   const [token, setToken] = useState('');
+  const [pidiendoToken, setPidiendoToken] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [listo, setListo] = useState(false);
   const [error, setError] = useState('');
@@ -34,21 +39,8 @@ export default function FormularioRapido({
   const completo = valores.nombre.trim() !== '' && valores.apellido.trim() !== ''
     && emailOk && telefonoOk;
 
-  async function enviar(evento: React.FormEvent) {
-    evento.preventDefault();
+  const enviar = useCallback(async () => {
     if (enviando) return;
-    // El servidor acepta sólo uno de los dos contactos; acá se piden los dos
-    // porque el pedido fue ese, y sin uno de ellos el envío no sale.
-    if (!completo) {
-      setError('Completá nombre, apellido, mail y teléfono.');
-      return;
-    }
-    // El captcha invisible puede tardar: se avisa en vez de dejar el botón
-    // apagado sin explicación.
-    if (!token) {
-      setError('Falta la verificación de seguridad. Esperá un segundo y probá de nuevo.');
-      return;
-    }
     setEnviando(true);
     setError('');
     try {
@@ -75,9 +67,31 @@ export default function FormularioRapido({
       setValores({ nombre: '', apellido: '', email: '', telefono: '' });
     } catch {
       setError('No pudimos enviarlo. Probá de nuevo o escribinos por WhatsApp.');
+      // El token es de un solo uso: el próximo intento pide uno nuevo.
+      setToken('');
+      setPidiendoToken(false);
     } finally {
       setEnviando(false);
     }
+  }, [casa, carrera, carreraId, enviando, token, valores]);
+
+  // Con el token en mano —lo trae el captcha recién montado— sale el envío.
+  useEffect(() => {
+    if (pidiendoToken && token) void enviar();
+  }, [pidiendoToken, token, enviar]);
+
+  function alEnviar(evento: React.FormEvent) {
+    evento.preventDefault();
+    if (enviando) return;
+    if (!completo) {
+      setError('Completá nombre, apellido, mail y teléfono.');
+      return;
+    }
+    if (!token) {
+      setPidiendoToken(true);
+      return;
+    }
+    void enviar();
   }
 
   if (listo) {
@@ -92,7 +106,7 @@ export default function FormularioRapido({
   return (
     <section className="career-form-rapido" aria-labelledby="career-form-rapido-titulo">
       <p className="career-form-rapido-titulo" id="career-form-rapido-titulo">Inscripción rápida</p>
-      <form onSubmit={enviar} noValidate>
+      <form onSubmit={alEnviar} noValidate>
         <div className="career-form-rapido-fila">
           <label>
             <span>Nombre</span>
@@ -137,12 +151,16 @@ export default function FormularioRapido({
             onChange={cambiar('telefono')}
           />
         </label>
-        <TurnstileWidget
-          marca={casa}
-          invisible
-          onVerify={setToken}
-          onExpire={() => setToken('')}
-        />
+        {pidiendoToken && !token && (
+          <div className="career-form-rapido-captcha">
+            <TurnstileWidget
+              marca={casa}
+              invisible
+              onVerify={setToken}
+              onExpire={() => setToken('')}
+            />
+          </div>
+        )}
         <button type="submit" disabled={enviando}>
           {enviando ? 'Enviando…' : 'Enviar'}
         </button>
