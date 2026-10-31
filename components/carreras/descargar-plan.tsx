@@ -28,7 +28,7 @@ export default function DescargarPlan({
     return (
       <a className="career-plan-download" href={oficial} download>
         <IconoDescarga />
-        Descargar plan de estudios
+        <span className="career-plan-download-label">Descargar plan de estudios</span>
       </a>
     );
   }
@@ -51,7 +51,7 @@ export default function DescargarPlan({
       aria-busy={armando || undefined}
     >
       <IconoDescarga />
-      Descargar plan de estudios
+      <span className="career-plan-download-label">Descargar plan de estudios</span>
     </button>
   );
 }
