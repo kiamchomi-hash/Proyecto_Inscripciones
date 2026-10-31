@@ -6,7 +6,7 @@ Cuando el sitio le muestra a alguien el precio vigente de una carrera de Teclab,
 
 ## Decisión (usuario, 03/10/2026)
 
-El envío sale por la API de SMTP2GO, desde `inscripciones@siglo21sur.com`. Resend no sirve: la cuenta es compartida con topykly y el plan gratis permite un solo dominio.
+El envío sale por la API de SMTP2GO, desde `inscripciones@siglo21sur.com`. Resend no sirvió: la cuenta era compartida con topykly y el plan gratis permite un solo dominio. Ese proyecto ya no existe y el 31/10/2026 se borró la última clave de Resend; la decisión de SMTP2GO no cambia.
 
 ## Hechos verificados
 

@@ -9,6 +9,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 - **Recuperación de Supabase, 28/10/2026.** Se descarta la tarea que pedía completar Auth, permisos/RLS, Vault y Storage en Supabase: la base se dio de baja con el corte a Cloudflare y el contenido vive en D1. [`docs/recuperacion-supabase.md`](recuperacion-supabase.md) queda como registro histórico del ensayo del 01/10/2026 y **no es un procedimiento vigente**. El respaldo que sí corre es el de D1: `npm run db:respaldo` todos los días a las 08:30 ([herramientas](herramientas.md#respaldo-de-la-base)).
 - **Autoinscripción de Teclab, 27/10/2026.** Se dio de baja el flujo completo: el carrusel «Inscribirme» del formulario, `kind: 'autoinscripcion'`, el pase HMAC, el enlace `/inscripcion/<código>`, la cola `robot_autoinscripciones`, la API `/api/robot/autoinscripciones`, el chequeo de vigilancia de la cola y el repo privado `cau-robot-teclab` en GitHub. El formulario de Teclab vuelve a ser una preinscripción como las otras: se guarda la consulta, avisa por Telegram y ofrece «Ver precio» después de confirmar, con la atención a mano. La migración `0011` borra las dos tablas (estaban vacías). [Tarea](../odd/tasks/autoinscripcion-teclab.md).
 
+## Resend — clave `Onboarding`, 31/10/2026
+
+- [x] **Borrar la clave `Onboarding` en el panel de Resend.** La borró el usuario el 31/10/2026 y `api-keys` quedó vacío («No API keys yet»), sin nada que preservar: `topykly-dev`, el otro proyecto que compartía la cuenta, ya no existe (confirmado el 31/10/2026). No hubo nada que deshacer del lado del proyecto: `RESEND_API_KEY` no aparece en el repo ni en el Worker, el mail sale por SMTP2GO desde `inscripciones@siglo21sur.com` y la variable de Vercel y el secreto de Supabase se habían retirado el 18/10/2026.
+
 ## Cierres y descartes del repaso de prioridades, 30/10/2026
 
 Repaso punto por punto de [la lista activa](../PENDIENTES.md) hecho con el usuario. Lo cerrado acá tiene la confirmación del usuario; no hubo commit asociado en los cuatro primeros casos.
