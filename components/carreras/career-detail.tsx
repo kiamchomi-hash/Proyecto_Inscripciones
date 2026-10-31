@@ -479,8 +479,11 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
           )}
 
           {teclabCompetencias.length > 0 && (
-            <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow={isTeclabCourse ? 'Qué vas a aprender' : 'Competencias profesionales'} />
+            <section id="perfil" className="career-section career-reveal" aria-label="Competencias profesionales">
+              {/* La tecnicatura va sin rótulo: la lista se explica sola y el
+                  renglón en mayúsculas sumaba un título vacío. El curso sí lo
+                  conserva, porque «Qué vas a aprender» dice algo distinto. */}
+              {isTeclabCourse && <SectionHeading eyebrow="Qué vas a aprender" />}
               <ul className="career-learning-list">
                 {teclabCompetencias.map((competencia, index) => (
                   <li key={index}>

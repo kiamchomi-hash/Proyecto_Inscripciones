@@ -303,6 +303,12 @@
   border-top-color: var(--teclab-azul);
 }
 
+/* Sin rótulo arriba, el filete quedaba como una línea suelta al principio de la
+   sección: la lista de competencias empieza directo. */
+.career-page--teclab .career-learning-list {
+  border-top: 0;
+}
+
 .career-page--teclab .career-learning-list li {
   border-bottom-color: rgba(0, 85, 240, 0.55);
   color: var(--teclab-texto);
