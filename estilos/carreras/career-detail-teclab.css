@@ -254,6 +254,12 @@
   column-gap: clamp(2rem, 5vw, 5rem);
 }
 
+/* El bloque de competencias va después de los formularios: ahí el aire vuelve,
+   porque ya no continúa la fila de datos sino que cierra la página. */
+.career-page--teclab .career-layout--checks {
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+
 .career-page--teclab .career-facts dt {
   color: var(--fact-etiqueta);
   font-weight: 600;

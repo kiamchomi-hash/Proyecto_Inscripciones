@@ -687,56 +687,8 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               </a>
             </section>
           )}
-          {(portada?.bullets.length ?? 0) > 0 && (
-            <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow="Tu futuro profesional">
-                Lo que vas a aprender
-              </SectionHeading>
-              <ul className="career-learning-list">
-                {portada!.bullets.map((bullet, index) => (
-                  <li key={index}>
-                    <span><CheckIcon /></span>
-                    <p>{bullet}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {teclabCompetencias.length > 0 && (
-            <section id="perfil" className="career-section career-reveal" aria-label="Competencias profesionales">
-              {/* La tecnicatura va sin rótulo: la lista se explica sola y el
-                  renglón en mayúsculas sumaba un título vacío. El curso sí lo
-                  conserva, porque «Qué vas a aprender» dice algo distinto. */}
-              {isTeclabCourse && <SectionHeading eyebrow="Qué vas a aprender" />}
-              <ul className="career-learning-list">
-                {teclabCompetencias.map((competencia, index) => (
-                  <li key={index}>
-                    <span><CheckIcon /></span>
-                    <p>{competencia}</p>
-                  </li>
-                ))}
-              </ul>
-              {teclabSalida && (
-                <div className="career-salida">
-                  <p>{teclabSalida}</p>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Salida laboral sola: la ultima oracion de la descripcion se pinta
-              junto a las competencias, y una carrera anunciada todavia no las
-              tiene. Sin esto, el dato se perdia. */}
-          {teclabCompetencias.length === 0 && teclabSalida && (
-            <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow="Salida laboral" />
-              <div className="career-salida">
-                <p>{teclabSalida}</p>
-              </div>
-            </section>
-          )}
-
+          {/* Las listas con tilde van abajo de los formularios (ver el final del
+              componente): son lectura de cierre, no parte del recorrido. */}
           {faq && (
             <section id="preguntas-frecuentes" className="career-section career-faq" aria-labelledby="career-faq-heading">
               <div className="career-section-heading">
@@ -788,6 +740,63 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
 
       {preinscripcion}
       {contacto}
+
+      {/* Competencias, «lo que vas a aprender» y salida laboral: debajo de los
+          formularios. Ocupan la columna del artículo (la segunda del grid queda
+          vacía) para que las líneas no se estiren a todo el ancho. */}
+      <div className="career-layout career-layout--checks">
+        <div className="career-content">
+          {(portada?.bullets.length ?? 0) > 0 && (
+            <section id="perfil" className="career-section career-reveal">
+              <SectionHeading eyebrow="Tu futuro profesional">
+                Lo que vas a aprender
+              </SectionHeading>
+              <ul className="career-learning-list">
+                {portada!.bullets.map((bullet, index) => (
+                  <li key={index}>
+                    <span><CheckIcon /></span>
+                    <p>{bullet}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {teclabCompetencias.length > 0 && (
+            <section id="perfil" className="career-section career-reveal" aria-label="Competencias profesionales">
+              {/* La tecnicatura va sin rótulo: la lista se explica sola y el
+                  renglón en mayúsculas sumaba un título vacío. El curso sí lo
+                  conserva, porque «Qué vas a aprender» dice algo distinto. */}
+              {isTeclabCourse && <SectionHeading eyebrow="Qué vas a aprender" />}
+              <ul className="career-learning-list">
+                {teclabCompetencias.map((competencia, index) => (
+                  <li key={index}>
+                    <span><CheckIcon /></span>
+                    <p>{competencia}</p>
+                  </li>
+                ))}
+              </ul>
+              {teclabSalida && (
+                <div className="career-salida">
+                  <p>{teclabSalida}</p>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Salida laboral sola: la ultima oracion de la descripcion se pinta
+              junto a las competencias, y una carrera anunciada todavia no las
+              tiene. Sin esto, el dato se perdia. */}
+          {teclabCompetencias.length === 0 && teclabSalida && (
+            <section id="perfil" className="career-section career-reveal">
+              <SectionHeading eyebrow="Salida laboral" />
+              <div className="career-salida">
+                <p>{teclabSalida}</p>
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
 
       {(relacionadas.length > 0 || equivalente) && (
         <section className="career-related career-reveal">
