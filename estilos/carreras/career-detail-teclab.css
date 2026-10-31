@@ -609,15 +609,19 @@
 /* ── Aside: navegacion y tarjeta de inscripcion ───────── */
 .career-page--teclab .career-aside nav a {
   border-color: var(--teclab-azul);
+  background: var(--teclab-azul);
   border-radius: 999px;
-  color: var(--teclab-texto);
-  font-weight: 400;
+  color: #fff;
+  font-weight: 600;
 }
 
+/* Azul pleno, sin desplazamiento: el único atajo del lateral se queda quieto y
+   sólo se aclara el azul al pasar el puntero. */
 .career-page--teclab .career-aside nav a:hover {
-  border-color: var(--career-accent);
-  background: var(--teclab-navy-claro);
-  color: var(--career-accent);
+  border-color: #1a6bff;
+  background: #1a6bff;
+  color: #fff;
+  transform: none;
 }
 
 .career-page--teclab .career-aside-cta {
