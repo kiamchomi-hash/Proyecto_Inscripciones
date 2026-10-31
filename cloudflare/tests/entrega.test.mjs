@@ -136,6 +136,8 @@ test('_headers de assets lleva seguridad y cache, sin cabeceras de HTML', () => 
   // Los derivados llevan el hash del original en el nombre: pueden ser inmutables.
   assert.match(contenido, /\/derivados\/\*\n  Cache-Control: public, max-age=31536000, immutable/);
   assert.match(contenido, /\/imagenes\/\*\n  Cache-Control: public, max-age=86400/);
+  // Los programas de Teclab son archivos pesados que se sirven tal cual.
+  assert.match(contenido, /\/planes\/\*\n  Cache-Control: public, max-age=86400, stale-while-revalidate=604800/);
   assert.doesNotMatch(contenido, /X-Robots-Tag|no-store/i);
 });
 
@@ -225,6 +227,10 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     '/api/formularios': await astro.fetch('/api/formularios', { method: 'POST' }),
     '/carreras/tecnicatura-superior-en-programacion/inscripcion':
       await astro.fetch('/carreras/tecnicatura-superior-en-programacion/inscripcion'),
+    // La inscripción de Teclab declara el mismo noindex desde el 30/10/2026
+    // (lib/vigilancia-esperado.ts): sin este pedido, la sonda no tenía contra
+    // qué comparar y la prueba fallaba con «undefined».
+    '/teclab/inscripcion': await astro.fetch('/teclab/inscripcion'),
   };
   for (const [ruta, patron] of NOINDEX) {
     const respuesta = respuestasNoindex[ruta];

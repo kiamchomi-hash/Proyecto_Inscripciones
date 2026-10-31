@@ -549,9 +549,11 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
           {hasPlan && (
             <section id="plan" className="career-section career-plan career-reveal">
               <div className="career-plan-head">
-                <SectionHeading eyebrow="Tu recorrido académico">
-                  Plan de estudios
-                </SectionHeading>
+                {/* Sin rótulo arriba: el botón de descarga va en la misma línea
+                    que el título y un renglón extra lo dejaba descolgado. */}
+                <div className="career-section-heading">
+                  <h2>Plan de estudios</h2>
+                </div>
                 {/* El programa oficial si Teclab lo publicó; si no, un PDF
                     armado con los datos de la página (lib/plan-pdf.ts). */}
                 {isTeclab && anios.length > 0 && (

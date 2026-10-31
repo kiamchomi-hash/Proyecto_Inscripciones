@@ -86,6 +86,12 @@ export function aplicarCabeceras(respuesta: Response, { ruta, estado }: Contexto
  * pedir cada foto: en una ficha de carrera son decenas de pedidos y el LCP es
  * una de esas imágenes. Un día de navegador y una semana de `stale-while-revalidate`
  * alcanza para no repetirlas sin dejar una foto vieja pegada un año.
+ *
+ * Los programas de Teclab (`/planes/`) pesan entre 500 KB y 2,6 MB y salían con
+ * el `max-age=0` por defecto: cada descarga volvía a cruzar el mundo entero. Se
+ * cachean como las imágenes y no como `/_astro/*`: el archivo se reemplaza en el
+ * mismo lugar cuando Teclab actualiza un plan, así que un año de `immutable`
+ * dejaría el programa viejo pegado en el navegador de quien ya lo bajó.
  */
 export function cabecerasAssets(): string {
   const lineas = ['/*'];
@@ -103,6 +109,9 @@ export function cabecerasAssets(): string {
 ${cacheImagenes}
 
 /fuentes/*
+${cacheImagenes}
+
+/planes/*
 ${cacheImagenes}
 `;
 }
