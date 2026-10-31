@@ -62,13 +62,32 @@ test('las de Gestión tienen tipo y las de Tecnología entran en un filtro', () 
 test('cada una tiene portada propia y ninguna tiene ficha oficial inventada', () => {
   const portadas = new Set();
   for (const { nombre } of NUEVAS) {
-    assert.equal(teclab.getFichaTeclab({ nombre }), null, nombre);
+    // Diseño de Producto Digital es la excepción: Teclab publicó su ficha con el
+    // bloque 4 (30/10/2026), así que dejó de ser anunciada. Se verifica aparte.
+    if (nombre !== 'Tecnicatura Superior en Diseño de Producto Digital') {
+      assert.equal(teclab.getFichaTeclab({ nombre }), null, nombre);
+    }
     const portada = teclab.getPortadaTeclab({ nombre });
     assert.match(portada ?? '', /^\/imagenes\/teclab\/carreras\/.+\.webp$/, nombre);
     assert.ok(existsSync(`public${portada}`), portada);
     portadas.add(portada);
   }
   assert.equal(portadas.size, NUEVAS.length);
+});
+
+test('las dos altas oficiales del bloque 4 tienen ficha con su foto', () => {
+  const fichas = [
+    ['Tecnicatura Superior en Diseño de Producto Digital', 'tecnico-superior-en-diseno-de-producto-digital'],
+    ['Tecnicatura Superior en Comercio Electrónico (e-commerce)', 'tecnico-superior-en-comercio-electronico'],
+  ];
+  for (const [nombre, slug] of fichas) {
+    const ficha = teclab.getFichaTeclab({ nombre });
+    assert.ok(ficha, nombre);
+    assert.equal(ficha.url, `https://teclab.edu.ar/carrera/${slug}/`, nombre);
+    for (const imagen of [ficha.imagen, ficha.imagenCierre]) {
+      assert.ok(existsSync(`public${imagen}`), `${nombre}: ${imagen}`);
+    }
+  }
 });
 
 test('ninguna promete articulación con Siglo 21: la fuente no la menciona', () => {

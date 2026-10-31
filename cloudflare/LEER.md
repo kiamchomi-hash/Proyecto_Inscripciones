@@ -1047,7 +1047,10 @@ necesita credencial porque no sale a la red; `--publicar` usa un token acotado
 (`Workers Scripts:Edit`, `Workers Routes:Edit` de la zona, `Queues:Edit` y
 `D1:Edit` sólo para migrar) que se lee del entorno o de `.env.local`, y le pasa a
 wrangler **sólo** esa variable: la base, SMTP2GO y las credenciales de ventas que
-también viven en `.env.local` no entran al proceso que publica. La alternativa
+también viven en `.env.local` no entran al proceso que publica. El token vigente
+no vence y quedó sin `D1:Edit` (31/10/2026): con eso alcanza para publicar, y
+borrar un token en el panel corta el deploy en el acto aunque el sitio siga
+publicado. La alternativa
 es `wrangler login`, que guarda el OAuth en texto plano en el perfil. Las pruebas
 de contrato —crons del JSON iguales a `CRONES`, y que el token salga sin
 arrastrar el resto— están en `tests/publicacion.test.mjs` y corren dentro de

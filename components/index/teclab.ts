@@ -71,6 +71,7 @@ const TIPOS: { match: string; tipo: string }[] = [
   { match: 'negocios digitales financieros', tipo: 'Negocios' },
   { match: 'logística', tipo: 'Gestión' },
   { match: 'comercio exterior', tipo: 'Negocios' },
+  { match: 'comercio electrónico', tipo: 'Negocios' },
   { match: 'riesgos empresariales', tipo: 'Gestión' },
   { match: 'agile coaching', tipo: 'Gestión' },
   { match: 'recursos humanos', tipo: 'Gestión' },
@@ -138,6 +139,7 @@ const SIN_ARTICULACION_CONFIRMADA = [
   'logística',
   'comercio exterior',
   'riesgos empresariales',
+  'comercio electrónico',
   'diseño de producto digital',
   'experiencia de usuario',
   'agile coaching',
@@ -210,6 +212,22 @@ const FICHAS: { match: string; ficha: TeclabFicha }[] = [
       url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-desarrollo-de-videojuegos/',
       imagen: '/imagenes/teclab/carreras/desarrollo-de-videojuegos.webp',
       imagenCierre: '/imagenes/teclab/carreras/desarrollo-de-videojuegos.webp',
+    },
+  },
+  {
+    match: 'comercio electrónico',
+    ficha: {
+      url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-comercio-electronico/',
+      imagen: '/imagenes/teclab/carreras/comercio-electronico.webp',
+      imagenCierre: '/imagenes/teclab/carreras/comercio-electronico-cierre.webp',
+    },
+  },
+  {
+    match: 'diseño de producto digital',
+    ficha: {
+      url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-diseno-de-producto-digital/',
+      imagen: '/imagenes/teclab/carreras/diseno-de-producto-digital.webp',
+      imagenCierre: '/imagenes/teclab/carreras/diseno-de-producto-digital.webp',
     },
   },
   {

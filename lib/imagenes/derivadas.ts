@@ -121,6 +121,7 @@ export const DERIVADAS: Record<string, Derivadas> = {
   "/imagenes/teclab/carreras/agile-coaching.webp": { hash: '41870dd9', anchos: [480, 960, 1440] },
   "/imagenes/teclab/carreras/cloud-administration-cierre.webp": { hash: '1eb74459', anchos: [480, 960] },
   "/imagenes/teclab/carreras/cloud-administration.webp": { hash: '5d5c7da0', anchos: [480, 960] },
+  "/imagenes/teclab/carreras/comercio-electronico.webp": { hash: '7cfff169', anchos: [480, 960] },
   "/imagenes/teclab/carreras/comercio-exterior.webp": { hash: 'ba637d33', anchos: [480, 960, 1440] },
   "/imagenes/teclab/carreras/curso-ia-cierre.webp": { hash: '6022aec5', anchos: [480, 960] },
   "/imagenes/teclab/carreras/curso-ia.webp": { hash: '6022aec5', anchos: [480, 960] },

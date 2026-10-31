@@ -36,6 +36,11 @@ const CARRERAS = {
   'gestion-hotelera': ['2026/03/header-h-5.png', '2026/03/footer-4.png'],
   'eventos': ['2026/03/header-h-9.png', '2026/03/footer-8.png'],
   'periodismo': ['2026/04/image-gen-1.png', '2026/03/footer-7.png'],
+  // Alta del bloque 4 (30/10/2026). La ficha nueva publica como foto principal un
+  // banner con texto encima («Tu carrera en sincro»), que no sirve dentro del
+  // modal: se usa la misma produccion sin texto. Diseño de Producto Digital no
+  // está acá porque ya tenía su foto.
+  'comercio-electronico': ['2026/10/Focused-Desk-Discussion.png', '2026/10/Focused-Desk-Discussion.png'],
 };
 
 // Logos blancos de las empresas que cocrearon cada carrera, tal como los publica

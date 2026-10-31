@@ -1,147 +1,155 @@
 # Pendientes
 
+Reordenada el 30/10/2026 por prioridad, con el orden marcado por el usuario punto por punto sobre la lista del 16/10/2026. Criterio general: **lo de Teclab manda** —dentro de cada nivel va primero— y es lo único que llega a «alta» por defecto; Siglo 21 e Identidad bajan un escalón salvo que se indique lo contrario. Cada entrada conserva entre paréntesis su número en la lista anterior, para poder seguir refiriéndose a cada tarea como antes.
+
 Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; las revisiones repetibles van en rutinas.
 
-Reordenada el 16/10/2026 por prioridad, juntando esta lista, las tareas abiertas de [`odd/tasks/`](odd/tasks/) y el [detalle de pendientes](docs/pendientes-detalle.md). El orden es: primero lo que ya está hecho y falta publicar o marcar; después lo que hace perder leads o muestra un dato equivocado; después el resto; Teclab ya no tiene prioridad especial (16/10/2026). Los números de los pedidos del 02/10/2026 se conservan para poder referirse a cada tarea  
+## Altísima
 
-1.Enfocar clases de apoyo computación en secundario y adultos mayores, no en universitarios, es el público objetivo más fuerte  
-1.2 fichas grandes de modales generan esa flecha de abajo, es algo que hice hace poco, además en desktop remplazo las flechas de bimestre y año, no es algo que esperaba
+1. **Borrar la clave `Onboarding` en el panel de Resend** (8.1). La hace el usuario; no tocar `topykly-dev`. El resto se retiró el 18/10/2026: sin uso en el código, ya no estaba en Vercel y se borró el secreto de Supabase.
 
-1.3 mal otras carreras en clase de apoyo, habilitar apoyo secundario  
-1.4 usar mejor los negocios para la automatización de negocios [https://app.hubspot.com/contacts/44080364/objects/0-3/views/recently_assigned/list](https://app.hubspot.com/contacts/44080364/objects/0-3/views/recently_assigned/list)
+2. **Cerrar el alta de las dos carreras del bloque 4 que ya son oficiales** (1.5 y 40, 30/10/2026). **Comercio Electrónico (e-commerce)** (id 248) y **Diseño de Producto Digital** (id 249) se cargaron el 30/10/2026 con [`sql/2026-10-30-altas-teclab-bloque4.sql`](sql/2026-10-30-altas-teclab-bloque4.sql): fila en D1, ficha oficial en `FICHAS` con su foto, tipo de Gestión y categoría de Tecnología. Falta **el precio** (Teclab todavía no lo pasó), la opción de HubSpot, el perfil del test vocacional de e-commerce y las resoluciones (Dictámenes 3390/26 y 3391/26). Las otras tres de la presentación —Gestión de IA y Transformación Digital, Diseño y Desarrollo de IA y Comunicación Digital— **no están publicadas por Teclab**: se cargan cuando abran, con el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).
 
-1.5 sumar carrera bloque 4
+## Alta
 
-1.5 guardar en el md algo para el slop, (es un guardado de twitter)
+Las altas de Teclab van primero; después las demás.
 
-## 3. Urgente: leads y precios
+3. **Revisar si Google indexó Desarrollo de Videojuegos** (6.1) — Teclab y Siglo 21: consultar en Search Console las fichas publicadas —[Teclab](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-desarrollo-de-videojuegos) y [Siglo 21](https://www.siglo21sur.com/carreras/siglo-21-video-juegos)—. Revisado el 29/10/2026: las dos siguen **desconocidas para Google, sin rastreo**, y las dos responden 200, están en `sitemap.xml` y enlazadas desde `/` y `/teclab`. La última lectura del sitemap por Google fue el 28/10 a las 19:20, anterior a la publicación, así que todavía no las vio; no hay nada roto. Falta pedir la indexación a mano en Search Console (API no lo permite) y volver a mirar en unos días.
 
-- [ ] **Investigar cuotas, intereses y cargos de otros medios de pago de Teclab** (23/10/2026): MercadoPago con dinero en cuenta, GoCuotas, WiBond, PagoFácil y Rapipago. El mismo total inicial no confirma las condiciones de financiación. **Parcial (30/10/2026):** el usuario confirmó que MercadoPago, PagoFácil y Rapipago son **1 pago**, sin cuotas, y ya está en el corpus y en «Formas de pago» del buscador. Falta GoCuotas y WiBond, y si ese 1 pago tiene el mismo total que el de tarjeta. [Detalle y límite de acceso](odd/tasks/teclab-extractor-dashboard.md#medios-de-pago-adicionales-condiciones-pendientes).
+4. **Completar las preguntas frecuentes de Gestión Ambiental (246) y Desarrollo de Videojuegos (247)** (6.5, 30/10/2026): las dos tienen **2 preguntas frecuentes** donde el resto de las carreras de Teclab tiene entre 3 y 6, así que la ficha cierra más corta. El resto de las fichas quedó al día contra el sitio oficial. [Enlaces consultados](referencias/2026-10-30-fichas-oficiales-teclab.md).
 
-## 5. Siglo 21
+5. **Confirmar con Teclab el reparto de resoluciones de Programación y Gestión Contable** (7.1, 28/10/2026): el sitio publica Resolución 2127/22 + Dictamen 2662/22 para Programación y 2357/22 + 2657/22 para Gestión Contable, pero el Boletín Oficial de CABA (Res. 2357/MEDGC/22, 16/05/2022) aprueba el plan de la Tecnicatura Superior en Programación en virtud del Dictamen 2.657/22. Los números ya están en el corpus (`carreras/teclab/resoluciones-teclab.json`, marcador `{resoluciones}`); falta que Secretaría Académica confirme cuál corresponde antes de citarlos para un trámite. **Verificado el 30/10/2026 en las dos fichas oficiales:** siguen publicando lo mismo, así que el desacuerdo con el Boletín sigue abierto del lado de Teclab.
 
-- Las piezas gráficas de esta casa quedaron **secundarias el 30/10/2026**: sólo material oficial y, como excepción, lo que se manda por WhatsApp ([criterio](docs/criterios.md#las-piezas-gráficas-de-siglo-21-van-con-el-material-oficial)). Sus pendientes abiertos viven en las secciones 6 y 7.
+6. **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (38, 20/10/2026): Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo. Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 
-## 6. Sitio y diseño
+7. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
 
-- [ ] **Revisar si Google indexó Desarrollo de Videojuegos** (Teclab y Siglo 21): consultar en Search Console las fichas publicadas —[Teclab](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-desarrollo-de-videojuegos) y [Siglo 21](https://www.siglo21sur.com/carreras/siglo-21-video-juegos)—. Revisado el 29/10/2026: las dos siguen **desconocidas para Google, sin rastreo**, y las dos responden 200, están en `sitemap.xml` y enlazadas desde `/` y `/teclab`. La última lectura del sitemap por Google fue el 28/10 a las 19:20, anterior a la publicación, así que todavía no las vio; no hay nada roto. Falta pedir la indexación a mano en Search Console (API no lo permite) y volver a mirar en unos días.
+8. **Imagen OG propia por carrera: mejorar las de Teclab** (47a, 18/10/2026). Las 31 carreras y cursos ya tienen la suya, con su foto y su nombre (`npm run og:teclab`); falta mejorarlas.
 
-- [ ] **Aprovechar la visibilidad del calendario académico para llevar a la oferta de carreras** (28/10/2026): `/calendario-academico` es la segunda página del sitio en clics de Google (54 clics y 2.883 impresiones en los 28 días al 29/10) y su única salida hacia la oferta era un botón en el hero. **Publicado el 30/10/2026** (`021708c`, workflow 41031187182) y **rehecho como página del ciclo 2027 el 30/10/2026**: el H1, el título, la descripción y todo el contenido son de 2027; las fechas concretas de 2026 se retiraron porque ese ciclo ya terminó. Como la universidad todavía no publicó el calendario 2027 (`lanube.21.edu.ar` sigue mostrando el 2026), la página explica la estructura que sí está en el reglamento —dos semestres, cuatro tramos de nueve semanas, ventanas de parciales, entregas de TP por tipología y materias cuatrimestrales de 18 semanas— y aclara que las fechas exactas se confirman con el calendario oficial. Las aperturas (marzo, mayo, agosto y octubre) salen de las fichas oficiales de cada carrera. Enlaces a la oferta: hero, FAQ de inicio de clases, FAQ de Teclab y cierre, al catálogo filtrado en Siglo 21 (`/?casa=siglo21#filtros-categoria`). `calendario-salida` se cuenta en `calendario_salidas` (D1, migración `0013`) y `npm run leads` lo muestra por destino. **Pendiente:** cargar las fechas cuando la universidad publique el calendario 2027, y a las dos semanas mirar el reparto por destino.
+9. **Revisar el flujo de inscripción de Teclab** de punta a punta (35a).
 
-- [ ] **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (28/10/2026): es el sitio de GRUPO BTC S.A. (Av. Córdoba 1551, CABA), no el oficial de la universidad, y resuelve la ficha de otra manera. Ejemplo anotado: [Licenciatura en Finanzas](https://siglo21online.com.ar/licenciatura-en-finanzas-detalle/). Lo que se vio ahí y vale evaluar: datos duros arriba y en una línea (duración, modalidad, título, validez con número de resolución), «¿Qué vas a lograr?» con cuatro resultados en tarjetas, comparación explícita de las dos modalidades de cursada (Educación Distribuida y Home) con encuentros y aperturas, plan de estudios plegado por año y cuatrimestre, y un bloque de «más posibilidades» con doble titulación, título intermedio y ámbitos profesionales. El formulario de WhatsApp ya llega con la carrera elegida. Revisar el resto de sus fichas antes de copiar cualquier cosa y decidir qué entra a `cloudflare/` sin inventar condiciones de cursada.
+10. **Crear folletos con CTA al frente y lista de carreras al dorso, empezando por Teclab** (41a).
 
-- [ ] **Dar a Teclab alcance en México y Chile por el SEO** (27/10/2026): Teclab se ofrece principalmente en México y Chile, no sólo en Argentina, y hoy el sitio no lo dice. Sumar esos países al contenido y a las páginas de Teclab (títulos, descripciones y texto visible) para que se lo encuentre buscando desde ahí. Sin inventar condiciones de cursada, precios ni modalidad que no estén confirmados: las condiciones por país las aporta el usuario.
+11. **Crear un folleto de carreras relevantes de Teclab** (52a).
 
-- [ ] **Arreglar las páginas de carreras de Teclab y los logos de `/teclab`** (29/10/2026): **son dos referencias distintas y se revisan las dos**, no una sola fuente:
-  1. **Sitio oficial de Teclab** — `https://teclab.edu.ar/carrera/<slug>/` para cada carrera (datos, plan, título, salidas, modalidad). Es la fuente del contenido.
-  2. **`https://siglo21online.com.ar/teclab`** — es otro sitio, de GRUPO BTC S.A., no el oficial de la universidad. Es el modelo de ficha terminada: cómo arma la página de cada carrera y cómo presenta la marca de Teclab.
+12. **Comparar las fichas de Teclab contra `teclab.edu.ar` y `siglo21online.com.ar/teclab` para mejorar el frontend** (nueva, 30/10/2026). Son dos referencias distintas y se miran las dos: `https://teclab.edu.ar/carrera/<slug>/` es la fuente del contenido (datos, plan, título, salidas, modalidad) y `https://siglo21online.com.ar/teclab` —sitio de GRUPO BTC, no oficial— es el modelo de ficha terminada: cómo arma la página de cada carrera y cómo presenta la marca de Teclab. Donde las dos se contradigan, manda la oficial, y no se copia texto de ninguna. No se sigue el rediseño oficial de punta a punta: lo revisado el 30/10 quedó en el [historial](docs/historial-pendientes.md#teclab--repaso-de-las-fichas-oficiales-30102026).
 
-  Donde las dos se contradigan, manda la oficial. No se copia texto de ninguna de las dos: se compara.
+13. **06/11/2026: segunda revisión del embudo del test vocacional** (33, general y Teclab). Primera lectura el 20/10/2026 (16 al 20/10): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron; la caída está en las preguntas 1 a 3 y después nadie abandona. El de Teclab no tuvo ninguna visita. Muestra demasiado chica para tocar pasos; si sigue en cero, revisar cómo se llega al de Teclab. [Cómo leerlo](docs/medicion-test-vocacional.md).
 
-  Dos frentes:
-  - **Fichas de carreras:** **revisadas contra el sitio oficial el 30/10/2026** — resoluciones, validez del título, certificado intermedio y planes de estudio quedaron al día en las 22 carreras activas. Falta sólo lo que no es dato: **Gestión Ambiental (246) y Desarrollo de Videojuegos (247) tienen 2 preguntas frecuentes** donde el resto tiene entre 3 y 6, así que su ficha cierra más corta. [Enlaces consultados](referencias/2026-10-30-fichas-oficiales-teclab.md).
-  - **Logos de `/teclab`:** corregir los que se ven mal; hoy salen de `cloudflare/src/entrega/PaginaTeclab.tsx` (`/imagenes/teclab/logo-teclab-siglo21.webp` y los de `partners/`: AWS Academy, Google, Microsoft, HubSpot, Zendesk y Avenga). Falta que el usuario diga cuáles y cómo se ven (tamaño, encuadre, calidad del archivo) antes de tocar los assets.
+14. **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3, 28/10/2026): es el sitio de GRUPO BTC S.A. (Av. Córdoba 1551, CABA), no el oficial de la universidad, y resuelve la ficha de otra manera. Ejemplo anotado: [Licenciatura en Finanzas](https://siglo21online.com.ar/licenciatura-en-finanzas-detalle/). Lo que se vio ahí y vale evaluar: datos duros arriba y en una línea (duración, modalidad, título, validez con número de resolución), «¿Qué vas a lograr?» con cuatro resultados en tarjetas, comparación explícita de las dos modalidades de cursada (Educación Distribuida y Home) con encuentros y aperturas, plan de estudios plegado por año y cuatrimestre, y un bloque de «más posibilidades» con doble titulación, título intermedio y ámbitos profesionales. El formulario de WhatsApp ya llega con la carrera elegida. Revisar el resto de sus fichas antes de copiar cualquier cosa y decidir qué entra a `cloudflare/` sin inventar condiciones de cursada.
 
-  Se apoya en la revisión de las fichas de `siglo21online.com.ar`.
+15. **Rediseñar Identidad Argentina: los modales y la página principal** (53). Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
 
-- [ ] **Cambiar el botón «Ver horarios» de clases de apoyo** (29/10/2026): es el pie de cada tarjeta de la landing, `components/clases-apoyo/clases-apoyo-landing.tsx` (`.ca-materia-accion`, hoy una superficie grafito sólida con texto blanco y flecha). Sin detalle del cambio todavía: falta que el usuario diga qué quiere. El historial de lo que ya se cambió en ese botón y en las tarjetas está en [`odd/tasks/clases-apoyo-tarjetas.md`](odd/tasks/clases-apoyo-tarjetas.md).
+16. **Pasar la carga diaria de precios a la nube** (57, 17/10/2026), si es posible: para no depender de que la PC esté prendida. Hoy corre con dos timers de systemd (Teclab e Identidad a las 9, Siglo 21 a las 10, reintento a las 14; ver [herramientas](docs/herramientas.md#actualización-diaria-desde-linux)). Antes de elegir dónde, resolver lo que hoy la ata a la máquina: la sesión SharePoint guardada para la planilla de CASA, que Cloudflare bloquea al portal de Teclab desde GitHub (por eso el robot de Teclab usa el runner `pc-sede`) y que la base comercial (`ventas/`, `carreras/`) no está en el repo.
 
-## 7. Bot, leads y comercial
+17. **Agregar Geist y Geist Serif a las tipografías del UIverse local** (nueva, 30/10/2026).
 
-- [ ] **Confirmar con Teclab el reparto de resoluciones de Programación y Gestión Contable** (28/10/2026): el sitio publica Resolución 2127/22 + Dictamen 2662/22 para Programación y 2357/22 + 2657/22 para Gestión Contable, pero el Boletín Oficial de CABA (Res. 2357/MEDGC/22, 16/05/2022) aprueba el plan de la Tecnicatura Superior en Programación en virtud del Dictamen 2.657/22. Los números ya están en el corpus (`carreras/teclab/resoluciones-teclab.json`, marcador `{resoluciones}`); falta que Secretaría Académica confirme cuál corresponde antes de citarlos para un trámite. **Verificado el 30/10/2026 en las dos fichas oficiales:** siguen publicando 2127/22 + Dictamen 2662/22 para Programación y 2357/22 + 2657/22 para Gestión Contable, así que el sitio no cambió nada y el desacuerdo con el Boletín sigue abierto del lado de Teclab.
+## Media-alta
 
-- [ ] **Revisar los dos PowerPoints nuevos de Teclab** (28/10/2026): uno de Gestión y el otro del último bloque de carreras.
+18. **Estudiar la venta exitosa de seguros** (19, 28/10/2026): ver cómo se vende un seguro —recorrido del asesor, objeciones, cierre y seguimiento— y qué se puede traer al trato con los leads del CAU.
 
-- [ ] **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas. No es una tarea de ejecución inmediata.
+19. **Revisar si Bienestar Integral y Mindfulness siguen dentro del alcance del convenio** (31). Lo que se cobre por ahí entra como comisión de Identidad.
 
-- [ ] **Confirmar el ingreso con usuario a La Nube 21**. El 17/10/2026 sólo se comprobó que la portada responde. [Revisión de acceso](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
+20. **Reducir el formulario de preinscripción de Siglo 21** (36). Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan; la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
-- [ ] **Sumar al corpus del bot las dudas de los leads**. Toda pregunta que llegue por leads y no esté respondida pasa a `ventas/corpus/`.
-- [ ] **Estudiar la venta exitosa de seguros** (28/10/2026): ver cómo se vende un seguro —recorrido del asesor, objeciones, cierre y seguimiento— y qué se puede traer al trato con los leads del CAU. Sin detalle todavía.
-- [ ] **Ampliar la app de HubSpot** (18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición; no ejecutar todavía. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
-- [ ] **HubSpot leads — mejoras de panel y operaciones** (20/10/2026):
-  - **Agregar check de WhatsApp**: casilla manual para marcar envío donde falte (ej. en Activity).
-  - **Permitir editar el texto del textarea**: retirar el `readonly` de `.activity-texto` para poder editar el mensaje/criterio antes de enviarlo.
-  - **Abrir las mesas al hacer clic en el día**: al hacer clic en la fecha/día, desplegar o abrir las mesas asociadas.
-  - **Completar los procesos CAU**: incorporar y completar los procesos y trámites administrativos de la sede en la herramienta. [Detalle](odd/tasks/hubspot-negocios.md).
+## Media
 
-## 8. Infraestructura y seguridad
+21. **Revisar la presentación RSP + exámenes libres de Teclab** (15b, 28/10/2026): `Descargas/PRESENTACION RSP + EXAMENES LIBRES TECLAB - 2026 (1).pptx`. Es la presentación más reciente que queda en el disco; las tres de «Capacitación de admisión» de los bloques 1 a 3 se usaron el 16/10 y ya no están.
 
-- [ ] **Renovar el token `CLOUDFLARE_API_TOKEN`** que usa el deploy por CI (creado el 27/10/2026 en *My Profile · API Tokens*, con `Workers Scripts:Edit`, `Queues:Edit`, `Workers Routes:Edit` y `Zone:Read` sobre `siglo21sur.com`). Si se le puso TTL de 90 días, vence a fines de enero de 2027 y el workflow falla con 401; renovarlo y volver a `gh secret set CLOUDFLARE_API_TOKEN`. Procedimiento en [`cloudflare/LEER.md`](cloudflare/LEER.md).
-- [ ] **Borrar la clave `Onboarding` en el panel de Resend** (la hace el usuario; no tocar `topykly-dev`). El resto se retiró el 18/10/2026: sin uso en el código, ya no estaba en Vercel y se borró el secreto de Supabase. *(Notas operativas.)*
+22. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
 
-## 9. Herramientas e inspiración
+23. **Dar de alta las clases de apoyo de secundario**, con contenido genérico enfocado a Villa Lugano (nueva, 30/10/2026; surge del punto 3).
 
-- [ ] **Crear una herramienta de procesos del CAU y completar los procesos CAU** (20/10/2026), distinta del buscador de carreras, para consultar los trámites y procesos de la sede.
-- [ ] **20. Terminar de revisar el UIverse local**.
-- [ ] **Usar la página de los alumnos para sacar elementos estéticos para el UIverse local**.
-- [ ] **28. Revisar distintas tipografías para agregar al UIverse local**.
-- [ ] **26. Revisar los plugins de ChatGPT y Claude**.
-- [ ] **30. Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración**.
+24. **Cambiar el botón «Ver horarios» de clases de apoyo** (13, 29/10/2026): es el pie de cada tarjeta de la landing, `components/clases-apoyo/clases-apoyo-landing.tsx` (`.ca-materia-accion`, hoy una superficie grafito sólida con texto blanco y flecha). Falta que el usuario diga qué quiere. El historial de lo que ya se cambió en ese botón y en las tarjetas está en [`odd/tasks/clases-apoyo-tarjetas.md`](odd/tasks/clases-apoyo-tarjetas.md).
 
-## 10. En espera de información externa
+25. **Confirmar becas, doble carrera y las dudas restantes de requisitos** (30), que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 
-Los pedidos ya redactados y el destino de cada dato están en [las notas operativas](docs/notas-operativas.md) y en `herramientas/pedidos-a-enviar.md`. Confirmar que el pedido siga vigente antes de enviarlo.
+26. **Sumar al corpus del bot las dudas de los leads** (18). Pendiente **permanente y a pedido**: cada duda que traiga un lead y no esté respondida pasa a `ventas/corpus/`. Siempre van a aparecer dudas nuevas.
 
-- [ ] **Confirmar becas, doble carrera y las dudas restantes de requisitos**, que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
-- [ ] Revisar las decisiones pendientes sobre los módulos de Bienestar Integral y Mindfulness, si siguen dentro del alcance del convenio. *(Notas operativas; estado sin confirmar.)*
-- [ ] **Cerrar las 5 alertas altas de `braces`** (GHSA-vfj7-8cjw-p6xm), en espera de un arreglo publicado. Sólo entra en desarrollo, por `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` 3.3.1 → `micromatch`; no llega al sitio. Sharp, source-map-js y el watcher ya se actualizaron (`96e2e78`). Al 18/10/2026 ni Next 16.4.2 ni el canary 16.5 cambiaron `fast-glob`, y el alias a tinyglobby rompe el plugin. Revisar cuando salga una versión nueva de Next. [Detalle](odd/tasks/auditoria-dependencias.md).
+27. **Revisar el flujo de inscripción de Siglo 21** de punta a punta (35b).
 
-## Al fondo de la cola
+28. **Relevar la financiación de Siglo 21 con una preinscripción propia** (37, 19/10/2026). La web de Siglo 21 no publica cuotas, tarjetas ni medios de pago. El usuario hace una preinscripción con su mail y llega hasta la pantalla de pago; se lee sin cargar datos y se sacan tarjetas, cuotas, bancos y medios para armar el mensaje de financiación a los leads. Antes, avisar o marcar como prueba el lead que se genera en HubSpot. Lo que se vea vale para esa carrera y ese momento; las promos bancarias cambian seguido.
 
-Postergado por el usuario el 16/10/2026; se retoma después de los pendientes anteriores. **Las piezas gráficas de Siglo 21 quedaron secundarias el 30/10/2026**: sólo material oficial, y lo que se manda por WhatsApp sigue su curso ([criterio](docs/criterios.md#las-piezas-gráficas-de-siglo-21-van-con-el-material-oficial)).
+29. **Imagen OG propia por carrera en Siglo 21 e Identidad Argentina** (47b, 18/10/2026): hoy siguen con la genérica de su categoría (por ejemplo, Administración usa `/imagenes/og/default.jpg`).
 
-- [ ] **06/11/2026: segunda revisión del embudo del test vocacional** (general y Teclab). Primera lectura el 20/10/2026 (16 al 20/10): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron; la caída está en las preguntas 1 a 3 y después nadie abandona. El de Teclab no tuvo ninguna visita. Muestra demasiado chica para tocar pasos; si sigue en cero, revisar cómo se llega al de Teclab. [Cómo leerlo](docs/medicion-test-vocacional.md).
+30. **Incorporar más imágenes de personas** (48).
 
-- [ ] **Mostrar el precio dentro de los pasos del formulario de preinscripción — parcialmente hecho** (18/10/2026). Hecho y publicado en Siglo 21 y Teclab, con la aclaración de que completarlo no cobra nada (`36d5823`, `2b9fd55`; [detalle](docs/historial-pendientes.md#formularios--precio-en-la-preinscripción-18102026)). Falta Identidad Argentina, que todavía no publica precio en el sitio.
+31. **Mejorar con IA las imágenes de algunos modales de carreras** (49).
 
-- [ ] **Revisar el flujo de inscripción** de punta a punta, en las tres casas.
+32. **Mejorar las páginas de clases, con sus folletos e imágenes** (50). Es material del centro educativo; la versión de WhatsApp de los folletos sigue vigente.
 
-- [ ] **Reducir el formulario de preinscripción de Siglo 21**. Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan (16/10/2026); la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
+33. **Revisar el video institucional contra la oferta vigente antes de publicarlo** (54). [Detalle](docs/pendientes-detalle.md#pendiente-16).
 
-- [ ] **Relevar la financiación de Siglo 21 con una preinscripción propia** (19/10/2026). La web de Siglo 21 no publica cuotas, tarjetas ni medios de pago, así que no se puede repetir lo de Teclab (extraer las tarjetas de la página). El usuario hace una preinscripción con su mail y llega hasta la pantalla de pago; Claude la lee sin cargar datos y saca tarjetas, cuotas, bancos y medios de pago para armar el mensaje de financiación a los leads. Antes, avisar o marcar como prueba el lead que se genera en HubSpot. Lo que se vea vale para esa carrera y ese momento; las promos bancarias cambian seguido.
+34. **Automatizar HubSpot** (55): pasar a Seguimientos al marcar WhatsApp enviado, mejorar pestañas y agregar contadores rojos de envíos y seguimientos pendientes (19/10/2026). [Detalle](odd/tasks/hubspot-negocios.md).
 
-- [ ] **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo). Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. Bajado al fondo el 16/10/2026: las carreras todavía no están validadas. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
+35. **Línea del tiempo de Siglo 21 para explicar semestres y cuatrimestres** (56, pieza para leads). **Dejó de estar fija al fondo el 30/10/2026.** Contenido: semestres de enero a junio y de julio a diciembre, cada uno con un cuatrimestre de cursada adentro, de dos bimestres; la matrícula se paga una vez por cuatrimestre. El primer borrador (paso 3, en `contenidos/siglo21/en-curso/2026-10-17-linea-semestres/`) no se entendía: hay que repensar cómo mostrarlo, no retocar ese.
 
-- [ ] **Empezar a revisar nuevas carreras de Teclab**.
+## Media-baja
 
-- [ ] **Bloque 4 de carreras nuevas de Teclab**: cuando llegue su capacitación de admisión, darlas de alta como los bloques 2 y 3 (16/10/2026). [Detalle](odd/tasks/teclab-bloques-2-y-3.md).
+36. **Fichas de carreras de Teclab** (42 y 43 unificadas, 30/10/2026): en 1080×1080, dos versiones por carrera —una con el sistema de `piezas_siglo21` en colores de Teclab y otra con el sistema de `piezas_teclab`—. Faltan las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
 
-- [ ] **10. Crear folletos con CTA en el frente y lista de carreras en el dorso** — *secundaria en Siglo 21 desde el 30/10/2026*. Empezar por Teclab; después Identidad Argentina y clases de apoyo.
+37. **Crear una herramienta de procesos del CAU y completar los procesos CAU** (24, 20/10/2026), distinta del buscador de carreras, para consultar los trámites y procesos de la sede.
 
-- [ ] **12. Crear folletos con estilo Siglo 21 y contenido y carreras de Teclab** — *secundaria desde el 30/10/2026, salvo la versión de WhatsApp*.
+38. **Entrar al portal de los alumnos y sacar elementos estéticos para el UIverse local** (26).
 
-- [ ] **Fichas de carreras de Teclab**: las 20 restantes en versión Siglo, la plantilla `piezas_teclab` y las 21 en versión Teclab. Las fotos de cada carrera las aporta el usuario. [Detalle](odd/tasks/fichas-carreras-teclab.md).
+39. **Mejorar la página de materias en base a los folletos creados** (51).
 
-- [ ] **Autoinscripción de Siglo 21: postergada el 16/10/2026**; bajada al fondo el 17/10/2026. Hoy el formulario sólo registra la solicitud y la atención sigue a mano. Antes de retomarla, definir si se hace con un robot en el portal de Siglo 21 (como en Teclab) o con un enlace personalizado.
+40. **Revisar el flujo de inscripción de Identidad Argentina** de punta a punta (35c).
 
-- [ ] **21. Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos**, por una vía distinta del buscador de carreras. Bajado al fondo por el usuario el 17/10/2026: se consultará y completará a medida que surjan casos en el día a día, no como un relevamiento general anticipado.
+## Baja
 
-- [ ] **9. Dar imágenes a todas las carreras**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+41. **Limpiar la estética «vibecodeada» del sitio** (6, 30/10/2026): hay muchas cosas que se ven claramente hechas por IA. Arreglo inmediato cuando se retome: bordes a la izquierda de las tarjetas, glassmorfismo y frases orientativas dentro de la propia página.
 
-- [ ] **Imagen OG propia por carrera — parcialmente hecho** (18/10/2026). Hecho en Teclab: las 31 carreras y cursos tienen la suya, con su foto y su nombre (`npm run og:teclab`). Faltan Siglo 21 e Identidad Argentina, que siguen con la genérica de su categoría (por ejemplo, Administración usa `/imagenes/og/default.jpg`).
+42. **Usar mejor los negocios para la automatización de negocios** (4, 02/10/2026). [Vista de contactos en HubSpot](https://app.hubspot.com/contacts/44080364/objects/0-3/views/recently_assigned/list).
 
-- [ ] **1. Incorporar más imágenes de personas**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+43. **Cargar las fechas del calendario académico 2027 cuando la universidad las publique** (9, 30/10/2026) y a las dos semanas mirar el reparto de `calendario_salidas` por destino. La página ya está publicada y rehecha como ciclo 2027; hoy `lanube.21.edu.ar` sigue mostrando el 2026.
 
-- [ ] **6. Mejorar con IA las imágenes de algunos modales de carreras**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+44. **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (16, 17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas.
 
-- [ ] **2. Mejorar las páginas de clases y crear sus folletos e imágenes** — *los folletos, secundarios desde el 30/10/2026, salvo la versión de WhatsApp*. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+45. **Confirmar el ingreso con usuario a La Nube 21** (17). Dato aportado el 30/10/2026: con la cuenta de la asesora principal se puede ingresar a la Nube de un alumno usando el portal administrativo. [Revisión de acceso](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 
-- [ ] **7. Mejorar la página de materias en base a los folletos creados**. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+46. **Ampliar la app de HubSpot** (20, 18/10/2026): cambiar el motivo de calificación (el usuario detallará la regla), mostrar un check junto al enlace de WhatsApp cuando el mensaje se haya enviado y automatizar seguimientos y actividades futuras. Pendiente de definición. [Detalle](odd/tasks/hubspot-negocios.md#pendientes-indicados-por-el-usuario).
 
-- [ ] **11. Crear un folleto de carreras relevantes** — *secundaria en Siglo 21 desde el 30/10/2026, salvo la versión de WhatsApp*. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+47. **HubSpot leads — mejoras de panel y operaciones** (21, 20/10/2026):
+    - **Agregar check de WhatsApp**: casilla manual para marcar envío donde falte (ej. en Activity).
+    - **Permitir editar el texto del textarea**: retirar el `readonly` de `.activity-texto` para poder editar el mensaje/criterio antes de enviarlo.
+    - **Abrir las mesas al hacer clic en el día**: al hacer clic en la fecha/día, desplegar o abrir las mesas asociadas.
+    - **Completar los procesos CAU**: incorporar y completar los procesos y trámites administrativos de la sede en la herramienta. [Detalle](odd/tasks/hubspot-negocios.md).
 
-- [ ] **8. Rediseñar Identidad Argentina: los modales y la página principal**. Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo. Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+48. **Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos** (45), por una vía distinta del buscador de carreras: se consulta y completa a medida que surjan casos en el día a día, no como relevamiento general anticipado.
 
-- [ ] **Revisar el video institucional contra la oferta vigente antes de publicarlo**. [Detalle](docs/pendientes-detalle.md#pendiente-16). Bajado al fondo por el usuario el 17/10/2026, antes de las tareas fijas.
+49. **Dar imágenes a todas las carreras de Siglo 21** (46b).
 
-- [ ] **Automatizar HubSpot**. Pendientes propios separados: pasar a Seguimientos al marcar WhatsApp enviado, mejorar pestañas y agregar contadores rojos de envíos/seguimientos pendientes (19/10/2026). Bajado al fondo por el usuario el 18/10/2026. [Detalle](odd/tasks/hubspot-negocios.md).
+## Ratos muertos
 
-- [ ] **Línea del tiempo de Siglo 21 para explicar semestres y cuatrimestres** (pieza para leads), agregado el 17/10/2026. **Fija al fondo de la cola**: no se mueve nunca, y lo que se baje al fondo queda arriba de las fijas. Contenido: semestres de enero a junio y de julio a diciembre, cada uno con un cuatrimestre de cursada adentro, de dos bimestres; la matrícula se paga una vez por cuatrimestre. El primer borrador (paso 3, en `contenidos/siglo21/en-curso/2026-10-17-linea-semestres/`) no se entendía: hay que repensar cómo mostrarlo, no retocar ese.
+50. **Revisar distintas tipografías para agregar al UIverse local** (27). Es la primera de estas: faltan tipografías.
 
-- [ ] **Pasar la carga diaria de precios a la nube**, agregado el 17/10/2026, para no depender de que la PC esté prendida. **Fija al fondo de la cola**: no se mueve nunca, y lo que se baje al fondo queda arriba de las fijas. Hoy corre en la PC con dos timers de systemd (Teclab e Identidad a las 9, Siglo 21 a las 10, reintento a las 14; ver [herramientas](docs/herramientas.md#actualización-diaria-desde-linux)). Antes de elegir dónde, resolver lo que hoy la ata a la máquina: la sesión SharePoint guardada para la planilla de CASA, que Cloudflare bloquea al portal de Teclab desde GitHub (por eso el robot de Teclab usa el runner `pc-sede`) y que la base comercial (`ventas/`, `carreras/`) no está en el repo.
+51. **Terminar de revisar el UIverse local** (25).
+
+52. **Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración** (29).
+
+53. **Folletos con CTA y lista de carreras para Siglo 21** (41b) — **casi descartada**: nos piden usar sólo el contenido oficial, salvo la versión de WhatsApp.
+
+## Descartadas
+
+Se dejan anotadas para que no vuelvan a aparecer como pendientes.
+
+- **Revisar los plugins de ChatGPT y Claude** (28): el usuario ya trabaja full OpenCode y Hermes.
+- **Mostrar el precio dentro del formulario de preinscripción** (34): no se van a poner precios en el formulario. Siglo 21 y Teclab quedan como están.
+- **Autoinscripción de Siglo 21** (44): sólo agrega fricción; la atención la maneja el usuario.
+- **Folleto de carreras relevantes para Siglo 21 e Identidad** (52b): sólo Teclab.
+- **Dar imágenes a las carreras de Identidad Argentina** (46c).
+
+## Cerradas el 30/10/2026
+
+- **Flechas raras en los modales de carreras** (2): solucionado; ya no aparecen la flecha de abajo ni el reemplazo de las flechas de bimestre y año en desktop.
+- **«Otras carreras» en clases de apoyo** (3): solucionado. La carga del apoyo de secundario es la tarea 23.
+- **Cuotas y cargos de los otros medios de pago de Teclab** (7): confirmado que MercadoPago, PagoFácil y Rapipago son 1 pago, sin cuotas.
+- **Logos de `/teclab`** (12b): corregidos.
 
 ## Documentación de apoyo
+
+- **Pedidos a la universidad y a Teclab**: los ya redactados y el destino de cada dato están en [las notas operativas](docs/notas-operativas.md) y en `herramientas/pedidos-a-enviar.md`. Confirmar que el pedido siga vigente antes de enviarlo.
 
 - [Rutinas de mantenimiento](docs/rutinas.md): contenido, bot, SEO, fuentes comerciales, leads y verificaciones de deploy. La revisión de indexación y rendimiento (antigua tarea 13) es seguimiento permanente, no tarea cerrable.
 - [Detalle de pendientes abiertos](docs/pendientes-detalle.md): mediciones, restricciones, fuentes y pasos originales.

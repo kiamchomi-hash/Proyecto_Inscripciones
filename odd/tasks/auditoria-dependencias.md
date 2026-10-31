@@ -35,3 +35,7 @@ Exploración completada, base limpia. braces sin parche; sharp0.35.5 y source-ma
 - `npm run build`: correcto, compilación y generación de 161 páginas completadas.
 - `git diff --check`: correcto. next-env.d.ts generado por build restaurado exactamente al baseline HEAD con autorización.
 - T1 permanece parcial: no hay reemplazo drop-in verificado para fast-glob; no se ocultó la auditoría ni se usó downgrade/force. Sin commit/push.
+
+### Cierre, 30/10/2026
+
+- T1 se cierra **sin cambios de código**: la alerta GHSA-vfj7-8cjw-p6xm (CVE-2026-93687) se retiró el 23/10/2026 por no ser explotable en la práctica, y nunca hubo versión parcheada que esperar (`braces` sigue en 3.0.3, la última publicada). `npm audit` da 0 vulnerabilidades en 459 dependencias; la cadena `@next/eslint-plugin-next → fast-glob → micromatch → braces` queda igual y es sólo de desarrollo. El CI corre `npm audit --omit=dev` y nunca la vio.
