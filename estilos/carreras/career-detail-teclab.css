@@ -613,6 +613,9 @@
   border-radius: 999px;
   color: #fff;
   font-weight: 600;
+  /* Una sola píldora de ancho completo: el texto va centrado, como el resto de
+     los botones del sitio, y no colgado a la izquierda. */
+  text-align: center;
 }
 
 /* Azul pleno, sin desplazamiento: el único atajo del lateral se queda quieto y
