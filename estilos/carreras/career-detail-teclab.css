@@ -248,7 +248,9 @@
 }
 
 .career-page--teclab .career-layout {
-  padding-top: clamp(2rem, 3vw, 3rem);
+  /* La columna arranca pegada a la fila de datos: con 2-3 rem quedaba un hueco
+     que separaba las competencias de la ficha en dos bloques. */
+  padding-top: clamp(0.9rem, 1.5vw, 1.5rem);
   column-gap: clamp(2rem, 5vw, 5rem);
 }
 
