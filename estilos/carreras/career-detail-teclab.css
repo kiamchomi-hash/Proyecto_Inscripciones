@@ -422,6 +422,118 @@
   text-decoration-color: var(--career-accent);
 }
 
+/* ── Descarga del plan de estudios ────────────────────── */
+/* El botón va en la misma línea que el título del plan. En teléfono baja solo,
+   debajo del título, porque el heading ya ocupa el ancho. */
+.career-page--teclab .career-plan-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1.5rem;
+  margin-bottom: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+.career-page--teclab .career-plan-head .career-section-heading {
+  margin-bottom: 0;
+}
+
+.career-page--teclab .career-plan-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.6rem 1.15rem;
+  border: 1px solid var(--teclab-azul);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-family: var(--teclab-fuente);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+/* Sin desplazamiento en hover: los botones del sitio no se mueven. */
+.career-page--teclab .career-plan-download:hover {
+  border-color: var(--career-accent);
+  background: rgba(74, 226, 231, 0.12);
+}
+
+.career-page--teclab .career-plan-download:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.career-page--teclab .career-plan-download:focus-visible {
+  outline: 2px solid var(--career-accent);
+  outline-offset: 3px;
+}
+
+.career-page--teclab .career-plan-download svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+/* ── Resoluciones y validez nacional ──────────────────── */
+/* Mismo respaldo que publica Teclab al pie de su ficha oficial. Va después de
+   la franja de marca y antes de las preguntas frecuentes: cierra el tramo de
+   «es oficial» con el número que lo prueba. */
+.career-page--teclab .career-resoluciones {
+  margin-top: 1.75rem;
+  margin-bottom: clamp(2.25rem, 3.5vw, 3rem);
+  padding: 1.25rem clamp(1rem, 2vw, 1.5rem);
+  border-radius: var(--teclab-esquina);
+  background: var(--teclab-navy-claro);
+}
+
+.career-page--teclab .career-resoluciones h2 {
+  margin: 0 0 1rem;
+  color: var(--career-accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.career-page--teclab .career-resoluciones dl {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+}
+
+.career-page--teclab .career-resoluciones dl > div {
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(0, 85, 240, 0.55);
+}
+
+.career-page--teclab .career-resoluciones dl > div:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.career-page--teclab .career-resoluciones dt {
+  color: var(--career-accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.career-page--teclab .career-resoluciones dd {
+  margin: 0.15rem 0 0;
+  color: var(--teclab-texto);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 /* ── Preguntas frecuentes ─────────────────────────────── */
 .career-page--teclab .career-faq details {
   border: 0;

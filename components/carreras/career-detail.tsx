@@ -22,10 +22,13 @@ import {
   parsePlanTeclab,
   partirDescripcionTeclab,
 } from '@/components/index/teclab';
+import { getResolucionesTeclab } from '@/components/index/resoluciones-teclab';
+import { getPlanOficialTeclab } from '@/components/index/planes-teclab';
 import AvisoInicioTeclab from '@/components/index/aviso-inicio-teclab';
 import CareerInfoButton from './career-info-button';
 import StickyEnrollmentCta from './sticky-enrollment-cta';
 import ResaltarInscripcion from './resaltar-inscripcion';
+import DescargarPlan from './descargar-plan';
 import {
   getCareerPrefix,
   parseIAMeta,
@@ -151,6 +154,9 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
   // competencias, perfil-, pero no un plan por cuatrimestre.
   const conMaterialTeclab = isTeclab || isTeclabCourse;
   const ficha = conMaterialTeclab ? getFichaTeclab(carrera) : null;
+  // Resoluciones que Teclab publica al pie de su ficha oficial. Los cursos no
+  // llevan y las anunciadas «Próximamente» todavía no las tienen.
+  const resoluciones = isTeclab ? getResolucionesTeclab(carrera) : null;
   const articula = articulaConSiglo21(carrera);
   // Teclab (tecnicaturas y cursos) usa la paleta oficial del instituto; el
   // resto del diseno vive en career-detail-teclab.css bajo `career-page--teclab`.
@@ -542,9 +548,20 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
 
           {hasPlan && (
             <section id="plan" className="career-section career-plan career-reveal">
-              <SectionHeading eyebrow="Tu recorrido académico">
-                Plan de estudios
-              </SectionHeading>
+              <div className="career-plan-head">
+                <SectionHeading eyebrow="Tu recorrido académico">
+                  Plan de estudios
+                </SectionHeading>
+                {/* El programa oficial si Teclab lo publicó; si no, un PDF
+                    armado con los datos de la página (lib/plan-pdf.ts). */}
+                {isTeclab && anios.length > 0 && (
+                  <DescargarPlan
+                    anios={anios}
+                    carreraNombre={nombreCompleto}
+                    oficial={getPlanOficialTeclab(carrera)}
+                  />
+                )}
+              </div>
 
               {iaModulos && iaModulos.length > 0 && (
                 <div className="career-modules">
@@ -693,6 +710,35 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </a>
+            </section>
+          )}
+          {/* Mismo respaldo que publica Teclab al pie de su ficha: qué resolución
+              aprobó el plan, qué dictamen le dio aprobación plena y qué
+              resolución le da validez nacional al título. Sin esto, la ficha
+              decía «título oficial» sin decir con qué número. */}
+          {resoluciones && (
+            <section className="career-resoluciones" aria-labelledby="career-resoluciones-heading">
+              <h2 id="career-resoluciones-heading">Resoluciones y validez nacional</h2>
+              <dl>
+                {resoluciones.plan && (
+                  <div>
+                    <dt>Plan de estudios</dt>
+                    <dd>Resolución {resoluciones.plan}</dd>
+                  </div>
+                )}
+                {resoluciones.dictamen && (
+                  <div>
+                    <dt>Aprobación plena</dt>
+                    <dd>Dictamen {resoluciones.dictamen}</dd>
+                  </div>
+                )}
+                {resoluciones.validez && (
+                  <div>
+                    <dt>Validez nacional del título</dt>
+                    <dd>Resolución {resoluciones.validez}</dd>
+                  </div>
+                )}
+              </dl>
             </section>
           )}
           {faq && (

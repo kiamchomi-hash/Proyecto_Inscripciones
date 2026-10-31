@@ -21,6 +21,9 @@ const dependencias = {
   './career-info-button': { default: vacio, __esModule: true },
   './sticky-enrollment-cta': { default: vacio, __esModule: true },
   './resaltar-inscripcion': { default: vacio, __esModule: true },
+  '@/components/index/resoluciones-teclab': cargarTypescript('components/index/resoluciones-teclab.ts', {}),
+  '@/components/index/planes-teclab': cargarTypescript('components/index/planes-teclab.ts', {}),
+  './descargar-plan': { default: vacio, __esModule: true },
 };
 dependencias['./career-content'] = cargarTypescript('components/carreras/career-content.ts', dependencias);
 dependencias['./inscripcion-carrera'] = cargarTypescript('components/carreras/inscripcion-carrera.tsx', dependencias);
@@ -58,6 +61,7 @@ test('FAQ no suma pantallas vacías al carrusel ni cambia el modal Teclab', () =
     './use-compartir': {}, './icono-compartir': {}, '@/components/formularios/elegir-carrera': {},
     './ver-precio-teclab': {}, '@/components/formularios/casas': {},
     './flechas-de-scroll': {}, './modal-shell': {}, './use-foco-modal': {},
+    '@/lib/plan-pdf': { descargarPlanPDF: async () => {} },
   });
   const portada = { type: 'portada', bullets: [] };
   assert.deepEqual(carousel.slidesDelCarrusel([portada, faq, { type: 'modalidad' }, { type: 'evaluacion' }]), [portada]);

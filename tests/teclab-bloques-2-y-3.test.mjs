@@ -229,6 +229,9 @@ const dependencias = {
   './career-info-button': { default: vacio, __esModule: true },
   './sticky-enrollment-cta': { default: vacio, __esModule: true },
   './resaltar-inscripcion': { default: vacio, __esModule: true },
+  '@/components/index/resoluciones-teclab': cargarTypescript('components/index/resoluciones-teclab.ts', {}),
+  '@/components/index/planes-teclab': cargarTypescript('components/index/planes-teclab.ts', {}),
+  './descargar-plan': { default: vacio, __esModule: true },
 };
 dependencias['./career-content'] = cargarTypescript('components/carreras/career-content.ts', dependencias);
 const inscripcion = cargarTypescript('components/carreras/inscripcion-carrera.tsx', dependencias);

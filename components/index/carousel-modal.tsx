@@ -11,6 +11,7 @@ import IconoCompartir from './icono-compartir';
 import { PanelVerPrecio, AccesoVerPrecio } from './ver-precio-teclab';
 import { carreraConPrecio, casaDeCarrera } from '@/components/formularios/casas';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
+import { descargarPlanPDF } from '@/lib/plan-pdf';
 import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 
 interface Props {
@@ -129,94 +130,13 @@ function PanelContent({ panel, showTitle, cuatStartIdx }: { panel: Panel; showTi
 }
 
 // ── PDF download helper (in-page, no new window) ──
+// El armado del PDF vive en lib/plan-pdf.ts: es el mismo que usa el botón de las
+// fichas de Teclab, así el formato no se duplica en dos lugares.
 async function downloadPlanPDF(panels: Panel[], carreraNombre: string) {
-  const jsPDFModule = await import('jspdf');
-  const jsPDF = jsPDFModule.default ?? jsPDFModule.jsPDF;
-  await import('jspdf-autotable');
-  const yearPanels = panels.filter(p => p.tipo === 'year') as YearPanel[];
-
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const pageW = doc.internal.pageSize.getWidth();
-  const marginL = 18;
-  const marginR = 18;
-  const contentW = pageW - marginL - marginR;
-  let y = 20;
-
-  const checkPage = (needed: number) => {
-    if (y + needed > doc.internal.pageSize.getHeight() - 15) {
-      doc.addPage();
-      y = 20;
-    }
-  };
-
-  // Title
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
-  doc.setTextColor(1, 55, 41); // #013729
-  doc.text(carreraNombre.toUpperCase(), marginL, y);
-  y += 8;
-
-  // Subtitle
-  doc.setFontSize(9);
-  doc.setTextColor(100, 100, 100);
-  doc.text('PLAN DE ESTUDIOS', marginL, y);
-  y += 3;
-  doc.setDrawColor(0, 199, 177); // #00c7b1
-  doc.setLineWidth(0.6);
-  doc.line(marginL, y, marginL + contentW, y);
-  y += 10;
-
-  // Years — 3 per page, then new page
-  const renderYear = (panel: YearPanel) => {
-    // Year header with teal left bar
-    doc.setFillColor(232, 245, 243);
-    doc.rect(marginL, y - 4, contentW, 8, 'F');
-    doc.setFillColor(0, 199, 177);
-    doc.rect(marginL, y - 4, 1.2, 8, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(1, 55, 41);
-    doc.text(panel.año.toUpperCase(), marginL + 4, y + 1);
-    y += 10;
-
-    for (const cuatri of panel.cuatrimestres) {
-      checkPage(10);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
-      doc.setTextColor(0, 85, 135); // #005587
-      doc.text(cuatri.label.toUpperCase(), marginL + 5, y);
-      y += 4;
-
-      for (const materia of cuatri.materias) {
-        checkPage(6);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9.5);
-        doc.setTextColor(51, 51, 51);
-        doc.setFillColor(0, 199, 177);
-        doc.circle(marginL + 7, y - 1, 0.8, 'F');
-        doc.text(materia, marginL + 11, y);
-        y += 4.5;
-      }
-      y += 2;
-    }
-    y += 3;
-  };
-
-  // Page 1: years 1-3
-  for (let i = 0; i < Math.min(3, yearPanels.length); i++) {
-    renderYear(yearPanels[i]);
-  }
-
-  // Page 2: years 4+
-  if (yearPanels.length > 3) {
-    doc.addPage();
-    y = 20;
-    for (let i = 3; i < yearPanels.length; i++) {
-      renderYear(yearPanels[i]);
-    }
-  }
-
-  doc.save(`Plan de Estudios - ${carreraNombre}.pdf`);
+  const anios = panels
+    .filter((panel): panel is YearPanel => panel.tipo === 'year')
+    .map(panel => ({ anio: panel.año, cuatrimestres: panel.cuatrimestres }));
+  await descargarPlanPDF(anios, carreraNombre);
 }
 
 // El mismo corte que el `md:` de Tailwind. Se consulta en el momento (efecto o

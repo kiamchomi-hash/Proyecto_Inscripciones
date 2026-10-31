@@ -13,6 +13,7 @@ const { SlideCierreView } = cargarTypescript('components/index/carousel-modal.ts
   '@/components/carreras/career-content': { mensajeWhatsAppPrecios: () => 'Consulta' },
   './use-compartir': {}, './icono-compartir': {},
   './modal-shell': {}, './use-foco-modal': {},
+  '@/lib/plan-pdf': { descargarPlanPDF: async () => {} },
   '@/components/formularios/elegir-carrera': {},
   '@/components/formularios/casas': casas,
   './ver-precio-teclab': { AccesoVerPrecio: () => React.createElement(React.Fragment, null,
