@@ -24,6 +24,7 @@ const dependencias = {
   '@/components/index/resoluciones-teclab': cargarTypescript('components/index/resoluciones-teclab.ts', {}),
   '@/components/index/planes-teclab': cargarTypescript('components/index/planes-teclab.ts', {}),
   './descargar-plan': { default: vacio, __esModule: true },
+  './formulario-rapido': { default: vacio, __esModule: true },
 };
 dependencias['./career-content'] = cargarTypescript('components/carreras/career-content.ts', dependencias);
 dependencias['./inscripcion-carrera'] = cargarTypescript('components/carreras/inscripcion-carrera.tsx', dependencias);

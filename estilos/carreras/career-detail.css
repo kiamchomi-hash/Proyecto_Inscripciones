@@ -490,14 +490,14 @@
 }
 
 /* El bloque de cierre (competencias y franjas de marca) va después de los
-   formularios, donde ya no hay lateral: se centra con el ancho de la columna
-   del artículo, así las líneas no se estiran a todo lo ancho. */
+   formularios. Cuando no hay lateral se centra con el ancho de la columna del
+   artículo; cuando lo hay, el formulario corto ocupa la segunda columna. */
 @media (min-width: 901px) {
-  .career-layout--checks {
+  .career-layout--checks-solo {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .career-layout--checks > .career-content {
+  .career-layout--checks-solo > .career-content {
     width: 100%;
     max-width: calc(100% - var(--career-aside-ancho) - var(--career-columnas-gap));
     margin-inline: auto;

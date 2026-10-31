@@ -28,6 +28,7 @@ import CareerInfoButton from './career-info-button';
 import StickyEnrollmentCta from './sticky-enrollment-cta';
 import ResaltarInscripcion from './resaltar-inscripcion';
 import DescargarPlan from './descargar-plan';
+import FormularioRapido from './formulario-rapido';
 import {
   getCareerPrefix,
   parseIAMeta,
@@ -652,7 +653,7 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
       {/* Competencias, «lo que vas a aprender» y salida laboral: debajo de los
           formularios. Ocupan la columna del artículo (la segunda del grid queda
           vacía) para que las líneas no se estiren a todo el ancho. */}
-      <div className="career-layout career-layout--checks">
+      <div className={`career-layout career-layout--checks${isTeclab ? '' : ' career-layout--checks-solo'}`}>
         <div className="career-content">
           {(portada?.bullets.length ?? 0) > 0 && (
             <section id="perfil" className="career-section career-reveal">
@@ -800,6 +801,14 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
             </section>
           )}
         </div>
+
+        {/* Lateral de cierre: el formulario corto. En las casas que no lo tienen
+            la clase `career-layout--checks-solo` centra el bloque. */}
+        {isTeclab && (
+          <aside className="career-aside career-aside--rapido" aria-label="Inscripción rápida">
+            <FormularioRapido casa="teclab" carrera={carrera.nombre} carreraId={carrera.id} />
+          </aside>
+        )}
       </div>
 
       {(relacionadas.length > 0 || equivalente) && (

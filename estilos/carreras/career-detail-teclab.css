@@ -578,6 +578,102 @@
   line-height: 1.45;
 }
 
+/* ── Formulario rápido del lateral ────────────────────── */
+/* Cierra la ficha en la columna derecha, con los cuatro datos de contacto.
+   Sólo en escritorio: en el teléfono el lateral no se muestra y los formularios
+   completos ya están arriba. */
+.career-page--teclab .career-form-rapido {
+  padding: 1.25rem;
+  border: 1px solid rgba(0, 85, 240, 0.55);
+  border-radius: var(--teclab-esquina);
+  background: var(--teclab-navy-claro);
+}
+
+.career-page--teclab .career-form-rapido-titulo {
+  margin: 0 0 1rem;
+  color: var(--career-accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.career-page--teclab .career-form-rapido form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.career-page--teclab .career-form-rapido-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.career-page--teclab .career-form-rapido label {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.career-page--teclab .career-form-rapido label > span {
+  color: var(--teclab-texto);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.career-page--teclab .career-form-rapido input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(0, 85, 240, 0.7);
+  border-radius: 0.4rem;
+  background: rgba(8, 17, 26, 0.6);
+  color: #fff;
+  font-family: var(--teclab-fuente);
+  font-size: 0.82rem;
+}
+
+.career-page--teclab .career-form-rapido input:focus {
+  outline: none;
+  border-color: var(--career-accent);
+}
+
+.career-page--teclab .career-form-rapido button {
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--career-accent);
+  color: var(--teclab-navy);
+  font-family: var(--teclab-fuente);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.career-page--teclab .career-form-rapido button:hover {
+  background: var(--career-accent-bright);
+}
+
+.career-page--teclab .career-form-rapido button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.career-page--teclab .career-form-rapido-error {
+  margin: 0;
+  color: #ffb4b4;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.career-page--teclab .career-form-rapido-aviso {
+  margin: 0;
+  color: var(--teclab-texto);
+  font-size: 0.86rem;
+}
+
 /* ── Preguntas frecuentes ─────────────────────────────── */
 .career-page--teclab .career-faq details {
   border: 0;

@@ -128,6 +128,39 @@ test('campos por casa: se guarda lo declarado y los booleanos siempre', async t 
   assert.equal((await contactoInvalido.json()).error, 'Datos de contacto inválidos');
 });
 
+test('el formulario rápido del lateral entra como consulta de contacto', async t => {
+  const { db } = await crearD1(t);
+  await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
+
+  // Lo que manda `components/carreras/formulario-rapido.tsx`: los cuatro datos y
+  // la carrera de la ficha, sin `newsletter` (no hay casilla a la vista).
+  const respuesta = await pedir(sobre('consulta', {
+    casa: 'teclab',
+    tipoFormulario: 'contacto',
+    carrera: 'Tecnicatura Superior en Programación',
+    carreraId: 1,
+    nombre: 'Ana',
+    apellido: 'Pérez',
+    email: 'lead@example.invalid',
+    telefono: '11 1234-5678',
+  }), { db });
+  assert.equal(respuesta.status, 201);
+  assert.deepEqual(await respuesta.json(), { ok: true });
+
+  const fila = await db.prepare('SELECT * FROM consultas').first();
+  assert.equal(fila.casa, 'teclab');
+  assert.equal(fila.tipo_formulario, 'contacto');
+  assert.equal(fila.carrera, 'Tecnicatura Superior en Programación');
+  assert.equal(fila.nombre, 'Ana');
+  assert.equal(fila.apellido, 'Pérez');
+  assert.equal(fila.email, 'lead@example.invalid');
+  assert.equal(fila.telefono, '11 1234-5678');
+
+  // Sin consentimiento no se suscribe a nadie.
+  const efectos = (await filas(db)).map(f => f.tipo).sort();
+  assert.deepEqual(efectos, ['aviso-lead']);
+});
+
 test('consulta con preinscripción: precio vigente, mail encolado y efectos atómicos', async t => {
   const { db } = await crearD1(t);
   await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
