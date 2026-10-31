@@ -479,12 +479,29 @@
 }
 
 .career-layout {
+  --career-aside-ancho: 290px;
+  --career-columnas-gap: clamp(3rem, 8vw, 8rem);
   width: min(100% - 2rem, 1280px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 290px;
-  gap: clamp(3rem, 8vw, 8rem);
+  grid-template-columns: minmax(0, 1fr) var(--career-aside-ancho);
+  gap: var(--career-columnas-gap);
   margin: 0 auto;
   padding: clamp(3.5rem, 6vw, 5.5rem) 0 2rem;
+}
+
+/* El bloque de cierre (competencias y franjas de marca) va después de los
+   formularios, donde ya no hay lateral: se centra con el ancho de la columna
+   del artículo, así las líneas no se estiran a todo lo ancho. */
+@media (min-width: 901px) {
+  .career-layout--checks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .career-layout--checks > .career-content {
+    width: 100%;
+    max-width: calc(100% - var(--career-aside-ancho) - var(--career-columnas-gap));
+    margin-inline: auto;
+  }
 }
 
 .career-section {
