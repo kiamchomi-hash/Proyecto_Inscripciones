@@ -609,6 +609,14 @@
   gap: 0.6rem;
 }
 
+/* El captcha invisible sólo se dibuja cuando Cloudflare decide pedir el desafío.
+   Centrado y sin reservar alto: en el caso normal no ocupa lugar. */
+.career-page--teclab .career-form-rapido form > div {
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+}
+
 .career-page--teclab .career-form-rapido label {
   display: grid;
   gap: 0.3rem;
