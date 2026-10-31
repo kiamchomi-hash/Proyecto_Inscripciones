@@ -7,7 +7,7 @@ import * as tipos from '../components/index/types.ts';
 import * as teclab from '../components/index/teclab.ts';
 import * as adaptadores from '../lib/datos/carrera-detalle.ts';
 import { carreraHubspotDe } from '../components/formularios/casas.ts';
-import { perfilDe } from '../components/test-vocacional-teclab/puntaje.ts';
+import { perfilDe, recomendar, PREGUNTAS } from '../components/test-vocacional-teclab/puntaje.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 import { buscarRedireccion } from '../cloudflare/src/entrega/redirects.ts';
 
@@ -114,6 +114,36 @@ test('las nueve tienen perfil propio en el test vocacional de Teclab', () => {
   assert.equal(perfilDe({ nombre: 'Tecnicatura Superior en Experiencia del Cliente', nombre_corto: 'Customer Experience' }), 'experiencia-cliente');
   assert.equal(perfilDe({ nombre: 'Tecnicatura Superior en Seguros' }), 'seguros');
   assert.equal(perfilDe({ nombre: 'Tecnicatura Superior en Relaciones Laborales' }), 'relaciones-laborales');
+});
+
+test('Comercio Electrónico tiene perfil propio y sale primero con respuestas de e-commerce', () => {
+  const ecommerce = { nombre: 'Tecnicatura Superior en Comercio Electrónico (e-commerce)' };
+  assert.equal(perfilDe(ecommerce), 'comercio-electronico');
+  // Ni se queda con el perfil de Comercio Exterior ni le deja el suyo.
+  assert.equal(perfilDe({ nombre: 'Tecnicatura Superior en Comercio Exterior' }), 'comercio-exterior');
+
+  // Respuestas coherentes con la carrera: vender online, campañas, logística y
+  // números. Tiene que quedar arriba de Marketing Digital e Inbound.
+  const opcion = (eje, texto) => {
+    const pregunta = PREGUNTAS.find(p => p.eje === eje);
+    return pregunta.opciones.findIndex(o => o.texto === texto);
+  };
+  const respuestas = [
+    opcion('Mundo', 'Marcas, ventas y clientes'),
+    opcion('Tarea', 'Crear contenido y campañas'),
+    opcion('Lugar', 'Desde casa, frente a la compu'),
+    opcion('Logro', 'Que una marca venda más'),
+    opcion('Material', 'Números y documentos'),
+    opcion('Tema', 'Finanzas y seguros'),
+    opcion('Desafío', 'Que un pedido llegue a tiempo'),
+  ];
+  const catalogo = [
+    ecommerce,
+    { nombre: 'Tecnicatura Superior en Marketing Digital' },
+    { nombre: 'Tecnicatura Superior en Inbound Marketing' },
+    { nombre: 'Tecnicatura Superior en Logística' },
+  ].map((carrera, orden) => ({ id: orden + 1, orden, ...carrera }));
+  assert.equal(recomendar(catalogo, respuestas)[0].carrera.nombre, ecommerce.nombre);
 });
 
 test('el test vocacional general tiene una ruta específica para cada una', () => {
