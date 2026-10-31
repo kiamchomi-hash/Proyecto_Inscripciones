@@ -462,56 +462,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
 
       <div className="career-layout">
         <div className="career-content">
-          {(portada?.bullets.length ?? 0) > 0 && (
-            <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow="Tu futuro profesional">
-                Lo que vas a aprender
-              </SectionHeading>
-              <ul className="career-learning-list">
-                {portada!.bullets.map((bullet, index) => (
-                  <li key={index}>
-                    <span><CheckIcon /></span>
-                    <p>{bullet}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {teclabCompetencias.length > 0 && (
-            <section id="perfil" className="career-section career-reveal" aria-label="Competencias profesionales">
-              {/* La tecnicatura va sin rótulo: la lista se explica sola y el
-                  renglón en mayúsculas sumaba un título vacío. El curso sí lo
-                  conserva, porque «Qué vas a aprender» dice algo distinto. */}
-              {isTeclabCourse && <SectionHeading eyebrow="Qué vas a aprender" />}
-              <ul className="career-learning-list">
-                {teclabCompetencias.map((competencia, index) => (
-                  <li key={index}>
-                    <span><CheckIcon /></span>
-                    <p>{competencia}</p>
-                  </li>
-                ))}
-              </ul>
-              {teclabSalida && (
-                <div className="career-salida">
-                  <p>{teclabSalida}</p>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Salida laboral sola: la ultima oracion de la descripcion se pinta
-              junto a las competencias, y una carrera anunciada todavia no las
-              tiene. Sin esto, el dato se perdia. */}
-          {teclabCompetencias.length === 0 && teclabSalida && (
-            <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow="Salida laboral" />
-              <div className="career-salida">
-                <p>{teclabSalida}</p>
-              </div>
-            </section>
-          )}
-
           {/* Aviso de inicio de Teclab, justo arriba del plan (o de "Como se
               cursa" en el curso): ahi se decide si anotarse, no en el hero. Una
               anunciada no tiene fecha de inicio: el aviso diria "todavia estas a
@@ -625,6 +575,35 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
             </section>
           )}
 
+          {/* Resoluciones antes de las competencias: la ficha arranca por el
+              plan de estudios, sigue con el respaldo oficial y recién después
+              cuenta qué se aprende. */}
+          {resoluciones && (
+            <section className="career-resoluciones" aria-labelledby="career-resoluciones-heading">
+              <h2 id="career-resoluciones-heading">Resoluciones y validez nacional</h2>
+              <dl>
+                {resoluciones.plan && (
+                  <div>
+                    <dt>Plan de estudios</dt>
+                    <dd>Resolución {resoluciones.plan}</dd>
+                  </div>
+                )}
+                {resoluciones.dictamen && (
+                  <div>
+                    <dt>Aprobación plena</dt>
+                    <dd>Dictamen {resoluciones.dictamen}</dd>
+                  </div>
+                )}
+                {resoluciones.validez && (
+                  <div>
+                    <dt>Validez nacional del título</dt>
+                    <dd>Resolución {resoluciones.validez}</dd>
+                  </div>
+                )}
+              </dl>
+            </section>
+          )}
+
           {/* Franja institucional: la diplomatura la dicta la Academia.
               Sin enlace a su sitio, igual que la de Teclab: el contacto se hace
               por WhatsApp o por el formulario de esta pagina. */}
@@ -717,35 +696,56 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               </a>
             </section>
           )}
-          {/* Mismo respaldo que publica Teclab al pie de su ficha: qué resolución
-              aprobó el plan, qué dictamen le dio aprobación plena y qué
-              resolución le da validez nacional al título. Sin esto, la ficha
-              decía «título oficial» sin decir con qué número. */}
-          {resoluciones && (
-            <section className="career-resoluciones" aria-labelledby="career-resoluciones-heading">
-              <h2 id="career-resoluciones-heading">Resoluciones y validez nacional</h2>
-              <dl>
-                {resoluciones.plan && (
-                  <div>
-                    <dt>Plan de estudios</dt>
-                    <dd>Resolución {resoluciones.plan}</dd>
-                  </div>
-                )}
-                {resoluciones.dictamen && (
-                  <div>
-                    <dt>Aprobación plena</dt>
-                    <dd>Dictamen {resoluciones.dictamen}</dd>
-                  </div>
-                )}
-                {resoluciones.validez && (
-                  <div>
-                    <dt>Validez nacional del título</dt>
-                    <dd>Resolución {resoluciones.validez}</dd>
-                  </div>
-                )}
-              </dl>
+          {(portada?.bullets.length ?? 0) > 0 && (
+            <section id="perfil" className="career-section career-reveal">
+              <SectionHeading eyebrow="Tu futuro profesional">
+                Lo que vas a aprender
+              </SectionHeading>
+              <ul className="career-learning-list">
+                {portada!.bullets.map((bullet, index) => (
+                  <li key={index}>
+                    <span><CheckIcon /></span>
+                    <p>{bullet}</p>
+                  </li>
+                ))}
+              </ul>
             </section>
           )}
+
+          {teclabCompetencias.length > 0 && (
+            <section id="perfil" className="career-section career-reveal" aria-label="Competencias profesionales">
+              {/* La tecnicatura va sin rótulo: la lista se explica sola y el
+                  renglón en mayúsculas sumaba un título vacío. El curso sí lo
+                  conserva, porque «Qué vas a aprender» dice algo distinto. */}
+              {isTeclabCourse && <SectionHeading eyebrow="Qué vas a aprender" />}
+              <ul className="career-learning-list">
+                {teclabCompetencias.map((competencia, index) => (
+                  <li key={index}>
+                    <span><CheckIcon /></span>
+                    <p>{competencia}</p>
+                  </li>
+                ))}
+              </ul>
+              {teclabSalida && (
+                <div className="career-salida">
+                  <p>{teclabSalida}</p>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Salida laboral sola: la ultima oracion de la descripcion se pinta
+              junto a las competencias, y una carrera anunciada todavia no las
+              tiene. Sin esto, el dato se perdia. */}
+          {teclabCompetencias.length === 0 && teclabSalida && (
+            <section id="perfil" className="career-section career-reveal">
+              <SectionHeading eyebrow="Salida laboral" />
+              <div className="career-salida">
+                <p>{teclabSalida}</p>
+              </div>
+            </section>
+          )}
+
           {faq && (
             <section id="preguntas-frecuentes" className="career-section career-faq" aria-labelledby="career-faq-heading">
               <div className="career-section-heading">
@@ -764,12 +764,13 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
         <aside className="career-aside" aria-label="Navegación y contacto">
           <div className="career-aside-inner">
             <nav>
+              {/* El orden del índice sigue el de la página: el plan primero. */}
+              {cursada.length > 0 && <a href="#plan">Cómo se cursa</a>}
+              {hasPlan && <a href="#plan">Plan de estudios</a>}
               {((portada?.bullets.length ?? 0) > 0 || teclabCompetencias.length > 0) && (
                 <a href="#perfil">{isTeclabCourse ? 'Qué vas a aprender' : 'Perfil profesional'}</a>
               )}
               {teclabCompetencias.length === 0 && teclabSalida && <a href="#perfil">Salida laboral</a>}
-              {cursada.length > 0 && <a href="#plan">Cómo se cursa</a>}
-              {hasPlan && <a href="#plan">Plan de estudios</a>}
               {faq && <a href="#preguntas-frecuentes">Preguntas frecuentes</a>}
               {inscripcionHref && (
                 <a href="#preinscripcion">Cómo inscribirte</a>
