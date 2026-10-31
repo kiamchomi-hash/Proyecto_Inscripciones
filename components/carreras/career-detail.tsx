@@ -568,10 +568,10 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
 
           {/* Resoluciones antes de las competencias: la ficha arranca por el
               plan de estudios, sigue con el respaldo oficial y recién después
-              cuenta qué se aprende. */}
+              cuenta qué se aprende. Sin encabezado a la vista: los tres datos
+              se explican solos y el nombre queda para el lector de pantalla. */}
           {resoluciones && (
-            <section className="career-resoluciones" aria-labelledby="career-resoluciones-heading">
-              <h2 id="career-resoluciones-heading">Resoluciones y validez nacional</h2>
+            <section className="career-resoluciones" aria-label="Resoluciones y validez nacional">
               <dl>
                 {resoluciones.plan && (
                   <div>
