@@ -41,6 +41,13 @@
   border-bottom: 0;
 }
 
+/* Los cuatro datos van pegados a los botones: con el aire del hero quedaba un
+   hueco de más de 80 px entre «Ver info» y la fila de institución, duración y
+   título, y se leían como dos bloques separados. */
+.career-page--teclab .career-hero-inner {
+  padding-bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
 .career-page--teclab .career-hero-media::after {
   background: linear-gradient(90deg, rgba(12, 24, 36, 0.18), transparent 65%);
 }
