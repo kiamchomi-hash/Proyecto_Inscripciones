@@ -615,13 +615,8 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
 
         <aside className="career-aside" aria-label="Navegación y contacto">
           <div className="career-aside-inner">
-            <nav>
-              {/* Sólo el atajo de inscripción: el resto de la página se lee
-                  corriendo y las cuatro píldoras competían con el formulario. */}
-              {inscripcionHref && (
-                <a href="#preinscripcion">Cómo inscribirte</a>
-              )}
-            </nav>
+            {/* Sin índice: «Cómo inscribirte» decía lo mismo que «Quiero
+                inscribirme» en la tarjeta de abajo. */}
             <div className="career-aside-cta">
               {carrera.proximamente && <span>Próxima apertura</span>}
               <strong>

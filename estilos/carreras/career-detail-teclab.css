@@ -709,26 +709,6 @@
 }
 
 /* ── Aside: navegacion y tarjeta de inscripcion ───────── */
-.career-page--teclab .career-aside nav a {
-  border-color: var(--teclab-azul);
-  background: var(--teclab-azul);
-  border-radius: 999px;
-  color: #fff;
-  font-weight: 600;
-  /* Una sola píldora de ancho completo: el texto va centrado, como el resto de
-     los botones del sitio, y no colgado a la izquierda. */
-  text-align: center;
-}
-
-/* Azul pleno, sin desplazamiento: el único atajo del lateral se queda quieto y
-   sólo se aclara el azul al pasar el puntero. */
-.career-page--teclab .career-aside nav a:hover {
-  border-color: #1a6bff;
-  background: #1a6bff;
-  color: #fff;
-  transform: none;
-}
-
 .career-page--teclab .career-aside-cta {
   border: 0;
   border-radius: var(--teclab-esquina);
@@ -924,9 +904,6 @@
 @media (prefers-reduced-motion: reduce) {
   .career-page--teclab .career-years > section:hover,
   .career-page--teclab .career-related li > a:hover,
-  .career-page--teclab .career-aside nav a:hover {
-    transform: none;
-  }
 
   /* El halo y el degradé quedan quietos: el color está, el movimiento no. */
   .career-page--teclab .career-aside-cta > a:first-of-type {
