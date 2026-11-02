@@ -124,6 +124,16 @@ html {
     line-height: 1.4 !important; /* Altura de línea fija para evitar variaciones entre body */
 }
 
+/* Teclab entra en azul: es otra marca y su enlace tiene que leerse así en el
+   estado normal, no sólo al pasar el puntero. El azul de la casa (#0055f0) sobre
+   el fondo profundo apaga un texto de este tamaño, así que va la versión
+   aclarada del acento, con el mismo criterio que CLARO en teclab-modal.tsx. Va
+   antes de :hover y .active a propósito: mismo peso, y esas dos tienen que poder
+   pisarlo. En las páginas de Teclab lo pisa la regla del tema. */
+.navbar-link[href="/teclab"] {
+  color: #73a2f7;
+}
+
 .navbar-link:hover {
   background-color: var(--color-highlight);
   color: #013729;
