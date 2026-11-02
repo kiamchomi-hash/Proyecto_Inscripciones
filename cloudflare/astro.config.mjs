@@ -61,12 +61,6 @@ const reemplazos = [
 export default defineConfig({
   output: 'server',
   publicDir: publico,
-  // El CSS entra en el HTML en vez de salir como `<link>`: las cuatro hojas de
-  // la home son cuatro pedidos que bloquean el primer pintado (~600 ms medidos
-  // en 4G lenta, 1/11/2026). La CSP ya permite `style-src 'unsafe-inline'`, así
-  // que no hace falta nonce. Se paga en caché entre páginas: cada una trae su
-  // CSS embebido.
-  build: { inlineStylesheets: 'always' },
   adapter: cloudflare({ imageService: 'passthrough', remoteBindings: false }),
   integrations: [react(), integracionCabecerasAssets, integracionDerivadas],
   session: false,
