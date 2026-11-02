@@ -124,14 +124,14 @@ html {
     line-height: 1.4 !important; /* Altura de línea fija para evitar variaciones entre body */
 }
 
-/* Teclab entra en azul: es otra marca y su enlace tiene que leerse así en el
-   estado normal, no sólo al pasar el puntero. El azul de la casa (#0055f0) sobre
-   el fondo profundo apaga un texto de este tamaño, así que va la versión
-   aclarada del acento, con el mismo criterio que CLARO en teclab-modal.tsx. Va
-   antes de :hover y .active a propósito: mismo peso, y esas dos tienen que poder
-   pisarlo. En las páginas de Teclab lo pisa la regla del tema. */
+/* Teclab va con el bloque azul de la casa (#0055f0) y texto blanco: es otra
+   marca y su enlace tiene que destacarse en el estado normal, no sólo al pasar
+   el puntero. Va antes de :hover y .active a propósito: mismo peso, y esas dos
+   tienen que poder pisarlo. En las páginas de Teclab no va el bloque, porque ahí
+   el navbar ya es azul entero y el azul lleno es la señal de «estás acá». */
 .navbar-link[href="/teclab"] {
-  color: #73a2f7;
+  background-color: #0055f0;
+  color: #fff;
 }
 
 .navbar-link:hover {
@@ -391,6 +391,13 @@ body:has(.teclab-page, .ficha-teclab, .tvt-page) .main-navbar {
 
 body:has(.teclab-page, .ficha-teclab, .tvt-page) .navbar-link {
   color: #f0f0f6;
+}
+
+/* En una página de Teclab el bloque azul de su propio enlace se apaga: el azul
+   lleno ahí es la señal de la página activa. Va antes de :hover y .active del
+   tema, que tienen el mismo peso y lo pisan cuando corresponde. */
+body:has(.teclab-page, .ficha-teclab, .tvt-page) .navbar-link[href="/teclab"] {
+  background-color: transparent;
 }
 
 body:has(.teclab-page, .ficha-teclab, .tvt-page) .navbar-link:hover {
