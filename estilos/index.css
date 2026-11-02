@@ -520,6 +520,19 @@
   gap: 1.5rem;
 }
 
+/* Las secciones del catálogo que quedan fuera de pantalla no se maquetan hasta
+   que se acercan. La home trae 88 carreras: el recálculo de estilo y el layout
+   de todo eso costaban 789-1393 ms de layout y 614-887 ms de estilo en la traza
+   con 4x de CPU (1/11/2026), y se pagaban antes de poder pintar.
+   `contain-intrinsic-size` con `auto` recuerda el alto real después de la
+   primera pintada, así que la barra de scroll no salta y el CLS queda en 0.
+   Medido sobre el HTML de producción: layout 1393 → 433 ms, estilo 614 → 419 ms.
+   El modal de carrera se pinta fuera de `.main-grid`, por eso no queda atrapado. */
+.main-grid > div > section[id^="section-"] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1200px;
+}
+
 /* Filter toggle button */
 .filter-toggle-btn {
   display: flex;
