@@ -434,6 +434,29 @@ test('api: sin cola no publica nada y la respuesta no cambia', async t => {
   assert.equal(await db.prepare(`SELECT count(*) AS n FROM outbox`).first('n'), 1);
 });
 
+test('api y telegram: inscripción rápida se distingue sin modificar el aviso de contacto', async t => {
+  const { db } = await crearD1(t);
+  const base = { casa: 'teclab', tipoFormulario: 'contacto', carrera: 'Programación', nombre: 'Ana', apellido: 'Prueba', email: 'ana@example.invalid', telefono: '1112345678' };
+  for (const origen of ['inscripcion-rapida', undefined]) {
+    const respuesta = await pedir({ kind: 'consulta', token: 't', payload: { ...base, origen } }, { db });
+    assert.equal(respuesta.status, 201);
+  }
+  const efectos = (await db.prepare('SELECT id, detalle FROM outbox ORDER BY id').all()).results;
+  assert.equal(JSON.parse(efectos[0].detalle).origen, 'inscripcion-rapida');
+  assert.equal(efectos[1].detalle, null);
+  const { buscar, llamadas } = espia();
+  const transportes = crearTransportes({ telegram: { token: 't', chatId: '1' } }, buscar, db);
+  for (const efecto of efectos) assert.equal(await consumirEfecto(db, efecto.id, transportes), 'enviado');
+  const [rapida, comun] = llamadas.map(llamada => JSON.parse(llamada.init.body).text);
+  assert.match(rapida, /Inscripción rápida — Teclab/);
+  for (const dato of ['Ana', 'Prueba', 'Programación', 'ana@example.invalid', '1112345678']) assert.ok(rapida.includes(dato));
+  assert.doesNotMatch(rapida, /\*Tipo:|\*Localidad:|\*Equivalencias:/);
+  assert.match(comun, /Consulta — Teclab/);
+  assert.match(comun, /\*Tipo:/);
+  assert.match(comun, /\*Localidad:/);
+  assert.match(comun, /\*Equivalencias:/);
+});
+
 // ── Prueba de correo desde el Worker ──
 
 const pedirPrueba = (autorizacion, entorno) => manejarCorreoPrueba(

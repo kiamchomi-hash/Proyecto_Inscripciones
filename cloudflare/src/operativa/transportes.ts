@@ -93,7 +93,7 @@ async function textoTelegram(db: D1Database, pedido: PedidoTelegram): Promise<{ 
   if (!consulta) throw new ErrorRechazo('fila-inexistente');
   // Sin `precio-visto` ni el enriquecimiento del aviso de consulta: las dos
   // consultas del contrato vigente van a la base por el adaptador propio.
-  return { texto: buildConsultaMessage(consulta), markdown: true };
+  return { texto: buildConsultaMessage(consulta, { inscripcionRapida: pedido.origen === 'inscripcion-rapida' }), markdown: true };
 }
 
 /** Telegram: `sendMessage` con `parse_mode` Markdown, como la Edge Function. */

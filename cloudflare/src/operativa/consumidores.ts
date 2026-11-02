@@ -23,6 +23,7 @@ export interface PedidoTelegram {
   fuente: 'consulta' | 'faq' | 'clase';
   /** Id de la fila que lo originó (`consultas`, `faq_preguntas` o `solicitudes_clase`). */
   id: number | string;
+  origen?: 'inscripcion-rapida';
 }
 
 export interface PedidoNewsletter {
@@ -131,7 +132,8 @@ function pedidoAvisoLead(fila: FilaOutbox): Resuelto {
     return { tipo: 'pedido', transporte: 'telegram', pedido: { tipo: 'aviso-lead', fuente: 'clase', id: fila.clase_id } };
   }
   if (fila.consulta_id !== null) {
-    return { tipo: 'pedido', transporte: 'telegram', pedido: { tipo: 'aviso-lead', fuente: 'consulta', id: fila.consulta_id } };
+    const origen = detalleDe(fila).origen === 'inscripcion-rapida' ? 'inscripcion-rapida' : undefined;
+    return { tipo: 'pedido', transporte: 'telegram', pedido: { tipo: 'aviso-lead', fuente: 'consulta', id: fila.consulta_id, ...(origen ? { origen } : {}) } };
   }
   return { tipo: 'omitido', motivo: 'sin-ancla' };
 }

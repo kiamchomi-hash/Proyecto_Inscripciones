@@ -53,6 +53,7 @@ export default function FormularioRapido({
           payload: {
             casa,
             tipoFormulario: 'contacto',
+            origen: 'inscripcion-rapida',
             carrera,
             carreraId,
             nombre: valores.nombre.trim(),

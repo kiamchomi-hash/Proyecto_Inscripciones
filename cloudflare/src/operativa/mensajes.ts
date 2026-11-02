@@ -80,7 +80,7 @@ export interface PrecioVistoAviso {
   created_at: string;
 }
 
-export function buildConsultaMessage(fila: Fila, { precioVisto = null }: { precioVisto?: PrecioVistoAviso | null } = {}): string {
+export function buildConsultaMessage(fila: Fila, { precioVisto = null, inscripcionRapida = false }: { precioVisto?: PrecioVistoAviso | null; inscripcionRapida?: boolean } = {}): string {
   const fecha = fila.created_at ? formatDate(fila.created_at as string) : '—';
   const nombre = `${fila.nombre || '—'} ${fila.apellido || ''}`.trim();
 
@@ -100,18 +100,20 @@ export function buildConsultaMessage(fila: Fila, { precioVisto = null }: { preci
       cabecera(fila),
       `👀 *Vio el precio:* ${precioVisto.carrera || 'carrera no especificada'} el ${formatDate(precioVisto.created_at)}`,
     ]
-    : [cabecera(fila)];
+    : [inscripcionRapida ? '📝 *Inscripción rápida — Teclab*' : cabecera(fila)];
 
   return [
     ...marca,
     ``,
     `👤 *Nombre:* ${nombre}`,
     `🎓 *Carrera:* ${fila.carrera || 'No especificada'}`,
-    `📋 *Tipo:* ${fila.tipo || '—'}`,
+    ...(!inscripcionRapida ? [`📋 *Tipo:* ${fila.tipo || '—'}`] : []),
     `📧 *Email:* ${fila.email || '—'}`,
     `📱 *Teléfono:* ${fila.telefono || '—'}`,
-    `📍 *Localidad:* ${fila.localidad || '—'}`,
-    `🔄 *Equivalencias:* ${fila.equivalencias ? 'Sí' : 'No'}`,
+    ...(!inscripcionRapida ? [
+      `📍 *Localidad:* ${fila.localidad || '—'}`,
+      `🔄 *Equivalencias:* ${fila.equivalencias ? 'Sí' : 'No'}`,
+    ] : []),
     ...(legajo.length ? [``, `📝 *Datos del legajo*`, ...legajo] : []),
     ``,
     `🕐 *Fecha:* ${fecha}`,

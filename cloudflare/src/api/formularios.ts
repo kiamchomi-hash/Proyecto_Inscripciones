@@ -178,7 +178,12 @@ async function registrarConsulta(db: D1Database, payload: JsonRecord, entorno: E
     }
   }
 
-  const efectos: Efecto[] = [{ tipo: 'aviso-lead' }, ...efectoNewsletter(payload, 'email')];
+  const esRapida = payload.origen === 'inscripcion-rapida'
+    && payload.tipoFormulario === 'contacto' && payload.casa === 'teclab';
+  const efectos: Efecto[] = [
+    esRapida ? { tipo: 'aviso-lead', detalle: { origen: 'inscripcion-rapida' } } : { tipo: 'aviso-lead' },
+    ...efectoNewsletter(payload, 'email'),
+  ];
   const email = text(payload.email, 254);
   if (precio?.estado === 'vigente' && carrera && EMAIL.test(email)) {
     efectos.push({ tipo: 'mail-precio', detalle: { carreraId: carrera.id, limitar: false } });
