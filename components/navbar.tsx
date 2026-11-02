@@ -8,11 +8,14 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from './icons';
 
+// «Sobre Nosotros» no va en el navbar (02/11/2026): es la página de la sede y
+// se llega a ella desde el pie (`components/footer.tsx`). En su lugar entra
+// Teclab, que es otra marca con otra oferta y su propia landing.
 const NAV_LINKS = [
   { href: '/', label: 'INICIO/CARRERAS' },
+  { href: '/teclab', label: 'Teclab' },
   { href: '/clases-apoyo', label: 'Clases de Apoyo' },
   { href: '/novedades/1', label: 'Novedades' },
-  { href: '/sobre-nosotros', label: 'Sobre Nosotros' },
   { href: '/faq', label: 'FAQ' },
   { href: '/contacto', label: 'Contacto' },
 ];
@@ -120,7 +123,10 @@ export default function Navbar() {
     // El modal de carrera reescribe la URL a /carreras/{slug} (y esa es la misma
     // ruta que la pagina de carrera): sigue siendo la seccion INICIO/CARRERAS,
     // asi que el enlace no tiene que perder el resaltado al abrir el modal.
-    if (href === '/') return pathname === '/' || pathname.startsWith('/carreras') || pathname === '/teclab';
+    if (href === '/') return pathname === '/' || pathname.startsWith('/carreras');
+    // /teclab tiene su propio enlace: su landing, el test vocacional y la
+    // inscripción no son la sección INICIO/CARRERAS.
+    if (href === '/teclab') return pathname === '/teclab' || pathname.startsWith('/teclab/');
     if (href.startsWith('/novedades')) return pathname.startsWith('/novedades');
     return pathname === href;
   }

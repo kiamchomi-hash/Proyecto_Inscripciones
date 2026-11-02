@@ -22,6 +22,12 @@ La comparación viva con Next sigue activa: estas referencias cubren las 32 ruta
 de esa comparación y sus regiones de navegación y pie, pero no sustituyen aún las
 pruebas de redirects, errores y capturas de navegador.
 
+El 02/11/2026 se editaron a mano sólo las regiones `navegacion` de `home.json` y
+`rutas.json`: el navbar cambió a propósito (sale «Sobre Nosotros», entra Teclab,
+que ahora tiene enlace propio) y el generador de Next ya no puede producir la
+referencia nueva. El resto de los campos sigue siendo lo que registró Next; si
+alguna vez se regenera, revisar igual la diferencia antes de sustituirlas.
+
 Las referencias visuales están en `../visuales-next/`: 50 capturas sintéticas,
 divididas en 54 bandas WebP sin pérdida y sus manifiestos (unos 39 MiB). Las
 generó `tests/helpers/generar-referencias-visuales.mjs` desde la corrida local
