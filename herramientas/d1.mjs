@@ -10,12 +10,10 @@
 // `--sin-red`), y cualquier sentencia que no
 // sea de lectura exige `--escribir` explícito. No hay transacciones visibles acá:
 // D1 aplica cada `execute` como un lote.
-import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import path from 'node:path';
 
-const PROYECTO = path.resolve(new URL('..', import.meta.url).pathname);
-const WRANGLER = path.join(PROYECTO, 'cloudflare', 'node_modules', 'wrangler', 'bin', 'wrangler.js');
+import { ejecutarD1, RUTA_WRANGLER } from './d1-wrangler.mjs';
+
 const BASE = process.env.D1_PRODUCCION || 'cau-produccion';
 
 const args = process.argv.slice(2);
@@ -57,19 +55,13 @@ if (!soloLectura && !escribir) {
   process.exit(2);
 }
 
-if (!existsSync(WRANGLER)) {
+if (!existsSync(RUTA_WRANGLER)) {
   console.error('No está Wrangler en cloudflare/node_modules. Correr npm --prefix cloudflare install.');
   process.exit(2);
 }
 
 try {
-  const salida = execFileSync(
-    'node',
-    [WRANGLER, 'd1', 'execute', BASE, '--remote', '--json', '--yes',
-      ...(archivo ? ['--file', path.resolve(archivo)] : ['--command', sql])],
-    { cwd: path.join(PROYECTO, 'cloudflare'), encoding: 'utf8', maxBuffer: 512 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] },
-  );
-  const bloques = JSON.parse(salida);
+  const bloques = ejecutarD1({ base: BASE, ...(archivo ? { archivo } : { sql }) });
   for (const bloque of bloques) {
     for (const fila of bloque.results ?? []) console.log(JSON.stringify(fila));
     if (bloque.meta) {
@@ -77,7 +69,9 @@ try {
     }
   }
 } catch (error) {
-  const detalle = error.stderr ? String(error.stderr).slice(0, 800) : String(error.message).slice(0, 400);
-  console.error(detalle);
+  console.error(error.message);
+  if (error.transitorio) {
+    console.error('Se reintentó y siguió fallando la autenticación: probar `npx wrangler login` en cloudflare/.');
+  }
   process.exit(1);
 }

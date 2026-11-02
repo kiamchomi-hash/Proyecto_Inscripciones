@@ -137,6 +137,10 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Folleto de carreras relevantes para Siglo 21 e Identidad** (52b): sólo Teclab.
 - **Dar imágenes a las carreras de Identidad Argentina** (46c).
 
+## Cerradas el 02/11/2026
+
+- **La carga diaria de precios de Siglo 21 fallaba por un 401 de wrangler, sin reintento.** Las dos corridas del 02/11 (10:00 y 14:00) cortaron en la primera consulta a D1 con `Authentication error [code: 10000]` y la base quedó con los precios del 01/11, que vencían esa misma noche. La causa está en la sesión de wrangler, no en el publicador: cuando renueva el token OAuth, la primera llamada puede volver 401 y la siguiente, con el mismo token guardado, responde 200 —15 casos entre el 27/10 y el 02/11, todos precedidos por `grant_type=refresh_token`—. Arreglado con `herramientas/d1-wrangler.mjs`, una única puerta a `wrangler d1 execute` que reintenta sólo ese fallo y los 5xx y cortes de red (esperas de 5 s a 4 min), usada por el publicador de precios y por `npm run db:d1`, y que además informa la causa real: el aviso del journal quedaba cortado en `Command failed: … --command SEL` por el recorte a 220 caracteres. Republicados los 67 precios de Siglo 21 el 02/11 a las 14:57 con lectura de vuelta verificada. `tests/d1-wrangler.test.mjs` cubre qué se reintenta y qué no.
+
 ## Cerradas el 31/10/2026
 
 - **Reparto de resoluciones de Programación y Gestión Contable** (era la 4): el usuario definió el 31/10/2026 que **manda lo que publica Teclab** —Resolución 2127/22 + Dictamen 2662/22 para Programación y 2357/22 + 2657/22 para Gestión Contable—, aunque el Boletín Oficial de CABA apruebe el plan de Programación con el Dictamen 2.657/22. No se espera más confirmación de Secretaría Académica: los números se citan como los publica el instituto y quedaron versionados en `components/index/resoluciones-teclab.ts` (copia de `carreras/teclab/resoluciones-teclab.json`, que no está en el repo). `tests/resoluciones-teclab.test.mjs` compara las dos cuando el JSON está en el disco, así que al regrabarlo el sitio no queda atrás.
