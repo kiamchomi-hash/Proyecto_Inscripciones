@@ -658,12 +658,11 @@
   padding: clamp(1.25rem, 2.5vw, 2rem);
   border: 1px solid rgba(255,255,255,.14);
   background: rgba(255,255,255,.025);
-  transition: border-color .25s ease, transform .25s ease;
+  transition: border-color .25s ease;
 }
 
 .career-years > section:hover {
   border-color: color-mix(in srgb, var(--career-accent) 55%, transparent);
-  transform: translateY(-3px);
 }
 
 .career-year-title {
