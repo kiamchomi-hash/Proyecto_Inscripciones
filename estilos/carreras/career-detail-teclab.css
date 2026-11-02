@@ -583,6 +583,7 @@
    Sólo en escritorio: en el teléfono el lateral no se muestra y los formularios
    completos ya están arriba. */
 .career-page--teclab .career-form-rapido {
+  position: relative;
   margin-top: 1.25rem;
   padding: 1.25rem;
   border: 1px solid rgba(0, 85, 240, 0.55);
@@ -615,6 +616,7 @@
 .career-page--teclab .career-form-rapido-captcha {
   display: flex;
   justify-content: center;
+  min-width: 0;
   min-height: 0;
 }
 
@@ -681,6 +683,22 @@
   margin: 0;
   color: var(--teclab-texto);
   font-size: 0.86rem;
+}
+
+.career-page--teclab .career-form-rapido-form--oculto {
+  visibility: hidden;
+}
+
+.career-page--teclab .career-form-rapido-confirmacion {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--career-accent);
+  text-align: center;
 }
 
 /* ── Preguntas frecuentes ─────────────────────────────── */

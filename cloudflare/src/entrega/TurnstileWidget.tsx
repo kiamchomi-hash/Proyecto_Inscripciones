@@ -91,6 +91,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
       documento,
       ventana,
       demo,
+      invisible,
       cargar: () => cargarScriptTurnstile(documento, ventana),
       onVerify: token => onVerifyRef.current(token),
       onExpire: () => onExpireRef.current?.(),
@@ -126,7 +127,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
 
   // Invisible: el contenedor queda vacío y sólo crece si Cloudflare tiene que
   // mostrar el desafío.
-  if (invisible) return <div ref={contenedor} className="flex justify-center" />;
+  if (invisible) return <div ref={envoltorio} className="w-full"><div ref={contenedor} className="flex justify-center" /></div>;
 
   // El iframe del widget mide 71 px al montar (medido en prod, desktop y
   // mobile); sin reservar ese lugar, todo lo que está debajo salta cuando

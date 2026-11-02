@@ -95,19 +95,10 @@ export default function FormularioRapido({
     void enviar();
   }
 
-  if (listo) {
-    return (
-      <section className="career-form-rapido career-form-rapido--listo" aria-live="polite">
-        <p className="career-form-rapido-titulo">Inscripción rápida</p>
-        <p className="career-form-rapido-aviso">Recibimos tus datos.</p>
-      </section>
-    );
-  }
-
   return (
     <section className="career-form-rapido" aria-labelledby="career-form-rapido-titulo">
       <p className="career-form-rapido-titulo" id="career-form-rapido-titulo">Inscripción rápida</p>
-      <form onSubmit={alEnviar} noValidate>
+      <form onSubmit={alEnviar} noValidate className={listo ? 'career-form-rapido-form--oculto' : undefined} inert={listo} aria-hidden={listo || undefined}>
         <div className="career-form-rapido-fila">
           <label>
             <span>Nombre</span>
@@ -167,6 +158,12 @@ export default function FormularioRapido({
         </button>
         {error && <p className="career-form-rapido-error" role="alert">{error}</p>}
       </form>
+      {listo && (
+        <div className="career-form-rapido-confirmacion" role="status">
+          <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l4 4L19 6" /></svg>
+          <p className="career-form-rapido-aviso">Recibimos tus datos.</p>
+        </div>
+      )}
     </section>
   );
 }
