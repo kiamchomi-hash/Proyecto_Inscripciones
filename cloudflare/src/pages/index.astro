@@ -30,6 +30,10 @@ const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
   canonical="https://www.siglo21sur.com"
   ruta="/"
 >
-  <PaginaHome carreras={carreras} turnstile={turnstile} client:load />
+  {/* `client:idle` y no `client:load`: el catálogo ya viene renderizado del
+      servidor y los 45 módulos del bundle competían con el primer pintado por
+      ancho de banda y CPU (LCP 3,2 s en móvil, 1/11/2026). La isla hidrata en
+      la primera ventana de ocio, después del `load`. */}
+  <PaginaHome carreras={carreras} turnstile={turnstile} client:idle />
   <SiteFooter />
 </Sitio>
