@@ -352,12 +352,9 @@ html {
   }
 }
 
-@media (max-width: 640px) {
-  .navbar-link {
-    justify-content: flex-start;
-    text-align: left;
-  }
-}
+/* Hasta el 02/11/2026 acá había un `@media (max-width: 640px)` que alineaba los
+   enlaces del menú a la izquierda en celular. Se retiró: el menú va centrado en
+   todos los anchos, igual que en tablet. */
 
 /* ── Navbar en las páginas de Teclab ───────────────────── */
 /* Una página de Teclab es la que tiene /teclab (.teclab-page) o la ficha de una
