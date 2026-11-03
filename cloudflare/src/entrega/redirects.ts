@@ -48,11 +48,13 @@ export const REDIRECCIONES: readonly Redireccion[] = [
 
 const CARRERA_VIEJA = /^\/carrera\/([^/]+)$/;
 const FICHA = /^\/carreras\/([^/]+)$/;
+const INSCRIPCION = /^\/carreras\/([^/]+)\/inscripcion$/;
 
 /**
  * Busca una redirección para la ruta pedida. La barra final se ignora porque
  * Next normaliza primero. `:slug` equivale a un solo segmento, como en el
- * matcher de Next: no toca `/carreras/<slug>/inscripcion`.
+ * matcher de Next: no toca `/carreras/<slug>/inscripcion`, que se resuelve
+ * aparte abajo.
  */
 export function buscarRedireccion(ruta: string): Redireccion | null {
   const normalizada = ruta.length > 1 && ruta.endsWith('/') ? ruta.slice(0, -1) : ruta;
@@ -67,6 +69,17 @@ export function buscarRedireccion(ruta: string): Redireccion | null {
   const ficha = FICHA.exec(normalizada);
   if (ficha) {
     const renombre = redirectCarrera(ficha[1]);
+    if (renombre) return { origen: normalizada, destino: renombre.destino, estado: renombre.status };
+  }
+
+  // La inscripción de una ficha renombrada o dada de baja va a la ficha vigente
+  // y no a `<destino>/inscripcion`: esa página no siempre existe (depende del
+  // nivel de la carrera) y, cuando existe, es noindex, así que no conviene
+  // mandarle la señal de la URL vieja. El caso testigo es Videojuegos de Siglo
+  // 21, cuya `/inscripcion` quedó indexada y respondía 404.
+  const inscripcion = INSCRIPCION.exec(normalizada);
+  if (inscripcion) {
+    const renombre = redirectCarrera(inscripcion[1]);
     if (renombre) return { origen: normalizada, destino: renombre.destino, estado: renombre.status };
   }
   return null;

@@ -112,5 +112,9 @@ export function redirectsEsperados(base: string): Array<[string, string, number?
       `${base}/carreras/tecnicatura-superior-en-experiencia-del-cliente`,
       301,
     ],
+    // La `/inscripcion` vieja de Videojuegos de Siglo 21 quedó indexada y hoy da
+    // 404: es la página en blanco que aparecía en Google.
+    [`${base}/carreras/tecnicatura-en-videojuegos`, `${base}/carreras/siglo-21-video-juegos`, 301],
+    [`${base}/carreras/tecnicatura-en-videojuegos/inscripcion`, `${base}/carreras/siglo-21-video-juegos`, 301],
   ];
 }

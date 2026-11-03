@@ -58,6 +58,8 @@ test('redirects: códigos exactos, barra final y query conservada', () => {
     ['/carreras/diplomatura-en-inteligencia-artificial', '/', 302],
     ['/carreras/tecnicatura-superior-en-energias-renovables', '/', 301],
     ['/carreras/tecnicatura-superior-en-gestion-de-energias-renovables', '/', 301],
+    ['/carreras/tecnicatura-en-videojuegos', '/carreras/siglo-21-video-juegos', 301],
+    ['/carreras/tecnicatura-en-videojuegos/inscripcion', '/carreras/siglo-21-video-juegos', 301],
   ];
   for (const [ruta, destino, estado] of casos) {
     const redireccion = buscarRedireccion(ruta);

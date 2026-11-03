@@ -17,6 +17,12 @@ const BAJAS_302 = ['diplomatura-en-bienestar-integral-herramientas-para-transfor
   'diplomatura-en-inteligencia-artificial', 'diplomatura-en-marketing-para-emprendedores-y-duenos-de-negocios',
   'diplomatura-en-management-hotelero'];
 const RENOMBRES: Record<string, [string, 301 | 308]> = {
+  // La ficha de Videojuegos de Siglo 21 se publicó con URLs nuevas el 30/08 y el
+  // 29/10/2026 sin redirección. La anterior `/inscripcion` sí quedó indexada
+  // (rastreada el 15/10/2026) y desde el rename da 404: es la página en blanco
+  // que aparecía en Google. Va a la ficha vigente, que es la que hay que
+  // indexar; la de inscripción es noindex a propósito.
+  'tecnicatura-en-videojuegos': ['siglo-21-video-juegos', 301],
   'tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching': ['tecnicatura-superior-en-agile-coaching', 308],
   'diplomatura-en-fraude-financiero-y-digital': ['diplomatura-en-prevencion-de-fraude-financiero-y-digital', 301],
   'tecnicatura-superior-en-customer-experience': ['tecnicatura-superior-en-experiencia-del-cliente', 301],
