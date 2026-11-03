@@ -6,7 +6,7 @@ import ogTeclab from '@/components/carreras/og-teclab.json';
 
 // Port de los contratos SEO de app/carreras/[slug]/page.tsx. El presupuesto se
 // prueba por nombre y luego por sufijo: no sacrificar el prefijo académico antes.
-const ESPECIFICOS: Record<string, { title: string; description: string }> = {
+const ESPECIFICOS: Record<string, { title?: string; description: string }> = {
   'Tecnicatura en Diseño y Desarrollo de Videojuegos': {
     title: 'Tecnicatura en Diseño y Desarrollo de Videojuegos | Siglo 21',
     description: 'Aprendé programación, animación 2D y 3D, inteligencia artificial y motores de videojuegos. Conocé el plan de la tecnicatura a distancia de Siglo 21.',
@@ -38,6 +38,14 @@ const ESPECIFICOS: Record<string, { title: string; description: string }> = {
   Procurador: {
     title: 'Procurador a Distancia | Universidad Siglo 21',
     description: 'Estudiá Procurador a distancia: formación en derecho procesal, trámites y representación jurídica. Conocé el plan de estudios y cómo inscribirte.',
+  },
+  // Fichas de Teclab que sólo necesitan su propia description: sin `title` se
+  // sigue usando el de plantilla, que ya mide bien.
+  'Tecnicatura Superior en Desarrollo de Videojuegos': {
+    description: 'Estudiá Desarrollo de Videojuegos en Teclab: aprendé programación y motores para crear y optimizar videojuegos, con formación 100% online.',
+  },
+  'Tecnicatura Superior en Comercio Electrónico (e-commerce)': {
+    description: 'Estudiá Comercio Electrónico en Teclab y aprendé marketing y medios de pago para gestionar negocios digitales y canales de venta online.',
   },
 };
 
