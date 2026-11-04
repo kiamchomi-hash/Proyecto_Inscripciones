@@ -15,7 +15,7 @@ historial anterior.
 
 ## Páginas de inscripción de Teclab (03/10/2026)
 
-Cada carrera de Teclab con inscripción abierta (16 tecnicaturas y el curso) suma
+Cada carrera de Teclab con inscripción abierta (24 tecnicaturas al 04/11/2026) suma
 `/carreras/<slug>/inscripcion` al sitemap, con prioridad 0,6 y el mismo `lastmod` que
 su ficha. Apuntan a la intención «cómo me inscribo» («inscripción tecnicatura en
 programación teclab»), no a «qué es la carrera», que sigue siendo de la ficha.

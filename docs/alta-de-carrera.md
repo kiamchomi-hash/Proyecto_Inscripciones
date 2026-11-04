@@ -147,7 +147,9 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
 - [ ] **M** — Corpus del bot (`ventas/corpus/<casa>.json`): releer las respuestas que
   cuentan carreras («16 tecnicaturas» y similares). Flujo de la skill `bot_respuestas`.
 - [ ] **M** — Folletos: las listas están escritas a mano en
-  `scripts/generar-folletos-whatsapp.mjs`; regenerar las imágenes de `public/folletos/`.
+  `scripts/generar-folletos-whatsapp.mjs` y en la placa de carreras
+  (`contenidos/teclab/aprobados/generales/whatsapp/2026-09-25-lista-carreras-whatsapp/`,
+  ver su `ficha.md`); regenerar las imágenes de `public/folletos/`.
 
 ## 7. SEO, indexación y control
 
