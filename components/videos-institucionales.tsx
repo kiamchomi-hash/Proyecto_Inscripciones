@@ -47,18 +47,18 @@ const VIDEOS: VideoInstitucional[] = [
     id: 'yZNU0NZrGaI',
     tema: 'teclab',
     titulo: 'Teclab',
-    descripcion: 'Carreras online de Tecnología y Gestión, más el curso de Inteligencia Artificial.',
+    descripcion: 'Carreras online de Tecnología y Gestión.',
     destino: {
     href: '/teclab',
       texto: 'Ver propuesta de Teclab',
     },
     folletos: [{
-      preview: '/folletos/teclab-tecnicaturas-2026-09.webp',
-      archivo: '/folletos/teclab-tecnicaturas-2026-09.webp',
+      preview: '/folletos/teclab-tecnicaturas-2026-11.webp',
+      archivo: '/folletos/teclab-tecnicaturas-2026-11.webp',
       titulo: 'Teclab',
       alt: 'Oferta de tecnicaturas de Teclab',
       ancho: 1080,
-      alto: 1240,
+      alto: 1350,
     }],
   },
 ];
