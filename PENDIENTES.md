@@ -14,9 +14,6 @@ Las altas de Teclab van primero; después las demás.
 
 2. **Revisar si Google indexó Desarrollo de Videojuegos** (6.1) — Teclab y Siglo 21: consultar en Search Console las fichas publicadas —[Teclab](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-desarrollo-de-videojuegos) y [Siglo 21](https://www.siglo21sur.com/carreras/siglo-21-video-juegos)—. Revisado el 29/10/2026: las dos siguen **desconocidas para Google, sin rastreo**, y las dos responden 200, están en `sitemap.xml` y enlazadas desde `/` y `/teclab`. La última lectura del sitemap por Google fue el 28/10 a las 19:20, anterior a la publicación, así que todavía no las vio; no hay nada roto. Falta pedir la indexación a mano en Search Console (API no lo permite) y volver a mirar en unos días.
 
-3. **Completar las preguntas frecuentes de Gestión Ambiental (246) y Desarrollo de Videojuegos (247)** (6.5, 30/10/2026): las dos tienen **2 preguntas frecuentes** donde el resto de las carreras de Teclab tiene entre 3 y 6, así que la ficha cierra más corta. El resto de las fichas quedó al día contra el sitio oficial. [Enlaces consultados](referencias/2026-10-30-fichas-oficiales-teclab.md).
-
-
 4. **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (38, 20/10/2026): Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo. Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
 
 5. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
@@ -39,8 +36,6 @@ Las altas de Teclab van primero; después las demás.
 
 14. **Pasar la carga diaria de precios a la nube** (57, 17/10/2026), si es posible: para no depender de que la PC esté prendida. Hoy corre con dos timers de systemd (Teclab e Identidad a las 9, Siglo 21 a las 10, reintento a las 14; ver [herramientas](docs/herramientas.md#actualización-diaria-desde-linux)). Antes de elegir dónde, resolver lo que hoy la ata a la máquina: la sesión SharePoint guardada para la planilla de CASA, que Cloudflare bloquea al portal de Teclab desde GitHub (por eso el robot de Teclab usa el runner `pc-sede`) y que la base comercial (`ventas/`, `carreras/`) no está en el repo.
 
-15. **Agregar Geist y Geist Serif a las tipografías del UIverse local** (nueva, 30/10/2026).
-
 ## Media-alta
 
 16. **Estudiar la venta exitosa de seguros** (19, 28/10/2026): ver cómo se vende un seguro —recorrido del asesor, objeciones, cierre y seguimiento— y qué se puede traer al trato con los leads del CAU.
@@ -50,8 +45,6 @@ Las altas de Teclab van primero; después las demás.
 18. **Reducir el formulario de preinscripción de Siglo 21** (36). Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan; la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
 ## Media
-
-19. **Revisar la presentación RSP + exámenes libres de Teclab** (15b, 28/10/2026): `Descargas/PRESENTACION RSP + EXAMENES LIBRES TECLAB - 2026 (1).pptx`. Es la presentación más reciente que queda en el disco; las tres de «Capacitación de admisión» de los bloques 1 a 3 se usaron el 16/10 y ya no están.
 
 20. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
 
@@ -136,6 +129,15 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Autoinscripción de Siglo 21** (44): sólo agrega fricción; la atención la maneja el usuario.
 - **Folleto de carreras relevantes para Siglo 21 e Identidad** (52b): sólo Teclab.
 - **Dar imágenes a las carreras de Identidad Argentina** (46c).
+
+## Cerradas el 05/11/2026
+
+- **Completar las preguntas frecuentes de Gestión Ambiental y Desarrollo de Videojuegos** (era la 3): se agregaron cuatro preguntas a cada ficha en D1, con autorización, conservando las dos anteriores. Verificado en la base y en ambas páginas publicadas: seis por carrera. [Fuentes](referencias/2026-11-05-faq-ambiental-videojuegos.md).
+- **Revisar la presentación RSP + exámenes libres de Teclab** (era la 19): revisadas las 34 diapositivas y sus imágenes; el contenido y las referencias por diapositiva quedaron en `ventas/procesos-teclab.html`, buscador local autocontenido. La presentación lo identifica como piloto inicial 2027 y deja puntos por definir; su vigencia queda en [seguimiento de Teclab](docs/rutinas.md#teclab).
+
+## Cerradas el 04/11/2026
+
+- **Agregar Geist y Geist Serif al UIverse local** (era la 15): ambas muestras ya estaban en la categoría Tipografías. El 04/11 se comprobó que la biblioteca lee las dos y que sus fuentes externas responden correctamente.
 
 ## Cerradas el 02/11/2026
 
