@@ -83,7 +83,7 @@ const CELDA = `padding:14px 0;border-bottom:1px solid ${LINEA};`;
 
 /**
  * Numera los bimestres en el orden del precio, como en Siglo 21: «Bimestre 1
- * (octubre-noviembre)», «Bimestre 2». Una «cuota» es un bimestre: la
+ * (abril-junio)», «Bimestre 2». Una «cuota» es un bimestre: la
  * matrícula y dos bimestres es el cuatrimestre completo. Sólo cambia el rótulo
  * que se muestra; la cobertura sigue usando los conceptos originales.
  */

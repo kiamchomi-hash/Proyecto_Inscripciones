@@ -9,7 +9,7 @@ Que «Ver precio» y el enlace personalizado (`/inscripcion/<codigo>`) digan con
 - Reglamento Institucional de Teclab, 4.1 (citado en `ventas/corpus/teclab.json`): «el pago de la matrícula y aranceles tienen una periodicidad cuatrimestral».
 - Al inicio del cuatrimestre se paga matrícula + los dos bimestres; a mitad (junio u octubre), matrícula + el único bimestre que queda.
 - Las 16 tecnicaturas activas duran «2 años» (4 cuatrimestres, 8 bimestres); el curso dura «4 semanas» y es pago único, sin bimestres.
-- El robot de precios (`herramientas/ventas/extraer-externos.mjs`, fuera de git) rotula los bimestres siempre 2A/2B (agosto-septiembre, octubre-noviembre) aunque lee el período real con `periodoTeclab(fila)`.
+- El robot de precios (`herramientas/ventas/extraer-externos.mjs`, fuera de git) rotula los bimestres con el período real que lee con `periodoTeclab(fila)` y los meses del Reglamento 3.4.1: abril-junio, junio-agosto, agosto-octubre, octubre-diciembre.
 
 ## Tareas
 
@@ -19,8 +19,8 @@ Que «Ver precio» y el enlace personalizado (`/inscripcion/<codigo>`) digan con
 
 ## Criterios de aceptación
 
-- 2B: «Cubre la matrícula y lo que queda del cuatrimestre: el bimestre de octubre y noviembre. La carrera tiene 4 cuatrimestres (8 bimestres), y cada uno se paga aparte: matrícula y bimestres.»
-- 1A: los rótulos dicen marzo-abril y mayo-junio, y el texto «de marzo a junio».
+- 2B: «Cubre la matrícula y lo que queda del cuatrimestre: el bimestre de octubre a diciembre. La carrera tiene 4 cuatrimestres (8 bimestres), y cada uno se paga aparte: matrícula y bimestres.»
+- 1A: los rótulos salen del Reglamento 3.4.1 (abril-junio y junio-agosto), que fija la estructura del año; el día exacto del inicio de 1A 2027 todavía no está publicado. Sin período, «Primer bimestre» / «Segundo bimestre».
 - Sin duración conocida queda «El cuatrimestre siguiente se paga de nuevo, matrícula y bimestres.»
 - El slide de precio sigue sin scroll en 375x667.
 
@@ -30,7 +30,7 @@ Que «Ver precio» y el enlace personalizado (`/inscripcion/<codigo>`) digan con
 
 ## Riesgo abierto
 
-Los importes los lee de los campos `bimestre2A`/`bimestre2B` del simulador. No se sabe si en el primer cuatrimestre se llaman igual; no se toca hasta verlo.
+Resuelto el 02/11/2026: el simulador pasó a 1A 2027 y devuelve `bimestre1A`/`bimestre1B` con sus descuentos. El extractor y los generadores leen la letra que traiga el resumen, no una fija. Sigue abierto el mes exacto de inicio: Teclab todavía no publicó el calendario 2027, así que no se nombran meses.
 
 ## Progreso
 

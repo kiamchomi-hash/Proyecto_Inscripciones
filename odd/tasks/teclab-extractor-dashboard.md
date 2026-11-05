@@ -24,7 +24,7 @@ T1 delegated: preparación y escritura con análisis. T2 delegated: pruebas y ve
 
 ### Archivos propios
 - `ventas/fuentes/teclab/marketing-agent/precios_lote_extractor.js`: selectores actuales, menú por campo, etiquetas funcionales, lista virtualizada, respuesta antes del cambio de Carrera, rótulo Matrícula con tilde, importación sin ejecución automática. No se cambió el cálculo de importes ni períodos.
-- `ventas/fuentes/teclab/marketing-agent/precios_lote_extractor_2b.js`: llama explícitamente a `run()` y conserva `PRICE_STRUCTURE=matricula-2b` y el error del proceso.
+- `ventas/fuentes/teclab/marketing-agent/precios_lote_extractor_2b.js`: llama explícitamente a `run()` y propaga el error del proceso. Desde el 02/11/2026 ya no fija la estructura: el extractor lee del resumen los bimestres que publique el portal (1A/1B o 2A/2B).
 - `ventas/fuentes/teclab/marketing-agent/tests/precios-portal.test.cjs`: fixtures locales con Playwright y pruebas de importación/lanzador sin red.
 - `referencias/2026-10-22-teclab-extractor.md`: fuentes del diagnóstico.
 

@@ -43,3 +43,20 @@ Investigación completada: corrida 08/10 interrumpida 09:02; reintento apunta a 
 - Próxima consulta del timer 08/10/2026 13:15 ART; el éxito diario omite nuevas extracciones hoy. Próxima extracción regular 09/10/2026 09:00 ART; reintento 14:00 ART si falla, recuperación tras interrupción en la próxima consulta.
 - Timer obsoleto `cau-precios-siglo21.timer` sigue disabled/inactive. No hubo commit/stage/push.
 - T1 completada: servicio real cerrado con éxito y automatización activa. Verificación independiente de código sin bloqueantes, 23/23 tests Node, 2/2 Python y verificación de unidades exit 0; Windows sólo revisión estática.
+
+## Reintentos hasta lograrlo — 04/11/2026
+- El 04/11 la corrida de Siglo 21 falló a las 11:12 (arranque de la máquina) con
+  `page.goto: net::ERR_NETWORK_CHANGED`, un corte de red transitorio. El turno
+  cerrado como fallo esperaba a las 14h: cuatro horas sin precios del día.
+- Cambio en `herramientas/ventas/programar-precios-linux.mjs`: un intento cerrado
+  como fallo vuelve a correr en cada consulta del timer (cada 15 minutos) hasta
+  que sale bien; el éxito diario sigue cortando los intentos. El turno de las
+  14h deja de ser el único reintento.
+- Para no avisar ocho veces por hora con un portal caído, el fallo se notifica
+  una sola vez por día (`falloAvisado` en el estado privado) y el éxito se avisa
+  al recuperar.
+- Actualizados los tests del programador (7/7) y `docs/herramientas.md`;
+  unidades reinstaladas con respaldo en `~/.local/state/cau-precios-respaldo-20261104-115355`.
+- Siglo 21 recuperado el mismo día a las 11:47 ART y verificado a través del
+  servicio a las 11:54 (7m38s, `Result=success`, estado `exito:true`). Las tres
+  fuentes quedaron vigentes con 0 días de antigüedad.

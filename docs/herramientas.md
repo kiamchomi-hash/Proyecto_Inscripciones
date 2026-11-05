@@ -177,8 +177,10 @@ institución. `--sin-publicar` omite esas publicaciones.
 systemd de usuario sin activar la tarea ni guardar secretos. Se activa con
 `systemctl --user enable --now cau-precios@teclab.timer cau-precios@siglo21.timer`:
 Teclab e Identidad a las 09:00 de Argentina, Siglo 21 a las 10:00 (a las 09 su
-planilla puede traer todavía la promoción vencida), reintento a las 14 si falla y
-recuperación de una corrida pendiente al iniciar sesión (`Persistent=true`). Cada
+planilla puede traer todavía la promoción vencida), reintento en cada consulta
+del timer (cada 15 minutos) hasta que la corrida sale bien, y
+recuperación de una corrida pendiente al iniciar sesión (`Persistent=true`). Un
+fallo se avisa una sola vez por día y no en cada reintento. Cada
 corrida termina con un aviso de escritorio (`notify-send`).
 No ejecuta con la máquina apagada ni sin sesión; no habilita linger. La prueba
 real explícita es `systemctl --user start cau-precios@siglo21.service`; diagnóstico con

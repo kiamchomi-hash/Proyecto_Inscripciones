@@ -25,7 +25,7 @@ export const COBERTURA_PAGO =
  * precio (un curso de pago único): ahí no se afirma nada.
  */
 export function coberturaDelPago(conceptos: Concepto[]): string | null {
-  // «Bimestre (marzo-abril)» y también «Primer bimestre», que es como rotula
+  // «Bimestre (abril-junio)» y también «Primer bimestre», que es como rotula
   // el robot cuando no sabe el período.
   return conceptos.some(c => /\bbimestre\b/i.test(c.concepto)) ? COBERTURA_PAGO : null;
 }
