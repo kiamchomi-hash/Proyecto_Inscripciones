@@ -723,11 +723,11 @@ a.ca-materia:hover::before { transform: none; opacity: 0.34; }
 
 .ca-materias-seccion::before { content: none; display: none; }
 
-.ca-materia { --ca-card-surface: linear-gradient(145deg, #166d62, #08221f 78%); background: var(--ca-card-surface); }
-.ca-materia:nth-child(2) { --ca-card-surface: linear-gradient(145deg, #294b78, #0b1c31 80%); }
-.ca-materia:nth-child(3) { --ca-card-surface: linear-gradient(145deg, #126078, #071f2a 80%); }
-.ca-materia:nth-child(4) { --ca-card-surface: linear-gradient(145deg, #80652a, #211b12 80%); }
-.ca-materia:nth-child(5) { --ca-card-surface: linear-gradient(145deg, #8d3042, #28131b 80%); }
+.ca-materia { --ca-card-surface: linear-gradient(145deg, #166d62, #08221f 78%); --ca-card-acento: #166d62; background: var(--ca-card-surface); }
+.ca-materia:nth-child(2) { --ca-card-surface: linear-gradient(145deg, #294b78, #0b1c31 80%); --ca-card-acento: #294b78; }
+.ca-materia:nth-child(3) { --ca-card-surface: linear-gradient(145deg, #126078, #071f2a 80%); --ca-card-acento: #126078; }
+.ca-materia:nth-child(4) { --ca-card-surface: linear-gradient(145deg, #80652a, #211b12 80%); --ca-card-acento: #80652a; }
+.ca-materia:nth-child(5) { --ca-card-surface: linear-gradient(145deg, #8d3042, #28131b 80%); --ca-card-acento: #8d3042; }
 
 a.ca-materia:hover { background: var(--ca-card-surface); }
 a.ca-materia:hover::before { opacity: 0.34; }
@@ -830,24 +830,44 @@ a.ca-materia:hover .ca-materia-ico,
   stroke-width: 1.4;
 }
 
-/* Una acción sólida compartida conserva los colores de cada materia. */
+/* Acción clara y compartida: crema de marca sobre petróleo, con la flecha en
+   un círculo del color de cada tarjeta. Es el pie más visible de la tarjeta,
+   para que entrar a los horarios no dependa de encontrar la flecha. Mínimo
+   táctil de 44 px. */
 .ca-materia-accion {
   position: relative;
   justify-content: center;
-  min-height: 2.35rem;
-  padding: 0.55rem 2.5rem;
+  min-height: 44px;
+  padding: 0.55rem 3rem;
   border: 0;
   border-radius: 0.55rem;
-  background: #2b2b2f;
-  color: #fff;
+  background: #fef8f4;
+  color: #013729;
   font-size: 0.8rem;
   letter-spacing: 0.06em;
+  transition: background-color 0.2s ease;
 }
 
 .ca-materia-accion svg {
   position: absolute;
-  right: 0.8rem;
-  color: #fff;
+  top: 50%;
+  right: 0.55rem;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  border-radius: 50%;
+  background: var(--ca-card-acento, #166d62);
+  color: #fef8f4;
+  transform: translateY(-50%);
+  transition: transform 0.2s ease;
+}
+
+a.ca-materia:hover .ca-materia-accion svg { transform: translate(2px, -50%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-materia-accion,
+  .ca-materia-accion svg { transition: none; }
 }
 
 /* ══ Página de materia ══

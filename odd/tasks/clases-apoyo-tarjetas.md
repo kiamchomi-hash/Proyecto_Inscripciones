@@ -99,6 +99,27 @@ Centrar el texto de «Ver horarios» independientemente de la flecha, agrandar l
 - `git diff --check` aprobado. No se repitió check completo por ser CSS acotado, con regresión y navegador reales. Chromium requirió ejecución fuera del sandbox por bloqueo de inicio.
 - Sin commit ni publicación.
 
+## Ajuste T10 autorizado (05/11/2026)
+El usuario eligió, entre cinco variantes mostradas sobre el recuadro publicado, la
+**píldora crema**: fondo `#fef8f4`, texto `#013729` y la flecha dentro de un
+círculo de **28 px del color de cada tarjeta** (`--ca-card-acento`, el primer
+extremo de su degradado: teal, azul, cian, oro y vino), con el trazo en crema.
+Descartó contorno, bloque partido, relieve duro y barra baja. Cambio sólo en
+`.ca-materia-accion` de `estilos/clases-apoyo/clases-apoyo.css`; no se toca
+título, degradados, sello, textos ni enlaces.
+
+### Evidencia T10
+- Alto mínimo a **44 px** medido en el navegador: la raíz del sitio es de 13 px,
+  así que `2.75rem` daba 35,75 px y hubo que fijarlo en píxeles.
+- Verificación con el CSS local inyectado sobre la página publicada (D1 local sin
+  materias): 1280 y 375 px, cinco acciones opacas `rgb(254,248,244)` con texto
+  `rgb(1,55,41)`, círculo `28px` con radio 50% del acento de cada tarjeta, desvío
+  del centro del texto 0,00 px y sin desborde horizontal.
+- Contraste del trazo crema sobre cada círculo: Matemática 5,87 · Lengua 8,41 ·
+  Computación 6,72 · Física 5,23 · Arte 7,57 (umbral 3:1 para íconos).
+- `npm run check` aprobado: lint y typecheck sin errores, 282/282 pruebas.
+- Sin commit ni publicación.
+
 ## Publicación autorizada
 El usuario solicitó commit y push. Alcance: CSS de clases de apoyo, navegación entre materias, regresiones y este seguimiento. Se excluyen cambios ajenos y documentación compartida modificada en paralelo. Check completo y control de secretos pendientes de la comprobación final.
 
