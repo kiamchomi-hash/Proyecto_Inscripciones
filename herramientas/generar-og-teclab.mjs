@@ -1,133 +1,80 @@
-// Genera la imagen para compartir (og:image) de cada carrera y curso de Teclab.
-//
-// Misma estetica que las portadas por familia de generar-og.mjs (tinta #071822,
-// cian en Tecnologia y cursos, violeta en Gestion, logo co-branded), pero con la
-// foto y el nombre de cada carrera: compartida por WhatsApp o redes, la tarjeta
-// dice que carrera es y no solo la familia.
-//
-// Salida:
-//   public/imagenes/og/teclab/<slug>.jpg   -> 1200x630, la sirve ogCarrera()
-//   components/carreras/og-teclab.json     -> los slugs que tienen imagen propia.
-//                                             Una carrera fuera de la lista sigue
-//                                             con la portada de su familia.
-//
-// Uso: npm run og:teclab   (carga .env.local; lee la base con la anon key)
-// Despues de dar de alta o renombrar una carrera de Teclab hay que volver a
-// correrlo y commitear las imagenes y el json.
-
+// Genera las imágenes para compartir de las carreras activas de Teclab.
+// Usa las fotos y datos de producción; las imágenes que no se regeneran se
+// conservan en el manifiesto para no retirar recursos de carreras anteriores.
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { chromium } from 'playwright';
 import sharp from 'sharp';
-import { mkdirSync, writeFileSync } from 'node:fs';
 import { consultar } from './d1-consulta.mjs';
 import { carreraFullName, carreraToSlug, esCarreraVisible } from '../components/index/types.ts';
 import { esCursoTeclab, esTeclab, getFamiliaTeclab, getPortadaTeclab } from '../components/index/teclab.ts';
 
-
-const W = 1200, H = 630;
-const TINTA = '#071822';
-const FUENTE = 'Segoe UI, Arial, sans-serif';
-const DIR_OG = 'public/imagenes/og/teclab';
+const DIR = 'public/imagenes/og/teclab';
 const MANIFIESTO = 'components/carreras/og-teclab.json';
-// El violeta de Gestion es el de la marca; en la etiqueta de arriba, sobre la
-// tinta, el puro se leia poco, asi que el texto va en uno mas claro y la barra
-// en el de la marca.
-const ACENTO = { tecnologia: '#2ee7d7', gestion: '#8e2cf2' };
-const ACENTO_TEXTO = { tecnologia: '#2ee7d7', gestion: '#b47cff' };
+const dataUrl = (ruta, tipo) => `data:${tipo};base64,${readFileSync(ruta).toString('base64')}`;
+const fuente700 = dataUrl('public/fuentes/poppins-latin-700.woff2', 'font/woff2');
+const fuente600 = dataUrl('public/fuentes/poppins-latin-600.woff2', 'font/woff2');
+const logo = dataUrl('public/imagenes/teclab/logo-teclab-siglo21.webp', 'image/webp');
+const escapar = valor => String(valor).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 
-const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-function envolver(texto, max) {
-  const lineas = [];
-  let actual = '';
-  for (const p of texto.split(' ')) {
-    if (actual && (actual + ' ' + p).length > max) { lineas.push(actual); actual = p; }
-    else actual = actual ? actual + ' ' + p : p;
-  }
-  if (actual) lineas.push(actual);
-  return lineas;
-}
-
-/** "Tecnicatura Superior en" arriba, chico, y el nombre grande abajo. */
-function partirNombre(carrera) {
-  // El nombre en ingles entre parentesis ("(User Experience)") se saca, como
-  // en la meta description: son dos renglones mas y el titulo ya lo cubre.
-  const completo = carreraFullName(carrera).replace(/\s*\([^)]*\)/g, '');
-  const prefijo = carrera.prefix?.trim() ?? '';
-  if (prefijo && completo.toLowerCase().startsWith(prefijo.toLowerCase() + ' ')) {
-    return { arriba: prefijo, nombre: completo.slice(prefijo.length + 1) };
-  }
-  return { arriba: '', nombre: completo };
-}
-
-function capa(carrera, acento, acentoTexto, etiqueta) {
-  const { arriba, nombre } = partirNombre(carrera);
-  // Hasta dos renglones a 62; si no entra, a 50 con renglones mas largos.
-  let lineas = envolver(nombre, 20);
-  let size = 62;
-  if (lineas.length > 2) { lineas = envolver(nombre, 25); size = 50; }
-  const paso = size + 12;
-  // Prefijo, nombre y bajada se centran entre la etiqueta (y 120) y el logo
-  // (y ~520), dejando aire arriba del logo.
-  const altoBloque = (arriba ? 46 : 0) + lineas.length * paso + 44;
-  const y0 = 135 + (360 - altoBloque) / 2;
-  const yNombre = y0 + (arriba ? 46 : 0) + size;
-  const tspans = lineas.map((l, i) => `<tspan x="76" y="${yNombre + i * paso}">${esc(l)}</tspan>`).join('');
-  const bajada = ['100% online', carrera.duracion && carrera.duracion !== 'Consultar' ? carrera.duracion : null]
-    .filter(Boolean).join(' · ');
-  return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="${TINTA}" stop-opacity="0.98"/>
-      <stop offset="55%" stop-color="${TINTA}" stop-opacity="0.9"/>
-      <stop offset="100%" stop-color="${TINTA}" stop-opacity="0.1"/>
-    </linearGradient></defs>
-    <rect width="${W}" height="${H}" fill="url(#g)"/>
-    <text x="76" y="92" font-family="${FUENTE}" font-size="25" font-weight="800" fill="${acentoTexto}" letter-spacing="3.5">TECLAB · ${esc(etiqueta.toUpperCase())}</text>
-    <rect x="76" y="112" width="58" height="5" fill="${acento}"/>
-    ${arriba ? `<text x="76" y="${y0 + 30}" font-family="${FUENTE}" font-size="30" font-weight="600" fill="rgba(255,255,255,0.8)">${esc(arriba)}</text>` : ''}
-    <text font-family="${FUENTE}" font-size="${size}" font-weight="800" fill="#ffffff">${tspans}</text>
-    <text x="76" y="${yNombre + (lineas.length - 1) * paso + 48}" font-family="${FUENTE}" font-size="26" font-weight="700" fill="rgba(255,255,255,0.88)">${esc(bajada)}</text>
-  </svg>`;
-}
-
-// Lee de la base de producción en Cloudflare (D1).
-let data;
-try {
-  data = consultar(`SELECT nombre, prefix, nombre_corto, nivel, duracion, activa
-    FROM carreras WHERE activa = 1`)
-    .map(fila => ({ ...fila, activa: fila.activa === 1 }));
-} catch (error) {
-  console.error('No se pudo leer carreras:', String(error.message ?? error).slice(0, 200));
-  process.exit(1);
-}
-
-const logo = await sharp('public/imagenes/teclab/logo-teclab-siglo21.webp').resize({ width: 300 }).toBuffer();
-const altoLogo = (await sharp(logo).metadata()).height;
-mkdirSync(DIR_OG, { recursive: true });
-
-const slugs = [];
+const carreras = consultar(`SELECT nombre, prefix, nombre_corto, nivel, duracion, activa
+  FROM carreras WHERE activa = 1`).map(c => ({ ...c, activa: c.activa === 1 }))
+  .filter(c => esCarreraVisible(c) && (esTeclab(c) || esCursoTeclab(c)));
+const slugs = new Set(JSON.parse(readFileSync(MANIFIESTO, 'utf8')).slugs);
 const sinFoto = [];
-for (const carrera of data.filter(c => esCarreraVisible(c) && (esTeclab(c) || esCursoTeclab(c)))) {
-  const slug = carreraToSlug(carrera);
-  const portada = getPortadaTeclab(carrera);
-  if (!portada) { sinFoto.push(slug); continue; }
-  const familia = getFamiliaTeclab(carrera);
-  const acento = ACENTO[familia] ?? ACENTO.tecnologia;
-  const acentoTexto = ACENTO_TEXTO[familia] ?? ACENTO_TEXTO.tecnologia;
-  const etiqueta = familia === 'gestion' ? 'Gestión' : familia === 'tecnologia' ? 'Tecnología' : 'Curso';
-
-  const buf = await sharp(`public${portada}`)
-    .resize(W, H, { fit: 'cover', position: 'attention', kernel: 'lanczos3' })
-    .composite([
-      { input: Buffer.from(capa(carrera, acento, acentoTexto, etiqueta)), top: 0, left: 0 },
-      { input: logo, top: 560 - altoLogo, left: 76 },
-    ])
-    .jpeg({ quality: 82, mozjpeg: true })
-    .toBuffer();
-  await sharp(buf).toFile(`${DIR_OG}/${slug}.jpg`);
-  slugs.push(slug);
-  console.log(`${slug} — ${Math.round(buf.length / 1024)} KB`);
+mkdirSync(DIR, { recursive: true });
+const browser = await chromium.launch({ headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
+  for (const carrera of carreras) {
+    const slug = carreraToSlug(carrera);
+    const portada = getPortadaTeclab(carrera);
+    if (!portada) { sinFoto.push(slug); continue; }
+    const familia = getFamiliaTeclab(carrera);
+    const etiqueta = familia === 'gestion' ? 'Gestión' : familia === 'tecnologia' ? 'Tecnología' : 'Curso';
+    const color = familia === 'gestion' ? '#8e2cf2' : '#2ee7d7';
+    const tinta = familia === 'gestion' ? '#fff' : '#071822';
+    const completo = carreraFullName(carrera).replace(/\s*\([^)]*\)/g, '');
+    const prefix = carrera.prefix?.trim() ?? '';
+    const tienePrefijo = prefix && completo.toLowerCase().startsWith(`${prefix.toLowerCase()} `);
+    const nombre = tienePrefijo ? completo.slice(prefix.length + 1) : completo;
+    const fondo = await sharp(`public${portada}`).resize(1200, 630, { fit: 'cover', position: 'attention' }).webp().toBuffer();
+    const imagen = `data:image/webp;base64,${fondo.toString('base64')}`;
+    const duracion = carrera.duracion && carrera.duracion !== 'Consultar' ? `<span class="pill">${escapar(carrera.duracion)}</span>` : '';
+    const html = `<style>
+      @font-face{font-family:Poppins;src:url(${fuente700});font-weight:700}
+      @font-face{font-family:Poppins;src:url(${fuente600});font-weight:600}
+      *{box-sizing:border-box}body{margin:0}.card{width:1200px;height:630px;position:relative;overflow:hidden;
+        background:linear-gradient(90deg,rgba(7,24,34,.96),rgba(7,24,34,.85) 55%,rgba(7,24,34,.22)),url(${imagen}) center/cover;
+        color:#fff;font-family:Poppins,sans-serif}
+      .legibilidad{position:absolute;left:0;right:0;top:80px;height:390px;background:linear-gradient(180deg,transparent,rgba(7,24,34,.78) 28%,rgba(7,24,34,.78) 72%,transparent)}
+      .noise{position:absolute;inset:0;opacity:.11;mix-blend-mode:soft-light}
+      .title{position:absolute;left:45px;right:45px;top:83px;height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;text-align:center}
+      .top{font-size:48px;font-weight:600;letter-spacing:-1px;color:#ecf1f2}.name{font-size:120px;font-weight:700;letter-spacing:-4px;line-height:1.05}
+      .logo{position:absolute;width:300px;left:76px;bottom:54px}.pills{position:absolute;right:50px;bottom:56px;display:flex;gap:12px}
+      .pill{background:#f0f0f6;color:#071822;border-radius:30px;padding:13px 23px;font-size:21px;font-weight:600}.tipo{background:${color};color:${tinta}}
+      </style><div class="card"><div class="legibilidad"></div><svg class="noise" width="1200" height="630"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="1200" height="630" filter="url(#n)"/></svg>
+      <div class="title">${tienePrefijo ? `<div class="top">${escapar(prefix)}</div>` : ''}<div class="name">${escapar(nombre)}</div></div>
+      <img class="logo" src="${logo}"><div class="pills"><span class="pill">100% online</span>${duracion}<span class="pill tipo">${etiqueta}</span></div></div>`;
+    await page.setContent(html);
+    await page.evaluate(() => document.fonts.ready);
+    // Reducir de a poco hasta que el título entre en el área libre y no se
+    // superponga con el pie; el navegador decide los cortes por palabras.
+    await page.evaluate(() => {
+      const nombre = document.querySelector('.name');
+      const titulo = document.querySelector('.title');
+      let size = 120;
+      while (size > 42 && (nombre.scrollWidth > nombre.clientWidth || nombre.offsetHeight + (document.querySelector('.top')?.offsetHeight ?? 0) > titulo.clientHeight)) {
+        size -= 2;
+        nombre.style.fontSize = `${size}px`;
+      }
+    });
+    const captura = await page.screenshot();
+    await sharp(captura).jpeg({ quality: 82, mozjpeg: true }).toFile(`${DIR}/${slug}.jpg`);
+    slugs.add(slug);
+    console.log(slug);
+  }
+} finally {
+  await browser.close();
 }
-
-slugs.sort();
-writeFileSync(MANIFIESTO, JSON.stringify({ slugs }, null, 2) + '\n');
-console.log(`\n${slugs.length} imagenes -> ${DIR_OG}/ y ${MANIFIESTO}`);
-if (sinFoto.length) console.log(`Sin foto, siguen con la portada de su familia: ${sinFoto.join(', ')}`);
+writeFileSync(MANIFIESTO, `${JSON.stringify({ slugs: [...slugs].sort() }, null, 2)}\n`);
+console.log(`${carreras.length - sinFoto.length} imágenes generadas. Sin foto: ${sinFoto.join(', ') || 'ninguna'}`);
