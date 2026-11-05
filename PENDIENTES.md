@@ -6,21 +6,17 @@ Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; 
 
 ## Altísima
 
-1. **Cerrar el alta de las dos carreras del bloque 4 que ya son oficiales** (1.5 y 40, 30/10/2026). **Comercio Electrónico (e-commerce)** (id 248) y **Diseño de Producto Digital** (id 249) se cargaron el 30/10/2026 con [`sql/2026-10-30-altas-teclab-bloque4.sql`](sql/2026-10-30-altas-teclab-bloque4.sql): fila en D1, ficha oficial en `FICHAS` con su foto, tipo de Gestión y categoría de Tecnología. El 31/10/2026 se cerró todo lo que no depende de Teclab: **perfil propio en el test vocacional** (`comercio-electronico`, con los pesos reajustados sobre las 326.592 combinaciones), **resoluciones** (Dictamen 3391/26 y 3390/26, ya en `carreras/teclab/resoluciones-teclab.json`, con sus dos slugs en el extractor, que es local y no está versionado) y **alta en la oferta del bot** sin precio, como Gestión Ambiental y Videojuegos, con el PDF del plan en `carreras/teclab/pdfs/`. Falta lo que depende de Teclab: **el precio** (todavía no lo pasó) y **la opción de HubSpot** —revisado el 31/10/2026, la landing `vinculacion.teclab.edu.ar/expo-bs-as-esposito` sigue ofreciendo sólo las carreras viejas y sin ellas la opción no existe—. Las otras tres de la presentación —Gestión de IA y Transformación Digital, Diseño y Desarrollo de IA y Comunicación Digital— **no están publicadas por Teclab**: se cargan cuando abran, con el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).
+1. **Cargar las otras tres carreras del bloque 4 cuando Teclab las publique** (1.5 y 40): Gestión de IA y Transformación Digital, Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).
 
 ## Alta
 
 Las altas de Teclab van primero; después las demás.
 
-2. **Revisar si Google indexó Desarrollo de Videojuegos** (6.1) — Teclab y Siglo 21: consultar en Search Console las fichas publicadas —[Teclab](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-desarrollo-de-videojuegos) y [Siglo 21](https://www.siglo21sur.com/carreras/siglo-21-video-juegos)—. Revisado el 29/10/2026: las dos siguen **desconocidas para Google, sin rastreo**, y las dos responden 200, están en `sitemap.xml` y enlazadas desde `/` y `/teclab`. La última lectura del sitemap por Google fue el 28/10 a las 19:20, anterior a la publicación, así que todavía no las vio; no hay nada roto. Falta pedir la indexación a mano en Search Console (API no lo permite) y volver a mirar en unos días.
+2. **Revisar si Google indexó Desarrollo de Videojuegos** (6.1) — Consultar en Search Console las fichas de [Teclab](https://www.siglo21sur.com/carreras/tecnicatura-superior-en-desarrollo-de-videojuegos) y [Siglo 21](https://www.siglo21sur.com/carreras/siglo-21-video-juegos). El 05/11/2026 ambas seguían sin indexar y sin rastreo informado; los estados de detección oscilaron entre «descubierta» y «URL desconocida». Se solicitó manualmente la indexación de las dos y Google confirmó que las agregó a la cola de rastreo prioritaria. **Volver a consultar en unos días**: la solicitud no garantiza la indexación.
 
-4. **Recorrer el [checklist de alta de carrera](docs/alta-de-carrera.md) con las cinco carreras nuevas** (38, 20/10/2026): Gestión de Alimentos, Gestión de Proyectos Mineros, Gestión de Energías Renovables, Gestión Ambiental e Higiene y Seguridad en el Trabajo. Publicadas el 09/10/2026 como «Próximamente» con plan, título y preguntas frecuentes; faltan, entre otros, el precio, la fecha de inicio, el lead a HubSpot y los folletos. [Detalle](odd/tasks/teclab-carreras-proximamente.md).
+4. **Revisar el [checklist de alta de carrera](docs/alta-de-carrera.md) cuando Teclab habilite las pendientes** (38, 20/10/2026). El usuario confirmó el 05/11 que Gestión de Alimentos y Gestión de Energías Renovables todavía no están habilitadas: hacer su alta cuando Teclab las abra, no antes. Revisión parcial del 05/11: Proyectos Mineros, Higiene y Seguridad y Gestión Ambiental están activas, con ficha y página de inscripción (200), perfil en el test de Teclab, imagen OG y precio en D1 vigente hasta el 05/11. La carga a HubSpot se hace a mano; esas tres no están en el mapeo automático, cuyo emisor está desactivado. Falta contrastar los demás puntos aplicables del checklist, incluidos folletos, fechas e indexación. [Detalle histórico](odd/tasks/teclab-carreras-proximamente.md).
 
 5. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
-
-6. **Imagen OG propia por carrera: mejorar las de Teclab** (47a, 18/10/2026). Las 31 carreras y cursos ya tienen la suya, con su foto y su nombre (`npm run og:teclab`); falta mejorarlas.
-
-7. **Revisar el flujo de inscripción de Teclab** de punta a punta (35a).
 
 8. **Crear folletos con CTA al frente y lista de carreras al dorso, empezando por Teclab** (41a).
 
@@ -48,9 +44,7 @@ Las altas de Teclab van primero; después las demás.
 
 20. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
 
-21. **Dar de alta las clases de apoyo de secundario**, con contenido genérico enfocado a Villa Lugano (nueva, 30/10/2026; surge del punto 3).
-
-22. **Cambiar el botón «Ver horarios» de clases de apoyo** (13, 29/10/2026): es el pie de cada tarjeta de la landing, `components/clases-apoyo/clases-apoyo-landing.tsx` (`.ca-materia-accion`, hoy una superficie grafito sólida con texto blanco y flecha). Falta que el usuario diga qué quiere. El historial de lo que ya se cambió en ese botón y en las tarjetas está en [`odd/tasks/clases-apoyo-tarjetas.md`](odd/tasks/clases-apoyo-tarjetas.md).
+22. **Cambiar el botón «Ver horarios» de clases de apoyo** (13, 29/10/2026): pie de cada tarjeta de la landing, `components/clases-apoyo/clases-apoyo-landing.tsx` (`.ca-materia-accion`). **Definido el 05/11/2026**: entre cinco variantes el usuario eligió la píldora crema con la flecha en un círculo del color de cada tarjeta; ya está en `estilos/clases-apoyo/clases-apoyo.css` (commit `ad58484`), **falta publicarla**. El historial de lo que ya se cambió en ese botón y en las tarjetas está en [`odd/tasks/clases-apoyo-tarjetas.md`](odd/tasks/clases-apoyo-tarjetas.md).
 
 23. **Confirmar becas, doble carrera y las dudas restantes de requisitos** (30), que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 
@@ -132,6 +126,13 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 
 ## Cerradas el 05/11/2026
 
+- **Dar de alta las clases de apoyo de secundario** (era la 21): cerrada por decisión del usuario el 05/11/2026. La fila `secundario` de la tabla `materias` en D1 de producción queda como está —`en_construccion = 1`, sin descripción ni fotos—, así que la tarjeta sigue mostrándose como «Próximamente». No hay cambio de código ni de datos.
+
+- **Revisar la inscripción automatizada de Teclab** (era la 7): el usuario confirmó que ya no la usa; la preinscripción llega por Telegram. Pendiente descartado por dejar de aplicar.
+
+- **Mejorar las imágenes OG de Teclab** (era la 6): diseño aprobado con Poppins, título centrado, foto oscurecida para mejorar la lectura y píldoras al pie. Se regeneraron las 24 carreras activas y se actualizó el generador; pruebas y build aprobados. Commit `14dff42` subido; publicación en curso al momento de registrarlo.
+
+- **Cerrar el alta de Comercio Electrónico y Diseño de Producto Digital** (parte de la 1): cargadas el 30/10/2026 en D1 con [`sql/2026-10-30-altas-teclab-bloque4.sql`](sql/2026-10-30-altas-teclab-bloque4.sql), con ficha, foto y plan; el 31/10 se completaron el test vocacional, las resoluciones y la oferta del bot. El 05/11 se verificó que ambas tienen precio en `carreras/teclab/carreras-externas.json` y aparecen en el desplegable de carrera del formulario de [HubSpot](https://vinculacion.teclab.edu.ar/expo-bs-as-esposito). El listado visible de la landing sigue desactualizado; no se envió el formulario.
 - **Completar las preguntas frecuentes de Gestión Ambiental y Desarrollo de Videojuegos** (era la 3): se agregaron cuatro preguntas a cada ficha en D1, con autorización, conservando las dos anteriores. Verificado en la base y en ambas páginas publicadas: seis por carrera. [Fuentes](referencias/2026-11-05-faq-ambiental-videojuegos.md).
 - **Revisar la presentación RSP + exámenes libres de Teclab** (era la 19): revisadas las 34 diapositivas y sus imágenes; el contenido y las referencias por diapositiva quedaron en `ventas/procesos-teclab.html`, buscador local autocontenido. La presentación lo identifica como piloto inicial 2027 y deja puntos por definir; su vigencia queda en [seguimiento de Teclab](docs/rutinas.md#teclab).
 
@@ -152,7 +153,7 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 ## Cerradas el 30/10/2026
 
 - **Flechas raras en los modales de carreras** (2): solucionado; ya no aparecen la flecha de abajo ni el reemplazo de las flechas de bimestre y año en desktop.
-- **«Otras carreras» en clases de apoyo** (3): solucionado. La carga del apoyo de secundario es la tarea 23.
+- **«Otras carreras» en clases de apoyo** (3): solucionado. La carga del apoyo de secundario pasó a la lista activa y se cerró sin alta el 05/11/2026.
 - **Cuotas y cargos de los otros medios de pago de Teclab** (7): confirmado que MercadoPago, PagoFácil y Rapipago son 1 pago, sin cuotas.
 - **Logos de `/teclab`** (12b): corregidos.
 
