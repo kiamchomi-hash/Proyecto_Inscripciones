@@ -16,7 +16,8 @@ import '@/components/formularios/formulario-lead.css';
 // Home paritaria con `app/page.tsx`: mismo título absoluto, misma descripción,
 // mismos componentes y mismo orden. El catálogo se lee de D1 con la taxonomía
 // compartida; el texto largo de las fichas no viaja en el HTML, igual que hoy.
-const anio = new Date().getFullYear();
+// La oferta ya está orientada al ciclo académico 2027, aunque el año civil aún sea 2026.
+const anio = 2027;
 const carreras = await carrerasDeHome(env.DB);
 // La configuración del captcha se resuelve una vez en el servidor: la usan el
 // `<meta>` del layout y el contexto de la isla, para que el HTML renderizado
