@@ -10,6 +10,21 @@ export type DatosVocacional = {
   etapa?: 'preguntas' | 'resultado';
 };
 
+/**
+ * Los eventos que además se cuentan en el servidor, en `vocacional_embudo`.
+ *
+ * Desde el corte a Cloudflare la analítica del navegador es local y no sale a la
+ * red: sin esta lista el recorrido no se podía leer entre días. `retroceso`,
+ * `reiniciado` y `cta` se quedan en el navegador: los dos primeros no ayudan a
+ * ubicar la caída y la CTA ya se mide como clic en otra tabla.
+ */
+export const EVENTOS_VOCACIONAL_MEDIDOS = [
+  'vocacional-iniciado',
+  'vocacional-pregunta',
+  'vocacional-completado',
+  'vocacional-salida',
+] as const;
+
 /** Estado efímero por montaje: no recibe respuestas, perfiles ni identificadores. */
 export function crearAnalyticsVocacional(
   test: TestVocacional,

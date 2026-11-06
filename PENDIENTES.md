@@ -24,7 +24,7 @@ Las altas de Teclab van primero; después las demás.
 
 10. **Comparar las fichas de Teclab contra `teclab.edu.ar` y `siglo21online.com.ar/teclab` para mejorar el frontend** (nueva, 30/10/2026). Son dos referencias distintas y se miran las dos: `https://teclab.edu.ar/carrera/<slug>/` es la fuente del contenido (datos, plan, título, salidas, modalidad) y `https://siglo21online.com.ar/teclab` —sitio de GRUPO BTC, no oficial— es el modelo de ficha terminada: cómo arma la página de cada carrera y cómo presenta la marca de Teclab. Donde las dos se contradigan, manda la oficial, y no se copia texto de ninguna. No se sigue el rediseño oficial de punta a punta: lo revisado el 30/10 quedó en el [historial](docs/historial-pendientes.md#teclab--repaso-de-las-fichas-oficiales-30102026). **Aplicado el 31/10/2026**: el botón «Descargar plan de estudios» y el bloque de resoluciones al pie (ver cerradas del 31/10). Lo que queda de este repaso es el plan de estudios plegado por año y la FAQ de 6 a 9 preguntas, que es el pendiente 3.
 
-11. **06/11/2026: segunda revisión del embudo del test vocacional** (33, general y Teclab). Primera lectura el 20/10/2026 (16 al 20/10): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron; la caída está en las preguntas 1 a 3 y después nadie abandona. El de Teclab no tuvo ninguna visita. Muestra demasiado chica para tocar pasos; si sigue en cero, revisar cómo se llega al de Teclab. [Cómo leerlo](docs/medicion-test-vocacional.md).
+11. **Revisar el embudo del test vocacional** (33, general y Teclab). **Medición repuesta el 06/11/2026**: desde el corte a Cloudflare el recorrido no se guardaba en ningún lado —la analítica del navegador es local y Vercel ya no existe—, así que la segunda lectura no se podía hacer. Ahora los pasos iniciado, pregunta, completado y salida se cuentan en D1 (`vocacional_embudo`, migración `0014`) y `npm run leads` los muestra por test y por pregunta. Falta que se acumulen intentos: la próxima lectura útil es a partir del 20/11/2026. Primera lectura (16 al 20/10, antes del corte): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron y la caída estaba en las preguntas 1 a 3; el de Teclab no tuvo ninguna visita. La migración `0014` ya está aplicada en producción; falta publicar el código que manda los pasos. [Cómo leerlo](docs/medicion-test-vocacional.md).
 
 12. **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3, 28/10/2026): es el sitio de GRUPO BTC S.A. (Av. Córdoba 1551, CABA), no el oficial de la universidad, y resuelve la ficha de otra manera. Ejemplo anotado: [Licenciatura en Finanzas](https://siglo21online.com.ar/licenciatura-en-finanzas-detalle/). Lo que se vio ahí y vale evaluar: datos duros arriba y en una línea (duración, modalidad, título, validez con número de resolución), «¿Qué vas a lograr?» con cuatro resultados en tarjetas, comparación explícita de las dos modalidades de cursada (Educación Distribuida y Home) con encuentros y aperturas, plan de estudios plegado por año y cuatrimestre, y un bloque de «más posibilidades» con doble titulación, título intermedio y ámbitos profesionales. El formulario de WhatsApp ya llega con la carrera elegida. Revisar el resto de sus fichas antes de copiar cualquier cosa y decidir qué entra a `cloudflare/` sin inventar condiciones de cursada.
 
@@ -43,8 +43,6 @@ Las altas de Teclab van primero; después las demás.
 ## Media
 
 20. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
-
-22. **Cambiar el botón «Ver horarios» de clases de apoyo** (13, 29/10/2026): pie de cada tarjeta de la landing, `components/clases-apoyo/clases-apoyo-landing.tsx` (`.ca-materia-accion`). **Definido el 05/11/2026**: entre cinco variantes el usuario eligió la píldora crema con la flecha en un círculo del color de cada tarjeta; ya está en `estilos/clases-apoyo/clases-apoyo.css` (commit `ad58484`), **falta publicarla**. El historial de lo que ya se cambió en ese botón y en las tarjetas está en [`odd/tasks/clases-apoyo-tarjetas.md`](odd/tasks/clases-apoyo-tarjetas.md).
 
 23. **Confirmar becas, doble carrera y las dudas restantes de requisitos** (30), que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 
@@ -123,6 +121,10 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Autoinscripción de Siglo 21** (44): sólo agrega fricción; la atención la maneja el usuario.
 - **Folleto de carreras relevantes para Siglo 21 e Identidad** (52b): sólo Teclab.
 - **Dar imágenes a las carreras de Identidad Argentina** (46c).
+
+## Cerradas el 06/11/2026
+
+- **Cambiar el botón «Ver horarios» de clases de apoyo** (era la 22): la píldora crema con la flecha en un círculo del color de cada tarjeta ya está publicada con el commit `ad58484`. Verificado el 06/11/2026 en producción: `/_astro/clases-apoyo.gPgviDJL.css` sirve `#fef8f4` y `--ca-card-acento`, y ya no tiene la barra grafito. [Historial](odd/tasks/clases-apoyo-tarjetas.md).
 
 ## Cerradas el 05/11/2026
 

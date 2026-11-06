@@ -1122,3 +1122,30 @@ cloudflare/migrations/0013_calendario_salidas.sql --escribir` el 30/10/2026. El
 helper corta con «Unexpected token» al leer la salida de un DDL, pero la tabla
 queda creada: se comprueba con un `SELECT` a `sqlite_master`.
 
+## Embudo del test vocacional en D1 (06/11/2026)
+
+Hasta el corte a Cloudflare el recorrido se leía en Vercel Web Analytics. Desde
+entonces los eventos `vocacional-*` se quedaban en memoria del navegador
+(`src/entrega/analitica.ts`) y la segunda lectura del embudo no se podía hacer:
+no era que nadie usara el test, era que no había fuente.
+
+- `migrations/0014_vocacional_embudo.sql` agrega `vocacional_embudo (fecha,
+  test, evento, pregunta, veces)`: agregados por día, nunca filas por visita ni
+  respuestas elegidas.
+- Se cuentan cuatro pasos, declarados una sola vez en
+  `EVENTOS_VOCACIONAL_MEDIDOS` (`lib/vocacional-analytics.ts`): iniciado,
+  pregunta, completado y salida. `retroceso`, `reiniciado` y `cta` siguen sólo
+  en el navegador; la CTA ya se mide como clic en `career_clicks`.
+- `src/datos/vocacional-embudo.ts` valida evento, test y posición (1 a 30),
+  deriva la clave de cuota con SHA-256 (`vocacional:<digest>`, 240 cada 600 s) y
+  suma el paso del día.
+- `POST /api/alertas-analytics` lo cuenta sin aviso de Telegram: una alerta por
+  cada pregunta de cada intento sería ruido.
+- `npm run leads` trae la sección «Test vocacional» con iniciados, completados,
+  salidas y cuántos alcanzaron cada pregunta, por test.
+
+**Ya aplicada en producción** con `node herramientas/d1.mjs --archivo
+cloudflare/migrations/0014_vocacional_embudo.sql --escribir` el 06/11/2026 y
+comprobada con un `SELECT` a `sqlite_master`. Falta publicar el código que manda
+los pasos: hasta que el Worker nuevo esté arriba, la tabla queda vacía.
+

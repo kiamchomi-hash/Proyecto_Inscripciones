@@ -12,6 +12,7 @@
 // romper el envio, que a esa altura ya ocurrio.
 
 import { track } from '@/lib/analytics-destino';
+import { EVENTOS_VOCACIONAL_MEDIDOS } from '@/lib/vocacional-analytics';
 
 /** Desde dónde se envió la consulta, para distinguir cada superficie de captación. */
 export type OrigenConsulta = 'home' | 'teclab' | 'contacto';
@@ -223,4 +224,10 @@ export function trackVocacional(
     ...(destino ? { destino } : {}),
     ...(etapa ? { etapa } : {}),
   });
+  // El recorrido, además, queda contado en D1: la analítica del navegador ya no
+  // sale a la red y sin esto no se puede leer en qué pregunta se cae la gente.
+  // Va sólo el paso alcanzado, nunca la respuesta elegida.
+  if ((EVENTOS_VOCACIONAL_MEDIDOS as readonly string[]).includes(evento)) {
+    enviarEventoServidor(evento, { test, pregunta });
+  }
 }

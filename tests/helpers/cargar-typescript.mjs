@@ -40,8 +40,17 @@ export function cargarTypescript(archivo, dependencias, resto = require) {
   const modulo = { exports: {} };
   const importar = nombre =>
     Object.hasOwn(dependencias, nombre) ? dependencias[nombre]
-      : Object.hasOwn(AUTOMATICOS, nombre) ? AUTOMATICOS[nombre]
-        : resto(nombre);
+      : nombre === '@/lib/vocacional-analytics' ? vocacional()
+        : Object.hasOwn(AUTOMATICOS, nombre) ? AUTOMATICOS[nombre]
+          : resto(nombre);
   new Function('require', 'module', 'exports', codigo)(importar, modulo, modulo.exports);
   return modulo.exports;
+}
+
+// `lib/analytics.ts` importa la lista de pasos del embudo. Se carga el módulo
+// real una vez: es puro y no arrastra nada del navegador.
+let moduloVocacional;
+function vocacional() {
+  moduloVocacional ??= cargarTypescript(new URL('../../lib/vocacional-analytics.ts', import.meta.url), {});
+  return moduloVocacional;
 }

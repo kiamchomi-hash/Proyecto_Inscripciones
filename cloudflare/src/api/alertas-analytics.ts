@@ -1,5 +1,6 @@
 import { consumirCupoAlerta } from '../datos/control.ts';
 import { registrarSalidaCalendario } from '../datos/calendario.ts';
+import { registrarEventoVocacional } from '../datos/vocacional-embudo.ts';
 import { registrarClickWhatsapp } from '../datos/whatsapp.ts';
 import { ipConfiable } from './ip.ts';
 
@@ -13,7 +14,7 @@ import { ipConfiable } from './ip.ts';
  * Dos eventos se cuentan en D1 sin avisar: el clic a WhatsApp de cualquier
  * dispositivo y las salidas del calendario académico hacia la oferta. El aviso
  * de Telegram sigue siendo sólo del clic móvil a WhatsApp y de los casos de la
- * allowlist.
+ * allowlist. Los pasos del test vocacional también se cuentan en D1, sin aviso.
  *
  * El envío es un puerto: sin configuración responde 502 `{ ok: false }`, un
  * rechazo del proveedor también, y una excepción de red la absorbe el `catch`
@@ -124,6 +125,15 @@ export async function manejarAlertaAnalytics(
     if (evento === 'calendario-salida') {
       if (!db) return respuesta({ ok: false });
       const contado = await registrarSalidaCalendario(db, cuerpo.datos.destino, ipConfiable(request));
+      return respuesta({ ok: contado });
+    }
+
+    // Embudo del test vocacional: se cuenta siempre y no avisa. Avisar de cada
+    // pregunta de cada intento llenaría el chat de Telegram con algo que se lee
+    // en el informe, no en el momento.
+    if (evento.startsWith('vocacional-')) {
+      if (!db) return respuesta({ ok: false });
+      const contado = await registrarEventoVocacional(db, evento, cuerpo.datos, ipConfiable(request));
       return respuesta({ ok: contado });
     }
 

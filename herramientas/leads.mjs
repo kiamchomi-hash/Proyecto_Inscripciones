@@ -98,7 +98,18 @@ async function leerSalidasCalendario() {
     ORDER BY salidas DESC`);
 }
 
+// ── D1: el embudo del test vocacional ───────────────────────────────────────
+
+async function leerEmbudoVocacional() {
+  return consultar(`SELECT test, evento, pregunta, sum(veces) AS veces
+    FROM vocacional_embudo
+    WHERE fecha BETWEEN '${DESDE}' AND '${HASTA}'
+    GROUP BY test, evento, pregunta
+    ORDER BY test, evento, pregunta`);
+}
+
 // ── D1: las consultas que entraron de verdad ────────────────────────────────
+
 async function leerConsultas() {
   return consultar(`SELECT strftime('%d/%m %H:%M', created_at, '-3 hours') AS cuando,
       date(created_at, '-3 hours') AS dia_utc,
@@ -227,13 +238,14 @@ console.log(`LEADS - ultimos ${DIAS} dias (${dm(DESDE)} al ${dm(HASTA)})`);
 // Cada fuente se lee aparte: son tres servicios distintos y ninguno depende de
 // otro. El error se guarda como valor en vez de cortar, para que la caida de
 // uno no se lleve puestos los otros.
-const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario] = await Promise.all([
+const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario, embudoVocacional] = await Promise.all([
   leerClicksWhatsapp().then(d => (fuentesLeidas.push('d1'), d), e => e),
   leerAvisos().catch(e => e),
   leerConsultas().catch(e => e),
   leerVisitas().then(d => (fuentesLeidas.push('cloudflare'), d), e => e),
   leerGoogle().then(d => (fuentesLeidas.push('gsc'), d), e => e),
   leerSalidasCalendario().catch(e => e),
+  leerEmbudoVocacional().catch(e => e),
 ]);
 
 // ── 1. Clics a WhatsApp ─────────────────────────────────────────────────────
@@ -308,7 +320,65 @@ if (salidasCalendario instanceof Error) {
   console.log('  Son los enlaces del calendario que llevan a la oferta: el destino dice a dónde fue cada uno.');
 }
 
-// ── 3. Consultas del formulario ─────────────────────────────────────────────
+// ── 3. Test vocacional ──────────────────────────────────────────────────────
+
+titulo('Test vocacional', 'D1, en vivo: iniciados, completados y donde se cae');
+
+let iniciadosVocacional = null;
+
+if (embudoVocacional instanceof Error) {
+  noDisponible(embudoVocacional);
+} else if (embudoVocacional.length === 0) {
+  console.log('  Ningun intento en la ventana.');
+  if (DESDE < DESDE_QUE_SE_MIDE) {
+    console.log(`  Ojo: el embudo se cuenta desde el ${dm(DESDE_QUE_SE_MIDE)}, el dia del corte.`);
+  }
+} else {
+  const cuentaEmbudo = (test, evento) => embudoVocacional
+    .filter(f => f.test === test && f.evento === evento)
+    .reduce((a, f) => a + Number(f.veces), 0);
+
+  if (DESDE < DESDE_QUE_SE_MIDE) {
+    console.log(`  Ojo: el embudo se cuenta desde el ${dm(DESDE_QUE_SE_MIDE)}, el dia del corte.`);
+  }
+
+  iniciadosVocacional = 0;
+  for (const test of ['general', 'teclab']) {
+    const iniciados = cuentaEmbudo(test, 'vocacional-iniciado');
+    const completados = cuentaEmbudo(test, 'vocacional-completado');
+    const salidas = cuentaEmbudo(test, 'vocacional-salida');
+    if (iniciados === 0 && completados === 0) continue;
+    iniciadosVocacional += iniciados;
+
+    console.log(`\n  ${test === 'general' ? 'General' : 'Teclab'}`);
+    console.log(`    ${String(num(iniciados)).padStart(4)}  iniciaron`);
+    console.log(`    ${String(num(completados)).padStart(4)}  completaron  (${pct(completados, iniciados)})`);
+    if (salidas > 0) console.log(`    ${String(num(salidas)).padStart(4)}  salieron sin terminar`);
+
+    // Dónde se cae: cuántos alcanzaron cada pregunta.
+    const porPregunta = new Map();
+    for (const f of embudoVocacional) {
+      if (f.test !== test || f.evento !== 'vocacional-pregunta') continue;
+      const pregunta = Number(f.pregunta);
+      porPregunta.set(pregunta, (porPregunta.get(pregunta) ?? 0) + Number(f.veces));
+    }
+    if (porPregunta.size > 0) {
+      const alcanzadas = [...porPregunta.entries()].sort((a, b) => a[0] - b[0]);
+      const pico = Math.max(...alcanzadas.map(([, n]) => n));
+      console.log('    Pregunta  alcanzaron');
+      for (const [pregunta, n] of alcanzadas) {
+        const barra = '#'.repeat(Math.round((n / pico) * 16));
+        console.log(`    ${String(pregunta).padStart(8)}  ${String(num(n)).padStart(10)}  ${barra}`.trimEnd());
+      }
+    }
+  }
+  if (iniciadosVocacional === 0) {
+    console.log('  Ningun intento iniciado en la ventana.');
+  }
+  console.log('  Una salida es una salida observable: no prueba que la persona no vuelva.');
+}
+
+// ── 4. Consultas del formulario ─────────────────────────────────────────────
 
 titulo('Consultas del formulario', 'D1, en vivo');
 
@@ -333,7 +403,7 @@ if (consultas instanceof Error) {
   }
 }
 
-// ── 4. Trafico desde Google ─────────────────────────────────────────────────
+// ── 5. Trafico desde Google ─────────────────────────────────────────────────
 
 titulo(
   'Trafico desde Google',
@@ -364,7 +434,7 @@ if (google instanceof Error) {
   }
 }
 
-// ── 5. El embudo ────────────────────────────────────────────────────────────
+// ── 6. El embudo ────────────────────────────────────────────────────────────
 
 titulo('Embudo', `${dm(DESDE)} al ${dm(HASTA)}`);
 
@@ -380,6 +450,7 @@ if (clicksMovil !== null) fila(clicksMovil, 'de esos clics, desde el movil');
 if (!(salidasCalendario instanceof Error) && salidasCalendario.length) {
   fila(salidasCalendario.reduce((a, f) => a + Number(f.salidas), 0), 'salieron del calendario hacia la oferta');
 }
+if (iniciadosVocacional) fila(iniciadosVocacional, 'iniciaron el test vocacional');
 if (!(consultas instanceof Error)) {
   fila(consultas.length, `dejaron el formulario${visitantes ? `  (${pct(consultas.length, visitantes)})` : ''}`);
 }

@@ -66,7 +66,7 @@ function capturarConsola(t) {
   return llamadas;
 }
 
-test('analítica local: eventos planos, sin red, sin claves privadas y sin consola', async t => {
+test('analítica local: eventos planos, sin claves privadas, con el embudo en D1 y sin consola', async t => {
   const { despachados } = instalarVentana();
   t.after(restaurarVentana);
   const consola = capturarConsola(t);
@@ -101,31 +101,41 @@ test('analítica local: eventos planos, sin red, sin claves privadas y sin conso
   analytics.trackMateriaClase('Matemática');
   analytics.trackDiaClase('Matemática');
   analytics.trackHorarioClase('Matemática', '18:00-20:00');
+  // El embudo queda contado en D1: es el único track() que sale a la red, y va
+  // sólo el paso, sin la respuesta elegida. La CTA se queda local.
   analytics.trackVocacional('vocacional-iniciado', {
     test: 'general', pregunta: 1, respondidas: 0, total: 10,
+  });
+  analytics.trackVocacional('vocacional-cta', {
+    test: 'general', pregunta: 3, respondidas: 2, total: 10, destino: 'carrera',
   });
 
   const nombres = leerEventos().map(evento => evento.evento);
   for (const nombre of [
     'formulario-iniciado', 'formulario-visto', 'consulta', 'pregunta-faq',
     'solicitud-clase', 'clase-materia', 'clase-dia', 'clase-horario', 'vocacional-iniciado',
+    'vocacional-cta',
   ]) assert.ok(nombres.includes(nombre), nombre);
-  assert.equal(llamadas.length, 0, 'ningún track() sale a la red');
+  assert.equal(llamadas.length, 1, 'sólo el paso del embudo sale a la red');
+  assert.equal(llamadas[0].url, '/api/alertas-analytics');
+  assert.deepEqual(JSON.parse(llamadas[0].init.body), {
+    evento: 'vocacional-iniciado', datos: { test: 'general', pregunta: 1 },
+  });
 
-  // El aviso de fallo sí usa el endpoint propio, con un cuerpo sin datos personales.
+  // El aviso de fallo usa el mismo endpoint, con un cuerpo sin datos personales.
   analytics.avisarFalloFormularioContacto('contacto', 'red');
   await new Promise(resolve => setTimeout(resolve, 0));
-  assert.equal(llamadas.length, 1);
-  assert.equal(llamadas[0].url, '/api/alertas-analytics');
-  assert.equal(llamadas[0].init.method, 'POST');
-  const cuerpo = JSON.parse(llamadas[0].init.body);
+  assert.equal(llamadas.length, 2);
+  assert.equal(llamadas[1].url, '/api/alertas-analytics');
+  assert.equal(llamadas[1].init.method, 'POST');
+  const cuerpo = JSON.parse(llamadas[1].init.body);
   assert.deepEqual(cuerpo, { evento: 'formulario-fallo', datos: { origen: 'contacto', motivo: 'red' } });
-  assert.doesNotMatch(llamadas[0].init.body, /example\.invalid|persona@|1234/);
+  assert.doesNotMatch(llamadas[1].init.body, /example\.invalid|persona@|1234/);
 
   // Google no se carga ni se llama: el helper compartido deja el evento local.
   sendGAEvent('event', 'career_card_click', { career_name: 'Carrera X', career_level: 'Pregrado' });
   assert.ok(leerEventos().some(evento => evento.evento === 'ga-career_card_click'));
-  assert.equal(llamadas.length, 1);
+  assert.equal(llamadas.length, 2);
 
   assert.equal(consola.length, 0, 'ni los eventos ni el fallo se escriben en consola');
 });
