@@ -21,9 +21,17 @@
 
 /* Hero: sombra en petroleo hondo en vez del verde casi negro del sitio. */
 .career-page--siglo21 .career-hero-shade {
+  /* Cubre el redondeo de subpíxel de la foto en el borde inferior. */
+  bottom: -1px;
   background:
     linear-gradient(90deg, rgba(0, 43, 43, .96) 0%, rgba(0, 43, 43, .74) 43%, rgba(0, 43, 43, .1) 78%),
     linear-gradient(0deg, rgba(0, 43, 43, .94) 0%, transparent 55%);
+}
+
+@media (max-width: 900px) {
+  .career-page--siglo21 .career-hero-shade {
+    height: 241px;
+  }
 }
 
 /* El sistema titula liviano: DM Sans Medium, sin la negra del sitio. */
