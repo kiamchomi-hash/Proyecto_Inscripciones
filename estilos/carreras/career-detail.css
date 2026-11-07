@@ -379,6 +379,20 @@
   color: var(--career-ink);
 }
 
+.career-page .career-hero .career-button--whatsapp {
+  min-height: 44px;
+  padding-block: 0;
+  background: #25d366;
+  border-color: #25d366;
+  color: #082f1a;
+  font-weight: 900;
+}
+
+.career-page .career-hero .career-button--whatsapp:hover {
+  transform: none;
+  filter: brightness(.94);
+}
+
 /* Llegada desde «Quiero inscribirme» del mail (resaltar-inscripcion.tsx): el
    contorno titila unas vueltas para marcar por dónde seguir. Contorno y no
    borde ni sombra: no pisa el estilo del botón. */

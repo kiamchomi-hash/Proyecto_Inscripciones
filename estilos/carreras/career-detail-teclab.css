@@ -874,6 +874,39 @@
     margin-top: 1.25rem;
   }
 
+  /* El kicker ya hereda el margen lateral del H1 que lo contiene. */
+  .career-page--teclab .career-hero h1 .career-kicker {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .career-page--teclab .career-hero h1 {
+    text-align: center;
+  }
+
+  .career-page--teclab .career-breadcrumb {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .career-page--teclab:is(.career-page--title-long, .career-page--title-xl) .career-breadcrumb {
+    justify-content: flex-start;
+  }
+
+  .career-page--teclab .career-breadcrumb-current {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .career-page--teclab:is(.career-page--title-long, .career-page--title-xl) .career-hero h1 {
+    max-width: none;
+    font-size: 27px;
+  }
+
   .career-page--teclab .career-hero-media {
     position: relative;
     inset: auto;

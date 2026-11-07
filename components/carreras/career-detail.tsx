@@ -392,6 +392,11 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               </p>
             )}
             <div className="career-hero-actions">
+              {!isIA && (
+                <a href={waHref} target="_blank" rel="noopener nofollow" className="career-button career-button--whatsapp">
+                  Consultar por WhatsApp
+                </a>
+              )}
               {/* Quien viene a inscribirse baja a la preinscripcion, que arma el
                   legajo. La de una carrera que todavia no abrio solo guarda la
                   consulta y avisa por Telegram: sin precio. */}
@@ -402,14 +407,11 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               >
                 {carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
-              <a
-                href={waHref}
-                target="_blank"
-                rel="noopener nofollow"
-                className="career-button career-button--ghost"
-              >
-                Hacer una consulta
-              </a>
+              {isIA && (
+                <a href={waHref} target="_blank" rel="noopener nofollow" className="career-button career-button--ghost">
+                  Hacer una consulta
+                </a>
+              )}
               <CareerInfoButton carrera={carrera} />
             </div>
             {/* Debajo de los botones: arriba alejaba la preinscripcion del texto. */}
