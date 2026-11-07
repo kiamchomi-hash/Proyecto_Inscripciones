@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fuentes/bricolage-grotesque-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Fichas de Universidad Siglo 21 con el Visual System 2025 de la universidad
    (skill piezas_siglo21). Solo cambia el estilo: la disposicion es la de
    career-detail.css. Teclab e Identidad no llevan `career-page--siglo21`.
@@ -36,11 +44,53 @@
 
 /* El sistema titula liviano: DM Sans Medium, sin la negra del sitio. */
 .career-page--siglo21 .career-hero h1 {
-  font-family: var(--s21-fuente);
-  font-weight: 500;
+  font-family: 'Bricolage Grotesque', var(--s21-fuente);
+  font-weight: 700;
   letter-spacing: -.035em;
   line-height: 1;
   color: var(--s21-lila);
+}
+
+@media (max-width: 900px) {
+  .career-page--siglo21 .career-hero { padding-top: 0; }
+
+  .career-page--siglo21 .career-hero-media,
+  .career-page--siglo21 .career-hero-shade {
+    inset: 0;
+    height: 100%;
+  }
+
+  .career-page--siglo21 .career-hero-shade {
+    background: linear-gradient(90deg, rgba(0, 43, 43, .94), rgba(0, 43, 43, .68)),
+      linear-gradient(0deg, rgba(0, 43, 43, .88), transparent);
+  }
+
+  .career-page--siglo21 .career-hero h1,
+  .career-page--siglo21 .career-kicker {
+    max-width: none;
+    text-align: center;
+  }
+
+  .career-page--siglo21 .career-breadcrumb {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .career-page--siglo21:is(.career-page--title-long, .career-page--title-xl) .career-breadcrumb {
+    justify-content: flex-start;
+  }
+
+  .career-page--siglo21 .career-breadcrumb-current {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .career-page--siglo21:is(.career-page--title-long, .career-page--title-xl) .career-hero h1 {
+    font-size: 27px;
+  }
 }
 
 .career-page--siglo21 .career-kicker {

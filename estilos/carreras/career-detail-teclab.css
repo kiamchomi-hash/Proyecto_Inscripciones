@@ -1,3 +1,16 @@
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fuentes/manrope-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.career-page--teclab .career-hero h1 {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+}
+
 /* Ficha de carrera o curso de Teclab con el sistema visual oficial del instituto
    (skill piezas_teclab): azul #0055F0, navy #0C1824, cian #4AE2E7, blanco y
    #F0F0F6, todo en Poppins. Se carga justo despues de career-detail.css y todo
