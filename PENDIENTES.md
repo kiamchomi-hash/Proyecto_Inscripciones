@@ -4,6 +4,15 @@ Reordenada el 30/10/2026 por prioridad, con el orden marcado por el usuario punt
 
 Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; las revisiones repetibles van en rutinas.
 
+## Cola de trabajo
+
+La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hacer ahora. Se avanza de a un pendiente: si el usuario dice que no por ahora, no se marca como resuelto ni se cambia su prioridad; se lo baja al final de la cola activa y se propone el siguiente. Si no hay una cola activa explícita, se arma siguiendo el orden de prioridad de esta lista. Al retomar una tarea aplazada, vuelve a su lugar según la prioridad original.
+
+**Aplazados en la cola actual (06/11/2026):**
+
+- Completar el checklist de alta de las tres carreras activas de Teclab (pendiente 4): hoy no.
+- Revisar la indexación de Desarrollo de Videojuegos (pendiente 2): hoy no; volver a consultar en unos días.
+
 ## Altísima
 
 1. **Cargar las otras tres carreras del bloque 4 cuando Teclab las publique** (1.5 y 40): Gestión de IA y Transformación Digital, Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).
