@@ -72,7 +72,7 @@ Las altas de Teclab van primero; después las demás.
 
 35. **Crear una herramienta de procesos del CAU y completar los procesos CAU** (24, 20/10/2026), distinta del buscador de carreras, para consultar los trámites y procesos de la sede.
 
-36. **Entrar al portal de los alumnos y sacar elementos estéticos para el UIverse local** (26).
+36. **Entrar al portal de los alumnos y sumar referencias al UIverse local**, incluido usar el SVG de Portal Electrónico (26).
 
 37. **Mejorar la página de materias en base a los folletos creados** (51).
 
