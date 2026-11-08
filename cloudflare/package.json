@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24.0.0" },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "dev": "node scripts/local.mjs dev",
     "preview": "node scripts/local.mjs preview",
@@ -40,17 +42,18 @@
     "publicar:produccion": "node scripts/publicar.mjs --publicar"
   },
   "dependencies": {
-    "astro": "7.4.2",
     "@astrojs/cloudflare": "14.4.2",
     "@astrojs/react": "7.1.1",
+    "astro": "7.4.2",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
+    "@cloudflare/vite-plugin": "1.67.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "typescript": "5.9.3",
-    "wrangler": "4.152.0"
+    "wrangler": "4.158.0"
   }
 }

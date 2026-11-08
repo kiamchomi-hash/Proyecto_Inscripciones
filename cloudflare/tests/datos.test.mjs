@@ -10,7 +10,7 @@ test('migración desde cero y segunda aplicación por historial sin cambios', as
   await insertarCarrera(db);
   await worker.applyD1Migrations('DB');
   assert.equal(await db.prepare('SELECT count(*) AS n FROM carreras').first('n'), 1);
-  assert.equal(await db.prepare('SELECT count(*) AS n FROM d1_migrations').first('n'), 12);
+  assert.equal(await db.prepare('SELECT count(*) AS n FROM d1_migrations').first('n'), 14);
   const tablas = (await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all()).results.map(r => r.name);
   for (const nombre of ['carreras', 'precios_privados', 'reservas_mail_precio', 'form_rate_limits', 'career_clicks', 'consultas', 'outbox',
     'faq_preguntas', 'solicitudes_clase', 'suscripciones_newsletter', 'newsletter_envios', 'materias', 'novedades']) assert.ok(tablas.includes(nombre));
