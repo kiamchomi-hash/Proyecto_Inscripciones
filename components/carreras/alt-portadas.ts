@@ -2,6 +2,20 @@
 // a la carrera: si cambia la portada, no se atribuye la descripción anterior.
 // Los retratos y fotos de ambiente que no ilustran el tema quedan decorativos.
 const ALT_PORTADAS: Readonly<Record<string, string>> = {
+  '/imagenes/Modales/Escribanía/Hero-escribania.jpg': 'Tres personas revisan documentos y escriben en una mesa',
+  '/imagenes/Modales/Contador Público/xxl_cropped_dca3a0e5c32edb183e84fb58a4fd5b8b.jpg': 'Tres personas conversan alrededor de una computadora y documentos',
+  '/imagenes/Modales/Licenciatura en Negocios Digitales/Foto-hero-licenciatura-inteligencia-negocios-digitales.webp': 'Personas trabajan con computadoras en un espacio compartido',
+  '/imagenes/Modales/Licenciatura en Administración Pública/Licenciatura en Administración Pública.webp': 'Dos personas conversan sobre documentos en un escritorio',
+  '/imagenes/Modales/Licenciatura en Terapia Ocupacional y Desarrollo Humano/hero-lic-en-terapia-ocupacional-y-desarrollo-humano.jpg': 'Una persona con ropa sanitaria en un edificio',
+  '/imagenes/Modales/Procurador/Foto-hero-procurador.webp': 'Un hombre revisa documentos en un escritorio',
+  '/imagenes/Modales/Tecnicatura en Administración y Gestión Tributaria/foto-hero-administracion-y-gestion-tributaria.webp': 'Una mujer escribe sobre documentos junto al teclado de una computadora',
+  '/imagenes/Modales/Tecnicatura en Gestión de Empresas Familiares/Foto-hero-gestion-de-empresas-familiares.webp': 'Una mujer escribe en una carpeta de mano en una oficina',
+  '/imagenes/Modales/Tecnicatura Universitaria en Administración y Gestión de Políticas Públicas/Foto-hero-administracion-y-gestion-de-politicas-publicas.webp': 'Dos mujeres revisan papeles en una oficina',
+  '/imagenes/Modales/Tecnicatura en Gestión Contable e impositiva/Foto-hero-gestion-contable-e-impositiva.webp': 'Un hombre trabaja con documentos y una calculadora junto a una computadora',
+  '/imagenes/Modales/Tecnicatura en Relaciones Laborales/Licenciatura en Gestión de Recursos Humanos.webp': 'Una mujer escribe en una carpeta junto a una computadora',
+  '/imagenes/Modales/Tecnicatura en Gestión Administrativas de Servicios de Salud/Foto-hero-servicios-de-salud.webp': 'Un hombre trabaja con papeles y una computadora en un escritorio',
+  '/imagenes/teclab/carreras/seguros.webp': 'Dos personas conversan en una mesa de trabajo',
+  '/imagenes/teclab/carreras/administracion-de-empresas.webp': 'Dos personas conversan frente a gráficos en una computadora portátil',
   '/imagenes/Modales/Abogacía/Experiencia-universitaria-en-la-Siglo-21-donde-los-estudiantes-de-Abogacia-combinan-estudio-y-trabajo-3-1-905x1024.jpg': 'Personas reunidas alrededor de documentos sobre una mesa',
   '/imagenes/Modales/Licenciatura en Administración/Foto-hero-administracion.webp': 'Personas reunidas alrededor de una mesa frente a gráficos',
   '/imagenes/Modales/Finanzas/portada_desktop.webp': 'Dos personas revisan documentos junto a una computadora',

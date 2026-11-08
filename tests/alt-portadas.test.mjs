@@ -23,3 +23,11 @@ test('las portadas temáticas revisadas describen lo que muestran', () => {
   assert.equal(altPortadaCarrera('/imagenes/imagenes_carreras/licenciatura-en-ambiente-y-energias-renovables.webp'),
     'Un hombre examina una maqueta de un aerogenerador');
 });
+
+test('la revisión individual incluye la actividad contable y la indumentaria sanitaria', () => {
+  assert.equal(altPortadaCarrera('/imagenes/Modales/Tecnicatura en Gestión Contable e impositiva/Foto-hero-gestion-contable-e-impositiva.webp'),
+    'Un hombre trabaja con documentos y una calculadora junto a una computadora');
+  assert.equal(altPortadaCarrera('/imagenes/Modales/Licenciatura en Terapia Ocupacional y Desarrollo Humano/hero-lic-en-terapia-ocupacional-y-desarrollo-humano.jpg'),
+    'Una persona con ropa sanitaria en un edificio');
+  assert.equal(altPortadaCarrera('/imagenes/teclab/carreras/gestion-hotelera.webp'), '');
+});
