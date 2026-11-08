@@ -14,3 +14,12 @@ test('las portadas descritas no quedan ocultas a lectores de pantalla', () => {
   assert.match(componente, /aria-hidden=\{heroAlt \? undefined : true\}/);
   assert.match(componente, /alt=\{heroAlt\}/);
 });
+
+test('las portadas temáticas revisadas describen lo que muestran', () => {
+  assert.equal(altPortadaCarrera('/imagenes/Modales/Licenciatura en Periodismo/Foto-hero-licenciatura-en-publicidad.webp'),
+    'Una periodista sostiene un micrófono frente a una cámara');
+  assert.equal(altPortadaCarrera('/imagenes/Modales/Licenciatura en Gerontología/Foto-hero-licenciatura-gerontologia-ccc.webp'),
+    'Un hombre acompaña a una persona mayor durante una conversación');
+  assert.equal(altPortadaCarrera('/imagenes/imagenes_carreras/licenciatura-en-ambiente-y-energias-renovables.webp'),
+    'Un hombre examina una maqueta de un aerogenerador');
+});
