@@ -71,6 +71,7 @@ export default function MateriaGenerica({ materia }: { materia: MateriaFicha }) 
 
       <WhatsappClase
         slug={materia.slug}
+        materia={materia.label}
         whatsapp={materia.whatsapp}
         telefono={materia.telefono_display}
         profesor={materia.nombre_profesor}

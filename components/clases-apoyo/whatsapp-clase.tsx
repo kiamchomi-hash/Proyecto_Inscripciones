@@ -13,8 +13,9 @@ function WhatsAppIcon({ size = 20 }: { size?: number }) {
 
 // El número y el nombre salen de la fila de la materia (whatsapp y
 // telefono_display): nunca se escriben a mano.
-export default function WhatsappClase({ slug, whatsapp, telefono, profesor, enConstruccion, className = 'ca-wa-link' }: {
+export default function WhatsappClase({ slug, materia, whatsapp, telefono, profesor, enConstruccion, className = 'ca-wa-link' }: {
   slug: string;
+  materia: string;
   whatsapp: string;
   telefono: string;
   profesor: string;
@@ -23,7 +24,7 @@ export default function WhatsappClase({ slug, whatsapp, telefono, profesor, enCo
 }) {
   return (
     <a
-      href={`https://wa.me/${whatsapp}`}
+      href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hola! Tengo interés en las clases de apoyo de ${materia}`)}`}
       target="_blank"
       rel="noopener noreferrer nofollow"
       className={className}
