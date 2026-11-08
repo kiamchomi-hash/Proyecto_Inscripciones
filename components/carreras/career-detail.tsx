@@ -5,6 +5,7 @@ import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import Image from 'next/image';
 import Link from 'next/link';
 import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
+import { altPortadaCarrera } from './alt-portadas';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Carrera, CarreraEnlace } from '@/components/index/types';
 import { carreraToSlug, carreraFullName } from '@/components/index/types';
@@ -172,6 +173,7 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
     portada?.imagen_desktop ||
     portada?.imagen_mobile ||
     '/imagenes/imagenes_cau/edificio_siglo21_campus2.webp';
+  const heroAlt = altPortadaCarrera(heroImage);
   const heroPosition =
     HERO_POSITIONS[nombreCompleto] ||
     portada?.imagen_desktop_position ||
@@ -282,11 +284,11 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
       <header className="career-hero">
         {!isIA && (
           <>
-            <div className="career-hero-media" aria-hidden="true">
+            <div className="career-hero-media" aria-hidden={heroAlt ? undefined : true}>
               <ImagenResponsiva
                 className="career-hero-image"
                 ruta={heroImage}
-                alt=""
+                alt={heroAlt}
                 fill
                 priority
                 sizes="100vw"

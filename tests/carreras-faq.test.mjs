@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import * as tipos from '../components/index/types.ts';
 import * as teclab from '../components/index/teclab.ts';
 import * as adaptadores from '../lib/datos/carrera-detalle.ts';
+import * as altPortadas from '../components/carreras/alt-portadas.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
 
 const vacio = () => null;
@@ -19,6 +20,7 @@ const dependencias = {
   '@/components/index/ia-isotipo': { default: vacio, __esModule: true },
   '@/components/index/aviso-inicio-teclab': { default: vacio, __esModule: true },
   './career-info-button': { default: vacio, __esModule: true },
+  './alt-portadas': altPortadas,
   './sticky-enrollment-cta': { default: vacio, __esModule: true },
   './resaltar-inscripcion': { default: vacio, __esModule: true },
   '@/components/index/resoluciones-teclab': cargarTypescript('components/index/resoluciones-teclab.ts', {}),
@@ -31,6 +33,14 @@ dependencias['./inscripcion-carrera'] = cargarTypescript('components/carreras/in
 const CareerDetail = cargarTypescript('components/carreras/career-detail.tsx', dependencias).default;
 const faq = { type: 'faq', items: [{ pregunta: '¿Qué hace <script>un procurador</script>?', respuesta: 'Gestiona expedientes & documentación.' }] };
 const carrera = { id: 87, nombre: 'Procurador', nivel: 'Pregrado', prefix: 'Pregrado', nombre_corto: 'Procurador', duracion: '3 años', titulo: 'Procurador/a', modalidad: 'Distancia', descripcion: 'Gestioná expedientes.', enfoque: '', slides: null, plan_estudios: null, seccion_modalidad: null, seccion_duracion: null };
+
+test('la portada informativa se describe en SSR y la decorativa permanece oculta', () => {
+  const informativa = { ...carrera, slides: [{ type: 'portada', imagen_desktop: '/imagenes/teclab/carreras/logistica.webp', bullets: [] }] };
+  const html = renderToStaticMarkup(React.createElement(CareerDetail, { carrera: informativa, relacionadas: [] }));
+  assert.match(html, /class="career-hero-media"><img[^>]+alt="Una persona maneja un montacargas en un depósito"/);
+  const decorativa = renderToStaticMarkup(React.createElement(CareerDetail, { carrera, relacionadas: [] }));
+  assert.match(decorativa, /class="career-hero-media" aria-hidden="true"><img[^>]+alt=""/);
+});
 
 // RED observable antes de implementar: el discriminante FAQ todavía se rechaza.
 test('FAQ valida texto obligatorio, proyecta sólo su contrato y no muta la entrada', () => {

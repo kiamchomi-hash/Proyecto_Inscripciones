@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import * as tipos from '../components/index/types.ts';
 import * as teclab from '../components/index/teclab.ts';
 import * as adaptadores from '../lib/datos/carrera-detalle.ts';
+import * as altPortadas from '../components/carreras/alt-portadas.ts';
 import { carreraHubspotDe } from '../components/formularios/casas.ts';
 import { perfilDe, recomendar, PREGUNTAS } from '../components/test-vocacional-teclab/puntaje.ts';
 import { cargarTypescript } from './helpers/cargar-typescript.mjs';
@@ -227,6 +228,7 @@ const dependencias = {
   '@/components/index/ia-isotipo': { default: vacio, __esModule: true },
   '@/components/index/aviso-inicio-teclab': { default: vacio, __esModule: true },
   './career-info-button': { default: vacio, __esModule: true },
+  './alt-portadas': altPortadas,
   './sticky-enrollment-cta': { default: vacio, __esModule: true },
   './resaltar-inscripcion': { default: vacio, __esModule: true },
   '@/components/index/resoluciones-teclab': cargarTypescript('components/index/resoluciones-teclab.ts', {}),
