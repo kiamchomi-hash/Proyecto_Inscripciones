@@ -26,12 +26,27 @@ export const GEO = { latitude: -34.6870295, longitude: -58.4775718 } as const;
 /** `title` del iframe, compartido por las tres páginas que lo muestran. */
 export const MAPS_TITLE = 'Ubicación del CAU Villa Lugano en Google Maps';
 
-/** `PostalAddress` de schema.org, tal cual va en el JSON-LD. */
+/**
+ * `PostalAddress` de schema.org, tal cual va en el JSON-LD.
+ *
+ * La región va con el nombre completo y no con la sigla: es lo que declara la
+ * ficha de Google y Google compara los datos de la sede campo por campo. Hasta
+ * el 08/11/2026 el layout decía "CABA" y las páginas de materias decían el
+ * nombre completo, así que la misma dirección se publicaba de dos maneras.
+ */
 export const POSTAL_ADDRESS = {
   "@type": "PostalAddress",
   "streetAddress": "Guaminí 4876",
   "addressLocality": "Villa Lugano",
-  "addressRegion": "CABA",
+  "addressRegion": "Ciudad Autónoma de Buenos Aires",
   "postalCode": "C1439",
   "addressCountry": "AR",
 } as const;
+
+/**
+ * `@id` de la sede como nodo de schema.org. Se declara una sola vez, en
+ * `cloudflare/src/layouts/Sitio.astro`, y las páginas que hablan de la sede lo
+ * referencian en vez de repetir la dirección: dos copias del mismo dato se
+ * desincronizan y Google lee dos sedes distintas.
+ */
+export const ORGANIZACION_ID = "https://www.siglo21sur.com/#organizacion";

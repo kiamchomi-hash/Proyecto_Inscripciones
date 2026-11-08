@@ -66,6 +66,45 @@ const CHECKLIST = [
   'Capacitaciones para empresas y PYMES',
 ];
 
+/**
+ * Preguntas de la sede, con las mismas respuestas que ya decía la página.
+ *
+ * Se publican también como `FAQPage` en `cloudflare/src/pages/sobre-nosotros.astro`:
+ * un buscador o un asistente que necesite "dónde queda" o "hasta qué hora
+ * atiende" tiene que encontrar la respuesta en una frase completa y no
+ * deducirla de un párrafo.
+ */
+export interface PreguntaSede {
+  pregunta: string;
+  respuesta: string;
+  /** Sólo la pregunta que manda a la ficha de Google. */
+  enlace?: string;
+}
+
+export const PREGUNTAS_SEDE: PreguntaSede[] = [
+  {
+    pregunta: '¿Dónde queda el CAU de Universidad Siglo 21 en CABA?',
+    respuesta: 'En Guaminí 4876, Villa Lugano, Comuna 8 de la Ciudad Autónoma de Buenos Aires.',
+  },
+  {
+    pregunta: '¿Cuál es el horario de atención de la sede?',
+    respuesta: 'De lunes a viernes, de 8:00 a 20:00, en turnos mañana y tarde.',
+  },
+  {
+    pregunta: '¿Qué se puede hacer en la sede?',
+    respuesta: 'Inscribirse a las carreras y diplomaturas de Universidad Siglo 21, rendir y recibir acompañamiento presencial. En el mismo espacio funcionan las clases de apoyo, los talleres culturales y el coworking.',
+  },
+  {
+    pregunta: '¿Las carreras se cursan en la sede?',
+    respuesta: 'No: la cursada es a distancia. La sede es el lugar donde te inscribís, rendís y te acompañan.',
+  },
+  {
+    pregunta: '¿Cómo llego?',
+    respuesta: 'La sede está en Guaminí 4876, Villa Lugano. El mapa de esta página y el botón «Cómo llegar» abren la ficha del lugar en Google Maps.',
+    enlace: MAPS_URL,
+  },
+];
+
 /* ── Page ────────────────────────────────────────────────── */
 
 export default function SobreNosotrosPage() {
@@ -462,6 +501,54 @@ export default function SobreNosotrosPage() {
 
       {/* ─── GLOW DIVIDER ─────────────────────────────────── */}
       <div className="sn-glow-line mb-7" />
+
+      {/* ─── PREGUNTAS DE LA SEDE ─────────────────────────── */}
+      <section className="mb-7" aria-labelledby="preguntas-sede-titulo">
+        <p className="text-xs font-semibold tracking-widest uppercase mb-3 text-center" style={{ color: '#00c7b1' }}>
+          Preguntas frecuentes
+        </p>
+        <h2
+          id="preguntas-sede-titulo"
+          className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white mb-6"
+        >
+          Sobre la sede
+        </h2>
+        <div className="sn-faq rounded-2xl overflow-hidden" style={{ background: '#162f2e', border: '1px solid rgba(0,199,177,0.12)' }}>
+          {PREGUNTAS_SEDE.map((q, i) => (
+            <details
+              key={q.pregunta}
+              className="sn-faq-item"
+              style={i ? { borderTop: '1px solid rgba(0,199,177,0.12)' } : undefined}
+            >
+              <summary className="flex items-center justify-between gap-4 px-5 sm:px-6 py-4 cursor-pointer">
+                <span className="text-base sm:text-lg font-bold text-white">{q.pregunta}</span>
+                <svg
+                  className="w-4 h-4 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  style={{ color: '#00c7b1' }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </summary>
+              <p className="px-5 sm:px-6 pb-5 text-sm leading-relaxed" style={{ color: '#c8dedd' }}>
+                {q.respuesta}
+                {q.enlace && (
+                  <>
+                    {' '}
+                    <a href={q.enlace} target="_blank" rel="noopener nofollow" style={{ color: '#00c7b1' }}>
+                      Ver en Google Maps
+                    </a>
+                  </>
+                )}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
 
       {/* ─── MAP ──────────────────────────────────────────── */}
       <section className="sn-map-card sn-glass rounded-2xl p-6 sm:p-10 mb-0">

@@ -123,6 +123,23 @@
   pointer-events: none;
 }
 
+/* ── Preguntas de la sede ─────────────────────────────── */
+.sn-faq summary {
+  list-style: none;
+}
+.sn-faq summary::-webkit-details-marker {
+  display: none;
+}
+.sn-faq-item summary:hover {
+  background: rgba(0, 199, 177, 0.04);
+}
+.sn-faq-item summary svg {
+  transition: transform 0.2s ease;
+}
+.sn-faq-item[open] summary svg {
+  transform: rotate(180deg);
+}
+
 /* ── WhatsApp glow ────────────────────────────────────── */
 .sn-whatsapp-btn {
   position: relative;

@@ -1,7 +1,7 @@
 ---
 import { env } from 'cloudflare:workers';
 import { jsonLdScript } from '@/lib/json-ld';
-import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
+import { GEO, MAPS_URL, ORGANIZACION_ID, POSTAL_ADDRESS } from '@/lib/sede';
 import NavbarIsla from '../entrega/NavbarIsla';
 import { configTurnstile } from '../entrega/entorno-publico.ts';
 import AnalyticsInteractions from '@/components/analytics-interactions';
@@ -109,11 +109,21 @@ const jsonLd = jsonLdScript([
   {
     '@context': 'https://schema.org',
     '@type': ['EducationalOrganization', 'LocalBusiness'],
+    // El `@id` permite que las demás páginas referencien esta misma sede en vez
+    // de repetir la dirección. `hasMap` y la ficha de Google dentro de `sameAs`
+    // son lo que une la entidad del sitio con el local que existe en Maps: sin
+    // ese enlace, el JSON-LD describe un negocio que Google no puede emparejar
+    // con su ficha.
+    '@id': ORGANIZACION_ID,
     name: 'CAU Villa Lugano - Universidad Siglo 21',
+    alternateName: 'CAU Villa Lugano',
     url: 'https://www.siglo21sur.com',
+    logo: 'https://www.siglo21sur.com/imagenes/imagenes_cau/logo_cau-160.webp',
+    image: 'https://www.siglo21sur.com/imagenes/imagenes_cau/Foto-entrada.webp',
     description: 'Centro de Aprendizaje Universitario Villa Lugano. Carreras universitarias a distancia de Universidad Siglo 21.',
     address: POSTAL_ADDRESS,
     geo: { '@type': 'GeoCoordinates', ...GEO },
+    hasMap: MAPS_URL,
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
@@ -126,7 +136,9 @@ const jsonLd = jsonLdScript([
       'Comuna 8', 'CABA',
     ].map(name => ({ '@type': 'Place', name })),
     telephone: '+5491132973801',
+    email: 'inscripciones@siglo21sur.com',
     sameAs: [
+      MAPS_URL,
       'https://www.facebook.com/ceducativovillalugano/',
       'https://www.instagram.com/centroeducativovillalugano/',
     ],

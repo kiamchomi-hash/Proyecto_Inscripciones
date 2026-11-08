@@ -6,6 +6,7 @@ import SiteFooter from '@/components/footer';
 import { leerMateriaPublica, listarNavegacionMaterias } from '../../datos/materias';
 import { configTurnstile } from '../../entrega/entorno-publico';
 import { jsonLdScript } from '@/lib/json-ld';
+import { ORGANIZACION_ID } from '@/lib/sede';
 import '@/estilos/clases-apoyo/clases-apoyo.css';
 import '@/estilos/clases-apoyo/reserva-clase.css';
 import '@/estilos/clases-apoyo/computacion.css';
@@ -18,8 +19,7 @@ const serviceSchema = {
   '@context': 'https://schema.org', '@type': 'Service', name: `Clases particulares de ${ficha.label}`,
   serviceType: 'Clases de apoyo escolar', description: `Clases particulares de ${ficha.label} en Villa Lugano, presenciales.`, url,
   areaServed: { '@type': 'Place', name: 'Villa Lugano, Ciudad Autónoma de Buenos Aires' },
-  provider: { '@type': 'EducationalOrganization', name: 'CAU Villa Lugano — Universidad Siglo 21', url: BASE_URL,
-    address: { '@type': 'PostalAddress', streetAddress: 'Guaminí 4876', addressLocality: 'Villa Lugano', addressRegion: 'Ciudad Autónoma de Buenos Aires', addressCountry: 'AR' } },
+  provider: { '@id': ORGANIZACION_ID, name: 'CAU Villa Lugano - Universidad Siglo 21' },
 };
 const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
   { '@type': 'ListItem', position: 1, name: 'Inicio', item: BASE_URL },

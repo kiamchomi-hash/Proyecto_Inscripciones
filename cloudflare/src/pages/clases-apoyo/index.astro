@@ -5,7 +5,7 @@ import ClasesApoyoLanding from '@/components/clases-apoyo/clases-apoyo-landing';
 import SiteFooter from '@/components/footer';
 import { listarMateriasPublicas } from '../../datos/materias';
 import { jsonLdScript } from '@/lib/json-ld';
-import { GEO, POSTAL_ADDRESS } from '@/lib/sede';
+import { ORGANIZACION_ID } from '@/lib/sede';
 import '@/estilos/clases-apoyo/clases-apoyo.css';
 const BASE_URL = 'https://www.siglo21sur.com';
 const materias = await listarMateriasPublicas(env.DB);
@@ -15,7 +15,10 @@ const servicioSchema = {
   description: 'Clases particulares y apoyo escolar presenciales de primaria y secundaria en Villa Lugano, de lunes a viernes.',
   url: `${BASE_URL}/clases-apoyo`,
   areaServed: ['Villa Lugano', 'Villa Riachuelo', 'Villa Soldati', 'Mataderos', 'Barrio Piedrabuena'].map(name => ({ '@type': 'Place', name: `${name}, Ciudad Autónoma de Buenos Aires` })),
-  provider: { '@type': 'EducationalOrganization', name: 'CAU Villa Lugano — Universidad Siglo 21', url: BASE_URL, address: POSTAL_ADDRESS, geo: { '@type': 'GeoCoordinates', ...GEO } },
+  // La sede se referencia por `@id` (la declara `Sitio.astro` en toda página):
+  // repetir acá la dirección creaba una segunda copia que ya decía la región
+  // con otra forma que el layout.
+  provider: { '@id': ORGANIZACION_ID, name: 'CAU Villa Lugano - Universidad Siglo 21' },
   hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Materias', itemListElement: materias.filter(m => !m.en_construccion).map(m => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: `Clases de apoyo de ${m.label}`, url: `${BASE_URL}/clases-apoyo/${m.slug}` } })) },
 };
 const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
