@@ -57,7 +57,7 @@ test('una opción fuera de su lista, o un obligatorio vacío, frenan el envío y
     const contexto = {
       valido: caso.malEscritos.length === 0 && caso.faltanObligatorios.length === 0,
       ...caso, token: 'seguro', hayContacto: true, errorEmail: '', errorTelefono: '',
-      origen: 'dedicada', modo: 'preinscripcion', trackIntentoFormulario: () => {},
+      origen: 'dedicada', modo: 'preinscripcion', esPreinscripcion: true, carrera: { id: 1 }, trackIntentoFormulario: () => {},
       setIntentado: v => { intentado = v; }, setEnFrio: () => {},
       frioRef: { current: null }, setTimeout: () => 1, clearTimeout: () => {},
       irAlPrimerProblema: p => { problemas = p; },

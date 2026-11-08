@@ -710,15 +710,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // La casa que manda: la fija de la página, o la que trae la carrera elegida.
   const casaActiva = casa ?? casaDeCarrera(carrera);
   const casaDeLaCarrera = casaDeCarrera(carrera);
-  // Una preinscripción sin carrera elegida no tiene sentido: no se sabe a qué
-  // se preinscribe nadie, ni qué datos hacen falta. Hasta que haya carrera se
-  // muestra sólo el buscador. El contacto sí puede empezar en blanco: es una
-  // consulta, y bien puede ser sobre nada en particular.
-  const esperandoCarrera = esPreinscripcion && !casaActiva;
-  const campos = casaActiva
-    ? camposDe(casaActiva, modo)
-    : esPreinscripcion ? [] : camposComunes(modo);
-  const obligatorios = casaActiva ? obligatoriosDe(casaActiva, modo) : [];
+  // Mientras no hay carrera, se muestran los campos de Siglo 21; al elegir una
+  // carrera se usa la casa real. La elección sigue siendo obligatoria para enviar.
+  const casaVisual = casaActiva ?? (esPreinscripcion ? 'siglo21' : null);
+  const esperandoCarrera = false;
+  const campos = casaVisual ? camposDe(casaVisual, modo) : camposComunes(modo);
+  const obligatorios = casaVisual ? obligatoriosDe(casaVisual, modo) : [];
   // Si la casa no declara ninguno, no hay distinción que marcar: nada es
   // obligatorio y decírselo campo por campo sería ruido en veinte etiquetas.
   const hayObligatorios = obligatorios.length > 0;
@@ -767,7 +764,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const columnas = repartirColumnas(
     enPantalla.filter(id => CAMPOS[id].grupo !== 'contacto'),
     esPreinscripcion,
-    esPreinscripcion && casaActiva === 'siglo21',
+    esPreinscripcion && casaVisual === 'siglo21',
   );
 
   const categorias = useMemo(() => categoriasPresentes(carreras), [carreras]);
@@ -905,7 +902,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   });
 
   const hayContacto = Boolean(email || telefono);
-  const datosValidos = hayContacto && !errorEmail && !errorTelefono
+  const datosValidos = (!esPreinscripcion || Boolean(carrera)) && hayContacto && !errorEmail && !errorTelefono
     && !faltanObligatorios.length && !malEscritos.length;
   const valido = datosValidos && Boolean(token);
 
@@ -1109,6 +1106,10 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       setEnFrio(true);
       if (frioRef.current) clearTimeout(frioRef.current);
       frioRef.current = setTimeout(() => setEnFrio(false), 5000);
+      if (esPreinscripcion && !carrera) {
+        document.getElementById(`${prefijo}-carrera`)?.focus();
+        return;
+      }
       // Todo lo que frena el envío, junto: lo que falta, lo que no es una
       // opción de su lista, y el mail o el teléfono mal escritos —que no
       // entran en ninguna de las dos y quedaban sin señalar—.
@@ -1374,7 +1375,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                         placeholder="Buscar carrera..."
                         autoComplete="off"
                         maxLength={100}
-                        className={`${CAMPO} ${BORDE_OK} pr-8`}
+                      className={`${CAMPO} ${esPreinscripcion && !carrera ? (intentado ? BORDE_MAL : 'border-[var(--catalogo-acento)] focus:border-[var(--catalogo-acento)]') : BORDE_OK} pr-8`}
                       />
                       <svg className="pointer-events-none absolute right-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--catalogo-acento)]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
