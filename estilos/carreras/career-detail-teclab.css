@@ -853,11 +853,8 @@
 
 /* ── CTA fijo en movil ────────────────────────────────── */
 @media (max-width: 900px) {
-  /* Los botones van antes que la foto y la presentación: con la foto arriba y
-     seis líneas de texto, "Quiero inscribirme" quedaba al fondo de la primera
-     pantalla. El contenedor y el bloque de texto se aplanan (display:contents)
-     para que la foto, que es hermana de ellos, pueda caer entre los botones y
-     el párrafo; el margen lateral que daba el contenedor pasa a cada hijo. */
+  /* Los botones y la presentación preceden a la foto en móvil. Los contenedores
+     se aplanan para ordenar la imagen junto al texto sin afectar escritorio. */
   .career-page--teclab .career-hero {
     --hero-margen: 1rem;
     display: flex;
@@ -924,13 +921,13 @@
     position: relative;
     inset: auto;
     z-index: auto;
-    order: 1;
+    order: 2;
     height: 150px;
     margin-top: 1.75rem;
   }
 
   .career-page--teclab .career-hero-intro {
-    order: 2;
+    order: 1;
     margin-top: 1.25rem;
     margin-bottom: 1rem;
   }
@@ -965,6 +962,31 @@
     font-weight: 600;
   }
 
+}
+
+/* En teléfono la foto ocupa el fondo de toda la portada, como en Siglo 21. */
+@media (max-width: 900px) {
+  .career-page--teclab .career-hero { display: block; }
+  .career-page--teclab .career-hero-inner { display: block; }
+  .career-page--teclab .career-hero-copy { display: block; }
+  .career-page--teclab .career-hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    height: 100%;
+    margin: 0;
+  }
+  .career-page--teclab .career-hero-shade {
+    display: block;
+    inset: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(12, 24, 36, .94), rgba(12, 24, 36, .68)),
+      linear-gradient(0deg, rgba(12, 24, 36, .88), transparent);
+  }
+  .career-page--teclab :is(.career-hero-nav-row, .career-kicker, .career-hero h1, .career-proximamente, .career-hero-actions, .career-hero-intro) {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

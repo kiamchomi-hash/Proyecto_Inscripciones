@@ -52,7 +52,7 @@
 }
 
 @media (max-width: 900px) {
-  .career-page--siglo21 .career-hero { padding-top: 0; }
+  .career-page--siglo21 .career-hero { padding-top: 0; border-bottom: 0; }
 
   .career-page--siglo21 .career-hero-media,
   .career-page--siglo21 .career-hero-shade {
@@ -61,6 +61,7 @@
   }
 
   .career-page--siglo21 .career-hero-shade {
+    height: calc(100% + 1px);
     background: linear-gradient(90deg, rgba(0, 43, 43, .94), rgba(0, 43, 43, .68)),
       linear-gradient(0deg, rgba(0, 43, 43, .88), transparent);
   }
@@ -69,6 +70,11 @@
   .career-page--siglo21 .career-kicker {
     max-width: none;
     text-align: center;
+  }
+
+  .career-page--siglo21 .career-hero h1 {
+    font-size: min(3.28rem, calc((100vw - 3rem) / (var(--career-palabra, 1) * .63)));
+    overflow-wrap: anywhere;
   }
 
   .career-page--siglo21 .career-breadcrumb {
@@ -107,7 +113,7 @@
 }
 
 /* Botones en pildora. La accion principal es la pildora «Inscribite» del
-   sistema: rellena, con el circulo a la izquierda y el texto en petroleo
+   sistema: rellena, con el circulo a la derecha y el texto en petroleo
    (blanco sobre este cian da 2:1). */
 .career-page--siglo21 .career-button {
   border-radius: 999px;
@@ -116,9 +122,9 @@
 }
 
 .career-page--siglo21 .career-button--primary {
-  flex-direction: row-reverse;
+  flex-direction: row;
   gap: .7rem;
-  padding: .45rem 1.4rem .45rem .45rem;
+  padding: .45rem .45rem .45rem 1.4rem;
   background: var(--s21-pildora);
   color: var(--s21-petroleo);
 }
