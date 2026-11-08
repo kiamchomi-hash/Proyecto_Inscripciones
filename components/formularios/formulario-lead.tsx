@@ -141,7 +141,7 @@ function anchosDeColumna(campos: CampoId[]): number[] {
  * El `12` del arranque es el buscador de carrera y su filtro, dos filas que
  * cuelgan siempre de la primera columna.
  */
-function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoId[], CampoId[]] {
+function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean, compactarSiglo21: boolean): [CampoId[], CampoId[]] {
   if (!esPreinscripcion) {
     return [
       campos.filter(id => CAMPOS[id].grupo === 'consulta'),
@@ -154,6 +154,11 @@ function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean): [CampoI
   // Dónde termina cada bloque: los únicos lugares donde se puede cortar.
   const cortes = [0];
   for (const bloque of bloquesDe(campos, grupoDe)) cortes.push(cortes[cortes.length - 1] + bloque.campos.length);
+  // Sin domicilio, los datos personales de Siglo 21 pueden ocupar el espacio
+  // libre bajo la carrera sin alterar el orden de lectura en celular.
+  if (compactarSiglo21) {
+    for (let i = 1; i < campos.length; i++) cortes.push(i);
+  }
 
   // Se prueban todos los cortes y gana el más parejo. Que la última fila de
   // cada columna quede completa no se resuelve acá —con cantidades impares no
@@ -762,6 +767,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const columnas = repartirColumnas(
     enPantalla.filter(id => CAMPOS[id].grupo !== 'contacto'),
     esPreinscripcion,
+    esPreinscripcion && casaActiva === 'siglo21',
   );
 
   const categorias = useMemo(() => categoriasPresentes(carreras), [carreras]);
@@ -1432,7 +1438,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                       const conLinea = columna === 1 || indiceBloque > 0;
                       return (
                         <div key={indiceBloque} className="space-y-1.5">
-                          {bloque.grupo && (
+                          {bloque.grupo && !(columna === 2 && indiceBloque === 0 && columnas[0].length > 0 && grupoDe(columnas[0][columnas[0].length - 1]) === bloque.grupo) && (
                             <p className={conLinea ? `${ROTULO_BLOQUE} border-t border-[var(--catalogo-acento)]/15 pt-2` : ROTULO_BLOQUE}>{ROTULO_GRUPO[bloque.grupo]}</p>
                           )}
                     <div className="grid grid-cols-6 gap-1.5">

@@ -117,12 +117,13 @@ test('un campo vacio viaja igual: borrar un dato tiene que poder guardarse', () 
   assert.equal(payload.nombre, '');
 });
 
-test('la preinscripcion de Siglo 21 es la del portal', () => {
+test('la preinscripcion de Siglo 21 no pide datos de residencia', () => {
   const campos = camposDe('siglo21', 'preinscripcion');
 
-  // Los que suma respecto de Teclab.
-  for (const propio of ['tipoDocumento', 'paisResidencia', 'tipoDomicilio', 'torre', 'barrio']) {
-    assert.ok(campos.includes(propio), `Siglo 21 pide ${propio}`);
+  assert.ok(campos.includes('tipoDocumento'));
+  for (const campo of ['paisResidencia', 'tipoDomicilio', 'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento', 'torre', 'barrio', 'codigoPostal', 'provincia', 'localidad']) {
+    assert.ok(!campos.includes(campo), `Siglo 21 no pide ${campo}`);
+    assert.ok(!(campo in armarPayload('siglo21', 'preinscripcion', { [campo]: 'dato' })));
   }
   // Los que el portal NO pide, aunque Teclab si.
   for (const ajeno of ['nivelEstudios', 'colegio', 'colegioLocalidad', 'medioPago', 'equivalencias']) {
@@ -222,7 +223,7 @@ test('en una preinscripcion se pide todo, salvo lo que depende del domicilio o e
   // Teclab ya no queda sin exigir nada por no tener su ficha cargada.
   assert.ok(obligatoriosDe('teclab', 'preinscripcion').length > 10);
   assert.ok(obligatoriosDe('siglo21', 'preinscripcion').includes('telefono'));
-  assert.ok(obligatoriosDe('siglo21', 'preinscripcion').includes('codigoPostal'));
+  assert.ok(!obligatoriosDe('siglo21', 'preinscripcion').includes('codigoPostal'));
 });
 
 test('teclab pide el codigo postal sin exigirlo, como su portal', () => {

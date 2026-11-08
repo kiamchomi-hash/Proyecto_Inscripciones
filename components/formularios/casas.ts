@@ -191,9 +191,7 @@ export const CASAS: Record<CasaId, Casa> = {
     // formulario web, y el área sale sola de un número bien escrito.
     preinscripcion: [
       'tipoDocumento', 'dni', 'apellido', 'nombre', 'email', 'fechaNacimiento',
-      'nacionalidad', 'paisResidencia', 'sexo', 'estadoCivil', 'lugarNacimiento',
-      'tipoDomicilio', 'domicilio', 'domicilioNumero', 'domicilioPiso',
-      'domicilioDepartamento', 'torre', 'barrio', 'codigoPostal', 'localidad',
+      'nacionalidad', 'sexo', 'estadoCivil', 'lugarNacimiento',
       'telefono',
     ],
   },
