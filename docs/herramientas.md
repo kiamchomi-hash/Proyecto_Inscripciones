@@ -221,3 +221,24 @@ Argentina, `Persistent=true`). Las unidades viven junto al script en
 instalación está en el encabezado del `.timer`. Las funciones de lectura,
 armado y comparación están cubiertas por
 `herramientas/ventas/tests/relevar-financiacion-teclab.test.mjs`.
+
+### Lectura de la placa «Opciones de financiación» (.pptx)
+
+`herramientas/ventas/extraer-financiacion-pptx.py` lee la placa que manda
+Negocio cada bimestre y la devuelve como datos: período, vigencia, cada grupo de
+bancos con interés y CFT a 3 y 6 cuotas, las opciones sin interés, las billeteras
+(Go Cuotas, WiBond) y las aclaraciones al pie. Sin dependencias (zip + XML de la
+biblioteca estándar) y sin rutas propias: recibe el archivo por argv y escribe
+JSON por stdout.
+
+```bash
+python3 herramientas/ventas/extraer-financiacion-pptx.py <placa.pptx>
+python3 herramientas/ventas/extraer-financiacion-pptx.py <placa.pptx> \
+  --comparar carreras/teclab/financiacion-teclab-simulador.json
+```
+
+Con `--comparar` cruza la placa con el relevamiento del Simulador del portal e
+informa por stderr las tasas y los CFT que no coinciden, los bancos que la placa
+mueve de franja y los medios de pago que el portal no lista. La placa manda como
+fuente comercial, pero el portal es el que cobra: una diferencia se revisa antes
+de publicar.

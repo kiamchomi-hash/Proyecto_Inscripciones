@@ -3,19 +3,21 @@
 // precio» (las opciones generales). La autoinscripción ya no pregunta banco ni
 // tarjeta: el portal del alumno los toma solo.
 //
-// Fuente: el simulador, en el relevamiento limpio del 16/10/2026 (decisión del
-// usuario: manda el portal, no la placa ni el Dashboard Comercial). El primer
-// relevamiento de ese día tuvo errores por menús viejos del portal; el limpio
-// muestra 6 cuotas sin interés y Plan Z con Naranja X, y Sucrédito sólo en 3
-// cuotas. El mismo relevamiento alimenta al bot y al buscador desde
-// ventas/fuentes/teclab/conocimiento-hermes/financiacion_teclab.json. Si el
-// portal cambia, se vuelve a relevar y se actualizan los dos lados.
+// Fuente: la placa «Opciones de financiación» del período 1A (vigente desde el
+// 02/11/2026), tomada el 10/11/2026 por decisión del usuario. El portal, ese
+// mismo día, seguía informando 30,19% y 34,27% de CFT en la franja preferencial
+// —la TEA del portal, 34,73% y 40,20%, es lo que la placa publica como CFT— y a
+// Macro en 6,15% / 12,48%. El resto de las condiciones viene del relevamiento
+// limpio del portal del 16/10/2026: 6 cuotas sin interés y Plan Z con Naranja X,
+// y Sucrédito sólo en 3 cuotas. Los mismos datos alimentan al bot y al buscador
+// desde ventas/fuentes/teclab/conocimiento-hermes/financiacion_teclab.json. Si
+// cambia cualquiera de las dos fuentes, se actualizan los dos lados.
 //
 // Autocontenido a propósito: sin imports, para que lo puedan importar los
 // componentes del navegador sin arrastrar nada más.
 
-// Porcentajes tal como figuran en el simulador.
-const PREFERENCIAL = { tres: { interes: 6.15, cft: 43.34 }, seis: { interes: 12.48, cft: 50.54 } };
+// Porcentajes tal como figuran en la placa 1A (vigente desde el 02/11/2026).
+const PREFERENCIAL = { tres: { interes: 5.07, cft: 34.73 }, seis: { interes: 10.23, cft: 40.2 } };
 const RESTO = { tres: { interes: 7.41, cft: 53.95 }, seis: { interes: 12.99, cft: 52.96 } };
 
 const porcentaje = (valor: number) =>
