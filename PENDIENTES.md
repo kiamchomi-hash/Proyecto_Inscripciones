@@ -12,6 +12,9 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 - Completar el checklist de alta de las tres carreras activas de Teclab (pendiente 4): hoy no.
 - Revisar la indexación de Desarrollo de Videojuegos (pendiente 2): hoy no; volver a consultar en unos días.
+- Dar imágenes a todas las carreras de Teclab (pendiente 5): bajado al final de la cola.
+- Crear folletos de Teclab con CTA al frente y lista de carreras al dorso (pendiente 8): bajado al final de la cola.
+- Crear un folleto de carreras relevantes de Teclab (pendiente 9): bajado al final de la cola.
 
 ## Altísima
 
