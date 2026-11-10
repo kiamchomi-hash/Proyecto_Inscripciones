@@ -1,0 +1,33 @@
+# Competencia SEO local y nacional — 08/11/2026
+
+- https://html.duckduckgo.com/html/?q=universidad+carreras+villa+lugano — muestra local de resultados; no representa Google ni una ubicación precisa.
+- https://html.duckduckgo.com/html/?q=escribania+a+distancia+argentina+universidad&kl=ar-es — resultados nacionales para Escribanía.
+- https://html.duckduckgo.com/html/?q=tecnicatura+seguros+distancia+carrera+argentina&kl=ar-es — resultados nacionales para Seguros.
+- https://html.duckduckgo.com/html/?q=carreras+abogacia+distancia+argentina+universidad&kl=ar-es — resultados nacionales para Abogacía.
+- https://html.duckduckgo.com/html/?q=martillero+y+corredor+publico+a+distancia+carrera&kl=ar-es — resultados nacionales para Martillero.
+- https://nslapaz.edu.ar/campus.html — ubicación del Instituto Nuestra Señora de la Paz en Villa Lugano y enlace a nivel terciario.
+- https://frba.utn.edu.ar/ingreso/carreras/ — oferta y ubicación del campus UTN Buenos Aires.
+- https://institutoiea.edu.ar/carreras/seguros — oferta de Seguros, modalidad y contenido del competidor.
+- https://www.siglo21sur.com/carreras/tecnicatura-superior-en-seguros — ficha propia de Seguros.
+- https://www.kennedy.edu.ar/landing2026/abogacia/ — oferta y contenido de Abogacía de Kennedy.
+- https://www.siglo21sur.com/carreras/abogacia — ficha propia de Abogacía.
+- https://www.ucasal.edu.ar/landing/ingreso/carreras-online/escribania/ — oferta online y plan de Escribanía de UCASAL.
+- https://universe.edu.ar/educacion-universitaria/escribania — ficha de otro CAU de Siglo 21 en Villa Regina.
+- https://www.siglo21sur.com/carreras/escribania — ficha propia de Escribanía.
+- https://21.edu.ar/carreras-y-programas/martillero-corredor-publico-y-corredor-inmobiliario — duración y título informados por Siglo 21.
+- https://www.siglo21sur.com/carreras/martillero-corredor-publico-y-corredor-inmobiliario — ficha propia, con discrepancia de duración y título frente a la fuente oficial.
+- https://www.siglo21sur.com/sobre-nosotros — información local y horario que difiere del pie de página.
+- https://superiorlapaz.edu.ar/ — oferta y dirección del Instituto Superior Nuestra Señora de la Paz.
+- https://superiorlapaz.edu.ar/administracion_de_empresas.html — duración, modalidad híbrida y prácticas de Administración.
+- https://superiorlapaz.edu.ar/analista_de_sistemas.html — duración, modalidad, prácticas y articulaciones de Sistemas.
+- https://escuelaceciliagrierson.blogspot.com/p/alumnos.html — carreras de Enfermería, cursada y sede Villa Lugano de IFTS 90.
+- https://escuelaceciliagrierson.blogspot.com/2026/08/tutorias.html — evidencia de tutorías en Villa Lugano en 2026.
+- https://sites.google.com/bue.edu.ar/ifts-2-de-20/ — sede y oferta gastronómica del IFTS 2; última actividad visible de 2025, vigencia actual no confirmada.
+- https://www.siglo21sur.com/novedades/articulo/que-es-el-cau-villa-lugano — contenido vigente del artículo y enlace de WhatsApp diferente del pie; verificar destinatario antes de corregir.
+- https://esba.edu.ar/ — oferta de ESBA, nombre detectado en una consulta de Search Console; la sede en Lugano no está confirmada en esta página.
+- https://www.google.com/search?q=universidad+villa+lugano&hl=es&gl=ar — consulta observada en navegador conectado con ubicación IP Villa Celina: home propia primera entre resultados web; CBC primero en lugares.
+- https://www.google.com/search?q=carreras+universitarias+villa+lugano&hl=es&gl=ar — home propia primera entre resultados web y citada en respuesta de IA; muestra personalizada.
+- https://www.google.com/search?q=terciarios+villa+lugano&hl=es&gl=ar — directorio primero en resultados web; IFTS 2 antes del Centro Educativo en el bloque local.
+- https://www.google.com/maps/search/universidades+villa+lugano — orden observado: CBC y Centro Educativo tras dos anuncios; depende de ubicación y contexto.
+- https://www.google.com/maps/search/terciarios+villa+lugano — orden observado: Centro Educativo e IFTS 2 tras dos anuncios; puede diferir del bloque local de Google.
+- https://ens3a-caba.infd.edu.ar/sitio/ — Escuela Normal Superior 3 Anexo Lugano, profesorados en Inicial y Primaria y datos para ingresantes 2027.
