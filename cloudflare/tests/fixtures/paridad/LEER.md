@@ -28,6 +28,16 @@ que ahora tiene enlace propio) y el generador de Next ya no puede producir la
 referencia nueva. El resto de los campos sigue siendo lo que registró Next; si
 alguna vez se regenera, revisar igual la diferencia antes de sustituirlas.
 
+El 10/11/2026 se actualizaron con lo que devuelve el build local la `home` y las
+cinco rutas que habían quedado fuera de referencia: el «Título: …» de las
+tarjetas del catálogo (`292a266`), el mensaje de WhatsApp de las clases de apoyo
+(`7e442db`) y los campos del formulario de preinscripción (`3cdc040`) no estaban
+en lo que registró Next. Se comparó ruta por ruta antes de sustituir y cada
+diferencia era una de esas tres. Desde que la app de Next salió del repo estas
+referencias son una foto del estado acordado, no una comparación con Next: las
+regeneran `scripts/actualizar-referencia-ruta.mjs` y
+`scripts/actualizar-referencia-home.mjs`.
+
 Las referencias visuales están en `../visuales-next/`: 50 capturas sintéticas,
 divididas en 54 bandas WebP sin pérdida y sus manifiestos (unos 39 MiB). Las
 generó `tests/helpers/generar-referencias-visuales.mjs` desde la corrida local

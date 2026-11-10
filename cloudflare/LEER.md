@@ -618,6 +618,12 @@ qué rutas y qué campos están fuera de referencia, sin escribir nada; conviene
 correrlo antes para confirmar que la diferencia es la esperada y no una
 regresión. Los dos necesitan el build hecho.
 
+La home se guarda aparte, en `tests/fixtures/paridad/home.json`, y la tenía el
+generador de Next. Como la app de Next salió del repo, `node
+scripts/actualizar-referencia-home.mjs` la reescribe con lo que devuelve el
+build local: mismo criterio que el de las rutas, y también hay que revisar la
+diferencia antes de sustituirla.
+
 `tests/e2e.test.mjs` agrega lo que el HTML no puede probar, con dos servidores
 reales en loopback y Chromium:
 

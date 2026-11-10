@@ -6,11 +6,15 @@ import { insertarCatalogo } from './fixtures/catalogo-home.mjs';
 import { canonical, enlacesDe, idioma, jsonLd, metas, textoPrincipal, titulo } from './helpers/html.mjs';
 import { proyectarPagina, RUTAS_REFERENCIA } from './helpers/referencias-rutas.mjs';
 
+// Las referencias se generaron con Next, pero la app de Next ya no está en el
+// repo: hoy son una foto del estado acordado del sitio, que se actualiza a
+// mano cuando una página cambia a propósito (ver LEER.md de esta carpeta).
+
 const META = ['description', 'author', 'creator', 'og:type', 'og:locale', 'og:url', 'og:site_name',
   'og:title', 'og:description', 'og:image', 'og:image:width', 'og:image:height', 'og:image:alt',
   'twitter:card', 'twitter:title', 'twitter:description', 'twitter:image', 'google-site-verification'];
 
-test('home del Worker coincide con la referencia estable de Next', async t => {
+test('home del Worker coincide con la referencia acordada', async t => {
   const referencia = JSON.parse(await readFile(new URL('./fixtures/paridad/home.json', import.meta.url), 'utf8'));
   const astro = createTestHarness({ workers: [{ configPath: './dist/server/wrangler.json' }] });
   t.after(() => astro.close());
@@ -33,7 +37,7 @@ test('home del Worker coincide con la referencia estable de Next', async t => {
   assert.deepEqual(enlacesDe(html, { apertura: /<footer\b/, cierre: '</footer>' }).sort(), referencia.pie);
 });
 
-test('sitemap y robots del Worker coinciden con las referencias estables de Next', async t => {
+test('sitemap y robots del Worker coinciden con la referencia acordada', async t => {
   const astro = createTestHarness({ workers: [{ configPath: './dist/server/wrangler.json' }] });
   t.after(() => astro.close());
   await astro.listen();
@@ -49,7 +53,7 @@ test('sitemap y robots del Worker coinciden con las referencias estables de Next
   }
 });
 
-test('las rutas del Worker coinciden con las referencias estables de Next', async t => {
+test('las rutas del Worker coinciden con la referencia acordada', async t => {
   const referencias = JSON.parse(await readFile(new URL('./fixtures/paridad/rutas.json', import.meta.url), 'utf8'));
   assert.deepEqual(Object.keys(referencias).sort(), RUTAS_REFERENCIA.map(r => r.ruta).sort());
   const astro = createTestHarness({ workers: [{ configPath: './dist/server/wrangler.json' }] });
