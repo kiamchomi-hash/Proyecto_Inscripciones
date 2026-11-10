@@ -75,7 +75,7 @@ export default function Hero() {
                   alt="Teclab, Instituto Técnico Superior"
                   width={296}
                   height={100}
-                  loading="eager"
+                  fetchPriority="low"
                   className="relative z-10 w-[74px] min-[380px]:w-[95px] sm:w-[120px] md:w-[140px] lg:w-[170px] xl:w-[125px] 2xl:w-[150px] h-auto object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]"
                 />
 
@@ -211,7 +211,8 @@ export default function Hero() {
             width={280}
             height={102}
             className="w-[280px] h-[102px] object-contain"
-            loading="eager"
+            loading="lazy"
+            fetchPriority="low"
           />
         </div>
 

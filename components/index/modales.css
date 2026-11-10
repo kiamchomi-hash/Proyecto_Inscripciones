@@ -17,6 +17,47 @@
    - `--alto-modal` es ese alto, para que el contenido pueda medirse contra el
      panel y no contra la ventana. `--alto-tipo` es el que usa la tipografía:
      igual al panel, salvo en pantallas bajas (abajo). */
+/* Contenedor de los cuatro modales de carrera: es un `<dialog>` nativo abierto
+   con `showModal()`. Acá se reponen los valores que el navegador le da por
+   defecto (márgenes, `max-width`, fondo, color) para que el panel se comporte
+   igual que el contenedor fijo que era antes.
+   `display: flex` obliga a reponer a mano la regla del navegador que oculta un
+   `<dialog>` cerrado: cualquier `display` de autor gana sobre la hoja del
+   navegador. */
+.modal-raiz {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  /* 16px y no 1rem: el `font-size` de `html` baja a 13px en móvil y el panel
+     quedaba 6px más ancho que con el `p-4` que había antes. */
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow-y: auto;
+  /* Sin esto la rueda sigue moviendo la página de atrás cuando el velo o el
+     panel ya están en el tope del scroll. */
+  overscroll-behavior: contain;
+}
+
+.modal-raiz:not([open]) {
+  display: none;
+}
+
+/* El velo propio ya oscurece la página; el backdrop del navegador no pinta. */
+.modal-raiz::backdrop {
+  background: transparent;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
 .modal-panel {
   --alto-modal: min(92dvh, 52rem, 100dvh - 2rem);
   --alto-tipo: var(--alto-modal);

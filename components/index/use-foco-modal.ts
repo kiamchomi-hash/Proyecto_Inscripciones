@@ -2,9 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// Lo que entra en el recorrido con Tab dentro del modal.
-const ENFOCABLES = 'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
 // Lo que dura la salida del velo antes de desmontar el modal.
 const DURACION_CIERRE = 300;
 
@@ -15,11 +12,11 @@ interface Opciones {
 }
 
 /**
- * Lo que comparten los cuatro modales de carrera fuera de lo visual: deja
- * `inert` todo lo que está fuera del modal, enfoca el botón de cerrar al abrir
- * y devuelve el foco a quien lo abrió al desmontarse, cierra con Escape y
- * encierra el Tab dentro del modal. El cierre espera la salida del velo
- * (`closing`) antes de avisarle al padre.
+ * Lo que queda por hacer en los cuatro modales de carrera ahora que el panel es
+ * un `<dialog>` abierto con `showModal()`: el navegador ya deja inerte el resto
+ * de la página, encierra el foco, cierra con Escape y devuelve el foco a quien
+ * abrió. Acá sólo queda la animación de salida —`closing` espera que el velo se
+ * apague antes de avisarle al padre— y enfocar el botón de cerrar al abrir.
  *
  * Las flechas de los carruseles no viven acá: cada modal sabe cuántos slides
  * tiene y si la tecla viene de un campo editable.
@@ -27,29 +24,16 @@ interface Opciones {
 export function useFocoModal({ onClose, initiallyVisible = false }: Opciones) {
   const [visible, setVisible] = useState(initiallyVisible);
   const [closing, setClosing] = useState(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const openerRef = useRef<HTMLElement | null>(null);
+  // Se lee durante el render, antes de que `showModal()` mueva el foco adentro.
+  const openerRef = useRef<HTMLElement | null>(
+    typeof document === 'undefined' ? null : (document.activeElement as HTMLElement | null),
+  );
 
   useEffect(() => {
-    openerRef.current = document.activeElement as HTMLElement | null;
-    const inerted: Element[] = [];
-    let current: Element | null = dialogRef.current;
-    while (current?.parentElement) {
-      for (const sibling of Array.from(current.parentElement.children)) {
-        if (sibling !== current && !sibling.hasAttribute('inert')) {
-          sibling.setAttribute('inert', '');
-          inerted.push(sibling);
-        }
-      }
-      current = current.parentElement;
-    }
     requestAnimationFrame(() => setVisible(true));
     closeBtnRef.current?.focus();
-    return () => {
-      inerted.forEach((element) => element.removeAttribute('inert'));
-      openerRef.current?.focus();
-    };
   }, []);
 
   const cerrar = useCallback(() => {
@@ -57,28 +41,13 @@ export function useFocoModal({ onClose, initiallyVisible = false }: Opciones) {
     setTimeout(onClose, DURACION_CIERRE);
   }, [onClose]);
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        cerrar();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const items = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(ENFOCABLES) ?? []);
-      if (!items.length) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [cerrar]);
+  useEffect(
+    () => () => {
+      // Si el padre desmonta sin pasar por `cerrar`, el foco igual vuelve.
+      openerRef.current?.focus();
+    },
+    [],
+  );
 
   return { dialogRef, closeBtnRef, abierto: visible && !closing, cerrar };
 }

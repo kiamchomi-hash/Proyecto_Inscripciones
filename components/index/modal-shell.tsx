@@ -1,11 +1,11 @@
 'use client';
 
-import type { CSSProperties, ReactNode, RefObject } from 'react';
+import { useEffect, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import FlechasDeScroll from './flechas-de-scroll';
 
 interface Props {
-  /** El contenedor fijo del modal: lo usan el hook de foco y las flechas de scroll. */
-  dialogRef: RefObject<HTMLDivElement | null>;
+  /** El `<dialog>`: lo abren `showModal()` y lo usan las flechas de scroll. */
+  dialogRef: RefObject<HTMLDialogElement | null>;
   /** Velo visible (abierto y sin estar cerrándose). */
   abierto: boolean;
   /** Clic en el velo. */
@@ -23,14 +23,20 @@ interface Props {
 }
 
 /**
- * Armazón común de los modales de carrera: el contenedor fijo, el velo y el
- * panel. El tamaño del panel es uno solo y vive en `.modal-panel`
- * (modales.css); lo que cambia por casa llega por `className` y `style`.
+ * Armazón común de los modales de carrera: el velo y el panel, dentro de un
+ * `<dialog>` nativo.
  *
- * El contenedor fijo conserva `overflow-y-auto overscroll-contain`: de eso
- * depende que la rueda no mueva la página de atrás. El `role` y el
- * `aria-modal` no se tocan porque globals.css oscurece la barra de la página
- * con `html:has([role="dialog"][aria-modal="true"])`.
+ * El `<dialog>` abierto con `showModal()` aporta lo que antes se armaba a mano:
+ * página inerte detrás, foco encerrado, capa superior (`::backdrop`, sin pelear
+ * z-index) y cierre con Escape o gesto de volver. Por eso acá no hay
+ * `role="dialog"` ni `aria-modal`: el elemento ya los implica, y duplicarlos
+ * confunde a los lectores de pantalla.
+ *
+ * Escape llega como `cancel`; se cancela el cierre del navegador para que el
+ * velo se apague con la animación y el padre decida cuándo desmontar.
+ *
+ * El tamaño del panel es uno solo y vive en `.modal-panel` (modales.css); lo que
+ * cambia por casa llega por `className` y `style`.
  */
 export default function ModalShell({
   dialogRef,
@@ -43,23 +49,37 @@ export default function ModalShell({
   children,
   ...aria
 }: Props) {
+  useEffect(() => {
+    const dialogo = dialogRef.current;
+    if (!dialogo) return;
+    if (!dialogo.open) dialogo.showModal();
+    // Al desmontar se cierra: saca el elemento de la capa superior y devuelve
+    // el foco a quien abrió.
+    return () => {
+      if (dialogo.open) dialogo.close();
+    };
+  }, [dialogRef]);
+
   return (
-    <div
+    <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-[5000] flex items-center justify-center p-4 overflow-y-auto overscroll-contain"
-      role="dialog"
-      aria-modal="true"
+      className="modal-raiz"
+      onCancel={(e) => {
+        e.preventDefault();
+        onCerrar();
+      }}
       {...aria}
     >
       <div
         className={`absolute inset-0 backdrop-blur-[3px] transition-opacity duration-300 ${abierto ? 'opacity-100' : 'opacity-0'}`}
         style={{ background: colorVelo }}
         onClick={onCerrar}
+        aria-hidden="true"
       />
       <div {...datos} className={`modal-panel ${className}`} style={style}>
         {children}
         <FlechasDeScroll raiz={dialogRef} />
       </div>
-    </div>
+    </dialog>
   );
 }

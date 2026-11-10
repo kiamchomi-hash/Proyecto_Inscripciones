@@ -17,6 +17,14 @@
   transition: transform 0.5s ease;
 }
 
+/* Sin movimiento reducido no hay desplazamiento animado: el slide cambia de
+   golpe, igual que en el resto de las transiciones de la portada. */
+@media (prefers-reduced-motion: reduce) {
+  .banner-carousel-track {
+    transition: none;
+  }
+}
+
 .banner-slide {
   min-width: 100%;
   max-width: 100%;
