@@ -8,5 +8,10 @@ import Pagina, { metadata } from '@/paginas/calendario-academico';
   og={{tipo: 'article', titulo: 'Calendario Académico 2027 — Universidad Siglo 21 a Distancia',
     descripcion: 'Semestres, tramos de nueve semanas, parciales, entregas y materias cuatrimestrales del ciclo 2027, con la inscripción abierta.',
     url: '/calendario-academico', imagen: {url: '/imagenes/og/default.jpg', ancho: 1200, alto: 630, alt: 'Universidad Siglo 21 — CAU Online'}}}>
-  <Pagina client:load />
+  {/* Sin directiva de cliente: la página no tiene nada interactivo —sólo
+      texto, enlaces y la tabla— así que se renderiza en el build y no viaja
+      como isla. Con `client:load` el navegador bajaba React, rearmaba todo el
+      árbol y lo tiraba: ~30 KB de JS para el mismo HTML. La navbar, el reparto
+      de WhatsApp y las analíticas son islas aparte y siguen hidratándose. */}
+  <Pagina />
 </Sitio>

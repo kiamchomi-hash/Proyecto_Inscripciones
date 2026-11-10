@@ -108,8 +108,11 @@ export default function CalendarioAcademicoPage() {
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] mb-4">
+          {/* El espacio delante de 2027 no se ve —el span es un bloque y el
+              navegador lo colapsa al inicio de la línea— pero sí queda en el
+              texto: sin él, el título se copia y se lee «Académico2027». */}
           <span className="block text-white">Calendario Académico</span>
-          <span className="ca-titulo-degrade block">2027</span>
+          <span className="ca-titulo-degrade block"> 2027</span>
         </h1>
 
         <p className="max-w-2xl mx-auto text-sm sm:text-base leading-relaxed" style={{ color: '#c8dedd' }}>
@@ -220,28 +223,37 @@ export default function CalendarioAcademicoPage() {
 
       {/* ─── ENTREGAS ─────────────────────────────────────── */}
       <section className="mb-10">
-        <h2 className="ca-h2">Entregas de trabajos prácticos</h2>
+        <h2 className="ca-h2" id="entregas-titulo">Entregas de trabajos prácticos</h2>
         <p className="text-sm leading-relaxed mb-5" style={{ color: '#c8dedd' }}>
           Cada tipología de materia tiene su calendario de entregas, contado por semana de cursada.
           Entregar después de la fecha descuenta 5% de la nota del trabajo por día, con un tope de
           50 puntos.
         </p>
-        <div className="ca-entregas">
+        {/* En un celular la tabla mide más que la pantalla, así que se recorre en
+            horizontal. `tabindex="0"` la mete en el orden de tabulación: sin eso,
+            quien navega con teclado no puede desplazarla. `role="region"` con el
+            nombre del título evita que ese foco caiga en una caja sin explicación. */}
+        <div
+          className="ca-entregas"
+          tabIndex={0}
+          role="region"
+          aria-labelledby="entregas-titulo"
+        >
           <table>
             <thead>
               <tr>
-                <th>Tipo</th>
-                <th className="ca-entregas-detalle">Materia</th>
-                <th>TP1</th>
-                <th>TP2</th>
-                <th>TP3</th>
-                <th>TP4</th>
+                <th scope="col">Tipo</th>
+                <th scope="col" className="ca-entregas-detalle">Materia</th>
+                <th scope="col">TP1</th>
+                <th scope="col">TP2</th>
+                <th scope="col">TP3</th>
+                <th scope="col">TP4</th>
               </tr>
             </thead>
             <tbody>
               {ENTREGAS.map(e => (
                 <tr key={e.tipo}>
-                  <td className="ca-entregas-tipo">{e.tipo}</td>
+                  <th scope="row" className="ca-entregas-tipo">{e.tipo}</th>
                   <td className="ca-entregas-detalle">{e.detalle}</td>
                   {e.semanas.map((semana, i) => (
                     <td key={i} className="ca-entregas-semana">S.{semana}</td>

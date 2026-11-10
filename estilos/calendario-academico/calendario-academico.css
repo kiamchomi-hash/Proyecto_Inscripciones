@@ -70,9 +70,21 @@
   background: #162f2e;
 }
 
+/* En el celular la tabla mide más que la pantalla y se recorre en horizontal.
+   `tabindex="0"` la vuelve enfocable para el teclado, así que necesita un foco
+   propio: el del navegador queda debajo del panel redondeado y no se ve. */
+.ca-entregas:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
 .ca-entregas table {
   width: 100%;
-  border-collapse: collapse;
+  /* `separate` y no `collapse`: con los bordes colapsados el navegador
+     descarta los de una celda con `position: sticky` y la columna fija se
+     despega al desplazar. El espaciado va en 0 para que se vea igual. */
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: .8125rem;
 }
 
@@ -92,7 +104,30 @@
   border-bottom: 1px solid rgba(0, 199, 177, .14);
 }
 
-.ca-entregas tbody tr + tr td {
+/* La columna «Tipo» es el encabezado de cada fila (`th scope="row"`) y queda
+   fija a la izquierda: al desplazar la tabla son 103px de columnas de semanas
+   y sin esto se pierde a qué tipo pertenece cada fila. El fondo tiene que ser
+   opaco o el texto de atrás se ve a través, y el borde derecho marca dónde
+   termina la columna en vez de dejar la sensación de que el texto se corta. */
+.ca-entregas tbody th,
+.ca-entregas thead th:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  background: #162f2e;
+  box-shadow: 1px 0 0 rgba(0, 199, 177, .16);
+}
+
+/* El título de la columna fija va por encima de las celdas que pasan por
+   debajo, o el texto de las semanas se le dibuja encima. */
+.ca-entregas tbody th {
+  z-index: 1;
+}
+
+.ca-entregas thead th:first-child {
+  z-index: 2;
+}
+
+.ca-entregas tbody tr + tr > * {
   border-top: 1px solid rgba(0, 199, 177, .07);
 }
 
@@ -211,6 +246,15 @@
   color: #00c7b1;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* Los enlaces al final de una respuesta medían 16px de alto, por debajo del
+   mínimo de 24×24 de WCAG 2.5.8. El del reglamento no entra: va dentro de una
+   oración, que es la excepción de la norma. */
+.ca-card .ca-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
 }
 
 /* Acceso a la oferta desde el calendario. */
