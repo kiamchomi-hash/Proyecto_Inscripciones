@@ -35,6 +35,9 @@ DOCUMENTACION_PROYECTO.md
 .env*
 !.env.example
 .agents/
+# Lo genera `npx skills add` y sólo describe lo que hay en .agents/, que no se
+# versiona: la guía se reinstala con `npx modern-web-guidance@latest install`.
+skills-lock.json
 # Credenciales de service accounts (Search Console, etc). Nunca al repo.
 *service_account*.json
 *gsc*.json

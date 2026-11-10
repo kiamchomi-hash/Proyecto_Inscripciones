@@ -25,6 +25,7 @@
     { "action": "integration.use", "resource": "skill:tests-daypo", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:pdf", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:seo-audit", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:modern-web-guidance", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:web-perf", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:cloudflare", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:wrangler", "effect": "allow" },
