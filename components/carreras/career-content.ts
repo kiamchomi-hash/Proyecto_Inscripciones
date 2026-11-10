@@ -13,7 +13,7 @@ import type { TeclabPeriodo } from '@/components/index/teclab';
 // Primer import de runtime del modulo: hasta ahora solo traia tipos, que el type
 // stripping borra. O sea que este archivo ya no se puede abrir con node pelado
 // desde herramientas/ -- el alias `@/` lo resuelve el bundler, no Node.
-import { esCursoTeclab, esTeclab, parsePlanTeclab } from '@/components/index/teclab';
+import { esCursoTeclab, esTeclab, getPortadaTeclab, parsePlanTeclab } from '@/components/index/teclab';
 
 /** Separa el nombre en prefijo ("Licenciatura en") y nombre limpio. */
 export function getCareerPrefix(carrera: Carrera): { prefix: string; cleanName: string } {
@@ -217,6 +217,25 @@ function nombreEnMensaje(carrera: CarreraEnMensaje): string {
   const nombre = carreraFullName(carrera);
   if (carrera.nivel === 'Identidad Argentina' || esCursoTeclab(carrera)) return nombre;
   return `la carrera *${nombre.toUpperCase()}*`;
+}
+
+/**
+ * La foto del encabezado de la ficha, con la foto de respaldo cuando la
+ * carrera no trae portada.
+ *
+ * Vive acá y no en el componente porque la página de Astro la necesita para
+ * precargar la imagen en el `<head>`: si cada uno calculara la suya, un día se
+ * diferencian y la precarga apuntaría a una foto que no es la que se pinta.
+ */
+export function imagenHeroCarrera(carrera: Carrera): string {
+  const conMaterialTeclab = esTeclab(carrera) || esCursoTeclab(carrera);
+  const portada = getPortada(carrera);
+  return (
+    (conMaterialTeclab ? getPortadaTeclab(carrera) : null) ||
+    portada?.imagen_desktop ||
+    portada?.imagen_mobile ||
+    '/imagenes/imagenes_cau/edificio_siglo21_campus2.webp'
+  );
 }
 
 /** Boton de WhatsApp de la ficha y de los cuatro modales. */

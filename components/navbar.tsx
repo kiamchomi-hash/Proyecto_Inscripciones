@@ -35,6 +35,11 @@ function TeclabMarca({ grande = false }: { grande?: boolean }) {
       alt="Teclab"
       width={296}
       height={100}
+      // La marca de Teclab está en el HTML de todas las páginas pero el CSS la
+      // esconde salvo en las de Teclab (`body:has(.teclab-page…)`). Sin esto el
+      // navegador la bajaba igual en cada página del sitio.
+      loading="lazy"
+      fetchPriority="low"
       style={{ height: grande ? '3rem' : '2.4rem', width: 'auto' }}
     />
   );

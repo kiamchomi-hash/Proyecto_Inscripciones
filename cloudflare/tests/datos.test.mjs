@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readdirSync } from 'node:fs';
 import { listarCatalogoPublico, leerPrecioPrivado } from '../src/datos/repositorio.ts';
 import { crearD1, insertarCarrera, insertarPrecio } from './helpers/d1.mjs';
+
+// El número de migraciones sale de la carpeta, no de un número fijo: cada
+// migración nueva tiene que estar aplicada sí o sí, y el número escrito a
+// mano quedó viejo cuando entró la 0015.
+const MIGRACIONES = readdirSync(new URL('../migrations/', import.meta.url)).filter(n => n.endsWith('.sql'));
 
 test('migración desde cero y segunda aplicación por historial sin cambios', async t => {
   const { db, worker } = await crearD1(t, false);
@@ -10,7 +16,7 @@ test('migración desde cero y segunda aplicación por historial sin cambios', as
   await insertarCarrera(db);
   await worker.applyD1Migrations('DB');
   assert.equal(await db.prepare('SELECT count(*) AS n FROM carreras').first('n'), 1);
-  assert.equal(await db.prepare('SELECT count(*) AS n FROM d1_migrations').first('n'), 14);
+  assert.equal(await db.prepare('SELECT count(*) AS n FROM d1_migrations').first('n'), MIGRACIONES.length);
   const tablas = (await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all()).results.map(r => r.name);
   for (const nombre of ['carreras', 'precios_privados', 'reservas_mail_precio', 'form_rate_limits', 'career_clicks', 'consultas', 'outbox',
     'faq_preguntas', 'solicitudes_clase', 'suscripciones_newsletter', 'newsletter_envios', 'materias', 'novedades']) assert.ok(tablas.includes(nombre));

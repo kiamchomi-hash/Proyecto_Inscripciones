@@ -17,7 +17,6 @@ import {
   esCursoTeclab,
   esTeclab,
   getFichaTeclab,
-  getPortadaTeclab,
   parseCompetenciasTeclab,
   parseEnfoqueTeclab,
   parsePlanTeclab,
@@ -36,6 +35,7 @@ import {
   parsePlanModulos,
   parseDocente,
   getPortada,
+  imagenHeroCarrera,
   getPlanSlide,
   periodosTeclabToAnios,
   planSlideToAnios,
@@ -168,11 +168,9 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
   const { prefix, cleanName } = getCareerPrefix(carrera);
   const nombreCompleto = carreraFullName(carrera);
   const portada = getPortada(carrera);
-  const heroImage =
-    (conMaterialTeclab ? getPortadaTeclab(carrera) : null) ||
-    portada?.imagen_desktop ||
-    portada?.imagen_mobile ||
-    '/imagenes/imagenes_cau/edificio_siglo21_campus2.webp';
+  // La misma foto que la precarga la página de Astro: si se calcularan por
+  // separado, la precarga apuntaría a otra imagen.
+  const heroImage = imagenHeroCarrera(carrera);
   const heroAlt = altPortadaCarrera(heroImage);
   const heroPosition =
     HERO_POSITIONS[nombreCompleto] ||

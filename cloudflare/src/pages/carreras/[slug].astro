@@ -3,6 +3,9 @@ import { env } from 'cloudflare:workers';
 import Sitio from '../../layouts/Sitio.astro';
 import PaginaCarrera, { relacionadasCarrera } from '../../entrega/PaginaCarrera';
 import { carreraEquivalente } from '@/components/carreras/carrera-equivalente';
+import { imagenHeroCarrera } from '@/components/carreras/career-content';
+import { encodeImagePath } from '@/lib/imagenes/rutas';
+import { srcSetDe } from '@/lib/imagenes/responsivas';
 import { carrerasPublicas, carreraPorSlug } from '../../datos/carreras';
 import { seoCarrera } from '../../entrega/carrera-seo';
 import { configTurnstile } from '../../entrega/entorno-publico';
@@ -32,12 +35,26 @@ const relacionadas = relacionadasCarrera(carrera, carreras);
 const equivalente = carreraEquivalente(carrera, carreras);
 const opciones = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion,
   ...(c.proximamente ? { proximamente: true } : {}) }));
+// La foto del encabezado se precarga en el `<head>`: el HTML de la ficha llega
+// en streaming y el `<img>` del hero aparece muy tarde en el documento, así
+// que sin la pista el navegador recién la baja cuando el parser llega a él.
+// Sólo cuando la foto no tiene derivados webp: con derivados el navegador
+// elige el webp y precargar el original haría baixar los dos.
+const rutaHero = imagenHeroCarrera(carrera);
+const preloadImagen = rutaHero.startsWith('/') && !srcSetDe(rutaHero) ? encodeImagePath(rutaHero) : undefined;
 ---
 {/* Las fichas de Identidad Argentina volvieron a indexarse el 26/10/2026 (commit
     b90fb95 del sitio): sin `robots`, igual que la ficha de Next. */}
 <Sitio titulo={titulo} descripcion={descripcion} canonical={canonical} ruta={ruta} palabrasClave={palabrasClave}
   og={{ tipo: '', titulo, descripcion, url: canonical, imagen: { url: imagen } }}
-  twitter={{ tarjeta: 'summary_large_image', titulo, descripcion, imagen }}>
+  twitter={{ tarjeta: 'summary_large_image', titulo, descripcion, imagen }}
+  preloadImagen={preloadImagen}>
+  {/* `client:idle` y no `client:load`: la ficha viene renderizada del servidor
+      y la isla arrastra 331 KB de JS (47 KB de chunk de página) que, con
+      `client:load`, se pedían y ejecutaban durante la carga. Medido en red
+      lenta, el LCP no cambia —lo que lo retrasa es el CSS—, pero la
+      hidratación queda para la primera ventana de ocio, después del `load`.
+      Igual que en la home. */}
   <PaginaCarrera carrera={carrera} relacionadas={relacionadas} equivalente={equivalente} opciones={opciones}
-    turnstile={configTurnstile(env as unknown as Record<string, unknown>)} client:load />
+    turnstile={configTurnstile(env as unknown as Record<string, unknown>)} client:idle />
 </Sitio>

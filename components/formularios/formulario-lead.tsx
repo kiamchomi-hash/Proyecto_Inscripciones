@@ -474,6 +474,9 @@ function CampoFecha({ id, valor, onChange, invalido }: {
       {abierto && (
         <div
           role="dialog"
+          // Sin nombre, un lector de pantalla anuncia sólo «diálogo». El
+          // calendario se anuncia por lo que hace: elegir el día.
+          aria-label="Elegir la fecha"
           // Siempre hacia abajo, como el resto de los desplegables.
           className="absolute top-full z-30 mt-1 w-full min-w-[17rem] rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] p-2 shadow-xl"
         >

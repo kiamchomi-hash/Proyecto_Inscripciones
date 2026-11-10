@@ -61,9 +61,17 @@ export interface Props {
   /** Sólo las páginas que declaran su propio `twitter` en Next. */
   twitter?: MetasTwitter;
   robots?: string;
+  /**
+   * URL de la imagen de arriba del pliegue, para precargarla. El HTML de la
+   * ficha llega en streaming y el `<img>` del hero aparece tarde en el
+   * documento: sin esta pista el navegador no empieza a bajarla hasta que
+   * llega a ese punto, y en una conexión lenta la imagen tarda casi tres
+   * segundos más de lo necesario.
+   */
+  preloadImagen?: string;
 }
 
-const { titulo, descripcion, canonical, ruta = '/', palabrasClave, og, twitter, robots } = Astro.props;
+const { titulo, descripcion, canonical, ruta = '/', palabrasClave, og, twitter, robots, preloadImagen } = Astro.props;
 const SITIO = 'https://www.siglo21sur.com';
 
 // Las palabras clave del layout son las de `app/layout.tsx`, escritas igual.
@@ -188,6 +196,12 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
         precargan del mismo origen, sin pedir nada a Google. */}
     <link rel="preload" href="/fuentes/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fuentes/unbounded-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    {/* La imagen de arriba del pliegue, cuando la página la declara. La
+        precarga sale del mismo origen y no compite con los scripts: el
+        navegador la baja en paralelo con el CSS en vez de esperar a que el
+        parser llegue al `<img>`. */}
+    {preloadImagen && <link rel="preload" href={preloadImagen} as="image" fetchpriority="high" />}
 
     {red.tipo && <meta property="og:type" content={red.tipo} />}
     {red.locale && <meta property="og:locale" content={red.locale} />}
