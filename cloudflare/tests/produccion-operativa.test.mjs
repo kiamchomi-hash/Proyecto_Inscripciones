@@ -80,6 +80,9 @@ test('los programados se despachan por expresión y una desconocida falla', asyn
   const sinSecreto = await manejarProgramado(CRONES.newsletter, { ...contexto, secretoCron: undefined });
   assert.equal(sinSecreto.status, 503);
   assert.match(JSON.stringify(sinSecreto.cuerpo), /CRON_SECRET/);
+
+  // El aviso a IndexNow tampoco corre sin base.
+  await assert.rejects(manejarProgramado(CRONES.indexnow, contexto), /IndexNow sin base/);
 });
 
 test('el cron de vigilancia lee los precios de la base en vez de darlos por ausentes', async () => {

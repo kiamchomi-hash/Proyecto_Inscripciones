@@ -1017,7 +1017,7 @@ Detalle en [STAGING-PREPARACION.md](STAGING-PREPARACION.md).
 Hasta acá el Worker de producción se publicó con un `wrangler` suelto y una
 configuración que no estaba en el repo (`.local/produccion/`). Eso ya no es el
 camino: la configuración es `produccion/wrangler.json` (dominios propios, D1
-`cau-produccion`, colas `cau-efectos` + DLQ, los cinco crons y las variables
+`cau-produccion`, colas `cau-efectos` + DLQ, los seis crons y las variables
 públicas) y el único publicador es `scripts/publicar.mjs`:
 
 ```bash

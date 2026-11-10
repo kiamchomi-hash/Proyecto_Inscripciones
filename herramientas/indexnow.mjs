@@ -5,12 +5,14 @@
 //   npm run indexnow              # manda el sitemap entero
 //   npm run indexnow -- --probar  # sólo lista lo que mandaría
 //
-// En cada deploy de producción lo llama el workflow de publicación
-// (`.github/workflows/verificar.yml`, y el manual `publicar.yml`) apenas
-// termina el deploy: lee la clave y el sitemap publicados. A mano queda para la
-// primera carga, para un deploy que se saltó el aviso o para cuando IndexNow
-// estuvo caído. `/api/revalidar` del Worker no manda IndexNow (no hay ISR ni
-// caché que invalidar).
+// El aviso de todos los días no pasa por acá: lo hace el cron `indexnow` del
+// Worker cada 6 horas (`cloudflare/src/api/indexnow.ts`), que arma la lista
+// desde D1 y avisa sólo las URLs nuevas o cambiadas. No se puede llamar desde
+// el workflow de publicación: Cloudflare devuelve 403 al leer `/sitemap.xml`
+// desde las IPs de GitHub (10/11/2026). Esto queda para la primera carga, para
+// un deploy que se saltó el aviso o para cuando IndexNow estuvo caído.
+// `/api/revalidar` del Worker no manda IndexNow (no hay ISR ni caché que
+// invalidar).
 //
 // Sale con código 1 si IndexNow no aceptó el pedido.
 

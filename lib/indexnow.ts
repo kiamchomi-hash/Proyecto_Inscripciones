@@ -38,7 +38,12 @@ export function urlsParaIndexNow(rutas: ReadonlyArray<readonly [string, string?]
  * lo tomó) o `null` si no salió. Nunca lanza: un IndexNow caído no puede tumbar
  * la revalidación, que es lo que importa.
  */
-export async function avisarIndexNow(urls: string[], hacerFetch: typeof fetch = fetch): Promise<number | null> {
+export async function avisarIndexNow(
+  urls: string[],
+  // Firma mínima a propósito: el `Buscar` del Worker y `fetch` la cumplen, y así
+  // las pruebas pueden inyectar un doble sin armar un `fetch` completo.
+  hacerFetch: (url: string, init: RequestInit) => Promise<Response> = fetch,
+): Promise<number | null> {
   if (urls.length === 0) return null;
   try {
     const respuesta = await hacerFetch(ENDPOINT, {

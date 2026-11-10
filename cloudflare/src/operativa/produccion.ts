@@ -4,6 +4,8 @@ import type { Transportes } from './consumidores.ts';
 import { manejarNewsletter, type EntornoNewsletter } from '../api/newsletter.ts';
 import { manejarRecordatorio } from '../api/recordatorio-teclab.ts';
 import { lectorDePrecios, manejarVigilancia } from '../api/vigilancia.ts';
+import { manejarIndexNow } from '../api/indexnow.ts';
+import { avisarIndexNow } from '../../../lib/indexnow.ts';
 import { enviarDigest } from './digest.ts';
 
 /**
@@ -88,6 +90,8 @@ export const CRONES = {
   /** Barrido del outbox: recupera lo que no llegó a la cola. */
   efectos: '*/5 * * * *',
   vigilancia: '0 */6 * * *',
+  /** Aviso a IndexNow de las URLs nuevas o cambiadas del sitemap. */
+  indexnow: '15 */6 * * *',
   newsletter: '0 13 * * *',
   recordatorio: '0 12 * * 1',
   digest: '0 12 * * *',
@@ -132,6 +136,14 @@ export async function manejarProgramado(
       contexto.db,
       Object.keys(canales).length > 0 ? crearTransportes(canales, contexto.buscar, contexto.db) : {},
     );
+    return { tarea, status: 200, cuerpo: resumen };
+  }
+
+  if (tarea === 'indexnow') {
+    if (!contexto.db) throw new Error('IndexNow sin base');
+    const resumen = await manejarIndexNow(contexto.db, {
+      avisar: urls => avisarIndexNow(urls, contexto.buscar),
+    });
     return { tarea, status: 200, cuerpo: resumen };
   }
 
