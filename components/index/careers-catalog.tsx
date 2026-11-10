@@ -996,6 +996,9 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
           <span className={`block font-semibold text-[1.1rem] leading-tight ${familiaTeclab || isTeclabCourse ? 'text-[#071822]' : 'text-white'}`}>
             {cleanName}
           </span>
+          {familiaTeclab && !carrera.proximamente && carrera.titulo.trim() && (
+            <span className="teclab-card-titulo">Título: {carrera.titulo}</span>
+          )}
         </div>
         <span className="text-[0.65rem] min-[380px]:text-xs font-bold detail-link px-2 min-[380px]:px-4 py-1.5 min-[380px]:py-2 rounded-lg cursor-pointer text-center self-center">
           Ver detalles
