@@ -70,6 +70,7 @@ jobs:
         run: npm ci
         working-directory: cloudflare
       - name: Publicar el commit verificado
+        id: publicar
         working-directory: cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -80,6 +81,28 @@ jobs:
           read -r actual _ <<< "$referencia"
           if [ "$actual" != "$GITHUB_SHA" ]; then
             echo "Este commit ya no es la punta de main; no se publica."
+            echo "publicado=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           node scripts/publicar.mjs --publicar --smoke-rapido
+          echo "publicado=true" >> "$GITHUB_OUTPUT"
+      # Avisa a IndexNow (Bing, Yandex, Seznam, Naver) que el sitemap cambió.
+      # Va después del deploy porque el script lee la clave y el sitemap de
+      # producción, y antes del deploy todavía no están publicados. Si IndexNow
+      # no contesta, el sitio ya está publicado igual: el paso se marca en rojo
+      # pero el job sigue.
+      - name: Avisar a IndexNow lo publicado
+        if: steps.publicar.outputs.publicado == 'true'
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          set -uo pipefail
+          for intento in 1 2 3 4 5; do
+            if npm run indexnow; then
+              exit 0
+            fi
+            echo "IndexNow no tomó el aviso (intento ${intento}); espero 15 s."
+            sleep 15
+          done
+          echo "::warning::IndexNow no aceptó el aviso en 5 intentos. Se avisa a mano con npm run indexnow."
+          exit 1

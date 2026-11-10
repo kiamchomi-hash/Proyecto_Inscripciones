@@ -5,11 +5,12 @@
 //   npm run indexnow              # manda el sitemap entero
 //   npm run indexnow -- --probar  # sólo lista lo que mandaría
 //
-// El aviso de todos los días no pasa por acá: `/api/revalidar` del Worker ya no
-// manda IndexNow (no hay ISR ni caché que invalidar), así que hoy se avisa a
-// mano. Esto es para la primera carga, para después de un
-// deploy que toca muchas páginas a la vez (títulos, plantilla de la ficha) o
-// para cuando IndexNow estuvo caído.
+// En cada deploy de producción lo llama el workflow de publicación
+// (`.github/workflows/verificar.yml`, y el manual `publicar.yml`) apenas
+// termina el deploy: lee la clave y el sitemap publicados. A mano queda para la
+// primera carga, para un deploy que se saltó el aviso o para cuando IndexNow
+// estuvo caído. `/api/revalidar` del Worker no manda IndexNow (no hay ISR ni
+// caché que invalidar).
 //
 // Sale con código 1 si IndexNow no aceptó el pedido.
 

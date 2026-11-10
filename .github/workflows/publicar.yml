@@ -83,3 +83,21 @@ jobs:
           else
             node scripts/publicar.mjs --ensayo
           fi
+      # Igual que en Verificaciones: el aviso va después del deploy, porque el
+      # script lee la clave y el sitemap de producción. El ensayo no publica, así
+      # que no avisa nada.
+      - name: Avisar a IndexNow lo publicado
+        if: inputs.modo == 'produccion'
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          set -uo pipefail
+          for intento in 1 2 3 4 5; do
+            if npm run indexnow; then
+              exit 0
+            fi
+            echo "IndexNow no tomó el aviso (intento ${intento}); espero 15 s."
+            sleep 15
+          done
+          echo "::warning::IndexNow no aceptó el aviso en 5 intentos. Se avisa a mano con npm run indexnow."
+          exit 1

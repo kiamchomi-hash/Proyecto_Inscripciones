@@ -64,8 +64,8 @@ Las tres fuentes usan credenciales que ya están en la máquina —el acceso a l
 
 ChatGPT busca sobre el índice de Bing, así que una ficha que Bing no tiene no aparece en sus respuestas aunque esté bien en Google. Desde el 20/10/2026 el sitio le avisa a IndexNow (Bing, Yandex y los demás buscadores del protocolo) cada URL que cambia:
 
-- **Solo, en cada cambio de contenido**: no pasa. El `/api/revalidar` del Worker no manda IndexNow —no hay ISR ni caché que invalidar—. Hoy IndexNow se avisa a mano.
-- **A mano, el sitemap entero**: `npm run indexnow` (`herramientas/indexnow.mjs`), para la primera carga o después de un deploy que toca muchas páginas a la vez. `--probar` lista sin mandar. Antes de mandar confirma que la clave esté publicada, y sale con código 1 si IndexNow no aceptó.
+- **Solo, en cada deploy de producción**: lo llama el workflow de publicación (`Verificaciones`, y el manual `Publicar el Worker`) apenas termina el deploy, y avisa el sitemap entero. Va después de publicar porque lee la clave y el sitemap de producción; si IndexNow no contesta, el paso se marca pero el deploy ya está hecho y el job sigue. `/api/revalidar` del Worker no manda IndexNow —no hay ISR ni caché que invalidar—.
+- **A mano**: `npm run indexnow` (`herramientas/indexnow.mjs`), para la primera carga, para un deploy que se saltó el aviso o para cuando IndexNow estuvo caído. `--probar` lista sin mandar. Antes de mandar confirma que la clave esté publicada, y sale con código 1 si IndexNow no aceptó.
 
 La clave vive en `lib/indexnow.ts` y en `public/<clave>.txt`, con el mismo contenido. **No es un secreto**: el protocolo la pide pública para comprobar que el aviso viene del dueño del dominio. Cambiarla obliga a renombrar el archivo en el mismo commit; `tests/indexnow.test.mjs` falla si no coinciden.
 

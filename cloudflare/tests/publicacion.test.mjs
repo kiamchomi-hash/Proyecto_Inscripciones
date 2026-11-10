@@ -25,6 +25,20 @@ test('el push publica sólo tras ambos controles y no despliega un commit viejo'
   assert.match(manual, /node scripts\/publicar\.mjs --ensayo/);
 });
 
+test('el aviso a IndexNow sale después de publicar y no puede tirar el deploy', () => {
+  // El script lee la clave y el sitemap de producción: antes del deploy no
+  // existen. Y si IndexNow no contesta, el sitio ya está publicado igual.
+  for (const archivo of ['verificar.yml', 'publicar.yml']) {
+    const workflow = readFileSync(join(raiz, '../.github/workflows', archivo), 'utf8');
+    assert.match(workflow, /name: Avisar a IndexNow lo publicado/, archivo);
+    assert.match(workflow, /continue-on-error: true/, archivo);
+    assert.ok(
+      workflow.indexOf('Avisar a IndexNow') > workflow.indexOf('scripts/publicar.mjs --publicar'),
+      `${archivo}: el aviso a IndexNow tiene que ir después de publicar`,
+    );
+  }
+});
+
 /** Los cron de `CRONES` tal como están escritos en el código, sin importarlo. */
 function cronsDelCodigo() {
   const fuente = readFileSync(join(raiz, 'src', 'operativa', 'produccion.ts'), 'utf8');
