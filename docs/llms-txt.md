@@ -76,16 +76,38 @@ Las páginas HTML del sitio mandan la segunda:
 Link: </llms.txt>; rel="describedby"
 ```
 
+Y las que tienen versión markdown, las dos:
+
+```
+Link: </carreras/abc.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"
+```
+
 Va en la cabecera de la respuesta, no en el HTML: la especificación lo permite
 —la forma de cabecera «también funciona para recursos que no son HTML»— y no
 obliga a tocar el marcado, que las referencias de paridad comparan byte a byte.
 La pone `aplicarCabeceras` (`cloudflare/src/entrega/cabeceras.ts`), que ya
 decide las cabeceras de cada ruta: sólo en las respuestas `200` de tipo
-`text/html`. El propio `/llms.txt`, el sitemap, las APIs y los assets no la
-llevan, porque no son páginas que describir.
+`text/html`, y también en los archivos markdown, que se describen a sí mismos.
 
-La primera relación (`alternate`) queda para cuando haya versiones markdown de
-cada página.
+## Las versiones markdown de las páginas
+
+La otra mitad de la convención: la versión limpia de cada página, en la misma
+URL con `.md` al final.
+
+| Ruta | Qué es |
+|---|---|
+| `/carreras/<slug>.md` | La ficha: datos, plan de estudios, preguntas frecuentes y cómo inscribirse |
+| `/clases-apoyo/<slug>.md` | La clase de apoyo: descripción, texto largo y cómo reservar turno |
+| `/novedades/articulo/<slug>.md` | El artículo: extracto, fecha y el cuerpo convertido a markdown |
+
+Las arman `cloudflare/src/entrega/markdown-carrera.ts`,
+`markdown-materia.ts` y `markdown-articulo.ts`, y las rutas son
+`cloudflare/src/pages/**/[slug].md.ts`. Todo el texto sale de la base: la
+descripción, el plan, las preguntas frecuentes y los datos de la ficha. No se
+escribe una línea que no esté en el sitio, y ningún precio se publica.
+
+El contenido de los artículos es HTML: `lib/html-markdown.ts` lo traduce a
+markdown (encabezados, listas, enlaces, negritas, tablas e imágenes).
 
 ## Vigilancia
 
@@ -97,8 +119,12 @@ es una página de navegador.
 La cabecera `Link` también se vigila: está en `CABECERAS_ESPERADAS`, que los
 dos vigilantes miden sobre la home.
 
+Las rutas `.md` no están en `RUTAS`: dependen de la entidad que piden y
+devolverían 404 en cuanto esa entidad cambia de nombre. Lo que las cubre es la
+página de la que salen.
+
 ## Qué falta
 
-- Una versión markdown de cada página (`/carreras/<slug>.md` y compañía), que
-  es la otra mitad de la convención. Con eso se agregaría la relación
-  `alternate` a la cabecera `Link`.
+- Las versiones markdown de las páginas fijas (`/faq.md`, `/contacto.md`): su
+  texto vive en componentes de React, no en la base, así que no hay de dónde
+  tomarlo sin copiarlo y que se desincronice.

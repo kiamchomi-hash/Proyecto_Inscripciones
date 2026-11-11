@@ -52,6 +52,35 @@ const INSCRIPCION = /^\/(?:carreras\/[^/]+\/inscripcion|teclab\/inscripcion)\/?$
  */
 export const LINK_LLMS = '</llms.txt>; rel="describedby"';
 
+/** Las páginas que tienen versión markdown propia. */
+const VERSION_MARKDOWN: RegExp[] = [
+  /^\/carreras\/[^/]+$/,
+  /^\/clases-apoyo\/[^/]+$/,
+  /^\/novedades\/articulo\/[^/]+$/,
+];
+
+/** La URL del markdown de esa página, si lo tiene. */
+export function versionMarkdown(ruta: string): string | null {
+  if (ruta.endsWith('.md')) return null;
+  return VERSION_MARKDOWN.some(patron => patron.test(ruta)) ? `${ruta}.md` : null;
+}
+
+/**
+ * La cabecera `Link` de una respuesta:
+ * - `rel="alternate"` apunta a la versión markdown de esa misma página;
+ * - `rel="describedby"` apunta al `/llms.txt` que la cubre.
+ *
+ * La llevan las páginas HTML y los archivos markdown. El propio `/llms.txt`
+ * no: no se describe a sí mismo.
+ */
+export function cabeceraLink(ruta: string, tipo: string): string | null {
+  if (ruta === '/llms.txt') return null;
+  const markdown = tipo.includes('text/html') ? versionMarkdown(ruta) : null;
+  if (markdown) return `<${markdown}>; rel="alternate"; type="text/markdown", ${LINK_LLMS}`;
+  if (tipo.includes('text/html') || tipo.includes('text/markdown')) return LINK_LLMS;
+  return null;
+}
+
 /**
  * `X-Robots-Tag` por ruta, como los bloques de `headers()` de `next.config.ts`.
  * No hay noindex global: una página pública tiene que poder indexarse. El 404
@@ -86,10 +115,12 @@ export function aplicarCabeceras(respuesta: Response, { ruta, estado }: Contexto
   const robots = robotsDeRuta(ruta, estado);
   if (robots) respuesta.headers.set('X-Robots-Tag', robots);
   // Sólo las páginas que se sirven con éxito: un 404 no describe nada y los
-  // recursos que no son HTML no son páginas.
-  if (estado === 200 && !respuesta.headers.has('Link')
-    && (respuesta.headers.get('Content-Type') ?? '').includes('text/html')) {
-    respuesta.headers.set('Link', LINK_LLMS);
+  // recursos que no son HTML no son páginas. El archivo markdown se describe a
+  // sí mismo: la especificación dice que la cabecera también sirve para los
+  // recursos que no son HTML.
+  if (estado === 200 && !respuesta.headers.has('Link')) {
+    const enlace = cabeceraLink(ruta, respuesta.headers.get('Content-Type') ?? '');
+    if (enlace) respuesta.headers.set('Link', enlace);
   }
   return respuesta;
 }

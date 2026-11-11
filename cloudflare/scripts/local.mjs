@@ -51,7 +51,7 @@ export function comandoLocal(nombre) {
     // `cache-produccion` cuida la caché de borde del entry de producción, que
     // no se puede importar desde node.
     entrega: ['--test', 'tests/entrega.test.mjs', 'tests/cache-produccion.test.mjs',
-      'tests/llms-txt.test.mjs'],
+      'tests/llms-txt.test.mjs', 'tests/markdown.test.mjs'],
     datos: ['--test', '--test-concurrency=1', 'tests/datos.test.mjs', 'tests/concurrencia.test.mjs'],
     control: ['--test', '--test-concurrency=1', 'tests/rate-limit.test.mjs', 'tests/contadores.test.mjs', 'tests/migraciones.test.mjs'],
     api: ['--test', '--test-concurrency=1', 'tests/formularios.test.mjs', 'tests/operativa.test.mjs',

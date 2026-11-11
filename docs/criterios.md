@@ -395,6 +395,12 @@ es la forma de la convención llmstxt.org. Va en la respuesta y no en el
 `<head>`: no toca el marcado que las referencias de paridad comparan, y la
 pide `aplicarCabeceras`, que ya decide las cabeceras de cada ruta.
 
+Las páginas con contenido en la base tienen además su versión markdown en la
+misma URL con `.md` al final (`/carreras/<slug>.md`, `/clases-apoyo/<slug>.md`,
+`/novedades/articulo/<slug>.md`), y su cabecera declara la relación
+`alternate`. El texto sale de la base: no se escribe una línea que no esté en el
+sitio.
+
 ## El entorno: lo que ya costó descubrir
 
 ### El sitio ya no corre en Vercel
