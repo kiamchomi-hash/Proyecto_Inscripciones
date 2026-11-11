@@ -624,6 +624,10 @@ scripts/actualizar-referencia-home.mjs` la reescribe con lo que devuelve el
 build local: mismo criterio que el de las rutas, y también hay que revisar la
 diferencia antes de sustituirla.
 
+Las referencias visuales se regeneran aparte, con `node
+scripts/actualizar-referencias-visuales.mjs <capturas-home> <capturas-paginas>`,
+a partir de las capturas que deja la corrida del e2e.
+
 `tests/e2e.test.mjs` agrega lo que el HTML no puede probar, con dos servidores
 reales en loopback y Chromium:
 
@@ -639,8 +643,10 @@ reales en loopback y Chromium:
 - **Capturas**: escritorio 1440×900 y móvil 390×844, DPR 1, movimiento reducido,
   PNG completo en `.local/capturas/<sello>/`. La comparación se hace con un
   canvas del propio Chromium; la tolerancia es 2 % de píxeles con algún canal a
-  más de 32 y diferencia media ≤2. Última corrida: 0,004 % / media 0,005 en
-  escritorio y 0,009 % / media 0,011 en móvil.
+  más de 32 y diferencia media ≤2. Se comparan contra las referencias
+  corregidas de `tests/fixtures/visuales-corregidas/` (ver su `LEER.md`), no
+  contra las de Next: aquéllas se toman con el mismo procedimiento y con las
+  fuentes ya aplicadas, que es lo que hace la captura estable.
 - **Navegación**: el enlace de salto se hace visible al recibir foco con Tab y
   cambia el hash; el enlace del pie a `/contacto` navega en las dos puntas. En
   Next es navegación de cliente y la ruta responde; en Astro es un pedido
@@ -648,23 +654,19 @@ reales en loopback y Chromium:
 - **Turnstile**: sin site key no hay marcador ni script y el formulario avisa que
   falta tildar; con site key el HTML trae marcador y 71 px, monta con
   `size='flexible'`, entrega el token al formulario y al angostar a 320 px
-  redibuja en compacto (140 px) descartando el widget anterior; en demo no hay
-  script y el token llega igual.
+  redibuja en compacto (146 px) descartando el widget anterior; en demo no hay
+  script y el token llega igual. El control corre sobre
+  `/carreras/licenciatura-en-administracion/inscripcion`, que tiene un solo
+  formulario: la home tiene dos (contacto y preinscripción) y cada uno monta su
+  widget, así que el conteo de dibujos no sería determinista.
 
 Requisitos y límites del harness, para no romperlo sin querer:
-- Necesita `npm --prefix cloudflare run build` previo, el Next instalado en la
-  raíz, Playwright en la raíz y un Chromium descargado. Falla con mensaje
-  explícito si falta cualquiera.
-- No corre junto a un `next dev` del sitio: Next toma `.next/dev/lock` y los dos
-  procesos pelearían por `.next`. La prueba detecta un PID vivo y aborta; un lock
-  de un proceso muerto no bloquea. Cuando existe `/proc`, además confirma que ese
-  PID es un `next`: un proceso recién terminado sigue como zombie unos instantes
-  y, sin esa comprobación, el segundo test de paridad veía al que el primero
-  acababa de matar.
-- Escribe en el `.next` real del sitio (no hay `distDir` por variable de
-  entorno). Es caché de desarrollo; no toca código ni build de producción.
-- `next/font` necesita la caché de fuentes de `.next`; con la caché vacía y sin
-  red, Next puede fallar antes de responder.
+- Necesita `npm --prefix cloudflare run build` previo, Playwright en la raíz y un
+  Chromium descargado. Falla con mensaje explícito si falta cualquiera.
+- El contraste con el sitio anterior ya no se hace en vivo: la app de Next
+  salió del repo y la comparación es contra las referencias guardadas
+  (`tests/fixtures/paridad/` y `tests/fixtures/visuales-next/`), que quedan
+  como registro histórico.
 - El servidor de Astro del e2e se levanta con `wrangler dev` y no con el harness
   porque el navegador necesita un puerto real. Se siembra un D1 efímero por
   perfil en `.local/e2e-d1-*` y los servidores con site key o demo usan

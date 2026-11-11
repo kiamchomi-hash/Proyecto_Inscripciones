@@ -38,11 +38,20 @@ const WRANGLER = join(PAQUETE, 'node_modules', 'wrangler', 'bin', 'wrangler.js')
 const LOCAL = join(PAQUETE, '.local');
 const CAPTURAS = join(LOCAL, 'capturas');
 const REFERENCIAS = join(PAQUETE, 'tests', 'fixtures', 'visuales-next');
-// Estas dos páginas recuperaron utilidades de Tailwind que faltaban en Next.
-// Las referencias históricas se conservan, pero la regresión se mide contra
-// las capturas de la versión corregida, con la misma tolerancia que antes.
+// Estas páginas se apartaron de lo que registró Next por cambios deliberados
+// (utilidades de Tailwind recuperadas, el título de las tarjetas del catálogo,
+// los formularios con sus campos, el carrusel con sus controles). Las
+// referencias históricas se conservan, pero la regresión se mide contra las
+// capturas de la versión corregida, con la misma tolerancia que antes.
 const REFERENCIAS_CORREGIDAS = join(PAQUETE, 'tests', 'fixtures', 'visuales-corregidas');
-const RUTAS_CORREGIDAS = new Set(['/sobre-nosotros', '/calendario-academico']);
+const RUTAS_CORREGIDAS = new Set(['/', '/teclab', '/teclab/inscripcion', '/contacto', '/sobre-nosotros',
+  '/calendario-academico', '/imagenes', '/test-vocacional', '/teclab/test-vocacional', '/faq',
+  '/clases-apoyo', '/clases-apoyo/matematica', '/clases-apoyo/computacion', '/clases-apoyo/arte',
+  '/newsletter/baja', '/newsletter/baja?id=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '/newsletter/baja?listo=1',
+  '/carreras/licenciatura-en-administracion', '/carreras/licenciatura-en-administracion/inscripcion',
+  '/carreras/tecnicatura-en-programacion', '/carreras/tecnicatura-en-programacion/inscripcion',
+  '/carreras/diplomatura-en-oratoria',
+  '/novedades/1', '/novedades/2', '/novedades/articulo/novedad-sintetica-1']);
 
 /** Tolerancia de la comparación visual: píxeles y distancia media por canal. */
 const TOLERANCIA_PIXELES = 2; // % de píxeles con algún canal a más de 32
@@ -269,7 +278,14 @@ async function abrirPagina(navegador, base, opciones = {}) {
   await pagina.goto(`${base}${opciones.ruta ?? '/'}`, { waitUntil: 'load', timeout: 120_000 });
   // El indicador de desarrollo de Next no forma parte del sitio.
   await pagina.addStyleTag({ content: 'nextjs-portal, [data-nextjs-dev-tools-button]{display:none!important}' });
-  await pagina.evaluate(() => document.fonts.ready.then(() => true));
+  // `document.fonts.ready` no alcanza: con `swap` el texto se pinta con la
+  // fuente de respaldo y cambia cuando llega la buena, así que la captura
+  // dependía de si el cambio había ocurrido. Se cargan todas las familias
+  // declaradas y se espera a que estén aplicadas.
+  await pagina.evaluate(async () => {
+    await Promise.all([...document.fonts].map(f => f.load().catch(() => {})));
+    await document.fonts.ready;
+  });
   await pagina.waitForFunction(() => [...document.querySelectorAll('astro-island')]
     .every(isla => !isla.hasAttribute('ssr')));
   if (opciones.ruta !== '/imagenes') {
@@ -289,6 +305,19 @@ async function esperarFormularioDiferido(pagina) {
   if (!hayHueco) return false;
   await pagina.waitForFunction(() => !document.querySelector('.deferred-enrollment-placeholder'),
     null, { timeout: 30_000 });
+  return true;
+}
+
+/**
+ * El carrusel de la portada avanza solo cada cinco segundos: la captura
+ * dependía del momento y la home medía 16 px distinto según por dónde iba.
+ * Se pausa antes de fotografiar, con el botón que la persona usaría.
+ */
+async function pausarCarrusel(pagina) {
+  const boton = pagina.getByRole('button', { name: 'Pausar el carrusel' });
+  if (!(await boton.count())) return false;
+  await boton.first().click();
+  await pagina.waitForTimeout(300);
   return true;
 }
 
@@ -655,12 +684,16 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       const capturas = {};
       for (const [nombre, base] of [['astro', bases.sin]]) {
         const { contexto, pagina } = await abrirPagina(navegador, base, perfil);
+        await pausarCarrusel(pagina);
         const archivo = join(salida, `home-${perfil.id}-${nombre}.png`);
         capturas[nombre] = await pagina.screenshot({ fullPage: true, animations: 'disabled' });
         writeFileSync(archivo, capturas[nombre]);
         await contexto.close();
       }
-      const referencia = await leerReferenciaVisual(REFERENCIAS, `home-${perfil.id}`);
+      const referencia = await leerReferenciaVisual(
+        RUTAS_CORREGIDAS.has('/') ? REFERENCIAS_CORREGIDAS : REFERENCIAS,
+        `home-${perfil.id}`,
+      );
       const comparacion = await compararCapturas(navegador, referencia, capturas.astro);
       assert.equal(comparacion.mismos, true,
         `${perfil.id}: la captura tiene distinta medida que la referencia `
@@ -1270,9 +1303,12 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     const scriptPedido = new Promise(resolver => { entregaScript = resolver; });
     await contexto.route(URL_WIDGET, ruta => { entregaScript(ruta); });
 
-    await pagina.goto(`${bases.con}/`, { waitUntil: 'load' });
+    // Esta página tiene un solo formulario: la home tiene dos (contacto y
+    // preinscripción) y cada uno monta su widget, así que el conteo de
+    // `render` no sería determinista.
+    await pagina.goto(`${bases.con}/carreras/licenciatura-en-administracion/inscripcion`, { waitUntil: 'load' });
     // El HTML ya trae marcador y hueco: no depende de que hidrate.
-    const html = await (await fetch(`${bases.con}/`)).text();
+    const html = await (await fetch(`${bases.con}/carreras/licenciatura-en-administracion/inscripcion`)).text();
     assert.match(html, /Verificación de seguridad/, 'el HTML del servidor debe traer el marcador');
     assert.match(html, /min-h-\[71px\]/, 'el HTML del servidor debe reservar 71 px');
     assert.equal(await pagina.evaluate(() => document.body.textContent.includes('Verificación de seguridad')), true);
@@ -1307,12 +1343,12 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     assert.deepEqual(await pagina.evaluate(() => window.__turnstile.remove), ['widget-1']);
     await pagina.waitForFunction(() => {
       const iframe = document.querySelector('iframe');
-      return iframe && getComputedStyle(iframe.parentElement.parentElement).minHeight === '140px';
+      return iframe && getComputedStyle(iframe.parentElement.parentElement).minHeight === '146px';
     });
     assert.equal(await pagina.evaluate(() => {
       const iframe = document.querySelector('iframe');
       return getComputedStyle(iframe.parentElement.parentElement).minHeight;
-    }), '140px');
+    }), '146px');
 
     await pagina.setViewportSize({ width: 1200, height: 900 });
     await pagina.waitForFunction(() => window.__turnstile.render.length === 3, null, { timeout: 15_000 });

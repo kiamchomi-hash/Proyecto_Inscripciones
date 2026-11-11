@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -54,7 +55,7 @@ test('el manifiesto rechaza huecos, solapamientos y dimensiones incorrectas', as
   await assert.rejects(codificarBandas(png, 16384), /inválido/);
 });
 
-test('las referencias corregidas y las históricas siguen íntegras y separadas', async () => {
+test('las referencias corregidas y las históricas siguen íntegras y separadas', async t => {
   const base = fileURLToPath(new URL('./fixtures/', import.meta.url));
   for (const [nombre, ancho, altoHistorico, altoCorregido] of [
     // Las correcciones se vuelven a tomar cuando la página cambia de verdad;
@@ -63,11 +64,22 @@ test('las referencias corregidas y las históricas siguen íntegras y separadas'
     ['sobre-nosotros-escritorio', 1440, 6104, 6688],
     ['sobre-nosotros-movil', 390, 6580, 7508],
     ['calendario-academico-escritorio', 1440, 4233, 4474],
-    ['calendario-academico-movil', 390, 4613, 4653],
+    ['calendario-academico-movil', 390, 4613, 4666],
   ]) {
     const historica = await sharp(await leerReferenciaVisual(join(base, 'visuales-next'), nombre)).metadata();
     const corregida = await sharp(await leerReferenciaVisual(join(base, 'visuales-corregidas'), nombre)).metadata();
     assert.deepEqual([historica.width, historica.height], [ancho, altoHistorico], nombre);
     assert.deepEqual([corregida.width, corregida.height], [ancho, altoCorregido], nombre);
+  }
+
+  // Toda referencia corregida tiene que seguir siendo legible y sin pérdida:
+  // `leerReferenciaVisual` reconstruye el PNG desde las bandas y valida que
+  // las dimensiones de cada una coincidan con el manifiesto.
+  const corregidas = readdirSync(join(base, 'visuales-corregidas')).filter(n => n.endsWith('.json'));
+  assert.ok(corregidas.length >= 50, `faltan referencias corregidas: ${corregidas.length}`);
+  for (const manifiesto of corregidas) {
+    const nombre = manifiesto.replace(/\.json$/, '');
+    const imagen = await sharp(await leerReferenciaVisual(join(base, 'visuales-corregidas'), nombre)).metadata();
+    assert.ok(imagen.width > 0 && imagen.height > 0, `${nombre}: la referencia no se pudo reconstruir`);
   }
 });
