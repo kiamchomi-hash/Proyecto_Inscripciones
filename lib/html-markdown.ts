@@ -96,8 +96,10 @@ export function htmlAMarkdown(html: string): string {
   texto = texto.replace(/<li\b[^>]*>([\s\S]*?)<\/li>/gi, '\n- $1');
   texto = texto.replace(/<\/(ul|ol)>/gi, '\n');
 
-  // Párrafos, saltos de línea y citas.
+  // Párrafos, bloques, saltos de línea y citas.
   texto = texto.replace(/<\/p>/gi, '\n\n');
+  texto = texto.replace(/<\/div>/gi, '\n\n');
+  texto = texto.replace(/<\/span>/gi, ' ');
   texto = texto.replace(/<blockquote\b[^>]*>([\s\S]*?)<\/blockquote>/gi, '\n\n> $1\n\n');
   texto = texto.replace(/<br\s*\/?>/gi, '\n');
 

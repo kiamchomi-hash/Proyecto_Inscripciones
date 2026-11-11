@@ -318,3 +318,24 @@ export function construirLlmsTxt(datos: DatosLlmsTxt): string {
 
   return `${bloques.join('\n\n')}\n`;
 }
+
+/** La línea de una carrera: nombre, URL y nota. La usan el llms.txt y las
+ * versiones markdown de las páginas de catálogo.
+ */
+export function lineaDeCarrera(carrera: CarreraLlms): { nombre: string; url: string; nota: string } {
+  const nombre = carreraFullName(carrera);
+  return {
+    nombre: textoDeEnlace(nombre),
+    url: `${BASE}/carreras/${carreraToSlug(carrera)}`,
+    nota: notaDeCarrera(carrera, nombre),
+  };
+}
+
+/** La línea de una clase de apoyo, igual que la de una carrera. */
+export function lineaDeMateria(materia: MateriaLlms): { nombre: string; url: string; nota: string } {
+  return {
+    nombre: textoDeEnlace(materia.label),
+    url: `${BASE}/clases-apoyo/${materia.slug}`,
+    nota: notaDeMateria(materia),
+  };
+}

@@ -7,6 +7,7 @@ import { listarMateriasPublicas } from '../../datos/materias';
 import { jsonLdScript } from '@/lib/json-ld';
 import { ORGANIZACION_ID } from '@/lib/sede';
 import '@/estilos/clases-apoyo/clases-apoyo.css';
+import { PAGINAS } from '@/lib/paginas';
 const BASE_URL = 'https://www.siglo21sur.com';
 const materias = await listarMateriasPublicas(env.DB);
 const servicioSchema = {
@@ -27,7 +28,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
 ] };
 ---
 <Sitio titulo="Clases particulares y apoyo escolar en Villa Lugano | Siglo 21"
-  descripcion="Clases particulares y apoyo escolar presenciales en Villa Lugano, Villa Riachuelo y alrededores: Matemática, Lengua, Física, Computación y Arte. Guaminí 4876."
+  descripcion={PAGINAS.clases.descripcion}
   palabrasClave={['clases de apoyo villa lugano', 'apoyo escolar villa lugano', 'clases particulares villa lugano', 'profesor particular villa riachuelo', 'apoyo escolar barrio piedrabuena', 'clases de apoyo mataderos']}
   canonical={`${BASE_URL}/clases-apoyo`} ruta="/clases-apoyo">
   <ClasesApoyoLanding materias={materias} client:load />

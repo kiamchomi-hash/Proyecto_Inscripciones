@@ -13,6 +13,7 @@ import '@/estilos/index.css';
 import '@/components/index/modales.css';
 import '@/components/formularios/formulario-lead.css';
 import '@/estilos/teclab/teclab.css';
+import { PAGINAS } from '@/lib/paginas';
 
 // `/teclab` paritaria con `app/teclab/page.tsx`: mismo título absoluto,
 // descripción, palabras clave, Open Graph, Twitter y JSON-LD, y el mismo
@@ -24,7 +25,7 @@ const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
 
 <Sitio
   titulo="Tecnicaturas Teclab Online | Carreras de 2 años"
-  descripcion="Tecnicaturas y cursos Teclab 100% online en tecnología, gestión y negocios. Conocé la oferta y recibí asesoramiento personalizado."
+  descripcion={PAGINAS.teclab.descripcion}
   palabrasClave={['teclab', 'tecnicaturas online', 'carreras cortas', 'instituto técnico superior teclab', 'universidad siglo 21', 'estudiar online']}
   canonical={URL}
   ruta="/teclab"

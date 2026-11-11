@@ -50,3 +50,23 @@ export const POSTAL_ADDRESS = {
  * desincronizan y Google lee dos sedes distintas.
  */
 export const ORGANIZACION_ID = "https://www.siglo21sur.com/#organizacion";
+
+/**
+ * Los teléfonos de la sede, en las dos formas en que se escriben.
+ *
+ * El que atiende el WhatsApp y el que declara el JSON-LD son el mismo número:
+ * el primero como lo escribe la gente, el segundo en formato internacional.
+ */
+export const TELEFONO_DISPLAY = '11 3297-3801';
+export const TELEFONO_E164 = '+5491132973801';
+
+/** El correo de contacto: el mismo desde el que salen los mails de precio. */
+export const EMAIL_CONTACTO = 'inscripciones@siglo21sur.com';
+
+/**
+ * El horario del WhatsApp. **No es el de la sede**: la sede atiende de 9 a 20
+ * y el WhatsApp arranca una hora antes. Son dos cosas distintas, no una
+ * diferencia para emparejar (lo dice también la respuesta de la sede en
+ * `components/faq-page.tsx`).
+ */
+export const HORARIO_WHATSAPP = 'Lun a Vie, 8 a 20 hs';

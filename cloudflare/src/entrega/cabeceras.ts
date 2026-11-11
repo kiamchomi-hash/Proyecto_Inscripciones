@@ -6,8 +6,9 @@
 // `challenges.cloudflare.com` para Turnstile, que Next también declara, y
 // `static.cloudflareinsights.com` para el beacon de Cloudflare Web Analytics:
 // sin ese origen la CSP bloquea el script y el sitio queda sin medición de
-// visitas. El beacon manda sus datos a `cloudflareinsights.com`, por eso también
-// figura en `connect-src`.
+// visitas. El beacon postea a `/cdn-cgi/rum` del propio dominio, que ya
+// cubre `connect-src 'self'`; `cloudflareinsights.com` queda autorizado igual,
+// por si el beacon vuelve a usar su destino por defecto.
 // `frame-src` mantiene Google Maps y YouTube porque `/contacto` y
 // `/sobre-nosotros` los embeben igual que el sitio vigente.
 export const CSP = [
@@ -57,6 +58,7 @@ const VERSION_MARKDOWN: RegExp[] = [
   /^\/carreras\/[^/]+$/,
   /^\/clases-apoyo\/[^/]+$/,
   /^\/novedades\/articulo\/[^/]+$/,
+  /^\/(?:faq|contacto|calendario-academico|sobre-nosotros|teclab|clases-apoyo|test-vocacional)$/,
 ];
 
 /** La URL del markdown de esa página, si lo tiene. */

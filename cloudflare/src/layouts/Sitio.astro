@@ -1,7 +1,7 @@
 ---
 import { env } from 'cloudflare:workers';
 import { jsonLdScript } from '@/lib/json-ld';
-import { GEO, MAPS_URL, ORGANIZACION_ID, POSTAL_ADDRESS } from '@/lib/sede';
+import { EMAIL_CONTACTO, GEO, MAPS_URL, ORGANIZACION_ID, POSTAL_ADDRESS, TELEFONO_E164 } from '@/lib/sede';
 import NavbarIsla from '../entrega/NavbarIsla';
 import { configTurnstile } from '../entrega/entorno-publico.ts';
 import AnalyticsInteractions from '@/components/analytics-interactions';
@@ -143,8 +143,8 @@ const jsonLd = jsonLdScript([
       'Villa Celina', 'Ciudad Madero', 'Tapiales', 'Ingeniero Budge',
       'Comuna 8', 'CABA',
     ].map(name => ({ '@type': 'Place', name })),
-    telephone: '+5491132973801',
-    email: 'inscripciones@siglo21sur.com',
+    telephone: TELEFONO_E164,
+    email: EMAIL_CONTACTO,
     sameAs: [
       MAPS_URL,
       'https://www.facebook.com/ceducativovillalugano/',
@@ -166,12 +166,17 @@ const jsonLd = jsonLdScript([
 const { sitio: sitekeyTurnstile, demo: demoFormularios } =
   configTurnstile(env as unknown as Record<string, unknown>);
 
-// Beacon de Cloudflare Web Analytics. La instalación automática está activa en
-// la zona, pero no inyecta nada en las respuestas del Worker: sin esta etiqueta
-// el sitio no mide una sola visita. El valor es el `site_token` público del
-// sitio RUM de la cuenta (no es un secreto: viaja en el HTML de cualquier sitio
-// que use Web Analytics) y no hay que confundirlo con `CF_RUM_SITE_TAG`, que es
-// el `site_tag` con el que el resumen diario consulta la API GraphQL.
+// Beacon de Cloudflare Web Analytics. La instalación automática de la zona
+// inyecta su propio beacon al final del HTML, pero no es el que manda: el
+// script lee el primer `data-cf-beacon` del DOM y éste está en el `<head>`.
+// El valor es el `site_token` público del sitio RUM de la cuenta (no es un
+// secreto: viaja en el HTML de cualquier sitio que use Web Analytics) y no hay
+// que confundirlo con `CF_RUM_SITE_TAG`, que es el `site_tag` con el que el
+// resumen diario consulta la API GraphQL.
+// `send.to` manda los datos a `/cdn-cgi/rum` del propio dominio. Sin eso el
+// beacon postea a `https://cloudflareinsights.com/cdn-cgi/rum`, que no existe:
+// la respuesta es un 404 sin cabeceras CORS y cada visitante veía un error de
+// CORS en la consola, que Lighthouse cuenta como fallo de buenas prácticas.
 // Sólo se emite en el dominio propio, para no ensuciar la medición desde local
 // ni desde staging.
 const BEACON_TOKEN = '28aced3641ba4a7d81cb1b8722ebb2f3';
@@ -235,7 +240,7 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
         is:inline
         type="module"
         src="https://static.cloudflareinsights.com/beacon.min.js"
-        data-cf-beacon={JSON.stringify({ token: beaconAnalytics })}
+        data-cf-beacon={JSON.stringify({ token: beaconAnalytics, send: { to: '/cdn-cgi/rum' } })}
       />
     )}
   </head>

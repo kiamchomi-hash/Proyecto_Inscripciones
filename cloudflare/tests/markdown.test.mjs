@@ -16,6 +16,9 @@ import { cabeceraLink, versionMarkdown } from '../src/entrega/cabeceras.ts';
 const { construirMarkdownCarrera } = await import('../src/entrega/markdown-carrera.ts');
 const { construirMarkdownMateria } = await import('../src/entrega/markdown-materia.ts');
 const { construirMarkdownArticulo } = await import('../src/entrega/markdown-articulo.ts');
+const { construirMarkdownContacto } = await import('../src/entrega/markdown-contacto.ts');
+const { construirMarkdownCalendario } = await import('../src/entrega/markdown-calendario.ts');
+const { construirMarkdownCatalogo } = await import('../src/entrega/markdown-catalogos.ts');
 
 const CONFIG = './dist/server/wrangler.json';
 
@@ -164,6 +167,48 @@ test('el artículo sale con su extracto, su fecha y el cuerpo convertido', () =>
   assert.doesNotMatch(markdown, /</);
 });
 
+// ── Las páginas fijas ───────────────────────────────────────────────────────
+
+test('la página de contacto sale con los datos de la sede', () => {
+  const markdown = construirMarkdownContacto('https://www.siglo21sur.com/contacto');
+  assert.match(markdown, /^# Contacto\n/);
+  assert.match(markdown, /- \*\*WhatsApp:\*\* 11 3297-3801 — https:\/\/wa\.me\/5491132973801/);
+  assert.match(markdown, /- \*\*Teléfono:\*\* \+5491132973801/);
+  assert.match(markdown, /- \*\*Correo:\*\* inscripciones@siglo21sur\.com/);
+  assert.match(markdown, /- \*\*Horario de atención por WhatsApp:\*\* Lun a Vie, 8 a 20 hs/);
+  assert.match(markdown, /- \*\*Dirección:\*\* Guaminí 4876, Villa Lugano, Ciudad Autónoma de Buenos Aires, C1439, AR/);
+  assert.match(markdown, /- \*\*Mapa:\*\* https:\/\/maps\.app\.goo\.gl\/mXu8TUH6FCLQvuYYA/);
+  assert.match(markdown, /- \*\*Página:\*\* https:\/\/www\.siglo21sur\.com\/contacto/);
+});
+
+test('el calendario sale con la estructura del ciclo y sus preguntas', () => {
+  const markdown = construirMarkdownCalendario('https://www.siglo21sur.com/calendario-academico');
+  assert.match(markdown, /^# Calendario académico\n/);
+  assert.match(markdown, /- \*\*Aperturas de cursada:\*\* marzo, mayo, agosto, octubre\./);
+  assert.match(markdown, /- \*\*Tramos por semestre:\*\* 2\./);
+  assert.match(markdown, /\| 1 a 4 \| Primer parcial \|/);
+  assert.match(markdown, /\| 9 \| Recuperatorio e integrador \|/);
+  assert.match(markdown, /- \*\*MIA — Materias de Integración y Aplicación:\*\* semanas 4, 5, 7, 8\./);
+  assert.match(markdown, /### ¿Cuándo empiezan las clases en 2027\?/);
+});
+
+test('una página de catálogo sale con su resumen y sus secciones', () => {
+  const markdown = construirMarkdownCatalogo({
+    titulo: 'Teclab',
+    descripcion: 'Tecnicaturas y cursos Teclab 100% online.',
+    url: 'https://www.siglo21sur.com/teclab',
+    secciones: [
+      { titulo: 'Tecnicaturas', items: [{ nombre: 'Programación', url: 'https://www.siglo21sur.com/carreras/x', nota: '2 años.' }] },
+      { titulo: 'Vacía', items: [] },
+    ],
+  });
+  assert.match(markdown, /^# Teclab\n/);
+  assert.match(markdown, /> Tecnicaturas y cursos Teclab 100% online\./);
+  assert.match(markdown, /## Tecnicaturas\n\n- \[Programación\]\(https:\/\/www\.siglo21sur\.com\/carreras\/x\): 2 años\./);
+  // La sección sin elementos no sale.
+  assert.doesNotMatch(markdown, /## Vacía/);
+});
+
 // ── La cabecera Link ────────────────────────────────────────────────────────
 
 test('la cabecera Link declara el markdown de la página y el llms.txt', () => {
@@ -171,13 +216,22 @@ test('la cabecera Link declara el markdown de la página y el llms.txt', () => {
     '/carreras/licenciatura-en-administracion.md');
   assert.equal(versionMarkdown('/clases-apoyo/matematica'), '/clases-apoyo/matematica.md');
   assert.equal(versionMarkdown('/novedades/articulo/que-es-el-cau'), '/novedades/articulo/que-es-el-cau.md');
-  assert.equal(versionMarkdown('/faq'), null);
+  assert.equal(versionMarkdown('/faq'), '/faq.md');
+  assert.equal(versionMarkdown('/contacto'), '/contacto.md');
+  assert.equal(versionMarkdown('/calendario-academico'), '/calendario-academico.md');
+  assert.equal(versionMarkdown('/sobre-nosotros'), '/sobre-nosotros.md');
+  assert.equal(versionMarkdown('/teclab'), '/teclab.md');
+  assert.equal(versionMarkdown('/clases-apoyo'), '/clases-apoyo.md');
+  assert.equal(versionMarkdown('/test-vocacional'), '/test-vocacional.md');
   assert.equal(versionMarkdown('/carreras/licenciatura-en-administracion/inscripcion'), null);
   assert.equal(versionMarkdown('/carreras/abc.md'), null);
 
   assert.equal(cabeceraLink('/carreras/abc', 'text/html'),
     '</carreras/abc.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
-  assert.equal(cabeceraLink('/faq', 'text/html'), '</llms.txt>; rel="describedby"');
+  assert.equal(cabeceraLink('/faq', 'text/html'),
+    '</faq.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
+  assert.equal(cabeceraLink('/sobre-nosotros', 'text/html'),
+    '</sobre-nosotros.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
   assert.equal(cabeceraLink('/carreras/abc.md', 'text/markdown; charset=utf-8'),
     '</llms.txt>; rel="describedby"');
   assert.equal(cabeceraLink('/llms.txt', 'text/markdown; charset=utf-8'), null);
@@ -230,4 +284,67 @@ test('las versiones markdown se sirven en el build compilado', async t => {
   assert.equal((await astro.fetch('/novedades/articulo/no-existe.md')).status, 404);
   // El borrador tampoco.
   assert.equal((await astro.fetch('/novedades/articulo/novedad-sintetica-13.md')).status, 404);
+});
+
+test('las páginas fijas tienen su versión markdown', async t => {
+  assert.ok(existsSync(CONFIG), 'Falta el build de Astro.');
+  const astro = createTestHarness({ workers: [{ configPath: CONFIG }] });
+  t.after(() => astro.close());
+  await astro.listen();
+  const worker = astro.getWorker();
+  await worker.applyD1Migrations('DB');
+  await insertarCatalogo((await worker.getEnv()).DB);
+
+  // El FAQ: las respuestas del acordeón salen del mismo JSX que la página.
+  const faq = await astro.fetch('/faq.md');
+  assert.equal(faq.status, 200);
+  assert.equal(faq.headers.get('content-type'), 'text/markdown; charset=utf-8');
+  const textoFaq = await faq.text();
+  assert.match(textoFaq, /^# Preguntas frecuentes\n/);
+  assert.match(textoFaq, /### ¿Dónde queda el CAU Villa Lugano\?/);
+  assert.match(textoFaq, /Guaminí 4876/);
+  assert.doesNotMatch(textoFaq, /<[a-z]/i);
+
+  // El contacto: los datos de la sede.
+  const contacto = await astro.fetch('/contacto.md');
+  assert.equal(contacto.status, 200);
+  const textoContacto = await contacto.text();
+  assert.match(textoContacto, /- \*\*WhatsApp:\*\* 11 3297-3801/);
+  assert.match(textoContacto, /- \*\*Correo:\*\* inscripciones@siglo21sur\.com/);
+  assert.match(textoContacto, /- \*\*Dirección:\*\* Guaminí 4876/);
+
+  // El calendario: la estructura del ciclo.
+  const calendario = await astro.fetch('/calendario-academico.md');
+  assert.equal(calendario.status, 200);
+  assert.match(await calendario.text(), /- \*\*Aperturas de cursada:\*\* marzo, mayo, agosto, octubre\./);
+
+  // Sobre nosotros: las tarjetas y las preguntas de la sede.
+  const sobre = await astro.fetch('/sobre-nosotros.md');
+  assert.equal(sobre.status, 200);
+  assert.match(await sobre.text(), /- \*\*Formación universitaria:\*\*/);
+
+  // Las páginas de catálogo: la misma oferta que la página y el llms.txt.
+  const teclab = await astro.fetch('/teclab.md');
+  assert.equal(teclab.status, 200);
+  assert.match(await teclab.text(), /## Tecnicaturas y cursos de Teclab/);
+
+  const clases = await astro.fetch('/clases-apoyo.md');
+  assert.equal(clases.status, 200);
+  assert.match(await clases.text(), /- \[Matemática\]\(https:\/\/www\.siglo21sur\.com\/clases-apoyo\/matematica\)/);
+
+  const vocacional = await astro.fetch('/test-vocacional.md');
+  assert.equal(vocacional.status, 200);
+  assert.match(await vocacional.text(), /## Carreras de la oferta/);
+
+  // Cada una se declara con su versión markdown.
+  for (const [ruta, markdown] of [
+    ['/faq', '/faq.md'], ['/contacto', '/contacto.md'],
+    ['/calendario-academico', '/calendario-academico.md'],
+    ['/sobre-nosotros', '/sobre-nosotros.md'], ['/teclab', '/teclab.md'],
+    ['/clases-apoyo', '/clases-apoyo.md'], ['/test-vocacional', '/test-vocacional.md'],
+  ]) {
+    const pagina = await astro.fetch(ruta);
+    assert.equal(pagina.headers.get('link'),
+      `<${markdown}>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"`, ruta);
+  }
 });

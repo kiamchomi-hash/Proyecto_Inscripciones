@@ -5,14 +5,15 @@ import PaginaFaq from '../entrega/PaginaFaq';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { listarFaqPublicas } from '../datos/faq';
+import { PAGINAS } from '@/lib/paginas';
 import { configTurnstile } from '../entrega/entorno-publico';
 import '@/estilos/faq/faq.css';
 const preguntas = await listarFaqPublicas(env.DB);
 const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
-const descripcion = 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano. La universidad cerca de Celina y todo Zona Sur/Oeste.';
+const descripcion = PAGINAS.faq.descripcion;
 const schema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: preguntas.map(q => ({ '@type': 'Question', name: q.titulo, acceptedAnswer: { '@type': 'Answer', text: q.respuesta } })) };
 ---
-<Sitio titulo="Preguntas Frecuentes | Siglo 21" descripcion={descripcion}
+<Sitio titulo={PAGINAS.faq.titulo} descripcion={descripcion}
   palabrasClave={['preguntas frecuentes', 'siglo 21', 'villa lugano', 'cursada', 'exámenes', 'aranceles', 'inscripción']}
   canonical="https://www.siglo21sur.com/faq" ruta="/faq"
   og={{ titulo: 'Preguntas Frecuentes — CAU Villa Lugano', descripcion, url: '/faq', sitio: 'CAU Villa Lugano — Universidad Siglo 21', imagen: { url: '/imagenes/og/default.jpg', ancho: 1200, alto: 630, alt: 'CAU Villa Lugano — Universidad Siglo 21 a distancia' } }}

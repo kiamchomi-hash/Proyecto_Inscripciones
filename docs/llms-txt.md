@@ -99,15 +99,26 @@ URL con `.md` al final.
 | `/carreras/<slug>.md` | La ficha: datos, plan de estudios, preguntas frecuentes y cómo inscribirse |
 | `/clases-apoyo/<slug>.md` | La clase de apoyo: descripción, texto largo y cómo reservar turno |
 | `/novedades/articulo/<slug>.md` | El artículo: extracto, fecha y el cuerpo convertido a markdown |
+| `/faq.md` | Las preguntas del acordeón con sus respuestas y las que mandan los que escriben |
+| `/contacto.md` | Los datos de la sede: WhatsApp, teléfono, correo, horario, dirección y mapa |
+| `/calendario-academico.md` | La estructura del ciclo: aperturas, semanas, parciales, entregas y preguntas |
+| `/sobre-nosotros.md` | Qué es el centro, la sede en números, qué se puede hacer ahí y las preguntas |
+| `/teclab.md`, `/clases-apoyo.md`, `/test-vocacional.md` | Las páginas que son un catálogo: su resumen y la misma oferta que muestran |
 
-Las arman `cloudflare/src/entrega/markdown-carrera.ts`,
-`markdown-materia.ts` y `markdown-articulo.ts`, y las rutas son
-`cloudflare/src/pages/**/[slug].md.ts`. Todo el texto sale de la base: la
-descripción, el plan, las preguntas frecuentes y los datos de la ficha. No se
+Las arman `cloudflare/src/entrega/markdown-*.ts` y las rutas son
+`cloudflare/src/pages/**/[slug].md.ts`. Todo el texto sale de la base, de los
+módulos de datos de cada página o del mismo JSX que la página pinta: no se
 escribe una línea que no esté en el sitio, y ningún precio se publica.
 
-El contenido de los artículos es HTML: `lib/html-markdown.ts` lo traduce a
-markdown (encabezados, listas, enlaces, negritas, tablas e imágenes).
+- Las respuestas del FAQ son JSX: se renderizan y se pasan por el conversor, en
+  vez de copiarlas a un archivo de texto que se desincronizaría.
+- El contenido de los artículos es HTML: `lib/html-markdown.ts` lo traduce a
+  markdown (encabezados, listas, enlaces, negritas, tablas e imágenes).
+- Los datos de la sede (teléfono, correo, horario, dirección) viven en
+  `lib/sede.ts` y los usan el JSON-LD, la página de contacto y su versión
+  markdown.
+- El título y la descripción de las páginas fijas viven en `lib/paginas.ts`, y
+  los de las páginas con módulo de datos propio, en ese módulo.
 
 ## Vigilancia
 
@@ -125,6 +136,8 @@ página de la que salen.
 
 ## Qué falta
 
-- Las versiones markdown de las páginas fijas (`/faq.md`, `/contacto.md`): su
-  texto vive en componentes de React, no en la base, así que no hay de dónde
-  tomarlo sin copiarlo y que se desincronice.
+- La versión markdown de la home (`/index.md`): su contenido es el catálogo,
+  que el `llms.txt` ya lista, y un carrusel de avisos que no se translate a
+  markdown.
+- La del listado de novedades (`/novedades/1.md`): sus artículos ya tienen la
+  suya.

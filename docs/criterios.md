@@ -397,9 +397,11 @@ pide `aplicarCabeceras`, que ya decide las cabeceras de cada ruta.
 
 Las páginas con contenido en la base tienen además su versión markdown en la
 misma URL con `.md` al final (`/carreras/<slug>.md`, `/clases-apoyo/<slug>.md`,
-`/novedades/articulo/<slug>.md`), y su cabecera declara la relación
-`alternate`. El texto sale de la base: no se escribe una línea que no esté en el
-sitio.
+`/novedades/articulo/<slug>.md`, `/faq.md`, `/contacto.md`,
+`/calendario-academico.md`, `/sobre-nosotros.md` y las de catálogo), y su
+cabecera declara la relación `alternate`. El texto sale de la base, de los
+módulos de datos de cada página o del mismo JSX que la página pinta: no se
+escribe una línea que no esté en el sitio.
 
 ## El entorno: lo que ya costó descubrir
 

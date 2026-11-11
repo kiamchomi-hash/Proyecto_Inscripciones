@@ -8,7 +8,7 @@ import { trackPreguntaFaq } from '@/lib/analytics';
 
 /* ── Data ──────────────────────────────────────────────── */
 
-interface FaqItem {
+export interface FaqItem {
   question: string;
   keywords: string;
   content: React.ReactNode;
@@ -59,7 +59,7 @@ function SocialLink({ href, label, color, bgColor, borderColor, icon, children }
   );
 }
 
-const FAQ_ITEMS: FaqItem[] = [
+export const FAQ_ITEMS: FaqItem[] = [
   {
     question: '¿Dónde queda el CAU Villa Lugano?',
     shortLabel: '¿Dónde queda el CAU Villa Lugano?',

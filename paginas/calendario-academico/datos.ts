@@ -12,6 +12,38 @@
  * (apartados 3.3.2 y 5.1.3). Verificado el 30/10/2026.
  */
 
+/**
+ * Los metadatos de la página. Viven acá y no en el componente porque la
+ * versión markdown de la página los usa también: dos copias del mismo texto
+ * se desincronizan.
+ */
+export const metadata = {
+  // La consulta estacional es "calendario siglo 21 2027" y sus variantes. El año
+  // va en el título si o si, y sin prometer fechas que todavía no existen.
+  title: { absolute: 'Calendario Académico 2027 Siglo 21 a Distancia | Cursada' },
+  description:
+    'Cómo se organiza el ciclo 2027 de Universidad Siglo 21 a distancia: dos semestres, cuatro tramos de nueve semanas, parciales, entregas de trabajos prácticos y materias cuatrimestrales. Inscripción 2027 abierta en el CAU Villa Lugano.',
+  keywords: [
+    'calendario académico 2027',
+    'calendario siglo 21 2027',
+    'inscripción 2027 siglo 21',
+    'inicio de clases 2027',
+    'parciales siglo 21',
+    'modalidad distancia',
+  ],
+  alternates: {
+    canonical: '/calendario-academico',
+  },
+  openGraph: {
+    title: 'Calendario Académico 2027 — Universidad Siglo 21 a Distancia',
+    description:
+      'Semestres, tramos de nueve semanas, parciales, entregas y materias cuatrimestrales del ciclo 2027, con la inscripción abierta.',
+    url: '/calendario-academico',
+    type: 'article',
+    images: [{ url: '/imagenes/og/default.jpg', width: 1200, height: 630, alt: 'Universidad Siglo 21 — CAU Online' }],
+  },
+};
+
 export const REGLAMENTO =
   'https://contenidos.21.edu.ar/microsites/reglamento/index.php?put=5-1-calendario-academico';
 

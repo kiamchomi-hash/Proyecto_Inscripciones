@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from '@/components/icons';
 import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
 import TurnstileWidget from '@/components/turnstile-widget';
-import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
+import { HORARIO_WHATSAPP, MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE, TELEFONO_DISPLAY } from '@/lib/sede';
 import { avisarFalloFormularioContacto, tipoFalloTecnicoFormulario, trackConsulta, trackInicioFormulario } from '@/lib/analytics';
 import { mensajeRechazoEnsayo, type DetalleRechazo } from '@/components/formularios/errores-ensayo';
 import './contacto.css';
@@ -307,7 +307,7 @@ export default function ContactoPageContent() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">WhatsApp</h2>
-                <p className="text-xs font-semibold" style={{ color: '#25D366' }}>11 3297-3801</p>
+                <p className="text-xs font-semibold" style={{ color: '#25D366' }}>{TELEFONO_DISPLAY}</p>
               </div>
             </div>
 
@@ -322,7 +322,7 @@ export default function ContactoPageContent() {
             <div className="px-6 pb-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
                 style={{ color: '#25D366', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.2)' }}>
-                Lun a Vie, 8 a 20 hs
+                {HORARIO_WHATSAPP}
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
                 style={{ color: '#25D366', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.2)' }}>
@@ -657,7 +657,7 @@ export default function ContactoPageContent() {
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ color: '#00c7b1' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
-              <span className="text-xs font-semibold" style={{ color: '#c8dedd' }}>Lun a Vie, 8 a 20 hs</span>
+              <span className="text-xs font-semibold" style={{ color: '#c8dedd' }}>{HORARIO_WHATSAPP}</span>
             </div>
 
             <div className="flex flex-wrap justify-center gap-2">

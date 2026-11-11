@@ -12,6 +12,7 @@ import '@/estilos/index.css';
 // cascade sea la misma: sin esto faltaban el panel del contacto y los modales.
 import '@/components/index/modales.css';
 import '@/components/formularios/formulario-lead.css';
+import { PAGINAS } from '@/lib/paginas';
 
 // Home paritaria con `app/page.tsx`: mismo título absoluto, misma descripción,
 // mismos componentes y mismo orden. El catálogo se lee de D1 con la taxonomía
@@ -27,7 +28,7 @@ const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
 
 <Sitio
   titulo={`Universidad Siglo 21 | CAU Online | Oferta académica ${anio}`}
-  descripcion="Oferta académica online de Universidad Siglo 21, con acompañamiento para estudiantes de CABA, GBA y otras zonas. Consultá carreras e inscripciones."
+  descripcion={PAGINAS.home.descripcion}
   canonical="https://www.siglo21sur.com"
   ruta="/"
 >

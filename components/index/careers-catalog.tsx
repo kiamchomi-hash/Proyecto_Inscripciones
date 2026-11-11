@@ -456,13 +456,17 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                 <button
                   onClick={() => { setShowFilters(!showFilters); setDesktopFilterSection(null); }}
                   className={`filter-toggle-btn ${hasFilters ? 'active' : ''}`}
-                  aria-label="Filtros por área y duración"
                   aria-expanded={showFilters}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                   </svg>
-                  <span className="hidden sm:inline">Filtros</span>
+                  {/* El rótulo acompaña al contador en el nombre accesible: en
+                      móvil queda oculto pero se lee, y en escritorio se ve.
+                      Con un `aria-label` encima, WCAG 2.5.3 pedía que el texto
+                      visible ("Filtros 0") estuviera en el nombre accesible y
+                      no estaba ("Filtros por área y duración"). */}
+                  <span className="sr-only sm:not-sr-only">Filtros</span>{' '}
                   <span className="filter-count-badge">{filterCount}</span>
                 </button>
                 {/* Desktop: limpiar filtros al lado del buscador */}
@@ -945,6 +949,18 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
     onClick(carrera);
   }, [carrera, onClick]);
 
+  // El nombre accesible de la tarjeta es el texto que se ve. El `aria-label`
+  // que lo reescribía ("Ver detalles de ...") dejaba fuera ese texto, y WCAG
+  // 2.5.3 pide que el nombre accesible lo contenga; además dos carreras con el
+  // mismo nombre (Licenciatura y Tecnicatura de Diseño y Animación Digital)
+  // quedaban con nombres idénticos y enlaces distintos. Cuando el nombre
+  // oficial de la carrera no aparece en la tarjeta (el prefijo visible puede
+  // no traer el tipo), se agrega oculto para no perderlo.
+  const textoVisible = `${prefix} ${cleanName}`.replace(/\s+/g, ' ').trim();
+  const nombreOficial = carrera.nombre.replace(/\s+/g, ' ').trim();
+  const oficialOculto =
+    nombreOficial.length > 0 && !textoVisible.toLowerCase().includes(nombreOficial.toLowerCase());
+
   return (
     <li className="contents">
       <Link
@@ -954,8 +970,8 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
         onClick={handleClick}
         onMouseEnter={handlePrefetch}
         onTouchStart={handlePrefetch}
-        aria-label={`Ver detalles de ${carrera.nombre}`}
       >
+        {oficialOculto && <span className="sr-only">{nombreOficial}</span>}
         {badge && !badgeInternoTeclab && (
           <span className={`career-badge ${badgeClase}`}>
             {badge}

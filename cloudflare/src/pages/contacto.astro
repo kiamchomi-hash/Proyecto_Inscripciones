@@ -1,6 +1,7 @@
 ---
 import { env } from 'cloudflare:workers';
 import Sitio from '../layouts/Sitio.astro';
+import { PAGINAS } from '@/lib/paginas';
 import PaginaContacto from '../entrega/PaginaContacto';
 import SiteFooter from '@/components/footer';
 import { configTurnstile } from '../entrega/entorno-publico.ts';
@@ -12,8 +13,8 @@ const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
 ---
 
 <Sitio
-  titulo="Contacto | Siglo 21"
-  descripcion="Contactá al CAU Villa Lugano, sede de Universidad Siglo 21. WhatsApp, Facebook, Instagram. Guaminí 4876, Villa Lugano, Comuna 8, CABA."
+  titulo={PAGINAS.contacto.titulo}
+  descripcion={PAGINAS.contacto.descripcion}
   palabrasClave={['contacto', 'CAU villa lugano', 'siglo 21', 'whatsapp', 'Guaminí 4876', 'comuna 8']}
   canonical="https://www.siglo21sur.com/contacto"
   ruta="/contacto"

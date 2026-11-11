@@ -82,8 +82,13 @@ export default function HeroCarousel({ children }: Props) {
     touchStartRef.current = null;
   };
 
+  // WCAG 2.2.8 (Target Size, mínimo) pide 24×24 px. El tamaño en `rem` de
+  // Tailwind depende de la raíz, que en móvil baja a 13 px: `h-7` ahí mide
+  // 22,75 px y no alcanzaba. El mínimo en píxeles fijos deja el área táctil
+  // igual en cualquier pantalla y el aspecto visible no cambia (el punto son
+  // 8 px dentro de un botón transparente).
   const botonControl =
-    'grid h-7 w-7 shrink-0 place-items-center rounded-full text-white/70 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 transition-colors';
+    'grid h-7 w-7 min-h-[24px] min-w-[24px] shrink-0 place-items-center rounded-full text-white/70 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 transition-colors';
 
   return (
     <section
@@ -133,7 +138,7 @@ export default function HeroCarousel({ children }: Props) {
               onClick={() => irA(i)}
               aria-label={`Ir a la slide ${i + 1} de ${total}`}
               aria-current={i === actual ? 'true' : undefined}
-              className="grid h-6 w-6 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+              className="grid h-6 w-6 min-h-[24px] min-w-[24px] place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
             >
               <span className={`carousel-dot ${i === actual ? 'active' : ''}`} aria-hidden="true" />
             </button>

@@ -160,7 +160,9 @@ try {
       await abrir('/');
       const buscar = page.getByRole('textbox', { name: 'Buscar carrera', exact: true });
       await buscar.fill('Abogacía');
-      const enlace = page.getByRole('link', { name: 'Ver detalles de Abogacía', exact: true });
+      // La tarjeta ya no reescribe su nombre con un `aria-label`: el nombre
+      // accesible es el texto que se ve, así que se busca por la carrera.
+      const enlace = page.getByRole('link', { name: /Abogacía/ }).first();
       await enlace.waitFor(); await enlace.click();
       const dialogo = page.getByRole('dialog'); await dialogo.waitFor();
       await page.keyboard.press('Tab');
