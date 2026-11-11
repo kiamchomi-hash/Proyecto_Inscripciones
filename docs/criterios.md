@@ -257,6 +257,16 @@ se prueban las áreas afectadas; el control integral queda para cambios amplios.
 GitHub verifica el código de la raíz y el contrato del publicador, no el `check`
 completo de Cloudflare.
 
+**El índice de git puede tener trabajo de otra sesión (11/11/2026):** cuando
+dos sesiones editan el repo a la vez, una puede dejar archivos en *staging* y
+el commit de la otra se los lleva: `git commit` toma todo lo que está en el
+índice, no sólo lo que esa sesión agregó. Antes de commitear hay que mirar
+`git diff --cached` y confirmar que están sólo los archivos propios; si hay
+trabajo ajeno, se saca del índice con `git restore --staged <archivo>` y queda
+en el árbol de trabajo. Pasó con un commit de accesibilidad que se llevó las
+versiones markdown de otra sesión; el trabajo no se perdió (quedó publicado y
+el otro proceso siguió encima), pero salió del commit que le tocaba.
+
 ### Las piezas gráficas de Siglo 21 van con el material oficial
 
 Decidido el 30/10/2026: Siglo 21 pidió que se use sólo su material oficial. No
