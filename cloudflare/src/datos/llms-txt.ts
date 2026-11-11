@@ -22,12 +22,21 @@ type FilaMateria = {
   descripcion: string | null;
 };
 
+type FilaArticulo = {
+  slug: string;
+  titulo: string;
+  extracto: string | null;
+  fecha: string | null;
+};
+
 export async function datosLlmsTxt(db: D1Database): Promise<DatosLlmsTxt> {
-  const [carreras, materias] = await Promise.all([
+  const [carreras, materias, articulos] = await Promise.all([
     consultarConReintentos(() => db.prepare(`SELECT nombre, prefix, nivel, descripcion, duracion,
       titulo, modalidad, proximamente FROM carreras WHERE activa = 1 ORDER BY rowid`).all<FilaCarrera>()),
     consultarConReintentos(() => db.prepare(`SELECT slug, label, descripcion FROM materias
       WHERE activa = 1 AND en_construccion = 0 ORDER BY rowid`).all<FilaMateria>()),
+    consultarConReintentos(() => db.prepare(`SELECT slug, titulo, extracto, fecha FROM novedades
+      WHERE publicada = 1 AND slug IS NOT NULL ORDER BY rowid`).all<FilaArticulo>()),
   ]);
 
   return {
@@ -42,5 +51,6 @@ export async function datosLlmsTxt(db: D1Database): Promise<DatosLlmsTxt> {
       proximamente: fila.proximamente === 1,
     })),
     materias: materias.results,
+    articulos: articulos.results,
   };
 }

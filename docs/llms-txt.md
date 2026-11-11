@@ -18,11 +18,13 @@ especificación.
 |---|---|
 | Carreras | `carreras` de D1, con `activa = 1`, filtradas por `esCarreraVisible` (la taxonomía compartida) |
 | Clases de apoyo | `materias` de D1, con `activa = 1` y `en_construccion = 0` |
+| Artículos | `novedades` de D1, con `publicada = 1` y slug: título, extracto y fecha |
 | Páginas fijas | Una lista fija en el código, con las mismas descripciones que declara cada página |
 
 Las 101 URLs de carrera que salen son **exactamente** las del `sitemap.xml`: el
 slug se arma con `carreraToSlug`, la misma función que usa el sitemap y la
-ficha.
+ficha. Las de los artículos son las mismas URLs, con el mismo filtro de
+publicación.
 
 ## Dónde vive el código
 
@@ -47,6 +49,8 @@ compartido con el sitemap.
 - **La cola de la ficha de Identidad Argentina.** La descripción de las
   diplomaturas termina con «Docente: … Escuela … Convenio Academia …»: eso se
   corta antes de la nota.
+- **Los borradores.** Un artículo con `publicada = 0` no sale, y al que le
+  falta el extracto se lo publica con la fecha sola.
 
 ## Cómo se prueba
 

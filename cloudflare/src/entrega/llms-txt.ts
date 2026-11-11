@@ -34,9 +34,17 @@ export interface MateriaLlms {
   descripcion: string | null;
 }
 
+export interface ArticuloLlms {
+  slug: string;
+  titulo: string;
+  extracto: string | null;
+  fecha: string | null;
+}
+
 export interface DatosLlmsTxt {
   carreras: CarreraLlms[];
   materias: MateriaLlms[];
+  articulos: ArticuloLlms[];
 }
 
 // ── Encabezado ──────────────────────────────────────────────────────────────
@@ -180,6 +188,26 @@ function sinColaDeDocente(texto: string): string {
 
 const MAXIMO_NOTA = 400;
 
+/**
+ * La fecha como la muestra el sitio: «20 de septiembre de 2026». Se arma a
+ * mano y no con `toLocaleDateString` para que el texto sea el mismo en el
+ * Worker, en Node y en la prueba, sin depender de los datos de idioma de cada
+ * entorno.
+ */
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
+  'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function fechaLarga(fecha: string | null): string {
+  const partes = /^(\d{4})-(\d{2})-(\d{2})/.exec(fecha ?? '');
+  if (!partes) return '';
+  const [, anio, mes, dia] = partes;
+  return `${Number(dia)} de ${MESES[Number(mes) - 1]} de ${anio}`;
+}
+
+function conPuntoFinal(texto: string): string {
+  return /[.!?]$/.test(texto) ? texto : `${texto}.`;
+}
+
 // ── Notas ───────────────────────────────────────────────────────────────────
 
 /**
@@ -221,6 +249,17 @@ function notaDeMateria(materia: MateriaLlms): string {
   return recortarEnOracion(texto, MAXIMO_NOTA);
 }
 
+/** La nota de un artículo: el extracto y la fecha en que se publicó. */
+function notaDeArticulo(articulo: ArticuloLlms): string {
+  const partes: string[] = [];
+  const crudo = articulo.extracto ? sinHtml(articulo.extracto).trim() : '';
+  const extracto = crudo ? recortarEnOracion(desentidades(crudo), 300) : '';
+  if (extracto) partes.push(conPuntoFinal(extracto));
+  const fecha = fechaLarga(articulo.fecha);
+  if (fecha) partes.push(`(${fecha})`);
+  return partes.join(' ');
+}
+
 // ── Construcción ────────────────────────────────────────────────────────────
 
 export function construirLlmsTxt(datos: DatosLlmsTxt): string {
@@ -260,6 +299,17 @@ export function construirLlmsTxt(datos: DatosLlmsTxt): string {
       return `- [${nombre}](${url}): ${notaDeMateria(materia)}`;
     });
     bloques.push('## Clases de apoyo', lineas.join('\n'));
+  }
+
+  if (datos.articulos.length) {
+    const lineas = datos.articulos.map(articulo => {
+      // El título viene de la base: se le sacan las etiquetas antes de
+      // escribirlo, como hace el sitio con el contenido.
+      const nombre = textoDeEnlace(sinHtml(articulo.titulo));
+      const url = `${BASE}/novedades/articulo/${articulo.slug}`;
+      return `- [${nombre}](${url}): ${notaDeArticulo(articulo)}`;
+    });
+    bloques.push('## Artículos', lineas.join('\n'));
   }
 
   bloques.push('## Páginas del sitio', PAGINAS

@@ -254,10 +254,12 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.match(markdown, /^# Universidad Siglo 21 — CAU Villa Lugano\n/);
   assert.match(markdown, /\n## Licenciaturas de Universidad Siglo 21\n/);
   assert.match(markdown, /\n## Clases de apoyo\n/);
+  assert.match(markdown, /\n## Artículos\n/);
   for (const esperado of [
     '- [Licenciatura en Administración](https://www.siglo21sur.com/carreras/licenciatura-en-administracion):',
     '- [Diplomatura en Oratoria](https://www.siglo21sur.com/carreras/diplomatura-en-oratoria):',
     '- [Matemática](https://www.siglo21sur.com/clases-apoyo/matematica):',
+    '- [Novedad destacada sintética](https://www.siglo21sur.com/novedades/articulo/novedad-sintetica-1):',
     '- [Contacto](https://www.siglo21sur.com/contacto):',
   ]) {
     assert.ok(markdown.includes(esperado), esperado);
@@ -266,6 +268,8 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     '/carreras/maestria-en-gestion-educativa',
     '/carreras/licenciatura-en-agroinformatica',
     '/clases-apoyo/arte', '/clases-apoyo/oculta',
+    // El artículo 13 es un borrador: no se publica.
+    '/novedades/articulo/novedad-sintetica-13',
   ]) {
     assert.ok(!markdown.includes(fuera), `${fuera} no debe publicarse`);
   }

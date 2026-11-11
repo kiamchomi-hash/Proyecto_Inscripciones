@@ -57,7 +57,14 @@ const MATERIAS = [{
   descripcion: JSON.stringify(['Clases <strong>presenciales</strong>, individuales o en grupo reducido.']),
 }];
 
-const markdown = construirLlmsTxt({ carreras: CARRERAS, materias: MATERIAS });
+const ARTICULOS = [{
+  slug: 'que-es-el-cau-villa-lugano',
+  titulo: 'Qué es un CAU y cómo te acompaña',
+  extracto: 'Conocé cómo te acompañamos para elegir una carrera e inscribirte online en Universidad Siglo 21.',
+  fecha: '2026-07-23',
+}];
+
+const markdown = construirLlmsTxt({ carreras: CARRERAS, materias: MATERIAS, articulos: ARTICULOS });
 
 test('el archivo tiene la forma de llmstxt.org: H1, resumen y secciones con listas', () => {
   const lineas = markdown.split('\n');
@@ -105,8 +112,34 @@ test('las secciones siguen el orden de la taxonomía compartida', () => {
     'Diplomaturas y cursos de Identidad Argentina',
     'Tecnicaturas y cursos de Teclab (Tecnología)',
     'Clases de apoyo',
+    'Artículos',
     'Páginas del sitio',
   ]);
+});
+
+test('los artículos salen con su extracto y la fecha en que se publicaron', () => {
+  const linea = markdown.split('\n').find(l => l.includes('/novedades/articulo/que-es-el-cau-villa-lugano'));
+  assert.ok(linea);
+  assert.ok(linea.startsWith('- [Qué es un CAU y cómo te acompaña]('));
+  assert.ok(linea.includes('Conocé cómo te acompañamos para elegir una carrera e inscribirte online'));
+  assert.ok(linea.includes('(23 de julio de 2026)'), linea);
+  // El título y el enlace no repiten lo que ya dice la nota.
+  assert.ok(!linea.includes('2026-07-23'));
+});
+
+test('un artículo sin extracto o sin fecha no rompe la nota', () => {
+  const salida = construirLlmsTxt({
+    carreras: [], materias: [],
+    articulos: [
+      { slug: 'sin-fecha', titulo: 'Sin fecha', extracto: 'Un texto.', fecha: null },
+      { slug: 'sin-extracto', titulo: 'Sin extracto', extracto: null, fecha: '2026-07-23' },
+    ],
+  });
+  const sinFecha = salida.split('\n').find(l => l.includes('/novedades/articulo/sin-fecha'));
+  const sinExtracto = salida.split('\n').find(l => l.includes('/novedades/articulo/sin-extracto'));
+  assert.equal(sinFecha, '- [Sin fecha](https://www.siglo21sur.com/novedades/articulo/sin-fecha): Un texto.');
+  assert.equal(sinExtracto,
+    '- [Sin extracto](https://www.siglo21sur.com/novedades/articulo/sin-extracto): (23 de julio de 2026)');
 });
 
 test('la nota lleva modalidad, duración y título cuando difiere del enlace', () => {
@@ -161,7 +194,7 @@ test('una descripción larga se recorta en un límite de oración', () => {
       descripcion: larga.repeat(12), duracion: '4 años', titulo: 'Licenciado/a',
       modalidad: 'A distancia', proximamente: false,
     }],
-    materias: [],
+    materias: [], articulos: [],
   });
   const nota = salida.split('\n').find(l => l.includes('/carreras/licenciatura-en-carrera-larga'));
   assert.ok(nota);
