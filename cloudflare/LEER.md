@@ -1157,3 +1157,30 @@ cloudflare/migrations/0014_vocacional_embudo.sql --escribir` el 06/11/2026 y
 comprobada con un `SELECT` a `sqlite_master`. Falta publicar el código que manda
 los pasos: hasta que el Worker nuevo esté arriba, la tabla queda vacía.
 
+## `/llms.txt` y la cabecera `Link` (11/11/2026)
+
+El mapa del sitio para los agentes de IA, con la convención de llmstxt.org.
+
+- `src/pages/llms.txt.ts` — la ruta. Se genera en cada pedido, como
+  `sitemap.xml`, con `Cache-Control: no-store` y `text/markdown; charset=utf-8`.
+- `src/datos/llms-txt.ts` — lee D1: carreras activas y clases de apoyo
+  publicadas. El reintento de las lecturas quedó en `src/datos/reintento.ts`,
+  compartido con el sitemap.
+- `src/entrega/llms-txt.ts` — arma el markdown. Es puro: no lee la base ni la
+  red, para que las pruebas lo abran con Node pelado. Las URLs de las carreras
+  salen del mismo `carreraToSlug` que el sitemap, así que coinciden byte a byte.
+
+Las páginas HTML mandan `Link: </llms.txt>; rel="describedby"`. La pone
+`aplicarCabeceras` (`src/entrega/cabeceras.ts`), que ya decide las cabeceras de
+cada ruta: sólo en respuestas 200 de tipo `text/html`. El propio `/llms.txt`, el
+sitemap, las APIs y los assets no la llevan. Va en la respuesta y no en el
+`<head>` para no tocar el marcado, que las referencias de paridad comparan.
+
+`/llms.txt` está en `RUTAS` de `lib/vigilancia-esperado.ts` y la cabecera en
+`CABECERAS_ESPERADAS`: los dos vigilantes (el cron del Worker y
+`herramientas/smoke.mjs`) los miden. Ambos reintentan la home hasta tres veces
+antes de declarar ausente una cabecera: durante un despliegue conviven dos
+versiones del Worker unos segundos y un nodo puede seguir sirviendo la
+anterior. El detalle del archivo y de lo que no se publica está en
+[`docs/llms-txt.md`](../docs/llms-txt.md).
+
