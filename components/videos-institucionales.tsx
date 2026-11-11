@@ -102,14 +102,20 @@ function Folletos({ video }: { video: VideoInstitucional }) {
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
           <span>Anterior</span>
         </button>
-        <button className="vi-carrusel-estado" type="button" aria-label={estado.detenido ? 'Carrusel en pausa' : 'Pausar carrusel'} aria-disabled={estado.detenido} onClick={detener}>
-          <span className="vi-carrusel-contador" aria-live={estado.detenido ? 'polite' : 'off'} aria-atomic="true">{estado.indice + 1}<span> / {video.folletos.length}</span></span>
-          <span className="vi-carrusel-pausa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" /></svg>{estado.detenido ? 'En pausa' : 'Pausar'}</span>
+        <button className="vi-carrusel-estado" type="button" aria-disabled={estado.detenido} onClick={detener}>
+          {/* El contador queda fuera del nombre accesible: el nombre tiene que
+              contener el texto visible (WCAG 2.5.3) y el contador lo rompe. */}
+          <span className="vi-carrusel-contador" aria-hidden="true">{estado.indice + 1}<span> / {video.folletos.length}</span></span>
+          <span className="vi-carrusel-pausa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" /></svg>{estado.detenido ? 'En pausa' : 'Pausar'}<span className="sr-only"> el carrusel de folletos</span></span>
         </button>
         <button type="button" aria-label="Folleto siguiente" onClick={() => enviar({ tipo: 'seleccionar', indice: estado.indice + 1 })}>
           <span>Siguiente</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6" /></svg>
         </button>
+        {/* El aviso del folleto va fuera del botón: dentro formaría parte de su
+            nombre accesible y el botón se anunciaría con el número de folio.
+            Al final para no cortar la fila de controles. */}
+        <span className="sr-only" aria-live={estado.detenido ? 'polite' : 'off'} aria-atomic="true">Folleto {estado.indice + 1} de {video.folletos.length}</span>
       </div>}
     </div>
   );
