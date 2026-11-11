@@ -128,6 +128,42 @@ test('X-Robots-Tag se decide por ruta: público sin noindex, privado y 404 con n
     'max-age=63072000; includeSubDomains; preload');
 });
 
+test('la cabecera Link apunta al llms.txt en las páginas y en nada más', () => {
+  const html = new Response('<html></html>', {
+    status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  });
+  const pagina = aplicarCabeceras(html, { ruta: '/', estado: 200 });
+  assert.equal(pagina.headers.get('Link'), '</llms.txt>; rel="describedby"');
+
+  // El propio archivo, el sitemap y las APIs no son páginas que describir.
+  for (const [tipo, ruta] of [
+    ['text/markdown; charset=utf-8', '/llms.txt'],
+    ['application/xml', '/sitemap.xml'],
+    ['text/plain', '/robots.txt'],
+    ['application/json', '/api/estado'],
+  ]) {
+    const respuesta = aplicarCabeceras(new Response('x', {
+      status: 200, headers: { 'Content-Type': tipo },
+    }), { ruta, estado: 200 });
+    assert.equal(respuesta.headers.get('Link'), null, ruta);
+  }
+
+  // Un 404 no describe nada.
+  const inexistente = aplicarCabeceras(new Response('<html></html>', {
+    status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  }), { ruta: '/no-existe', estado: 404 });
+  assert.equal(inexistente.headers.get('Link'), null);
+
+  // Si la ruta ya trajo su propia cabecera `Link`, no se pisa.
+  const propia = aplicarCabeceras(new Response('<html></html>', {
+    status: 200, headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      Link: '</carreras/x.md>; rel="alternate"; type="text/markdown"',
+    },
+  }), { ruta: '/carreras/x', estado: 200 });
+  assert.equal(propia.headers.get('Link'), '</carreras/x.md>; rel="alternate"; type="text/markdown"');
+});
+
 test('_headers de assets lleva seguridad y cache, sin cabeceras de HTML', () => {
   const contenido = cabecerasAssets();
   assert.match(contenido, /^\/\*\n/m);
@@ -212,6 +248,8 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.equal(llms.headers.get('content-type'), 'text/markdown; charset=utf-8');
   assert.equal(llms.headers.get('x-robots-tag'), null);
   assert.equal(llms.headers.get('cache-control'), 'no-store');
+  // El archivo no se describe a sí mismo: la cabecera `Link` va en las páginas.
+  assert.equal(llms.headers.get('link'), null);
   const markdown = await llms.text();
   assert.match(markdown, /^# Universidad Siglo 21 — CAU Villa Lugano\n/);
   assert.match(markdown, /\n## Licenciaturas de Universidad Siglo 21\n/);
@@ -245,6 +283,8 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   }
   assert.match(home.headers.get('content-security-policy'), /frame-ancestors 'none'/);
   assert.equal(home.headers.get('x-robots-tag'), null);
+  // La convención llmstxt.org: la página dice cuál es su versión para agentes.
+  assert.equal(home.headers.get('link'), '</llms.txt>; rel="describedby"');
 
   // La lista que vigila producción (`lib/vigilancia-esperado.ts`) se cumple
   // sobre la home y sobre las rutas que exige noindex, sin relajarla.

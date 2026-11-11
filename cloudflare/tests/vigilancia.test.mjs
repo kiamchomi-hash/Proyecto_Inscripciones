@@ -12,6 +12,8 @@ const CABECERAS_HOME = {
   'referrer-policy': 'strict-origin-when-cross-origin',
   'permissions-policy': 'camera=(), microphone=()',
   'strict-transport-security': 'max-age=63072000; includeSubDomains; preload',
+  // La convención llmstxt.org: la página declara su versión para agentes.
+  link: '</llms.txt>; rel="describedby"',
 };
 
 const SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>

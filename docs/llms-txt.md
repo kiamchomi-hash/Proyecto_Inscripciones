@@ -60,6 +60,29 @@ build compilado con D1 efímero y sembrado y pide `/llms.txt`: comprueba el
 estado, el `Content-Type`, las secciones, que estén las carreras de la oferta
 y que no estén las apagadas.
 
+## La cabecera `Link`
+
+La convención llmstxt.org recomienda dos relaciones: `rel="alternate" type="text/markdown"`
+apunta a la versión markdown de la página y `rel="describedby"` al archivo
+`llms.txt` que la cubre. Como el archivo está en la raíz, cubre todo el sitio.
+
+Las páginas HTML del sitio mandan la segunda:
+
+```
+Link: </llms.txt>; rel="describedby"
+```
+
+Va en la cabecera de la respuesta, no en el HTML: la especificación lo permite
+—la forma de cabecera «también funciona para recursos que no son HTML»— y no
+obliga a tocar el marcado, que las referencias de paridad comparan byte a byte.
+La pone `aplicarCabeceras` (`cloudflare/src/entrega/cabeceras.ts`), que ya
+decide las cabeceras de cada ruta: sólo en las respuestas `200` de tipo
+`text/html`. El propio `/llms.txt`, el sitemap, las APIs y los assets no la
+llevan, porque no son páginas que describir.
+
+La primera relación (`alternate`) queda para cuando haya versiones markdown de
+cada página.
+
 ## Vigilancia
 
 `/llms.txt` está en `RUTAS` de [`lib/vigilancia-esperado.ts`](../lib/vigilancia-esperado.ts),
@@ -67,10 +90,11 @@ así que los dos vigilantes (el cron del Worker y `herramientas/smoke.mjs`)
 comprueban que devuelva 200. `herramientas/calidad-web.mjs` lo deja afuera: no
 es una página de navegador.
 
+La cabecera `Link` también se vigila: está en `CABECERAS_ESPERADAS`, que los
+dos vigilantes miden sobre la home.
+
 ## Qué falta
 
-- La cabecera `Link: </llms.txt>; rel="describedby"` que la especificación
-  sugiere para asociar el archivo a una página. Requiere tocar el pipeline de
-  cabeceras, que hoy es el mismo para todas las rutas, así que quedó afuera.
 - Una versión markdown de cada página (`/carreras/<slug>.md` y compañía), que
-  es la otra mitad de la convención.
+  es la otra mitad de la convención. Con eso se agregaría la relación
+  `alternate` a la cabecera `Link`.

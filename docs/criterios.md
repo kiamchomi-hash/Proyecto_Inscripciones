@@ -390,6 +390,11 @@ Tres cosas que no se negocian:
 
 Detalle en [`llms-txt.md`](llms-txt.md).
 
+Las páginas HTML mandan la cabecera `Link: </llms.txt>; rel="describedby"`, que
+es la forma de la convención llmstxt.org. Va en la respuesta y no en el
+`<head>`: no toca el marcado que las referencias de paridad comparan, y la
+pide `aplicarCabeceras`, que ya decide las cabeceras de cada ruta.
+
 ## El entorno: lo que ya costó descubrir
 
 ### El sitio ya no corre en Vercel

@@ -40,6 +40,19 @@ const IMAGENES = /^\/imagenes\/?$/;
 const INSCRIPCION = /^\/(?:carreras\/[^/]+\/inscripcion|teclab\/inscripcion)\/?$/;
 
 /**
+ * La convención llmstxt.org: la cabecera `Link` con `rel="describedby"` apunta
+ * al `/llms.txt` que cubre la página. Como el archivo está en la raíz, cubre
+ * todo el sitio.
+ *
+ * Va en las páginas HTML y en nada más: el propio archivo, el sitemap, las
+ * APIs y los assets no son páginas que describir. La forma de cabecera se
+ * prefiere a un `<link>` en el HTML porque no toca el marcado —las referencias
+ * visuales y de paridad comparan el documento— y porque la especificación
+ * dice que también sirve para recursos que no son HTML.
+ */
+export const LINK_LLMS = '</llms.txt>; rel="describedby"';
+
+/**
  * `X-Robots-Tag` por ruta, como los bloques de `headers()` de `next.config.ts`.
  * No hay noindex global: una página pública tiene que poder indexarse. El 404
  * sí lo lleva porque no hay contenido que ofrecer, y la ruta privada repite el
@@ -72,6 +85,12 @@ export function aplicarCabeceras(respuesta: Response, { ruta, estado }: Contexto
   if (!respuesta.headers.has('Cache-Control')) respuesta.headers.set('Cache-Control', 'no-store');
   const robots = robotsDeRuta(ruta, estado);
   if (robots) respuesta.headers.set('X-Robots-Tag', robots);
+  // Sólo las páginas que se sirven con éxito: un 404 no describe nada y los
+  // recursos que no son HTML no son páginas.
+  if (estado === 200 && !respuesta.headers.has('Link')
+    && (respuesta.headers.get('Content-Type') ?? '').includes('text/html')) {
+    respuesta.headers.set('Link', LINK_LLMS);
+  }
   return respuesta;
 }
 

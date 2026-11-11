@@ -30,12 +30,17 @@ export const RUTAS = [
   '/llms.txt',
 ];
 
-/** Cabeceras de seguridad de `cloudflare/src/entrega/cabeceras.ts`, medidas sobre la home. */
+/**
+ * Cabeceras que la home tiene que traer: las de seguridad de
+ * `cloudflare/src/entrega/cabeceras.ts` y la que declara la versión del sitio
+ * para los agentes de IA (la convención llmstxt.org).
+ */
 export const CABECERAS_ESPERADAS: Record<string, RegExp> = {
   'content-security-policy': /frame-ancestors 'none'/,
   'x-content-type-options': /^nosniff$/,
   'referrer-policy': /strict-origin-when-cross-origin/,
   'permissions-policy': /camera=\(\)/,
+  'link': /<\/llms\.txt>; rel="describedby"/,
 };
 
 /** HSTS solo tiene sentido sobre https, por eso va aparte. */

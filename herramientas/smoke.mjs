@@ -118,9 +118,9 @@ for (const ruta of RUTAS) {
   }
 }
 
-// ── 2. Cabeceras de seguridad ───────────────────────────────────────────────
+// ── 2. Cabeceras de la home ─────────────────────────────────────────────────
 
-console.log('\nCabeceras de seguridad (home)');
+console.log('\nCabeceras de la home (seguridad y versión para agentes)');
 
 const home = await pedir(BASE + '/');
 for (const [cabecera, patron] of Object.entries(CABECERAS_ESPERADAS)) {

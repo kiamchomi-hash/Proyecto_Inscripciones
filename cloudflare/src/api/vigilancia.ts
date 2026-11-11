@@ -130,7 +130,7 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
     }
   });
 
-  // 2. Cabeceras de seguridad sobre la home.
+  // 2. Cabeceras de la home: seguridad y la versión para agentes.
   try {
     const home = await pedir(base + '/');
     for (const [cabecera, patron] of Object.entries(CABECERAS_ESPERADAS)) {
