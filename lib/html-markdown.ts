@@ -78,7 +78,9 @@ export function htmlAMarkdown(html: string): string {
 
   // Enlaces: el texto de adentro es el que se ve.
   texto = texto.replace(/<a\b[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href: string, interior: string) => {
-    const visible = interior.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    // Las etiquetas de adentro se cambian por un espacio: si no, dos textos
+    // seguidos en el enlace quedan pegados ("WhatsApp" + "11 3297-3801").
+    const visible = interior.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     return visible ? `[${visible}](${href})` : '';
   });
 
@@ -94,7 +96,9 @@ export function htmlAMarkdown(html: string): string {
 
   // Listas: cada ítem en su línea.
   texto = texto.replace(/<li\b[^>]*>([\s\S]*?)<\/li>/gi, '\n- $1');
-  texto = texto.replace(/<\/(ul|ol)>/gi, '\n');
+  // Al cerrarse la lista va una línea en blanco: si no, el markdown sigue
+  // contando lo que viene como parte del último ítem.
+  texto = texto.replace(/<\/(ul|ol)>/gi, '\n\n');
 
   // Párrafos, bloques, saltos de línea y citas.
   texto = texto.replace(/<\/p>/gi, '\n\n');

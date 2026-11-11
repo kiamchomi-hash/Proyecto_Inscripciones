@@ -368,6 +368,11 @@ test('las páginas fijas tienen su versión markdown', async t => {
   assert.match(textoFaq, /### ¿Dónde queda el CAU Villa Lugano\?/);
   assert.match(textoFaq, /Guaminí 4876/);
   assert.doesNotMatch(textoFaq, /<[a-z]/i);
+  // Las zonas son una lista, no un montón de párrafos sueltos, y el texto de
+  // los enlaces de redes no va pegado al teléfono.
+  assert.match(textoFaq, /- Villa Lugano\n- Mataderos\n- Liniers\n/);
+  assert.match(textoFaq, /- \[WhatsApp 11 3297-3801\]\(https:\/\/wa\.me\/5491132973801\)/);
+  assert.doesNotMatch(textoFaq, /WhatsApp11/);
 
   // El contacto: los datos de la sede.
   const contacto = await astro.fetch('/contacto.md');

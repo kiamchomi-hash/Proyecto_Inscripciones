@@ -36,10 +36,10 @@ const CHEVRON_SVG = <ChevronDownIcon className="faq-chevron w-6 h-6" style={{ co
 
 function ZonaCard({ name }: { name: string }) {
   return (
-    <div className="zona-card flex items-center gap-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(0,199,177,0.07)', border: '1px solid rgba(0,199,177,0.28)' }}>
+    <li className="zona-card flex items-center gap-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(0,199,177,0.07)', border: '1px solid rgba(0,199,177,0.28)' }}>
       {PIN_SVG}
       <span className="font-semibold text-sm" style={{ color: '#00c7b1' }}>{name}</span>
-    </div>
+    </li>
   );
 }
 
@@ -79,7 +79,10 @@ export const FAQ_ITEMS: FaqItem[] = [
             para emparejar. */}
         <p>Estamos en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Guaminí 4876, Piso 1</strong>, en <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Villa Lugano</strong>, Zona Sur/Oeste de CABA, a poca distancia de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>Mataderos, Liniers y Villa Celina</strong>. Atendemos de <strong style={{ color: 'var(--cau-brand-cream, #fef8f4)' }}>lunes a viernes de 9 a 20 hs</strong>.</p>
         <p style={{ fontSize: '0.78rem', color: '#7ca19b', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>cerca de</p>
-        <div className="grid grid-cols-3 gap-2">
+        {/* Una lista y no un grupo de cajas: en la versión markdown de la
+            página (`/faq.md`) cada zona sale como un ítem de lista y no como
+            un párrafo suelto. `list-none` deja el dibujo igual. */}
+        <ul className="grid grid-cols-3 gap-2 list-none p-0 m-0">
           <ZonaCard name="Villa Lugano" />
           <ZonaCard name="Mataderos" />
           <ZonaCard name="Liniers" />
@@ -87,7 +90,7 @@ export const FAQ_ITEMS: FaqItem[] = [
           <ZonaCard name="Zona Sur del GBA" />
           <ZonaCard name="Comuna 8" />
           <ZonaCard name="Villa Soldati" />
-        </div>
+        </ul>
         <div className="flex flex-col sm:flex-row gap-3 mt-3">
           <div className="flex flex-col gap-2 flex-1">
             <div className="rounded-lg overflow-hidden" style={{ height: 220 }}>
@@ -121,30 +124,42 @@ export const FAQ_ITEMS: FaqItem[] = [
     headerSocials: true,
     content: (
       <div className="px-5 pb-5 pt-1 leading-relaxed space-y-2" style={{ color: '#c8dedd' }}>
-        <SocialLink href="https://wa.me/5491132973801" label="WhatsApp" color="#25D366" bgColor="rgba(37,211,102,0.1)" borderColor="rgba(37,211,102,0.3)"
-          icon={<WhatsAppIcon className="w-5 h-5" />}>
-          <span className="block font-semibold text-sm" style={{ color: '#25D366' }}>WhatsApp</span>
-          <span className="block text-xs" style={{ color: '#c8dedd' }}>11 3297-3801</span>
-        </SocialLink>
-        <SocialLink href="https://www.facebook.com/ceducativovillalugano/" label="Facebook" color="#1877F2" bgColor="rgba(24,119,242,0.1)" borderColor="rgba(24,119,242,0.3)"
-          icon={<FacebookIcon className="w-5 h-5" />}>
-          <span className="block font-semibold text-sm" style={{ color: '#1877F2' }}>Facebook</span>
-          <span className="block text-xs" style={{ color: '#c8dedd' }}>ceducativovillalugano</span>
-        </SocialLink>
-        <SocialLink href="https://www.instagram.com/centroeducativovillalugano/" label="Instagram" color="#e6683c" bgColor="rgba(230,104,60,0.1)" borderColor="rgba(230,104,60,0.3)"
-          icon={<InstagramIcon className="w-5 h-5" />}>
-          <span className="block font-semibold text-sm" style={{ color: '#e6683c' }}>Instagram</span>
-          <span className="block text-xs" style={{ color: '#c8dedd' }}>@centroeducativovillalugano</span>
-        </SocialLink>
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" style={{ color: '#ef4444' }} viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
-          </svg>
-          <span>
-            <span className="block font-semibold text-sm" style={{ color: '#ef4444' }}>Visitanos presencialmente</span>
-            <span className="block text-xs" style={{ color: '#c8dedd' }}>CAU Villa Lugano — Guaminí 4876</span>
-          </span>
-        </div>
+        {/* Las redes van en una lista: en la versión markdown (`/faq.md`)
+            cada una sale como un ítem y no como tres enlaces pegados. */}
+        <ul className="list-none p-0 m-0 space-y-2">
+          <li>
+            <SocialLink href="https://wa.me/5491132973801" label="WhatsApp" color="#25D366" bgColor="rgba(37,211,102,0.1)" borderColor="rgba(37,211,102,0.3)"
+              icon={<WhatsAppIcon className="w-5 h-5" />}>
+              <span className="block font-semibold text-sm" style={{ color: '#25D366' }}>WhatsApp</span>
+              <span className="block text-xs" style={{ color: '#c8dedd' }}>11 3297-3801</span>
+            </SocialLink>
+          </li>
+          <li>
+            <SocialLink href="https://www.facebook.com/ceducativovillalugano/" label="Facebook" color="#1877F2" bgColor="rgba(24,119,242,0.1)" borderColor="rgba(24,119,242,0.3)"
+              icon={<FacebookIcon className="w-5 h-5" />}>
+              <span className="block font-semibold text-sm" style={{ color: '#1877F2' }}>Facebook</span>
+              <span className="block text-xs" style={{ color: '#c8dedd' }}>ceducativovillalugano</span>
+            </SocialLink>
+          </li>
+          <li>
+            <SocialLink href="https://www.instagram.com/centroeducativovillalugano/" label="Instagram" color="#e6683c" bgColor="rgba(230,104,60,0.1)" borderColor="rgba(230,104,60,0.3)"
+              icon={<InstagramIcon className="w-5 h-5" />}>
+              <span className="block font-semibold text-sm" style={{ color: '#e6683c' }}>Instagram</span>
+              <span className="block text-xs" style={{ color: '#c8dedd' }}>@centroeducativovillalugano</span>
+            </SocialLink>
+          </li>
+          <li>
+            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
+              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" style={{ color: '#ef4444' }} viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+              </svg>
+              <span>
+                <span className="block font-semibold text-sm" style={{ color: '#ef4444' }}>Visitanos presencialmente</span>
+                <span className="block text-xs" style={{ color: '#c8dedd' }}>CAU Villa Lugano — Guaminí 4876</span>
+              </span>
+            </div>
+          </li>
+        </ul>
       </div>
     ),
   },
