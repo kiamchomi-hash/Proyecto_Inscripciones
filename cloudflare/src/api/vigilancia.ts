@@ -132,13 +132,24 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
 
   // 2. Cabeceras de la home: seguridad y la versión para agentes.
   try {
-    const home = await pedir(base + '/');
+    // Durante un despliegue conviven dos versiones del Worker unos segundos:
+    // un nodo puede seguir sirviendo la anterior y la home llega sin la
+    // cabecera nueva. Se reintenta unas pocas veces antes de declararla
+    // ausente, así el aviso no sale por una transición.
+    let respuesta = await pedir(base + '/');
+    for (let intento = 0; intento < 3; intento++) {
+      const faltan = Object.keys(CABECERAS_ESPERADAS)
+        .filter(cabecera => !respuesta.headers.get(cabecera));
+      if (!faltan.length) break;
+      await new Promise(resolver => setTimeout(resolver, 3000));
+      respuesta = await pedir(base + '/');
+    }
     for (const [cabecera, patron] of Object.entries(CABECERAS_ESPERADAS)) {
-      const valor = home.headers.get(cabecera);
+      const valor = respuesta.headers.get(cabecera);
       if (!valor) falla(cabecera, 'ausente');
       else if (!patron.test(valor)) falla(cabecera, `valor inesperado: ${valor.slice(0, 80)}`);
     }
-    const hsts = home.headers.get('strict-transport-security');
+    const hsts = respuesta.headers.get('strict-transport-security');
     if (!hsts || !HSTS_ESPERADO.test(hsts)) {
       falla('strict-transport-security', hsts ? `valor inesperado: ${hsts}` : 'ausente');
     }

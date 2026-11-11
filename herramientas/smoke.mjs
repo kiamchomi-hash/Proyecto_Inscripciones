@@ -122,7 +122,16 @@ for (const ruta of RUTAS) {
 
 console.log('\nCabeceras de la home (seguridad y versión para agentes)');
 
-const home = await pedir(BASE + '/');
+// Durante un despliegue conviven dos versiones del Worker unos segundos: un
+// nodo puede seguir sirviendo la anterior y la home llega sin la cabecera
+// nueva. Se reintenta unas pocas veces antes de declararla ausente.
+let home = await pedir(BASE + '/');
+for (let intento = 0; intento < 3; intento++) {
+  const faltan = Object.keys(CABECERAS_ESPERADAS).filter(c => !home.headers[c]);
+  if (!faltan.length) break;
+  await new Promise(resolver => setTimeout(resolver, 3000));
+  home = await pedir(BASE + '/');
+}
 for (const [cabecera, patron] of Object.entries(CABECERAS_ESPERADAS)) {
   const valor = home.headers[cabecera];
   if (!valor) fallo(cabecera, 'ausente');
