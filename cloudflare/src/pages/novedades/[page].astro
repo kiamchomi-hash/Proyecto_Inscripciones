@@ -4,14 +4,19 @@ import Sitio from '../../layouts/Sitio.astro';
 import NovedadesPage from '@/components/novedades/novedades-page';
 import SiteFooter from '@/components/footer';
 import { listarNovedades } from '../../datos/novedades';
+import { PAGINAS } from '@/lib/paginas';
 import '@/estilos/novedades/novedades.css';
 const datos = await listarNovedades(env.DB, Astro.params.page!);
 if (!datos) return new Response(null, { status: 404 });
 const ruta = `/novedades/${Astro.params.page}`;
-const suffix = datos.currentPage > 1 ? ` — Página ${datos.currentPage}` : '';
+// El título de la página 1 vive en `lib/paginas.ts`, junto a su descripción y
+// a la versión markdown del listado.
+const titulo = datos.currentPage > 1
+  ? `Novedades — Página ${datos.currentPage} | Siglo 21`
+  : PAGINAS.novedades.titulo;
 ---
-<Sitio titulo={`Novedades${suffix} | Siglo 21`}
-  descripcion="Últimas novedades sobre carreras, inscripción y formación online."
+<Sitio titulo={titulo}
+  descripcion={PAGINAS.novedades.descripcion}
   palabrasClave={['novedades', 'noticias', 'siglo 21', 'carreras online', 'inscripción']}
   canonical={`https://www.siglo21sur.com${ruta}`} ruta={ruta}>
   <NovedadesPage {...datos} />

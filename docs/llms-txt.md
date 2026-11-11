@@ -104,9 +104,12 @@ URL con `.md` al final.
 | `/calendario-academico.md` | La estructura del ciclo: aperturas, semanas, parciales, entregas y preguntas |
 | `/sobre-nosotros.md` | Qué es el centro, la sede en números, qué se puede hacer ahí y las preguntas |
 | `/teclab.md`, `/clases-apoyo.md`, `/test-vocacional.md` | Las páginas que son un catálogo: su resumen y la misma oferta que muestran |
+| `/index.md` | La home: la oferta agrupada por área, cómo inscribirse y los datos de la sede |
+| `/novedades/<n>.md` | El listado: la destacada, los artículos de la página y la paginación |
 
 Las arman `cloudflare/src/entrega/markdown-*.ts` y las rutas son
-`cloudflare/src/pages/**/[slug].md.ts`. Todo el texto sale de la base, de los
+`cloudflare/src/pages/**/*.md.ts` (la home es `index.md.ts`, que Astro sirve
+como `/index.md` sin pisar `index.astro`). Todo el texto sale de la base, de los
 módulos de datos de cada página o del mismo JSX que la página pinta: no se
 escribe una línea que no esté en el sitio, y ningún precio se publica.
 
@@ -136,8 +139,7 @@ página de la que salen.
 
 ## Qué falta
 
-- La versión markdown de la home (`/index.md`): su contenido es el catálogo,
-  que el `llms.txt` ya lista, y un carrusel de avisos que no se translate a
-  markdown.
-- La del listado de novedades (`/novedades/1.md`): sus artículos ya tienen la
-  suya.
+Nada: todas las páginas del sitio que se pueden escribir en texto tienen su
+versión markdown. La home la tiene recortada a la estructura —título, oferta
+por área, inscripción y sede—, porque su carrusel de avisos no tiene versión en
+texto y el mapa completo sigue siendo el `/llms.txt`.

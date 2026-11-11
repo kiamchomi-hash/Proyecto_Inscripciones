@@ -58,12 +58,15 @@ const VERSION_MARKDOWN: RegExp[] = [
   /^\/carreras\/[^/]+$/,
   /^\/clases-apoyo\/[^/]+$/,
   /^\/novedades\/articulo\/[^/]+$/,
+  /^\/novedades\/\d+$/,
   /^\/(?:faq|contacto|calendario-academico|sobre-nosotros|teclab|clases-apoyo|test-vocacional)$/,
 ];
 
 /** La URL del markdown de esa página, si lo tiene. */
 export function versionMarkdown(ruta: string): string | null {
   if (ruta.endsWith('.md')) return null;
+  // La home no es un directorio: su markdown es `/index.md`, no `/.md`.
+  if (ruta === '/') return '/index.md';
   return VERSION_MARKDOWN.some(patron => patron.test(ruta)) ? `${ruta}.md` : null;
 }
 

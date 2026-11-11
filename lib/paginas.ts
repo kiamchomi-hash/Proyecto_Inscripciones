@@ -44,4 +44,8 @@ export const PAGINAS: Record<string, PaginaFija> = {
     descripcion: 'Respondé un recorrido breve y descubrí las áreas y carreras de Universidad '
       + 'Siglo 21 que más conectan con tus intereses.',
   },
+  novedades: {
+    titulo: 'Novedades | Siglo 21',
+    descripcion: 'Últimas novedades sobre carreras, inscripción y formación online.',
+  },
 };

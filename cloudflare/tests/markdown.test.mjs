@@ -19,6 +19,8 @@ const { construirMarkdownArticulo } = await import('../src/entrega/markdown-arti
 const { construirMarkdownContacto } = await import('../src/entrega/markdown-contacto.ts');
 const { construirMarkdownCalendario } = await import('../src/entrega/markdown-calendario.ts');
 const { construirMarkdownCatalogo } = await import('../src/entrega/markdown-catalogos.ts');
+const { construirMarkdownInicio } = await import('../src/entrega/markdown-inicio.ts');
+const { construirMarkdownNovedades } = await import('../src/entrega/markdown-novedades.ts');
 
 const CONFIG = './dist/server/wrangler.json';
 
@@ -209,6 +211,61 @@ test('una página de catálogo sale con su resumen y sus secciones', () => {
   assert.doesNotMatch(markdown, /## Vacía/);
 });
 
+// ── La home y el listado de novedades ──────────────────────────────────────
+
+test('la home sale con la oferta agrupada por área', () => {
+  const carreras = [
+    {
+      nombre: 'Licenciatura en Administración', prefix: 'Licenciatura', nivel: 'Grado',
+      descripcion: 'Formación en gestión de organizaciones.', duracion: '4 años',
+      titulo: 'Licenciatura en Administración', modalidad: 'A distancia', proximamente: false,
+    },
+    {
+      nombre: 'Diplomatura en Oratoria', prefix: null, nivel: 'Identidad Argentina',
+      descripcion: 'Oratoria y expresión.', duracion: '8 meses',
+      titulo: 'Diplomatura en Oratoria', modalidad: 'Presencial', proximamente: false,
+    },
+  ];
+  const markdown = construirMarkdownInicio(carreras, 'https://www.siglo21sur.com');
+
+  assert.match(markdown, /^# Universidad Siglo 21 online: carreras e inscripciones\n/);
+  assert.match(markdown, /- \*\*Índice del sitio para agentes:\*\* https:\/\/www\.siglo21sur\.com\/llms\.txt/);
+  assert.match(markdown, /### Licenciaturas\n\n- \[Licenciatura en Administración\]\(https:\/\/www\.siglo21sur\.com\/carreras\/licenciatura-en-administracion\)/);
+  // Identidad Argentina no está en la home: su ficha sigue publicada, pero la
+  // vidriera la oculta, igual que la página.
+  assert.doesNotMatch(markdown, /Oratoria/);
+  assert.match(markdown, /## Contacto\n\n- \*\*WhatsApp:\*\* 11 3297-3801/);
+});
+
+test('el listado de novedades sale con su paginación', () => {
+  const markdown = construirMarkdownNovedades({
+    currentPage: 2,
+    totalPages: 3,
+    pinned: null,
+    items: [{ slug: 'una', titulo: 'Una novedad', extracto: 'Lo que pasó.', fecha: '2026-10-20' }],
+  }, 'https://www.siglo21sur.com/novedades/2');
+
+  assert.match(markdown, /^# Novedades\n/);
+  assert.match(markdown, /- \*\*Paginación:\*\* página 2 de 3/);
+  assert.match(markdown, /## Artículos\n\n- \[Una novedad\]\(https:\/\/www\.siglo21sur\.com\/novedades\/articulo\/una\): Lo que pasó\. \(20 de octubre de 2026\)/);
+  assert.doesNotMatch(markdown, /## Destacada/);
+  assert.match(markdown, /- \[Página anterior\]\(https:\/\/www\.siglo21sur\.com\/novedades\/1\): página 1 de 3\./);
+  assert.match(markdown, /- \[Página siguiente\]\(https:\/\/www\.siglo21sur\.com\/novedades\/3\): página 3 de 3\./);
+});
+
+test('la primera página del listado trae la destacada y no ofrece anterior', () => {
+  const markdown = construirMarkdownNovedades({
+    currentPage: 1,
+    totalPages: 2,
+    pinned: { slug: 'fija', titulo: 'La destacada', extracto: 'Va arriba.', fecha: '2026-10-25' },
+    items: [{ slug: 'otra', titulo: 'Otra', extracto: null, fecha: '2026-10-24' }],
+  }, 'https://www.siglo21sur.com/novedades/1');
+
+  assert.match(markdown, /## Destacada\n\n- \[La destacada\]/);
+  assert.doesNotMatch(markdown, /Página anterior/);
+  assert.match(markdown, /- \[Página siguiente\]/);
+});
+
 // ── La cabecera Link ────────────────────────────────────────────────────────
 
 test('la cabecera Link declara el markdown de la página y el llms.txt', () => {
@@ -223,6 +280,9 @@ test('la cabecera Link declara el markdown de la página y el llms.txt', () => {
   assert.equal(versionMarkdown('/teclab'), '/teclab.md');
   assert.equal(versionMarkdown('/clases-apoyo'), '/clases-apoyo.md');
   assert.equal(versionMarkdown('/test-vocacional'), '/test-vocacional.md');
+  assert.equal(versionMarkdown('/'), '/index.md');
+  assert.equal(versionMarkdown('/novedades/1'), '/novedades/1.md');
+  assert.equal(versionMarkdown('/novedades/12'), '/novedades/12.md');
   assert.equal(versionMarkdown('/carreras/licenciatura-en-administracion/inscripcion'), null);
   assert.equal(versionMarkdown('/carreras/abc.md'), null);
 
@@ -230,6 +290,10 @@ test('la cabecera Link declara el markdown de la página y el llms.txt', () => {
     '</carreras/abc.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
   assert.equal(cabeceraLink('/faq', 'text/html'),
     '</faq.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
+  assert.equal(cabeceraLink('/', 'text/html'),
+    '</index.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
+  assert.equal(cabeceraLink('/novedades/1', 'text/html'),
+    '</novedades/1.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
   assert.equal(cabeceraLink('/sobre-nosotros', 'text/html'),
     '</sobre-nosotros.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
   assert.equal(cabeceraLink('/carreras/abc.md', 'text/markdown; charset=utf-8'),
@@ -336,8 +400,27 @@ test('las páginas fijas tienen su versión markdown', async t => {
   assert.equal(vocacional.status, 200);
   assert.match(await vocacional.text(), /## Carreras de la oferta/);
 
+  // La home: la oferta agrupada, sin Identidad Argentina, y los datos de la sede.
+  const inicio = await astro.fetch('/index.md');
+  assert.equal(inicio.status, 200);
+  assert.equal(inicio.headers.get('content-type'), 'text/markdown; charset=utf-8');
+  const textoInicio = await inicio.text();
+  assert.match(textoInicio, /^# Universidad Siglo 21 online: carreras e inscripciones\n/);
+  assert.match(textoInicio, /### Licenciaturas/);
+  assert.match(textoInicio, /- \[Licenciatura en Administración\]/);
+  assert.doesNotMatch(textoInicio, /Diplomatura en Oratoria/);
+
+  // El listado de novedades: la destacada y los artículos de la página.
+  const listado = await astro.fetch('/novedades/1.md');
+  assert.equal(listado.status, 200);
+  const textoListado = await listado.text();
+  assert.match(textoListado, /## Destacada/);
+  assert.match(textoListado, /\/novedades\/articulo\/novedad-sintetica-1/);
+  assert.equal((await astro.fetch('/novedades/99.md')).status, 404);
+
   // Cada una se declara con su versión markdown.
   for (const [ruta, markdown] of [
+    ['/', '/index.md'], ['/novedades/1', '/novedades/1.md'],
     ['/faq', '/faq.md'], ['/contacto', '/contacto.md'],
     ['/calendario-academico', '/calendario-academico.md'],
     ['/sobre-nosotros', '/sobre-nosotros.md'], ['/teclab', '/teclab.md'],

@@ -13,6 +13,7 @@
 import {
   CATEGORIES, carreraFullName, carreraToSlug, esCarreraVisible, getCategoryForCarrera,
 } from '../../../components/index/types.ts';
+import { PAGINAS as TEXTOS } from '../../../lib/paginas.ts';
 import { BASE } from './sitemap-xml.ts';
 
 // ── Datos ───────────────────────────────────────────────────────────────────
@@ -90,27 +91,27 @@ const PAGINAS: ReadonlyArray<{ ruta: string; nombre: string; nota: string }> = [
   {
     ruta: '/',
     nombre: 'Inicio',
-    nota: 'Oferta académica online de Universidad Siglo 21, con acompañamiento para estudiantes de CABA, GBA y otras zonas. Consultá carreras e inscripciones.',
+    nota: TEXTOS.home.descripcion,
   },
   {
     ruta: '/teclab',
     nombre: 'Teclab',
-    nota: 'Tecnicaturas y cursos Teclab 100% online en tecnología, gestión y negocios. Conocé la oferta y recibí asesoramiento personalizado.',
+    nota: TEXTOS.teclab.descripcion,
   },
   {
     ruta: '/clases-apoyo',
     nombre: 'Clases de apoyo',
-    nota: 'Clases particulares y apoyo escolar presenciales en Villa Lugano, Villa Riachuelo y alrededores: Matemática, Lengua, Física, Computación y Arte. Guaminí 4876.',
+    nota: TEXTOS.clases.descripcion,
   },
   {
     ruta: '/contacto',
     nombre: 'Contacto',
-    nota: 'Contactá al CAU Villa Lugano, sede de Universidad Siglo 21. WhatsApp, Facebook, Instagram. Guaminí 4876, Villa Lugano, Comuna 8, CABA.',
+    nota: TEXTOS.contacto.descripcion,
   },
   {
     ruta: '/faq',
     nombre: 'Preguntas frecuentes',
-    nota: 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano. La universidad cerca de Celina y todo Zona Sur/Oeste.',
+    nota: TEXTOS.faq.descripcion,
   },
   {
     ruta: '/calendario-academico',
@@ -120,12 +121,14 @@ const PAGINAS: ReadonlyArray<{ ruta: string; nombre: string; nota: string }> = [
   {
     ruta: '/sobre-nosotros',
     nombre: 'Sobre nosotros',
-    nota: 'Centro de Aprendizamiento Universitario de Universidad Siglo 21 en el sur de CABA: Guaminí 4876, Villa Lugano, Comuna 8. Inscripciones y tutorías presenciales.',
+    // El texto vive en `paginas/sobre-nosotros/datos.tsx`, que es TSX: no se
+    // puede importar desde acá sin arrastrar JSX al módulo puro.
+    nota: 'Centro de Aprendizaje Universitario de Universidad Siglo 21 en el sur de CABA: Guaminí 4876, Villa Lugano, Comuna 8. Inscripciones y tutorías presenciales.',
   },
   {
     ruta: '/test-vocacional',
     nombre: 'Test vocacional',
-    nota: 'Respondé un recorrido breve y descubrí las áreas y carreras de Universidad Siglo 21 que más conectan con tus intereses.',
+    nota: TEXTOS.vocacional.descripcion,
   },
   {
     ruta: '/teclab/test-vocacional',
@@ -135,7 +138,7 @@ const PAGINAS: ReadonlyArray<{ ruta: string; nombre: string; nota: string }> = [
   {
     ruta: '/novedades/1',
     nombre: 'Novedades',
-    nota: 'Últimas novedades sobre carreras, inscripción y formación online.',
+    nota: TEXTOS.novedades.descripcion,
   },
 ];
 
@@ -284,9 +287,7 @@ export function construirLlmsTxt(datos: DatosLlmsTxt): string {
   for (const seccion of secciones) {
     const delGrupo = grupos.get(seccion.id) ?? [];
     const lineas = delGrupo.map(carrera => {
-      const nombre = textoDeEnlace(carreraFullName(carrera));
-      const url = `${BASE}/carreras/${carreraToSlug(carrera)}`;
-      const nota = notaDeCarrera(carrera, carreraFullName(carrera));
+      const { nombre, url, nota } = lineaDeCarrera(carrera);
       return `- [${nombre}](${url}): ${nota}`;
     });
     bloques.push(`## ${seccion.titulo}`, lineas.join('\n'));
@@ -294,20 +295,16 @@ export function construirLlmsTxt(datos: DatosLlmsTxt): string {
 
   if (datos.materias.length) {
     const lineas = datos.materias.map(materia => {
-      const nombre = textoDeEnlace(materia.label);
-      const url = `${BASE}/clases-apoyo/${materia.slug}`;
-      return `- [${nombre}](${url}): ${notaDeMateria(materia)}`;
+      const { nombre, url, nota } = lineaDeMateria(materia);
+      return `- [${nombre}](${url}): ${nota}`;
     });
     bloques.push('## Clases de apoyo', lineas.join('\n'));
   }
 
   if (datos.articulos.length) {
     const lineas = datos.articulos.map(articulo => {
-      // El título viene de la base: se le sacan las etiquetas antes de
-      // escribirlo, como hace el sitio con el contenido.
-      const nombre = textoDeEnlace(sinHtml(articulo.titulo));
-      const url = `${BASE}/novedades/articulo/${articulo.slug}`;
-      return `- [${nombre}](${url}): ${notaDeArticulo(articulo)}`;
+      const { nombre, url, nota } = lineaDeArticulo(articulo);
+      return `- [${nombre}](${url}): ${nota}`;
     });
     bloques.push('## Artículos', lineas.join('\n'));
   }
@@ -337,5 +334,16 @@ export function lineaDeMateria(materia: MateriaLlms): { nombre: string; url: str
     nombre: textoDeEnlace(materia.label),
     url: `${BASE}/clases-apoyo/${materia.slug}`,
     nota: notaDeMateria(materia),
+  };
+}
+
+/** La línea de un artículo de novedades: la usan el llms.txt y el listado. */
+export function lineaDeArticulo(articulo: ArticuloLlms): { nombre: string; url: string; nota: string } {
+  return {
+    // El título viene de la base: se le sacan las etiquetas antes de
+    // escribirlo, como hace el sitio con el contenido.
+    nombre: textoDeEnlace(sinHtml(articulo.titulo)),
+    url: `${BASE}/novedades/articulo/${articulo.slug}`,
+    nota: notaDeArticulo(articulo),
   };
 }

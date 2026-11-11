@@ -1184,3 +1184,21 @@ versiones del Worker unos segundos y un nodo puede seguir sirviendo la
 anterior. El detalle del archivo y de lo que no se publica está en
 [`docs/llms-txt.md`](../docs/llms-txt.md).
 
+Cada página que se puede escribir en texto tiene además su versión markdown en
+la misma URL con `.md` al final, y su cabecera declara `alternate`:
+
+- `src/pages/carreras/[slug].md.ts`, `clases-apoyo/[materia].md.ts` y
+  `novedades/articulo/[slug].md.ts` — fichas, clases y artículos, con los datos
+  de D1.
+- `src/pages/faq.md.ts`, `contacto.md.ts`, `calendario-academico.md.ts` y
+  `sobre-nosotros.md.ts` — las páginas fijas.
+- `src/pages/index.md.ts` y `novedades/[page].md.ts` — la home y el listado.
+  Astro quita sólo la última extensión, así que `index.md.ts` se sirve como
+  `/index.md` y no pisa `index.astro`.
+- `src/pages/teclab.md.ts`, `clases-apoyo.md.ts` y `test-vocacional.md.ts` — las
+  landing de catálogo.
+
+Los proyectores son `src/entrega/markdown-*.ts`, puros. Las líneas de contacto
+de la sede salen de `src/entrega/markdown-sede.ts`, que a su vez lee
+`lib/sede.ts`: el teléfono y la dirección no se copian en ningún lado.
+

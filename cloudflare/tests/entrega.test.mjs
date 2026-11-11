@@ -133,7 +133,8 @@ test('la cabecera Link apunta al llms.txt en las páginas y en nada más', () =>
     status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' },
   });
   const pagina = aplicarCabeceras(html, { ruta: '/', estado: 200 });
-  assert.equal(pagina.headers.get('Link'), '</llms.txt>; rel="describedby"');
+  assert.equal(pagina.headers.get('Link'),
+    '</index.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
 
   // El propio archivo, el sitemap y las APIs no son páginas que describir.
   for (const [tipo, ruta] of [
@@ -288,7 +289,8 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.match(home.headers.get('content-security-policy'), /frame-ancestors 'none'/);
   assert.equal(home.headers.get('x-robots-tag'), null);
   // La convención llmstxt.org: la página dice cuál es su versión para agentes.
-  assert.equal(home.headers.get('link'), '</llms.txt>; rel="describedby"');
+  assert.equal(home.headers.get('link'),
+    '</index.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
 
   // La lista que vigila producción (`lib/vigilancia-esperado.ts`) se cumple
   // sobre la home y sobre las rutas que exige noindex, sin relajarla.
