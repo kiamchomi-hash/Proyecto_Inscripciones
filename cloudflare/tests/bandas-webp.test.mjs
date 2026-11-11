@@ -57,10 +57,13 @@ test('el manifiesto rechaza huecos, solapamientos y dimensiones incorrectas', as
 test('las referencias corregidas y las históricas siguen íntegras y separadas', async () => {
   const base = fileURLToPath(new URL('./fixtures/', import.meta.url));
   for (const [nombre, ancho, altoHistorico, altoCorregido] of [
-    ['sobre-nosotros-escritorio', 1440, 6104, 6178],
-    ['sobre-nosotros-movil', 390, 6580, 7149],
-    ['calendario-academico-escritorio', 1440, 4233, 4417],
-    ['calendario-academico-movil', 390, 4613, 4652],
+    // Las correcciones se vuelven a tomar cuando la página cambia de verdad;
+    // las alturas quedan fijadas acá para que una referencia no se regenere
+    // sin que nadie lo note. Las de `visuales-next` no se tocan nunca.
+    ['sobre-nosotros-escritorio', 1440, 6104, 6688],
+    ['sobre-nosotros-movil', 390, 6580, 7508],
+    ['calendario-academico-escritorio', 1440, 4233, 4474],
+    ['calendario-academico-movil', 390, 4613, 4653],
   ]) {
     const historica = await sharp(await leerReferenciaVisual(join(base, 'visuales-next'), nombre)).metadata();
     const corregida = await sharp(await leerReferenciaVisual(join(base, 'visuales-corregidas'), nombre)).metadata();
