@@ -27,6 +27,7 @@ export const RUTAS = [
   '/novedades/1',
   '/robots.txt',
   '/sitemap.xml',
+  '/llms.txt',
 ];
 
 /** Cabeceras de seguridad de `cloudflare/src/entrega/cabeceras.ts`, medidas sobre la home. */

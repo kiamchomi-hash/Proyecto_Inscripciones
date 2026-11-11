@@ -205,6 +205,33 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.equal(robots.headers.get('cache-control'), 'public, max-age=0, must-revalidate');
   assert.equal(await robots.text(), generarRobots());
 
+  // `/llms.txt` es el mapa del sitio para los agentes de IA: se genera con la
+  // misma oferta que el sitemap y con las mismas URLs.
+  const llms = await astro.fetch('/llms.txt');
+  assert.equal(llms.status, 200);
+  assert.equal(llms.headers.get('content-type'), 'text/markdown; charset=utf-8');
+  assert.equal(llms.headers.get('x-robots-tag'), null);
+  assert.equal(llms.headers.get('cache-control'), 'no-store');
+  const markdown = await llms.text();
+  assert.match(markdown, /^# Universidad Siglo 21 — CAU Villa Lugano\n/);
+  assert.match(markdown, /\n## Licenciaturas de Universidad Siglo 21\n/);
+  assert.match(markdown, /\n## Clases de apoyo\n/);
+  for (const esperado of [
+    '- [Licenciatura en Administración](https://www.siglo21sur.com/carreras/licenciatura-en-administracion):',
+    '- [Diplomatura en Oratoria](https://www.siglo21sur.com/carreras/diplomatura-en-oratoria):',
+    '- [Matemática](https://www.siglo21sur.com/clases-apoyo/matematica):',
+    '- [Contacto](https://www.siglo21sur.com/contacto):',
+  ]) {
+    assert.ok(markdown.includes(esperado), esperado);
+  }
+  for (const fuera of [
+    '/carreras/maestria-en-gestion-educativa',
+    '/carreras/licenciatura-en-agroinformatica',
+    '/clases-apoyo/arte', '/clases-apoyo/oculta',
+  ]) {
+    assert.ok(!markdown.includes(fuera), `${fuera} no debe publicarse`);
+  }
+
   // Cabeceras globales en HTML, y ninguna en los redirects (como Next).
   const home = await astro.fetch('/');
   assert.equal(home.status, 200);

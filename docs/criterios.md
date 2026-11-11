@@ -366,6 +366,30 @@ persona encargada carga el lead en la landing de la sede con los datos que ya
 llegan por Telegram, así que **no hay que volver a proponer encolarlo en
 `registrarConsulta`**.
 
+### `/llms.txt` lo genera el Worker desde D1, como el sitemap
+
+Decidido el 10/11/2026. Es el mapa del sitio para los agentes de IA (la
+convención de [llmstxt.org](https://llmstxt.org/)): un H1, un bloque `>` de
+resumen y secciones `##` con listas de enlaces markdown.
+
+**No es un archivo estático en `public/`**: se arma en cada pedido con la
+misma oferta y los mismos filtros que el sitemap, así que un alta o una baja
+se ven sin deploy. Vive en `cloudflare/src/pages/llms.txt.ts`, con los datos
+en `cloudflare/src/datos/llms-txt.ts` y el markdown en
+`cloudflare/src/entrega/llms-txt.ts`.
+
+Tres cosas que no se negocian:
+
+- **No hay precios.** Los aranceles viven en `precios_privados` y sólo se ven
+  con «Ver precio» o por WhatsApp; el archivo dice cómo consultarlos.
+- **No hay niveles fuera de la oferta.** El filtro es el de la taxonomía
+  compartida (`esCarreraVisible`), o sea el mismo que el sitemap: los posgrados
+  y los cursos históricos de Siglo 21 no salen.
+- **No se inventa copy.** Cada nota sale de la base (`descripcion`, `duracion`,
+  `titulo`, `modalidad`) o de la descripción que ya declara la página.
+
+Detalle en [`llms-txt.md`](llms-txt.md).
+
 ## El entorno: lo que ya costó descubrir
 
 ### El sitio ya no corre en Vercel

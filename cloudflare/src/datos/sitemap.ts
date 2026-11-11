@@ -1,5 +1,6 @@
 import type { CarreraSlide } from '../../../components/index/types.ts';
 import type { DatosSitemap } from '../entrega/sitemap.ts';
+import { consultarConReintentos } from './reintento.ts';
 
 // Lecturas del sitemap contra D1. Repiten las mismas columnas y filtros que
 // `app/sitemap.ts`. Next no declara orden, así que hereda el físico de la tabla
@@ -14,24 +15,6 @@ type FilaCarrera = {
   updated_at: string | null;
   proximamente: number;
 };
-
-const REINTENTOS = 2;
-
-/** Mismo margen que `consultarConReintentos` de `app/sitemap.ts`. */
-async function consultarConReintentos<T>(consulta: () => Promise<T>): Promise<T> {
-  let ultimoError: unknown;
-  for (let intento = 0; intento <= REINTENTOS; intento++) {
-    try {
-      return await consulta();
-    } catch (error) {
-      ultimoError = error;
-      if (intento < REINTENTOS) {
-        await new Promise(resolver => setTimeout(resolver, 250 * (intento + 1)));
-      }
-    }
-  }
-  throw ultimoError;
-}
 
 export async function datosSitemap(db: D1Database): Promise<DatosSitemap> {
   const [carreras, materias, total, articulos] = await Promise.all([
