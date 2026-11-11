@@ -528,18 +528,18 @@
   gap: 1.5rem;
 }
 
-/* Las secciones del catálogo que quedan fuera de pantalla no se maquetan hasta
-   que se acercan. La home trae 88 carreras: el recálculo de estilo y el layout
-   de todo eso costaban 789-1393 ms de layout y 614-887 ms de estilo en la traza
-   con 4x de CPU (1/11/2026), y se pagaban antes de poder pintar.
-   `contain-intrinsic-size` con `auto` recuerda el alto real después de la
-   primera pintada, así que la barra de scroll no salta y el CLS queda en 0.
-   Medido sobre el HTML de producción: layout 1393 → 433 ms, estilo 614 → 419 ms.
-   El modal de carrera se pinta fuera de `.main-grid`, por eso no queda atrapado. */
-.main-grid > div > section[id^="section-"] {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 1200px;
-}
+/* Las secciones del catálogo ya no se maquetan fuera de pantalla.
+   Antes era lo contrario: `content-visibility: auto` con
+   `contain-intrinsic-size: auto 1200px` dejaba la caja de cada sección con un
+   alto estimado (1/11/2026: layout 1393 → 433 ms con 4x de CPU). El problema
+   es que el contenido real desbordaba esa caja y, al renderizarse, las
+   tarjetas del final de una sección quedaban tapadas por la siguiente: WCAG
+   2.5.8 las marcaba y el control de accesibilidad del repo fallaba de a ratos
+   (11/11/2026, siete nodos). Medido sobre el HTML de producción sin la
+   optimización: el layout inicial sube de 73 a 140 ms (sin throttling) y las
+   siete violaciones desaparecen.
+   El modal de carrera se pinta fuera de `.main-grid`, por eso no queda
+   atrapado. */
 
 /* Filter toggle button */
 .filter-toggle-btn {

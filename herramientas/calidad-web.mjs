@@ -67,6 +67,10 @@ await context.route('**/*', async route => {
   // controla por el procedimiento manual; acá evitamos además generar tráfico.
   if (u.hostname === 'challenges.cloudflare.com') return route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
   if (/google-analytics|googletagmanager/.test(u.hostname) || u.pathname.startsWith('/api/track-')) return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
+  // El beacon de Cloudflare Web Analytics postea a `/cdn-cgi/rum` del propio
+  // dominio. Se responde con un 204 acá para no mandar una visita real a la
+  // medición de producción ni contarla como error del sitio.
+  if (req.method() === 'POST' && u.pathname.startsWith('/cdn-cgi/rum')) return route.fulfill({ status: 204 });
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method()) && u.origin === new URL(base).origin) return route.abort('blockedbyclient');
   return route.continue();
 });
@@ -86,9 +90,13 @@ page.setDefaultTimeout(15000);
 let errores = [];
 page.on('pageerror', e => errores.push(e.message));
 page.on('requestfailed', r => {
-  if (new URL(r.url()).host !== new URL(base).host) return;
+  const url = new URL(r.url());
+  if (url.host !== new URL(base).host) return;
+  // Lo que el edge de Cloudflare inyecta según la IP (la detección de bots,
+  // `challenge-platform`) no es un error del sitio.
+  if (url.pathname.startsWith('/cdn-cgi/')) return;
   const motivo = r.failure()?.errorText ?? 'sin detalle';
-  if (!/abort|cancel|NS_BINDING_ABORTED/i.test(motivo)) errores.push(`${r.resourceType()} ${new URL(r.url()).pathname}: ${motivo}`);
+  if (!/abort|cancel|NS_BINDING_ABORTED/i.test(motivo)) errores.push(`${r.resourceType()} ${url.pathname}: ${motivo}`);
 });
 page.on('response', r => {
   if (new URL(r.url()).host === new URL(base).host && r.status() >= 400 && ['script', 'stylesheet', 'image'].includes(r.request().resourceType())) errores.push(`${r.status()} ${new URL(r.url()).pathname}`);
