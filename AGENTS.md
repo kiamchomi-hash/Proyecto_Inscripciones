@@ -33,8 +33,8 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
   prueba la ejecución ni la disponibilidad en otras conversaciones.
 - Los enlaces selectivos en `.agents/skills/` apuntan a skills propias de
   `.claude/skills/`. Git permite incluir únicamente los doce enlaces declarados; el
-  resto de `.agents/` sigue ignorado. Los enlaces aún no tienen commit ni se
-  integraron, por lo que todavía no viajan a otros worktrees. El descubrimiento depende de la
+  resto de `.agents/` sigue ignorado. Los enlaces están versionados y viajan
+  con el repositorio. El descubrimiento depende de la
   sesión; se comprobó en un nuevo prompt local de este worktree, no en otras
   conversaciones. No ejecutar acciones remotas ni con efectos por
   el solo hecho de que un perfil o skill las mencione: respetar la autorización
@@ -54,6 +54,52 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
   tarea. No se comprobó equivalencia con `/auto`, `/codex` o `/free` de
   OpenCode ni conservación del contexto al cambiar de proveedor; los perfiles
   y enlaces no implementan esos comandos.
+
+### Reparto solicitado para T3
+
+Los nombres `/auto` y `/free` identifican aquí el reparto de OpenCode que se
+quiere reproducir; **no son comandos de T3**. Esta guía no cambia el proveedor o
+modelo del coordinador en el turno actual ni configura un selector de modos.
+Seleccionar el modelo de la conversación en T3 antes de iniciar el trabajo; si
+T3 no permite cambiarlo por turno o conservar el contexto, no afirmar que el
+cambio ocurrió. Estas instrucciones no son permisos ni bloqueos técnicos.
+
+| Reparto | Función | Proveedor y modelo | Límite de la tarea |
+| --- | --- | --- | --- |
+| auto | Coordinador | `opencode-go/deepseek-v4.1-flash` | Coordina y aplica los cambios autorizados. |
+| auto | `borrador` | `opencode-go/claude-haiku-5-5` | Texto; sin edición ni shell, hasta 12 pasos. |
+| auto | `dificil` | `opencode-go/claude-haiku-5-5` | Depuración y revisión; un intento por pedido, hasta 20 pasos; puede reproducir con comandos, no editar. |
+| auto | `lote` | `opencode-go/qwen3.8-flash` | Clasificar, extraer y resumir; sin edición ni shell, hasta 8 pasos. |
+| auto | `codex_rapido` | Luna, OpenAI/ChatGPT | Segunda opinión breve; sin edición, hasta 6 pasos. |
+| auto | `revision_final` | Terra, OpenAI/ChatGPT | Revisión final cuando corresponda; sin edición, hasta 12 pasos. |
+| free | Coordinador | `opencode/deepseek-v4.1-flash-free` | Coordina sin usar suscripciones. |
+| free | `free_lote` | `opencode/glm-5.3-flash-free` | Clasificar, extraer, resumir y redactar en volumen; sin edición ni shell, hasta 8 pasos. |
+| free | `free_opinion` | `opencode/beam-free` | Segunda opinión breve; sin edición, hasta 6 pasos. |
+
+**Aplicación en T3:**
+
+1. El usuario elige el reparto; seleccionar en la conversación el proveedor y
+   modelo del coordinador correspondiente. No alternar automáticamente entre
+   repartos. Si el coordinador actual no coincide, informar la diferencia: la
+   guía no cambia por sí sola el modelo que ya está respondiendo.
+2. Cuando una delegación esté autorizada y corresponda, consultar una vez por
+   conversación `orchestrator_capabilities` antes de la primera `delegate_task`.
+   Identificar allí el proveedor y modelo exactos de la fila; pasar su
+   `providerInstanceId` y `model` en `target` de `delegate_task`, con la función,
+   alcance, límites y verificaciones en `task`. Seguir el resultado y su `next`.
+   Si el entorno exige la herramienta nativa para una delegación del mismo
+   proveedor y modelo, respetar esa regla. Un listado no acredita cuota ni
+   garantiza que la ejecución vaya a funcionar.
+3. En free usar exclusivamente las filas free, sin OpenCode Go ni ChatGPT ni
+   otra suscripción. Verificar los resultados gratuitos; no confiarles escrituras
+   ni decisiones irreversibles. En auto, no ejecutar `revision_final` si el
+   coordinador ya es Codex ni duplicar una revisión ya realizada.
+4. Si el proveedor o modelo elegido no está disponible o falla, informar el
+   resultado y no sustituirlo ni cambiar de reparto automáticamente. No usar Sol
+   o Astra sin autorización explícita para la tarea. Los límites de pasos y de
+   edición son instrucciones al delegado: no suponen un bloqueo técnico de T3.
+   Las restricciones de seguridad, integración y operaciones remotas anteriores
+   siguen vigentes.
 
 ## Comandos
 
