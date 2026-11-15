@@ -60,28 +60,27 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
 Los nombres `/auto` y `/free` identifican aquí el reparto de OpenCode que se
 quiere reproducir; **no son comandos de T3**. Esta guía no cambia el proveedor o
 modelo del coordinador en el turno actual ni configura un selector de modos.
-Seleccionar el modelo de la conversación en T3 antes de iniciar el trabajo; si
-T3 no permite cambiarlo por turno o conservar el contexto, no afirmar que el
-cambio ocurrió. Estas instrucciones no son permisos ni bloqueos técnicos.
+El coordinador conserva el proveedor y modelo que ya tiene; el reparto elegido
+determina los modelos de las delegaciones. Estas instrucciones no son permisos
+ni bloqueos técnicos.
 
 | Reparto | Función | Proveedor y modelo | Límite de la tarea |
 | --- | --- | --- | --- |
-| auto | Coordinador | `opencode-go/deepseek-v4.1-flash` | Coordina y aplica los cambios autorizados. |
+| auto | Coordinador original de OpenCode | `opencode-go/deepseek-v4.1-flash` | Referencia; T3 no necesita cambiar de coordinador. |
 | auto | `borrador` | `opencode-go/claude-haiku-5-5` | Texto; sin edición ni shell, hasta 12 pasos. |
 | auto | `dificil` | `opencode-go/claude-haiku-5-5` | Depuración y revisión; un intento por pedido, hasta 20 pasos; puede reproducir con comandos, no editar. |
 | auto | `lote` | `opencode-go/qwen3.8-flash` | Clasificar, extraer y resumir; sin edición ni shell, hasta 8 pasos. |
 | auto | `codex_rapido` | Luna, OpenAI/ChatGPT | Segunda opinión breve; sin edición, hasta 6 pasos. |
 | auto | `revision_final` | Terra, OpenAI/ChatGPT | Revisión final cuando corresponda; sin edición, hasta 12 pasos. |
-| free | Coordinador | `opencode/deepseek-v4.1-flash-free` | Coordina sin usar suscripciones. |
+| free | Coordinador original de OpenCode | `opencode/deepseek-v4.1-flash-free` | Referencia; T3 no necesita cambiar de coordinador. |
 | free | `free_lote` | `opencode/glm-5.3-flash-free` | Clasificar, extraer, resumir y redactar en volumen; sin edición ni shell, hasta 8 pasos. |
 | free | `free_opinion` | `opencode/beam-free` | Segunda opinión breve; sin edición, hasta 6 pasos. |
 
 **Aplicación en T3:**
 
-1. El usuario elige el reparto; seleccionar en la conversación el proveedor y
-   modelo del coordinador correspondiente. No alternar automáticamente entre
-   repartos. Si el coordinador actual no coincide, informar la diferencia: la
-   guía no cambia por sí sola el modelo que ya está respondiendo.
+1. El usuario elige el reparto de las delegaciones. El coordinador actual no
+   tiene que cambiar de proveedor ni de modelo. No alternar automáticamente
+   entre repartos.
 2. Cuando una delegación esté autorizada y corresponda, consultar una vez por
    conversación `orchestrator_capabilities` antes de la primera `delegate_task`.
    Identificar allí el proveedor y modelo exactos de la fila; pasar su
@@ -90,8 +89,9 @@ cambio ocurrió. Estas instrucciones no son permisos ni bloqueos técnicos.
    Si el entorno exige la herramienta nativa para una delegación del mismo
    proveedor y modelo, respetar esa regla. Un listado no acredita cuota ni
    garantiza que la ejecución vaya a funcionar.
-3. En free usar exclusivamente las filas free, sin OpenCode Go ni ChatGPT ni
-   otra suscripción. Verificar los resultados gratuitos; no confiarles escrituras
+3. En free delegar exclusivamente a las filas gratuitas, sin OpenCode Go ni
+   ChatGPT para esas delegaciones; el coordinador conserva su propio modelo y
+   cuota. Verificar los resultados gratuitos; no confiarles escrituras
    ni decisiones irreversibles. En auto, no ejecutar `revision_final` si el
    coordinador ya es Codex ni duplicar una revisión ya realizada.
 4. Si el proveedor o modelo elegido no está disponible o falla, informar el
