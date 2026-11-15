@@ -1,5 +1,27 @@
 # Las verificaciones de `herramientas/` y la vigilancia de producción
 
+## Aviso de actualizaciones del entorno
+
+`node herramientas/actualizaciones.mjs` consulta sin instalar: npm de la raíz,
+`cloudflare/` y el prefijo global del Node que ejecuta el script; OpenCode CLI
+contra `@opencode/cli`; CodeGraph contra `@colbymchenry/codegraph`; y el
+`SKILL.md` de Modern Web Guidance contra su fuente oficial. Enumera skills de
+`~/.agents/skills` y `.claude/skills`, pero no presume que todas tengan fuente
+identificable. Consulta además APT con su índice local y las actualizaciones de
+los remotos Flatpak configurados. No ejecuta `apt update`, instalaciones ni
+actualizaciones. No cubre automáticamente otros Node de nvm, otros gestores,
+OpenCode Desktop, otras rutas de skills ni todos los archivos de una skill.
+
+El informe completo queda en `~/.local/state/cau-actualizaciones/informe.json`
+(o `$XDG_STATE_HOME/cau-actualizaciones/informe.json`). Las fuentes fallidas
+aparecen como `error` y producen salida 2, no como «al día». Una notificación de
+escritorio avisa cambios en los resultados o errores; si no se puede entregar,
+se reintenta. Necesita una sesión gráfica disponible. El timer de usuario
+`cau-actualizaciones.timer` revisa diariamente cuando la máquina está activa;
+`Persistent=true` recupera una ejecución perdida al volver a iniciar la sesión.
+Para inspeccionarlo: `systemctl --user status cau-actualizaciones.timer`; para
+pausarlo: `systemctl --user disable --now cau-actualizaciones.timer`.
+
 ### Copia local para comparar versiones
 
 `herramientas/7 - Copia local del sitio.sh` captura las páginas de `origin/main`,
