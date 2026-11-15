@@ -12,6 +12,9 @@ const React = require('react');
 const encodeImagePath = ruta => (ruta ? ruta.split('/').map(encodeURIComponent).join('/') : ruta);
 
 const AUTOMATICOS = {
+  // La región viva de `useCompartir` está vacía hasta que se copia: en el
+  // markup inicial no aporta nada a los tests, que comparan el resto del modal.
+  './aviso-compartir': { __esModule: true, default: () => null },
   '@/lib/imagenes/rutas': { encodeImagePath },
   // Un `<img>` pelado: el manifiesto de derivadas (18 KB) no aporta nada al
   // test, que compara texto y atributos del markup.

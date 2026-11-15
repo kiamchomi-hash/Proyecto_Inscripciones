@@ -24,22 +24,33 @@ Ninguna de esas dos comprobaciones equivale a una auditoría integral.
 - `navbar`, estado de ubicación: se confirmó en `/faq` que el enlace activo
   sólo tenía clase visual, sin `aria-current`. Corrección local: `page` en la
   ruta exacta y `location` en una sección descendiente; pruebas 293/293.
+- `copy-button`: la guía advierte que el contenido de un botón es presentacional
+  y una región viva adentro no se anuncia de forma fiable. Se encontró el mismo
+  patrón en cinco lugares (`copy-link-button`, `career-modal`, `teclab-modal`,
+  `ia-modal`, `carousel-modal`). Corrección local: `AvisoCompartir`, una región
+  `role="status"` hermana del botón; el texto visible del botón no cambia.
+
+- `accordion`: el FAQ arma cada ítem con `<button aria-expanded>` y panel con
+  `hidden` al cerrar. Faltaba la relación explícita: se agregó `aria-controls`
+  con `useId` en las tres variantes (preguntas, contacto, preguntas de
+  usuarios). La guía desaconseja además envolver cada acordeón en un landmark.
 
 ## En revisión
 
-- `copy-button`: `components/novedades/copy-link-button.tsx` coloca `aria-live`
-  en el propio botón; la guía advierte que una región viva dentro de un botón
-  no se anuncia de forma fiable. Confirmar el comportamiento y las variantes
-  antes de modificarlo.
+- `dialog`: los cuatro modales de carrera y el de Teclab usan `<dialog>` nativo
+  con `showModal()`. El modal «Hacé tu pregunta» de `faq-page.tsx` sigue siendo
+  un `div` con `role="dialog"` y foco administrado a mano. Migrarlo toca los
+  formularios de publicación y privacidad; queda anotado, no se cambió.
 - El catálogo de guías fue clasificado preliminarmente por temas; confirmar
   cada aplicabilidad contra el código, sin tratar sugerencias como requisitos
   de funcionalidades que el sitio no tiene.
 - Falta contrastar por familia y variantes las guías pertinentes de
   navegación, formularios, diálogos, imágenes, movimiento, rendimiento,
   seguridad, accesibilidad y componentes de clases de apoyo.
-- La referencia visual de home precede a la eliminación de
-  `content-visibility` en `4c72a48`. En el fixture, restituir temporalmente
-  esa regla produjo una coincidencia de escritorio del 0,000 %; en móvil
-  quedó una diferencia de 1 px. No se restaura en producción: se había
-  retirado por la superposición de tarjetas. Falta revisar y actualizar las
-  capturas correspondientes sin ocultar otros cambios.
+- La referencia visual de home quedó al día: la de escritorio precedía a la
+  eliminación de `content-visibility` (`4c72a48`) — restituir esa regla en una
+  corrida aislada reprodujo la referencia al 0,000 %, pero no se reintroduce
+  porque se había retirado por la superposición de tarjetas. La de móvil estaba
+  todavía más atrás: mostraba otro diseño del bloque de catálogo y del pie.
+  Ambas se regeneraron desde la captura real y la corrida siguiente queda
+  pendiente de confirmar.

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useId } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon, ChevronDownIcon } from './icons';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { MAPS_URL, MAPS_EMBED_SRC, MAPS_TITLE } from '@/lib/sede';
@@ -290,6 +290,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
   item: FaqItem; index: number; isOpen: boolean; onToggle: () => void;
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const panelId = useId();
 
   useEffect(() => {
     const el = contentRef.current;
@@ -335,7 +336,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
     return (
       <div className={`faq-item rounded-xl overflow-hidden${isOpen ? ' is-open' : ''}`} style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.28)', borderLeft: 'none' }}>
         <div className="faq-header-wrap flex items-center gap-2 pr-2 md:pr-5" onClick={onToggle}>
-          <button type="button" className="faq-btn flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4 flex-1 min-w-0" aria-expanded={isOpen}>
+          <button type="button" className="faq-btn flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4 flex-1 min-w-0" aria-expanded={isOpen} aria-controls={panelId}>
             <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--cau-brand-dark-green)' }}>{index + 1}</span>
             <span className="font-semibold flex-1 min-w-0 leading-snug text-sm md:text-lg" style={{ color: '#fff' }}>
               {questionLines.map((line, i) => <span key={i}>{line}{i < questionLines.length - 1 && <br />}</span>)}
@@ -362,7 +363,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
           )}
           <ChevronDownIcon className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: 'var(--color-highlight)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
         </div>
-        <div ref={contentRef} className="faq-content">
+        <div id={panelId} ref={contentRef} className="faq-content">
           {item.content}
         </div>
       </div>
@@ -371,14 +372,14 @@ function FaqAccordionItem({ item, index, isOpen, onToggle }: {
 
   return (
     <div className={`faq-item rounded-xl overflow-hidden${isOpen ? ' is-open' : ''}`} style={{ background: 'var(--color-card-bg)', border: '1px solid rgba(0,199,177,0.28)', borderLeft: 'none' }}>
-      <button type="button" className="faq-btn w-full flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4" aria-expanded={isOpen} onClick={onToggle}>
+      <button type="button" className="faq-btn w-full flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4" aria-expanded={isOpen} aria-controls={panelId} onClick={onToggle}>
         <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--cau-brand-dark-green)' }}>{index + 1}</span>
         <span className="font-semibold flex-1 min-w-0 leading-snug text-sm md:text-lg" style={{ color: '#fff' }}>
           {questionLines.map((line, i) => <span key={i}>{line}{i < questionLines.length - 1 && <br />}</span>)}
         </span>
         <ChevronDownIcon className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: 'var(--color-highlight)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
-      <div ref={contentRef} className="faq-content">
+      <div id={panelId} ref={contentRef} className="faq-content">
         {item.content}
       </div>
     </div>
@@ -741,6 +742,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 function UserQuestionItem({ q, displayIndex, isOpen, onToggle }: { q: UserQuestion; displayIndex: number; isOpen: boolean; onToggle: () => void }) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const panelId = useId();
 
   useEffect(() => {
     const el = contentRef.current;
@@ -762,14 +764,14 @@ function UserQuestionItem({ q, displayIndex, isOpen, onToggle }: { q: UserQuesti
 
   return (
     <div className={`faq-item-user rounded-xl overflow-hidden${isOpen ? ' is-open-user' : ''}`}>
-      <button type="button" className="faq-btn-user w-full flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4" aria-expanded={isOpen} onClick={onToggle}>
+      <button type="button" className="faq-btn-user w-full flex items-center gap-3 md:gap-4 text-left px-4 md:px-5 py-4" aria-expanded={isOpen} aria-controls={panelId} onClick={onToggle}>
         <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: '#37b5aa', color: '#012a1f' }}>
           {displayIndex}
         </span>
         <span className="font-semibold flex-1 min-w-0 leading-snug text-sm md:text-lg" style={{ color: '#fff' }}>{q.titulo}</span>
         <ChevronDownIcon className="faq-chevron w-5 h-5 md:w-6 md:h-6 flex-shrink-0" style={{ color: '#37b5aa', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
-      <div ref={contentRef} className="faq-content">
+      <div id={panelId} ref={contentRef} className="faq-content">
         <div className="px-5 pb-5 pt-1 leading-relaxed space-y-3" style={{ color: '#c8dedd' }}>
           {q.descripcion && (
             <p style={{ color: '#e0f0ee' }}>{q.descripcion}</p>

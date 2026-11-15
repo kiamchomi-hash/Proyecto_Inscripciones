@@ -15,6 +15,7 @@ import { getEscuelaIA } from './identidad-argentina';
 import Isotipo from './ia-isotipo';
 import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
+import AvisoCompartir from './aviso-compartir';
 import IconoCompartir from './icono-compartir';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import { NUMERO_TECLAB_IDENTIDAD } from '@/lib/whatsapp';
@@ -730,13 +731,13 @@ export default function IAModal({ carrera, onClose }: Props) {
             <button
               onClick={compartir}
               title="Compartir enlace"
-              aria-live="polite"
               className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
               style={{ background: 'transparent', border: `1px solid ${AZUL}`, color: AZUL_CLARO }}
             >
               <IconoCompartir estado={estadoCompartir} />
               <span>{textoCompartir(estadoCompartir)}</span>
             </button>
+            <AvisoCompartir estado={estadoCompartir} />
           </div>
         </div>
     </ModalShell>

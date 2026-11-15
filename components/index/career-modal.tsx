@@ -7,6 +7,7 @@ import { type Carrera, carreraToSlug } from './types';
 import { getEscuelaIA } from './identidad-argentina';
 import { esCursoTeclab } from './teclab';
 import { useCompartir, textoCompartir } from './use-compartir';
+import AvisoCompartir from './aviso-compartir';
 import IconoCompartir from './icono-compartir';
 import { PanelVerPrecio } from './ver-precio-teclab';
 import { carreraConPrecio, casaDeCarrera } from '@/components/formularios/casas';
@@ -411,7 +412,6 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
             <button
               onClick={compartir}
               title="Compartir enlace"
-              aria-live="polite"
               className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
               style={
                 isIA
@@ -422,6 +422,7 @@ export default function CareerModal({ carrera, onClose, initiallyVisible = false
               <IconoCompartir estado={estadoCompartir} />
               <span>{textoCompartir(estadoCompartir)}</span>
             </button>
+            <AvisoCompartir estado={estadoCompartir} />
           </div>
         </div>
     </ModalShell>

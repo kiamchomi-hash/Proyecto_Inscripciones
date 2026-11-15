@@ -7,6 +7,7 @@ import { type Carrera, type CarreraSlide, type SlidePlanEstudios, carreraToSlug,
 import { sanitizeContent } from '@/lib/sanitize-content';
 import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios, modalidadCorta } from '@/components/carreras/career-content';
 import { useCompartir, textoCompartir } from './use-compartir';
+import AvisoCompartir from './aviso-compartir';
 import IconoCompartir from './icono-compartir';
 import { PanelVerPrecio, AccesoVerPrecio } from './ver-precio-teclab';
 import { carreraConPrecio, casaDeCarrera } from '@/components/formularios/casas';
@@ -841,11 +842,12 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
             <div className="order-2 sm:order-1 w-full sm:flex-1 flex items-center gap-1.5 min-w-0">
               <input type="text" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()}
                 className="flex-1 min-w-0 px-3 py-2 bg-[#013729] border border-s21/20 rounded-lg text-[#7ca19b] text-[11px] font-mono focus:outline-none focus:border-s21/50 cursor-text transition-colors truncate" />
-              <button onClick={compartir} title="Compartir enlace" aria-live="polite"
+              <button onClick={compartir} title="Compartir enlace"
                 className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 bg-s21 text-[#013729] font-bold rounded-lg hover:brightness-110 transition-colors text-sm">
                 <IconoCompartir estado={estadoCompartir} />
                 <span>{textoCompartir(estadoCompartir)}</span>
               </button>
+              <AvisoCompartir estado={estadoCompartir} />
             </div>
           </div>
         </div>
