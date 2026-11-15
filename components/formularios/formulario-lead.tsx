@@ -338,6 +338,7 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
         aria-label={nombreAccesible}
         aria-expanded={abierto}
         aria-controls={abierto && filtradas.length ? `${id}-lista` : undefined}
+        aria-invalid={invalido || marcado || undefined}
         aria-autocomplete="list"
         aria-activedescendant={abierto && indiceActivo >= 0 && indiceActivo < filtradas.length ? `${id}-opcion-${indiceActivo}` : undefined}
         autoComplete="off"
@@ -494,6 +495,7 @@ function CampoFecha({ id, valor, onChange, invalido }: {
         onClick={alternar}
         aria-haspopup="dialog"
         aria-expanded={abierto}
+        aria-describedby={invalido ? `${id}-falta` : undefined}
         className={`${CAMPO} ${invalido ? BORDE_MAL : BORDE_OK} cursor-pointer pr-11 text-left ${valor ? 'text-white' : 'text-[var(--catalogo-texto-suave)]/60'}`}
       >
         {valor ? `${dia}/${mes}/${anio}` : 'DD/MM/AAAA'}
@@ -505,6 +507,9 @@ function CampoFecha({ id, valor, onChange, invalido }: {
           </svg>
         </span>
       </button>
+      {/* El botón no admite `aria-invalid`; el campo obligatorio sin completar
+          se explica con un texto asociado. */}
+      {invalido && <span id={`${id}-falta`} className="sr-only">Completá este campo.</span>}
 
       {abierto && (
         <div
@@ -656,6 +661,8 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
         value={typeof valor === 'string' ? valor : ''}
         onChange={event => onChange(event.target.value)}
         maxLength={campo.max}
+        aria-invalid={error || invalido ? true : undefined}
+        aria-describedby={error ? `${htmlId}-error` : undefined}
         className={`${CAMPO} ${error || invalido ? BORDE_MAL : BORDE_OK}`}
       />
       {/* El hueco existe siempre en los campos que reportan error —`error`
@@ -663,7 +670,7 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
           desaparece sin mover el resto del formulario. Por eso los textos van
           cortos: tienen que entrar en una línea. */}
       {error !== undefined && (
-        <p className="form-field-error mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{error}</p>
+        <p id={`${htmlId}-error`} className="form-field-error mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{error}</p>
       )}
     </div>
   );
@@ -1617,6 +1624,16 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
               style={{ background: 'rgba(0,0,0,0.35)', borderTop: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}
             >
               <div className="flex min-h-4 flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[11px] leading-4">
+                {/* Aviso para lectores de pantalla: el texto visible cambia
+                    solo, así que sin una región viva que exista desde antes
+                    no se anuncia. */}
+                <span role="status" className="sr-only">
+                  {error || (captchaVencido
+                    ? 'El captcha venció. Volvé a tildarlo.'
+                    : intentado && !token
+                      ? 'Falta tildar la verificación de seguridad.'
+                      : '')}
+                </span>
                 {error
                   ? <span className="text-red-400">{error}</span>
                   : captchaVencido

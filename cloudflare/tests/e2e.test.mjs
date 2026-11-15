@@ -1113,6 +1113,41 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     }
   });
 
+  await t.test('el formulario de lead anuncia sus errores y avisa en una región viva', async () => {
+    const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta: '/carreras/tecnicatura-en-programacion' });
+    try {
+      // El formulario de la ficha es diferido: se monta al llegar al ancla.
+      await pagina.locator('a[href="#preinscripcion"]').first().click();
+      const email = pagina.locator('#preinscripcion-email');
+      await email.waitFor();
+      await pagina.waitForFunction(() => [...document.querySelectorAll('astro-island')].every(i => !i.hasAttribute('ssr')));
+      // Enviar vacío no es un envío: es el intento que revela qué falta. La
+      // página tiene tres formularios; éste es el de la preinscripción.
+      await pagina.getByRole('button', { name: 'Enviar preinscripción' }).click();
+      await pagina.waitForFunction(
+        () => document.querySelector('#preinscripcion-email')?.getAttribute('aria-invalid') === 'true',
+        null, { timeout: 10_000 },
+      );
+      // Los desplegables obligatorios también lo dicen, no sólo el borde rojo.
+      assert.ok(await pagina.locator('form [aria-invalid="true"]').count() > 1);
+      // El mensaje de formato no flota suelto: el campo lo referencia.
+      await email.fill('no-es-un-mail');
+      await pagina.waitForFunction(
+        () => document.querySelector('#preinscripcion-email')?.hasAttribute('aria-describedby'),
+        null, { timeout: 10_000 },
+      );
+      const descrito = await email.getAttribute('aria-describedby');
+      assert.equal(await pagina.locator(`#${descrito}`).count(), 1, 'el campo tiene que apuntar a su mensaje');
+      assert.match(await pagina.locator(`#${descrito}`).innerText(), /formato del email/i);
+      // El aviso va en una región viva propia: dentro del botón no se anuncia.
+      const estados = pagina.locator('[role="status"]');
+      assert.ok(await estados.count() > 0, 'falta la región que anuncia el estado del envío');
+      assert.equal(await estados.first().evaluate(el => el.closest('button') !== null), false);
+    } finally {
+      await contexto.close();
+    }
+  });
+
   await t.test('calendario de preinscripción identifica mes y año', async () => {
     const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta: '/carreras/tecnicatura-en-programacion' });
     try {
