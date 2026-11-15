@@ -201,6 +201,7 @@ export default function Navbar() {
               // de fondo en cada visita. Se navega igual, solo pide al hacer clic.
               prefetch={false}
               className={`navbar-link${isActive(href) ? ' active' : ''}`}
+              aria-current={pathname === href ? 'page' : isActive(href) ? 'location' : undefined}
               onClick={closeMenu}
             >
               {label}
