@@ -259,13 +259,14 @@ function errorDeTelefono(valor: string) {
  * del campo, si lo tipeado deja una sola opción posible, se completa sola — así
  * "arg" termina en "Argentina" sin obligar a elegirla del listado.
  */
-function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalido }: {
+function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalido, nombreAccesible }: {
   id: string;
   valor: string;
   onChange: (valor: string) => void;
   opciones: readonly string[];
   etiquetasOpciones?: Readonly<Record<string, string>>;
   invalido?: boolean;
+  nombreAccesible?: string;
 }) {
   const [abierto, setAbierto] = useState(false);
   // `null` mientras no se está tipeando: ahí la lista se muestra entera.
@@ -334,6 +335,7 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
         type="text"
         id={id}
         role="combobox"
+        aria-label={nombreAccesible}
         aria-expanded={abierto}
         aria-controls={abierto && filtradas.length ? `${id}-lista` : undefined}
         aria-autocomplete="list"
@@ -516,6 +518,7 @@ function CampoFecha({ id, valor, onChange, invalido }: {
           <div className="mb-2 grid grid-cols-2 gap-1.5">
             <Desplegable
               id={`${id}-mes`}
+              nombreAccesible="Mes"
               valor={MESES[vista.mes - 1]}
               opciones={MESES}
               // Sólo se mueve con un mes de la lista: con lo tipeado a medias,
@@ -527,6 +530,7 @@ function CampoFecha({ id, valor, onChange, invalido }: {
             />
             <Desplegable
               id={`${id}-anio`}
+              nombreAccesible="Año"
               valor={String(vista.anio)}
               opciones={ANIOS}
               // Y sólo con un año de la lista: `Number('1j999')` es NaN, y de

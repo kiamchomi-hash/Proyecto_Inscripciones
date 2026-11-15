@@ -30,7 +30,9 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
 <Sitio titulo={`Clases particulares de ${ficha.label} en Villa Lugano | CAU Siglo 21`}
   descripcion={`Clases particulares y apoyo escolar de ${ficha.label} en Villa Lugano: presenciales, individuales o en grupo reducido, con horario a convenir. Guaminí 4876.`}
   canonical={url} ruta={`/clases-apoyo/${ficha.slug}`} robots={ficha.en_construccion ? 'noindex, follow' : undefined}>
-  <PaginaMateria ficha={ficha} otras={otras} turnstile={turnstile} client:load />
+  <main>
+    <PaginaMateria ficha={ficha} otras={otras} turnstile={turnstile} client:load />
+  </main>
   <SiteFooter />
   {!ficha.en_construccion && <script type="application/ld+json" set:html={jsonLdScript(serviceSchema)} />}
   <script type="application/ld+json" set:html={jsonLdScript(breadcrumbSchema)} />

@@ -19,6 +19,8 @@ const schema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntit
   og={{ titulo: 'Preguntas Frecuentes — CAU Villa Lugano', descripcion, url: '/faq', sitio: 'CAU Villa Lugano — Universidad Siglo 21', imagen: { url: '/imagenes/og/default.jpg', ancho: 1200, alto: 630, alt: 'CAU Villa Lugano — Universidad Siglo 21 a distancia' } }}
   twitter={{ tarjeta: 'summary_large_image', titulo: 'Preguntas Frecuentes — CAU Villa Lugano', descripcion: 'Resolvé tus dudas sobre cursada, exámenes y aranceles en CAU Villa Lugano.', imagen: '/imagenes/og/default.jpg' }}>
   <script type="application/ld+json" set:html={jsonLdScript(schema)} />
-  <PaginaFaq preguntas={preguntas} turnstile={turnstile} client:load />
+  <main>
+    <PaginaFaq preguntas={preguntas} turnstile={turnstile} client:load />
+  </main>
   <SiteFooter />
 </Sitio>

@@ -1050,6 +1050,31 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     await contexto.close();
   });
 
+  await t.test('FAQ y fichas de materias tienen una región principal', async () => {
+    for (const ruta of ['/faq', '/clases-apoyo/matematica', '/clases-apoyo/computacion', '/clases-apoyo/arte']) {
+      const { pagina, contexto } = await abrirPagina(navegador, bases.sin, { ruta });
+      try {
+        assert.equal(await pagina.getByRole('main').count(), 1, `${ruta}: debe haber una región principal`);
+        assert.equal(await pagina.getByRole('main').getByRole('heading', { level: 1 }).count(), 1);
+      } finally {
+        await contexto.close();
+      }
+    }
+  });
+
+  await t.test('calendario de preinscripción identifica mes y año', async () => {
+    const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta: '/carreras/tecnicatura-en-programacion' });
+    try {
+      await pagina.locator('a[href="#preinscripcion"]').first().click();
+      await pagina.locator('#preinscripcion-fechaNacimiento').click();
+      const calendario = pagina.getByRole('dialog', { name: 'Elegir la fecha' });
+      assert.equal(await calendario.getByRole('combobox', { name: 'Mes', exact: true }).count(), 1);
+      assert.equal(await calendario.getByRole('combobox', { name: 'Año', exact: true }).count(), 1);
+    } finally {
+      await contexto.close();
+    }
+  });
+
   await t.test('desplegables de preinscripción se recorren y seleccionan con teclado', async () => {
     for (const ruta of ['/carreras/tecnicatura-en-programacion', '/carreras/licenciatura-en-administracion']) {
       const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta });
