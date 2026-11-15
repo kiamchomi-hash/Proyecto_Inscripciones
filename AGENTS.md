@@ -14,6 +14,47 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
 
 **[`docs/criterios.md`](docs/criterios.md) se lee antes de proponer nada**: las decisiones ya tomadas que no hay que volver a proponer y cómo espera el usuario que se trabaje.
 
+## Coordinación entre T3, Codex y OpenCode
+
+- Para una tarea especializada, consultar las instrucciones existentes antes de
+  reproducirlas: los perfiles de revisión de este proyecto están en
+  `~/.config/opencode/agents/` (`auditor-contenido`, `auditor-dependencias`,
+  `auditor-web`, `estratega-seo` y `verificador-produccion`, con extensión
+  `.md`). Son archivos locales y pueden no estar presentes en otra máquina.
+- Las skills propias viven en `.claude/skills/<nombre>/SKILL.md`; leer sólo las
+  pertinentes a la tarea. Consultar también las skills y herramientas que el
+  entorno actual ya expone, sin duplicar servidores MCP por precaución.
+- Los perfiles para Codex se preparan en `.codex/agents/`: los cinco de revisión
+  y los de arquitectura, frontend, backend, base de datos, QA e integración;
+  sus instrucciones están adaptadas de OpenCode, no son sus permisos. Los
+  agentes heredan los permisos efectivos del padre: las instrucciones de sólo
+  lectura no son una barrera técnica. No fijan modelo ni proveedor. Su
+  descubrimiento en un nuevo prompt local se comprobó en este worktree; eso no
+  prueba la ejecución ni la disponibilidad en otras conversaciones.
+- Los enlaces selectivos en `.agents/skills/` apuntan a skills propias de
+  `.claude/skills/`. Git permite incluir únicamente los doce enlaces declarados; el
+  resto de `.agents/` sigue ignorado. Los enlaces aún no tienen commit ni se
+  integraron, por lo que todavía no viajan a otros worktrees. El descubrimiento depende de la
+  sesión; se comprobó en un nuevo prompt local de este worktree, no en otras
+  conversaciones. No ejecutar acciones remotas ni con efectos por
+  el solo hecho de que un perfil o skill las mencione: respetar la autorización
+  vigente.
+- Conservar las reglas de costo y seguridad existentes. Sol y Astra requieren
+  autorización explícita para la tarea; no seleccionarlos por sustitución.
+  No modificar la configuración de OpenCode para aplicar esta guía.
+- T3 selecciona el proveedor por tarea y disponibilidad; OpenCode es un
+  proveedor independiente, con contexto y permisos propios. Un perfil TOML de
+  Codex no habilita OpenCode. Antes de trabajo paralelo, acordar contratos y
+  superficies exclusivas; pedir aprobación al usuario antes de integrar.
+  No cambiar a un modelo pago sin autorización. La base de datos requiere
+  autorización explícita y toda operación remota requiere destino, operación y
+  sesión o credencial explícitamente autorizados. No modificar `main`, hacer
+  merge ni push sin autorización.
+- T3 expone la selección de modelo de una conversación y de proveedor por
+  tarea. No se comprobó equivalencia con `/auto`, `/codex` o `/free` de
+  OpenCode ni conservación del contexto al cambiar de proveedor; los perfiles
+  y enlaces no implementan esos comandos.
+
 ## Comandos
 
 ```bash
