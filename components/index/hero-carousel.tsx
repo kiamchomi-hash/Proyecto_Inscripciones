@@ -97,6 +97,9 @@ export default function HeroCarousel({ children }: Props) {
       aria-label="Novedades del CAU"
       onMouseEnter={() => setEnHover(true)}
       onMouseLeave={() => setEnHover(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={() => { touchStartRef.current = null; setEnHover(false); }}
     >
       <div
         className="banner-carousel-track"
@@ -116,8 +119,6 @@ export default function HeroCarousel({ children }: Props) {
 
       <div
         className="flex w-full flex-wrap items-center justify-center gap-1 bg-black/30 px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
       >
         <button
           type="button"

@@ -713,6 +713,42 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     t.diagnostic(`capturas: ${salida}`);
   });
 
+  await t.test('carrusel: deslizar sobre el banner cambia la diapositiva', async () => {
+    const { contexto, pagina } = await abrirPagina(navegador, bases.sin, {
+      viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true,
+    });
+    try {
+      const carrusel = pagina.locator('.banner-carousel-track');
+      const caja = await carrusel.boundingBox();
+      assert.ok(caja, 'el banner debe estar visible');
+      const antes = await carrusel.evaluate(el => el.style.transform);
+      const cdp = await contexto.newCDPSession(pagina);
+      const y = caja.y + caja.height / 2;
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: caja.x + caja.width * 0.8, y }] });
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: caja.x + caja.width * 0.2, y }] });
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await pagina.waitForFunction(valor => document.querySelector('.banner-carousel-track')?.style.transform !== valor, antes);
+    } finally {
+      await contexto.close();
+    }
+  });
+
+  await t.test('calendario: la tabla se desplaza con el teclado', async () => {
+    const { contexto, pagina } = await abrirPagina(navegador, bases.sin, {
+      ruta: '/calendario-academico', viewport: { width: 390, height: 844 },
+    });
+    try {
+      const tabla = pagina.locator('.ca-entregas');
+      await tabla.focus();
+      assert.equal(await tabla.evaluate(el => document.activeElement === el), true);
+      const antes = await tabla.evaluate(el => el.scrollLeft);
+      await pagina.keyboard.press('ArrowRight');
+      await pagina.waitForFunction(valor => document.querySelector('.ca-entregas')?.scrollLeft > valor, antes);
+    } finally {
+      await contexto.close();
+    }
+  });
+
   await t.test('navegación básica: enlace de salto y salida de la home', async () => {
     for (const [nombre, base] of [['astro', bases.sin]]) {
       const { contexto, pagina } = await abrirPagina(navegador, base, { viewport: PERFILES[0].viewport });
