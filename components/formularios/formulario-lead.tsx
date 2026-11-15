@@ -274,6 +274,7 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
   // tecla: mientras se escribe "Uruguaya" todos los estados intermedios son
   // inválidos, y marcarlos hacía parpadear el campo letra por letra.
   const [marcado, setMarcado] = useState(false);
+  const [indiceActivo, setIndiceActivo] = useState(-1);
   const cajaRef = useRef<HTMLDivElement>(null);
 
   const etiquetaDe = useCallback((opcion: string) => etiquetasOpciones?.[opcion] ?? opcion, [etiquetasOpciones]);
@@ -293,6 +294,7 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
 
   const cerrar = useCallback(() => {
     setAbierto(false);
+    setIndiceActivo(-1);
     setBusqueda(previa => {
       // Si lo tipeado deja una sola opción, se adopta. Si no, queda como está
       // y el borde rojo se encarga de avisar.
@@ -304,6 +306,13 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
       return null;
     });
   }, [onChange, opciones, coincide]);
+
+  useEffect(() => {
+    if (abierto && indiceActivo >= 0) {
+      cajaRef.current?.querySelector<HTMLElement>(`[data-opcion-indice="${indiceActivo}"]`)
+        ?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [abierto, indiceActivo]);
 
   useEffect(() => {
     if (!abierto) return;
@@ -326,21 +335,41 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
         id={id}
         role="combobox"
         aria-expanded={abierto}
-        aria-controls={`${id}-lista`}
+        aria-controls={abierto && filtradas.length ? `${id}-lista` : undefined}
         aria-autocomplete="list"
+        aria-activedescendant={abierto && indiceActivo >= 0 && indiceActivo < filtradas.length ? `${id}-opcion-${indiceActivo}` : undefined}
         autoComplete="off"
         value={busqueda ?? etiquetaDe(valor)}
         placeholder="Sin especificar"
         onChange={evento => {
           setBusqueda(evento.target.value);
           onChange(evento.target.value);
+          setIndiceActivo(-1);
           setMarcado(false);
           setAbierto(true);
         }}
-        onFocus={() => { setBusqueda(null); setAbierto(true); }}
+        onFocus={() => { setBusqueda(null); setIndiceActivo(-1); setAbierto(true); }}
         onKeyDown={evento => {
+          if (evento.nativeEvent.isComposing || evento.nativeEvent.keyCode === 229) return;
+          if (evento.key === 'ArrowDown' || evento.key === 'ArrowUp') {
+            if (!filtradas.length) return;
+            evento.preventDefault();
+            setAbierto(true);
+            setIndiceActivo(prev => evento.key === 'ArrowDown'
+              ? Math.min(prev + 1, filtradas.length - 1)
+              : prev < 0 ? filtradas.length - 1 : Math.max(prev - 1, 0));
+            return;
+          }
           if (evento.key !== 'Enter') return;
           evento.preventDefault();
+          if (abierto && indiceActivo >= 0 && filtradas[indiceActivo] !== undefined) {
+            onChange(filtradas[indiceActivo]);
+            setBusqueda(null);
+            setAbierto(false);
+            setIndiceActivo(-1);
+            setMarcado(false);
+            return;
+          }
           const texto = (busqueda ?? etiquetaDe(valor)).trim();
           const posibles = opciones.filter(opcion => coincide(opcion, texto));
           // Enter con una sola candidata la elige; con cualquier otra cosa,
@@ -373,14 +402,18 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
           className="absolute top-full z-30 mt-1 w-full overflow-auto rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] shadow-xl"
           style={{ maxHeight: ALTO_LISTA }}
         >
-          {filtradas.map(opcion => (
+          {filtradas.map((opcion, indice) => (
             <button
               key={opcion}
               type="button"
+              id={`${id}-opcion-${indice}`}
+              data-opcion-indice={indice}
+              tabIndex={-1}
               role="option"
-              aria-selected={opcion === valor}
-              onClick={() => { onChange(opcion); setBusqueda(null); setAbierto(false); }}
-              className={`w-full border-b border-[var(--catalogo-acento)]/15 px-3 py-1.5 text-left text-sm transition-colors last:border-b-0 hover:bg-[var(--catalogo-acento)]/10 ${opcion === valor ? 'text-[var(--catalogo-acento)]' : 'text-white'}`}
+              aria-selected={indice === indiceActivo}
+              onMouseDown={evento => evento.preventDefault()}
+              onClick={() => { onChange(opcion); setBusqueda(null); setAbierto(false); setIndiceActivo(-1); }}
+              className={`w-full border-b border-[var(--catalogo-acento)]/15 px-3 py-1.5 text-left text-sm transition-colors last:border-b-0 hover:bg-[var(--catalogo-acento)]/10 ${indice === indiceActivo ? 'bg-[var(--catalogo-acento)]/20' : ''} ${opcion === valor ? 'text-[var(--catalogo-acento)]' : 'text-white'}`}
             >
               {etiquetaDe(opcion)}
             </button>

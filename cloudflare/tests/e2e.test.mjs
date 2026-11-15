@@ -1050,6 +1050,33 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     await contexto.close();
   });
 
+  await t.test('desplegables de preinscripción se recorren y seleccionan con teclado', async () => {
+    for (const ruta of ['/carreras/tecnicatura-en-programacion', '/carreras/licenciatura-en-administracion']) {
+      const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta });
+      try {
+        await pagina.locator('a[href="#preinscripcion"]').first().click();
+        const campo = pagina.locator('#preinscripcion-sexo');
+        await campo.waitFor();
+        await campo.focus();
+        await campo.press('ArrowDown');
+        await pagina.waitForFunction(() => document.querySelector('#preinscripcion-sexo')?.hasAttribute('aria-activedescendant'));
+        const primero = await campo.getAttribute('aria-activedescendant');
+        assert.ok(primero, `${ruta}: falta opción activa`);
+        assert.equal(await pagina.locator(`[id="${primero}"]`).getAttribute('aria-selected'), 'true');
+        await campo.press('ArrowDown');
+        await pagina.waitForFunction(anterior => document.querySelector('#preinscripcion-sexo')?.getAttribute('aria-activedescendant') !== anterior, primero);
+        const segundo = await campo.getAttribute('aria-activedescendant');
+        assert.notEqual(segundo, primero);
+        const texto = (await pagina.locator(`[id="${segundo}"]`).innerText()).trim();
+        await campo.press('Enter');
+        assert.equal(await campo.inputValue(), texto);
+        assert.equal(await campo.getAttribute('aria-expanded'), 'false');
+      } finally {
+        await contexto.close();
+      }
+    }
+  });
+
   await t.test('ficha → inscripción: selección, campos de casa, consentimiento y un solo envío demo', async () => {
     for (const [slug, casa, dedicada, idCarrera] of [
       ['licenciatura-en-administracion', 'siglo21', false, 11],
