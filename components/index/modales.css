@@ -1,9 +1,10 @@
 /* Estilos de los modales de carrera (Teclab e Identidad Argentina).
-   Viven aparte de app/index.css porque el mismo modal se abre desde dos lados:
+   Viven aparte de estilos/index.css porque el mismo modal se abre desde dos lados:
    el catalogo de la home y el boton "Ver info" de /carreras/[slug]. Cuando las
    reglas estaban solo en index.css, desde la pagina de la carrera el modal salia
    sin fondo, sin chips y con la foto ocupandolo todo.
-   Las dos hojas -index.css y career-detail.css- importan esta. */
+   Las paginas que la necesitan la importan explicita: un `@import` al final de
+   otra hoja el pipeline de Astro lo descarta. */
 
 /* Panel de los cuatro modales de carrera (ModalShell). Un solo tamaño para
    todos: lo que cambia por casa es el tema, no la caja.

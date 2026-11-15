@@ -1417,9 +1417,6 @@
   }
 }
 
-/* El boton "Ver info" abre el mismo modal que el catalogo de la home */
-@import "../../components/index/modales.css";
-@import "../../components/formularios/formulario-lead.css";
 
 /* Las respuestas permanecen en el HTML; details funciona sin JavaScript. */
 .career-faq details {

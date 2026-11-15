@@ -1319,6 +1319,3 @@ mark {
   color: #fff !important;
   border-color: #0a678f;
 }
-
-@import "../components/index/modales.css";
-@import "../components/formularios/formulario-lead.css";
