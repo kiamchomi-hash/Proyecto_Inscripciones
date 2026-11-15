@@ -515,36 +515,23 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     setSlide(3);
   }
 
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   // handleClose se recrea en cada render; guardarlo en una ref permite que el
   // listener de abajo dependa solo de `open` y no se re-registre al tipear.
   const handleCloseRef = useRef(handleClose);
   useEffect(() => { handleCloseRef.current = handleClose; });
 
-  // Escape + trampa de foco mientras el modal está abierto.
+  // `showModal()` deja la página inerte, encierra el foco y trae el velo a la
+  // capa superior. Depende de `open`: el componente se monta cerrado (devuelve
+  // `null`, sin `<dialog>`), así que un efecto de montaje se quedaría sin nodo
+  // al que abrir. El cierre del desmontaje lo hace el navegador.
   useEffect(() => {
     if (!open) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { handleCloseRef.current(); return; }
-      if (e.key === 'Tab') {
-        const modal = modalRef.current;
-        if (!modal) return;
-        const focusable = Array.from(modal.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
-        )).filter(el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden');
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey) {
-          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-        } else {
-          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-        }
-      }
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    const dialogo = modalRef.current;
+    if (!dialogo) return;
+    if (!dialogo.open) dialogo.showModal();
+    return () => { if (dialogo.open) dialogo.close(); };
   }, [open]);
 
   // Enfocar al abrir, y solo al abrir. Sin el array de dependencias esto corría
@@ -567,8 +554,14 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: 'rgba(0,10,10,0.82)' }} role="dialog" aria-modal="true" aria-labelledby="ask-heading" onClick={e => { if (e.target === e.currentTarget) handleClose(); }}>
-      <div ref={modalRef} className="w-full max-w-[480px] rounded-2xl overflow-hidden relative" style={{ background: '#122e2e', border: '1px solid rgba(5,140,112,0.5)', boxShadow: '0 24px 64px rgba(0,0,0,0.55)' }}>
+    <dialog
+      ref={modalRef}
+      className="ask-dialog"
+      aria-labelledby="ask-heading"
+      onCancel={e => { e.preventDefault(); handleCloseRef.current(); }}
+      onClick={e => { if (e.target === e.currentTarget) handleClose(); }}
+    >
+      <div className="w-full max-w-[480px] rounded-2xl overflow-hidden relative" style={{ background: '#122e2e', border: '1px solid rgba(5,140,112,0.5)', boxShadow: '0 24px 64px rgba(0,0,0,0.55)' }}>
         {/* Header */}
         <div className="flex items-center gap-3 px-8 py-5 rounded-t-2xl relative" style={{ background: 'linear-gradient(135deg, #012a1f 0%, #0d3040 100%)', borderBottom: '1px solid rgba(0,199,177,0.2)' }}>
           <button type="button" onClick={handleClose} aria-label="Cerrar"
@@ -734,7 +727,7 @@ function AskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
 

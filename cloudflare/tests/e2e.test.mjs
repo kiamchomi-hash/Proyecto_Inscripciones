@@ -1098,6 +1098,21 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     }
   });
 
+  await t.test('el modal de preguntas del FAQ es un diálogo nativo y sale con Escape', async () => {
+    const { pagina, contexto } = await abrirPagina(navegador, bases.sin, { ruta: '/faq' });
+    try {
+      await pagina.getByRole('button', { name: 'Hacer una pregunta' }).first().click();
+      const dialogo = pagina.getByRole('dialog', { name: 'Hacé tu pregunta' });
+      await dialogo.waitFor();
+      assert.equal(await dialogo.evaluate(el => el.tagName), 'DIALOG');
+      assert.equal(await pagina.evaluate(() => document.querySelectorAll('dialog[open]').length), 1);
+      await pagina.keyboard.press('Escape');
+      await pagina.getByRole('dialog', { name: 'Hacé tu pregunta' }).waitFor({ state: 'detached' });
+    } finally {
+      await contexto.close();
+    }
+  });
+
   await t.test('calendario de preinscripción identifica mes y año', async () => {
     const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta: '/carreras/tecnicatura-en-programacion' });
     try {

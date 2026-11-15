@@ -1,5 +1,46 @@
 /* ── FAQ — Solo estilos que NO se pueden hacer con Tailwind ── */
 
+/* Modal «Hacé tu pregunta»: es un `<dialog>` nativo abierto con `showModal()`,
+   así que el navegador se ocupa del foco encerrado, la página inerte detrás y
+   el cierre con Escape. Acá se reponen los valores que trae por defecto
+   (márgenes, `max-width`, fondo) para que el panel quede centrado como antes. */
+.ask-dialog {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow-y: auto;
+  /* Sin esto la rueda sigue moviendo la página de atrás al llegar al tope. */
+  overscroll-behavior: contain;
+}
+
+/* Cualquier `display` de autor gana sobre la hoja del navegador, que es la que
+   esconde un `<dialog>` cerrado. */
+.ask-dialog:not([open]) {
+  display: none;
+}
+
+/* El velo lo pinta el propio navegador: así el clic de afuera llega al diálogo
+   y no hace falta un div superpuesto.
+   `overflow: hidden` convierte el velo en contenedor de scroll (aunque no
+   scrollee): sin eso, la rueda sobre el velo mueve la página de atrás. */
+.ask-dialog::backdrop {
+  background: rgba(0, 10, 10, 0.82);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
 .faq-section {
   background: transparent;
 }
