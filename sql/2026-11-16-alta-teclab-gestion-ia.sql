@@ -47,5 +47,5 @@ Segundo Año | 4to cuatrimestre
   NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM carreras
-  WHERE lower(nombre) LIKE '%gestión de inteligencia artificial%transformación digital%'
+  WHERE instr(lower(nombre), 'gestión de inteligencia artificial') > 0
 );
