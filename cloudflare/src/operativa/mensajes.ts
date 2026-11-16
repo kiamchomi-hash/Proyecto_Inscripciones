@@ -38,10 +38,33 @@ const ETIQUETAS: Record<string, string> = {
   torre: '🏢 *Torre:*',
   barrio: '📍 *Barrio:*',
   codigo_postal: '📮 *Código postal:*',
+  localidad: '📍 *Localidad:*',
   nivel_estudios: '🎓 *Nivel de estudios:*',
   colegio: '🏫 *Colegio:*',
   colegio_localidad: '🏫 *Localidad del colegio:*',
 };
+
+const ORDEN_LEGAJO_PREINSCRIPCION = [
+  'fecha_nacimiento', 'localidad_nacimiento', 'nacionalidad', 'pais_residencia',
+  'tipo_documento', 'dni', 'sexo', 'estado_civil', 'tipo_domicilio',
+  'direccion', 'direccion_numero', 'direccion_piso', 'direccion_departamento',
+  'torre', 'barrio', 'codigo_postal', 'provincia', 'localidad',
+  'nivel_estudios', 'colegio_localidad', 'colegio',
+];
+const ORDEN_LEGAJO_PREINSCRIPCION_INDICE = new Map(
+  ORDEN_LEGAJO_PREINSCRIPCION.map((columna, indice) => [columna, indice]),
+);
+const CAMPOS_DOMICILIO = new Set([
+  'tipo_domicilio', 'direccion', 'direccion_numero', 'direccion_piso',
+  'direccion_departamento', 'torre', 'barrio', 'codigo_postal', 'provincia', 'localidad',
+]);
+const CAMPOS_ESTUDIOS = new Set(['nivel_estudios', 'colegio_localidad', 'colegio']);
+
+function fechaNacimientoLegible(valor: unknown): unknown {
+  if (typeof valor !== 'string') return valor;
+  const fecha = /^(\d{4})-(\d{2})-(\d{2})$/.exec(valor);
+  return fecha ? `${fecha[3]}/${fecha[2]}/${fecha[1]}` : valor;
+}
 
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('es-AR', {
@@ -86,10 +109,20 @@ export function buildConsultaMessage(fila: Fila, { precioVisto = null, inscripci
 
   // Sólo lo que el lead completó: un contacto suelto llega con casi todo vacío
   // y llenar el aviso de guiones lo vuelve ilegible.
-  const legajo = Object.entries(fila)
+  const esPreinscripcion = fila.tipo_formulario === 'preinscripcion';
+  const datosLegajo = Object.entries(fila)
     .filter(([columna, valor]) =>
-      !EN_CABECERA.has(columna) && valor !== null && valor !== undefined && valor !== '')
-    .map(([columna, valor]) => `${ETIQUETAS[columna] || `• *${columna}:*`} ${valor}`);
+      (!EN_CABECERA.has(columna) || (esPreinscripcion && columna === 'localidad'))
+      && valor !== null && valor !== undefined && valor !== '')
+    .sort(([a], [b]) => esPreinscripcion
+      ? (ORDEN_LEGAJO_PREINSCRIPCION_INDICE.get(a) ?? Number.MAX_SAFE_INTEGER)
+        - (ORDEN_LEGAJO_PREINSCRIPCION_INDICE.get(b) ?? Number.MAX_SAFE_INTEGER)
+      : 0)
+    .map(([columna, valor]) => ({
+      columna,
+      linea: `${ETIQUETAS[columna] || `• *${columna}:*`} ${columna === 'fecha_nacimiento' ? fechaNacimientoLegible(valor) : valor}`,
+    }));
+  const legajo = datosLegajo.map(({ linea }) => linea);
 
   // Quien escribe después de ver cuánto sale ya pasó ese filtro: la marca va
   // arriba de todo para atenderlo primero. Sin precio visto, el aviso es el de
@@ -105,16 +138,35 @@ export function buildConsultaMessage(fila: Fila, { precioVisto = null, inscripci
   return [
     ...marca,
     ``,
-    `👤 *Nombre:* ${nombre}`,
-    `🎓 *Carrera:* ${fila.carrera || 'No especificada'}`,
-    ...(!inscripcionRapida ? [`📋 *Tipo:* ${fila.tipo || '—'}`] : []),
-    `📧 *Email:* ${fila.email || '—'}`,
-    `📱 *Teléfono:* ${fila.telefono || '—'}`,
-    ...(!inscripcionRapida ? [
-      `📍 *Localidad:* ${fila.localidad || '—'}`,
-      `🔄 *Equivalencias:* ${fila.equivalencias ? 'Sí' : 'No'}`,
-    ] : []),
-    ...(legajo.length ? [``, `📝 *Datos del legajo*`, ...legajo] : []),
+    ...(esPreinscripcion ? [
+      `📝 *Datos del postulante*`,
+      `👤 *Nombre:* ${fila.nombre || '—'}`,
+      `👤 *Apellido:* ${fila.apellido || '—'}`,
+      ...datosLegajo.filter(({ columna }) => !CAMPOS_DOMICILIO.has(columna) && !CAMPOS_ESTUDIOS.has(columna))
+        .map(({ linea }) => linea),
+      `📧 *Email:* ${fila.email || '—'}`,
+      `📱 *Teléfono:* ${fila.telefono || '—'}`,
+      `🎓 *Carrera:* ${fila.carrera || 'No especificada'}`,
+      ...datosLegajo.filter(({ columna }) => CAMPOS_DOMICILIO.has(columna)).length
+        ? [``, `🏠 *Domicilio*`, ...datosLegajo.filter(({ columna }) => CAMPOS_DOMICILIO.has(columna))
+          .map(({ linea }) => linea)]
+        : [],
+      ...datosLegajo.filter(({ columna }) => CAMPOS_ESTUDIOS.has(columna)).length
+        ? [``, `🎓 *Estudios previos*`, ...datosLegajo.filter(({ columna }) => CAMPOS_ESTUDIOS.has(columna))
+          .map(({ linea }) => linea)]
+        : [],
+    ] : [
+      `👤 *Nombre:* ${nombre}`,
+      `🎓 *Carrera:* ${fila.carrera || 'No especificada'}`,
+      ...(!inscripcionRapida ? [`📋 *Tipo:* ${fila.tipo || '—'}`] : []),
+      `📧 *Email:* ${fila.email || '—'}`,
+      `📱 *Teléfono:* ${fila.telefono || '—'}`,
+      ...(!inscripcionRapida ? [
+        `📍 *Localidad:* ${fila.localidad || '—'}`,
+        `🔄 *Equivalencias:* ${fila.equivalencias ? 'Sí' : 'No'}`,
+      ] : []),
+      ...(legajo.length ? [``, `📝 *Datos del legajo*`, ...legajo] : []),
+    ]),
     ``,
     `🕐 *Fecha:* ${fecha}`,
   ].join('\n');

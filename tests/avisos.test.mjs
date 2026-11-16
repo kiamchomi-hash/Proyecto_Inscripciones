@@ -42,6 +42,48 @@ test('el legajo se arma con lo que trajo la fila, no con una lista fija', () => 
   assert.match(mensaje, /\*columna_futura:\* un dato nuevo/);
 });
 
+test('la preinscripción muestra nacimiento en día/mes/año y ordena los datos como el formulario', () => {
+  const mensaje = buildConsultaMessage({
+    ...base, casa: 'teclab', tipo_formulario: 'preinscripcion',
+    carrera: 'Gestión de la Empresa Agraria',
+    fecha_nacimiento: '2008-10-13', localidad_nacimiento: 'Correa, Santa Fe',
+    nacionalidad: 'Argentina', tipo_documento: 'DNI', dni: '35250845',
+    sexo: 'Masculino', estado_civil: 'Soltero', direccion: 'Mariano Moreno',
+    direccion_numero: '1357', localidad: 'Villa Lugano', nivel_estudios: 'Secundario',
+    colegio_localidad: 'Correa, Santa Fe', colegio: 'Escuela de Enseñanza Media',
+  });
+  const orden = [
+    '📝 *Datos del postulante*',
+    '👤 *Nombre:* Ana',
+    '👤 *Apellido:* Diaz',
+    '🎂 *Nacimiento:* 13/10/2008',
+    '🌎 *Lugar de nacimiento:* Correa, Santa Fe',
+    '🏳 *Nacionalidad:* Argentina',
+    '🪪 *Tipo de doc.:* DNI',
+    '🪪 *Documento:* 35250845',
+    '⚧ *Sexo:* Masculino',
+    '💍 *Estado civil:* Soltero',
+    '📧 *Email:* ana@x.com',
+    '📱 *Teléfono:* —',
+    '🎓 *Carrera:* Gestión de la Empresa Agraria',
+    '🏠 *Domicilio*',
+    '🏠 *Calle:* Mariano Moreno',
+    '🔢 *Número:* 1357',
+    '📍 *Localidad:* Villa Lugano',
+    '🎓 *Estudios previos*',
+    '🎓 *Nivel de estudios:* Secundario',
+    '🏫 *Localidad del colegio:* Correa, Santa Fe',
+    '🏫 *Colegio:* Escuela de Enseñanza Media',
+  ];
+  let anterior = -1;
+  for (const linea of orden) {
+    const indice = mensaje.indexOf(linea);
+    assert.ok(indice > anterior, `Orden incorrecto o falta «${linea}»:\n${mensaje}`);
+    anterior = indice;
+  }
+  assert.doesNotMatch(mensaje, /Nacimiento:.*2008-10-13/);
+});
+
 test('lo vacio no ensucia el aviso', () => {
   const mensaje = buildConsultaMessage({ ...base, casa: 'siglo21', tipo_formulario: 'contacto', dni: null, torre: '' });
   assert.ok(!mensaje.includes('Documento'));

@@ -29,6 +29,7 @@ function git(cwd, env, args, input) {
 }
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const cachePath = path => /^(node_modules|\.next)(\/|$)/.test(path) || path === 'tsconfig.tsbuildinfo';
+const derivadoGenerado = path => /^public\/derivados\/[a-f0-9]{8}-\d+\.webp$/.test(path);
 function verifySnapshot(root, expected) {
   const found = new Map();
   function visit(dir) {
@@ -36,7 +37,9 @@ function verifySnapshot(root, expected) {
       const target = join(dir, entry.name);
       const path = relative(root, target).split(sep).join('/');
       // No se siguen enlaces; los caches nunca reemplazan un archivo versionado.
-      if (cachePath(path) && !expected.has(path)) continue;
+      // `npm test` materializa derivados no versionados y comprueba sus rutas
+      // contra el manifiesto; sólo se toleran archivos con el nombre generado.
+      if ((cachePath(path) || derivadoGenerado(path)) && !expected.has(path)) continue;
       const stat = lstatSync(target);
       if (stat.isSymbolicLink()) throw new Error('El check creó un enlace en el código candidato. No publicar.');
       if (stat.isDirectory()) visit(target);

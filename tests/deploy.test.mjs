@@ -34,6 +34,21 @@ test('el envoltorio de deploy delega y no agrega todos los archivos', () => {
   assert.match(text, /deploy\.mjs/);
 });
 
+test('el check aislado admite derivados de imagen generados, pero no otros extras', async t => {
+  const cwd = fixture(t);
+  const { checkCandidate } = await import('../herramientas/deploy-check.mjs');
+  const tree = git(cwd, 'write-tree');
+
+  await assert.doesNotReject(checkCandidate(cwd, tree, async snapshot => {
+    mkdirSync(join(snapshot, 'public', 'derivados'), { recursive: true });
+    writeFileSync(join(snapshot, 'public', 'derivados', 'deadbeef-480.webp'), 'derivado');
+  }));
+  await assert.rejects(checkCandidate(cwd, tree, async snapshot => {
+    mkdirSync(join(snapshot, 'public', 'derivados'), { recursive: true });
+    writeFileSync(join(snapshot, 'public', 'derivados', 'inesperado.txt'), 'extra');
+  }), /modificó el código candidato/);
+});
+
 test('sólo commitea el archivo elegido y muestra el diff antes de confirmar', async t => {
   const cwd = fixture(t);
   writeFileSync(join(cwd, 'propio.txt'), 'propio nuevo\n');

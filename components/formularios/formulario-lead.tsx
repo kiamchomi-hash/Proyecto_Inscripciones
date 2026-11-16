@@ -16,6 +16,7 @@ import { EVENTO_ELEGIR_CARRERA, type DetalleElegirCarrera } from './elegir-carre
 import { PasoListo, PasoPrecio } from './autoinscripcion-teclab';
 import { PrecioEnFormulario, type PrecioVigente } from '@/components/index/ver-precio-teclab';
 import { modalidadCorta } from '@/components/carreras/career-content';
+import { fechaEntradaAIso, fechaIsoAEntrada, normalizarEntradaFecha } from './fecha';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -451,7 +452,13 @@ function CampoFecha({ id, valor, onChange, invalido }: {
   invalido?: boolean;
 }) {
   const [abierto, setAbierto] = useState(false);
+  const [textoFecha, setTextoFecha] = useState(() => fechaIsoAEntrada(valor));
+  const [errorFecha, setErrorFecha] = useState('');
   const cajaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (valor) setTextoFecha(fechaIsoAEntrada(valor));
+  }, [valor]);
 
   const [anio = '', mes = '', dia = ''] = valor ? valor.split('-') : [];
   const [vista, setVista] = useState(() => ({
@@ -479,7 +486,10 @@ function CampoFecha({ id, valor, onChange, invalido }: {
   };
 
   const elegir = (numero: number) => {
-    onChange(`${vista.anio}-${String(vista.mes).padStart(2, '0')}-${String(numero).padStart(2, '0')}`);
+    const iso = `${vista.anio}-${String(vista.mes).padStart(2, '0')}-${String(numero).padStart(2, '0')}`;
+    setTextoFecha(fechaIsoAEntrada(iso));
+    setErrorFecha('');
+    onChange(iso);
     setAbierto(false);
   };
 
@@ -489,27 +499,56 @@ function CampoFecha({ id, valor, onChange, invalido }: {
 
   return (
     <div className="relative" ref={cajaRef}>
+      <input
+        type="text"
+        id={id}
+        inputMode="numeric"
+        autoComplete="bday"
+        maxLength={10}
+        placeholder="DD/MM/AAAA"
+        value={textoFecha}
+        onChange={evento => {
+          const texto = normalizarEntradaFecha(evento.target.value);
+          setTextoFecha(texto);
+          setErrorFecha('');
+          onChange(fechaEntradaAIso(texto) ?? '');
+        }}
+        onBlur={() => {
+          if (!textoFecha) {
+            setErrorFecha('');
+            onChange('');
+            return;
+          }
+          const iso = fechaEntradaAIso(textoFecha);
+          if (!iso) {
+            setErrorFecha('Ingresá una fecha válida como DD/MM/AAAA.');
+            onChange('');
+            return;
+          }
+          setTextoFecha(fechaIsoAEntrada(iso));
+          setErrorFecha('');
+          onChange(iso);
+        }}
+        aria-invalid={errorFecha || invalido ? true : undefined}
+        aria-describedby={errorFecha ? `${id}-error` : invalido ? `${id}-falta` : undefined}
+        className={`${CAMPO} ${errorFecha || invalido ? BORDE_MAL : BORDE_OK} pr-11`}
+      />
       <button
         type="button"
-        id={id}
         onClick={alternar}
+        aria-label="Elegir fecha en el calendario"
         aria-haspopup="dialog"
         aria-expanded={abierto}
-        aria-describedby={invalido ? `${id}-falta` : undefined}
-        className={`${CAMPO} ${invalido ? BORDE_MAL : BORDE_OK} cursor-pointer pr-11 text-left ${valor ? 'text-white' : 'text-[var(--catalogo-texto-suave)]/60'}`}
+        className="absolute right-1 top-1/2 flex h-7 w-8 -translate-y-1/2 items-center justify-center rounded-md border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-acento)]/10"
       >
-        {valor ? `${dia}/${mes}/${anio}` : 'DD/MM/AAAA'}
-        {/* El ícono va en su propio recuadro, pegado al borde del campo. */}
-        <span className="pointer-events-none absolute right-1 top-1/2 flex h-7 w-8 -translate-y-1/2 items-center justify-center rounded-md border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-acento)]/10">
           <svg className="h-3.5 w-3.5 text-[var(--catalogo-acento)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <rect x="3" y="5" width="18" height="16" rx="2" />
             <path strokeLinecap="round" d="M3 10h18M8 3v4M16 3v4" />
           </svg>
-        </span>
       </button>
-      {/* El botón no admite `aria-invalid`; el campo obligatorio sin completar
-          se explica con un texto asociado. */}
-      {invalido && <span id={`${id}-falta`} className="sr-only">Completá este campo.</span>}
+      {errorFecha
+        ? <p id={`${id}-error`} className="form-field-error mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{errorFecha}</p>
+        : invalido && <span id={`${id}-falta`} className="sr-only">Completá este campo.</span>}
 
       {abierto && (
         <div
