@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { esRutaPrivada } from '../herramientas/secretos.mjs';
+import { esEnlaceSkillPublicoValido, esRutaPrivada } from '../herramientas/secretos.mjs';
 test('rutas comerciales y credenciales se bloquean sin bloquear código público', () => {
   for (const p of ['carreras/precio.md', 'ventas/corpus.json', 'herramientas/ventas/rutas.mjs', 'notas-locales/a.md', '.env.local', 'folder/.env.production', 'credenciales.json', 'x-service_account.json', 'secrets/key.pem']) assert.equal(esRutaPrivada(p), true, p);
-  for (const p of ['app/carreras/page.tsx', 'components/carreras/ficha.tsx', '.env.example', 'docs/variables-de-entorno.md']) assert.equal(esRutaPrivada(p), false, p);
+  for (const p of ['app/carreras/page.tsx', 'components/carreras/ficha.tsx', '.env.example', 'docs/variables-de-entorno.md', '.agents/skills/cau-brand']) assert.equal(esRutaPrivada(p), false, p);
+  assert.equal(esRutaPrivada('.agents/skills/modern-web-guidance'), true);
+  assert.equal(esRutaPrivada('.agents/skills/CAU-BRAND'), true);
 });
 
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
@@ -26,6 +28,32 @@ function fixture(t) {
   return cwd;
 }
 const tokenFalso = () => ['ghp', randomBytes(18).toString('hex')].join('_');
+test('sólo acepta enlaces de skills declarados que apuntan a un SKILL.md del árbol', () => {
+  const rutas = new Set(['.claude/skills/cau_brand/SKILL.md']);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/cau-brand', '../../.claude/skills/cau_brand', rutas,
+  ), true);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/cau-brand', '../../../fuera', rutas,
+  ), false);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/modern-web-guidance', '../../.claude/skills/modern-web-guidance', rutas,
+  ), false);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/cau-brand', '../../.claude/skills/cau_brand', new Set(),
+  ), false);
+});
+
+test('scanner permite el enlace de skill declarado y revisa su destino versionado', t => {
+  const cwd = fixture(t);
+  mkdirSync(join(cwd, '.claude', 'skills', 'cau_brand'), { recursive: true });
+  writeFileSync(join(cwd, '.claude', 'skills', 'cau_brand', 'SKILL.md'), 'Guía pública\n');
+  mkdirSync(join(cwd, '.agents', 'skills'), { recursive: true });
+  symlinkSync('../../.claude/skills/cau_brand', join(cwd, '.agents', 'skills', 'cau-brand'));
+  git(cwd, 'add', '.');
+  assert.doesNotThrow(() => revisarSecretos({ cwd }));
+});
+
 test('scanner real acepta selección inocua y no lee archivos ignorados', t => {
   const cwd = fixture(t);
   writeFileSync(join(cwd, '.gitignore'), '.env.local\n'); git(cwd, 'add', '.gitignore');

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync, rmSync, renameSync, unlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, symlinkSync, writeFileSync, readFileSync, rmSync, renameSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -296,6 +296,27 @@ test('snapshot rechaza enlaces Git antes de ejecutar check', async t => {
   await assert.rejects(checkCandidate(cwd, tree, () => { ran = true; }), /no soportados/);
   assert.equal(ran, false);
   assert.equal(git(cwd, 'write-tree'), tree);
+});
+
+test('snapshot acepta sólo el enlace de skill declarado hacia su SKILL.md versionado', async t => {
+  const cwd = fixture(t);
+  mkdirSync(join(cwd, '.claude', 'skills', 'cau_brand'), { recursive: true });
+  writeFileSync(join(cwd, '.claude', 'skills', 'cau_brand', 'SKILL.md'), 'Guía pública\n');
+  mkdirSync(join(cwd, '.agents', 'skills'), { recursive: true });
+  symlinkSync('../../.claude/skills/cau_brand', join(cwd, '.agents', 'skills', 'cau-brand'));
+  git(cwd, 'add', '.');
+  const tree = git(cwd, 'write-tree');
+  const { checkCandidate } = await import('../herramientas/deploy-check.mjs');
+  await assert.doesNotReject(checkCandidate(cwd, tree, async snapshot => {
+    assert.equal(
+      readFileSync(join(snapshot, '.agents', 'skills', 'cau-brand'), 'utf8'),
+      '../../.claude/skills/cau_brand',
+    );
+    assert.equal(
+      readFileSync(join(snapshot, '.claude', 'skills', 'cau_brand', 'SKILL.md'), 'utf8'),
+      'Guía pública\n',
+    );
+  }));
 });
 
 test('snapshot permite caches nuevos, pero no cambia los bytes LF Git por autocrlf', async t => {

@@ -1,6 +1,7 @@
 ---
 import { env } from 'cloudflare:workers';
 import { jsonLdScript } from '@/lib/json-ld';
+import { MARCA_MODAL } from '@/components/index/types';
 import { EMAIL_CONTACTO, GEO, MAPS_URL, ORGANIZACION_ID, POSTAL_ADDRESS, TELEFONO_E164 } from '@/lib/sede';
 import NavbarIsla from '../entrega/NavbarIsla';
 import { configTurnstile } from '../entrega/entorno-publico.ts';
@@ -242,6 +243,39 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
         src="https://static.cloudflareinsights.com/beacon.min.js"
         data-cf-beacon={JSON.stringify({ token: beaconAnalytics, send: { to: '/cdn-cgi/rum' } })}
       />
+    )}
+    {ruta.startsWith('/carreras/') && (
+      <script is:inline define:vars={{ marcaModal: MARCA_MODAL }}>
+        let marca = null;
+        try {
+          marca = sessionStorage.getItem(marcaModal);
+          if (marca) sessionStorage.removeItem(marcaModal);
+        } catch {}
+
+        if (marca === window.location.pathname && !window.location.hash) {
+          history.scrollRestoration = 'manual';
+          window.scrollTo(0, 0);
+
+          let vigilando = true;
+          const soltar = () => {
+            if (!vigilando) return;
+            vigilando = false;
+            window.removeEventListener('scroll', volverArriba);
+            for (const gesto of ['wheel', 'touchstart', 'keydown', 'pointerdown']) {
+              window.removeEventListener(gesto, soltar);
+            }
+            history.scrollRestoration = 'auto';
+          };
+          function volverArriba() {
+            if (vigilando && window.scrollY !== 0) window.scrollTo(0, 0);
+          }
+          window.addEventListener('scroll', volverArriba);
+          for (const gesto of ['wheel', 'touchstart', 'keydown', 'pointerdown']) {
+            window.addEventListener(gesto, soltar, { passive: true });
+          }
+          window.setTimeout(soltar, 1500);
+        }
+      </script>
     )}
   </head>
   <body>

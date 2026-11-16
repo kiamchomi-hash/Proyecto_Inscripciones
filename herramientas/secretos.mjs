@@ -2,11 +2,38 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, relative, resolve, sep } from 'node:path';
+import { dirname, join, posix, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ARCHIVOS, VERSION } from './gitleaks-version.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const ENLACES_SKILLS_PUBLICOS = Object.freeze({
+  '.agents/skills/bot-respuestas': '../../.claude/skills/bot_respuestas',
+  '.agents/skills/calcar-imagenes': '../../.claude/skills/calcar-imagenes',
+  '.agents/skills/cargar-carrera': '../../.claude/skills/cargar_carrera',
+  '.agents/skills/cau-brand': '../../.claude/skills/cau_brand',
+  '.agents/skills/cau-design-patterns': '../../.claude/skills/cau_design_patterns',
+  '.agents/skills/diseno-uiverse': '../../.claude/skills/diseno-uiverse',
+  '.agents/skills/lienzo-de-diseno': '../../.claude/skills/lienzo-de-diseno',
+  '.agents/skills/piezas-para-el-publico': '../../.claude/skills/piezas-para-el-publico',
+  '.agents/skills/piezas_siglo21': '../../.claude/skills/piezas_siglo21',
+  '.agents/skills/piezas_teclab': '../../.claude/skills/piezas_teclab',
+  '.agents/skills/piezas_teclab2': '../../.claude/skills/piezas_teclab2',
+  '.agents/skills/remotion': '../../.claude/skills/remotion',
+});
+
+export function esEnlaceSkillPublico(path) {
+  return Object.hasOwn(ENLACES_SKILLS_PUBLICOS, path);
+}
+
+export function esEnlaceSkillPublicoValido(path, destino, rutas) {
+  const esperado = ENLACES_SKILLS_PUBLICOS[path];
+  if (!esperado || destino !== esperado) return false;
+  const directorio = posix.normalize(posix.join(posix.dirname(path), destino));
+  return directorio.startsWith('.claude/skills/')
+    && rutas.has(`${directorio}/SKILL.md`);
+}
+
 export const binario = join(ROOT, 'node_modules', '.cache', 'gitleaks', VERSION, process.platform === 'win32' ? 'gitleaks.exe' : 'gitleaks');
 const env = () => ({ ...process.env, GIT_LITERAL_PATHSPECS: '1', GIT_PAGER: 'cat' });
 function git(cwd, ...args) {
@@ -17,7 +44,9 @@ const valor = (cwd, ...args) => git(cwd, ...args).toString('utf8').trim();
 const partes = text => text.split('\0').filter(Boolean);
 
 export function esRutaPrivada(path) {
-  const p = path.replaceAll('\\', '/').toLowerCase();
+  const normalizado = path.replaceAll('\\', '/');
+  if (esEnlaceSkillPublico(normalizado)) return false;
+  const p = normalizado.toLowerCase();
   const name = p.split('/').at(-1);
   return /^(?:carreras|ventas|herramientas\/ventas|notas-locales|contenidos|entregables|\.agents|\.pi)(?:\/|$)/.test(p)
     || (name.startsWith('.env') && name !== '.env.example')
@@ -74,8 +103,27 @@ export function revisarSecretos({ cwd, tree = valor(cwd, 'write-tree'), base = v
   // Inspeccionar todas las rutas de cada commit, incluso si después se borraron.
   const trees = [tree, ...commits];
   const entries = trees.map(ref => partes(git(cwd, 'ls-tree', '-r', '-z', ref).toString('utf8')));
-  const privatePaths = [...new Set(entries.flat().map(entry => entry.slice(entry.indexOf('\t') + 1)).filter(esRutaPrivada))];
-  if (privatePaths.length) throw new Error(`Archivos privados: ${privatePaths.map(p => JSON.stringify(p)).join(', ')}. Retirarlos de la selección; si están en commits pendientes, revisar esos commits antes de publicar.`);
+  const privatePaths = [];
+  for (const treeEntries of entries) {
+    const rutas = new Set(treeEntries.map(entry => entry.slice(entry.indexOf('\t') + 1)));
+    for (const entry of treeEntries) {
+      const index = entry.indexOf('\t');
+      const [mode, type, oid] = entry.slice(0, index).split(' ');
+      const path = entry.slice(index + 1);
+      if (esEnlaceSkillPublico(path)) {
+        const destino = mode === '120000' && type === 'blob'
+          ? git(cwd, 'cat-file', 'blob', oid).toString('utf8')
+          : null;
+        if (!esEnlaceSkillPublicoValido(path, destino, rutas)) {
+          throw new Error(`Enlace de skill público inválido: ${JSON.stringify(path)}. No publicar.`);
+        }
+      } else if (esRutaPrivada(path)) {
+        privatePaths.push(path);
+      }
+    }
+  }
+  const rutasPrivadas = [...new Set(privatePaths)];
+  if (rutasPrivadas.length) throw new Error(`Archivos privados: ${rutasPrivadas.map(p => JSON.stringify(p)).join(', ')}. Retirarlos de la selección; si están en commits pendientes, revisar esos commits antes de publicar.`);
   const dir = mkdtempSync(join(tmpdir(), 'gitleaks-revision-'));
   try {
     const snapshot = join(dir, 'seleccion');
@@ -83,21 +131,27 @@ export function revisarSecretos({ cwd, tree = valor(cwd, 'write-tree'), base = v
     const oids = entries[0].map(entry => entry.split('\t')[0].split(' ')[2]);
     const blobs = execFileSync('git', ['cat-file', '--batch'], { cwd, env: env(), input: `${oids.join('\n')}\n`, maxBuffer: 512 * 1024 * 1024, stdio: ['pipe', 'pipe', 'pipe'] });
     let offset = 0;
+    const rutasSeleccionadas = new Set(entries[0].map(item => item.slice(item.indexOf('\t') + 1)));
     for (const entry of entries[0]) {
       const [meta, path] = entry.split('\t');
       const [mode, type] = meta.split(' ');
-      if (type !== 'blob' || !['100644', '100755'].includes(mode)) throw new Error('La selección contiene enlaces o submódulos no revisables. No publicar.');
-      const target = resolve(snapshot, path);
-      if (relative(snapshot, target).startsWith(`..${sep}`) || relative(snapshot, target) === '..') throw new Error('Ruta no revisable. No publicar.');
-      mkdirSync(dirname(target), { recursive: true });
       const end = blobs.indexOf(10, offset);
       const header = blobs.subarray(offset, end).toString('ascii').split(' ');
       const size = Number(header[2]);
       if (end < 0 || header[0] !== meta.split(' ')[2] || header[1] !== 'blob' || !Number.isSafeInteger(size) || size < 0) throw new Error('Snapshot Git incompleto. No publicar.');
-      offset = end + 1;
-      if (offset + size >= blobs.length || blobs[offset + size] !== 10) throw new Error('Snapshot Git truncado. No publicar.');
-      writeFileSync(target, blobs.subarray(offset, offset + size));
-      offset += size + 1;
+      const inicio = end + 1;
+      if (inicio + size >= blobs.length || blobs[inicio + size] !== 10) throw new Error('Snapshot Git truncado. No publicar.');
+      const contenido = blobs.subarray(inicio, inicio + size);
+      const destino = mode === '120000' ? contenido.toString('utf8') : null;
+      if (type !== 'blob' || (!['100644', '100755'].includes(mode)
+        && !(mode === '120000' && esEnlaceSkillPublicoValido(path, destino, rutasSeleccionadas)))) {
+        throw new Error('La selección contiene enlaces o submódulos no revisables. No publicar.');
+      }
+      const target = resolve(snapshot, path);
+      if (relative(snapshot, target).startsWith(`..${sep}`) || relative(snapshot, target) === '..') throw new Error('Ruta no revisable. No publicar.');
+      mkdirSync(dirname(target), { recursive: true });
+      writeFileSync(target, contenido);
+      offset = inicio + size + 1;
     }
     // La política también es del candidato, nunca del working tree editable.
     const config = join(dir, 'politica.toml');

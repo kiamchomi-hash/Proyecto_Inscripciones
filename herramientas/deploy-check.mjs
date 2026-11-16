@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { esRutaPrivada } from './secretos.mjs';
+import { esEnlaceSkillPublico, esEnlaceSkillPublicoValido, esRutaPrivada } from './secretos.mjs';
 
 function within(root, target) {
   const path = relative(root, target);
@@ -87,7 +87,8 @@ export async function checkCandidate(cwd, tree, check = checkLocal) {
       const [mode, type, oid] = record.slice(0, index).split(' ');
       const path = record.slice(index + 1);
       const target = resolve(snapshot, path);
-      if (index < 0 || type !== 'blob' || !['100644', '100755'].includes(mode) || !within(snapshot, target)
+      if (index < 0 || type !== 'blob' || (!['100644', '100755'].includes(mode)
+        && !(mode === '120000' && esEnlaceSkillPublico(path))) || !within(snapshot, target)
         || path.split('/').some(part => !part || part === '..' || part === '.git' || /[\\\x00-\x1f]/.test(part))
         || esRutaPrivada(path) || cachePath(path)) throw new Error('El candidato contiene rutas privadas, caches, enlaces o submódulos no soportados. Retirarlos de la selección y reintentar.');
       if (process.platform === 'win32' && path.split('/').some(part => /[<>:"|?*]|[ .]$/.test(part) || /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(part))) throw new Error('El candidato contiene una ruta no representable en Windows. No publicar.');
@@ -98,6 +99,7 @@ export async function checkCandidate(cwd, tree, check = checkLocal) {
     const blobs = entries.length ? git(cwd, env, ['cat-file', '--batch'], `${entries.map(entry => entry.oid).join('\n')}\n`) : Buffer.alloc(0);
     let offset = 0;
     const expected = new Map();
+    const rutas = new Set(entries.map(entry => entry.path));
     for (const entry of entries) {
       const end = blobs.indexOf(10, offset);
       const [oid, type, length] = blobs.subarray(offset, end).toString('ascii').split(' ');
@@ -105,6 +107,9 @@ export async function checkCandidate(cwd, tree, check = checkLocal) {
       offset = end + 1;
       if (end < 0 || oid !== entry.oid || type !== 'blob' || !Number.isSafeInteger(size) || size < 0 || offset + size >= blobs.length || blobs[offset + size] !== 10) throw new Error('No se pudo materializar el árbol Git completo. No publicar.');
       const bytes = blobs.subarray(offset, offset + size);
+      if (entry.mode === '120000' && !esEnlaceSkillPublicoValido(entry.path, bytes.toString('utf8'), rutas)) {
+        throw new Error('La selección contiene un enlace de skill público inválido. No publicar.');
+      }
       mkdirSync(dirname(entry.target), { recursive: true });
       writeFileSync(entry.target, bytes);
       chmodSync(entry.target, entry.mode === '100755' ? 0o755 : 0o644);
