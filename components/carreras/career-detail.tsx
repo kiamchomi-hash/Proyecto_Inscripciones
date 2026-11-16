@@ -310,14 +310,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               <ArrowIcon />
               Ver todas las carreras
             </Link>
-            <nav aria-label="Migas de pan" className="career-breadcrumb">
-              <Link href="/" prefetch={false}>Inicio</Link>
-              <span className="career-breadcrumb-separator" aria-hidden="true">›</span>
-              <Link href="/#carreras" prefetch={false}>Carreras</Link>
-              <span className="career-breadcrumb-separator" aria-hidden="true">›</span>
-              <span className="career-breadcrumb-current" aria-current="page">{cleanName}</span>
-            </nav>
-
             {/* Quien dicta el programa. Hasta el 01/08/2026 la unica marca de
                 Teclab o de la Academia estaba en la fila de datos y en la franja
                 del final: quien llegaba desde Google leia el titulo, el hero y

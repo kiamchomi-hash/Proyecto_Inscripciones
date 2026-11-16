@@ -225,7 +225,7 @@
 
 /* ── Barra de datos ───────────────────────────────────── */
 /* Los cuatro datos son bloques de color pleno, como en las placas oficiales:
-   azul, cian, papel y navy claro con filete. Cada uno lleva su par de
+   azul, cian, papel e índigo. Cada uno lleva su par de
    fondo/texto con contraste AA. */
 .career-page--teclab .career-facts {
   gap: 0.75rem;
@@ -258,8 +258,8 @@
 }
 
 .career-page--teclab .career-facts > div:nth-child(4) {
-  --fact-etiqueta: var(--career-accent);
-  background: #112236;
+  --fact-etiqueta: #dedaff;
+  background: #423d8f;
 }
 
 .career-page--teclab .career-layout {
@@ -299,6 +299,16 @@
 
 .career-page--teclab .career-facts > div {
   text-align: center;
+}
+
+.career-page--teclab .career-facts > div:nth-child(-n+2) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.career-page--teclab .career-facts > div:nth-child(2) dd {
+  font-size: 1.2rem;
 }
 
 .career-page--teclab .career-fact-logo {

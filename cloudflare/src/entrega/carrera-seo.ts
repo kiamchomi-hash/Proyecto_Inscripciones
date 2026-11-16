@@ -7,6 +7,10 @@ import ogTeclab from '@/components/carreras/og-teclab.json';
 // Port de los contratos SEO de app/carreras/[slug]/page.tsx. El presupuesto se
 // prueba por nombre y luego por sufijo: no sacrificar el prefijo académico antes.
 const ESPECIFICOS: Record<string, { title?: string; description: string }> = {
+  'Tecnicatura Superior en Gestión de Inteligencia Artificial y Transformación Digital': {
+    title: 'Gestión de IA y Transformación Digital | Teclab',
+    description: 'Estudiá Gestión de Inteligencia Artificial y Transformación Digital en Teclab. Conocé el plan de estudios de la tecnicatura online de 2 años.',
+  },
   'Tecnicatura en Diseño y Desarrollo de Videojuegos': {
     title: 'Tecnicatura en Diseño y Desarrollo de Videojuegos | Siglo 21',
     description: 'Aprendé programación, animación 2D y 3D, inteligencia artificial y motores de videojuegos. Conocé el plan de la tecnicatura a distancia de Siglo 21.',

@@ -20,7 +20,7 @@ export type PerfilId =
   | 'ambiental' | 'higiene-seguridad' | 'relaciones-laborales' | 'hotelera' | 'eventos' | 'periodismo'
   | 'administracion' | 'finanzas-digitales' | 'logistica' | 'comercio-exterior' | 'riesgos'
   | 'producto-digital' | 'experiencia-usuario' | 'equipos-agiles' | 'recursos-humanos' | 'videojuegos'
-  | 'comercio-electronico';
+  | 'comercio-electronico' | 'gestion-inteligencia-artificial';
 
 type Puntos = Partial<Record<PerfilId, number>>;
 export type Opcion = { texto: string; puntos: Puntos };
@@ -33,6 +33,7 @@ type CarreraConNombre = { id: number; nombre: string; nombre_corto?: string | nu
  * específico va antes (Seguridad Informática antes que Higiene y Seguridad).
  */
 export const PERFILES: { id: PerfilId; match: string[] }[] = [
+  { id: 'gestion-inteligencia-artificial', match: ['gestion de inteligencia artificial y transformacion digital'] },
   { id: 'videojuegos', match: ['desarrollo de videojuegos'] },
   { id: 'programacion', match: ['programacion'] },
   { id: 'data-science', match: ['data science'] },
@@ -85,7 +86,7 @@ export const PREGUNTAS: Pregunta[] = [
     eje: 'Mundo',
     pregunta: '¿Qué mundo te atrae más?',
     opciones: [
-      { texto: 'Programas, apps y datos', puntos: { programacion: 5, videojuegos: 5, 'quality-assurance': 4, 'data-science': 2, 'producto-digital': 3, 'experiencia-usuario': 3 } },
+      { texto: 'Programas, apps y datos', puntos: { programacion: 5, videojuegos: 5, 'quality-assurance': 4, 'data-science': 2, 'producto-digital': 3, 'experiencia-usuario': 3, 'gestion-inteligencia-artificial': 4 } },
       { texto: 'Redes, servidores y ciberseguridad', puntos: { redes: 3, cloud: 3, 'seguridad-informatica': 6 } },
       { texto: 'Marcas, ventas y clientes', puntos: { 'marketing-digital': 6, 'inbound-marketing': 7, 'experiencia-cliente': 4, 'comercio-electronico': 5 } },
       { texto: 'Empresas, números y equipos', puntos: { contable: 6, 'relaciones-laborales': 4, seguros: 3, administracion: 5, 'finanzas-digitales': 3, 'recursos-humanos': 1, 'equipos-agiles': 5, riesgos: 3, 'comercio-electronico': 2 } },
@@ -99,7 +100,7 @@ export const PREGUNTAS: Pregunta[] = [
     opciones: [
       { texto: 'Escribir código y crear aplicaciones', puntos: { programacion: 5, videojuegos: 5 } },
       { texto: 'Probar sistemas y encontrar errores', puntos: { 'quality-assurance': 6 } },
-      { texto: 'Analizar datos para tomar decisiones', puntos: { 'data-science': 7, contable: 4, administracion: 6, 'finanzas-digitales': 4, 'producto-digital': 7, 'comercio-electronico': 2 } },
+      { texto: 'Analizar datos para tomar decisiones', puntos: { 'data-science': 7, contable: 4, administracion: 6, 'finanzas-digitales': 4, 'producto-digital': 7, 'comercio-electronico': 2, 'gestion-inteligencia-artificial': 5 } },
       { texto: 'Configurar redes, servidores y la nube', puntos: { redes: 5, cloud: 2 } },
       { texto: 'Crear contenido y campañas', puntos: { 'marketing-digital': 6, 'inbound-marketing': 6, 'comercio-electronico': 3 } },
       { texto: 'Atender y asesorar personas', puntos: { 'experiencia-cliente': 3, seguros: 3, hotelera: 2, 'relaciones-laborales': 3, 'comercio-electronico': 1 } },
@@ -161,7 +162,7 @@ export const PREGUNTAS: Pregunta[] = [
       { texto: 'Que un pedido llegue a tiempo', puntos: { logistica: 7, alimentos: 3, 'comercio-electronico': 4 } },
       { texto: 'Llevar un negocio a otros países', puntos: { 'comercio-exterior': 8, administracion: 6 } },
       { texto: 'Que una app sea fácil de usar', puntos: { 'experiencia-usuario': 6, 'producto-digital': 4 } },
-      { texto: 'Que un equipo trabaje mejor', puntos: { 'equipos-agiles': 7, administracion: 3 } },
+      { texto: 'Que un equipo trabaje mejor', puntos: { 'equipos-agiles': 7, administracion: 3, 'gestion-inteligencia-artificial': 7 } },
       { texto: 'Elegir a la persona justa para un puesto', puntos: { 'recursos-humanos': 7, 'relaciones-laborales': 2 } },
       { texto: 'Prevenir fraudes y riesgos', puntos: { riesgos: 7, 'finanzas-digitales': 4, 'seguridad-informatica': 4 } },
     ],

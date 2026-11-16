@@ -32,8 +32,9 @@ test('encuentra la carrera con el nombre de D1 y no inventa en las que no corres
   const qa = getResolucionesTeclab({ nombre: 'Tecnicatura en Calidad de Software', nombre_corto: 'Quality Assurance' });
   assert.equal(qa?.plan, '1184/23 del Ministerio de Educación de la Ciudad de Buenos Aires');
 
-  // Anunciadas y cursos no llevan resoluciones.
-  assert.equal(getResolucionesTeclab({ nombre: 'Tecnicatura Superior en Gestión de Inteligencia Artificial y Transformación Digital' }), null);
+  // La carrera fue publicada por Teclab con su dictamen.
+  assert.match(getResolucionesTeclab({ nombre: 'Tecnicatura Superior en Gestión de Inteligencia Artificial y Transformación Digital' }).dictamen, /^3427\/26 /);
+  // Los cursos no llevan resoluciones de tecnicatura.
   assert.equal(getResolucionesTeclab({ nombre: 'Curso de Introducción a la Inteligencia Artificial' }), null);
 });
 

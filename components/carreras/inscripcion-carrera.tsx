@@ -42,6 +42,7 @@ const MAX_DESCRIPCION = 165;
 // con la marca. Se lo nombra por el tema, que es lo que se busca. Negocios
 // Digitales Financieros tampoco entra con "Administración de" adelante.
 const TITULO_ESPECIFICO: Record<string, string> = {
+  'Tecnicatura Superior en Gestión de Inteligencia Artificial y Transformación Digital': 'Inscripción a Gestión de IA y Transformación Digital | Teclab',
   'Curso de Actualización Profesional en Inteligencia Artificial': 'Inscripción al Curso de Inteligencia Artificial | Teclab',
   'Tecnicatura Superior en Administración de Negocios Digitales Financieros': 'Inscripción a Negocios Digitales Financieros | Teclab',
 };

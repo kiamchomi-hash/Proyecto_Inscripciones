@@ -141,6 +141,7 @@ const SIN_ARTICULACION_CONFIRMADA = [
   'riesgos empresariales',
   'comercio electrónico',
   'diseño de producto digital',
+  'gestión de inteligencia artificial y transformación digital',
   'experiencia de usuario',
   'agile coaching',
   'recursos humanos',
@@ -206,6 +207,14 @@ export interface TeclabFicha {
 // la base: ahi quedaron valores genericos ("Perfil laboral", "Sector
 // financiero") que no son empresas.
 const FICHAS: { match: string; ficha: TeclabFicha }[] = [
+  {
+    match: 'gestión de inteligencia artificial y transformación digital',
+    ficha: {
+      url: 'https://teclab.edu.ar/carrera/tecnico-superior-en-gestion-de-inteligencia-artificial-y-transformacion-digital/',
+      imagen: '/imagenes/teclab/carreras/gestion-inteligencia-artificial.webp',
+      imagenCierre: '/imagenes/teclab/carreras/gestion-inteligencia-artificial.webp',
+    },
+  },
   {
     match: 'desarrollo de videojuegos',
     ficha: {

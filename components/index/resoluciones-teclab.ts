@@ -25,6 +25,10 @@ export interface ResolucionesTeclab {
 
 export const RESOLUCIONES_TECLAB: { match: string; resoluciones: ResolucionesTeclab }[] = [
   {
+    match: 'gestión de inteligencia artificial y transformación digital',
+    resoluciones: { dictamen: '3427/26 del Consejo Federal de Educación, Secretaría de Educación de la Nación' },
+  },
+  {
     match: 'administración de empresas',
     resoluciones: {
       dictamen: '3345/26 del Consejo Federal de Educación, Secretaría de Educación de la Nación',

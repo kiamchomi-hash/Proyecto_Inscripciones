@@ -143,6 +143,7 @@ export const DERIVADAS: Record<string, Derivadas> = {
   "/imagenes/teclab/carreras/gestion-de-alimentos.webp": { hash: '631f1bd3', anchos: [480, 960, 1440] },
   "/imagenes/teclab/carreras/gestion-de-proyectos-mineros.webp": { hash: '1596dee5', anchos: [480, 960, 1440] },
   "/imagenes/teclab/carreras/gestion-hotelera.webp": { hash: '5cdec455', anchos: [480, 960] },
+  "/imagenes/teclab/carreras/gestion-inteligencia-artificial.webp": { hash: '852de340', anchos: [480, 960, 1200] },
   "/imagenes/teclab/carreras/higiene-y-seguridad-en-el-trabajo.webp": { hash: '69776d9d', anchos: [480, 960, 1440] },
   "/imagenes/teclab/carreras/inbound-marketing-cierre.webp": { hash: 'e2cc477c', anchos: [480, 960] },
   "/imagenes/teclab/carreras/inbound-marketing.webp": { hash: 'da9675d8', anchos: [480, 960] },
