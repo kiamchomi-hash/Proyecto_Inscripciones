@@ -23,9 +23,12 @@ export const NUMERO_CAU = '5491132973801';
  */
 export const NUMERO_TECLAB_IDENTIDAD = NUMERO_CAU;
 
+/** Destino temporal de las consultas de Teclab. */
+export const NUMERO_TECLAB = '5491166522722';
+
 /** El número que corresponde a la casa; sin casa, el del CAU. */
 export const numeroWhatsAppDe = (casa: CasaId | null | undefined): string =>
-  casa === 'identidad' ? NUMERO_TECLAB_IDENTIDAD : NUMERO_CAU;
+  casa === 'teclab' ? NUMERO_TECLAB : casa === 'identidad' ? NUMERO_TECLAB_IDENTIDAD : NUMERO_CAU;
 
 /**
  * Entre quiénes se reparten las consultas que entran por WhatsApp. El primero
