@@ -132,8 +132,9 @@ test('el formulario rápido del lateral entra como consulta de contacto', async 
   const { db } = await crearD1(t);
   await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
 
-  // Lo que manda `components/carreras/formulario-rapido.tsx`: los cuatro datos y
-  // la carrera de la ficha, sin `newsletter` (no hay casilla a la vista).
+  // Lo que manda `components/carreras/formulario-rapido.tsx`: nombre, apellido,
+  // el dato de contacto y la carrera de la ficha, sin `newsletter` (no hay
+  // casilla a la vista).
   const respuesta = await pedir(sobre('consulta', {
     casa: 'teclab',
     tipoFormulario: 'contacto',
@@ -159,6 +160,27 @@ test('el formulario rápido del lateral entra como consulta de contacto', async 
   // Sin consentimiento no se suscribe a nadie.
   const efectos = (await filas(db)).map(f => f.tipo).sort();
   assert.deepEqual(efectos, ['aviso-lead']);
+});
+
+// El lateral pide un solo dato: el que la persona prefiera. Con la arroba va
+// como mail y el teléfono queda vacío; sin arroba, al revés.
+test('el contacto del formulario rápido puede venir sólo por mail o sólo por teléfono', async t => {
+  const { db } = await crearD1(t);
+  await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
+
+  const base = {
+    casa: 'teclab', tipoFormulario: 'contacto', origen: 'inscripcion-rapida',
+    carrera: 'Tecnicatura Superior en Programación', carreraId: 1,
+    nombre: 'Ana', apellido: 'Pérez',
+  };
+  assert.equal((await pedir(sobre('consulta', { ...base, email: 'lead@example.invalid', telefono: '' }), { db })).status, 201);
+  assert.equal((await pedir(sobre('consulta', { ...base, email: '', telefono: '11 1234-5678' }), { db })).status, 201);
+
+  const guardadas = await db.prepare('SELECT email, telefono FROM consultas ORDER BY id').all();
+  assert.deepEqual(guardadas.results, [
+    { email: 'lead@example.invalid', telefono: null },
+    { email: null, telefono: '11 1234-5678' },
+  ]);
 });
 
 test('consulta con preinscripción: precio vigente, mail encolado y efectos atómicos', async t => {
