@@ -132,6 +132,10 @@ Si cambia esa lógica, ejecutar las pruebas del área afectada; reservar el cont
 completo para cambios amplios o cuando corresponda una revisión integral. GitHub
 no ejecuta ese `check` completo: no presentarlo como si lo hiciera.
 
+La ruta breve por tipo de cambio y los disparadores para revisar regresiones
+conocidas están en [`docs/verificacion.md`](docs/verificacion.md) y
+[`docs/checklist-confiabilidad.md`](docs/checklist-confiabilidad.md).
+
 ### Verificaciones que no cubre `npm run check`
 
 `check` sólo mira el código. Lo que mira los datos y el sitio publicado vive en `herramientas/`, con un `.sh` de doble clic al lado de cada `.mjs` (la lógica se toca en el `.mjs`; el envoltorio no tiene lógica propia, y nada de esa carpeta entra al bundle): `npm run auditar` (contenido faltante en la base D1 de producción), `npm run smoke` (producción: rutas, cabeceras, redirects, sitemap y peso del HTML), `npm run capturas`, `npm run seo` (informe de Search Console) y `npm run leads` (de dónde vienen los leads: clics a WhatsApp, consultas y tráfico de Google, con el embudo). Las tres primeras salen con código 1 si encuentran algo.
