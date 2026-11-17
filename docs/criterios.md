@@ -73,6 +73,23 @@ directamente en el chat, en escritorio y celular. No alcanza con revisarlas
 internamente, describir el resultado ni dejar sólo enlaces para abrirlas. No
 esperar a que el usuario las pida.
 
+### Los HTML generados son vistas, no fuentes
+
+Decidido el 17/11/2026, después de leer el artículo de Thariq Shihipar sobre
+HTML como reemplazo de markdown (https://claude.dev/blog/using-claude-code-the-unreasonable-effectiveness-of-html).
+Los artefactos HTML del agente sirven para informes con datos, comparaciones
+lado a lado, diagramas y editores descartables: lo que un `.md` aplana. No
+reemplazan a los documentos canónicos (`AGENTS.md`, este archivo,
+`PENDIENTES.md`, los `LEER.md`): ésos se grepean, se difieren en git y se citan
+por ruta, y el diff de HTML es ruidoso.
+
+Lo que se conserve va en español, en un único archivo autocontenido (sin build
+ni dependencias externas), como vista regenerable del texto del que sale. Nada
+de precios ni corpus del bot: el repo es público. Todo editor descartable
+termina con un botón de exportar a texto para volver a pegarlo en el agente. Se
+muestra en el chat con capturas, como cualquier cambio visual. No hace falta un
+skill ni una plantilla nueva: se pide en el prompt.
+
 ### Las respuestas van cortas
 
 Nada de tablas de estado, resúmenes de lo que quedó hecho ni párrafos
