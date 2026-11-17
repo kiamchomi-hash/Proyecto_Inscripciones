@@ -41,6 +41,7 @@ export function comandoLocal(nombre) {
     migrar: ['node_modules/wrangler/bin/wrangler.js', 'd1', 'migrations', 'apply', 'DB', '--local'],
     diagnostico: ['node_modules/astro/bin/astro.mjs', 'check'],
     build: ['node_modules/astro/bin/astro.mjs', 'build'],
+    'build-e2e': ['node_modules/astro/bin/astro.mjs', 'build'],
     dev: ['node_modules/astro/bin/astro.mjs', 'dev', '--host', '127.0.0.1', '--port', '4329'],
     preview: ['node_modules/astro/bin/astro.mjs', 'preview', '--host', '127.0.0.1', '--port', '4329'],
     seguridad: ['--test', 'tests/seguridad.test.mjs', 'tests/bloqueo.test.mjs'],
@@ -51,6 +52,8 @@ export function comandoLocal(nombre) {
     // `cache-produccion` cuida la caché de borde del entry de producción, que
     // no se puede importar desde node.
     entrega: ['--test', 'tests/entrega.test.mjs', 'tests/cache-produccion.test.mjs',
+      'tests/assets-r2.test.mjs', 'tests/assets-html.test.mjs',
+      'tests/assets-build.test.mjs', 'tests/sincronizar-assets-r2.test.mjs', 'tests/inventario-imagenes.test.mjs',
       'tests/llms-txt.test.mjs', 'tests/markdown.test.mjs'],
     datos: ['--test', '--test-concurrency=1', 'tests/datos.test.mjs', 'tests/concurrencia.test.mjs'],
     control: ['--test', '--test-concurrency=1', 'tests/rate-limit.test.mjs', 'tests/contadores.test.mjs', 'tests/migraciones.test.mjs'],
@@ -79,7 +82,7 @@ export function comandoLocal(nombre) {
     // porque usa el mismo build y un D1 efímero.
     paridad: ['--test', '--test-concurrency=1', 'tests/carreras-detalle.test.mjs', 'tests/fijas.test.mjs', 'tests/paginas-carreras.test.mjs', 'tests/novedades.test.mjs', 'tests/paridad.test.mjs', 'tests/referencia-home.test.mjs', 'tests/bandas-webp.test.mjs'],
     // E2E real con el Playwright de la raíz: servidores en loopback, capturas y
-    // Turnstile interceptado. Requiere build previo y Chromium instalado.
+    // Turnstile interceptado. La ejecución prepara su build con inventario fijo.
     e2e: ['--test', '--test-concurrency=1', 'tests/e2e.test.mjs'],
     // La fase remota sólo admite GET públicos y lee exclusivamente las
     // variables públicas declaradas. Nunca pasa secretos al entorno del hijo.
@@ -88,7 +91,7 @@ export function comandoLocal(nombre) {
     importacion: ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/importacion.test.mjs', 'tests/copia-datos-publicos.test.mjs'],
     preparacion: ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/preparacion.test.mjs'],
     // Contrato del publicador y de produccion/wrangler.json: sin red y sin credenciales.
-    publicacion: ['--test', 'tests/publicacion.test.mjs'],
+    publicacion: ['--test', 'tests/publicacion.test.mjs', 'tests/canary.test.mjs'],
     'preparar-staging': ['scripts/preparar-staging.mjs'],
     'importar-dry-run': ['--experimental-transform-types', 'scripts/importar-datos.mjs', '--dry-run'],
     'staging-local': ['--experimental-transform-types', '--test', '--test-concurrency=1', 'tests/staging-local.test.mjs'],
@@ -99,7 +102,13 @@ export function comandoLocal(nombre) {
   return comandos[nombre];
 }
 
-export const PASOS_CHECK = ['seguridad', 'preparacion', 'publicacion', 'tipos', 'build', 'diagnostico', 'datos', 'control', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'build', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'e2e'];
+export function entornoPaso(nombre, paso, base) {
+  return ['check', 'e2e'].includes(nombre) && paso === 'build-e2e'
+    ? { ...base, CAU_E2E_INVENTARIO: '1' }
+    : base;
+}
+
+export const PASOS_CHECK = ['seguridad', 'preparacion', 'publicacion', 'tipos', 'build', 'diagnostico', 'datos', 'control', 'api', 'crons', 'telemetria', 'envios', 'recuperacion', 'identidad', 'materias', 'importacion', 'navegador', 'staging-local', 'staging-protegido', 'runtime', 'entrega', 'paridad', 'build-e2e', 'e2e'];
 
 export function ejecutar(nombre) {
   verificarArchivosLocales(raiz);
@@ -107,10 +116,12 @@ export function ejecutar(nombre) {
   mkdirSync(env.HOME, { recursive: true });
   const pasos = nombre === 'check'
     ? PASOS_CHECK
-    : [nombre];
+    : nombre === 'e2e'
+      ? ['build-e2e', 'e2e']
+      : [nombre];
   for (const paso of pasos) {
     const resultado = spawnSync(process.execPath, comandoLocal(paso), {
-      cwd: raiz, env, stdio: 'inherit',
+      cwd: raiz, env: entornoPaso(nombre, paso, env), stdio: 'inherit',
     });
     if (resultado.error) throw resultado.error;
     if (resultado.status !== 0) return resultado.status ?? 1;

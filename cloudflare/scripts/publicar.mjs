@@ -19,9 +19,11 @@
 // vuelta atrás es un deploy de la versión anterior, decidido por una persona.
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { clasificarRiesgo } from '../../herramientas/riesgo.mjs';
+import { ejecutarCanary } from './canary.mjs';
 
 const raiz = fileURLToPath(new URL('..', import.meta.url));
 const repo = fileURLToPath(new URL('../..', import.meta.url));
@@ -61,6 +63,9 @@ export function revisar(config, { compilado = false } = {}) {
   // pasó por este paquete es el `_headers` que escribe la integración.
   if (compilado) sip(Boolean(assets && existsSync(join(assets, '_headers'))), `assets sin build: ${config.assets?.directory ?? 'falta'}`);
   sip(config.assets?.binding === 'ASSETS' && config.assets?.run_worker_first === true, 'assets tiene que declarar ASSETS y run_worker_first');
+  sip((config.r2_buckets ?? []).some(bucket =>
+    bucket.binding === 'ASSETS_HISTORICOS' && bucket.bucket_name === 'cau-assets-historicos'),
+  'falta el binding R2 ASSETS_HISTORICOS con el bucket esperado');
 
   const base = (config.d1_databases ?? [])[0];
   sip(Boolean(base), 'falta el binding DB');
@@ -134,6 +139,16 @@ export function tokenDelEntorno(env = process.env, archivo = ENV_LOCAL) {
   return valor ? { origen: 'CLOUDFLARE_API_TOKEN de .env.local', token: valor } : null;
 }
 
+function tokenR2DelEntorno(env = process.env, archivo = ENV_LOCAL) {
+  if (env.CLOUDFLARE_R2_API_TOKEN) return env.CLOUDFLARE_R2_API_TOKEN;
+  if (!existsSync(archivo)) return null;
+  const linea = readFileSync(archivo, 'utf8').split(/\r?\n/)
+    .find(fila => /^\s*(?:export\s+)?CLOUDFLARE_R2_API_TOKEN\s*=/.test(fila));
+  if (!linea) return null;
+  const valor = linea.slice(linea.indexOf('=') + 1).trim().replace(/^["']|["']$/g, '');
+  return valor || null;
+}
+
 /**
  * Entorno del hijo que publica: sólo lo que wrangler necesita. En `.env.local`
  * viven también la base, SMTP2GO y credenciales de ventas; nada de eso tiene por
@@ -159,6 +174,7 @@ function plan(config, compilado) {
   console.log(`Colas       ${config.queues.producers.map(p => p.queue).join(', ')} + DLQ ${config.queues.consumers[0].dead_letter_queue}`);
   console.log(`Programados ${config.triggers.crons.length}: ${config.triggers.crons.join(' | ')}`);
   console.log(`Assets      ${config.assets.directory} (run_worker_first)`);
+  console.log(`Assets viejos R2 ${config.r2_buckets?.find(bucket => bucket.binding === 'ASSETS_HISTORICOS')?.bucket_name ?? 'sin configurar'} (el bucket debe crearse aparte)`);
   console.log(`Secretos    seis, administrados en Cloudflare: un deploy no los toca`);
   if (sucios.length) {
     console.log(`Sin commitear en el Worker: ${sucios.length} archivo(s)`);
@@ -173,7 +189,25 @@ function plan(config, compilado) {
   return true;
 }
 
-function main() {
+function riesgoDelCambio(baseSha) {
+  if (!baseSha || baseSha === 'manual') return 'alto';
+  const intentos = [];
+  if (/^[a-f0-9]{40,64}$/i.test(baseSha ?? '') && !/^0+$/.test(baseSha)) {
+    intentos.push([baseSha, 'HEAD']);
+  }
+  intentos.push(['HEAD^', 'HEAD']);
+  for (const rango of intentos) {
+    const resultado = spawnSync('git', ['diff', '--name-only', '-z', ...rango], {
+      cwd: repo, encoding: 'utf8',
+    });
+    if (resultado.status === 0) {
+      try { return clasificarRiesgo(resultado.stdout.split('\0').filter(Boolean)).nivel; } catch { /* regla conservadora */ }
+    }
+  }
+  return 'alto';
+}
+
+async function main() {
   const argumentos = process.argv.slice(2);
   const publicar = argumentos.includes('--publicar');
   const ensayo = argumentos.includes('--ensayo');
@@ -213,6 +247,16 @@ function main() {
       + 'Este script no pide ni guarda la credencial.',
     );
   }
+  const tokenR2 = tokenR2DelEntorno();
+  if (publicar && !tokenR2) {
+    throw new Error('Falta CLOUDFLARE_R2_API_TOKEN, credencial separada para subir los assets históricos. No se compila ni se publica.');
+  }
+  if (publicar && process.env.CANARY_VERSION_AFFINITY_CONFIGURED !== 'true') {
+    throw new Error(
+      'Canary bloqueado: falta verificar en la zona la regla Cloudflare-Workers-Version-Key para ambos dominios. '
+      + 'No alcanza con definir esta variable sin haber comprobado la regla.',
+    );
+  }
   if (credencial) console.log(`\nCredencial: ${credencial.origen}`);
 
   console.log('\n[1/3] Build del paquete');
@@ -224,26 +268,44 @@ function main() {
     throw new Error('El build no dejó lo que la configuración espera.');
   }
 
-  console.log(`\n[2/3] ${ensayo ? 'Ensayo del paquete (--dry-run, no publica)' : 'Publicación'}`);
-  correr('wrangler', process.execPath,
-    ['node_modules/wrangler/bin/wrangler.js', 'deploy', '--config', 'produccion/wrangler.json', ...(ensayo ? ['--dry-run'] : [])],
-    { env: entornoWrangler(credencial) });
-
   if (ensayo) {
+    console.log('\n[2/3] Ensayo del paquete (--dry-run, no publica)');
+    correr('wrangler', process.execPath,
+      ['node_modules/wrangler/bin/wrangler.js', 'deploy', '--config', 'produccion/wrangler.json', '--dry-run'],
+      { env: entornoWrangler(credencial) });
     console.log('\nEnsayo terminado: no se publicó nada.');
     return;
   }
 
-  console.log(`\n[3/3] Verificación contra ${BASE}${smokeRapido ? ' (rutas fijas)' : ''}`);
   try {
-    correr('smoke', process.execPath, [join(repo, 'herramientas', 'smoke.mjs'), ...(smokeRapido ? ['--rapido'] : [])], { cwd: repo, env: entornoWrangler(null) });
-  } catch {
-    console.log('\nEl deploy quedó publicado y el smoke encontró fallas. No revierte solo:');
-    console.log('la vuelta atrás es publicar la versión anterior desde el panel de Cloudflare o repetir este paso con el commit bueno.');
+    const sha = git('rev-parse', 'HEAD');
+    const riesgo = riesgoDelCambio(process.env.CANARY_BASE_SHA);
+    console.log(`\n[2/3] Canary Worker contra ${BASE}${smokeRapido ? ' (rutas fijas)' : ''}`);
+    await ejecutarCanary({
+      sha,
+      riesgo,
+      tokenCloudflare: credencial.token,
+      credencialDisponible: Boolean(credencial),
+      tokenR2,
+      registrar: evento => {
+        console.log(`[canary] ${JSON.stringify(evento)}`);
+        if (process.env.GITHUB_STEP_SUMMARY) {
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            `- ${evento.etapa}: ${evento.estado}${evento.porcentaje === undefined ? '' : ` (${evento.porcentaje}%)`}${evento.version ? `, versión ${evento.version}` : ''}\n`);
+        }
+      },
+    });
+  } catch (error) {
+    console.error(`\nEl canary no terminó correctamente: ${error.message}`);
     process.exitCode = 1;
     return;
   }
-  console.log('\nPublicado y verificado.');
+  console.log('\nCanary promovido y verificado.');
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  main().catch(error => {
+    console.error(`No se pudo publicar: ${error.message}`);
+    process.exitCode = 1;
+  });
+}

@@ -142,6 +142,15 @@ test('es un resumen transaccional: sin enlace de baja ni enlaces muertos', () =>
   }
 });
 
+test('el resumen de precio puede llevar baja sin cambiar el pie transaccional', () => {
+  const { html, texto } = armar({ bajaUrl: BAJA });
+  assert.ok(html.includes(`href="${BAJA}"`));
+  assert.match(html, />Anular suscripción</);
+  assert.ok(texto.includes(`Anular suscripción: ${BAJA}`));
+  assert.match(html, /Te escribimos porque pediste el precio de esta carrera/);
+  assert.doesNotMatch(html, /Te escribimos desde el CAU porque pediste novedades/);
+});
+
 test('todo lo interpolado sale escapado en el HTML', () => {
   const malicioso = {
     ...precio,

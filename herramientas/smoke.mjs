@@ -38,6 +38,11 @@ const args = process.argv.slice(2);
 const baseArg = args.find(a => a.startsWith('--base='));
 const BASE = (baseArg ? baseArg.slice('--base='.length) : BASE_PROD).replace(/\/$/, '');
 const RAPIDO = args.includes('--rapido');
+const versionArg = args.find(a => a.startsWith('--version-worker='));
+const VERSION_WORKER = versionArg?.slice('--version-worker='.length);
+if (versionArg && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(VERSION_WORKER)) {
+  throw new Error('--version-worker requiere un Worker Version ID UUID.');
+}
 const CONCURRENCIA = 8;
 
 const esProd = BASE === BASE_PROD;
@@ -66,6 +71,9 @@ function pedir(url, { metodo = 'GET', encoding = 'br, gzip', cuerpo, tipo } = {}
           'accept-encoding': encoding,
           'user-agent': 'smoke-siglo21sur/1.0',
           accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          ...(VERSION_WORKER ? {
+            'cloudflare-workers-version-overrides': `cau-produccion-20261026="${VERSION_WORKER}"`,
+          } : {}),
           ...(tipo ? { 'content-type': tipo, 'content-length': Buffer.byteLength(cuerpo) } : {}),
         },
       },
@@ -137,6 +145,27 @@ for (const [cabecera, patron] of Object.entries(CABECERAS_ESPERADAS)) {
   if (!valor) fallo(cabecera, 'ausente');
   else if (!patron.test(valor)) fallo(cabecera, `valor inesperado: ${String(valor).slice(0, 80)}`);
   else ok(cabecera);
+}
+if (VERSION_WORKER) {
+  const html = await pedir(BASE + '/', { encoding: 'identity' });
+  const asset = html.crudo.toString('utf8').match(
+    new RegExp(`/__assets/${VERSION_WORKER}/[^"'<>\\s]+`),
+  )?.[0];
+  if (!asset) {
+    fallo('assets versionados', `la home no referencia assets de la versión ${VERSION_WORKER}`);
+  } else {
+    try {
+      const assetUrl = new URL(asset, BASE).href;
+      const respuestaAsset = await pedir(assetUrl, { encoding: 'identity' });
+      if (respuestaAsset.status === 200 && respuestaAsset.headers['content-type']) {
+        ok('asset versionado en R2', `${new URL(assetUrl).pathname} → HTTP 200`);
+      } else {
+        fallo('asset versionado en R2', `HTTP ${respuestaAsset.status}`);
+      }
+    } catch (error) {
+      fallo('asset versionado en R2', error.message);
+    }
+  }
 }
 // HSTS solo tiene sentido sobre https.
 if (BASE.startsWith('https://')) {

@@ -1152,7 +1152,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta: '/carreras/tecnicatura-en-programacion' });
     try {
       await pagina.locator('a[href="#preinscripcion"]').first().click();
-      await pagina.locator('#preinscripcion-fechaNacimiento').click();
+      await pagina.getByRole('button', { name: 'Elegir fecha en el calendario' }).click();
       const calendario = pagina.getByRole('dialog', { name: 'Elegir la fecha' });
       assert.equal(await calendario.getByRole('combobox', { name: 'Mes', exact: true }).count(), 1);
       assert.equal(await calendario.getByRole('combobox', { name: 'Año', exact: true }).count(), 1);
@@ -1212,7 +1212,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
         const campo = pagina.locator(`#preinscripcion-${id}`);
         if (definicion.tipo === 'checkbox') continue;
         if (definicion.tipo === 'fecha') {
-          await campo.click();
+          await pagina.getByRole('button', { name: 'Elegir fecha en el calendario' }).click();
           const anio = pagina.locator('#preinscripcion-fechaNacimiento-anio');
           await anio.fill('1990'); await anio.press('Enter');
           await pagina.getByRole('dialog').getByRole('button', {name:'1', exact:true}).click();

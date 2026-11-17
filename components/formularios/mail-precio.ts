@@ -109,9 +109,9 @@ function filaHtml(linea: LineaPrecio): string {
                       </tr>`;
 }
 
-/** El resumen es transaccional y no lleva baja; el newsletter la lleva siempre. */
+/** La baja es opcional en el resumen; el newsletter siempre la lleva. */
 export type OpcionesMail = { carrera: CarreraDelMail; precio: PrecioDelMail; hoy: Date } & (
-  | { tipo?: 'resumen'; bajaUrl?: undefined }
+  | { tipo?: 'resumen'; bajaUrl?: string }
   | { tipo: 'newsletter'; bajaUrl: string }
 );
 
@@ -129,6 +129,7 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
   if (siglo21) return armarMailSiglo21({ carrera, precio, hoy, tipo, bajaUrl });
   const corto = carrera.nombre_corto?.trim() || carrera.nombre;
   const esNewsletter = tipo === 'newsletter';
+  const tieneBaja = !!bajaUrl;
   // Mismo asunto para el resumen y el newsletter: la carrera y la casa, sin la fecha.
   const asunto = `Precios - ${corto} - Teclab`;
   const pie = esNewsletter ? PIE_NEWSLETTER : PIE;
@@ -151,7 +152,7 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
     `Consultar por WhatsApp: ${whatsapp}`,
     '',
     pie,
-    ...(esNewsletter ? [`${BAJA}: ${bajaUrl}`] : []),
+    ...(tieneBaja ? [`${BAJA}: ${bajaUrl}`] : []),
   ].join('\n');
 
   const html = `<!doctype html>
@@ -238,7 +239,7 @@ export function armarMailPrecio({ carrera, precio, hoy, tipo, bajaUrl }: Opcione
         <!-- Pie -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
           <tr>
-            <td style="padding:18px 8px;font-size:12px;line-height:1.6;color:#7f90a2;text-align:center;">${escapar(pie)}${cobertura ? `<p style="margin:14px 0 0;font-size:12px;line-height:1.6;color:#7f90a2;">${escapar(cobertura)}</p>` : ''}${esNewsletter
+            <td style="padding:18px 8px;font-size:12px;line-height:1.6;color:#7f90a2;text-align:center;">${escapar(pie)}${cobertura ? `<p style="margin:14px 0 0;font-size:12px;line-height:1.6;color:#7f90a2;">${escapar(cobertura)}</p>` : ''}${tieneBaja
     ? `<div style="padding-top:14px;"><a href="${escapar(bajaUrl)}" style="${BOTON_BAJA}">${BAJA}</a></div>`
     : ''}</td>
           </tr>

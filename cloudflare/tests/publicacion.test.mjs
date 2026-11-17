@@ -14,15 +14,20 @@ const raiz = fileURLToPath(new URL('../', import.meta.url));
 
 test('el push publica sólo tras ambos controles y no despliega un commit viejo', () => {
   const workflow = readFileSync(join(raiz, '../.github/workflows/verificar.yml'), 'utf8');
-  assert.match(workflow, /needs:\s*\[codigo,\s*worker\]/);
+  assert.match(workflow, /needs:\s*\[codigo,\s*worker,\s*codeql\]/);
   assert.match(workflow, /github\.event_name\s*==\s*'push'/);
   assert.match(workflow, /group:\s*publicar-worker/);
   assert.match(workflow, /git ls-remote --exit-code origin refs\/heads\/main/);
   assert.match(workflow, /node scripts\/publicar\.mjs --publicar --smoke-rapido/);
+  assert.match(workflow, /CLOUDFLARE_R2_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_R2_API_TOKEN \}\}/);
+  assert.match(workflow, /CANARY_VERSION_AFFINITY_CONFIGURED: \$\{\{ vars\.CANARY_VERSION_AFFINITY_CONFIGURED \}\}/);
+  assert.match(workflow, /fetch-depth: 0/);
   const manual = readFileSync(join(raiz, '../.github/workflows/publicar.yml'), 'utf8');
   assert.match(manual, /group:\s*publicar-worker/);
   assert.match(manual, /git ls-remote --exit-code origin refs\/heads\/main/);
   assert.match(manual, /node scripts\/publicar\.mjs --ensayo/);
+  assert.match(manual, /CLOUDFLARE_R2_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_R2_API_TOKEN \}\}/);
+  assert.match(manual, /CANARY_VERSION_AFFINITY_CONFIGURED: \$\{\{ vars\.CANARY_VERSION_AFFINITY_CONFIGURED \}\}/);
 });
 
 test('el aviso a IndexNow sale después de publicar y no puede tirar el deploy', () => {
@@ -62,10 +67,16 @@ test('la configuración apunta al Worker, la base y los dominios de producción'
   assert.equal(config.name, 'cau-produccion-20261026');
   assert.equal(config.main, 'worker.ts');
   assert.equal(config.assets.run_worker_first, true);
+  assert.deepEqual(config.r2_buckets, [{
+    binding: 'ASSETS_HISTORICOS',
+    bucket_name: 'cau-assets-historicos',
+  }]);
+  assert.deepEqual(config.version_metadata, { binding: 'CF_VERSION_METADATA' });
   assert.deepEqual(config.d1_databases, [{
     binding: 'DB',
     database_name: 'cau-produccion',
     database_id: '4a1cc90c-8c55-493f-9753-d40ac5cbc3cb',
+    migrations_dir: '../migrations',
   }]);
   assert.deepEqual(config.routes.map(r => r.pattern).sort(), ['siglo21sur.com', 'www.siglo21sur.com']);
   assert.equal(config.vars.APP_STAGE, 'produccion');
@@ -138,4 +149,50 @@ test('sin credencial no se publica', () => {
   } finally {
     rmSync(carpeta, { recursive: true, force: true });
   }
+});
+
+test('sin la credencial R2 separada el publicador se detiene antes del build', () => {
+  const carpeta = mkdtempSync(join(tmpdir(), 'cau-publicar-sin-r2-'));
+  try {
+    const resultado = spawnSync(process.execPath, ['scripts/publicar.mjs', '--publicar', '--smoke-rapido'], {
+      cwd: raiz,
+      encoding: 'utf8',
+      env: { PATH: process.env.PATH, HOME: carpeta, CLOUDFLARE_API_TOKEN: 'token-cf-de-prueba' },
+    });
+    assert.notEqual(resultado.status, 0);
+    assert.match(resultado.stderr, /CLOUDFLARE_R2_API_TOKEN/);
+    assert.doesNotMatch(resultado.stdout, /\[1\/3\]/);
+    assert.doesNotMatch(resultado.stderr, /token-cf-de-prueba/);
+  } finally {
+    rmSync(carpeta, { recursive: true, force: true });
+  }
+});
+
+test('el canary falla cerrado hasta confirmar la regla de afinidad de la zona', () => {
+  const carpeta = mkdtempSync(join(tmpdir(), 'cau-publicar-sin-afinidad-'));
+  try {
+    const resultado = spawnSync(process.execPath, ['scripts/publicar.mjs', '--publicar', '--smoke-rapido'], {
+      cwd: raiz,
+      encoding: 'utf8',
+      env: {
+        PATH: process.env.PATH,
+        HOME: carpeta,
+        CLOUDFLARE_API_TOKEN: 'token-cf-de-prueba',
+        CLOUDFLARE_R2_API_TOKEN: 'token-r2-de-prueba',
+      },
+    });
+    assert.notEqual(resultado.status, 0);
+    assert.match(resultado.stderr, /Cloudflare-Workers-Version-Key/);
+    assert.doesNotMatch(resultado.stdout, /\[1\/3\]/);
+  } finally {
+    rmSync(carpeta, { recursive: true, force: true });
+  }
+});
+
+test('el smoke admite sólo UUID para version override y fija el nombre del Worker', () => {
+  const smoke = readFileSync(join(raiz, '../herramientas/smoke.mjs'), 'utf8');
+  assert.match(smoke, /--version-worker=/);
+  assert.match(smoke, /cloudflare-workers-version-overrides/);
+  assert.match(smoke, /cau-produccion-20261026=/);
+  assert.match(smoke, /Worker Version ID UUID/);
 });

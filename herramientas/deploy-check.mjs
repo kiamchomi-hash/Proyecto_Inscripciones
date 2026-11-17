@@ -5,6 +5,7 @@ import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync,
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { esEnlaceSkillPublico, esEnlaceSkillPublicoValido, esRutaPrivada } from './secretos.mjs';
+import { clasificarRiesgo } from './riesgo.mjs';
 
 function within(root, target) {
   const path = relative(root, target);
@@ -28,7 +29,14 @@ function git(cwd, env, args, input) {
   return execFileSync('git', ['--no-pager', ...args], { cwd, env, input, maxBuffer: 512 * 1024 * 1024, stdio: [input ? 'pipe' : 'ignore', 'pipe', 'pipe'] });
 }
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
-const cachePath = path => /^(node_modules|\.next)(\/|$)/.test(path) || path === 'tsconfig.tsbuildinfo';
+const TIMEOUT_CHECK = 300_000;
+const TIMEOUT_CHECK_CLOUDFLARE = 1_800_000;
+const cachePath = path => /(^|\/)(node_modules|\.next|\.wrangler)(\/|$)/.test(path)
+  || /^cloudflare\/\.astro(?:\/|$)/.test(path)
+  || /^cloudflare\/\.local(?:\/|$)/.test(path)
+  || /^(?:cloudflare\/)?dist(?:\/|$)/.test(path)
+  || path === 'cloudflare/worker-configuration.d.ts'
+  || path === 'tsconfig.tsbuildinfo';
 const derivadoGenerado = path => /^public\/derivados\/[a-f0-9]{8}-\d+\.webp$/.test(path);
 function verifySnapshot(root, expected) {
   const found = new Map();
@@ -53,29 +61,45 @@ function verifySnapshot(root, expected) {
     return !actual || actual.hash !== item.hash || (process.platform !== 'win32' && actual.executable !== item.executable);
   })) throw new Error('El check modificó el código candidato. No publicar; revisar el comando que escribe archivos y normalizar la selección antes de reintentar.');
 }
-function command(cwd, env, args) {
+function command(cwd, env, args, timeout = TIMEOUT_CHECK) {
   try {
     if (process.platform === 'win32') {
       // Sólo tokens constantes, ninguna ruta/entrada humana dentro del comando.
-      execFileSync(env.ComSpec || env.COMSPEC || 'cmd.exe', ['/d', '/s', '/c', `npm ${args.join(' ')}`], { cwd, env, stdio: 'inherit', timeout: 300_000 });
-    } else execFileSync('npm', args, { cwd, env, stdio: 'inherit', timeout: 300_000 });
-  } catch { throw new Error(`${args[0] === 'ci' ? 'npm ci' : 'npm run check'} falló en el árbol seleccionado. No se commiteó ni publicó nada.`); }
+      execFileSync(env.ComSpec || env.COMSPEC || 'cmd.exe', ['/d', '/s', '/c', `npm ${args.join(' ')}`], { cwd, env, stdio: 'inherit', timeout });
+    } else execFileSync('npm', args, { cwd, env, stdio: 'inherit', timeout });
+  } catch {
+    const comando = args[0] === 'ci' ? 'npm ci' : `npm ${args.join(' ')}`;
+    throw new Error(`${comando} falló en el árbol seleccionado. No se commiteó ni publicó nada.`);
+  }
 }
-export function checkLocal(snapshot, env) {
+export function checkLocal(snapshot, env, riesgo = clasificarRiesgo([]), ejecutar = command) {
+  const ejecutarConPlazo = (args, timeout = TIMEOUT_CHECK) => ejecutar(snapshot, env, args, timeout);
   const lock = JSON.parse(readFileSync(join(snapshot, 'package-lock.json'), 'utf8'));
   if (Object.values(lock.packages || {}).some(item => item.link || /^(?:file:|link:|\/|\\|[A-Za-z]:)/.test(item.resolved || ''))) {
     throw new Error('El lock usa enlaces o dependencias locales. No se puede verificar de forma aislada; usar dependencias publicadas antes de reintentar.');
   }
-  command(snapshot, env, ['ci', '--ignore-scripts', '--no-audit', '--no-fund', '--include=dev']);
+  ejecutarConPlazo(['ci', '--ignore-scripts', '--no-audit', '--no-fund', '--include=dev']);
+  const controlesCloudflare = riesgo.verificaciones.some(verificacion =>
+    verificacion === 'npm --prefix cloudflare run build'
+    || verificacion === 'npm --prefix cloudflare run check');
+  if (controlesCloudflare) {
+    ejecutarConPlazo(['--prefix', 'cloudflare', 'ci', '--ignore-scripts', '--no-audit', '--no-fund', '--include=dev']);
+  }
   // Los tests de secretos necesitan el scanner real fijado por el candidato.
   // No copiamos el binario mutable del node_modules de la máquina.
   if (existsSync(join(snapshot, 'herramientas', 'secretos.mjs'))) {
     try { execFileSync(process.execPath, ['herramientas/secretos.mjs', 'instalar'], { cwd: snapshot, env, stdio: 'inherit', timeout: 180_000 }); }
     catch { throw new Error('No se pudo preparar Gitleaks en el candidato. No publicar; revisar conexión y volver a ejecutar el publicador.'); }
   }
-  command(snapshot, env, ['run', 'check', '--ignore-scripts']);
+  ejecutarConPlazo(['run', 'check', '--ignore-scripts']);
+  if (riesgo.verificaciones.includes('npm --prefix cloudflare run build')) {
+    ejecutarConPlazo(['--prefix', 'cloudflare', 'run', 'build']);
+  }
+  if (riesgo.verificaciones.includes('npm --prefix cloudflare run check')) {
+    ejecutarConPlazo(['--prefix', 'cloudflare', 'run', 'check'], TIMEOUT_CHECK_CLOUDFLARE);
+  }
 }
-export async function checkCandidate(cwd, tree, check = checkLocal) {
+export async function checkCandidate(cwd, tree, check = checkLocal, baseRef = 'HEAD') {
   if (!/^[a-f0-9]{40,64}$/.test(tree)) throw new Error('Identidad del árbol candidato inválida.');
   const base = realpathSync(tmpdir());
   const temp = mkdtempSync(join(base, 'deploy-check-'));
@@ -120,7 +144,8 @@ export async function checkCandidate(cwd, tree, check = checkLocal) {
       offset += size + 1;
     }
     if (offset !== blobs.length) throw new Error('Lectura del árbol Git inconsistente. No publicar.');
-    await check(snapshot, env);
+    const cambios = git(cwd, env, ['diff', '--name-only', '--no-renames', '-z', baseRef, tree]).toString('utf8').split('\0').filter(Boolean);
+    await check(snapshot, env, clasificarRiesgo(cambios));
     verifySnapshot(snapshot, expected);
   } finally {
     // Nunca eliminar una ruta calculada fuera del temporal creado por esta llamada.

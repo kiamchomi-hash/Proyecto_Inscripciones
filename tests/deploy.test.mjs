@@ -49,6 +49,31 @@ test('el check aislado admite derivados de imagen generados, pero no otros extra
   }), /modificó el código candidato/);
 });
 
+test('instala el lock aislado de Cloudflare antes de correr sus verificaciones', async t => {
+  const cwd = fixture(t);
+  mkdirSync(join(cwd, 'cloudflare'), { recursive: true });
+  writeFileSync(join(cwd, 'package-lock.json'), JSON.stringify({ packages: {} }));
+  writeFileSync(join(cwd, 'cloudflare', 'package-lock.json'), JSON.stringify({ packages: {} }));
+  const { checkLocal } = await import('../herramientas/deploy-check.mjs');
+  const comandos = [];
+
+  checkLocal(cwd, {}, {
+    verificaciones: [
+      'npm run check',
+      'npm --prefix cloudflare run build',
+      'npm --prefix cloudflare run check',
+    ],
+  }, (_directorio, _entorno, argumentos, timeout) => comandos.push({ argumentos, timeout }));
+
+  assert.deepEqual(comandos, [
+    { argumentos: ['ci', '--ignore-scripts', '--no-audit', '--no-fund', '--include=dev'], timeout: 300_000 },
+    { argumentos: ['--prefix', 'cloudflare', 'ci', '--ignore-scripts', '--no-audit', '--no-fund', '--include=dev'], timeout: 300_000 },
+    { argumentos: ['run', 'check', '--ignore-scripts'], timeout: 300_000 },
+    { argumentos: ['--prefix', 'cloudflare', 'run', 'build'], timeout: 300_000 },
+    { argumentos: ['--prefix', 'cloudflare', 'run', 'check'], timeout: 1_800_000 },
+  ]);
+});
+
 test('sólo commitea el archivo elegido y muestra el diff antes de confirmar', async t => {
   const cwd = fixture(t);
   writeFileSync(join(cwd, 'propio.txt'), 'propio nuevo\n');
@@ -56,7 +81,7 @@ test('sólo commitea el archivo elegido y muestra el diff antes de confirmar', a
   const { listChanges } = await import(moduleUrl);
   const number = listChanges(cwd).findIndex(x => x === 'propio.txt') + 1;
   const result = await run(cwd, [String(number), 'fix: cambio propio', 'S']);
-  assert.equal(result.result, 0);
+  assert.equal(result.result, 0, result.output);
   assert.equal(result.pushes, 1);
   assert.match(result.output, /\+propio nuevo/);
   assert.equal(git(cwd, 'show', 'HEAD:ajeno.txt'), 'base');
@@ -94,7 +119,7 @@ test('admite espacios, unicode, metacaracteres, alta, baja y renombre', async t 
   const { listChanges } = await import(moduleUrl);
   const changes = listChanges(cwd);
   const result = await run(cwd, [changes.map((_, i) => i + 1).join(' '), 'feat: alta baja y renombre', 's']);
-  assert.equal(result.result, 0);
+  assert.equal(result.result, 0, result.output);
   assert.equal(git(cwd, 'show', 'HEAD:después espacio &.txt'), 'base');
   assert.equal(git(cwd, 'show', 'HEAD:nuevo [literal] &.txt'), 'nuevo');
   assert.doesNotMatch(git(cwd, 'ls-tree', '--name-only', 'HEAD'), /borrar|antes/);
@@ -334,6 +359,19 @@ test('snapshot acepta sólo el enlace de skill declarado hacia su SKILL.md versi
   }));
 });
 
+test('el check recibe la clasificación calculada contra la base Git y no todos los archivos', async t => {
+  const cwd = fixture(t);
+  mkdirSync(join(cwd, 'cloudflare', 'src', 'api'), { recursive: true });
+  writeFileSync(join(cwd, 'cloudflare', 'src', 'api', 'ruta.ts'), 'export {};\n');
+  git(cwd, 'add', '--', 'cloudflare/src/api/ruta.ts');
+  const tree = git(cwd, 'write-tree');
+  const { checkCandidate } = await import('../herramientas/deploy-check.mjs');
+  let recibido;
+  await checkCandidate(cwd, tree, async (_snapshot, _env, riesgo) => { recibido = riesgo; });
+  assert.equal(recibido.nivel, 'alto');
+  assert.ok(recibido.verificaciones.includes('npm --prefix cloudflare run check'));
+});
+
 test('snapshot permite caches nuevos, pero no cambia los bytes LF Git por autocrlf', async t => {
   const cwd = fixture(t);
   git(cwd, 'config', 'core.autocrlf', 'true');
@@ -345,6 +383,28 @@ test('snapshot permite caches nuevos, pero no cambia los bytes LF Git por autocr
     mkdirSync(join(snapshot, '.next'));
     writeFileSync(join(snapshot, '.next', 'tipos.d.ts'), '// cache generado');
     writeFileSync(join(snapshot, 'tsconfig.tsbuildinfo'), '{}');
+  });
+  assert.equal(git(cwd, 'write-tree'), tree);
+});
+
+test('snapshot tolera enlaces de node_modules anidados y salida generada de Cloudflare', async t => {
+  const cwd = fixture(t);
+  const tree = git(cwd, 'write-tree');
+  const { checkCandidate } = await import('../herramientas/deploy-check.mjs');
+  await checkCandidate(cwd, tree, snapshot => {
+    mkdirSync(join(snapshot, 'cloudflare', 'node_modules', '.bin'), { recursive: true });
+    symlinkSync('../wrangler/bin/wrangler.js', join(snapshot, 'cloudflare', 'node_modules', '.bin', 'wrangler'));
+    mkdirSync(join(snapshot, 'cloudflare', '.wrangler', 'state'), { recursive: true });
+    writeFileSync(join(snapshot, 'cloudflare', '.wrangler', 'state', 'generated'), 'estado local');
+    mkdirSync(join(snapshot, 'cloudflare', '.local', 'config', '.wrangler', 'logs'), { recursive: true });
+    writeFileSync(join(snapshot, 'cloudflare', '.local', 'config', '.wrangler', 'logs', 'generated'), 'estado local');
+    mkdirSync(join(snapshot, 'cloudflare', '.local', 'cache'), { recursive: true });
+    writeFileSync(join(snapshot, 'cloudflare', '.local', 'cache', 'generated'), 'estado local');
+    mkdirSync(join(snapshot, 'cloudflare', '.astro'), { recursive: true });
+    writeFileSync(join(snapshot, 'cloudflare', '.astro', 'types.d.ts'), 'tipos generados');
+    mkdirSync(join(snapshot, 'cloudflare', 'dist', '_worker.js'), { recursive: true });
+    writeFileSync(join(snapshot, 'cloudflare', 'dist', '_worker.js', 'index.js'), 'build generado');
+    writeFileSync(join(snapshot, 'cloudflare', 'worker-configuration.d.ts'), '// generado por Wrangler');
   });
   assert.equal(git(cwd, 'write-tree'), tree);
 });

@@ -11,7 +11,7 @@ import {
   URL_SMTP2GO, CLAVE_CUPO, MAXIMO_ENVIOS, normalizarDestinatario, validarPedidoControl,
   enviarCorreoControl, crearBusquedaCorreo, leerCuerpo,
 } from '../staging/correo-controlado.ts';
-import { ultimoSnapshot } from '../scripts/datos-publicos.mjs';
+import { snapshotPublicoMinimo } from './helpers/snapshot-publico.mjs';
 import { importarPublico, verificarPublico } from '../scripts/importar-datos.mjs';
 import { validarPublicacionStaging } from '../scripts/staging-remoto.mjs';
 import { aislarRed } from '../scripts/verificar-datos.mjs';
@@ -356,7 +356,7 @@ test('entry publicable: la ruta exige auth, falla cerrada y no sale a la red', a
     await s.listen();
     await s.getWorker().applyD1Migrations('DB');
     const { DB } = await s.getWorker().getEnv();
-    const { snapshot } = ultimoSnapshot();
+    const snapshot = snapshotPublicoMinimo();
     await importarPublico(DB, snapshot, { escribir: true, destino: { etapa: 'staging', remoto: false, nombre: config.name } });
     const antes = await verificarPublico(DB, snapshot);
     const pedir = (method, cuerpo, headers = {}) => s.fetch('https://ensayo.invalid/api/staging-correo', {

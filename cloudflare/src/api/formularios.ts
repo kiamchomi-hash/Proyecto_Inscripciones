@@ -214,7 +214,10 @@ async function registrarPrecio(db: D1Database, payload: JsonRecord) {
   const efectos: Efecto[] = [{ tipo: 'aviso-lead' }];
   if (datos.newsletter) efectos.push({ tipo: 'newsletter-alta' });
   if (resultado.estado === 'vigente') {
-    efectos.push({ tipo: 'mail-precio', detalle: { carreraId: carrera.id, limitar: true } });
+    efectos.push({
+      tipo: 'mail-precio',
+      detalle: { carreraId: carrera.id, limitar: true, ...(datos.newsletter ? { newsletter: true } : {}) },
+    });
   }
   const encolados = await guardarConEfectos(db, fila, efectos);
   return { resultado, efectos: encolados };

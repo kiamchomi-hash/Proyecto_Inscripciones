@@ -6,7 +6,7 @@ import { createTestHarness } from 'wrangler';
 import { resolverDb } from '../src/datos/binding.ts';
 import { crearEnsayoStaging } from '../staging/worker.ts';
 import { importarPublico, verificarPublico } from '../scripts/importar-datos.mjs';
-import { ultimoSnapshot } from '../scripts/datos-publicos.mjs';
+import { snapshotPublicoMinimo } from './helpers/snapshot-publico.mjs';
 import { aislarRed } from '../scripts/verificar-datos.mjs';
 
 test('wiring D1 separado exige etapa, etiqueta y nombre exclusivo; producción sólo con nombre exacto', () => {
@@ -72,7 +72,7 @@ test('staging workerd renderiza snapshot público en D1 efímero propio, siempre
   const red=aislarRed(); let server;
   try {
     await assert.rejects(fetch('https://egress-prohibido.invalid/'));red.bloqueados.length=0;
-    const {snapshot}=ultimoSnapshot();
+    const snapshot=snapshotPublicoMinimo();
     const nombre=`cau-staging-ensayo-${randomUUID()}`;
     const config={name:nombre,main:resolve('tests/fixtures/worker-staging.ts'),
       compatibility_date:'2026-10-24',compatibility_flags:['nodejs_compat'],
@@ -87,10 +87,10 @@ test('staging workerd renderiza snapshot público en D1 efímero propio, siempre
     const {DB,EFECTOS}=await worker.getEnv();assert.equal(EFECTOS,undefined);
     await importarPublico(DB,snapshot,{escribir:true,destino:{etapa:'staging',remoto:false,nombre}});
     const antes=await verificarPublico(DB,snapshot);
-    assert.deepEqual(Object.values(antes.tablas).map(t=>t.filas),[93,7,12,0]);
+    assert.deepEqual(Object.values(antes.tablas).map(t=>t.filas),[1,0,1,0]);
     for (const [ruta,patron] of [['/',/Licenciatura en Administración/],['/teclab',/Teclab/],
       ['/carreras/licenciatura-en-administracion',/Administración/],['/clases-apoyo',/apoyo/i],
-      ['/novedades/1',/novedades/i],['/sonda-binding',/carreras=93/]]) {
+      ['/novedades/1',/novedades/i],['/sonda-binding',/carreras=1/]]) {
       const r=await server.fetch(ruta,{redirect:'manual'});
       assert.equal(r.status,503,ruta);assert.equal(r.headers.get('x-robots-tag'),'noindex, nofollow');
       assert.equal(r.headers.get('cache-control'),'no-store');
@@ -104,6 +104,6 @@ test('staging workerd renderiza snapshot público en D1 efímero propio, siempre
     assert.equal(await (await server.fetch('/sonda-egress')).text(),'');
     assert.deepEqual(red.bloqueados,['egress-prohibido.invalid'],'workerd también pasa por el bloqueo');
     assert.deepEqual(await verificarPublico(DB,snapshot),antes,'sin históricos ni efectos por renderizar');
-    console.log(JSON.stringify({destino:nombre,efimero:true,tablas:[93,7,12,0],rutasRenderizadas:6,estado:503,cron:[],colas:false,egreso:'bloqueado'}));
+    console.log(JSON.stringify({destino:nombre,efimero:true,tablas:[1,0,1,0],rutasRenderizadas:6,estado:503,cron:[],colas:false,egreso:'bloqueado'}));
   } finally { try { await server?.close(); } finally { red.restaurar(); } }
 });

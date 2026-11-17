@@ -7,6 +7,7 @@ import { usuariosActivos } from '../src/operativa/analytics.ts';
 import {
   CANONICO, claveDeCache, copiaParaGuardar, normalizarParaCache, servirDesdeCopia,
 } from '../src/entrega/cache-borde.ts';
+import { servirAssetR2, versionarRespuestaHtml } from '../src/entrega/assets-r2.ts';
 
 /**
  * Entry de producción.
@@ -39,6 +40,9 @@ const cacheDeBorde = (globalThis as unknown as { caches?: { default: Cache } }).
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const asset = await servirAssetR2(request, env.ASSETS_HISTORICOS, caches?.default, ctx);
+    if (asset) return asset;
+    const version = env.CF_VERSION_METADATA?.id;
     // El dominio ápice no sirve contenido: manda a `www` con 308 y conserva la
     // ruta y la query.
     if (url.hostname === RAIZ) {
@@ -54,15 +58,18 @@ export default {
         },
       });
     }
-    const clave = cacheDeBorde ? claveDeCache(request, url) : null;
+    const claveBase = cacheDeBorde ? claveDeCache(request, url) : null;
+    const urlCache = new URL(url);
+    if (version) urlCache.searchParams.append('__worker_version', version);
+    const clave = claveBase && version ? new Request(urlCache, { method: 'GET' }) : claveBase;
     if (clave) {
       const copia = await cacheDeBorde!.match(clave);
       if (copia) return servirDesdeCopia(copia);
     }
 
-    const { respuesta, publica } = normalizarParaCache(
-      await aplicacion.fetch(request, env, ctx), request, url,
-    );
+    const renderizada = await aplicacion.fetch(request, env, ctx);
+    const versionada = version ? versionarRespuestaHtml(renderizada, version, request.url) : renderizada;
+    const { respuesta, publica } = normalizarParaCache(versionada, request, url);
 
     if (clave && publica) {
       ctx.waitUntil(cacheDeBorde!.put(clave, copiaParaGuardar(respuesta)));

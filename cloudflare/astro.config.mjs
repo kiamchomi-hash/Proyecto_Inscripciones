@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { pluginInventario } from './scripts/inventario-imagenes.mjs';
 import { cabecerasAssets } from './src/entrega/cabeceras.ts';
@@ -17,6 +18,9 @@ const aqui = fileURLToPath(new URL('.', import.meta.url));
 // la raíz en vez de copiarse a este paquete: una sola copia en Git, y `dist/`
 // —ignorado— es el único lugar donde se duplican al compilar.
 const publico = fileURLToPath(new URL('../public', import.meta.url));
+const rutasImagenesE2E = process.env.CAU_E2E_INVENTARIO === '1'
+  ? JSON.parse(readFileSync(new URL('./tests/fixtures/inventario-imagenes-e2e.json', import.meta.url), 'utf8'))
+  : undefined;
 
 // Cambios mínimos en componentes compartidos: en vez de bifurcarlos se resuelven
 // las APIs de Next contra estos reemplazos. Orden importante: las entradas
@@ -76,6 +80,6 @@ export default defineConfig({
     // configuración explícita no hay Google ni error de referencia.
     define: { 'process.env.NEXT_PUBLIC_GA_ID': 'undefined' },
     resolve: { alias: reemplazos },
-    plugins: [pluginInventario(`${publico}/imagenes`)],
+    plugins: [pluginInventario(`${publico}/imagenes`, rutasImagenesE2E)],
   },
 });

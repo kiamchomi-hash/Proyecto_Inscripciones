@@ -9,6 +9,20 @@ La migración es definitiva; la recuperación se hace dentro de Cloudflare.
 - Revisar los cambios y ejecutar los controles del proyecto y de `cloudflare/`.
 - Comprobar la configuración en `produccion/wrangler.json` y el plan con
   `npm run publicar` desde `cloudflare/`.
+- El flujo de publicación está preparado para versiones Worker con canary 0% → smoke con override
+  → 5% → smoke → 100%; ante fallo devuelve el Worker estable al 100% y nunca
+  revierte D1. No es elegible hasta que estén disponibles el bucket
+  `cau-assets-historicos`, `CLOUDFLARE_R2_API_TOKEN` separado y la regla de
+  afinidad de la zona.
+- La regla `http_request_transform` tiene que cubrir `www.siglo21sur.com` y
+  `siglo21sur.com` y asignar dinámicamente `Cloudflare-Workers-Version-Key` a
+  `ip.src`. Así el HTML y sus requests de assets llegan a la misma versión
+  durante el gradual deployment. Después de crearla y verificarla, definir la
+  variable de Actions `CANARY_VERSION_AFFINITY_CONFIGURED=true`. La variable
+  sola no crea ni comprueba la regla; sin ella el publicador falla cerrado.
+- Los assets se suben antes de incluir la candidata en el deployment. El smoke
+  fuerza la candidata con `Cloudflare-Workers-Version-Overrides` y verifica
+  también una ruta de asset en R2. La sincronización no borra objetos.
 - No incluir secretos ni datos privados en Git. Las migraciones D1 se aplican
   por separado y necesitan su propia revisión.
 - Un push a `main` publica el commit después de las verificaciones. El deploy

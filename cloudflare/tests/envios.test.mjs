@@ -236,6 +236,22 @@ test('binding: manda por Cloudflare sin clave y con el remitente estructurado', 
   assert.equal(enviados[0].headers, undefined);
 });
 
+test('mail de precio Teclab incluye la baja de novedades si la persona se suscribió', async t => {
+  const { db } = await crearD1(t);
+  await prepararPrecio(db);
+  const { id } = await efectoDeConsulta(db, 'mail-precio',
+    JSON.stringify({ carreraId: 1, limitar: false, newsletter: true }));
+  const { email, enviados } = bindingCorreo();
+
+  assert.equal(await consumirEfecto(db, id, crearTransportes({ email }, espia().buscar, db)), 'enviado');
+
+  const suscripcion = await db.prepare(`SELECT id FROM suscripciones_newsletter
+    WHERE email = ?1 AND carrera_id = ?2`).bind('fixture@example.invalid', 1).first();
+  assert.ok(suscripcion?.id);
+  assert.ok(enviados[0].html.includes(`/newsletter/baja?id=${suscripcion.id}`));
+  assert.match(enviados[0].html, />Anular suscripción</);
+});
+
 test('binding: el error con código es rechazo y sin código es ambiguo', async t => {
   const { db } = await crearD1(t);
   await prepararPrecio(db);

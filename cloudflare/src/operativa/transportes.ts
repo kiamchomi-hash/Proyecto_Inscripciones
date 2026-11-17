@@ -135,8 +135,17 @@ const codigoDeError = (error: unknown): string | null => {
 
 /** El mail armado; la plantilla es la misma para los dos caminos de salida. */
 function armarMailDelPrecio(pedido: PedidoMail, precio: PrecioDelMail) {
-  // La misma plantilla del resumen transaccional; el newsletter sólo le suma
-  // el pie con la baja y los encabezados de un clic (RFC 8058).
+  // El resumen conserva su pie y puede llevar baja si hubo consentimiento.
+  // El envío periódico suma además los encabezados de un clic (RFC 8058).
+  if (pedido.newsletter?.tipo === 'resumen') {
+    return armarMailPrecio({
+      carrera: pedido.carrera,
+      precio,
+      hoy: new Date(),
+      tipo: 'resumen',
+      bajaUrl: pedido.newsletter.bajaUrl,
+    });
+  }
   return pedido.newsletter
     ? armarMailPrecio({
       carrera: pedido.carrera,
@@ -184,7 +193,7 @@ function porBinding(
     subject: mail.asunto,
     html: mail.html,
     text: mail.texto,
-    ...(pedido.newsletter
+    ...(pedido.newsletter?.encabezados?.length
       ? { headers: Object.fromEntries(pedido.newsletter.encabezados.map(({ header, value }) => [header, value])) }
       : {}),
   });

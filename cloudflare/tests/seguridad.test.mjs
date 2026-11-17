@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { comandoLocal, entornoLocal, PASOS_CHECK, verificarArchivosLocales } from '../scripts/local.mjs';
+import { comandoLocal, entornoLocal, entornoPaso, PASOS_CHECK, verificarArchivosLocales } from '../scripts/local.mjs';
 
 test('el check genera el entry de staging antes de revisar tipos', () => {
   assert.ok(PASOS_CHECK.indexOf('build') < PASOS_CHECK.indexOf('diagnostico'));
@@ -18,7 +18,7 @@ test('los ejecutables locales coinciden con los paquetes instalados', () => {
 
 test('la configuración local no declara recursos ni rutas remotas', () => {
   const config = JSON.parse(readFileSync(new URL('../wrangler.json', import.meta.url)));
-  for (const key of ['account_id', 'routes', 'route', 'r2_buckets',
+  for (const key of ['account_id', 'routes', 'route',
     'services', 'kv_namespaces', 'images', 'env']) {
     assert.equal(config[key], undefined, key);
   }
@@ -28,6 +28,9 @@ test('la configuración local no declara recursos ni rutas remotas', () => {
   assert.equal(config.main, 'src/worker.ts');
   assert.deepEqual(config.d1_databases, [{ binding: 'DB', database_name: 'cau-d1-local',
     database_id: '00000000-0000-0000-0000-000000000001', migrations_dir: 'migrations', remote: false }]);
+  assert.deepEqual(config.r2_buckets, [{
+    binding: 'ASSETS_HISTORICOS', bucket_name: 'cau-assets-historicos', remote: false,
+  }]);
   assert.deepEqual(config.triggers, { crons: ['*/5 * * * *'] });
   assert.deepEqual(config.queues, {
     producers: [{ binding: 'EFECTOS', queue: 'cau-efectos-local' }],
@@ -98,6 +101,18 @@ test('el proceso hijo no hereda secretos, flags de Node ni configuración remota
     assert.equal(env[key], undefined);
   }
   assert.ok(!JSON.stringify(env).includes('centinela-no-publicar'));
+});
+
+test('el inventario fijo sólo se habilita para los builds de npm run check', () => {
+  const base = entornoLocal({ PATH: '/bin', CAU_E2E_INVENTARIO: 'forzado-por-el-padre' }, '/aislado');
+  assert.equal(base.CAU_E2E_INVENTARIO, undefined);
+  assert.equal(entornoPaso('check', 'build', base).CAU_E2E_INVENTARIO, undefined);
+  assert.equal(entornoPaso('check', 'build-e2e', base).CAU_E2E_INVENTARIO, '1');
+  assert.equal(entornoPaso('e2e', 'build-e2e', base).CAU_E2E_INVENTARIO, '1');
+  assert.equal(entornoPaso('build', 'build-e2e', base).CAU_E2E_INVENTARIO, undefined);
+  assert.equal(entornoPaso('build', 'build', base).CAU_E2E_INVENTARIO, undefined);
+  assert.ok(PASOS_CHECK.indexOf('build-e2e') > PASOS_CHECK.indexOf('paridad'));
+  assert.equal(comandoLocal('build-e2e').join(' '), comandoLocal('build').join(' '));
 });
 
 test('sólo admite comandos locales fijos, nunca deploy o argumentos adicionales', () => {

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { randomBytes, createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { createTestHarness } from 'wrangler';
-import { ultimoSnapshot } from '../scripts/datos-publicos.mjs';
+import { snapshotPublicoMinimo } from './helpers/snapshot-publico.mjs';
 import { importarPublico, verificarPublico } from '../scripts/importar-datos.mjs';
 import { validarDestinoRemoto, planImportacionRemota, validarPublicacionStaging } from '../scripts/staging-remoto.mjs';
 import { aislarRed } from '../scripts/verificar-datos.mjs';
@@ -61,9 +61,9 @@ test('publicación staging requiere identidad observada, autorización y configu
 });
 
 test('plan público remoto parametrizado se ensaya en D1 efímero sin relajar importador local', async()=>{
-  const {snapshot}=ultimoSnapshot();
+  const snapshot=snapshotPublicoMinimo();
   const plan=planImportacionRemota(snapshot,destino,observado);
-  assert.equal(plan.consultas.length,112);
+  assert.equal(plan.consultas.length,2);
   const s=createTestHarness({workers:[{config:{name:destino.nombre,main:resolve('tests/fixtures/worker-d1.mjs'),
     compatibility_date:'2026-10-25',dev:{ip:'127.0.0.1',port:0},d1_databases:[{binding:'DB',database_name:destino.nombre,
       database_id:destino.id,migrations_dir:resolve('migrations'),remote:false}]}}]});
@@ -83,7 +83,7 @@ test('entry publicable workerd: auth antes de assets/APIs, métodos, robots, egr
   config.dev={ip:'127.0.0.1',port:0};
   try {
     s=createTestHarness({workers:[{config}]});await s.listen();await s.getWorker().applyD1Migrations('DB');
-    const {DB}=await s.getWorker().getEnv();const {snapshot}=ultimoSnapshot();
+    const {DB}=await s.getWorker().getEnv();const snapshot=snapshotPublicoMinimo();
     await importarPublico(DB,snapshot,{escribir:true,destino:{etapa:'staging',remoto:false,nombre:destino.nombre}});
     const antes=await verificarPublico(DB,snapshot);
     // URL absoluta para no convertir //api en un host antes de llegar al Worker.

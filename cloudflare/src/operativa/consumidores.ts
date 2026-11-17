@@ -3,6 +3,7 @@ import { leerPrecioPrivado, reservarMailPrecio } from '../datos/repositorio.ts';
 import { leerRelojBase } from '../datos/reloj.ts';
 import { suscribirNewsletter } from '../datos/newsletter.ts';
 import { payloadCompletoDesdeConsulta, diaArgentino } from '../api/filas.ts';
+import { BASE_PROD } from '../../../lib/vigilancia-esperado.ts';
 import {
   leerEfecto, listarParaBarrido, reclamarEfecto, liberarReclamo, devolverSinTransporte,
   marcarAmbiguo, marcarEnviado, marcarError, marcarIntento,
@@ -29,8 +30,10 @@ export interface PedidoTelegram {
 export interface PedidoNewsletter {
   /** URL de baja del pie: sólo lleva el id de la suscripción. */
   bajaUrl: string;
+  /** El mail de precio conserva su plantilla transaccional. */
+  tipo?: 'resumen' | 'newsletter';
   /** Encabezados RFC 8058 que pide SMTP2GO como `custom_headers`. */
-  encabezados: { header: string; value: string }[];
+  encabezados?: { header: string; value: string }[];
 }
 
 export interface PedidoMail {
@@ -188,9 +191,24 @@ async function prepararEfecto(db: D1Database, fila: FilaOutbox, ahora: string): 
       const privado = await intentar(() => leerPrecioPrivado(db, carreraId as number));
       const resultado = resultadoPrecio(privado ?? null, diaArgentino(ahora));
       if (resultado.estado !== 'vigente') return { tipo: 'omitido', motivo: 'sin-precio-vigente' };
+      const suscripcionNewsletter = detalle.newsletter === true && carrera.nivel.startsWith('Teclab')
+        ? await suscribirNewsletter(db, {
+          email,
+          carrera: { id: carrera.id, nombre: carrera.nombre },
+          ahora: fila.created_at,
+        })
+        : null;
       return {
         tipo: 'pedido', transporte: 'mail',
-        pedido: { para: email, carrera, precio: resultado, limitar: detalle.limitar === true },
+        pedido: {
+          para: email, carrera, precio: resultado, limitar: detalle.limitar === true,
+          ...(suscripcionNewsletter ? {
+            newsletter: {
+              tipo: 'resumen' as const,
+              bajaUrl: `${BASE_PROD}/newsletter/baja?id=${encodeURIComponent(suscripcionNewsletter)}`,
+            },
+          } : {}),
+        },
       };
     }
 

@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Indexación — Desarrollo de Videojuegos, 15/11/2026
+
+- [x] **Comprobar la indexación de las fichas de Teclab y Siglo 21.** Search Console informa «Enviada e indexada» para ambas URLs, con veredicto `PASS`, rastreo permitido y canónica de Google coincidente con cada URL. Rastreadas el 08/11 (Teclab) y el 15/11 (Siglo 21). Cerrado el pendiente de seguimiento.
+
 ## Bajas
 
 - **Recuperación de Supabase, 28/10/2026.** Se descarta la tarea que pedía completar Auth, permisos/RLS, Vault y Storage en Supabase: la base se dio de baja con el corte a Cloudflare y el contenido vive en D1. [`docs/recuperacion-supabase.md`](recuperacion-supabase.md) queda como registro histórico del ensayo del 01/10/2026 y **no es un procedimiento vigente**. El respaldo que sí corre es el de D1: `npm run db:respaldo` todos los días a las 08:30 ([herramientas](herramientas.md#respaldo-de-la-base)).

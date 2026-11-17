@@ -51,7 +51,9 @@ DOCUMENTACION_PROYECTO.md
 !/.agents/skills/remotion
 !/.agents/skills/calcar-imagenes
 !/.agents/skills/diseno-uiverse
+!/.agents/skills/modern-web-guidance/
 /.agents/skills/*/**
+!/.agents/skills/modern-web-guidance/SKILL.md
 # Lo genera `npx skills add`; no se versiona con los enlaces selectivos.
 skills-lock.json
 # Credenciales de service accounts (Search Console, etc). Nunca al repo.

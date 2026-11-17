@@ -2,6 +2,7 @@
 import { execFileSync } from 'node:child_process';
 import { revisarSecretos } from './secretos.mjs';
 import { checkCandidate, checkLocal } from './deploy-check.mjs';
+import { clasificarRiesgo } from './riesgo.mjs';
 import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -54,6 +55,10 @@ export async function runDeploy({ cwd, ask, print = console.log, check = checkLo
     const pending = value(cwd, 'log', '--oneline', `${remote}..${head}`);
     if (pending) print(`También se publicarán estos commits locales anteriores:\n${pending}`);
     const changes = listChanges(cwd);
+    if (changes.length) {
+      const riesgo = clasificarRiesgo(changes);
+      print(`Riesgo del cambio: ${riesgo.nivel}. Verificaciones: ${riesgo.verificaciones.join(', ')}.`);
+    }
     let message;
     let reviewedTree = originalTree;
     if (changes.length) {
@@ -91,7 +96,7 @@ export async function runDeploy({ cwd, ask, print = console.log, check = checkLo
     }
     assertBinding(cwd, head, reviewedTree);
     print('[1/3] Revisando el árbol seleccionado: instalación aislada y npm run check (puede tardar varios minutos).');
-    await checkCandidate(cwd, reviewedTree, check);
+    await checkCandidate(cwd, reviewedTree, check, remote);
     assertBinding(cwd, head, reviewedTree);
     if (changes.length) {
       print('[2/3] Guardando sólo el staged revisado.');

@@ -232,7 +232,7 @@ test('precio: validación, carrera sin precio y mail con reserva de 168 h', asyn
   assert.equal(fila.tipo_formulario, 'precio');
   assert.equal(fila.equivalencias, 0);
   const mail = (await filas(db)).find(f => f.tipo === 'mail-precio');
-  assert.deepEqual(JSON.parse(mail.detalle), { carreraId: 1, limitar: true });
+  assert.deepEqual(JSON.parse(mail.detalle), { carreraId: 1, limitar: true, newsletter: true });
   assert.deepEqual((await filas(db)).map(f => f.tipo).sort(), ['aviso-lead', 'mail-precio', 'newsletter-alta']);
 });
 

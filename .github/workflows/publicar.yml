@@ -42,6 +42,8 @@ jobs:
           fi
 
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -64,6 +66,9 @@ jobs:
         working-directory: cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+          CANARY_VERSION_AFFINITY_CONFIGURED: ${{ vars.CANARY_VERSION_AFFINITY_CONFIGURED }}
+          CANARY_BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && 'manual' || github.event.before }}
           WRANGLER_SEND_METRICS: 'false'
           MODO: ${{ inputs.modo }}
         run: |

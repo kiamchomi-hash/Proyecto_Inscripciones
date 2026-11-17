@@ -27,6 +27,16 @@ Si un cambio cruza áreas, sumá los controles de cada una.
 | Workflow, publicación o contrato de configuración | Corré el test del contrato afectado y revisá el diff del workflow/configuración. El CI valida el contrato del publicador, pero no ejecuta el `check` completo de Cloudflare. |
 | Sólo documentación | Revisá enlaces relativos, comandos y afirmaciones contra la fuente vigente; no hace falta correr suites de aplicación. |
 
+El publicador local (`herramientas/5 - Subir cambios (deploy).sh`) informa el
+nivel de riesgo del diff seleccionado. Los cambios que afecten `cloudflare/`
+agregan el build; los de riesgo alto agregan las pruebas del área y el `check`
+completo de Cloudflare. Si el diff mezcla áreas, aplica el nivel más alto.
+
+CodeQL corre en GitHub en modo observación y publica alertas; todavía no bloquea
+por hallazgos de código preexistentes o nuevos. El job sí debe terminar bien
+antes de que el workflow publique. La activación de un bloqueo por hallazgos
+nuevos requiere establecer primero la línea base.
+
 Los controles de la raíz y de `cloudflare/` son independientes: `npm run check`
 no prueba el paquete Cloudflare. El `check` de Cloudflare tampoco equivale a una
 auditoría del sitio publicado. Los controles remotos, escrituras en D1 y

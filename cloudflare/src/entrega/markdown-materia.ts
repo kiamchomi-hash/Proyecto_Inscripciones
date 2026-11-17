@@ -15,7 +15,7 @@ export interface MateriaMarkdown {
   whatsapp: string | null;
   telefono_display: string | null;
   descripcion: string[];
-  texto_seo: string[];
+  texto_seo: string[] | null;
 }
 
 /** Los párrafos de la base, sin etiquetas: el markdown no lleva HTML. */
@@ -32,7 +32,7 @@ function linea(titulo: string, valor: string | null | undefined): string | null 
 
 export function construirMarkdownMateria(materia: MateriaMarkdown, url: string): string {
   const descripcion = parrafos(materia.descripcion);
-  const texto = parrafos(materia.texto_seo);
+  const texto = parrafos(materia.texto_seo ?? []);
 
   const bloques: string[] = [`# Clases particulares de ${materia.label} en Villa Lugano`];
   if (descripcion[0]) bloques.push('', `> ${descripcion[0]}`);

@@ -29,8 +29,7 @@ Para regenerarlas:
 
 ```bash
 cd cloudflare
-npm run build
-node --experimental-transform-types --test tests/e2e.test.mjs   # deja las capturas
+npm run test:e2e  # compila con el inventario versionado de E2E y deja las capturas
 node scripts/actualizar-referencias-visuales.mjs \
   .local/capturas/<sello-de-la-home> .local/capturas/<sello>-paginas
 ```

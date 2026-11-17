@@ -16,6 +16,13 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
 
 ## Coordinación entre T3, Codex y OpenCode
 
+### Navegador integrado de T3
+
+- Si el usuario pide abrir una URL en el navegador integrado, usar `preview_open` directamente con esa URL. No tomar `preview_status.available: false` o `tabId: null` como prueba de que el navegador no existe: puede significar simplemente que el chat aún no tiene una pestaña abierta.
+- Si el usuario pide «abrir el campus» o «campus virtual» sin pasar URL, usar `https://ecampus.uesiglo21.edu.ar/menu/`; no pedir el enlace de nuevo.
+- Si hace falta consultar el estado, llamar a `preview_open` igualmente cuando no haya pestaña. Sólo informar que no está disponible si la herramienta no está expuesta en la sesión o si `preview_open` falla; comunicar el error observado sin pedir al usuario que repita el enlace ya proporcionado.
+- El acceso del agente al navegador se configura en T3 en Settings → Browser y el cambio aplica a sesiones nuevas. Esta instrucción guía al agente, pero no puede habilitar una herramienta que T3 no exponga en esa sesión.
+
 - Para una tarea especializada, consultar las instrucciones existentes antes de
   reproducirlas: los perfiles de revisión de este proyecto están en
   `~/.config/opencode/agents/` (`auditor-contenido`, `auditor-dependencias`,

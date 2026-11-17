@@ -100,6 +100,13 @@ test('el entry cablea la copia y guarda sólo lo que la normalización autorizó
   assert.match(worker, /ctx\.waitUntil\(cacheDeBorde!\.put\(clave, copiaParaGuardar\(respuesta\)\)\)/);
 });
 
+test('el entry atiende las rutas de assets históricos desde R2 antes de la caché HTML', () => {
+  assert.match(worker, /servirAssetR2\(request, env\.ASSETS_HISTORICOS, caches\?\.default, ctx\)/);
+  assert.ok(worker.indexOf('servirAssetR2(request') < worker.indexOf('cacheDeBorde!.match(clave)'));
+  assert.match(worker, /versionarRespuestaHtml\(renderizada, version, request\.url\)/);
+  assert.match(worker, /__worker_version/);
+});
+
 test('las imágenes y las fuentes salen con TTL propio desde _headers', () => {
   assert.match(cabeceras, /\/imagenes\/\*/);
   assert.match(cabeceras, /\/fuentes\/\*/);
