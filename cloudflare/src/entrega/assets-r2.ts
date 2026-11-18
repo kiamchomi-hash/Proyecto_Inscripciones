@@ -76,8 +76,13 @@ export function versionarRespuestaHtml(
       },
     },
   ).on('style,script:not([src])', {
+    // `replace` escribe el contenido como texto HTML y escapa `&`, `<` y `>`.
+    // Sin `{ html: true }` el `&&` de un script inline llega como `&amp;&amp;`,
+    // el navegador no lo puede parsear y la isla de Astro nunca hidrata. Se
+    // reemplaza sólo el texto que trae una referencia: el resto queda intacto.
     text(chunk) {
-      chunk.replace(versionarReferenciasTexto(chunk.text, version));
+      const versionado = versionarReferenciasTexto(chunk.text, version);
+      if (versionado !== chunk.text) chunk.replace(versionado, { html: true });
     },
   }).transform(respuesta);
 }
