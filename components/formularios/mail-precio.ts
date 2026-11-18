@@ -109,7 +109,7 @@ function filaHtml(linea: LineaPrecio): string {
                       </tr>`;
 }
 
-/** La baja es opcional en el resumen; el newsletter siempre la lleva. */
+/** Todo correo lleva baja cuando se le pasa `bajaUrl`; el resumen la recibe del consumidor. */
 export type OpcionesMail = { carrera: CarreraDelMail; precio: PrecioDelMail; hoy: Date } & (
   | { tipo?: 'resumen'; bajaUrl?: string }
   | { tipo: 'newsletter'; bajaUrl: string }
@@ -277,11 +277,12 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
   const whatsapp = `https://wa.me/${numeroWhatsAppDe('siglo21')}?text=${encodeURIComponent(`Hola, quiero consultar por ${nombre}`)}`;
   const pie = tipo === 'newsletter' ? 'Te escribimos porque pediste novedades de esta carrera en siglo21sur.com.' : PIE;
   const cobertura = COBERTURA_PAGO;
+  const tieneBaja = !!bajaUrl;
   const texto = [nombre, '', ...numerarBimestres(precio.conceptos).map(l => `${l.concepto}: ${l.monto}`),
     `Total: ${precio.total}`, `Precio vigente hasta el ${diaMes(precio.vigenteHasta)}`,
     cobertura, '', `Preinscribirme: ${inscripcion}`,
     `Consultar por WhatsApp: ${whatsapp}`, '', pie,
-    ...(tipo === 'newsletter' ? [`${BAJA}: ${bajaUrl}`] : [])].join('\n');
+    ...(tieneBaja ? [`${BAJA}: ${bajaUrl}`] : [])].join('\n');
 
   const filasPrecio = numerarBimestres(precio.conceptos).map(l => `
                   <tr>
@@ -370,7 +371,7 @@ function armarMailSiglo21({ carrera, precio, tipo, bajaUrl }: { carrera: Carrera
             <td align="center" style="padding:14px 28px 22px;background:${SIGLO_FONDO};">
               <p style="margin:0;font-size:12px;line-height:1.6;color:${SIGLO_SUAVE};">${escapar(cobertura)}</p>
               <p style="margin:14px 0 0;font-size:12px;line-height:1.6;color:${SIGLO_SUAVE};">${escapar(pie)}</p>
-              ${tipo === 'newsletter' ? `<div style="padding-top:14px;"><a href="${escapar(bajaUrl ?? '')}" style="${BOTON_BAJA}">${BAJA}</a></div>` : ''}
+              ${tieneBaja ? `<div style="padding-top:14px;"><a href="${escapar(bajaUrl)}" style="${BOTON_BAJA}">${BAJA}</a></div>` : ''}
             </td>
           </tr>
         </table>

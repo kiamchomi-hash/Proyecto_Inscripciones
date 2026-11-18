@@ -1,18 +1,21 @@
 import type { APIRoute } from 'astro';
 import { manejarCorreoPrueba } from '../../api/correo-prueba.ts';
 import {
-  bindingCorreo, destinoCorreoPrueba, secretoCorreoPrueba,
+  bindingCorreo, bindingDb, destinoCorreoPrueba, secretoCorreoPrueba,
 } from '../../api/runtime.ts';
+import { idParaBaja } from '../../datos/newsletter.ts';
 import { enviarCorreoDePrueba } from '../../operativa/transportes.ts';
 
 export const prerender = false;
 
 export const POST: APIRoute = ({ request }) => {
   const binding = bindingCorreo();
+  const db = bindingDb();
   return manejarCorreoPrueba(request, {
     secreto: secretoCorreoPrueba(),
     destino: destinoCorreoPrueba(),
-    mail: binding ? para => enviarCorreoDePrueba(binding, para) : undefined,
+    idBaja: db ? email => idParaBaja(db, email) : undefined,
+    mail: binding ? (para, bajaUrl) => enviarCorreoDePrueba(binding, para, bajaUrl) : undefined,
   });
 };
 

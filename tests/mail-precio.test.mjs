@@ -252,6 +252,17 @@ test('Siglo 21 muestra lista 2027 y enlaza la preinscripción sin mensajes de Te
   }
 });
 
+test('el mail de precio de Siglo 21 lleva botón de anular suscripción con bajaUrl', () => {
+  const mail = armar({
+    carrera: { nombre: 'Abogacía', nivel: 'Grado' },
+    bajaUrl: BAJA,
+  });
+  assert.ok(mail.html.includes(`href="${BAJA}"`));
+  assert.match(mail.html, />Anular suscripción<\/a>/);
+  assert.ok(mail.texto.includes(`Anular suscripción: ${BAJA}`));
+  assert.match(mail.texto, /Te escribimos porque pediste el precio/);
+});
+
 test('el mail de Siglo 21 dice qué cubre el pago, igual que el de Teclab, con un solo texto', () => {
   const carreraSiglo = { nombre: 'Administración', prefix: 'Licenciatura en', nombre_corto: 'Administración', duracion: '4 años', nivel: 'Licenciaturas' };
   const aclaracion = 'Este pago cubre la matrícula y los bimestres detallados. El cuatrimestre siguiente requiere un nuevo pago de matrícula y bimestres.';

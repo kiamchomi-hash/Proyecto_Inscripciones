@@ -47,6 +47,25 @@ export async function suscribirNewsletter(db: D1Database, alta: AltaNewsletter):
   return fila.id;
 }
 
+/**
+ * Id de baja para cualquier correo, aunque la persona no se haya suscripto.
+ * Crea una fila general inactiva: da un enlace que funciona de verdad sin
+ * convertir a quien pidió un precio en suscriptor de novedades. Si ya existe
+ * la fila general, devuelve su id sin tocar el `activo`.
+ */
+export async function idParaBaja(db: D1Database, email: string): Promise<string> {
+  const correoNormalizado = correo(email);
+  const id = crypto.randomUUID();
+  const fila = await db.prepare(`
+    INSERT INTO suscripciones_newsletter(id, email, carrera_id, carrera_nombre, activo)
+    VALUES (?1, ?2, NULL, NULL, 0)
+    ON CONFLICT(email, ifnull(carrera_id, 0)) DO UPDATE SET id = suscripciones_newsletter.id
+    RETURNING id`)
+    .bind(id, correoNormalizado).first<{ id: string }>();
+  if (!fila) throw new Error('No se pudo preparar la baja del correo.');
+  return fila.id;
+}
+
 /** Baja de un clic: el cron lee `activo`, así que la baja no borra la fila. */
 export async function darDeBaja(db: D1Database, id: unknown): Promise<boolean> {
   if (typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {

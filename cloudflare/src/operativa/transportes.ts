@@ -204,14 +204,18 @@ function porBinding(
  * traducción de errores que un envío real, sin carrera, precio ni plantilla.
  */
 export function enviarCorreoDePrueba(
-  binding: CorreoBinding, para: string,
+  binding: CorreoBinding, para: string, bajaUrl: string,
 ): Promise<ResultadoTransporte> {
   return enviarPorBinding(binding, {
     to: para,
     from: remitenteEstructurado(REMITENTE_MAIL),
     subject: 'Prueba de correo del Worker del CAU',
-    text: 'Correo de prueba del envío saliente del sitio. Sale del Worker de producción por el binding de Cloudflare.',
-    html: '<p>Correo de prueba del envío saliente del sitio. Sale del Worker de producción por el binding de Cloudflare.</p>',
+    text: `Correo de prueba del envío saliente del sitio. Sale del Worker de producción por el binding de Cloudflare.\n\nAnular suscripción: ${bajaUrl}`,
+    html: `<p>Correo de prueba del envío saliente del sitio. Sale del Worker de producción por el binding de Cloudflare.</p><p><a href="${bajaUrl}">Anular suscripción</a></p>`,
+    headers: {
+      'List-Unsubscribe': `<${bajaUrl.replace('/newsletter/baja', '/api/newsletter/baja')}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    },
   });
 }
 

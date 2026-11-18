@@ -1,7 +1,7 @@
 import { pedidoLeadSede, resultadoPrecio, type ResultadoPrecio } from '../../../components/formularios/casas.ts';
 import { leerPrecioPrivado, reservarMailPrecio } from '../datos/repositorio.ts';
 import { leerRelojBase } from '../datos/reloj.ts';
-import { suscribirNewsletter } from '../datos/newsletter.ts';
+import { idParaBaja, suscribirNewsletter } from '../datos/newsletter.ts';
 import { payloadCompletoDesdeConsulta, diaArgentino } from '../api/filas.ts';
 import { BASE_PROD } from '../../../lib/vigilancia-esperado.ts';
 import {
@@ -191,23 +191,29 @@ async function prepararEfecto(db: D1Database, fila: FilaOutbox, ahora: string): 
       const privado = await intentar(() => leerPrecioPrivado(db, carreraId as number));
       const resultado = resultadoPrecio(privado ?? null, diaArgentino(ahora));
       if (resultado.estado !== 'vigente') return { tipo: 'omitido', motivo: 'sin-precio-vigente' };
-      const suscripcionNewsletter = detalle.newsletter === true && carrera.nivel.startsWith('Teclab')
+      // Todo mail lleva baja, incluso para Siglo 21 o para quien no pidió
+      // novedades: si no hay suscripción, se crea una fila inactiva sólo para
+      // tener un id de baja válido, sin dar consentimiento de novedades.
+      const idBaja = detalle.newsletter === true && carrera.nivel.startsWith('Teclab')
         ? await suscribirNewsletter(db, {
           email,
           carrera: { id: carrera.id, nombre: carrera.nombre },
           ahora: fila.created_at,
         })
-        : null;
+        : await idParaBaja(db, email);
+      const bajaUrl = `${BASE_PROD}/newsletter/baja?id=${encodeURIComponent(idBaja)}`;
       return {
         tipo: 'pedido', transporte: 'mail',
         pedido: {
           para: email, carrera, precio: resultado, limitar: detalle.limitar === true,
-          ...(suscripcionNewsletter ? {
-            newsletter: {
-              tipo: 'resumen' as const,
-              bajaUrl: `${BASE_PROD}/newsletter/baja?id=${encodeURIComponent(suscripcionNewsletter)}`,
-            },
-          } : {}),
+          newsletter: {
+            tipo: 'resumen' as const,
+            bajaUrl,
+            encabezados: [
+              { header: 'List-Unsubscribe', value: `<${BASE_PROD}/api/newsletter/baja?id=${encodeURIComponent(idBaja)}>` },
+              { header: 'List-Unsubscribe-Post', value: 'List-Unsubscribe=One-Click' },
+            ],
+          },
         },
       };
     }

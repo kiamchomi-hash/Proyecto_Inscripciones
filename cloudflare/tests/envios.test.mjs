@@ -233,7 +233,10 @@ test('binding: manda por Cloudflare sin clave y con el remitente estructurado', 
   assert.deepEqual(enviados[0].from, { email: 'inscripciones@siglo21sur.com', name: 'CAU Online' });
   assert.match(enviados[0].subject, /Precios/);
   assert.ok(enviados[0].html.length > 0 && enviados[0].text.length > 0);
-  assert.equal(enviados[0].headers, undefined);
+  assert.match(enviados[0].html, />Anular suscripción</);
+  assert.match(enviados[0].text, /Anular suscripción:/);
+  assert.match(enviados[0].headers['List-Unsubscribe'], /^<https:\/\//);
+  assert.equal(enviados[0].headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click');
 });
 
 test('mail de precio Teclab incluye la baja de novedades si la persona se suscribió', async t => {
@@ -250,6 +253,25 @@ test('mail de precio Teclab incluye la baja de novedades si la persona se suscri
   assert.ok(suscripcion?.id);
   assert.ok(enviados[0].html.includes(`/newsletter/baja?id=${suscripcion.id}`));
   assert.match(enviados[0].html, />Anular suscripción</);
+});
+
+test('mail de precio de Siglo 21 incluye la baja aunque la persona no pidió novedades', async t => {
+  const { db } = await crearD1(t);
+  await insertarCarrera(db, 1, { nivel: 'Grado', nombre: 'Carrera sintética', prefix: null });
+  await insertarPrecio(db);
+  const { id } = await efectoDeConsulta(db, 'mail-precio', JSON.stringify({ carreraId: 1, limitar: false }));
+  const { email, enviados } = bindingCorreo();
+
+  assert.equal(await consumirEfecto(db, id, crearTransportes({ email }, espia().buscar, db)), 'enviado');
+
+  const baja = await db.prepare(`SELECT id, activo FROM suscripciones_newsletter
+    WHERE email = ?1`).bind('fixture@example.invalid').first();
+  assert.ok(baja?.id);
+  assert.equal(baja.activo, 0, 'la baja no convierte al lead en suscriptor');
+  assert.ok(enviados[0].html.includes(`/newsletter/baja?id=${baja.id}`));
+  assert.match(enviados[0].html, />Anular suscripción</);
+  assert.match(enviados[0].text, /Anular suscripción:/);
+  assert.equal(enviados[0].headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click');
 });
 
 test('binding: el error con código es rechazo y sin código es ambiguo', async t => {
@@ -475,12 +497,13 @@ test('api y telegram: inscripción rápida se distingue sin modificar el aviso d
 
 // ── Prueba de correo desde el Worker ──
 
+const ID_PRUEBA = '11111111-1111-4111-8111-111111111111';
 const pedirPrueba = (autorizacion, entorno) => manejarCorreoPrueba(
   new Request('https://www.siglo21sur.com/api/correo-prueba', {
     method: 'POST',
     ...(autorizacion ? { headers: { authorization: `Bearer ${autorizacion}` } } : {}),
   }),
-  entorno,
+  { idBaja: async () => ID_PRUEBA, ...entorno },
 );
 
 test('correo-prueba: sin secreto 503 y con otro bearer 401', async () => {
@@ -512,11 +535,12 @@ test('correo-prueba: manda al destino fijo y no inventa un ok ajeno', async () =
   const ok = await pedirPrueba('s', {
     secreto: 's',
     destino: 'destino-fijo@example.invalid',
-    mail: async (para) => { enviados.push(para); return 'enviado'; },
+    mail: async (para, bajaUrl) => { enviados.push({ para, bajaUrl }); return 'enviado'; },
   });
   assert.equal(ok.status, 200);
   assert.deepEqual(await ok.json(), { ok: true });
-  assert.deepEqual(enviados, ['destino-fijo@example.invalid']);
+  assert.equal(enviados[0].para, 'destino-fijo@example.invalid');
+  assert.match(enviados[0].bajaUrl, /\/newsletter\/baja\?id=11111111-1111-4111-8111-111111111111$/);
 
   const omitido = await pedirPrueba('s', {
     secreto: 's', destino: 'x@example.invalid', mail: async () => 'sin-configurar',

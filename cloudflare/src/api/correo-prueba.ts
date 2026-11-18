@@ -1,3 +1,4 @@
+import { BASE_PROD } from '../../../lib/vigilancia-esperado.ts';
 import { rechazoBearer } from './auth.ts';
 import {
   ErrorAmbiguo, ErrorRechazo, type ResultadoTransporte,
@@ -20,7 +21,9 @@ import {
 export interface EntornoCorreoPrueba {
   secreto?: string;
   destino?: string;
-  mail?: (para: string) => Promise<ResultadoTransporte>;
+  /** Id de baja válido para el destinatario fijo; ningún correo sale sin él. */
+  idBaja?: (email: string) => Promise<string>;
+  mail?: (para: string, bajaUrl: string) => Promise<ResultadoTransporte>;
 }
 
 const respuesta = (cuerpo: Record<string, unknown>, status = 200) =>
@@ -38,8 +41,17 @@ export async function manejarCorreoPrueba(
   if (!entorno.destino) return respuesta({ error: 'CORREO_PRUEBA_DESTINO sin configurar' }, 503);
   if (!entorno.mail) return respuesta({ error: 'transporte de correo sin configurar' }, 503);
 
+  let bajaUrl: string;
   try {
-    const resultado = await entorno.mail(entorno.destino);
+    if (!entorno.idBaja) return respuesta({ error: 'baja sin configurar' }, 503);
+    const id = await entorno.idBaja(entorno.destino);
+    bajaUrl = `${BASE_PROD}/newsletter/baja?id=${encodeURIComponent(id)}`;
+  } catch {
+    return respuesta({ error: 'No se pudo preparar la baja del correo' }, 503);
+  }
+
+  try {
+    const resultado = await entorno.mail(entorno.destino, bajaUrl);
     if (resultado !== 'enviado') return respuesta({ ok: false, resultado }, 503);
   } catch (error) {
     // El código del proveedor sirve para diagnosticar; nunca se devuelve el
