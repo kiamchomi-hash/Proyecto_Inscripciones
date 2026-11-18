@@ -17,6 +17,7 @@ import { PasoListo, PasoPrecio } from './autoinscripcion-teclab';
 import { PrecioEnFormulario, type PrecioVigente } from '@/components/index/ver-precio-teclab';
 import { modalidadCorta } from '@/components/carreras/career-content';
 import { fechaEntradaAIso, fechaIsoAEntrada, normalizarEntradaFecha } from './fecha';
+import { altoNavbar } from '@/lib/navbar-alto';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -83,14 +84,6 @@ const acercaElBoton = (id: string): boolean => {
   if (!campo) return false;
   if (!enDosColumnas()) return ACERCAN_EN_MOVIL.includes(id as CampoId);
   return (campo.tipo ?? 'texto') === 'texto' && !ARRIBA_DE_TODO.includes(id as CampoId);
-};
-
-/** Lo que tapa la barra fija de arriba. Nada puede quedar debajo de eso. */
-const altoNavbar = () => {
-  const alto = Number.parseFloat(
-    getComputedStyle(document.documentElement).getPropertyValue('--navbar-height'),
-  );
-  return Number.isFinite(alto) ? alto : 60;
 };
 
 const suave = (): ScrollBehavior =>

@@ -713,6 +713,71 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     t.diagnostic(`capturas: ${salida}`);
   });
 
+  // El alto del navbar sale del CSS (`--navbar-height` en estilos/navbar.css),
+  // calculado con las medidas que lo componen. Antes lo escribía el componente
+  // midiendo con `getBoundingClientRect`; mientras ese JS no corría, la barra
+  // quedaba con el respaldo de 60px y se despegaba. Esto compara las dos cajas
+  // en el navegador real: si cambia el navbar y no la cuenta, falla acá.
+  await t.test('la barra pegajosa del catálogo se pega al navbar sin depender del JS', async () => {
+    for (const perfil of PERFILES) {
+      const { contexto, pagina } = await abrirPagina(navegador, bases.sin, {
+        viewport: perfil.viewport, hasTouch: perfil.hasTouch, isMobile: perfil.isMobile,
+      });
+      try {
+        // Si el alto quedara en un estilo en línea, la prueba estaría midiendo
+        // lo que escribe el componente y no lo que calcula el CSS.
+        const enLinea = await pagina.evaluate(() =>
+          /--navbar-height/.test(document.documentElement.getAttribute('style') ?? ''));
+        assert.equal(enLinea, false,
+          `${perfil.id}: --navbar-height está en línea; tiene que salir solo del CSS`);
+
+        const medidas = await pagina.evaluate(async () => {
+          const navbar = document.querySelector('.main-navbar');
+          const barra = document.querySelector('.sticky-search-wrapper');
+          if (!navbar || !barra) return null;
+          const altoCss = getComputedStyle(document.documentElement)
+            .getPropertyValue('--navbar-height').trim();
+          // Baja lo justo para que la barra quede pegada sin llegar al final de
+          // su contenedor, donde un sticky deja de pegarse por diseño.
+          document.documentElement.style.scrollBehavior = 'auto';
+          window.scrollTo(0, barra.getBoundingClientRect().top + window.scrollY + 200);
+          await new Promise(listo => requestAnimationFrame(() => requestAnimationFrame(listo)));
+          return {
+            altoCss,
+            posicion: getComputedStyle(barra).position,
+            altoNavbar: navbar.getBoundingClientRect().height,
+            bordeNavbar: navbar.getBoundingClientRect().bottom,
+            topeBarra: barra.getBoundingClientRect().top,
+            desplazado: window.scrollY,
+          };
+        });
+        assert.ok(medidas, `${perfil.id}: falta el navbar o la barra pegajosa del catálogo`);
+        assert.notEqual(medidas.altoCss, '',
+          `${perfil.id}: --navbar-height no está definido en el CSS`);
+        assert.equal(medidas.posicion, 'sticky',
+          `${perfil.id}: la barra del catálogo dejó de ser sticky (${medidas.posicion})`);
+        assert.ok(medidas.desplazado > 0,
+          `${perfil.id}: no se pudo desplazar la página para que la barra se pegue`);
+
+        // El contrato son dos cosas: la barra arranca en el borde inferior del
+        // navbar —o 1px adentro, que es el solape deliberado para que no se vea
+        // una franja de fondo— y el alto del CSS coincide con el navbar real.
+        const diferencia = medidas.topeBarra - medidas.bordeNavbar;
+        assert.ok(diferencia <= 0.5,
+          `${perfil.id}: queda un hueco de ${diferencia.toFixed(2)}px entre el navbar y la barra pegajosa`);
+        assert.ok(diferencia >= -2,
+          `${perfil.id}: la barra tapa ${(-diferencia).toFixed(2)}px del navbar; el solape es de 1px`);
+        assert.ok(Math.abs(medidas.altoNavbar - (medidas.topeBarra + 1)) <= 1,
+          `${perfil.id}: --navbar-height calcula ${(medidas.topeBarra + 1).toFixed(2)}px y el navbar mide `
+          + `${medidas.altoNavbar.toFixed(2)}px; la cuenta en CSS quedó desactualizada`);
+        t.diagnostic(`${perfil.id}: navbar ${medidas.altoNavbar.toFixed(2)}px, `
+          + `barra a ${diferencia.toFixed(2)}px de su borde`);
+      } finally {
+        await contexto.close();
+      }
+    }
+  });
+
   await t.test('carrusel: deslizar sobre el banner cambia la diapositiva', async () => {
     const { contexto, pagina } = await abrirPagina(navegador, bases.sin, {
       viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true,

@@ -166,8 +166,12 @@
   position: sticky;
   /* El pixel de menos la mete abajo del navbar, que es opaco y va en z-index
      2000: sin eso, cualquier resto de subpixel abre una linea de fondo entre
-     los dos. La barra no tiene borde superior, asi que solaparla no se ve. */
-  top: calc(var(--navbar-height, 60px) - 1px);
+     los dos. La barra no tiene borde superior, asi que solaparla no se ve.
+     El alto sale de `--navbar-height` (estilos/navbar.css), que se calcula con
+     las medidas del navbar y no con un número a mano: si cambia el navbar, la
+     barra sigue pegada sin que nadie ajuste nada. Sin respaldo fijo a propósito,
+     porque un 60 de emergencia es justamente el que tapa el error. */
+  top: calc(var(--navbar-height) - 1px);
   z-index: 999;
   background-color: var(--catalogo-barra);
   backdrop-filter: blur(12px);

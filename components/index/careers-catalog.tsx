@@ -10,6 +10,7 @@ import { CATEGORIAS_TECNOLOGIA, esCursoTeclab, getCategoriaTeclabTecnologia, get
 import CareerInfoModal from './career-info-modal';
 import { encodeImagePath } from '@/lib/imagenes/rutas';
 import { derivadaDe } from '@/lib/imagenes/responsivas';
+import { altoNavbar } from '@/lib/navbar-alto';
 
 // Levenshtein distance for fuzzy search
 function levenshtein(a: string, b: string): number {
@@ -185,7 +186,9 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
   const scrollToSearchBar = useCallback(() => {
     const anchor = scrollAnchorRef.current;
     if (!anchor) return;
-    const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 60;
+    // La altura se mide del navbar: `--navbar-height` es un `calc()` en rem y
+    // leerlo como texto daría NaN (ver lib/navbar-alto.ts).
+    const navbarHeight = altoNavbar();
     const anchorTop = anchor.getBoundingClientRect().top + window.pageYOffset;
     const targetScrollY = anchorTop - navbarHeight;
     if (Math.abs(window.pageYOffset - targetScrollY) > 1) {

@@ -13,7 +13,26 @@
   --cau-brand-cream: #fef8f4;
   --cau-brand-deep-teal: #0e6a5a;
     --color-highlight: #00c7b1;
-    --navbar-height: 60px;
+
+  /* Alto del navbar y, con él, dónde se pega la barra de búsqueda del catálogo
+     (`--navbar-height` en estilos/index.css). Es una cuenta, no un número: el
+     alto real sale del contenido del navbar, así que un valor fijo se
+     desalinea en cuanto cambia el ícono, el padding o la base rem —que acá
+     arranca en `clamp(13px, …)` y pasa a 120% en pantallas grandes—. Escrito
+     con las mismas medidas que esos elementos, acompaña solo. Lo verifica el
+     E2E comparando las dos cajas en móvil y escritorio. */
+  /* Móvil: hamburguesa (1.5rem de padding + 2.25rem de ícono) + 2px de borde. */
+  --navbar-height: calc(3.75rem + 2px);
+  /* Tamaño de letra de los enlaces de escritorio; lo usa también la cuenta del alto. */
+  --navbar-link-font: clamp(0.65rem, calc(0.474vw + 0.346rem), 0.85rem);
+}
+
+/* Escritorio: el navbar lo fija el enlace de la barra —padding vertical de
+   1rem por lado y una línea de 1.4— más los 2px del borde inferior. */
+@media (min-width: 1025px) {
+  :root {
+    --navbar-height: calc(2rem + 1.4 * var(--navbar-link-font) + 2px);
+  }
 }
 
 /* ── Escala global desktop ≥1380px ─────────────────────────────
@@ -224,7 +243,9 @@ html {
     flex-wrap: nowrap;
   }
   .navbar-link {
-    font-size: clamp(0.65rem, calc(0.474vw + 0.346rem), 0.85rem);
+    /* Sale de la misma variable que el alto del navbar: si cambia una, cambia
+       el otro y la barra pegajosa sigue pegada. */
+    font-size: var(--navbar-link-font);
     padding-left: clamp(0.35rem, calc(2.133vw - 1.016rem), 1.25rem);
     padding-right: clamp(0.35rem, calc(2.133vw - 1.016rem), 1.25rem);
     letter-spacing: 0.03em;

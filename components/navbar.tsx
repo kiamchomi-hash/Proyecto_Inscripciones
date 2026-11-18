@@ -54,29 +54,6 @@ export default function Navbar() {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  // Keep --navbar-height in sync with actual navbar size.
-  // getBoundingClientRect y no offsetHeight: offsetHeight redondea al entero, y
-  // el alto real es fraccionario porque la base rem sale de un clamp (42.78,
-  // 59.22, 62.42...). Cuando redondeaba para arriba, la barra de busqueda
-  // pegajosa se paraba un cachito mas abajo del navbar y quedaba una linea de
-  // fondo entre los dos.
-  useEffect(() => {
-    if (esRutaPreinscripcion(pathname)) {
-      document.documentElement.style.setProperty('--navbar-height', '0px');
-      return;
-    }
-    const nav = navRef.current;
-    if (!nav) return;
-    const actualizarAlto = () => {
-      const h = nav.getBoundingClientRect().height;
-      document.documentElement.style.setProperty('--navbar-height', h + 'px');
-    };
-    actualizarAlto();
-    const ro = new ResizeObserver(actualizarAlto);
-    ro.observe(nav);
-    return () => ro.disconnect();
-  }, [pathname]);
-
   useEffect(() => {
     if (!menuOpen || esRutaPreinscripcion(pathname)) return;
     const menu = menuRef.current;
@@ -139,6 +116,9 @@ export default function Navbar() {
   if (esRutaPreinscripcion(pathname)) return null;
 
   return (
+    // Su alto no se mide desde JS: `--navbar-height` lo calcula el CSS con las
+    // mismas medidas que arman esta barra (ver estilos/navbar.css). Así la
+    // barra pegajosa del catálogo se pega abajo aunque el JS no llegue a correr.
     <nav ref={navRef} className="main-navbar">
       <div className="navbar-container">
         {/* Mobile toggle */}

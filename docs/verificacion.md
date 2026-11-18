@@ -38,6 +38,44 @@ Cuando el cambio altera el alto de algo compartido:
 de alto convierte una regresión de layout en un falso verde y deja de proteger
 justo lo que la referencia vigila.
 
+## El alto del navbar no se mide desde JS
+
+`--navbar-height` (`estilos/navbar.css`) es la fuente única de dónde se pegan la
+barra de búsqueda del catálogo y los saltos de ancla de las fichas y de clases
+de apoyo. Se escribe como una cuenta con las medidas que arman el navbar —no
+como un número— porque el alto sale de su contenido y de la base `rem`, que
+cambia por breakpoint y sube a 120% en pantallas grandes. Antes lo escribía el
+componente midiendo con `getBoundingClientRect`; si ese JS no corría, quedaba el
+respaldo y la barra aparecía corrida.
+
+Si cambia una medida del navbar, se actualiza la cuenta en el mismo lugar. El
+E2E lo vigila: compara el borde inferior del navbar con el alto de la barra
+pegajosa en móvil y escritorio, y falla si queda un hueco o si el CSS calcula
+otra cosa que la caja real.
+
+Desde JS el alto se lee de la caja con `lib/navbar-alto.ts`.
+`getPropertyValue('--navbar-height')` devuelve el texto del `calc()` y no un
+número, así que `parseFloat` da `NaN` y cualquier respaldo fijo desalinea otra
+vez.
+
+## El E2E no corre el entry de producción
+
+`test:e2e` levanta el sitio con el servidor de desarrollo. El sitio publicado
+sale por `cloudflare/produccion/worker.ts`, que además versiona las referencias
+de assets dentro del HTML (`versionarRespuestaHtml`) y guarda una copia de borde.
+Un E2E en verde no dice nada sobre ese paso.
+
+Si el cambio toca `cloudflare/produccion/`, `cloudflare/src/entrega/` o el HTML
+que arma el Worker, corré `npm --prefix cloudflare run test:entrega`: sus pruebas
+levantan el entry real con wrangler y comparan bytes, no sólo el render.
+
+En `HTMLRewriter`, `Text.replace` y `Element.setInnerContent` escriben el
+contenido como texto HTML y escapan `&`, `<` y `>`. Aplicado al texto de un
+`<script>` inline, el `&&` llega como `&amp;&amp;`, el navegador no lo parsea y
+la página queda sin hidratar: los formularios no responden, los menús no abren y
+las islas de React no toman el control. Para reescribir código o estilos hace
+falta `{ html: true }`.
+
 ## Controles según el cambio
 
 | Cambio | Verificación local |
