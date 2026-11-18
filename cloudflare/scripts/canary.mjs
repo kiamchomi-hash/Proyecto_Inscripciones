@@ -117,11 +117,19 @@ export async function ejecutarCanary({
 
   // El ID lo asigna Cloudflare al upload. Los assets quedan en R2 antes de que
   // la versión entre en un deployment y pueda recibir tráfico o un override.
+  //
+  // Esta etapa tiene su propio tope, más alto que el de las demás: sube un
+  // objeto por proceso de wrangler (6 a la vez) y el build trae más de 800
+  // objetos, así que sólo el arranque de wrangler —cerca de 2s cada uno— ya
+  // consume los 300s del valor por defecto. Con ese tope el deploy moría a los
+  // 300s exactos y la candidata quedaba subida sin tráfico. El número alcanza
+  // con margen para el catálogo actual; si el sync se acerca otra vez, lo que
+  // corresponde es dejar de resubir los objetos que ya están en el bucket.
   await correr(
     'sincronizar-assets-r2', process.execPath,
     [join(raiz, 'scripts/sincronizar-assets-r2.mjs'),
       `--version=${versionNueva}`, '--confirmar-escritura'],
-    { env: envR2 },
+    { env: envR2, timeout: 900_000 },
   );
 
   let deploymentIntentado = false;
