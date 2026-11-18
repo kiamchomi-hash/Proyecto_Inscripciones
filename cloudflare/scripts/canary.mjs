@@ -93,10 +93,19 @@ export async function ejecutarCanary({
       return salida;
     } catch (error) {
       registrar({ etapa, estado: 'falló' });
-      const mensaje = String(error.stderr || error.message || 'error de proceso')
+      // No alcanza con el mensaje del proceso: el smoke escribe el diagnóstico
+      // en stdout y sale con código 1, así que sin leerlo queda un
+      // `Command failed` pelado y no se sabe qué comprobación falló. Se guarda
+      // la salida completa recortada al final, que es donde quedan las líneas
+      // `FALLA …` y el resumen del informe.
+      const salida = [error.stderr, error.stdout]
+        .map(texto => String(texto ?? '').trim())
+        .filter(Boolean)
+        .join('\n');
+      const mensaje = (salida || String(error.message || 'error de proceso'))
         .replaceAll(tokenCloudflare, '[REDACTADO]')
         .replaceAll(tokenR2, '[REDACTADO]')
-        .slice(0, 1200);
+        .slice(-4000);
       throw new Error(`${etapa}: ${mensaje}`);
     }
   };

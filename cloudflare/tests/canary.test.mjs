@@ -99,6 +99,35 @@ test('si falla un smoke, vuelve a la versión estable y confirma el 100%', async
   assert.ok(eventos.some(evento => evento.estado === 'rollback'));
 });
 
+test('el fallo de un smoke conserva su salida, que es donde está el diagnóstico', async () => {
+  let estadoActual = [{ version_id: ESTABLE, percentage: 100 }];
+  let fallos = 0;
+  await assert.rejects(ejecutarCanary(opciones({
+    comando: async (_binario, args) => {
+      const texto = args.join(' ');
+      if (texto.includes('deployments status')) return estado(estadoActual);
+      if (texto.includes('versions upload')) return upload;
+      if (texto.includes('sincronizar-assets-r2')) return { stdout: '', stderr: '' };
+      if (texto.includes('versions deploy')) {
+        estadoActual = [{ version_id: ESTABLE, percentage: 100 }];
+        return { stdout: '', stderr: '' };
+      }
+      if (texto.includes('smoke.mjs')) {
+        fallos += 1;
+        // El smoke informa por stdout y sale con código 1, sin stderr.
+        const error = new Error('Command failed: node herramientas/smoke.mjs');
+        error.stdout = '  FALLA  cabeceras — falta strict-transport-security\n\n1 falla(s):\n  - cabeceras';
+        throw error;
+      }
+      assert.fail(`comando inesperado: ${texto}`);
+    },
+  })), error => {
+    assert.match(error.message, /cabeceras — falta strict-transport-security/);
+    return true;
+  });
+  assert.equal(fallos, 1);
+});
+
 test('falla cerrado si el estado actual es ambiguo o falta la credencial R2', async () => {
   await assert.rejects(ejecutarCanary(opciones({
     comando: async () => estado([{ version_id: ESTABLE, percentage: 95 }, { version_id: NUEVA, percentage: 5 }]),
