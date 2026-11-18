@@ -14,7 +14,7 @@ import {
 import { bloquesDe, ROTULO_GRUPO } from './bloques';
 import { EVENTO_ELEGIR_CARRERA, type DetalleElegirCarrera } from './elegir-carrera';
 import { PasoListo, PasoPrecio } from './autoinscripcion-teclab';
-import { PrecioEnFormulario, type PrecioVigente } from '@/components/index/ver-precio-teclab';
+import { MENSAJE_FINANCIACION, PrecioEnFormulario, type PrecioVigente } from '@/components/index/ver-precio-teclab';
 import { modalidadCorta } from '@/components/carreras/career-content';
 import { fechaEntradaAIso, fechaIsoAEntrada, normalizarEntradaFecha } from './fecha';
 import { altoNavbar } from '@/lib/navbar-alto';
@@ -1583,7 +1583,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
             <PasoPrecio
               detalle={
                 <div className="vp-cuerpo vp-en-formulario">
-                  <PrecioEnFormulario precio={precioParaVer} duracion={duracionDe(carrera)} casa={casaDeLaCarrera ?? casaActiva ?? 'siglo21'} />
+                  <PrecioEnFormulario precio={precioParaVer} duracion={duracionDe(carrera)} casa={casaDeLaCarrera ?? casaActiva ?? 'siglo21'}
+                    waHrefFinanciacion={`https://wa.me/${numeroWhatsAppDe(casaDeLaCarrera ?? casaActiva ?? 'siglo21')}?text=${encodeURIComponent(MENSAJE_FINANCIACION)}`} />
                 </div>
               }
               textoContinuar="Volver"

@@ -10,10 +10,9 @@
 // slide no necesita nada de eso: el modal ya cierra con Escape y no pasa de
 // slide con las flechas mientras se escribe en un campo.
 
-import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type CasaId, type LineaPrecio } from '@/components/formularios/casas';
-import { financiacionGeneral } from '@/components/formularios/financiacion-teclab';
 import { COBERTURA_PAGO, coberturaDelPago } from '@/components/formularios/cobertura-pago';
 
 /** Desde cuándo «Verificando…» pasa a pedir unos segundos más. */
@@ -100,64 +99,22 @@ function EnlaceWhatsApp({ href, texto, principal = false }: { href: string; text
   );
 }
 
+/** Mensaje con el que se abre WhatsApp desde el botón de financiación. */
+export const MENSAJE_FINANCIACION = 'Quiero conocer la financiación';
+
+/** Reemplaza el texto del enlace de WhatsApp conservando el número de la casa. */
+function hrefFinanciacion(waHref: string): string {
+  const url = new URL(waHref);
+  url.searchParams.set('text', MENSAJE_FINANCIACION);
+  return url.toString();
+}
+
 /**
- * Las opciones de financiación vigentes, en letra chica bajo el total. El
- * medio se nombra una vez aunque tenga dos líneas (Visa y Mastercard).
- * Va plegada: abierta eran cinco renglones que en un teléfono bajo (375x667)
- * empujaban «Inscribite ya» fuera del slide. Al abrirla, el CFT sigue al lado
- * de cada interés.
+ * La financiación no se despliega: se consulta por WhatsApp. El mensaje ya
+ * dice qué quiere, así que en el chat saben por dónde arrancar sin preguntar.
  */
-function Financiacion() {
-  const lineas = financiacionGeneral();
-  const detallesRef = useRef<HTMLDetailsElement>(null);
-
-  // El slide centra su contenido en vertical: al abrir, el bloque crecía y
-  // se recentraba, y todo subía la mitad de lo que crecía. Antes de abrir se
-  // fija la posición actual con padding y alineación arriba, así lo nuevo
-  // crece sólo hacia abajo y, si no entra, se llega con scroll.
-  const anclar = (slide: HTMLElement | null | undefined, contenido: HTMLElement | null | undefined) => {
-    if (!slide || !contenido) return;
-    const relleno = parseFloat(getComputedStyle(slide).paddingTop) || 0;
-    const hueco = contenido.getBoundingClientRect().top - slide.getBoundingClientRect().top - relleno;
-    if (hueco <= 0) return;
-    slide.style.paddingTop = `${relleno + hueco}px`;
-    slide.style.justifyContent = 'flex-start';
-  };
-  const soltar = useCallback(() => {
-    const slide = detallesRef.current?.closest<HTMLElement>('.vp-slide');
-    if (!slide) return;
-    slide.style.paddingTop = '';
-    slide.style.justifyContent = '';
-  }, []);
-
-  // Si el panel cambia de vista con la financiación abierta, el slide vuelve
-  // a centrar lo que muestre después.
-  useEffect(() => soltar, [soltar]);
-
-  return (
-    <details
-      ref={detallesRef}
-      className="vp-financiacion"
-      onToggle={e => { if (!e.currentTarget.open) soltar(); }}
-    >
-      <summary
-        className="vp-financiacion-rotulo"
-        // El click llega antes de que el navegador abra el details.
-        onClick={e => {
-          const detalles = e.currentTarget.parentElement as HTMLDetailsElement;
-          if (!detalles.open) anclar(detalles.closest<HTMLElement>('.vp-slide'), detalles.closest<HTMLElement>('.vp-contenido'));
-        }}
-      >Ver financiación</summary>
-      <ul className="vp-financiacion-lineas">
-        {lineas.map((linea, i) => (
-          <li key={linea.detalle}>
-            {linea.medio !== lineas[i - 1]?.medio ? <strong>{linea.medio}: </strong> : null}
-            {linea.detalle}
-          </li>
-        ))}
-      </ul>
-    </details>
-  );
+function Financiacion({ href }: { href: string }) {
+  return <EnlaceWhatsApp href={href} texto={MENSAJE_FINANCIACION} />;
 }
 
 function AclaracionesPrecio({ precio, vencido = false, casa }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean; casa: CasaId }) {
@@ -184,15 +141,14 @@ function NotaCobertura({ precio, casa }: { precio: PrecioVigente; casa: CasaId }
 }
 
 /**
- * El precio vigente: conceptos, total, qué cubre el pago, vigencia y
- * financiación plegada. Sin acciones: cada lugar que lo muestra pone las suyas
- * («Inscribite ya» acá, «Inscribirme» en el formulario de preinscripción).
- * Con `financiacion={false}` la financiación queda afuera, para que el que lo
- * muestra la ponga donde quiera: el modal la lleva debajo de los botones.
+ * El precio vigente: conceptos, total, qué cubre el pago y vigencia. Sin
+ * acciones: cada lugar que lo muestra pone las suyas («Inscribite ya» acá,
+ * «Inscribirme» en el formulario de preinscripción). La financiación se pide
+ * por WhatsApp, con el enlace que pasa quien lo muestra.
  * Toma los colores de `--vp-acento`, `--vp-acento-claro` y
  * `--vp-texto-acento`, que define el contenedor.
  */
-export function DetallePrecio({ precio, duracion, vencido = false, financiacion = true, aclaraciones = true, casa = 'teclab' }: { casa?: CasaId; precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean; aclaraciones?: boolean }) {
+export function DetallePrecio({ precio, duracion, vencido = false, financiacion = false, waHrefFinanciacion, aclaraciones = true, casa = 'teclab' }: { casa?: CasaId; precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean; waHrefFinanciacion?: string; aclaraciones?: boolean }) {
   return (
     <>
       {precio.conceptos.length > 0 && (
@@ -215,7 +171,7 @@ export function DetallePrecio({ precio, duracion, vencido = false, financiacion 
         <span className="vp-total-monto">{precio.total}</span>
       </div>
       {aclaraciones && <AclaracionesPrecio precio={precio} duracion={duracion} vencido={vencido} casa={casa} />}
-      {!vencido && financiacion && casa === 'teclab' && <Financiacion />}
+      {!vencido && financiacion && casa === 'teclab' && waHrefFinanciacion && <Financiacion href={waHrefFinanciacion} />}
     </>
   );
 }
@@ -224,10 +180,10 @@ export function DetallePrecio({ precio, duracion, vencido = false, financiacion 
  * El precio dentro del formulario de preinscripción (un paso del carrusel o la
  * confirmación), armado como lo muestra «Ver precio» en cada casa: Siglo 21
  * con la vigencia arriba y qué cubre el pago abajo, sin la nota de la
- * promoción; Teclab con sus aclaraciones y la financiación plegada.
+ * promoción; Teclab con sus aclaraciones y la financiación por WhatsApp.
  */
-export function PrecioEnFormulario({ precio, duracion, casa }: { precio: PrecioVigente; duracion?: string | null; casa: CasaId }) {
-  if (casa !== 'siglo21') return <DetallePrecio precio={precio} duracion={duracion} casa={casa} />;
+export function PrecioEnFormulario({ precio, duracion, casa, waHrefFinanciacion }: { precio: PrecioVigente; duracion?: string | null; casa: CasaId; waHrefFinanciacion?: string }) {
+  if (casa !== 'siglo21') return <DetallePrecio precio={precio} duracion={duracion} casa={casa} financiacion waHrefFinanciacion={waHrefFinanciacion} />;
   return (
     <>
       <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
@@ -563,11 +519,12 @@ export function PanelVerPrecio({
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
-              {/* En Siglo 21 va lleno: con contorno, sobre el fondo verde, no se leía como WhatsApp. */}
-              <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal={casa === 'siglo21'} />
+              {/* Lleno en las dos casas: el verde de WhatsApp se reconoce mejor
+                  que el contorno, tanto sobre el tinta como sobre el verde. */}
+              <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
-          {casa === 'teclab' && <Financiacion />}
+          {casa === 'teclab' && <Financiacion href={hrefFinanciacion(waHrefPrecioVisto ?? waHref)} />}
           <NotaCobertura precio={precio} casa={casa} />
         </div>
       )}
