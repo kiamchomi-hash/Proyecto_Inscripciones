@@ -180,36 +180,6 @@ function repartirColumnas(campos: CampoId[], esPreinscripcion: boolean, compacta
 /** Alto de la lista desplegada, en píxeles. */
 const ALTO_LISTA = 224;
 
-const MESES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-] as const;
-
-/**
- * Los años posibles de nacimiento, del más probable al menos: un lead nuevo
- * suele estar terminando el secundario, no cumpliendo noventa.
- *
- * El año de hoy sale de `getFullYear()`, que es el local. Con `toISOString()`
- * saldría el de UTC, que en Argentina el 31 de diciembre a la noche ya es el
- * año siguiente.
- */
-const ANIOS = Array.from(
-  { length: 76 },
-  (_, i) => String(new Date().getFullYear() - 15 - i),
-);
-
-/**
- * Cuántos días tiene ese mes. Todo entero: no hay coma flotante a la vista, que
- * es de donde salen los redondeos raros.
- */
-function diasDelMes(anio: number, mes: number) {
-  if (mes === 2) {
-    const bisiesto = (anio % 4 === 0 && anio % 100 !== 0) || anio % 400 === 0;
-    return bisiesto ? 29 : 28;
-  }
-  return [4, 6, 9, 11].includes(mes) ? 30 : 31;
-}
-
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
@@ -428,77 +398,22 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
   );
 }
 
-/**
- * La fecha de nacimiento: un campo solo, con calendario propio.
- *
- * No es el `<input type="date">` nativo porque su calendario es el del
- * navegador y no se puede vestir; ni tres desplegables, que resuelven el dato
- * pero se leen como un formulario dentro del formulario. Este es un calendario
- * de verdad, con la tinta del sitio.
- *
- * El mes y el año van en listas y no en flechitas: para una fecha de nacimiento
- * nadie llega a 1990 pasando meses de a uno.
- *
- * El valor sigue siendo el texto `AAAA-MM-DD`. Se parte y se arma con strings;
- * el único `Date` que aparece es `new Date(a, m - 1, 1)` para saber en qué día
- * de la semana cae el primero — ese constructor toma números y es hora local,
- * así que no arrastra el corrimiento de `new Date('1990-04-12')`, que se lee
- * como UTC y en Argentina devuelve el día anterior.
- */
+/** Campo de nacimiento: texto numérico con barras y validación de fecha real. */
 function CampoFecha({ id, valor, onChange, invalido }: {
   id: string;
   valor: string;
   onChange: (valor: string) => void;
   invalido?: boolean;
 }) {
-  const [abierto, setAbierto] = useState(false);
   const [textoFecha, setTextoFecha] = useState(() => fechaIsoAEntrada(valor));
   const [errorFecha, setErrorFecha] = useState('');
-  const cajaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (valor) setTextoFecha(fechaIsoAEntrada(valor));
   }, [valor]);
 
-  const [anio = '', mes = '', dia = ''] = valor ? valor.split('-') : [];
-  const [vista, setVista] = useState(() => ({
-    anio: Number(anio) || Number(ANIOS[3]),
-    mes: Number(mes) || 1,
-  }));
-
-  useEffect(() => {
-    if (!abierto) return;
-    const afuera = (evento: MouseEvent) => {
-      if (cajaRef.current && !cajaRef.current.contains(evento.target as Node)) setAbierto(false);
-    };
-    const escape = (evento: KeyboardEvent) => { if (evento.key === 'Escape') setAbierto(false); };
-    document.addEventListener('mousedown', afuera);
-    document.addEventListener('keydown', escape);
-    return () => {
-      document.removeEventListener('mousedown', afuera);
-      document.removeEventListener('keydown', escape);
-    };
-  }, [abierto]);
-
-  const alternar = () => {
-    if (!abierto && anio && mes) setVista({ anio: Number(anio), mes: Number(mes) });
-    setAbierto(!abierto);
-  };
-
-  const elegir = (numero: number) => {
-    const iso = `${vista.anio}-${String(vista.mes).padStart(2, '0')}-${String(numero).padStart(2, '0')}`;
-    setTextoFecha(fechaIsoAEntrada(iso));
-    setErrorFecha('');
-    onChange(iso);
-    setAbierto(false);
-  };
-
-  const total = diasDelMes(vista.anio, vista.mes);
-  // getDay() da 0 para domingo; acá la semana empieza el lunes.
-  const arranque = (new Date(vista.anio, vista.mes - 1, 1).getDay() + 6) % 7;
-
   return (
-    <div className="relative" ref={cajaRef}>
+    <div>
       <input
         type="text"
         id={id}
@@ -521,7 +436,7 @@ function CampoFecha({ id, valor, onChange, invalido }: {
           }
           const iso = fechaEntradaAIso(textoFecha);
           if (!iso) {
-            setErrorFecha('Ingresá una fecha válida como DD/MM/AAAA.');
+            setErrorFecha('Fecha inválida. Usá DD/MM/AAAA.');
             onChange('');
             return;
           }
@@ -531,81 +446,18 @@ function CampoFecha({ id, valor, onChange, invalido }: {
         }}
         aria-invalid={errorFecha || invalido ? true : undefined}
         aria-describedby={errorFecha ? `${id}-error` : invalido ? `${id}-falta` : undefined}
-        className={`${CAMPO} ${errorFecha || invalido ? BORDE_MAL : BORDE_OK} pr-11`}
+        className={`${CAMPO} [@media(pointer:coarse)]:min-h-[44px] ${errorFecha || invalido ? BORDE_MAL : BORDE_OK}`}
       />
-      <button
-        type="button"
-        onClick={alternar}
-        aria-label="Elegir fecha en el calendario"
-        aria-haspopup="dialog"
-        aria-expanded={abierto}
-        className="absolute right-1 top-1/2 flex h-7 w-8 -translate-y-1/2 items-center justify-center rounded-md border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-acento)]/10"
+      <p
+        id={errorFecha ? `${id}-error` : undefined}
+        aria-hidden={!errorFecha ? true : undefined}
+        className={errorFecha
+          ? 'form-field-error mt-0.5 min-h-4 text-[11px] leading-4 text-red-400'
+          : 'mt-0.5 min-h-4'}
       >
-          <svg className="h-3.5 w-3.5 text-[var(--catalogo-acento)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <rect x="3" y="5" width="18" height="16" rx="2" />
-            <path strokeLinecap="round" d="M3 10h18M8 3v4M16 3v4" />
-          </svg>
-      </button>
-      {errorFecha
-        ? <p id={`${id}-error`} className="form-field-error mt-0.5 min-h-4 text-[11px] leading-4 text-red-400">{errorFecha}</p>
-        : invalido && <span id={`${id}-falta`} className="sr-only">Completá este campo.</span>}
-
-      {abierto && (
-        <div
-          role="dialog"
-          // Sin nombre, un lector de pantalla anuncia sólo «diálogo». El
-          // calendario se anuncia por lo que hace: elegir el día.
-          aria-label="Elegir la fecha"
-          // Siempre hacia abajo, como el resto de los desplegables.
-          className="absolute top-full z-30 mt-1 w-full min-w-[17rem] rounded-lg border border-[var(--catalogo-acento)]/25 bg-[var(--catalogo-form-campo)] p-2 shadow-xl"
-        >
-          <div className="mb-2 grid grid-cols-2 gap-1.5">
-            <Desplegable
-              id={`${id}-mes`}
-              nombreAccesible="Mes"
-              valor={MESES[vista.mes - 1]}
-              opciones={MESES}
-              // Sólo se mueve con un mes de la lista: con lo tipeado a medias,
-              // `indexOf` da -1 y el calendario quedaba en el mes 0.
-              onChange={nombre => {
-                const indice = MESES.indexOf(nombre as typeof MESES[number]);
-                if (indice >= 0) setVista(v => ({ ...v, mes: indice + 1 }));
-              }}
-            />
-            <Desplegable
-              id={`${id}-anio`}
-              nombreAccesible="Año"
-              valor={String(vista.anio)}
-              opciones={ANIOS}
-              // Y sólo con un año de la lista: `Number('1j999')` es NaN, y de
-              // ahí salían los "NaN" en la grilla.
-              onChange={a => { if (ANIOS.includes(a)) setVista(v => ({ ...v, anio: Number(a) })); }}
-            />
-          </div>
-
-          <div className="grid grid-cols-7 gap-0.5 text-center">
-            {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((letra, i) => (
-              <span key={i} className="py-1 text-[10px] font-bold uppercase text-[var(--catalogo-etiqueta)]">{letra}</span>
-            ))}
-            {Array.from({ length: arranque }, (_, i) => <span key={`hueco-${i}`} />)}
-            {Array.from({ length: total }, (_, i) => i + 1).map(numero => {
-              const elegido = Number(dia) === numero && Number(mes) === vista.mes && Number(anio) === vista.anio;
-              return (
-                <button
-                  key={numero}
-                  type="button"
-                  onClick={() => elegir(numero)}
-                  className={`rounded py-1 text-sm transition-colors ${elegido
-                    ? 'bg-[var(--catalogo-acento)] font-bold text-[var(--catalogo-acento-tinta)]'
-                    : 'text-white hover:bg-[var(--catalogo-acento)]/20'}`}
-                >
-                  {numero}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+        {errorFecha}
+      </p>
+      {invalido && !errorFecha && <span id={`${id}-falta`} className="sr-only">Completá este campo.</span>}
     </div>
   );
 }

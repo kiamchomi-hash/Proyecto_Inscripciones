@@ -1148,14 +1148,16 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     }
   });
 
-  await t.test('calendario de preinscripción identifica mes y año', async () => {
+  await t.test('fecha de preinscripción se completa por teclado sin calendario visible', async () => {
     const { pagina, contexto } = await abrirPagina(navegador, bases.demo, { ruta: '/carreras/tecnicatura-en-programacion' });
     try {
       await pagina.locator('a[href="#preinscripcion"]').first().click();
-      await pagina.getByRole('button', { name: 'Elegir fecha en el calendario' }).click();
-      const calendario = pagina.getByRole('dialog', { name: 'Elegir la fecha' });
-      assert.equal(await calendario.getByRole('combobox', { name: 'Mes', exact: true }).count(), 1);
-      assert.equal(await calendario.getByRole('combobox', { name: 'Año', exact: true }).count(), 1);
+      const campo = pagina.locator('#preinscripcion-fechaNacimiento');
+      await campo.fill('01041990');
+      assert.equal(await campo.inputValue(), '01/04/1990');
+      await campo.press('Tab');
+      assert.equal(await campo.getAttribute('aria-invalid'), null);
+      assert.equal(await pagina.getByRole('button', { name: 'Elegir fecha en el calendario' }).count(), 0);
     } finally {
       await contexto.close();
     }
@@ -1212,10 +1214,8 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
         const campo = pagina.locator(`#preinscripcion-${id}`);
         if (definicion.tipo === 'checkbox') continue;
         if (definicion.tipo === 'fecha') {
-          await pagina.getByRole('button', { name: 'Elegir fecha en el calendario' }).click();
-          const anio = pagina.locator('#preinscripcion-fechaNacimiento-anio');
-          await anio.fill('1990'); await anio.press('Enter');
-          await pagina.getByRole('dialog').getByRole('button', {name:'1', exact:true}).click();
+          await campo.fill('01011990');
+          assert.equal(await campo.inputValue(), '01/01/1990');
           continue;
         }
         const dato = definicion.opciones?.[0] ?? (id === 'dni' ? '12345678'
@@ -1235,6 +1235,9 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
       assert.equal(payload.kind, 'consulta');
       assert.equal(payload.payload.carreraId, idCarrera);
       assert.equal(payload.payload.newsletter, false);
+      if (campos.includes('fechaNacimiento')) {
+        assert.equal(payload.payload.fechaNacimiento, '1990-01-01');
+      }
       assert.equal(payload.token, 'demo');
       await pagina.waitForFunction(() => document.body.textContent.includes('Preinscripción enviada'));
       await contexto.close();

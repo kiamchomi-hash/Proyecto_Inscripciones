@@ -15,6 +15,29 @@ Si un cambio cruza áreas, sumá los controles de cada una.
    referencia visual sólo para silenciar una diferencia.
 5. Informá qué se ejecutó, el resultado y cualquier control que no pudo hacerse.
 
+## Referencias visuales de un componente compartido
+
+Las capturas del E2E se comparan por medida exacta: cualquier cambio de alto en
+un formulario o encabezado cambia la captura de **todas** las rutas que lo
+montan, no sólo de la que se estaba mirando. Ir de a una ruta por corrida es lo
+que hace que el mismo cambio parezca fallar tres veces.
+
+Cuando el cambio altera el alto de algo compartido:
+
+1. Enumerá las rutas afectadas antes de tocar nada: `codegraph_explore` sobre el
+   componente muestra las páginas que lo renderizan.
+2. Corré el E2E una sola vez con el comparador intacto y leé los diagnósticos
+   `dimensiones anteriores … actuales …`: las rutas que sólo difieren en alto
+   son las que hay que refrescar, y todas quedan listadas en la misma corrida.
+3. Confirmá que cada diferencia corresponde al cambio acordado —no a una
+   regresión— mirando la captura nueva contra la referencia.
+4. Regenerá sólo esas referencias con `scripts/actualizar-referencias-visuales.mjs`
+   y volvé a correr el E2E completo, sin relajar tolerancias ni medidas.
+
+**No se afloja la comparación para que pase.** Permitir que una captura cambie
+de alto convierte una regresión de layout en un falso verde y deja de proteger
+justo lo que la referencia vigila.
+
 ## Controles según el cambio
 
 | Cambio | Verificación local |
