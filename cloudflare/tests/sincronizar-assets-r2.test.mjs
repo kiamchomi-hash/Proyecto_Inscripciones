@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  construirManifiestoAssets, comandoSubida, entornoSubidaR2, sincronizarAssetsR2,
+  comandoLectura, comandoSubida, construirManifiestoAssets, entornoSubidaR2, sincronizarAssetsR2,
 } from '../scripts/sincronizar-assets-r2.mjs';
 
 const VERSION = 'f2663f9a-d5b8-4577-a2f6-debc5f34ad48';
@@ -46,6 +46,11 @@ test('el comando Wrangler pasa rutas como argumentos separados y sin shell', () 
   assert.ok(comando.args.includes('/tmp/a b.webp'));
   assert.ok(comando.args.includes('--remote'));
   assert.ok(!comando.args.join(' ').includes('sh -c'));
+
+  const lectura = comandoLectura('cau-assets-historicos', 'indices/objetos.json', '/tmp/a b.json', '/tmp/wrangler.json');
+  assert.ok(lectura.args.includes('get'));
+  assert.ok(lectura.args.includes('/tmp/a b.json'));
+  assert.ok(!lectura.args.join(' ').includes('sh -c'));
 });
 
 test('el proceso de upload recibe sólo la credencial R2 y el entorno mínimo', () => {
@@ -77,6 +82,8 @@ test('por defecto sólo calcula; la escritura sube objetos deduplicados y public
     tokenR2: 'token-de-prueba',
     ejecutarComando: async (_binario, args) => {
       llamados.push(args);
+      // Sin índice en el bucket (primer deploy con este mecanismo).
+      if (args.includes('get')) throw new Error('no existe el objeto');
       if (args.includes('manifests')) {
         const ruta = args[args.indexOf('--file') + 1];
         const manifiesto = JSON.parse(await readFile(ruta, 'utf8'));
@@ -85,8 +92,70 @@ test('por defecto sólo calcula; la escritura sube objetos deduplicados y public
     },
   });
   assert.equal(resultado.escrito, true);
-  assert.equal(llamados.length, 3);
+  assert.equal(resultado.subidos, 2);
+  assert.equal(resultado.yaEstaban, 0);
+  // Lectura del índice + dos objetos + índice + manifiesto.
+  assert.equal(llamados.length, 5);
   assert.ok(llamados.at(-1)[4].startsWith('cau-assets-historicos/manifests/'));
+});
+
+test('sólo sube los objetos que faltan y deja el índice completo', async t => {
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const { manifiesto } = await construirManifiestoAssets(root, VERSION);
+  const yaEstaba = manifiesto.files['imagenes/logo.webp'].digest;
+  const faltaba = manifiesto.files['_astro/app.js'].digest;
+
+  const subidos = [];
+  const resultado = await sincronizarAssetsR2({
+    version: VERSION,
+    directorio: root,
+    confirmarEscritura: true,
+    tokenR2: 'token-de-prueba',
+    ejecutarComando: async (_binario, args) => {
+      if (args.includes('get')) {
+        await writeFile(args[args.indexOf('--file') + 1], JSON.stringify({ digests: [yaEstaba] }));
+        return;
+      }
+      subidos.push(args[4]);
+      if (args[4].endsWith('indices/objetos.json')) {
+        const { digests } = JSON.parse(await readFile(args[args.indexOf('--file') + 1], 'utf8'));
+        assert.deepEqual(digests.sort(), [yaEstaba, faltaba].sort());
+      }
+    },
+  });
+
+  assert.equal(resultado.objetos, 2);
+  assert.equal(resultado.subidos, 1);
+  assert.equal(resultado.yaEstaban, 1);
+  assert.deepEqual(subidos, [
+    `cau-assets-historicos/objects/${faltaba}`,
+    'cau-assets-historicos/indices/objetos.json',
+    `cau-assets-historicos/manifests/${VERSION}.json`,
+  ]);
+});
+
+test('un índice ilegible no deja assets sin subir', async t => {
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const objetosSubidos = [];
+  const resultado = await sincronizarAssetsR2({
+    version: VERSION,
+    directorio: root,
+    confirmarEscritura: true,
+    tokenR2: 'token-de-prueba',
+    ejecutarComando: async (_binario, args) => {
+      if (args.includes('get')) {
+        await writeFile(args[args.indexOf('--file') + 1], '{ esto no es json');
+        return;
+      }
+      if (args[4].includes('/objects/')) objetosSubidos.push(args[4]);
+    },
+  });
+
+  assert.equal(resultado.subidos, 2);
+  assert.equal(objetosSubidos.length, 2);
 });
 
 test('no escribe si falta la credencial R2 separada', async t => {

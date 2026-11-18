@@ -22,7 +22,10 @@ La migración es definitiva; la recuperación se hace dentro de Cloudflare.
   sola no crea ni comprueba la regla; sin ella el publicador falla cerrado.
 - Los assets se suben antes de incluir la candidata en el deployment. El smoke
   fuerza la candidata con `Cloudflare-Workers-Version-Overrides` y verifica
-  también una ruta de asset en R2. La sincronización no borra objetos.
+  también una ruta de asset en R2. La sincronización no borra objetos: los
+  guarda por hash de su contenido y sólo sube los que no están, usando el índice
+  `indices/objetos.json` del mismo bucket. Si ese índice falta o no se puede
+  leer, sube todo (más lento, igual de correcto).
 - No incluir secretos ni datos privados en Git. Las migraciones D1 se aplican
   por separado y necesitan su propia revisión.
 - Un push a `main` publica el commit después de las verificaciones. El deploy

@@ -122,9 +122,11 @@ export async function ejecutarCanary({
   // objeto por proceso de wrangler (6 a la vez) y el build trae más de 800
   // objetos, así que sólo el arranque de wrangler —cerca de 2s cada uno— ya
   // consume los 300s del valor por defecto. Con ese tope el deploy moría a los
-  // 300s exactos y la candidata quedaba subida sin tráfico. El número alcanza
-  // con margen para el catálogo actual; si el sync se acerca otra vez, lo que
-  // corresponde es dejar de resubir los objetos que ya están en el bucket.
+  // 300s exactos y la candidata quedaba subida sin tráfico.
+  //
+  // El script ya no resube lo que está en el bucket, así que lo normal son unos
+  // segundos; los 900s quedan para el primer deploy sin índice, un cambio
+  // grande de imágenes o la recuperación de un índice perdido.
   await correr(
     'sincronizar-assets-r2', process.execPath,
     [join(raiz, 'scripts/sincronizar-assets-r2.mjs'),

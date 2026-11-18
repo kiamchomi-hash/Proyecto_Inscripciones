@@ -14,6 +14,15 @@ const aqui = fileURLToPath(new URL('../', import.meta.url));
 const VERSION = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const CARPETAS = new Set(['_astro', 'derivados', 'folletos', 'fuentes', 'imagenes', 'planes']);
 const RAIZ = new Set(['apple-touch-icon.png', 'favicon.ico', 'icon.png', 'icon-192.png', 'icon-512.png']);
+
+// Los objetos se guardan por hash de su contenido (`objects/<sha256>`) y nunca
+// cambian, así que el bucket funciona como un conjunto que sólo crece. Este
+// índice dice qué digests ya están subidos para no volver a mandarlos: subirlos
+// todos en cada deploy costaba más de 400s porque se paga el arranque de
+// wrangler una vez por objeto.
+const INDICE = 'indices/objetos.json';
+const CACHE_INDICE = 'no-store';
+const DIGEST = /^[a-f0-9]{64}$/i;
 const MIME = new Map([
   ['.css', 'text/css; charset=utf-8'],
   ['.html', 'text/html; charset=utf-8'],
@@ -60,14 +69,29 @@ export async function construirManifiestoAssets(directorio, version) {
   return { manifiesto, objetos };
 }
 
-export function comandoSubida(bucket, key, archivo, contentType, config) {
+export function comandoSubida(
+  bucket, key, archivo, contentType, config,
+  cacheControl = 'public, max-age=31536000, immutable',
+) {
   return {
     binario: process.execPath,
     args: [
       'node_modules/wrangler/bin/wrangler.js',
       'r2', 'object', 'put', `${bucket}/${key}`,
       '--remote', '--file', archivo, '--content-type', contentType,
-      '--cache-control', 'public, max-age=31536000, immutable',
+      '--cache-control', cacheControl,
+      '--config', config,
+    ],
+  };
+}
+
+export function comandoLectura(bucket, key, archivo, config) {
+  return {
+    binario: process.execPath,
+    args: [
+      'node_modules/wrangler/bin/wrangler.js',
+      'r2', 'object', 'get', `${bucket}/${key}`,
+      '--remote', '--file', archivo,
       '--config', config,
     ],
   };
@@ -93,6 +117,29 @@ async function ejecutarConLimite(items, limite, accion) {
   await Promise.all(trabajadores);
 }
 
+/**
+ * Digests que ya están en el bucket, según su índice.
+ *
+ * Si el índice no existe —primer deploy con este mecanismo, o bucket vacío— se
+ * devuelve un conjunto vacío y se sube todo: es más lento, pero correcto. Un
+ * índice ilegible se trata igual, para no dejar assets sin publicar por un
+ * archivo de estado roto.
+ */
+async function leerIndiceDeObjetos({ bucket, config, temporal, tokenR2, ejecutarComando }) {
+  const destino = join(temporal, 'indice-remoto.json');
+  const { binario, args } = comandoLectura(bucket, INDICE, destino, config);
+  try {
+    await ejecutarComando(binario, args, {
+      cwd: aqui, maxBuffer: 2 * 1024 * 1024, env: entornoSubidaR2(process.env, tokenR2),
+    });
+    const { digests } = JSON.parse(await readFile(destino, 'utf8'));
+    if (!Array.isArray(digests)) return new Set();
+    return new Set(digests.filter(digest => typeof digest === 'string' && DIGEST.test(digest)));
+  } catch {
+    return new Set();
+  }
+}
+
 export async function sincronizarAssetsR2({
   version,
   directorio = join(aqui, 'dist', 'client'),
@@ -116,12 +163,31 @@ export async function sincronizarAssetsR2({
   try {
     const manifiestoLocal = join(temporal, 'manifiesto.json');
     await writeFile(manifiestoLocal, `${JSON.stringify(manifiesto)}\n`, { mode: 0o600 });
-    await ejecutarConLimite([...objetos], 6, async ([digest, objeto]) => {
+
+    const yaSubidos = await leerIndiceDeObjetos({ bucket, config, temporal, tokenR2, ejecutarComando });
+    const pendientes = [...objetos].filter(([digest]) => !yaSubidos.has(digest));
+    await ejecutarConLimite(pendientes, 6, async ([digest, objeto]) => {
       const { binario, args } = comandoSubida(bucket, `objects/${digest}`, objeto.archivo, objeto.contentType, config);
       await ejecutarComando(binario, args, {
         cwd: aqui, maxBuffer: 2 * 1024 * 1024, env: entornoSubidaR2(process.env, tokenR2),
       });
     });
+
+    // El índice se reescribe sólo si hubo algo nuevo, y antes del manifiesto:
+    // así un manifiesto publicado siempre tiene sus objetos y su índice en el
+    // bucket. Si esto falla, el próximo deploy vuelve a subir lo que falte.
+    if (pendientes.length) {
+      const indiceLocal = join(temporal, 'indice.json');
+      const digests = [...new Set([...yaSubidos, ...objetos.keys()])].sort();
+      await writeFile(indiceLocal, `${JSON.stringify({ digests })}\n`, { mode: 0o600 });
+      const { binario, args } = comandoSubida(
+        bucket, INDICE, indiceLocal, 'application/json; charset=utf-8', config, CACHE_INDICE,
+      );
+      await ejecutarComando(binario, args, {
+        cwd: aqui, maxBuffer: 2 * 1024 * 1024, env: entornoSubidaR2(process.env, tokenR2),
+      });
+    }
+
     const { binario, args } = comandoSubida(
       bucket, `manifests/${version}.json`, manifiestoLocal,
       'application/json; charset=utf-8', config,
@@ -129,7 +195,12 @@ export async function sincronizarAssetsR2({
     await ejecutarComando(binario, args, {
       cwd: aqui, maxBuffer: 2 * 1024 * 1024, env: entornoSubidaR2(process.env, tokenR2),
     });
-    return { ...resumen, escrito: true };
+    return {
+      ...resumen,
+      subidos: pendientes.length,
+      yaEstaban: objetos.size - pendientes.length,
+      escrito: true,
+    };
   } finally {
     await rm(temporal, { recursive: true, force: true });
   }
