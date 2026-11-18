@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## WhatsApp de Teclab — vuelta al número del CAU, 18/11/2026
+
+- [x] **Volver el WhatsApp de Teclab al número del CAU.** El 16/11/2026 se desvió temporalmente al 11 6652-2722 (`NUMERO_TECLAB`) mientras el usuario no tenía acceso a la línea de Teclab. Recuperado el acceso, se revierte el desvío: `numeroWhatsAppDe('teclab')` vuelve al número del CAU (5491132973801), Teclab deja de tener número propio y la medición de clics vuelve a mirar sólo el del CAU. Se actualizaron `tests/whatsapp.test.mjs`, `tests/mail-precio.test.mjs` y las referencias de paridad (`home.json`, `rutas.json`). En verde: `npm run check` (318 pruebas) y `npm run test:paridad` (31).
+
 ## Indexación — Desarrollo de Videojuegos, 15/11/2026
 
 - [x] **Comprobar la indexación de las fichas de Teclab y Siglo 21.** Search Console informa «Enviada e indexada» para ambas URLs, con veredicto `PASS`, rastreo permitido y canónica de Google coincidente con cada URL. Rastreadas el 08/11 (Teclab) y el 15/11 (Siglo 21). Cerrado el pendiente de seguimiento.

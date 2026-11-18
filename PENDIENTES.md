@@ -18,8 +18,6 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 ## Altísima
 
-- **Volver el WhatsApp de Teclab al número del CAU** (16/11/2026): el 16/11 se cambió temporalmente a 11 6652-2722 (`NUMERO_TECLAB` en `lib/whatsapp.ts`) hasta nuevo aviso. Al revertirlo, volver `numeroWhatsAppDe('teclab')` al número del CAU y actualizar las pruebas de `tests/mail-precio.test.mjs` y `tests/whatsapp.test.mjs`.
-
 - **Precio de Gestión de Inteligencia Artificial y Transformación Digital** (16/11/2026, prioritario): revisar el simulador del Portal Administrativo de Teclab; cuando aparezca la carrera, verificar el importe y su vigencia, incorporarla al circuito de actualización de precios y pedir autorización para cargarlo en D1. El 16/11 no figuraba en el simulador del período 1A 2027; la carrera ya está publicada sin precio.
 
 1. **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 sin precio. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).

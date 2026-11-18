@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { trackWhatsapp } from '@/lib/analytics';
-import { ASESORES, NUMERO_CAU, NUMERO_TECLAB } from '@/lib/whatsapp';
+import { ASESORES, NUMERO_CAU } from '@/lib/whatsapp';
 
 /**
  * Escucha los clics a WhatsApp: los mide siempre y, si hay más de un asesor,
@@ -60,17 +60,17 @@ export default function WhatsappReparto() {
       const enlace = (evento.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
       if (!enlace) return;
 
-      // Se miden los números del CAU y Teclab, no los de profesores ni compartir.
+      // Sólo el número del CAU. El de "compartir por WhatsApp" de las novedades
+      // no lleva número, y el de clases de apoyo lleva el del profesor.
       const href = enlace.getAttribute('href') ?? '';
-      const esCau = href.includes(`wa.me/${NUMERO_CAU}`);
-      if (!esCau && !href.includes(`wa.me/${NUMERO_TECLAB}`)) return;
+      if (!href.includes(`wa.me/${NUMERO_CAU}`)) return;
 
       trackWhatsapp(window.location.pathname);
 
       // Ctrl/Cmd/rueda abren en otra pestaña por su cuenta: interceptarlos
       // rompería lo que el visitante pidió. Medirlos sí, que arriba ya pasó:
       // abrir WhatsApp en otra pestaña es tan lead como abrirlo en ésta.
-      if (!esCau || !reparte || evento.button !== 0 || evento.metaKey || evento.ctrlKey
+      if (!reparte || evento.button !== 0 || evento.metaKey || evento.ctrlKey
         || evento.shiftKey || evento.altKey) return;
 
       evento.preventDefault();

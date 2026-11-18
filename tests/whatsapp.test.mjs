@@ -32,7 +32,7 @@ function enlacesWhatsApp(html) {
 test('todos los enlaces del footer Teclab llevan al número solicitado', () => {
   const enlaces = enlacesWhatsApp(renderToStaticMarkup(React.createElement(Footer, { casa: 'teclab' })));
   assert.equal(enlaces.length, 2);
-  for (const enlace of enlaces) assert.equal(enlace[1], '5491166522722');
+  for (const enlace of enlaces) assert.equal(enlace[1], '5491132973801');
 });
 
 test('el footer de Siglo 21 conserva el número del CAU', () => {
@@ -47,7 +47,7 @@ test('navbar móvil y escritorio ofrecen el destino Teclab con la misma marca co
   const cau = enlaces.filter(enlace => /class="[^"]*marca-cau/.test(enlace[0]));
   assert.equal(teclab.length, 2);
   assert.equal(cau.length, 2);
-  for (const enlace of teclab) assert.equal(enlace[1], '5491166522722');
+  for (const enlace of teclab) assert.equal(enlace[1], '5491132973801');
   for (const enlace of cau) assert.equal(enlace[1], '5491132973801');
   const css = readFileSync('estilos/navbar.css', 'utf8');
   assert.match(css, /\.navbar-social-icon\.marca-teclab,\s*\.menu-footer-social a\.marca-teclab \{ display: none; \}/);
