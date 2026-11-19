@@ -35,7 +35,7 @@ export default function Hero() {
                 </h2>
                 <a
                   href="#preinscripcion"
-                  className="relative z-10 mt-[12px] sm:mt-[18px] flex min-h-[48px] max-w-full items-center justify-center rounded-full border border-transparent bg-white px-4 py-2 text-center text-[12px] leading-tight font-black tracking-[.04em] text-[#013729] uppercase shadow-[0_4px_15px_rgba(255,255,255,0.3)] transition-transform hover:scale-105 hover:bg-[#e2faec] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white active:scale-95"
+                  className="relative z-10 mt-[12px] sm:mt-[18px] flex min-h-[48px] max-w-full items-center justify-center rounded-full border border-transparent bg-white px-4 py-2 text-center text-[12px] leading-tight font-black tracking-[.04em] text-[#013729] uppercase shadow-[0_4px_15px_rgba(255,255,255,0.3)] transition-colors hover:bg-[#e2faec] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                 >
                   Ir al formulario de preinscripción
                 </a>
@@ -79,14 +79,11 @@ export default function Hero() {
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1 mt-2 sm:mt-3 z-10 w-full px-1">
                   <Link
                     href="/teclab"
-                    className="flex items-center justify-center gap-1 bg-[#2ee7d7] hover:bg-[#5cf0e3] text-[#071822] font-black py-1 px-3 sm:py-1.5 sm:px-6 rounded-full shadow-[0_4px_15px_rgba(46,231,215,0.35)] transition-transform hover:scale-105 active:scale-95 text-[7.5px] min-[380px]:text-[9px] sm:text-[11px] lg:text-[13px] uppercase tracking-widest border border-transparent text-center"
+                    className="flex items-center justify-center gap-1 bg-[#2ee7d7] hover:bg-[#5cf0e3] text-[#071822] font-black py-1 px-3 sm:py-1.5 sm:px-6 rounded-full shadow-[0_4px_15px_rgba(46,231,215,0.35)] transition-colors text-[7.5px] min-[380px]:text-[9px] sm:text-[11px] lg:text-[13px] uppercase tracking-widest border border-transparent text-center"
                   >
-                    Ver más
+                    Tecnicaturas de 2 años, 100% online
                     <span aria-hidden="true">→</span>
                   </Link>
-                  <span className="text-white/70 font-semibold text-[6.5px] min-[380px]:text-[8px] sm:text-[10px] lg:text-[11px] uppercase tracking-wider text-center">
-                    Tecnicaturas de dos años, 100% online
-                  </span>
                 </div>
               </div>
             </div>
@@ -164,25 +161,20 @@ export default function Hero() {
                 </div>
 
                 <h2
-                  // Escala mas chica que la slide 1: "Calendario Academico 2026"
-                  // son 25 caracteres contra los 18 de "Inscripciones 2026", y
-                  // con whitespace-nowrap el titulo se comia los margenes.
+                  // El año se omite para que el banner no quede desactualizado.
                   className="relative z-10 text-white font-black text-[0.8rem] min-[380px]:text-[1.2rem] sm:text-[1.5rem] md:text-[1.75rem] lg:text-[2.25rem] xl:text-[1.65rem] 2xl:text-[1.95rem] text-center tracking-tight uppercase whitespace-nowrap leading-none px-2"
                   style={{ textShadow: "1px 1px 0 #4b5563, 2px 2px 0 #374151, 3px 3px 0 #1f2937, 4px 4px 0 #111827, 4px 4px 10px rgba(0,0,0,0.6)" }}
                 >
-                  Calendario Académico 2026
+                  Calendario Académico
                 </h2>
 
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1 mt-2 sm:mt-3 z-10 w-full px-1">
                   <Link
                     href="/calendario-academico"
-                    className="flex items-center justify-center bg-white hover:bg-[#e2faec] text-[#013729] font-black py-1 px-2.5 sm:py-1.5 sm:px-5 rounded-full shadow-[0_4px_15px_rgba(255,255,255,0.3)] transition-transform hover:scale-105 active:scale-95 text-[7.5px] min-[380px]:text-[9px] sm:text-[11px] lg:text-[13px] uppercase tracking-widest border border-transparent text-center"
+                    className="flex items-center justify-center bg-white hover:bg-[#e2faec] text-[#013729] font-black py-1 px-2.5 sm:py-1.5 sm:px-5 rounded-full shadow-[0_4px_15px_rgba(255,255,255,0.3)] transition-colors text-[7.5px] min-[380px]:text-[9px] sm:text-[11px] lg:text-[13px] uppercase tracking-widest border border-transparent text-center"
                   >
                     Consultá el calendario académico
                   </Link>
-                  <span className="text-white/70 font-semibold text-[6.5px] min-[380px]:text-[8px] sm:text-[10px] lg:text-[11px] uppercase tracking-wider">
-                    Ver más
-                  </span>
                 </div>
               </div>
             </div>
