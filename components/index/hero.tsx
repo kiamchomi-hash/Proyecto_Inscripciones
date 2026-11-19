@@ -28,27 +28,17 @@ export default function Hero() {
                 </div>
                 
                 <h2
-                  className="relative z-10 text-white font-black text-[1.15rem] min-[380px]:text-[1.8rem] sm:text-[2.2rem] md:text-[2.5rem] lg:text-[3.5rem] xl:text-[2.5rem] 2xl:text-[3rem] text-center tracking-tight uppercase whitespace-nowrap leading-none"
+                  className="relative z-10 text-white font-black text-[1.45rem] min-[380px]:text-[1.9rem] sm:text-[2.35rem] md:text-[2.8rem] lg:text-[3rem] xl:text-[2.8rem] 2xl:text-[3.2rem] text-center tracking-tight uppercase leading-none"
                   style={{ textShadow: "1px 1px 0 #4b5563, 2px 2px 0 #374151, 3px 3px 0 #1f2937, 4px 4px 0 #111827, 4px 4px 10px rgba(0,0,0,0.6)" }}
                 >
                   Inscripciones 2027
                 </h2>
-                {/* La modalidad a la vista: el titulo oculto de la home lo dice, pero
-                    la primera pantalla no. Mismo estilo que la bajada de Teclab. */}
-                <p className="relative z-10 mt-1 sm:mt-1.5 text-white/85 font-semibold text-[6.5px] min-[380px]:text-[8px] sm:text-[10px] lg:text-[11px] uppercase tracking-wider text-center">
-                  Carreras de Universidad Siglo 21 con cursada online
-                </p>
-                <div className="flex flex-row items-center justify-center gap-1 min-[380px]:gap-2 sm:gap-3 mt-1.5 sm:mt-2 z-10 w-full px-1">
-                  <span className="text-white font-bold text-[7px] min-[380px]:text-[8.5px] sm:text-[11px] md:text-[13px] lg:text-[15px] uppercase tracking-wider drop-shadow-md text-center">
-                    Inscribite pulsando este botón:
-                  </span>
-                  <a
-                    href="#formulario"
-                    className="flex items-center justify-center bg-white hover:bg-[#e2faec] text-[#013729] font-black py-1 px-2.5 sm:py-1.5 sm:px-5 rounded-full shadow-[0_4px_15px_rgba(255,255,255,0.3)] transition-transform hover:scale-105 active:scale-95 text-[7.5px] min-[380px]:text-[9px] sm:text-[11px] lg:text-[13px] uppercase tracking-widest border border-transparent"
-                  >
-                    Ir al Formulario
-                  </a>
-                </div>
+                <a
+                  href="#preinscripcion"
+                  className="relative z-10 mt-[12px] sm:mt-[18px] flex min-h-[48px] max-w-full items-center justify-center rounded-full border border-transparent bg-white px-4 py-2 text-center text-[12px] leading-tight font-black tracking-[.04em] text-[#013729] uppercase shadow-[0_4px_15px_rgba(255,255,255,0.3)] transition-transform hover:scale-105 hover:bg-[#e2faec] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white active:scale-95"
+                >
+                  Ir al formulario de preinscripción
+                </a>
               </div>
             </div>
 

@@ -51,6 +51,7 @@ DOCUMENTACION_PROYECTO.md
 !/.agents/skills/remotion
 !/.agents/skills/calcar-imagenes
 !/.agents/skills/diseno-uiverse
+!/.agents/skills/preview-real-ui
 !/.agents/skills/modern-web-guidance/
 /.agents/skills/*/**
 !/.agents/skills/modern-web-guidance/SKILL.md

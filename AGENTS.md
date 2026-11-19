@@ -39,7 +39,7 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
   descubrimiento en un nuevo prompt local se comprobó en este worktree; eso no
   prueba la ejecución ni la disponibilidad en otras conversaciones.
 - Los enlaces selectivos en `.agents/skills/` apuntan a skills propias de
-  `.claude/skills/`. Git permite incluir únicamente los doce enlaces declarados; el
+  `.claude/skills/`. Git permite incluir únicamente los trece enlaces declarados; el
   resto de `.agents/` sigue ignorado. Los enlaces están versionados y viajan
   con el repositorio. El descubrimiento depende de la
   sesión; se comprobó en un nuevo prompt local de este worktree, no en otras

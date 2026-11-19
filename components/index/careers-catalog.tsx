@@ -790,8 +790,16 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
     : familiaTeclab === 'tecnologia'
       ? 'var(--teclab-cyan)'
       : familiaTeclab === 'gestion'
-        ? '#b578ff'
+        ? 'var(--catalogo-titulo-gestion, #b578ff)'
         : 'var(--catalogo-acento)';
+
+  const titulo = accent ? (
+    <span className="catalogo-titulo-partes">
+      <span>{title}</span>{' '}
+      <span className="catalogo-titulo-separador" aria-hidden="true" />
+      <span style={{ color: colorAcento }}>{accent}</span>
+    </span>
+  ) : title;
 
   return (
     <section id={`section-${sectionId}`} className="mb-10">
@@ -805,26 +813,10 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           <h2 className="text-xl min-[380px]:text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter min-w-0 pr-1">
             {titleHref ? (
               <Link href={titleHref} className="teclab-section-title-link" aria-label={`${title}${accent ? ` ${accent}` : ''}: ver toda la oferta Teclab`}>
-                <span>
-                  {title}
-                  {accent && <> / <span style={{ color: colorAcento }}>{accent}</span></>}
-                </span>
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14M14 7l5 5-5 5" />
-                </svg>
+                {titulo}
               </Link>
-            ) : (
-              <>
-                {title}
-                {accent && <> / <span style={{ color: colorAcento }}>{accent}</span></>}
-              </>
-            )}
+            ) : titulo}
           </h2>
-          {familiaTeclab && (
-            <span className={`teclab-section-badge teclab-${familiaTeclab} shrink-0`}>
-              Instituto Técnico
-            </span>
-          )}
           <button
             onClick={() => setShowSearch(!showSearch)}
             className={`p-1.5 rounded-lg shadow-sm transition-colors shrink-0 ${showSearch ? 'bg-[var(--catalogo-acento)] hover:bg-[var(--catalogo-acento)]/80' : 'bg-white/90 hover:bg-white/60'}`}
@@ -889,7 +881,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
       </div>
 
       <ul
-        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-w-0 mb-6 ${isIdentidadArgentina ? 'ia-section-cards' : ''}`}
+        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-w-0 mb-6 ${isIdentidadArgentina ? 'ia-section-cards' : ''} ${familiaTeclab ? 'teclab-section-cards' : ''}`}
       >
         {filteredCarreras.map(c => (
           <CareerCard key={c.id} carrera={c} onClick={onCareerClick} />
@@ -1008,11 +1000,11 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
             <span className="teclab-badge teclab-badge-tipo">Curso</span>
           </div>
         )}
-        <div className="flex-grow relative min-w-0">
+        <div className="career-card-text flex-grow relative min-w-0">
           {prefix && (
             <span className="career-prefix block mb-0.5">{prefix}</span>
           )}
-          <span className={`block font-semibold text-[1.1rem] leading-tight ${familiaTeclab || isTeclabCourse ? 'text-[#071822]' : 'text-white'}`}>
+          <span className={`career-card-name block min-w-0 font-semibold text-[1.1rem] leading-tight ${familiaTeclab || isTeclabCourse ? 'text-[#071822]' : 'text-white'}`}>
             {cleanName}
           </span>
           {familiaTeclab && !carrera.proximamente && carrera.titulo.trim() && (

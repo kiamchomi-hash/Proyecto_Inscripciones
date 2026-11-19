@@ -71,12 +71,8 @@ body:has(.teclab-page)::before {
   --teclab-ink: var(--tl-navy);
 }
 
-/* El acento de "Gestion" en el titulo de seccion viene como estilo en linea
-   (careers-catalog.tsx). Se lo ubica por la insignia de la familia y no por el
-   valor del estilo, que el navegador reescribe como rgb() al navegar del lado
-   del cliente. Sobre navy va el azul aclarado, que pasa AA. */
-.teclab-page .section-header-container:has(.teclab-section-badge.teclab-gestion) h2 span[style] {
-  color: var(--tl-azul-claro) !important;
+.teclab-page {
+  --catalogo-titulo-gestion: var(--tl-azul-claro);
 }
 
 /* La pildora activa del filtro trae el verde del CAU fijo en index.css (no

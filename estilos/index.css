@@ -1076,6 +1076,24 @@ mark {
   transform: translate(-3px, -3px);
 }
 
+/* Las tarjetas de una misma fila comparten las cuatro alturas en escritorio. */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 768px) {
+    .teclab-section-cards > li > .career-card-teclab {
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+      align-items: start;
+    }
+
+    .teclab-section-cards .teclab-card-head { grid-row: 1; }
+    .teclab-section-cards .career-card-text { display: contents; }
+    .teclab-section-cards .career-prefix { grid-area: 2 / 1; }
+    .teclab-section-cards .career-card-name { grid-area: 3 / 1; }
+    .teclab-section-cards .teclab-card-titulo { grid-area: 4 / 1; }
+    .teclab-section-cards .detail-link { grid-area: 3 / 2 / span 2; }
+  }
+}
+
 /* Los cursos no son tecnicaturas: el ámbar y la superficie cálida los separan
    visualmente de las dos familias de carreras de Teclab. */
 .teclab-curso {
@@ -1189,17 +1207,23 @@ mark {
 }
 
 /* ── Encabezado de seccion ── */
-/* Caja del encabezado, con el mismo filo que el titular del render */
-.teclab-section-badge {
-  font-size: 0.6rem;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-  color: #ffffff;
-  background: var(--teclab-ink);
-  border: 2px solid var(--teclab-accent);
+.catalogo-titulo-partes {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28em;
+  white-space: nowrap;
+}
+
+.catalogo-titulo-separador {
+  position: relative;
+  /* Centrado entre los bordes visibles de las palabras, no entre sus cajas. */
+  inset-inline-start: -0.12em;
+  flex: none;
+  width: 2px;
+  height: 0.72em;
+  height: 1cap;
+  border-radius: 2px;
+  background: var(--color-text-light);
 }
 
 .section-divider-teclab {
@@ -1236,32 +1260,10 @@ mark {
   --section-category-surface: var(--teclab-ink);
 }
 
-/* Los títulos Teclab de la home son la entrada editorial a su landing. El
-   enlace conserva exactamente la jerarquía del encabezado y sólo suma una
-   flecha para no parecer texto decorativo. */
+/* Los títulos Teclab de la home enlazan a su página de oferta. */
 .teclab-section-title-link {
-  display: inline-flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.35em;
   color: inherit;
   text-decoration: none;
-}
-
-.teclab-section-title-link svg {
-  width: 0.82em;
-  height: 0.82em;
-  flex: 0 0 auto;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.2;
-  transition: transform 180ms ease, color 180ms ease;
-}
-
-.teclab-section-title-link:hover svg {
-  color: var(--teclab-cyan);
-  transform: translateX(0.18em);
 }
 
 .teclab-section-title-link:focus-visible {

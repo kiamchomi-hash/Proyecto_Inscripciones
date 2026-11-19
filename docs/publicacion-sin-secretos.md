@@ -31,7 +31,7 @@ incompleto, **se bloquea la publicación**. No se interpreta un error como
 - Las carpetas comerciales de la raíz `carreras/`, `ventas/` y
   `herramientas/ventas/`, además de notas y materiales locales privados. No
   confunde esas carpetas con `app/carreras/` o `components/carreras/`.
-- `.agents/` sigue siendo privado salvo los doce symlinks declarados en
+- `.agents/` sigue siendo privado salvo los enlaces simbólicos declarados en
   `ENLACES_SKILLS_PUBLICOS` de `herramientas/secretos.mjs`. Cada uno debe conservar
   su destino exacto dentro de `.claude/skills/` y tener un `SKILL.md` versionado
   en el mismo árbol Git. El control escanea también el blob del enlace y el

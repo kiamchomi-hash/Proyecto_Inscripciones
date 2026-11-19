@@ -22,6 +22,7 @@
     { "action": "integration.use", "resource": "skill:remotion", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:calcar-imagenes", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:diseno-uiverse", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:preview-real-ui", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:tests-daypo", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:pdf", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:seo-audit", "effect": "allow" },
