@@ -1,8 +1,9 @@
 # Fuentes autoalojadas
 
-`fuentes.css` sirve Inter y Unbounded desde `public/fuentes/` de la raíz, con los
-mismos archivos que descarga `next/font/google` en el sitio vigente. No hay
-pedidos a Google: el build y el runtime funcionan sin red.
+`fuentes.css` sirve Inter desde `public/fuentes/` de la raíz, con el mismo
+archivo que descarga `next/font/google`. No hay pedidos a Google: el build y el
+runtime funcionan sin red. El archivo y la licencia de Unbounded se conservan
+por compatibilidad histórica, pero el sitio ya no la declara, carga ni usa.
 
 `poppins.css` hace lo mismo con la tercera familia del sitio, Poppins, pero se
 importa **sólo** desde `/teclab` y `/teclab/inscripcion`: en Next la cargan esas
@@ -13,19 +14,18 @@ dos páginas y no el layout.
 | Archivo | Familia | Pesos | Subconjunto | sha256 |
 |---|---|---|---|---|
 | `public/fuentes/inter-latin.woff2` | Inter (variable) | 100–900 | `latin` | `c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4` |
-| `public/fuentes/unbounded-latin.woff2` | Unbounded (variable) | 400–900 | `latin` | `d7f07f8a308ce0a7287d79a65a85cfbc0f4741ef426bf1a3902d24392cc71723` |
+| `public/fuentes/unbounded-latin.woff2` | Unbounded (variable; recurso conservado sin uso) | 400–900 | `latin` | `d7f07f8a308ce0a7287d79a65a85cfbc0f4741ef426bf1a3902d24392cc71723` |
 | `public/fuentes/poppins-latin-400.woff2` | Poppins | 400 | `latin` | `3dc5d0c52428fe1696264907a1054ebbaac07f8cbe45832c105f819c2ae397c0` |
 | `public/fuentes/poppins-latin-600.woff2` | Poppins | 600 | `latin` | `872e862918591a9e824dc03ed92f05729435ffbb8ebbb10eff7eda26592b1798` |
 | `public/fuentes/poppins-latin-700.woff2` | Poppins | 700 | `latin` | `197a3cbd7290c242c5c765268cdd69a9a39867fdc80cd13071f243a81c56fb76` |
 
 Son los `.woff2` que `next/font` deja en `.next/static/media/` al compilar el
-sitio (`app/layout.tsx`: `Inter({ subsets: ['latin'] })` y
-`Unbounded({ subsets: ['latin'], weight: ['400','600','700','800','900'] })`;
+sitio (`app/layout.tsx`: `Inter({ subsets: ['latin'] })`;
 `app/teclab/page.tsx` y `app/teclab/inscripcion/page.tsx`:
 `Poppins({ subsets: ['latin'], weight: ['400','600','700'] })`). Se copiaron
 byte a byte. Inter y Unbounded son variables y `next/font` genera un archivo por
 familia; Poppins no lo es, así que hay un archivo por peso (7 900, 7 992 y 7 848
-bytes).
+bytes). La copia de Unbounded queda archivada, no se importa al CSS vigente.
 
 Sólo se vendorizó el subconjunto `latin`, que es el único que declara el sitio:
 cubre `U+0000–00FF` (acentos, `ñ`, `¿`, `¡`), las comillas y guiones de
@@ -69,8 +69,7 @@ el sitio.
 
 ## Precarga
 
-`src/layouts/Sitio.astro` precarga Inter y Unbounded (`as="font"`,
-`crossorigin`) porque el cuerpo y la cabecera los usan en el primer pantallazo.
+`src/layouts/Sitio.astro` precarga sólo Inter (`as="font"`, `crossorigin`).
 Poppins **no** se precarga: en `/teclab` aparece en el hero, pero el sitio
 tampoco la precarga (next/font no emite `preload` ahí) y sumarla cambiaría el
 orden de carga respecto de Next.

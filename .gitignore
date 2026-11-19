@@ -53,8 +53,12 @@ DOCUMENTACION_PROYECTO.md
 !/.agents/skills/diseno-uiverse
 !/.agents/skills/preview-real-ui
 !/.agents/skills/modern-web-guidance/
+# Skill de terceros que se versiona entera: la copia de Cloudflare son varios
+# archivos de referencia que se leen entre sí, no un SKILL.md suelto.
+!/.agents/skills/security-audit/
 /.agents/skills/*/**
 !/.agents/skills/modern-web-guidance/SKILL.md
+!/.agents/skills/security-audit/**
 # Lo genera `npx skills add`; no se versiona con los enlaces selectivos.
 skills-lock.json
 # Credenciales de service accounts (Search Console, etc). Nunca al repo.
@@ -94,3 +98,6 @@ herramientas/_crop-tmp.mjs
 __pycache__/
 # Local Pi runtime state
 .atl/
+# App independiente de carga de leads: perfil con la sesión de HubSpot y binarios.
+/carga-leads-app/perfil-hubspot/
+/carga-leads-app/target/

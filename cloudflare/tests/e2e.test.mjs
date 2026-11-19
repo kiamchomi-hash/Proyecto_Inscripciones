@@ -593,15 +593,12 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
             peso: cara.weight,
             estado: cara.status,
           }))
-          .filter(cara => ['Inter', 'Unbounded'].includes(cara.familia));
+          .filter(cara => cara.familia === 'Inter');
         return {
           inter400: await medir('Inter', 400),
           inter700: await medir('Inter', 700),
-          unbounded600: await medir('Unbounded', 600),
-          unbounded900: await medir('Unbounded', 900),
           interCargada: document.fonts.check('400 24px Inter'),
           interNegritaCargada: document.fonts.check('700 24px Inter'),
-          unboundedCargada: document.fonts.check('600 24px Unbounded'),
           cuerpo: getComputedStyle(document.body).fontFamily,
           familias,
           recursos: performance.getEntriesByType('resource')
@@ -609,11 +606,11 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
             .filter(nombre => /\.woff2?($|\?)/.test(nombre)),
         };
       });
-      for (const clave of ['interCargada', 'interNegritaCargada', 'unboundedCargada']) {
+      for (const clave of ['interCargada', 'interNegritaCargada']) {
         assert.equal(datos[clave], true, `${nombre}: la fuente no está cargada (${clave})`);
       }
       assert.match(datos.cuerpo, /Inter/, `${nombre}: el cuerpo no usa Inter`);
-      assert.ok(datos.recursos.length >= 2, `${nombre}: no se descargó ningún .woff2`);
+      assert.ok(datos.recursos.length >= 1, `${nombre}: no se descargó Inter`);
       // Ni Next ni Astro piden nada externo: la analítica es local.
       assert.deepEqual(externos, [],
         `${nombre}: pedidos externos inesperados`);
@@ -628,10 +625,7 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     // Las caras declaradas tienen que ser las del sitio: si falta una, el
     // navegador la sintetiza o cae al fallback y el texto cambia de métrica.
     assert.ok(declaradas.astro.includes('Inter:100 900'), 'falta Inter variable');
-    for (const peso of ['400', '600', '700', '800', '900']) {
-      assert.ok(declaradas.astro.includes(`Unbounded:${peso}`), `falta Unbounded ${peso}`);
-    }
-    for (const clave of ['inter400', 'inter700', 'unbounded600', 'unbounded900']) {
+    for (const clave of ['inter400', 'inter700']) {
       assert.ok(metricas.astro[clave] > 100, `${clave}: muestra vacía`);
     }
     t.diagnostic(`fuentes: ${metricas.astro.familias.length} caras declaradas, métricas medidas`);

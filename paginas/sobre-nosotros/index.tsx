@@ -247,7 +247,7 @@ export default function SobreNosotrosPage() {
         </p>
         <h2
           className="text-2xl sm:text-4xl font-black tracking-tight text-center text-white mb-7"
-          style={{ fontFamily: 'var(--font-unbounded)' }}
+          style={{ fontFamily: 'var(--font-inter)' }}
         >
           ¿Por qué elegirnos?
         </h2>

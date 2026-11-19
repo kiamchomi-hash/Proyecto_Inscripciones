@@ -51,6 +51,66 @@ Ninguna de esas dos comprobaciones equivale a una auditoría integral.
   `hidden` al cerrar. Faltaba la relación explícita: se agregó `aria-controls`
   con `useId` en las tres variantes (preguntas, contacto, preguntas de
   usuarios). La guía desaconseja además envolver cada acordeón en un landmark.
+- `card`, `content-based-styling`, `size-aware-styling`: las tarjetas de carrera
+  son enlaces nativos que conservan su URL y abren el modal sólo en la
+  navegación normal; el sitio no depende de container queries para ellas. El
+  realce visual por `:hover` existe, pero no sustituye la navegación del enlace.
+- `motion`, `scroll-entry-exit-effects`, `cross-document-transitions`: se
+  verificó que hay transiciones y carruseles, con respeto a movimiento reducido
+  en algunos componentes, pero no una implementación general de animaciones
+  ligadas al scroll ni de View Transitions. La guía de efectos de carrusel es
+  progresiva y no obliga a convertir los carruseles actuales a scroll-snap.
+- `performance`, `optimize-preload-priority`, `break-up-long-tasks`: las guías
+  no imponen cambios sin una medición asociada. El código tiene prioridades de
+  imagen declaradas en casos puntuales y no se concluye de ello que todas las
+  rutas o recursos hayan sido auditados por rendimiento.
+- `sanitize-untrusted-html`, `trusted-types`, `validate-origins`: el HTML de
+  contenido se sanitiza en servidor con lista de etiquetas, atributos y
+  esquemas permitidos antes de insertarse. No se encontraron flujos de
+  `postMessage` de la aplicación que requieran validar orígenes ni una política
+  Trusted Types; no se recomienda introducirlas sin identificar un sink o
+  intercambio que lo justifique.
+- `css`: la consulta verificó selectores universales, `@layer`, `@scope` y
+  unidades de contenedor, flex/grid, propiedades lógicas, tokens, desborde y
+  responsive. Hay una query `@container modal` en el modal de Teclab, con
+  disposición base si no se aplica; también `@supports not (subgrid)` con
+  layout alternativo. No hay `@layer` ni `@scope`. En cambio, `.ca-materia`
+  declara `container-type: inline-size` sin una query ni unidades `cq*` que la
+  consuman: queda como posible declaración innecesaria, pendiente de probar el
+  efecto sobre el tamaño intrínseco antes de quitarla. Los tokens del sitio
+  están centralizados en `:root` y `@theme`; Tailwind Preflight es el reset
+  global existente, y el selector universal de movimiento reducido se limita
+  a esa preferencia. El `@import "tailwindcss"` de `globals.css` es una
+  directiva del compilador, no una cadena de descarga CSS en producción. Las
+  reglas `transition: all` aparecen en varias hojas, pero sin impacto medido
+  no se toman por defecto como defectos. El objetivo sigue siendo Baseline
+  2022; las funciones posteriores se evalúan por degradación y uso concreto.
+- `performance`: se tomaron trazas de carga en producción en Chromium de
+  escritorio, sin throttling, en home, `/teclab`, `/clases-apoyo` y
+  `/carreras/abogacia`. El analizador registró respectivamente 5/5/2/2 tareas
+  largas (>50 ms), con `longTaskBlocking` de 468,7/220,3/123,6/148,4 ms y
+  máximos por tarea de 252,9/235,0/151,5/177,9 ms. Es una muestra diagnóstica
+  del hilo principal, no TBT ni Core Web Vitals; no se obtuvo LCP, INP ni una
+  puntuación Lighthouse. Sin trazas con stack atribuible o throttling, no se
+  asigna el bloqueo a un componente ni se recomienda un cambio de código.
+  El reproductor sólo crea el iframe de YouTube después de que la persona pide
+  reproducir; no se encontró registro de Service Worker, por lo que las recetas
+  de caché para PWA no aplican. Sí se detectó una discrepancia con el criterio
+   vigente: `Sitio.astro` precargaba Unbounded globalmente y la ficha de Abogacía
+   pedía esa fuente; el navegador la descargó. `docs/criterios.md` indica que no
+   se use. Se quitó su precarga y declaración, y se reemplazaron por Inter los
+   usos activos en hojas, marca y páginas. Se actualizó la prueba de fuentes y
+   la referencia móvil del calendario afectada por el cambio tipográfico; el
+   archivo de fuente se conserva por ahora.
+- `legacy-scan`: se contrastaron sus 10 resultados actuales con las rúbricas.
+  El del acordeón es real y se conserva por compatibilidad con el objetivo
+  Baseline 2022 (ver arriba). Los seis usos de `toSorted()` chocan con ese
+  objetivo (ES2023), y el uso sugerido de `Object.groupBy()` con Baseline 2022
+  (ES2024): se descartan como modernizaciones obligatorias. Los dos avisos de
+  `Error.cause` corresponden a errores de scripts de canary; conservar la causa
+  puede ser útil, pero el escáner por sí solo no acredita una pérdida funcional
+  ni un defecto de seguridad. Queda registrada la observación, no un hallazgo
+  confirmado.
 
 ## Cobertura por área
 
@@ -66,24 +126,27 @@ Ninguna de esas dos comprobaciones equivale a una auditoría integral.
 | Modales | `dialog`, `prevent-page-scroll-under-modal-dialog`, `light-dismiss-a-dialog` | Todos usan `<dialog>` nativo; velo con `overflow: hidden` y `overscroll-behavior: contain` |
 | Copiar enlace | `copy-button` | Corregido: la región viva quedó fuera del botón |
 | Imágenes | `optimize-image-priority`, `deliver-optimized-decorative-images` | Cumple: `srcset`, `sizes`, `fetchPriority` y `alt` verificados por el e2e |
+| Catálogo y tarjetas | `card`, `content-based-styling`, `size-aware-styling` | Contrastadas: enlaces nativos; sin dependencia de container queries para las tarjetas |
+| Movimiento | `motion`, `scroll-entry-exit-effects`, `cross-document-transitions`, `carousel-slide-effects`, `animate-element-entry-exit` | Contrastadas: movimiento reducido presente en componentes puntuales; no se exige scroll-driven ni View Transitions |
+| Rendimiento | `performance`, `optimize-preload-priority`, `break-up-long-tasks` | Contraste y trazas de diagnóstico en cuatro rutas; no hay medición de CWV ni de campo |
+| Seguridad frontend | `sanitize-untrusted-html`, `trusted-types`, `validate-origins` | Contrastadas: sanitización server-side; no se identificó flujo app de `postMessage` que valide origen ni necesidad concreta de Trusted Types |
+| CSS general | `css`, `css-layout` | Contraste dirigido de arquitectura y patrones; queda pendiente validar el `container-type` sin consumidor y no se revisó regla por regla cada hoja |
 
 ## Sin contrastar
 
-El resto del catálogo no se revisó guía por guía. Lo que falta se puede agrupar
-así: tarjetas y catálogo (`card`, `content-based-styling`, `size-aware-styling`),
-movimiento y transiciones (`motion`, `scroll-entry-exit-effects`,
-`cross-document-transitions`), rendimiento (`performance`, `optimize-preload-priority`,
-`break-up-long-tasks`), seguridad del frontend (`sanitize-untrusted-html`,
-`trusted-types`, `validate-origins`) y el grupo grande de guías de CSS general.
-`legacy-scan` cubre 33 guías con reglas deterministas y dejó un solo hallazgo,
-el del acordeón, que se evaluó y se conservó. Eso no equivale a haber revisado
-las 208.
+El resto del catálogo no se revisó guía por guía. CSS y rendimiento se
+contrastaron con patrones y rutas seleccionados, no con una revisión de cada
+declaración ni con una medición de campo. La cobertura no es una auditoría
+integral de todas las guías ni de todas las URLs. `legacy-scan` examina un
+subconjunto determinista del catálogo; sus resultados se verificaron con las
+rúbricas y con el objetivo Baseline 2022, no se interpretan como diez defectos.
 
 ## En revisión
 
-- El catálogo de guías está clasificado por temas, pero falta confirmar la
-  aplicabilidad de cada una contra el código (ver «Sin contrastar»): una
-  sugerencia no es un requisito para funcionalidades que el sitio no tiene.
+- Falta probar si quitar `container-type: inline-size` de `.ca-materia` conserva
+  el layout y repetir la medición con throttling / herramienta que reporte Web
+  Vitals. No se recorrieron las 208 guías ni se hizo una auditoría integral de
+  las 129 URLs.
 - Referencias visuales de la home: quedaron al día. La de escritorio precedía
   a la eliminación de `content-visibility` (`4c72a48`); restituir esa regla en
   una corrida aislada reprodujo la referencia al 0,000 %, pero no se

@@ -159,9 +159,9 @@ export default function Navbar() {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="menu-header lg:hidden">
-            <span style={{ fontFamily: "'Unbounded',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
+            <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
               <span className="marca-cau">
-                CAU <span style={{ fontFamily: "'Unbounded',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
+                CAU <span style={{ fontFamily: "'Inter',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
               </span>
               <TeclabMarca grande />
             </span>

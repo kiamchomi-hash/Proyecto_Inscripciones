@@ -200,10 +200,8 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
 
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="dns-prefetch" href="https://wa.me" />
-    {/* Las dos familias se usan arriba del pliegue (cuerpo y cabecera): se
-        precargan del mismo origen, sin pedir nada a Google. */}
+    {/* Inter es común; la fuente del título sólo se precarga donde se usa. */}
     <link rel="preload" href="/fuentes/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fuentes/unbounded-latin.woff2" as="font" type="font/woff2" crossorigin />
     {preloadFuente && <link rel="preload" href={preloadFuente} as="font" type="font/woff2" crossorigin />}
 
     {/* La imagen de arriba del pliegue, cuando la página la declara. La

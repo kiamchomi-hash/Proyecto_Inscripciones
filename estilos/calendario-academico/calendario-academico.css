@@ -1,6 +1,6 @@
 /* Calendario Académico 2027 — /calendario-academico
    Mismo lenguaje visual que /sobre-nosotros: tarjetas de vidrio sobre el fondo
-   verde oscuro, acento #00c7b1 y titulos en Unbounded. */
+   verde oscuro y acento #00c7b1. */
 
 .ca-badge {
   background: rgba(0, 199, 177, .1);
@@ -11,11 +11,11 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-family: var(--font-unbounded), sans-serif;
+  font-family: var(--font-inter), sans-serif;
 }
 
 .ca-h2 {
-  font-family: var(--font-unbounded), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: 1.5rem;
   font-weight: 900;
   letter-spacing: -.02em;

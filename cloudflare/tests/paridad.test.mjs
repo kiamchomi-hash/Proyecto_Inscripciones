@@ -137,32 +137,27 @@ test('los assets versionados se sirven desde ../public sin copiarse al paquete',
 });
 
 test('las fuentes de marca se sirven autoalojadas, sin pedir nada a Google', async t => {
-  // Los dos archivos son los del subconjunto `latin` que descarga next/font en
+  // El archivo es el del subconjunto `latin` que descarga next/font en
   // el sitio vigente; la firma `wOF2` confirma que el binario no se corrompió.
-  for (const archivo of ['inter-latin.woff2', 'unbounded-latin.woff2']) {
+  for (const archivo of ['inter-latin.woff2']) {
     const ruta = new URL(`../../public/fuentes/${archivo}`, import.meta.url);
     assert.ok(existsSync(ruta), `falta public/fuentes/${archivo}`);
     const bytes = readFileSync(ruta);
     assert.equal(bytes.subarray(0, 4).toString('ascii'), 'wOF2', archivo);
     assert.ok(bytes.length > 30_000, `${archivo} quedó truncado (${bytes.length} bytes)`);
   }
-  for (const licencia of ['OFL-Inter.txt', 'OFL-Unbounded.txt']) {
+  for (const licencia of ['OFL-Inter.txt']) {
     const texto = readFileSync(new URL(`../../public/fuentes/${licencia}`, import.meta.url), 'utf8');
     assert.match(texto, /SIL OPEN FONT LICENSE Version 1\.1/i, licencia);
   }
 
   const css = readFileSync(new URL('../../estilos/fuentes.css', import.meta.url), 'utf8');
   assert.doesNotMatch(css, /fonts\.(googleapis|gstatic)\.com/, 'ningún origen externo de fuentes');
-  // Las dos familias se llaman como en Next: el CSS compartido las pide por
-  // nombre literal (`body { font-family: 'Inter' }`, navbar `'Unbounded'`).
+  // El CSS compartido pide Inter por nombre literal.
   assert.match(css, /@font-face\s*{[^}]*font-family:\s*'Inter';[^}]*font-weight:\s*100 900/);
   assert.match(css, /@font-face\s*{[^}]*font-family:\s*'Inter';[^}]*font-display:\s*swap/);
-  for (const peso of ['400', '600', '700', '800', '900']) {
-    assert.match(css, new RegExp(`@font-face\\s*{[^}]*font-family:\\s*'Unbounded';[^}]*font-weight:\\s*${peso}`),
-      `falta el peso ${peso} de Unbounded`);
-  }
   assert.match(css, /--font-inter:\s*'Inter'/);
-  assert.match(css, /--font-unbounded:\s*'Unbounded'/);
+  assert.doesNotMatch(css, /Unbounded|unbounded/);
   // El subconjunto latin llega hasta U+00FF: acentos y ñ de la home incluidos.
   assert.match(css, /unicode-range:\s*U\+\?\?/);
 
@@ -176,12 +171,9 @@ test('las fuentes de marca se sirven autoalojadas, sin pedir nada a Google', asy
   const home = await astro.fetch('/');
   const html = await home.text();
   assert.equal(home.status, 200);
-  // Precarga de las dos familias, del mismo origen y con CORS de fuente.
-  for (const familia of ['inter-latin', 'unbounded-latin']) {
-    assert.match(html, new RegExp(
-      `<link rel="preload" href="/fuentes/${familia}\\.woff2" as="font" type="font/woff2" crossorigin`,
-    ), `falta la precarga de ${familia}`);
-  }
+  // Sólo Inter se precarga: la otra familia no se usa en el sitio.
+  assert.match(html, /<link rel="preload" href="\/fuentes\/inter-latin\.woff2" as="font" type="font\/woff2" crossorigin/);
+  assert.doesNotMatch(html, /unbounded-latin\.woff2/i);
   assert.doesNotMatch(html, /fonts\.(googleapis|gstatic)\.com/, 'la home no debe pedir fuentes externas');
   // La hoja compilada usa las URLs locales, no las de next/font.
   const hojas = readdirSync(new URL('../dist/client/_astro/', import.meta.url))
@@ -190,6 +182,6 @@ test('las fuentes de marca se sirven autoalojadas, sin pedir nada a Google', asy
     new URL(`../dist/client/_astro/${nombre}`, import.meta.url), 'utf8',
   )).join('\n');
   assert.match(compilado, /url\(\/fuentes\/inter-latin\.woff2\)/);
-  assert.match(compilado, /url\(\/fuentes\/unbounded-latin\.woff2\)/);
+  assert.doesNotMatch(compilado, /Unbounded|unbounded/);
   assert.doesNotMatch(compilado, /_next\/static\/media/);
 });

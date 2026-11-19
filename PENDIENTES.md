@@ -18,13 +18,13 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 ## Altísima
 
-- **Precio de Gestión de Inteligencia Artificial y Transformación Digital** (16/11/2026, prioritario): revisar el simulador del Portal Administrativo de Teclab; cuando aparezca la carrera, verificar el importe y su vigencia, incorporarla al circuito de actualización de precios y pedir autorización para cargarlo en D1. El 16/11 no figuraba en el simulador del período 1A 2027; la carrera ya está publicada sin precio.
-
-1. **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 sin precio. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).
+1. **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 y cotizó el 18/11/2026. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).
 
 ## Alta
 
 Las altas de Teclab van primero; después las demás.
+
+- **Carrusel de Teclab, recursos de Pago Electrónico y test vocacional** (19/11/2026): editar el carrusel de Teclab, buscar las imágenes y los logos de Pago Electrónico y hacer el cambio en el test vocacional.
 
 - **Alinear los títulos de las tarjetas y las descripciones de título** (17/11/2026, prioritario): corregir la alineación visual de los nombres de las carreras y de sus descripciones de título, como se señala en la captura.
 
@@ -58,6 +58,10 @@ Las altas de Teclab van primero; después las demás.
 18. **Reducir el formulario de preinscripción de Siglo 21** (36). Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan; la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
 
 ## Media
+
+- **Ampliar la sección de Excel en las clases de apoyo de Computación** (19/11/2026): sumar funciones lógicas (`Y`, `O`, `SI`, `SI` con `Y` y con `O`) y búsquedas (`BUSCARV`, `INDICE`, `COINCIDIR` e `INDICE` con `COINCIDIR`). Falta retomar el diseño y decidirlo antes de implementar; la vista previa temporal se canceló.
+
+- **Continuar la revisión estética del sitio** (19/11/2026): revisar la portada, la página de cada carrera y los modales de Teclab en escritorio y celular.
 
 20. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
 

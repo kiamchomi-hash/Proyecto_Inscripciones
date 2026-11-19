@@ -18,7 +18,7 @@
 
    Los tokens --career-accent/-bright/-ink/-soft ya llegan en cian y navy desde
    career-detail.tsx; aca se pisa lo que el CSS compartido fija a mano (verdes,
-   Unbounded/Inter, blancos con tinte verde).
+   Inter, blancos con tinte verde).
 
    El azul #0055F0 contrasta poco sobre navy (~2,7:1): va en bordes y filetes,
    nunca en texto de lectura. */

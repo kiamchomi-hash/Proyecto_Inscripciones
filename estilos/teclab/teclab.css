@@ -644,7 +644,7 @@ body:has(.teclab-page)::before {
   background: var(--tl-cian);
 }
 
-/* Poppins, como el hero, que es el que fija el tono de la pagina. Unbounded
+/* Poppins, como el hero, que es el que fija el tono de la pagina. Inter
    sigue vetada: a 4.7rem se comia el bloque entero. */
 .teclab-continuity h2 {
   margin: 0.7rem 0 1.1rem;

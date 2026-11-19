@@ -1,0 +1,262 @@
+[
+  {
+    "nombre": "Abogacía",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Actuario",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Contador Público",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Escribanía",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Administración",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Administración Agraria",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Administración de Servicios de Salud",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Administración Pública",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Bioinformática",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Ciencia de Datos",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Ciencia Política y Gobierno",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Comercialización",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Comercio Internacional",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Criminología y Seguridad",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Desarrollo de Negocios Inmobiliarios",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Diseño y Animación Digital",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Educación (CCC)",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Educación y Nuevas Tecnologías",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Emprendimiento",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Finanzas",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Gerontología",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Gestión Ambiental",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Gestión de Recursos Humanos",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Gestión Deportiva",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Gestión Turística",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Higiene, seguridad y medio ambiente del trabajo",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Informática",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Inteligencia Artificial y Robótica",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en inteligencia en Negocios Digitales",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Logística Global",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Matemática",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Nutrición",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Periodismo",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura En Psicopedagogía (CCC)",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Publicidad",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Relaciones Internacionales",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Relaciones Públicas e Institucionales",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Seguridad Informática",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Licenciatura en Terapia Ocupacional y Desarrollo Humano",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Procurador",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Profesorado Universitario Nivel Secundario y Superior",
+    "nivel": "Grado"
+  },
+  {
+    "nombre": "Tecnicatura en Administración y Gestión de Políticas Públicas",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Administración y Gestión Tributaria",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Dirección de Equipos de Venta",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Dirección de Protocolo, Organización de Eventos y Relaciones Públicas",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Diseño y Animación Digital",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Gestión Contable e Impositiva",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Gestión de Empresas Familiares",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Higiene y Seguridad Laboral",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en la Investigación de la Escena del Crimen",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Marketing y Publicidad Digital",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Martillero, Corredor Público y Corredor Inmobiliario",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Promoción Comunitaria en Niñez y Adolescencia",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Relaciones Laborales",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura en Responsabilidad y Gestión Social",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Diseño y Desarrollo de Videojuegos",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Estadística Aplicada y Análisis Avanzado",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Gestión Administrativa de Servicios de Salud",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Gestión de Moda",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Gestión de Recursos Turísticos",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Gestión del Clima Laboral en la Organización",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Gestión y Auditorías Ambientales",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Hidrocarburos y Geociencia",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Negocios Agroecológicos",
+    "nivel": "Pregrado"
+  },
+  {
+    "nombre": "Tecnicatura Universitaria en Redes Informáticas y Telecomunicaciones",
+    "nivel": "Pregrado"
+  }
+]

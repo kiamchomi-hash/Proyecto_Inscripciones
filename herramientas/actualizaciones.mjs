@@ -70,11 +70,14 @@ async function version(fuente, binario, args, paquete) {
     detalle: [`instalada: ${instalada}; publicada: ${disponible}`] };
 }
 
-async function modernWeb() {
-  const local = await readFile(join(homedir(), '.agents/skills/modern-web-guidance/SKILL.md'));
-  const remota = await texto('https://raw.githubusercontent.com/GoogleChrome/modern-web-guidance/main/skills/modern-web-guidance/SKILL.md');
-  const iguales = local.equals(Buffer.from(remota));
-  return { fuente: 'Skill Modern Web Guidance', estado: iguales ? 'al día' : 'actualizaciones',
+// Una skill copiada de un repositorio se compara contra el archivo publicado
+// del que salió. Sólo mira el SKILL.md: el resto de la skill puede cambiar sin
+// que este control lo note.
+async function skillRemota(fuente, local, repo, ruta) {
+  const actual = await readFile(local);
+  const remota = await texto(`https://raw.githubusercontent.com/${repo}/main/${ruta}`);
+  const iguales = actual.equals(Buffer.from(remota));
+  return { fuente, estado: iguales ? 'al día' : 'actualizaciones',
     detalle: ['Comparación de SKILL.md; no comprueba los demás archivos de la skill.'] };
 }
 
@@ -115,7 +118,12 @@ export async function principal() {
     revisar('npm global', () => npmOutdated('npm global', ['--global'], raiz)),
     revisar('OpenCode CLI', () => version('OpenCode CLI', join(homedir(), '.opencode/bin/opencode'), ['--version'], '@opencode/cli')),
     revisar('CodeGraph', () => version('CodeGraph', join(homedir(), '.local/bin/codegraph'), ['--version'], '@colbymchenry/codegraph')),
-    revisar('Skill Modern Web Guidance', modernWeb),
+    revisar('Skill Modern Web Guidance', () => skillRemota('Skill Modern Web Guidance',
+      join(homedir(), '.agents/skills/modern-web-guidance/SKILL.md'),
+      'GoogleChrome/modern-web-guidance', 'skills/modern-web-guidance/SKILL.md')),
+    revisar('Skill Security Audit', () => skillRemota('Skill Security Audit',
+      join(raiz, '.agents/skills/security-audit/SKILL.md'),
+      'cloudflare/security-audit-skill', 'skills/security-audit/SKILL.md')),
     revisar('Inventario de skills', skills),
     revisar('APT', () => linux('APT', '/usr/bin/apt', ['list', '--upgradable'], 'Lista local de APT; no se actualiza el índice.')),
     revisar('Flatpak', () => linux('Flatpak', '/usr/bin/flatpak', ['remote-ls', '--updates', '--columns=application,version'], 'Sólo remotos configurados.')),

@@ -631,11 +631,9 @@ a partir de las capturas que deja la corrida del e2e.
 `tests/e2e.test.mjs` agrega lo que el HTML no puede probar, con dos servidores
 reales en loopback y Chromium:
 
-- **Fuentes**: las caras declaradas (familia y peso) son las mismas que Next
-  —Inter 100–900 y Unbounded 400/600/700/800/900—, `document.fonts.check` da
-  cargadas las que usa la home, el ancho de una muestra de texto coincide con el
-  de Next dentro de 0,5 % (si cayera al fallback, diferiría) y no se pide ningún
-  `.woff2` fuera del sitio.
+- **Fuentes**: la única cara declarada es Inter variable 100–900;
+  `document.fonts.check` confirma su carga, se descarga el WOFF2 local y no se
+  pide ningún archivo de fuentes fuera del sitio.
 - **Imágenes**: compara el render, no el `srcset`: `naturalWidth/Height > 0`,
   `complete`, `alt` presente e igual en las dos puntas, proporción natural
   contra la caja (≤5 %) y caja de layout igual; falla si alguna respuesta de
@@ -690,11 +688,10 @@ modales. La home los importa explícitamente en `index.astro`, en el mismo orden
 Si se suman hojas por esa vía, importarlas también acá; los dos avisos de
 PostCSS siguen apareciendo porque el archivo de la raíz no se toca.
 
-Inter y Unbounded se autoalojan: `../estilos/fuentes.css` declara las mismas
-familias, pesos, `unicode-range` `latin` y fallbacks que genera `next/font`, con
-`font-display: swap`, y `Sitio.astro` precarga los dos `.woff2`. Los archivos
-están en `public/fuentes/` de la raíz; origen, licencia OFL y cómo regenerarlos,
-en `../estilos/fuentes.md`.
+Inter se autoaloja: `../estilos/fuentes.css` declara la familia, el peso
+variable, el `unicode-range` `latin` y el fallback, con `font-display: swap`;
+`Sitio.astro` precarga su `.woff2`. Los archivos están en `public/fuentes/` de
+la raíz; origen, licencia OFL y cómo regenerarlos, en `../estilos/fuentes.md`.
 
 Verificación de cierre 4A (24/10/2026): `npm --prefix cloudflare run check` con
 142/142 pruebas, sin fallos, cancelaciones ni skips; tipos sin errores,
@@ -1201,4 +1198,3 @@ la misma URL con `.md` al final, y su cabecera declara `alternate`:
 Los proyectores son `src/entrega/markdown-*.ts`, puros. Las líneas de contacto
 de la sede salen de `src/entrega/markdown-sede.ts`, que a su vez lee
 `lib/sede.ts`: el teléfono y la dirección no se copian en ningún lado.
-

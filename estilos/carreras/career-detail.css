@@ -219,7 +219,7 @@
 .career-kicker {
   margin-bottom: .7rem;
   color: var(--career-accent-bright);
-  font-family: var(--font-unbounded), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: clamp(.7rem, 1vw, .86rem);
   font-weight: 700;
   letter-spacing: .15em;
@@ -544,7 +544,7 @@
 .career-related-heading h2 {
   max-width: 17ch;
   color: #f6fbfa;
-  font-family: var(--font-unbounded), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: clamp(1.8rem, 3vw, 3.2rem);
   font-weight: 700;
   letter-spacing: -.045em;
@@ -608,7 +608,7 @@
 .career-modules > div > span,
 .career-year-title span {
   color: var(--career-accent);
-  font-family: var(--font-unbounded), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: .72rem;
   font-weight: 700;
 }
@@ -645,7 +645,7 @@
   place-items: center;
   background: var(--career-accent);
   color: var(--career-ink);
-  font-family: var(--font-unbounded), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: 2rem;
   font-weight: 800;
 }
@@ -690,7 +690,7 @@
 
 .career-year-title h3 {
   color: #fff;
-  font-family: var(--font-unbounded), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: 1rem;
   font-weight: 700;
   text-align: right;

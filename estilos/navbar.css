@@ -109,7 +109,7 @@ html {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'Unbounded', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 1.5rem;
   line-height: 1;
