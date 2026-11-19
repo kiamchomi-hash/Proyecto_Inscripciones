@@ -180,6 +180,41 @@ test('_headers de assets lleva seguridad y cache, sin cabeceras de HTML', () => 
   assert.doesNotMatch(contenido, /X-Robots-Tag|no-store/i);
 });
 
+test('precarga sólo la fuente del título que corresponde a cada ficha', async t => {
+  const astro = createTestHarness({ workers: [{ configPath: CONFIG }] });
+  t.after(() => astro.close());
+  await astro.listen();
+  const worker = astro.getWorker();
+  await worker.applyD1Migrations('DB');
+  await insertarCatalogo((await worker.getEnv()).DB);
+
+  for (const [ruta, fuente] of [
+    ['/carreras/licenciatura-en-administracion', 'bricolage-grotesque-latin-700.woff2'],
+    ['/carreras/tecnicatura-en-programacion', 'manrope-latin-700.woff2'],
+    ['/carreras/curso-de-inteligencia-artificial', 'manrope-latin-700.woff2'],
+    ['/carreras/diplomatura-en-oratoria', null],
+    ['/', null],
+  ]) {
+    const respuesta = await astro.fetch(ruta);
+    assert.equal(respuesta.status, 200, ruta);
+    const head = (await respuesta.text()).split('</head>', 1)[0];
+    const precargas = [...head.matchAll(/<link\b[^>]*>/g)].map(([link]) => link)
+      .filter(link => link.includes('rel="preload"') && link.includes('as="font"')
+        && /\/fuentes\/(?:inter|bricolage-grotesque|manrope)-latin[-.]/.test(link));
+    assert.deepEqual(precargas.map(link => link.match(/href="([^"]+)"/)?.[1]),
+      ['/fuentes/inter-latin.woff2', ...(fuente ? [`/fuentes/${fuente}`] : [])], ruta);
+    if (fuente) {
+      assert.match(precargas[1], /\btype="font\/woff2"/);
+      assert.match(precargas[1], /\bcrossorigin(?:[\s=>])/);
+    }
+  }
+  for (const fuente of ['bricolage-grotesque-latin-700.woff2', 'manrope-latin-700.woff2']) {
+    const respuesta = await astro.fetch(`/fuentes/${fuente}`);
+    assert.equal(respuesta.status, 200, fuente);
+    assert.equal(Buffer.from(await respuesta.arrayBuffer()).toString('ascii', 0, 4), 'wOF2');
+  }
+});
+
 // Integración: build compilado en workerd y D1 efímero, sin red externa.
 test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.ok(existsSync(CONFIG),

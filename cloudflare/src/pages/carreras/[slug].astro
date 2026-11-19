@@ -11,6 +11,7 @@ import { seoCarrera } from '../../entrega/carrera-seo';
 import { configTurnstile } from '../../entrega/entorno-publico';
 import { redirectCarrera } from '../../entrega/redirects-carreras';
 import { carreraToSlug } from '@/components/index/types';
+import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
 import '@/estilos/poppins.css';
 import '@/estilos/dm-sans.css';
 import '@/estilos/carreras/career-detail.css';
@@ -42,13 +43,16 @@ const opciones = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel
 // elige el webp y precargar el original haría baixar los dos.
 const rutaHero = imagenHeroCarrera(carrera);
 const preloadImagen = rutaHero.startsWith('/') && !srcSetDe(rutaHero) ? encodeImagePath(rutaHero) : undefined;
+const preloadFuente = carrera.nivel === 'Identidad Argentina' ? undefined
+  : esTeclab(carrera) || esCursoTeclab(carrera) ? '/fuentes/manrope-latin-700.woff2'
+  : '/fuentes/bricolage-grotesque-latin-700.woff2';
 ---
 {/* Las fichas de Identidad Argentina volvieron a indexarse el 26/10/2026 (commit
     b90fb95 del sitio): sin `robots`, igual que la ficha de Next. */}
 <Sitio titulo={titulo} descripcion={descripcion} canonical={canonical} ruta={ruta} palabrasClave={palabrasClave}
   og={{ tipo: '', titulo, descripcion, url: canonical, imagen: { url: imagen } }}
   twitter={{ tarjeta: 'summary_large_image', titulo, descripcion, imagen }}
-  preloadImagen={preloadImagen}>
+  preloadImagen={preloadImagen} preloadFuente={preloadFuente}>
   {/* `client:idle` y no `client:load`: la ficha viene renderizada del servidor
       y la isla arrastra 331 KB de JS (47 KB de chunk de página) que, con
       `client:load`, se pedían y ejecutaban durante la carga. Medido en red

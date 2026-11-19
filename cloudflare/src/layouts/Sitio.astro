@@ -70,9 +70,11 @@ export interface Props {
    * segundos más de lo necesario.
    */
   preloadImagen?: string;
+  /** WOFF2 del título visible al cargar, cuando no usa Inter. */
+  preloadFuente?: string;
 }
 
-const { titulo, descripcion, canonical, ruta = '/', palabrasClave, og, twitter, robots, preloadImagen } = Astro.props;
+const { titulo, descripcion, canonical, ruta = '/', palabrasClave, og, twitter, robots, preloadImagen, preloadFuente } = Astro.props;
 const SITIO = 'https://www.siglo21sur.com';
 
 // Las palabras clave del layout son las de `app/layout.tsx`, escritas igual.
@@ -202,6 +204,7 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
         precargan del mismo origen, sin pedir nada a Google. */}
     <link rel="preload" href="/fuentes/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fuentes/unbounded-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {preloadFuente && <link rel="preload" href={preloadFuente} as="font" type="font/woff2" crossorigin />}
 
     {/* La imagen de arriba del pliegue, cuando la página la declara. La
         precarga sale del mismo origen y no compite con los scripts: el
