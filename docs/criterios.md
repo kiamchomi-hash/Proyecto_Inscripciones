@@ -260,6 +260,12 @@ que se deje de usar DMARC en `reject`.
 El sitio pasó a Cloudflare el 27/10/2026: Astro y React sobre Workers, con D1.
 El ahorro de la migración no está medido.
 
+**Regla del canary:** antes de evaluar el smoke a 0% o 5%, confirmar que la
+portada pedida con el override y una URL nueva por intento referencia la
+versión candidata y que su asset se sirve desde R2. Un `200` identificable de la versión anterior sólo
+permite esperar con un límite, nunca aprobar ni diagnosticar que faltan
+archivos. Si el override no se confirma o el asset falla, no se promueve.
+
 **Publicación, decidida el 29/10/2026:** el usuario trabaja solo y quiere que un
 push a `main` publique sin un paso manual. `Verificaciones` publica ese mismo
 commit si pasan sus dos controles, comprueba que siga siendo la punta de `main`

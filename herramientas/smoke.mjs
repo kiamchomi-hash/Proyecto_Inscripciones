@@ -21,6 +21,8 @@
 
 import { request as httpsRequest } from 'node:https';
 import { request as httpRequest } from 'node:http';
+import { randomUUID } from 'node:crypto';
+import { esperarPortadaCandidata } from './smoke-canary.mjs';
 // Que se espera de produccion lo declara un solo archivo, que tambien lee el
 // cron del Worker (cloudflare/src/api/vigilancia.ts). Si la lista viviera duplicada, uno de
 // los dos chequeos quedaria viejo sin que nadie se entere.
@@ -59,7 +61,7 @@ function ok(que, detalle = '') {
 
 // Pedido crudo: no descomprime, asi podemos contar los bytes que viajan de
 // verdad y ver los redirects sin que fetch los siga solo.
-function pedir(url, { metodo = 'GET', encoding = 'br, gzip', cuerpo, tipo } = {}) {
+function pedir(url, { metodo = 'GET', encoding = 'br, gzip', cuerpo, tipo, timeout = 30000 } = {}) {
   const u = new URL(url);
   const fn = u.protocol === 'https:' ? httpsRequest : httpRequest;
   return new Promise((resolve, reject) => {
@@ -93,7 +95,7 @@ function pedir(url, { metodo = 'GET', encoding = 'br, gzip', cuerpo, tipo } = {}
       },
     );
     req.on('error', reject);
-    req.setTimeout(30000, () => req.destroy(new Error('timeout')));
+    req.setTimeout(timeout, () => req.destroy(new Error('timeout')));
     req.end(cuerpo);
   });
 }
@@ -114,6 +116,22 @@ async function enTandas(items, fn, limite = CONCURRENCIA) {
 // ── 1. Rutas fijas ──────────────────────────────────────────────────────────
 
 console.log(`\nBase: ${BASE}\n`);
+if (VERSION_WORKER) {
+  const portada = new URL(`${BASE}/`);
+  // Cada pedido tiene una clave distinta: ni el navegador ni una caché que
+  // ignore el header de override deben reciclar el HTML de otro intento.
+  const { asset, intentos } = await esperarPortadaCandidata(VERSION_WORKER,
+    () => {
+      portada.searchParams.set('__smoke_canary', randomUUID());
+      return pedir(portada, { encoding: 'identity', timeout: 8000 });
+    });
+  const assetUrl = new URL(asset, BASE).href;
+  const respuestaAsset = await pedir(assetUrl, { encoding: 'identity', timeout: 8000 });
+  if (respuestaAsset.status !== 200 || !respuestaAsset.headers['content-type']) {
+    throw new Error(`Asset versionado en R2: ${asset} → HTTP ${respuestaAsset.status}, tipo: ${respuestaAsset.headers['content-type'] ?? 'ausente'}.`);
+  }
+  ok('asset versionado en R2', `${new URL(assetUrl).pathname} → HTTP 200 (portada confirmada en ${intentos} pedido(s))`);
+}
 console.log('Rutas principales');
 
 for (const ruta of RUTAS) {
@@ -145,27 +163,6 @@ for (const [cabecera, patron] of Object.entries(CABECERAS_ESPERADAS)) {
   if (!valor) fallo(cabecera, 'ausente');
   else if (!patron.test(valor)) fallo(cabecera, `valor inesperado: ${String(valor).slice(0, 80)}`);
   else ok(cabecera);
-}
-if (VERSION_WORKER) {
-  const html = await pedir(BASE + '/', { encoding: 'identity' });
-  const asset = html.crudo.toString('utf8').match(
-    new RegExp(`/__assets/${VERSION_WORKER}/[^"'<>\\s]+`),
-  )?.[0];
-  if (!asset) {
-    fallo('assets versionados', `la home no referencia assets de la versión ${VERSION_WORKER}`);
-  } else {
-    try {
-      const assetUrl = new URL(asset, BASE).href;
-      const respuestaAsset = await pedir(assetUrl, { encoding: 'identity' });
-      if (respuestaAsset.status === 200 && respuestaAsset.headers['content-type']) {
-        ok('asset versionado en R2', `${new URL(assetUrl).pathname} → HTTP 200`);
-      } else {
-        fallo('asset versionado en R2', `HTTP ${respuestaAsset.status}`);
-      }
-    } catch (error) {
-      fallo('asset versionado en R2', error.message);
-    }
-  }
 }
 // HSTS solo tiene sentido sobre https.
 if (BASE.startsWith('https://')) {
