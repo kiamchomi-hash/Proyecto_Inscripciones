@@ -1215,9 +1215,6 @@ mark {
 }
 
 .catalogo-titulo-separador {
-  position: relative;
-  /* Centrado entre los bordes visibles de las palabras, no entre sus cajas. */
-  inset-inline-start: -0.12em;
   flex: none;
   width: 2px;
   height: 0.72em;
