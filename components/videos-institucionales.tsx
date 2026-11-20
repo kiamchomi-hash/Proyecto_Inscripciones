@@ -58,7 +58,7 @@ const VIDEOS: VideoInstitucional[] = [
       titulo: 'Teclab',
       alt: 'Oferta de tecnicaturas de Teclab',
       ancho: 1080,
-      alto: 1350,
+      alto: 1427,
     }],
   },
 ];

@@ -8,7 +8,7 @@ Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; 
 
 La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hacer ahora. Se avanza de a un pendiente: si el usuario dice que no por ahora, no se marca como resuelto ni se cambia su prioridad; se lo baja al final de la cola activa y se propone el siguiente. Si no hay una cola activa explícita, se arma siguiendo el orden de prioridad de esta lista. Al retomar una tarea aplazada, vuelve a su lugar según la prioridad original.
 
-**Aplazados en la cola actual (19/11/2026):**
+**Aplazados en la cola actual (20/11/2026):**
 
 - Revisar la indexación de Desarrollo de Videojuegos (pendiente 2): hoy no; volver a consultar en unos días.
 - Dar imágenes a todas las carreras de Teclab (pendiente 5): bajado al final de la cola.
@@ -16,15 +16,9 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 - Crear un folleto de carreras relevantes de Teclab (pendiente 9): bajado al final de la cola.
 - Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): al final de la cola, esperar a que Teclab las publique.
 
-## Altísima
-
-1. **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 y cotizó el 18/11/2026. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39).
-
 ## Alta
 
 Las altas de Teclab van primero; después las demás.
-
-- **Actualizar el folleto de carreras de Teclab para que refleje la oferta vigente de 25 tecnicaturas** (revisión del checklist, 19/11/2026): la pieza de WhatsApp declara 24 y no incluye Gestión de Inteligencia Artificial y Transformación Digital. No confundir esta corrección puntual con la rutina de revisar la oferta, que queda en [rutinas](docs/rutinas.md). [Evidencia](referencias/2026-11-19-checklist-teclab-tres-carreras.md).
 
 5. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
 
@@ -94,6 +88,8 @@ Las altas de Teclab van primero; después las demás.
 
 ## Baja
 
+- **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40; bajada de Altísima a Baja el 20/11/2026): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 y cotizó el 18/11/2026. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39). Sigue al final de la cola activa, a la espera de que Teclab las publique.
+
 39. **Limpiar la estética «vibecodeada» del sitio** (6, 30/10/2026): hay muchas cosas que se ven claramente hechas por IA. Arreglo inmediato cuando se retome: bordes a la izquierda de las tarjetas, glassmorfismo y frases orientativas dentro de la propia página.
 
 40. **Usar mejor los negocios para la automatización de negocios** (4, 02/10/2026). [Vista de contactos en HubSpot](https://app.hubspot.com/contacts/44080364/objects/0-3/views/recently_assigned/list).
@@ -139,6 +135,8 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 ## Cerradas el 06/11/2026
 
 ## Cerradas el 20/11/2026
+
+- **Actualizar el folleto de carreras de Teclab para que refleje la oferta vigente de 25 tecnicaturas** (revisión del checklist, 19/11): cerrada con evidencia. Se agregó Gestión de Inteligencia Artificial y Transformación Digital —que en D1 figura en `Teclab - Tecnología`— a la lista de WhatsApp. El nombre completo no cabe en una fila, así que se parte en dos y la pieza pasó de 1080×1350 a 1080×1427; el generador calcula el alto y el botón y el pie bajan con las filas. Verificado: 25 filas, sin desbordes ni solapes. La fuente quedó en `contenidos/teclab/aprobados/generales/whatsapp/2026-09-25-lista-carreras-whatsapp/` y el proceso en `contenidos/teclab/en-curso/2026-11-20-lista-carreras-25/`. Se actualizó también el webp del sitio y la dimensión que espera el carrusel. [Evidencia](referencias/2026-11-19-checklist-teclab-tres-carreras.md).
 
 - **Verificar los planes de estudio de todas las carreras** (09/11/2026): cerrada con evidencia. Se cotejaron las 25 tecnicaturas de Teclab contra `teclab.edu.ar` y las 69 carreras de Siglo 21 contra `21.edu.ar` ([evidencia](referencias/2026-11-20-planes-siglo21.md)). En Teclab se encontraron y publicaron cinco correcciones (`sql/2026-11-20-corregir-planes-teclab.sql`); en Siglo 21 no hubo cambios de materias. Las dos diferencias que aparecieron en un primer pasaje automático eran un error del extractor, descartado contra D1 antes de escribir. Queda fuera de alcance Identidad Argentina, cuyos planes se rehicieron el 09/11 desde los programas oficiales.
 

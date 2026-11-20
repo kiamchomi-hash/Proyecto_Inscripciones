@@ -20,16 +20,16 @@ test('la integración contempla movimiento reducido e interacción accesible', (
 
 test('los cuatro folletos aprobados existen y mantienen sus dimensiones', async () => {
   const { default: sharp } = await import('sharp');
-  for (const [nombre, edicion] of [
-    ['siglo21-licenciaturas', '2026-09'],
-    ['siglo21-tecnicaturas', '2026-09'],
-    ['siglo21-complementacion', '2026-09'],
-    ['teclab-tecnicaturas', '2026-11'],
+  for (const [nombre, edicion, alto] of [
+    ['siglo21-licenciaturas', '2026-09', 1350],
+    ['siglo21-tecnicaturas', '2026-09', 1350],
+    ['siglo21-complementacion', '2026-09', 1350],
+    // Teclab pasó a 25 carreras y una fila de dos líneas (20/11/2026).
+    ['teclab-tecnicaturas', '2026-11', 1427],
   ]) {
     const { width, height } = await sharp(fileURLToPath(new URL(`../public/folletos/${nombre}-${edicion}.webp`, import.meta.url))).metadata();
     assert.equal(width, 1080);
-    // Las listas de Teclab pasaron a 1350 al crecer a 24 carreras (04/11/2026).
-    assert.equal(height, 1350);
+    assert.equal(height, alto);
   }
 });
 
