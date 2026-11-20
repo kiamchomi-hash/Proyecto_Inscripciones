@@ -71,30 +71,6 @@ export async function cargarTelefono(marco, etiqueta, numero, emitir) {
   await editor.getByRole('button', { name: 'Aplicar', exact: true }).click();
 }
 
-async function leerNegociosDeFicha(pagina, ficha) {
-  const url = new URL(pagina.url());
-  if (url.origin + url.pathname.replace(/\/$/, '') !== ficha) {
-    throw new Error('No se pudo verificar la ficha del contacto.');
-  }
-  const tarjeta = pagina.getByRole('button', { name: /^Negocios\s*\(\d+\)$/i });
-  await tarjeta.waitFor({ state: 'visible', timeout: 10000 });
-  const cantidad = Number((await tarjeta.innerText()).match(/\((\d+)\)/)?.[1] ?? NaN);
-  const ids = await pagina.locator('a[href*="/record/0-3/"]:visible').evaluateAll(enlaces =>
-    [...new Set(enlaces.map(enlace => {
-      const url = new URL(enlace.href);
-      return url.origin === 'https://app.hubspot.com'
-        ? url.pathname.match(/^\/contacts\/44080364\/record\/0-3\/(\d+)\/?$/)?.[1]
-        : null;
-    }).filter(Boolean))]);
-  return { cantidad, ids };
-}
-
-export function identificarNegocioNuevo(antes, despues) {
-  const nuevos = despues.ids.filter(id => !antes.ids.includes(id));
-  return antes.cantidad === antes.ids.length && despues.cantidad === despues.ids.length
-    && despues.cantidad === antes.cantidad + 1 && nuevos.length === 1 ? nuevos[0] : null;
-}
-
 export function crearAdaptador(pagina, { emitir = () => {} } = {}) {
   const modalContacto = () => pagina.frameLocator(
     '#object-builder-ui, #nav-object-create-iframe iframe',
@@ -167,7 +143,6 @@ export function crearAdaptador(pagina, { emitir = () => {} } = {}) {
       await pagina.goto(ficha, { waitUntil: 'domcontentloaded', timeout: 25000 });
       await pagina.waitForTimeout(4000);
       verificar();
-      const antes = await leerNegociosDeFicha(pagina, ficha);
       emitir('paso', { texto: 'Abriendo el formulario de negocio' });
       const tarjeta = pagina.locator('[data-test-id="hs-create-deal-custom-card"]');
       if (await tarjeta.count()) {
@@ -199,33 +174,12 @@ export function crearAdaptador(pagina, { emitir = () => {} } = {}) {
       await elegirSelect(marco, 'int_suborigen_script', 'Pauta Digital');
       await marco.locator('input[name="int_cau_code"]').fill('VLG01');
       emitir('paso', { texto: 'Negocio completado' });
-      return { ficha, antes };
     },
 
-    async enviar({ ficha, antes }) {
+    async enviar() {
       verificar();
-      if (antes.cantidad !== antes.ids.length) {
-        throw new Error('No se pudo leer la lista de negocios del contacto. No se envió el formulario.');
-      }
       const marco = pagina.frameLocator('iframe[src*="landing-negocios-agentes"]');
-      let consulta;
-      try {
-        await marco.locator('input[type="submit"]').click();
-        emitir('paso', { texto: 'Verificando el negocio en la ficha' });
-        consulta = await pagina.context().newPage();
-        for (let intento = 0; intento < 3; intento++) {
-          if (intento) await consulta.waitForTimeout(2000);
-          await consulta.goto(ficha, { waitUntil: 'domcontentloaded', timeout: 10000 });
-          const despues = await leerNegociosDeFicha(consulta, ficha);
-          const id = identificarNegocioNuevo(antes, despues);
-          if (id) return id;
-        }
-      } catch {
-        // Una interrupción después de intentar el clic no autoriza otro envío.
-      } finally {
-        await consulta?.close().catch(() => {});
-      }
-      return null;
+      await marco.locator('input[type="submit"]').click();
     },
   };
 }

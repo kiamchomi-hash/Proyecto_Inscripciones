@@ -13,18 +13,11 @@ export async function ejecutarCarga(adaptador, lead, { secar = false, noCrear = 
   }
 
   emitir('paso', { texto: 'Creando el negocio' });
-  const preparado = await adaptador.crearNegocio({ ...lead, contacto });
-  let negocio = null;
+  await adaptador.crearNegocio({ ...lead, contacto });
   if (!secar) {
     emitir('paso', { texto: 'Enviando el negocio' });
-    negocio = await adaptador.enviar(preparado);
-    if (!/^\d+$/.test(negocio ?? '')) {
-      throw Object.assign(
-        new Error('No se pudo confirmar el negocio. Revisá la ficha del contacto antes de reintentar.'),
-        { etapa: 'Verificando el negocio' },
-      );
-    }
+    await adaptador.enviar();
   }
   emitir('paso', { texto: 'Listo' });
-  return { contacto, negocio };
+  return { contacto, negocio: null };
 }

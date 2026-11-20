@@ -1,15 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ejecutarCarga } from '../aux/hubspot.mjs';
-import { identificarNegocioNuevo } from '../aux/adaptador-playwright.mjs';
-
-test('la ficha debe mostrar un negocio nuevo e inequívoco', () => {
-  const antes = { cantidad: 1, ids: ['201'] };
-  assert.equal(identificarNegocioNuevo(antes, { cantidad: 2, ids: ['201', '202'] }), '202');
-  assert.equal(identificarNegocioNuevo(antes, antes), null);
-  assert.equal(identificarNegocioNuevo(antes, { cantidad: 2, ids: ['201'] }), null);
-  assert.equal(identificarNegocioNuevo(antes, { cantidad: 2, ids: ['202', '203'] }), null);
-});
 
 function adaptadorFalso() {
   const pasos = [];
@@ -18,8 +9,8 @@ function adaptadorFalso() {
     async sesion() { pasos.push('sesion'); },
     async contactoPorCorreo() { pasos.push('buscar-contacto'); return null; },
     async crearContacto() { pasos.push('crear-contacto'); return '101'; },
-    async crearNegocio() { pasos.push('crear-negocio'); return '202'; },
-    async enviar() { pasos.push('enviar'); return '202'; },
+    async crearNegocio() { pasos.push('crear-negocio'); },
+    async enviar() { pasos.push('enviar'); },
   };
 }
 
@@ -30,16 +21,16 @@ test('crea contacto, negocio y envía en ese orden', async () => {
     correo: 'ejemplo@example.invalid', carrera: 'Abogacía', nivel: 'Grado',
   });
   assert.deepEqual(adaptador.pasos, ['sesion', 'buscar-contacto', 'crear-contacto', 'crear-negocio', 'enviar']);
-  assert.deepEqual(resultado, { contacto: '101', negocio: '202' });
+  assert.deepEqual(resultado, { contacto: '101', negocio: null });
 });
 
-test('un clic sin negocio confirmado no se informa como éxito ni se reenvía', async () => {
+test('si falla el clic de envío se informa el error y no se reintenta', async () => {
   const adaptador = adaptadorFalso();
-  adaptador.enviar = async () => { adaptador.pasos.push('enviar'); return null; };
+  adaptador.enviar = async () => { adaptador.pasos.push('enviar'); throw new Error('Falló Enviar'); };
   const eventos = [];
   await assert.rejects(ejecutarCarga(adaptador, { correo: 'prueba@example.test' }, {
     emitir: (_, datos) => eventos.push(datos.texto),
-  }), /no se pudo confirmar/i);
+  }), /falló enviar/i);
   assert.equal(adaptador.pasos.filter(paso => paso === 'enviar').length, 1);
   assert.ok(!eventos.includes('Listo'));
 });

@@ -1,0 +1,8 @@
+# Teclab: RSP, exámenes libres y convenios
+
+- [Reconocimiento de experiencia profesional](https://teclab.edu.ar/reconocimiento-de-saberes-previos/): confirma la misma distribución de carreras que la presentación de admisión relevada el 05/11 (RSP en Data Science, hasta cuatro materias; exámenes libres en las otras seis). La página pide presentar antecedentes al ingreso y aprobar las evaluaciones; no publica el mínimo de experiencia, los intentos, el recálculo ni el detalle por materia.
+- [FAQ de Teclab](https://teclab.edu.ar/faq/#examenes): los tres intentos que publica corresponden a finales regulares, no confirman el régimen del piloto.
+- [Comunidad Teclab y Empresa referida](https://teclab.edu.ar/becas/): publica seis meses de antigüedad, último recibo de sueldo y renovación cuatrimestral hasta 15 días corridos antes del inicio. Para proponer una empresa indica qué datos enviar, pero no publica un porcentaje general ni ofrece un modelo para firmar.
+- [Partnerships](https://teclab.edu.ar/partnerships/#empresas): anuncia beneficios corporativos y más de 200 compañías colaboradoras; esa cifra no es un padrón de convenios activos.
+- [Convenio DHL Express](https://vinculacion.teclab.edu.ar/dhl-express-argentina): la landing sigue online y anuncia un descuento adicional sin indicar porcentaje en el texto; no acredita vigencia operativa ni reemplaza el padrón.
+- [Panel Comercial de Admisión](https://informacion.teclab.edu.ar/hubfs/ADMISION/CALIDAD%20Y%20%20TRAINING/Dashboard_Comercial_Teclab%20%28Agentes%29.html): la pantalla de acceso identifica la edición 1A 2027. No se pudo consultar su contenido sin iniciar sesión; no se confirmó si cambiaron los 186 registros del corte local del 03/09/2026, sus porcentajes ni el modelo contractual.

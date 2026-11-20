@@ -1,52 +1,46 @@
-# Rutinas de mantenimiento
+# Rutinas y tareas periódicas
 
-Estas revisiones se repiten; no son tareas que puedan cerrarse para siempre. No se crea ni modifica ninguna automatización con esta lista.
+Este archivo contiene trabajo recurrente, no tareas puntuales del backlog. No se crea ni modifica ninguna automatización con esta lista.
 
 [Volver a los pendientes](../PENDIENTES.md).
 
-Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se anota la fecha de la última revisión. Si una revisión encuentra un problema concreto, ese problema pasa a `## Abierto` con su propio detalle.
+Las rutinas por evento se revisan cuando ocurre el disparador. Las tareas periódicas se hacen en la frecuencia acordada. En ambos casos se anota la fecha de la última revisión y no se cierran para siempre. Si aparece un problema concreto, se crea un pendiente separado en `PENDIENTES.md`; la rutina continúa.
 
-- [ ] **Actualizar las novedades del sitio.** Revisar si hay noticias, fechas, aperturas, cambios de oferta o información institucional nueva; cargar o corregir `novedades`, generar la imagen OG del artículo y comprobar que aparezca en la página, el sitemap y la navegación.
+## Por evento o cambio
 
-- [ ] **Revisar y mantener el corpus del bot.** Leer conversaciones reales y respuestas dudosas, confirmar cada dato contra su fuente vigente, corregir el corpus de la casa correspondiente y regenerar siempre las páginas de entrenador y buscador. No aprobar una respuesta sólo porque suena bien: verificar especialmente precios, fechas, modalidad, requisitos, cuotas y documentación.
-
-- [ ] **Auditar el contenido publicado.** Ejecutar `npm run auditar` y resolver o registrar los faltantes de carreras, planes, imágenes OG, materias, novedades y FAQ. Aplicar `esCarreraVisible()` a cualquier lectura nueva de `carreras` antes de publicar cambios.
+- [ ] **Actualizar las novedades del sitio cuando haya información nueva.** Revisar noticias, fechas, aperturas, cambios de oferta o información institucional; cargar o corregir `novedades`, generar la imagen OG del artículo y comprobar que aparezca en la página, el sitemap y la navegación.
 
 - [ ] **Actualizar fuentes comerciales cuando cambien.** Revisar los dashboards y comunicaciones oficiales de Siglo 21, Teclab e Identidad Argentina; actualizar precios, cuotas, fechas, financiación, modalidad y oferta sólo con fuente verificable. Regenerar los artefactos derivados y correr los tests de ventas.
 
-- [ ] **Renovar `precios_privados`.** Las 83 filas comparten el mismo `vigente_hasta` y la actualización corre de madrugada. Entre el vencimiento y esa corrida hay una ventana sin precios vigentes en la que `mail-precio` responde `sin-precio-vigente` y el newsletter no encuentra candidatas. **Es esperado**: no es una caída del sitio ni un precio faltante.
-
-- [ ] **Controlar leads y canales.** Revisar consultas recibidas, clics de WhatsApp y el embudo de `npm run leads`; verificar que el número de WhatsApp, los formularios y los avisos por Telegram sigan funcionando. Para avisos, mirar `net._http_response`: un formulario que responde `201` no confirma que Telegram haya recibido el mensaje.
+- [ ] **Revisar y mantener el corpus del bot cuando haya conversaciones o respuestas dudosas.** Confirmar cada dato contra su fuente vigente, corregir el corpus de la casa correspondiente y regenerar siempre las páginas de entrenador y buscador. Verificar especialmente precios, fechas, modalidad, requisitos, cuotas y documentación.
 
 - [ ] **Revisar producción después de cada deploy o cambio sensible.** Ejecutar `npm run smoke` y, cuando corresponda, `npm run seo`; comprobar rutas, redirects, cabeceras, noindex del admin, sitemap, formularios y panel. Si se toca CSP, secretos, triggers o Edge Functions, seguir además el procedimiento documentado y hacer la prueba manual correspondiente.
 
-## Siglo 21
+- [ ] **Reescribir la intro de cada carrera nueva de Teclab** desde su página oficial (`teclab.edu.ar/carrera/<slug>/`). No copiar frases: tomar datos y vocabulario de búsqueda. La intro abre con «Estudiá <tema> a distancia», nombra temas y herramientas concretos y termina con la salida laboral, porque `partirDescripcionTeclab` la separa. Última revisión: 09/10/2026, con las 16 vigentes reescritas; Seguros suma la matrícula de PAS sin examen. Venta Directa y el curso de IA quedaron afuera.
 
-Seguimiento recurrente de los planes de estudio publicados. El cron envía por
-Telegram un recordatorio el 1 de marzo, el 1 de agosto y el 15 de diciembre, a
-las 17:00 de Buenos Aires; el aviso no ejecuta la auditoría.
+## Por calendario
 
-- [ ] **Auditar los planes de estudio de Siglo 21.** Comparar los slides de las
-  carreras activas de Grado, Grado (CCC) y Pregrado con las fichas y documentos
-  oficiales vigentes. Actualizar sólo diferencias confirmadas y dejar sin
-  cambios los casos no verificables. Última revisión registrada: 20/11/2026;
-  siguiente aviso: 15/12/2026.
+Todavía no hay una frecuencia mensual confirmada para estas tareas. Cuando se defina una, va en esta sección con su periodicidad y la fecha de la próxima revisión; no se inventa una cadencia.
 
-## Teclab
+## Revisiones recurrentes sin frecuencia acordada
 
-Seguimientos de fondo. No se revisan cada vez que se trabaja en Teclab: se retoman cada tanto o cuando el usuario lo pide. El cron `/api/recordatorio-teclab` recuerda por Telegram los seguimientos de diseño e intros los lunes a las 9:00, con la lista de fichas vigentes que todavía no tienen la intro nueva; no recuerda el piloto de RSP y exámenes libres.
+- [ ] **Revisar la oferta oficial de Teclab para detectar carreras nuevas.** Si Teclab publica una, crear un pendiente puntual para darla de alta y recorrer `docs/alta-de-carrera.md`; no confundir revisar si apareció con hacer el alta.
 
-- [ ] **Auditar los planes de estudio de Teclab.** Comparar los planes de las carreras activas con sus fuentes oficiales y corregir sólo las diferencias confirmadas. Si las fuentes discrepan o no se pueden verificar, no modificar esa carrera. Recordatorio por Telegram el 1 de marzo, el 1 de agosto y el 15 de diciembre, a las 17:00 de Buenos Aires. Última revisión registrada: 30/10/2026; siguiente aviso: 15/12/2026.
+- [ ] **Auditar el contenido publicado.** Ejecutar `npm run auditar` y resolver o registrar faltantes de carreras, planes, imágenes OG, materias, novedades y FAQ. Aplicar `esCarreraVisible()` a cualquier lectura nueva de `carreras` antes de publicar cambios.
 
-- [ ] **Seguir el piloto de RSP y exámenes libres.** Revisar cada tanto las comunicaciones oficiales de Teclab para confirmar si está vigente y si cambian las carreras, materias, requisitos o el circuito. Confirmar también los puntos que la presentación deja por definir y actualizar `ventas/procesos-teclab.html` con la fuente y fecha de lo nuevo. Última revisión de la presentación: 05/11/2026; vigencia del piloto sin confirmar.
+- [ ] **Renovar `precios_privados`.** La actualización corre de madrugada. Entre el vencimiento y esa corrida hay una ventana sin precios vigentes en la que `mail-precio` responde `sin-precio-vigente` y el newsletter no encuentra candidatas. **Es esperado**: no es una caída del sitio ni un precio faltante.
 
-- [ ] **Mejorar el diseño de las fichas de Teclab (`/carreras/<slug>`), antigua tarea 38.** Ya aplican el sistema de `piezas_teclab`: paleta, Poppins, hero, bloques de datos en color, plan, formularios, navbar, pie, scroll y flecha. Quedan mejoras que el usuario todavía no definió; preguntarle cuáles antes de tocar nada. `/teclab`, `/teclab/inscripcion`, `/carreras/<slug>/inscripcion` e `/inscripcion/<codigo>` ya están hechas (commit `d73a904`). [Detalle](../odd/tasks/rediseno-paginas-teclab.md). Última revisión: 09/10/2026.
+- [ ] **Controlar leads y canales.** Revisar consultas recibidas, clics de WhatsApp y el embudo de `npm run leads`; verificar que el número de WhatsApp, los formularios y los avisos por Telegram sigan funcionando. Para avisos, mirar `net._http_response`: un formulario que responde `201` no confirma que Telegram haya recibido el mensaje.
 
-- [ ] **Reescribir la intro de cada carrera nueva de Teclab a partir de su página oficial** (`teclab.edu.ar/carrera/<slug>/`). No se copian frases: se toman los datos y el vocabulario de búsqueda. La intro va en `descripcion`, abre con "Estudiá <tema> a distancia" y nombra temas y herramientas concretos. Su última oración es la salida laboral, porque `partirDescripcionTeclab` la separa. Última revisión: 09/10/2026, con las 16 vigentes reescritas; Seguros suma la matrícula de PAS sin examen. Venta Directa y el curso de IA quedaron afuera.
+- [ ] **Seguir el piloto de RSP y exámenes libres de Teclab.** Revisar las comunicaciones oficiales para confirmar si sigue vigente y si cambian carreras, materias, requisitos o circuito. Confirmar los puntos por definir y actualizar `ventas/procesos-teclab.html` con fuente y fecha. Última revisión de la presentación: 05/11/2026; vigencia del piloto sin confirmar.
+
+- [ ] **Revisar el diseño de las fichas de Teclab (`/carreras/<slug>`).** Ya aplican el sistema de `piezas_teclab`: paleta, Poppins, hero, bloques de datos en color, plan, formularios, navbar, pie, scroll y flecha. Las mejoras no están definidas; preguntar antes de tocar nada. `/teclab`, `/teclab/inscripcion`, `/carreras/<slug>/inscripcion` e `/inscripcion/<codigo>` ya están hechas (commit `d73a904`). [Detalle](../odd/tasks/rediseno-paginas-teclab.md). Última revisión: 09/10/2026.
+
+El recordatorio `/api/recordatorio-teclab` avisa por Telegram los lunes a las 9:00 sobre diseño e intros de fichas vigentes que aún no tienen intro nueva; no recuerda el piloto de RSP.
 
 ## Seguimiento permanente de indexación y rendimiento
 
-La antigua tarea 13 del backlog continúa acá: no se cierra con una revisión. Revisar tras altas de carreras o cambios de contenido y en las revisiones de mantenimiento; registrar la fecha, las URLs revisadas, los resultados y cualquier limitación de acceso o medición.
+La antigua tarea 13 del backlog continúa acá: no se cierra con una revisión. Se revisa tras altas de carreras o cambios de contenido y durante las revisiones de mantenimiento; registrar la fecha, las URLs revisadas, los resultados y cualquier limitación de acceso o medición.
 
 - **Indexabilidad pública:** ejecutar `npm run smoke` y comprobar respuesta directa `200`, canónica, permisos de rastreo/indexación y presencia de las URLs y `lastmod` esperados en el sitemap. Estas comprobaciones no demuestran que Google haya indexado una página.
 - **Indexación y tráfico en Google:** ejecutar `npm run seo`, comparar con [el registro de indexación](indexacion.md) y el informe anterior; revisar Search Console (cobertura, páginas excluidas, consultas, CTR y posiciones). Si no hay acceso, dejar esa parte pendiente sin inferir el estado a partir del sitio público.
