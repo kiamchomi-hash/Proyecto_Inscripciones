@@ -8,6 +8,7 @@ import { manejarIndexNow } from '../api/indexnow.ts';
 import { avisarIndexNow } from '../../../lib/indexnow.ts';
 import { enviarDigest } from './digest.ts';
 import { manejarRecordatorioPlanesTeclab } from '../api/recordatorio-planes-teclab.ts';
+import { manejarRecordatorioPlanesSiglo21 } from '../api/recordatorio-planes-siglo21.ts';
 
 /**
  * Operativa de producción: consumo de la cola y barrido del outbox.
@@ -97,9 +98,9 @@ export const CRONES = {
   recordatorio: '0 12 * * 1',
   digest: '0 12 * * *',
   /** 17:00 de Buenos Aires (UTC−3), el 1/3 y el 1/8. */
-  recordatorioPlanesTeclabMarzoAgosto: '0 20 1 3,8 *',
+  recordatorioPlanesMarzoAgosto: '0 20 1 3,8 *',
   /** 17:00 de Buenos Aires (UTC−3), el 15/12. */
-  recordatorioPlanesTeclabDiciembre: '0 20 15 12 *',
+  recordatorioPlanesDiciembre: '0 20 15 12 *',
 } as const;
 
 export type NombreCron = keyof typeof CRONES;
@@ -127,14 +128,12 @@ export async function manejarProgramado(
   const tarea = tareaDe(expresion);
   if (!tarea) throw new Error('Cron no autorizado');
 
-  const ruta = tarea === 'recordatorio'
-    ? 'recordatorio-teclab'
-    : tarea.startsWith('recordatorioPlanesTeclab')
-      ? 'recordatorio-planes-teclab'
-      : tarea;
-  const request = new Request(`${contexto.origen}/api/${ruta}`, {
+  // Cada aviso institucional se atiende en su propia ruta: el `Request` que
+  // reciben los handlers lleva la misma credencial, nunca otra.
+  const pedido = (ruta: string) => new Request(`${contexto.origen}/api/${ruta}`, {
     headers: contexto.secretoCron ? { Authorization: `Bearer ${contexto.secretoCron}` } : {},
   });
+  const request = pedido(tarea === 'recordatorio' ? 'recordatorio-teclab' : tarea);
 
   if (tarea === 'efectos') {
     if (!contexto.db) throw new Error('Barrido sin base');
@@ -168,13 +167,30 @@ export async function manejarProgramado(
     return { tarea, status: resultado.enviados > 0 ? 200 : 503, cuerpo: resultado };
   }
 
-  if (tarea.startsWith('recordatorioPlanesTeclab')) {
-    const respuesta = await manejarRecordatorioPlanesTeclab(request, {
-      secretoCron: contexto.secretoCron,
-      telegram: contexto.telegram,
-    });
-    const cuerpo = await respuesta.json().catch(() => null);
-    return { tarea, status: respuesta.status, cuerpo };
+  if (tarea.startsWith('recordatorioPlanes')) {
+    const recordatorios = [
+      ['Teclab', 'recordatorio-planes-teclab', manejarRecordatorioPlanesTeclab],
+      ['Siglo 21', 'recordatorio-planes-siglo21', manejarRecordatorioPlanesSiglo21],
+    ] as const;
+    const resultados = await Promise.allSettled(recordatorios.map(async ([institucion, ruta, manejar]) => {
+      const respuesta = await manejar(pedido(ruta), {
+        secretoCron: contexto.secretoCron,
+        telegram: contexto.telegram,
+      });
+      return {
+        institucion,
+        status: respuesta.status,
+        cuerpo: await respuesta.json().catch(() => null),
+      };
+    }));
+    const avisos = resultados.map((resultado, indice) => resultado.status === 'fulfilled'
+      ? resultado.value
+      : { institucion: recordatorios[indice][0], status: 502, cuerpo: { aviso: 'error interno' } });
+    return {
+      tarea,
+      status: avisos.every(aviso => aviso.status === 200) ? 200 : 502,
+      cuerpo: { avisos },
+    };
   }
 
   const respuesta = tarea === 'vigilancia'

@@ -14,6 +14,7 @@
     { "action": "integration.use", "resource": "skill:cau_design_patterns", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:cargar_carrera", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:auditar-planes-teclab", "effect": "allow" },
+    { "action": "integration.use", "resource": "skill:auditar-planes-siglo21", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:bot_respuestas", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:piezas_siglo21", "effect": "allow" },
     { "action": "integration.use", "resource": "skill:piezas_teclab", "effect": "allow" },
