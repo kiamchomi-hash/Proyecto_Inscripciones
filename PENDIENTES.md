@@ -10,11 +10,11 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 **Aplazados en la cola actual (20/11/2026):**
 
-- Revisar la indexación de Desarrollo de Videojuegos (pendiente 2): hoy no; volver a consultar en unos días.
 - Dar imágenes a todas las carreras de Teclab (pendiente 5): bajado al final de la cola.
 - Crear folletos de Teclab con CTA al frente y lista de carreras al dorso (pendiente 8): bajado al final de la cola.
 - Crear un folleto de carreras relevantes de Teclab (pendiente 9): bajado al final de la cola.
 - Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): al final de la cola, esperar a que Teclab las publique.
+- Completar la FAQ de las carreras de Teclab (pendiente 3): al final de la cola; requiere trabajar bien las keywords y se espera a contar con un modelo de confianza para redactarlas.
 
 ## Alta
 
@@ -28,7 +28,7 @@ Las altas de Teclab van primero; después las demás.
 
 10. **Migrar las carreras de Teclab a un dominio propio** (20/11/2026): el plan está en [`docs/plans/2026-11-20-migracion-teclab-dominio-propio.md`](docs/plans/2026-11-20-migracion-teclab-dominio-propio.md). Se hace de a una carrera por deploy, con 301 desde `siglo21sur.com`, canónicas y sitemap por host, sin tocar Siglo 21 ni las páginas `/teclab`, `/teclab/inscripcion` y `/teclab/test-vocacional`. El plan asume `teclab-lugano.com`: hay que confirmar el nombre antes de empezar. La Tarea 5 (compra del dominio, zona en Cloudflare, token y Turnstile) requiere autorización explícita y pasos del usuario.
 
-11. **Comparar las fichas de Teclab contra `teclab.edu.ar` y `siglo21online.com.ar/teclab` para mejorar el frontend** (nueva, 30/10/2026). Son dos referencias distintas y se miran las dos: `https://teclab.edu.ar/carrera/<slug>/` es la fuente del contenido (datos, plan, título, salidas, modalidad) y `https://siglo21online.com.ar/teclab` —sitio de GRUPO BTC, no oficial— es el modelo de ficha terminada: cómo arma la página de cada carrera y cómo presenta la marca de Teclab. Donde las dos se contradigan, manda la oficial, y no se copia texto de ninguna. No se sigue el rediseño oficial de punta a punta: lo revisado el 30/10 quedó en el [historial](docs/historial-pendientes.md#teclab--repaso-de-las-fichas-oficiales-30102026). **Aplicado el 31/10/2026**: el botón «Descargar plan de estudios» y el bloque de resoluciones al pie (ver cerradas del 31/10). Lo que queda de este repaso es el plan de estudios plegado por año y la FAQ de 6 a 9 preguntas, que es el pendiente 3.
+11. **Comparar las fichas de Teclab contra `teclab.edu.ar` y `siglo21online.com.ar/teclab` para mejorar el frontend** (nueva, 30/10/2026). Son dos referencias distintas y se miran las dos: `https://teclab.edu.ar/carrera/<slug>/` es la fuente del contenido (datos, plan, título, salidas, modalidad) y `https://siglo21online.com.ar/teclab` —sitio de GRUPO BTC, no oficial— es el modelo de ficha terminada: cómo arma la página de cada carrera y cómo presenta la marca de Teclab. Donde las dos se contradigan, manda la oficial, y no se copia texto de ninguna. No se sigue el rediseño oficial de punta a punta: lo revisado el 30/10 quedó en el [historial](docs/historial-pendientes.md#teclab--repaso-de-las-fichas-oficiales-30102026). **Aplicado el 31/10/2026**: el botón «Descargar plan de estudios» y el bloque de resoluciones al pie (ver cerradas del 31/10). Lo que queda de este repaso es la FAQ de 6 a 9 preguntas, que es el pendiente 3 y quedó al final de Baja. El plan de estudios plegado por año se descartó el 20/11: el plan de Teclab son dos años en dos cajas lado a lado y plegarlo sólo agregaría un clic, además de que el componente es compartido con Siglo 21 e Identidad.
 
 12. **Revisar el embudo del test vocacional** (33, general y Teclab). **Medición repuesta el 06/11/2026**: desde el corte a Cloudflare el recorrido no se guardaba en ningún lado —la analítica del navegador es local y Vercel ya no existe—, así que la segunda lectura no se podía hacer. Ahora los pasos iniciado, pregunta, completado y salida se cuentan en D1 (`vocacional_embudo`, migración `0014`) y `npm run leads` los muestra por test y por pregunta. Falta que se acumulen intentos: la próxima lectura útil es a partir del 20/11/2026. Primera lectura (16 al 20/10, antes del corte): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron y la caída estaba en las preguntas 1 a 3; el de Teclab no tuvo ninguna visita. La migración `0014` ya está aplicada en producción; falta publicar el código que manda los pasos. [Cómo leerlo](docs/medicion-test-vocacional.md).
 
@@ -88,8 +88,6 @@ Las altas de Teclab van primero; después las demás.
 
 ## Baja
 
-- **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40; bajada de Altísima a Baja el 20/11/2026): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 y cotizó el 18/11/2026. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39). Sigue al final de la cola activa, a la espera de que Teclab las publique.
-
 39. **Limpiar la estética «vibecodeada» del sitio** (6, 30/10/2026): hay muchas cosas que se ven claramente hechas por IA. Arreglo inmediato cuando se retome: bordes a la izquierda de las tarjetas, glassmorfismo y frases orientativas dentro de la propia página.
 
 40. **Usar mejor los negocios para la automatización de negocios** (4, 02/10/2026). [Vista de contactos en HubSpot](https://app.hubspot.com/contacts/44080364/objects/0-3/views/recently_assigned/list).
@@ -111,6 +109,10 @@ Las altas de Teclab van primero; después las demás.
 46. **Usar el bot de HubSpot de Siglo 21 para extraer más respuestas y procesos administrativos** (45), por una vía distinta del buscador de carreras: se consulta y completa a medida que surjan casos en el día a día, no como relevamiento general anticipado.
 
 47. **Dar imágenes a todas las carreras de Siglo 21** (46b).
+
+- **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40; bajada de Altísima a Baja el 20/11/2026 y movida a la última posición de Baja el 20/11/2026): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 y cotizó el 18/11/2026. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39). Sigue al final de la cola activa, a la espera de que Teclab las publique.
+
+- **Completar la FAQ de las carreras de Teclab** (pendiente 3; movida al final de Baja el 20/11/2026): llevar las preguntas frecuentes de cada ficha de 3 o 5 a 6-9, con contenido de `teclab.edu.ar` reescrito con palabras propias. Relevadas las 25 fichas oficiales y anotado qué falta en cada una en [`referencias/2026-11-20-faq-teclab-revision.md`](referencias/2026-11-20-faq-teclab-revision.md): 22 carreras necesitan preguntas, 3 ya cumplen el piso, y QA, Gestión Hotelera, Inbound Marketing y Customer Experience tienen un techo de 5 en la fuente oficial. Quedan afuera becas, sueldos y campañas. **Aplazado a pedido del usuario**: depende de trabajar bien las keywords y prefiere esperar a un modelo de confianza para redactarlas. No se escribió nada en D1.
 
 ## Ratos muertos
 
@@ -135,6 +137,8 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 ## Cerradas el 06/11/2026
 
 ## Cerradas el 20/11/2026
+
+- **Revisar la indexación de Desarrollo de Videojuegos** (pendiente 2): cerrada con evidencia ya asentada el 15/11 en el [historial](docs/historial-pendientes.md#indexación--desarrollo-de-videojuegos-15112026) y reconfirmada el 20/11 con `npm run seo -- --inspeccion=` sobre las dos URLs vigentes: `/carreras/siglo-21-video-juegos` y `/carreras/tecnicatura-superior-en-desarrollo-de-videojuegos` dan `PASS` / «Enviada e indexada», `robots ALLOWED` y canónica de Google coincidente con cada URL (último rastreo 15/11 y 08/11 respectivamente). La URL antigua `/carreras/tecnicatura-en-videojuegos` sigue dando «Google no reconoce esta URL», pero es un 301 y no es la ficha vigente. La línea de aplazados estaba desactualizada; se retira de la cola. [Evidencia](referencias/2026-11-20-indexacion-videojuegos.md).
 
 - **Actualizar el folleto de carreras de Teclab para que refleje la oferta vigente de 25 tecnicaturas** (revisión del checklist, 19/11): cerrada con evidencia. Se agregó Gestión de Inteligencia Artificial y Transformación Digital —que en D1 figura en `Teclab - Tecnología`— a la lista de WhatsApp. El nombre completo no cabe en una fila, así que se parte en dos y la pieza pasó de 1080×1350 a 1080×1427; el generador calcula el alto y el botón y el pie bajan con las filas. Verificado: 25 filas, sin desbordes ni solapes. La fuente, la verificación y la captura quedaron juntas en `contenidos/teclab/aprobados/generales/whatsapp/2026-09-25-lista-carreras-whatsapp/`. Se actualizó también el webp del sitio y la dimensión que espera el carrusel. [Evidencia](referencias/2026-11-19-checklist-teclab-tres-carreras.md).
 
