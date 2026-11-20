@@ -42,6 +42,24 @@ test('sólo acepta enlaces de skills declarados que apuntan a un SKILL.md del á
   assert.equal(esEnlaceSkillPublicoValido(
     '.agents/skills/cau-brand', '../../.claude/skills/cau_brand', new Set(),
   ), false);
+  const rutasTeclab = new Set(['.claude/skills/auditar-planes-teclab/SKILL.md']);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/auditar-planes-teclab',
+    '../../.claude/skills/auditar-planes-teclab',
+    rutasTeclab,
+  ), true);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/auditar-planes-teclab', '../../../fuera', rutasTeclab,
+  ), false);
+  const rutasSiglo21 = new Set(['.claude/skills/auditar-planes-siglo21/SKILL.md']);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/auditar-planes-siglo21',
+    '../../.claude/skills/auditar-planes-siglo21',
+    rutasSiglo21,
+  ), true);
+  assert.equal(esEnlaceSkillPublicoValido(
+    '.agents/skills/auditar-planes-siglo21', '../../../fuera', rutasSiglo21,
+  ), false);
 });
 
 test('scanner permite el enlace de skill declarado y revisa su destino versionado', t => {
@@ -50,6 +68,26 @@ test('scanner permite el enlace de skill declarado y revisa su destino versionad
   writeFileSync(join(cwd, '.claude', 'skills', 'cau_brand', 'SKILL.md'), 'Guía pública\n');
   mkdirSync(join(cwd, '.agents', 'skills'), { recursive: true });
   symlinkSync('../../.claude/skills/cau_brand', join(cwd, '.agents', 'skills', 'cau-brand'));
+  git(cwd, 'add', '.');
+  assert.doesNotThrow(() => revisarSecretos({ cwd }));
+});
+
+test('scanner permite el enlace público de auditoría de planes Teclab', t => {
+  const cwd = fixture(t);
+  mkdirSync(join(cwd, '.claude', 'skills', 'auditar-planes-teclab'), { recursive: true });
+  writeFileSync(join(cwd, '.claude', 'skills', 'auditar-planes-teclab', 'SKILL.md'), 'Guía pública\n');
+  mkdirSync(join(cwd, '.agents', 'skills'), { recursive: true });
+  symlinkSync('../../.claude/skills/auditar-planes-teclab', join(cwd, '.agents', 'skills', 'auditar-planes-teclab'));
+  git(cwd, 'add', '.');
+  assert.doesNotThrow(() => revisarSecretos({ cwd }));
+});
+
+test('scanner permite el enlace público de auditoría de planes Siglo 21', t => {
+  const cwd = fixture(t);
+  mkdirSync(join(cwd, '.claude', 'skills', 'auditar-planes-siglo21'), { recursive: true });
+  writeFileSync(join(cwd, '.claude', 'skills', 'auditar-planes-siglo21', 'SKILL.md'), 'Guía pública\n');
+  mkdirSync(join(cwd, '.agents', 'skills'), { recursive: true });
+  symlinkSync('../../.claude/skills/auditar-planes-siglo21', join(cwd, '.agents', 'skills', 'auditar-planes-siglo21'));
   git(cwd, 'add', '.');
   assert.doesNotThrow(() => revisarSecretos({ cwd }));
 });
