@@ -13,6 +13,22 @@ indexada, con canónica propia y último rastreo del **03/09/2026**. No se envia
 solicitudes de indexación en esta revisión. El detalle que sigue conserva el
 historial anterior.
 
+## Dos tecnicaturas nuevas 2027 de Teclab (20/11/2026)
+
+Publicadas con ficha propia, plan, FAQ, portada e imagen OG, y con sus páginas de
+inscripción:
+
+```
+https://www.siglo21sur.com/carreras/tecnicatura-superior-en-diseno-y-desarrollo-de-inteligencia-artificial
+https://www.siglo21sur.com/carreras/tecnicatura-superior-en-administracion-de-negocios-digitales-financieros
+```
+
+El workflow de publicación no pudo avisar a IndexNow (5 reintentos); se mandó a mano
+con `npm run indexnow` y lo tomó con HTTP 200 (132 URLs del sitemap). La inspección de
+Search Console del mismo día las ve aún sin rastrear —«Google no reconoce esta URL» y
+«No se ha encontrado (404)», respectivamente—, que es lo esperado en URLs recién
+creadas. Revisar con `npm run seo` en una semana.
+
 ## Páginas de inscripción de Teclab (03/10/2026)
 
 Cada carrera de Teclab con inscripción abierta (24 tecnicaturas al 04/11/2026) suma

@@ -13,7 +13,7 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 - Dar imágenes a todas las carreras de Teclab (pendiente 5): bajado al final de la cola.
 - Crear folletos de Teclab con CTA al frente y lista de carreras al dorso (pendiente 8): bajado al final de la cola.
 - Crear un folleto de carreras relevantes de Teclab (pendiente 9): bajado al final de la cola.
-- Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): al final de la cola, esperar a que Teclab las publique.
+- Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): **Diseño y Desarrollo de IA cargado el 20/11/2026** (id 251, con el alta de Administración de Negocios Digitales Financieros, id 252) tras confirmarlo el asesor; sigue pendiente Comunicación Digital, esperar a que Teclab la publique. Quedan sin precio y sin resolución las dos del 20/11.
 - Completar la FAQ de las carreras de Teclab (pendiente 3): al final de la cola; requiere trabajar bien las keywords y se espera a contar con un modelo de confianza para redactarlas.
 
 ## Alta
