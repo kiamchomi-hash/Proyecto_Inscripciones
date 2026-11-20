@@ -85,49 +85,6 @@ test('los programados se despachan por expresión y una desconocida falla', asyn
   await assert.rejects(manejarProgramado(CRONES.indexnow, contexto), /IndexNow sin base/);
 });
 
-test('los recordatorios de planes de ambas instituciones se envían en las tres fechas locales previstas', async () => {
-  assert.equal(CRONES.recordatorioPlanesMarzoAgosto, '0 20 1 3,8 *');
-  assert.equal(CRONES.recordatorioPlanesDiciembre, '0 20 15 12 *');
-
-  const mensajes = [];
-  for (const cron of [
-    CRONES.recordatorioPlanesMarzoAgosto,
-    CRONES.recordatorioPlanesDiciembre,
-  ]) {
-    const resultado = await manejarProgramado(cron, {
-      db: null,
-      secretoCron: 'secreto-de-prueba',
-      origen: 'https://ensayo.invalid',
-      buscar: async () => new Response('{}'),
-      telegram: async texto => { mensajes.push(texto); return 'enviado'; },
-    });
-    assert.equal(resultado.status, 200);
-    assert.deepEqual(resultado.cuerpo.avisos.map(aviso => aviso.status), [200, 200]);
-  }
-
-  assert.equal(mensajes.length, 4);
-  assert.equal(mensajes.filter(texto => /planes de estudio.*Teclab/.test(texto)).length, 2);
-  assert.equal(mensajes.filter(texto => /planes de estudio.*Siglo 21/.test(texto)).length, 2);
-});
-
-test('un fallo de un aviso no impide intentar ni reportar el otro', async () => {
-  const mensajes = [];
-  const resultado = await manejarProgramado(CRONES.recordatorioPlanesMarzoAgosto, {
-    db: null,
-    secretoCron: 'secreto-de-prueba',
-    origen: 'https://ensayo.invalid',
-    buscar: async () => new Response('{}'),
-    telegram: async texto => {
-      mensajes.push(texto);
-      return texto.includes('Teclab') ? 'error HTTP 502' : 'enviado';
-    },
-  });
-
-  assert.equal(mensajes.length, 2);
-  assert.equal(resultado.status, 502);
-  assert.deepEqual(resultado.cuerpo.avisos.map(aviso => aviso.status), [502, 200]);
-});
-
 test('el cron de vigilancia lee los precios de la base en vez de darlos por ausentes', async () => {
   const consultas = [];
   const db = {

@@ -8,13 +8,13 @@ Marcar una tarea terminada sólo con evidencia y mover su detalle al historial; 
 
 La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hacer ahora. Se avanza de a un pendiente: si el usuario dice que no por ahora, no se marca como resuelto ni se cambia su prioridad; se lo baja al final de la cola activa y se propone el siguiente. Si no hay una cola activa explícita, se arma siguiendo el orden de prioridad de esta lista. Al retomar una tarea aplazada, vuelve a su lugar según la prioridad original.
 
-**Aplazados en la cola actual (06/11/2026):**
+**Aplazados en la cola actual (19/11/2026):**
 
-- Completar el checklist de alta de las tres carreras activas de Teclab (pendiente 4): hoy no.
 - Revisar la indexación de Desarrollo de Videojuegos (pendiente 2): hoy no; volver a consultar en unos días.
 - Dar imágenes a todas las carreras de Teclab (pendiente 5): bajado al final de la cola.
 - Crear folletos de Teclab con CTA al frente y lista de carreras al dorso (pendiente 8): bajado al final de la cola.
 - Crear un folleto de carreras relevantes de Teclab (pendiente 9): bajado al final de la cola.
+- Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): al final de la cola, esperar a que Teclab las publique.
 
 ## Altísima
 
@@ -24,14 +24,7 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 Las altas de Teclab van primero; después las demás.
 
-- **Carrusel de Teclab, recursos de Pago Electrónico y test vocacional** (19/11/2026): editar el carrusel de Teclab, buscar las imágenes y los logos de Pago Electrónico y hacer el cambio en el test vocacional.
-
-- **Alinear los títulos de las tarjetas y las descripciones de título** (17/11/2026, prioritario): corregir la alineación visual de los nombres de las carreras y de sus descripciones de título, como se señala en la captura.
-
-- **Verificar los planes de estudio de todas las carreras** (09/11/2026): comparar materia por materia y cuatrimestre por cuatrimestre los planes publicados en el sitio con las fuentes oficiales de cada institución, registrar diferencias y corregirlas con autorización para escribir en D1. El plan de Matemática de Siglo 21 motivó esta revisión.
-
-
-4. **Revisar el [checklist de alta de carrera](docs/alta-de-carrera.md) cuando Teclab habilite las pendientes** (38, 20/10/2026). El usuario confirmó el 05/11 que Gestión de Alimentos y Gestión de Energías Renovables todavía no están habilitadas: hacer su alta cuando Teclab las abra, no antes. Revisión parcial del 05/11: Proyectos Mineros, Higiene y Seguridad y Gestión Ambiental están activas, con ficha y página de inscripción (200), perfil en el test de Teclab, imagen OG y precio en D1 vigente hasta el 05/11. La carga a HubSpot se hace a mano; esas tres no están en el mapeo automático, cuyo emisor está desactivado. Falta contrastar los demás puntos aplicables del checklist, incluidos folletos, fechas e indexación. [Detalle histórico](odd/tasks/teclab-carreras-proximamente.md).
+- **Actualizar el folleto de carreras de Teclab para que refleje la oferta vigente de 25 tecnicaturas** (revisión del checklist, 19/11/2026): la pieza de WhatsApp declara 24 y no incluye Gestión de Inteligencia Artificial y Transformación Digital. No confundir esta corrección puntual con la rutina de revisar la oferta, que queda en [rutinas](docs/rutinas.md). [Evidencia](referencias/2026-11-19-checklist-teclab-tres-carreras.md).
 
 5. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
 
@@ -66,8 +59,6 @@ Las altas de Teclab van primero; después las demás.
 20. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
 
 23. **Confirmar becas, doble carrera y las dudas restantes de requisitos** (30), que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
-
-24. **Sumar al corpus del bot las dudas de los leads** (18). Pendiente **permanente y a pedido**: cada duda que traiga un lead y no esté respondida pasa a `ventas/corpus/`. Siempre van a aparecer dudas nuevas.
 
 25. **Revisar el flujo de inscripción de Siglo 21** de punta a punta (35b).
 
@@ -144,6 +135,16 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Dar imágenes a las carreras de Identidad Argentina** (46c).
 
 ## Cerradas el 06/11/2026
+
+## Cerradas el 20/11/2026
+
+- **Verificar los planes de estudio de todas las carreras** (09/11/2026): cerrada con evidencia. Se cotejaron las 25 tecnicaturas de Teclab contra `teclab.edu.ar` y las 69 carreras de Siglo 21 contra `21.edu.ar` ([evidencia](referencias/2026-11-20-planes-siglo21.md)). En Teclab se encontraron y publicaron cinco correcciones (`sql/2026-11-20-corregir-planes-teclab.sql`); en Siglo 21 no hubo cambios de materias. Las dos diferencias que aparecieron en un primer pasaje automático eran un error del extractor, descartado contra D1 antes de escribir. Queda fuera de alcance Identidad Argentina, cuyos planes se rehicieron el 09/11 desde los programas oficiales.
+
+## Cerradas el 19/11/2026
+
+- **Completar la revisión del checklist de alta para Proyectos Mineros, Higiene y Seguridad y Gestión Ambiental**: cerrada con evidencia y límites de verificación asentados en el [historial](docs/historial-pendientes.md#checklist-de-alta-de-tres-carreras-de-teclab-19112026). Los seguimientos concretos quedaron separados.
+
+- **Alinear los títulos de las tarjetas y las descripciones de título**: completado.
 
 - **Cambiar el botón «Ver horarios» de clases de apoyo** (era la 22): la píldora crema con la flecha en un círculo del color de cada tarjeta ya está publicada con el commit `ad58484`. Verificado el 06/11/2026 en producción: `/_astro/clases-apoyo.gPgviDJL.css` sirve `#fef8f4` y `--ca-card-acento`, y ya no tiene la barra grafito. [Historial](odd/tasks/clases-apoyo-tarjetas.md).
 

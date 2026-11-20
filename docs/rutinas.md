@@ -20,23 +20,9 @@ Estas tareas no se cierran: se vuelven a marcar cada vez que corresponde y se an
 
 - [ ] **Revisar producción después de cada deploy o cambio sensible.** Ejecutar `npm run smoke` y, cuando corresponda, `npm run seo`; comprobar rutas, redirects, cabeceras, noindex del admin, sitemap, formularios y panel. Si se toca CSP, secretos, triggers o Edge Functions, seguir además el procedimiento documentado y hacer la prueba manual correspondiente.
 
-## Siglo 21
-
-Seguimiento recurrente de los planes de estudio publicados. El cron envía por
-Telegram un recordatorio el 1 de marzo, el 1 de agosto y el 15 de diciembre, a
-las 17:00 de Buenos Aires; el aviso no ejecuta la auditoría.
-
-- [ ] **Auditar los planes de estudio de Siglo 21.** Comparar los slides de las
-  carreras activas de Grado, Grado (CCC) y Pregrado con las fichas y documentos
-  oficiales vigentes. Actualizar sólo diferencias confirmadas y dejar sin
-  cambios los casos no verificables. Última revisión registrada: 20/11/2026;
-  siguiente aviso: 15/12/2026.
-
 ## Teclab
 
 Seguimientos de fondo. No se revisan cada vez que se trabaja en Teclab: se retoman cada tanto o cuando el usuario lo pide. El cron `/api/recordatorio-teclab` recuerda por Telegram los seguimientos de diseño e intros los lunes a las 9:00, con la lista de fichas vigentes que todavía no tienen la intro nueva; no recuerda el piloto de RSP y exámenes libres.
-
-- [ ] **Auditar los planes de estudio de Teclab.** Comparar los planes de las carreras activas con sus fuentes oficiales y corregir sólo las diferencias confirmadas. Si las fuentes discrepan o no se pueden verificar, no modificar esa carrera. Recordatorio por Telegram el 1 de marzo, el 1 de agosto y el 15 de diciembre, a las 17:00 de Buenos Aires. Última revisión registrada: 30/10/2026; siguiente aviso: 15/12/2026.
 
 - [ ] **Seguir el piloto de RSP y exámenes libres.** Revisar cada tanto las comunicaciones oficiales de Teclab para confirmar si está vigente y si cambian las carreras, materias, requisitos o el circuito. Confirmar también los puntos que la presentación deja por definir y actualizar `ventas/procesos-teclab.html` con la fuente y fecha de lo nuevo. Última revisión de la presentación: 05/11/2026; vigencia del piloto sin confirmar.
 
