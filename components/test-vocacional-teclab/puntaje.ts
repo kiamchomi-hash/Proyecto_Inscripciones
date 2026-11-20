@@ -33,7 +33,7 @@ type CarreraConNombre = { id: number; nombre: string; nombre_corto?: string | nu
  * específico va antes (Seguridad Informática antes que Higiene y Seguridad).
  */
 export const PERFILES: { id: PerfilId; match: string[] }[] = [
-  { id: 'gestion-inteligencia-artificial', match: ['gestion de inteligencia artificial y transformacion digital'] },
+  { id: 'gestion-inteligencia-artificial', match: ['gestion de inteligencia artificial y transformacion digital', 'diseno y desarrollo de inteligencia artificial'] },
   { id: 'videojuegos', match: ['desarrollo de videojuegos'] },
   { id: 'programacion', match: ['programacion'] },
   { id: 'data-science', match: ['data science'] },

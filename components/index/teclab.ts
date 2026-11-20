@@ -142,6 +142,7 @@ const SIN_ARTICULACION_CONFIRMADA = [
   'comercio electrónico',
   'diseño de producto digital',
   'gestión de inteligencia artificial y transformación digital',
+  'diseño y desarrollo de inteligencia artificial',
   'experiencia de usuario',
   'agile coaching',
   'recursos humanos',
@@ -425,6 +426,9 @@ const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
   { match: 'diseño de producto digital', imagen: '/imagenes/teclab/carreras/diseno-de-producto-digital.webp' },
   // «Designer sketching Wireframes (Unsplash)», Green Chameleon, CC0.
   { match: 'experiencia de usuario', imagen: '/imagenes/teclab/carreras/diseno-de-experiencia-de-usuario.webp' },
+  // Portada de la familia de IA ya publicada: comparte tema con Gestión de IA
+  // hasta que Teclab habilite la ficha oficial de Diseño y Desarrollo de IA.
+  { match: 'diseño y desarrollo de inteligencia artificial', imagen: '/imagenes/teclab/carreras/gestion-inteligencia-artificial.webp' },
   // «Sticky Notes on a Whiteboard at a Climate Change Training for Joshua Tree
   // Interpretive Rangers», National Park Service, dominio público (Wikimedia Commons).
   { match: 'agile coaching', imagen: '/imagenes/teclab/carreras/agile-coaching.webp' },

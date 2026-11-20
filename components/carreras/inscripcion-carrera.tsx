@@ -43,6 +43,7 @@ const MAX_DESCRIPCION = 165;
 // Digitales Financieros tampoco entra con "Administración de" adelante.
 const TITULO_ESPECIFICO: Record<string, string> = {
   'Tecnicatura Superior en Gestión de Inteligencia Artificial y Transformación Digital': 'Inscripción a Gestión de IA y Transformación Digital | Teclab',
+  'Tecnicatura Superior en Diseño y Desarrollo de Inteligencia Artificial': 'Inscripción a Diseño y Desarrollo de IA | Teclab',
   'Curso de Actualización Profesional en Inteligencia Artificial': 'Inscripción al Curso de Inteligencia Artificial | Teclab',
   'Tecnicatura Superior en Administración de Negocios Digitales Financieros': 'Inscripción a Negocios Digitales Financieros | Teclab',
 };
