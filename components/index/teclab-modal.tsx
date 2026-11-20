@@ -25,6 +25,7 @@ import IconoCompartir from './icono-compartir';
 import AvisoInicioTeclab from './aviso-inicio-teclab';
 import { AccesoAviso, AccesoVerPrecio, PanelVerPrecio } from './ver-precio-teclab';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
+import { precioPendiente } from '@/components/formularios/casas';
 import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
 import {
   credencialTeclab,
@@ -648,12 +649,15 @@ function SlideCierre({
   carrera,
   acento,
   ficha,
+  sinPrecio,
   onVerPrecio,
   onAvisame,
 }: {
   carrera: Carrera;
   acento: string;
   ficha: TeclabFicha | null;
+  /** Falta el precio vigente en la casa: se rotula pendiente, sin pedir el mail. */
+  sinPrecio: boolean;
   onVerPrecio: () => void;
   onAvisame: () => void;
 }) {
@@ -664,7 +668,7 @@ function SlideCierre({
   // Los datos van como chips, igual que en la portada. Con cuadros rotulados
   // eran cuatro cintas largas que traian scroll; con dos, dos cajitas sueltas
   // en medio de la nada. El titulo y el certificado ya estan en la portada.
-  const chips = [modalidad, carrera.duracion, credencialTeclab(carrera)].filter(Boolean);
+  const chips = [modalidad, carrera.duracion, credencialTeclab(carrera), ...(sinPrecio ? ['Precio pendiente'] : [])].filter(Boolean);
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
 
   return (
@@ -720,7 +724,7 @@ function SlideCierre({
             lleva este boton; WhatsApp queda a la vista abajo. */}
         {/* Una anunciada no tiene precio que mostrar: en su lugar, el aviso de
             apertura y WhatsApp, a la vista en el cuerpo y no sólo en el pie. */}
-        {carrera.proximamente ? (
+        {carrera.proximamente || sinPrecio ? (
           <AccesoAviso
             acento={acento}
             textoAcento={textoSobreAcentoTeclab(acento)}
@@ -832,6 +836,8 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   // Cuenta los toques de «Ver precio» del cierre. Con un mail ya recordado, el
   // slide del precio lo pide solo; llegar con «Siguiente» no lo pide.
   const [pedidoPrecio, setPedidoPrecio] = useState(0);
+  // Sin precio publicado por la casa no se pide el mail: se rotula pendiente.
+  const sinPrecio = carrera.proximamente || precioPendiente(carrera);
 
   // El slide del precio es una funcion del slide activo (monta el captcha
   // recien cuando se ve); el resto son nodos fijos, asi pasar de slide no los
@@ -880,16 +886,16 @@ export default function TeclabModal({ carrera, onClose }: Props) {
         document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
       }, 350);
     };
-    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} onVerPrecio={irAPrecio} onAvisame={avisar} /> });
-    // Sin inscripcion abierta no hay precio vigente que pedir.
-    if (!carrera.proximamente) {
+    s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} sinPrecio={sinPrecio} onVerPrecio={irAPrecio} onAvisame={avisar} /> });
+    // Sin inscripcion abierta ni precio publicado no hay nada que pedir.
+    if (!sinPrecio) {
       s.push({
         key: 'precio',
         node: (activo: boolean) => <SlideVerPrecio ref={precioRef} carrera={carrera} acento={acento} activo={activo} pedido={pedidoPrecio} />,
       });
     }
     return s;
-  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio, handleClose]);
+  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio, handleClose, sinPrecio]);
 
   const nombre = carrera.nombre_corto || carrera.nombre;
 

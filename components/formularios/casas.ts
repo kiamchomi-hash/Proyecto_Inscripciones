@@ -376,9 +376,18 @@ export function validarPayloadPrecio(payload: Record<string, unknown>): PayloadP
  * `proximamente` es opcional sólo para el newsletter, que no lo lee; el
  * endpoint de formularios lo trae siempre de la base.
  */
-export function carreraConPrecio(carrera: { nivel: string; activa: boolean; proximamente?: boolean }): boolean {
+// Carreras abiertas cuyo precio todavía no publica la casa. No se inventa un
+// número: se muestra «Precio pendiente» y se mantiene la consulta por WhatsApp.
+const PRECIOS_PENDIENTES = new Set([
+  'Tecnicatura Superior en Diseño y Desarrollo de Inteligencia Artificial',
+  'Tecnicatura Superior en Administración de Negocios Digitales Financieros',
+]);
+
+export const precioPendiente = (carrera: { nombre: string }): boolean => PRECIOS_PENDIENTES.has(carrera.nombre);
+
+export function carreraConPrecio(carrera: { nombre: string; nivel: string; activa: boolean; proximamente?: boolean }): boolean {
   const casa = casaDeCarrera(carrera);
-  return carrera.activa === true && carrera.proximamente !== true && casa !== null && CASAS_CON_PRECIO.includes(casa);
+  return carrera.activa === true && carrera.proximamente !== true && !precioPendiente(carrera) && casa !== null && CASAS_CON_PRECIO.includes(casa);
 }
 
 /**

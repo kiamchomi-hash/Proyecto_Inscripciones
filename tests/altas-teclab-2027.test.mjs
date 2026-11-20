@@ -10,6 +10,7 @@ import {
 } from '../components/index/teclab.ts';
 import { getResolucionesTeclab } from '../components/index/resoluciones-teclab.ts';
 import { perfilDe } from '../components/test-vocacional-teclab/puntaje.ts';
+import { carreraConPrecio, precioPendiente } from '../components/formularios/casas.ts';
 
 const ia = {
   nombre: 'Tecnicatura Superior en Diseño y Desarrollo de Inteligencia Artificial',
@@ -29,6 +30,15 @@ test('Diseño y Desarrollo de IA: área, categoría, portada, sin resolución ni
   const portada = getPortadaTeclab(ia);
   assert.ok(portada);
   assert.ok(existsSync(`public${portada}`));
+});
+
+test('el precio de las dos altas 2027 queda pendiente, sin pedir el mail', () => {
+  for (const carrera of [ia, negocios]) {
+    const fila = { ...carrera, activa: true };
+    assert.equal(precioPendiente(fila), true);
+    assert.equal(carreraConPrecio(fila), false);
+  }
+  assert.equal(precioPendiente({ nombre: 'Tecnicatura Superior en Programación' }), false);
 });
 
 test('Negocios Digitales Financieros: área, tipo, portada, sin resolución ni articulación', () => {
