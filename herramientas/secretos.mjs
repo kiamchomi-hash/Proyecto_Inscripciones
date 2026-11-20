@@ -11,6 +11,7 @@ const ENLACES_SKILLS_PUBLICOS = Object.freeze({
   '.agents/skills/bot-respuestas': '../../.claude/skills/bot_respuestas',
   '.agents/skills/calcar-imagenes': '../../.claude/skills/calcar-imagenes',
   '.agents/skills/cargar-carrera': '../../.claude/skills/cargar_carrera',
+  '.agents/skills/auditar-planes-teclab': '../../.claude/skills/auditar-planes-teclab',
   '.agents/skills/cau-brand': '../../.claude/skills/cau_brand',
   '.agents/skills/cau-design-patterns': '../../.claude/skills/cau_design_patterns',
   '.agents/skills/diseno-uiverse': '../../.claude/skills/diseno-uiverse',

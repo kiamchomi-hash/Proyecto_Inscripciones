@@ -8,8 +8,9 @@ D1 las diferencias confirmadas contra las fuentes oficiales.
 
 ## Flujo
 
-1. Activar la skill cuando el usuario pida revisar planes de Teclab; no crear un
-   recordatorio ni una ejecución automática.
+1. Configurar una descripción para que OpenCode anuncie e invoque la skill cuando
+   la conversación trate planes de estudio o materias de Teclab, especialmente
+   al cierre de un cuatrimestre. La skill no programa por sí misma la revisión.
 2. Leer la lista vigente de carreras activas de Teclab desde D1 y su plan
    publicado.
 3. Consultar la ficha oficial de cada carrera y el PDF oficial enlazado desde
@@ -37,7 +38,8 @@ enlace selectivo correspondiente en `.agents/skills/` y la excepción de uso en
 
 ## Límites
 
-- La skill es manual: no programa ni envía avisos al final del cuatrimestre.
+- La skill se descubre por el contexto de la conversación. Los avisos recurrentes
+  por Telegram se configuran aparte y no ejecutan la auditoría.
 - No publica código ni hace deploy; el contenido de las fichas se sirve desde
   D1.
 - Si la fuente primaria no permite determinar el plan con certeza, no inventa

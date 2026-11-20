@@ -85,6 +85,30 @@ test('los programados se despachan por expresión y una desconocida falla', asyn
   await assert.rejects(manejarProgramado(CRONES.indexnow, contexto), /IndexNow sin base/);
 });
 
+test('los recordatorios de planes de Teclab se envían en las tres fechas locales previstas', async () => {
+  assert.equal(CRONES.recordatorioPlanesTeclabMarzoAgosto, '0 20 1 3,8 *');
+  assert.equal(CRONES.recordatorioPlanesTeclabDiciembre, '0 20 15 12 *');
+
+  const mensajes = [];
+  for (const cron of [
+    CRONES.recordatorioPlanesTeclabMarzoAgosto,
+    CRONES.recordatorioPlanesTeclabDiciembre,
+  ]) {
+    const resultado = await manejarProgramado(cron, {
+      db: null,
+      secretoCron: 'secreto-de-prueba',
+      origen: 'https://ensayo.invalid',
+      buscar: async () => new Response('{}'),
+      telegram: async texto => { mensajes.push(texto); return 'enviado'; },
+    });
+    assert.equal(resultado.status, 200);
+    assert.match(resultado.cuerpo.aviso, /enviado/);
+  }
+
+  assert.equal(mensajes.length, 2);
+  assert.ok(mensajes.every(texto => /planes de estudio.*Teclab/.test(texto)));
+});
+
 test('el cron de vigilancia lee los precios de la base en vez de darlos por ausentes', async () => {
   const consultas = [];
   const db = {

@@ -59,10 +59,10 @@ export function comandoLocal(nombre) {
     control: ['--test', '--test-concurrency=1', 'tests/rate-limit.test.mjs', 'tests/contadores.test.mjs', 'tests/migraciones.test.mjs'],
     api: ['--test', '--test-concurrency=1', 'tests/formularios.test.mjs', 'tests/operativa.test.mjs',
       'tests/upgrade-outbox.test.mjs', 'tests/upgrade-tablas.test.mjs', 'tests/apoyo-faq-baja.test.mjs'],
-    // Crons de newsletter y recordatorio, y la vigilancia con transporte doble:
+    // Crons de newsletter, recordatorios y vigilancia con transporte doble:
     // no se envía nada ni se audita producción.
     crons: ['--test', '--test-concurrency=1', 'tests/newsletter.test.mjs', 'tests/vigilancia.test.mjs',
-      'tests/indexnow-cron.test.mjs'],
+      'tests/indexnow-cron.test.mjs', 'tests/recordatorio-planes-teclab.test.mjs'],
     // Telemetría agregada, alertas, revalidación y registrador local de analítica.
     telemetria: ['--test', '--test-concurrency=1', 'tests/telemetria.test.mjs', 'tests/analitica.test.mjs',
       'tests/whatsapp-clicks.test.mjs', 'tests/calendario-salidas.test.mjs', 'tests/vocacional-embudo.test.mjs'],
