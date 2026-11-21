@@ -18,7 +18,10 @@ import '@/estilos/carreras/career-detail.css';
 import '@/estilos/carreras/career-detail-teclab.css';
 import '@/estilos/carreras/career-detail-siglo21.css';
 import '@/components/index/modales.css';
-import '@/components/formularios/formulario-lead.css';
+// El CSS del formulario NO se importa acá: se pide junto con el chunk dinámico
+// en `deferred-enrollment-form.tsx`, cuando el formulario está por aparecer.
+// Sólo las reglas del hueco viven en `career-detail.css` para reservar el alto
+// desde el primer HTML y que su llegada no empuje la página.
 
 const redirect = redirectCarrera(Astro.params.slug!);
 if (redirect) {
