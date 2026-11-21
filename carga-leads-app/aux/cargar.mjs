@@ -58,6 +58,8 @@ async function main() {
   try {
     const secar = process.argv.includes('--secar');
     const noCrear = process.argv.includes('--no-crear');
+    const soloContacto = process.argv.includes('--solo-contacto');
+    const soloNegocio = process.argv.includes('--solo-negocio');
     const ver = esVer();
     const datos = await leerEntrada();
     const error = validarLead(datos);
@@ -97,7 +99,7 @@ async function main() {
       const resultado = await ejecutarCarga(
         crearAdaptador(pagina, { emitir: informar }),
         { ...datos, telefono: normalizarTelefono(datos.telefono), nivel },
-        { secar, noCrear, emitir: informar },
+        { secar, noCrear, soloContacto, soloNegocio, emitir: informar },
       );
       informar('ok', resultado);
     } finally {

@@ -28,8 +28,12 @@ App de escritorio independiente para cargar leads en HubSpot. Pide nombre, apell
 ## Botones
 
 - **Sesión iniciada / Sesión no iniciada**: muestra el estado y abre el login al pulsarlo. Mientras la ventana está abierta aparece **Ya inicié sesión**, que es el único modo de cerrarla desde la app.
-- **Cargar lead**: abre Brave en segundo plano y ejecuta la carga.
-- **Cargar viendo**: abre Brave en pantalla para seguir la carga en HubSpot y muestra cada paso en el panel **Estado**.
+- **Cargar lead**: abre Brave en segundo plano, busca o crea el contacto y muestra su ID en el estado. No crea el negocio.
+- **Cargar negocio**: usa el correo y la carrera del formulario, abre la ficha del contacto existente, completa el negocio y pulsa **Enviar** una vez. Si el contacto no existe, avisa.
+- **Cargar lead viendo**: igual que Cargar lead, pero con Brave visible.
+- **Cargar negocio viendo**: igual que Cargar negocio, pero con Brave visible.
+
+Los cuatro botones muestran cada paso en el panel **Estado**.
 
 Los pasos se acumulan en el panel y quedan visibles cuando termina. Los errores aparecen en rojo dentro de la misma ventana. Si la ventana de sesión sigue abierta, la carga se detiene y pide cerrarla primero con **Ya inicié sesión**: el perfil no puede usarse en dos ventanas a la vez.
 

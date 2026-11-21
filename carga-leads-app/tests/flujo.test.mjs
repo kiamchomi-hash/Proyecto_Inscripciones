@@ -35,6 +35,22 @@ test('si falla el clic de envío se informa el error y no se reintenta', async (
   assert.ok(!eventos.includes('Listo'));
 });
 
+test('el modo solo contacto termina sin crear el negocio', async () => {
+  const adaptador = adaptadorFalso();
+  const resultado = await ejecutarCarga(adaptador, { correo: 'prueba@example.test' }, { soloContacto: true });
+  assert.deepEqual(adaptador.pasos, ['sesion', 'buscar-contacto', 'crear-contacto']);
+  assert.deepEqual(resultado, { contacto: '101', negocio: null });
+});
+
+test('el modo solo negocio exige que el contacto exista', async () => {
+  const adaptador = adaptadorFalso();
+  await assert.rejects(
+    () => ejecutarCarga(adaptador, { correo: 'prueba@example.test' }, { soloNegocio: true }),
+    /cargá el lead primero/i,
+  );
+  assert.ok(!adaptador.pasos.includes('crear-negocio'));
+});
+
 test('reutiliza el contacto existente sin crear otro', async () => {
   const adaptador = adaptadorFalso();
   adaptador.contactoPorCorreo = async () => { adaptador.pasos.push('buscar-contacto'); return '99'; };

@@ -104,6 +104,12 @@ struct Carrera {
     nivel: String,
 }
 
+#[derive(Clone, Copy, PartialEq)]
+enum Modo {
+    Contacto,
+    Negocio,
+}
+
 #[derive(Default, PartialEq)]
 enum Estado {
     #[default]
@@ -215,7 +221,7 @@ impl AppCarga {
         let _ = std::fs::write(flag, "1");
     }
 
-    fn cargar(&mut self, ver: bool) {
+    fn cargar(&mut self, modo: Modo, ver: bool) {
         if let Err(mensaje) = self.lead.validar() {
             self.error = mensaje;
             self.estado = Estado::Error;
@@ -230,6 +236,10 @@ impl AppCarga {
             let aux = concat!(env!("CARGO_MANIFEST_DIR"), "/aux/cargar.mjs");
             let mut comando = Command::new("node");
             comando.arg(aux);
+            match modo {
+                Modo::Contacto => { comando.arg("--solo-contacto"); }
+                Modo::Negocio => { comando.arg("--solo-negocio"); }
+            }
             if ver { comando.arg("--ver"); }
             let mut hijo = match comando
                 .stdin(Stdio::piped())
@@ -389,14 +399,28 @@ impl eframe::App for AppCarga {
                         let cargar = egui::Button::new(
                             egui::RichText::new("Cargar lead").color(TEXTO).strong(),
                         ).fill(VERDE).min_size(egui::vec2(150.0, 34.0));
-                        let viendo = egui::Button::new(
-                            egui::RichText::new("Cargar viendo").color(TEXTO).strong(),
-                        ).fill(AZUL).min_size(egui::vec2(150.0, 34.0));
+                        let negocio = egui::Button::new(
+                            egui::RichText::new("Cargar negocio").color(TEXTO).strong(),
+                        ).fill(DORADO).min_size(egui::vec2(150.0, 34.0));
                         if ui.add_enabled(self.estado != Estado::Cargando, cargar).clicked() {
-                            self.cargar(false);
+                            self.cargar(Modo::Contacto, false);
                         }
-                        if ui.add_enabled(self.estado != Estado::Cargando, viendo).clicked() {
-                            self.cargar(true);
+                        if ui.add_enabled(self.estado != Estado::Cargando, negocio).clicked() {
+                            self.cargar(Modo::Negocio, false);
+                        }
+                    });
+                    ui.horizontal(|ui| {
+                        let lead_viendo = egui::Button::new(
+                            egui::RichText::new("Cargar lead viendo").color(TEXTO).strong(),
+                        ).fill(AZUL).min_size(egui::vec2(150.0, 34.0));
+                        let negocio_viendo = egui::Button::new(
+                            egui::RichText::new("Cargar negocio viendo").color(TEXTO).strong(),
+                        ).fill(AZUL).min_size(egui::vec2(150.0, 34.0));
+                        if ui.add_enabled(self.estado != Estado::Cargando, lead_viendo).clicked() {
+                            self.cargar(Modo::Contacto, true);
+                        }
+                        if ui.add_enabled(self.estado != Estado::Cargando, negocio_viendo).clicked() {
+                            self.cargar(Modo::Negocio, true);
                         }
                     });
                 });

@@ -16,6 +16,8 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 - Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): **Diseño y Desarrollo de IA cargado el 20/11/2026** (id 251, con el alta de Administración de Negocios Digitales Financieros, id 252) tras confirmarlo el asesor; sigue pendiente Comunicación Digital, esperar a que Teclab la publique. Quedan sin precio y sin resolución las dos del 20/11.
 - Completar la FAQ de las carreras de Teclab (pendiente 3): al final de la cola; requiere trabajar bien las keywords y se espera a contar con un modelo de confianza para redactarlas.
 
+**Reservados para Claude Code (20/11/2026):** los pendientes 5, 8, 9, 13 y 14 se dejan para cuando el usuario tenga Claude; no se abordan desde OpenCode. Siguen en su nivel de prioridad original.
+
 ## Alta
 
 Las altas de Teclab van primero; después las demás.
@@ -28,13 +30,9 @@ Las altas de Teclab van primero; después las demás.
 
 10. **Migrar las carreras de Teclab a un dominio propio** (20/11/2026): el plan está en [`docs/plans/2026-11-20-migracion-teclab-dominio-propio.md`](docs/plans/2026-11-20-migracion-teclab-dominio-propio.md). Se hace de a una carrera por deploy, con 301 desde `siglo21sur.com`, canónicas y sitemap por host, sin tocar Siglo 21 ni las páginas `/teclab`, `/teclab/inscripcion` y `/teclab/test-vocacional`. El plan asume `teclab-lugano.com`: hay que confirmar el nombre antes de empezar. La Tarea 5 (compra del dominio, zona en Cloudflare, token y Turnstile) requiere autorización explícita y pasos del usuario.
 
-12. **Revisar el embudo del test vocacional** (33, general y Teclab). **Medición repuesta el 06/11/2026**: desde el corte a Cloudflare el recorrido no se guardaba en ningún lado —la analítica del navegador es local y Vercel ya no existe—, así que la segunda lectura no se podía hacer. Ahora los pasos iniciado, pregunta, completado y salida se cuentan en D1 (`vocacional_embudo`, migración `0014`) y `npm run leads` los muestra por test y por pregunta. Falta que se acumulen intentos: la próxima lectura útil es a partir del 20/11/2026. Primera lectura (16 al 20/10, antes del corte): el general tuvo 14 visitantes, 6 iniciaron, 4 completaron y la caída estaba en las preguntas 1 a 3; el de Teclab no tuvo ninguna visita. La migración `0014` ya está aplicada en producción; falta publicar el código que manda los pasos. [Cómo leerlo](docs/medicion-test-vocacional.md).
-
 13. **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3, 28/10/2026): es el sitio de GRUPO BTC S.A. (Av. Córdoba 1551, CABA), no el oficial de la universidad, y resuelve la ficha de otra manera. Ejemplo anotado: [Licenciatura en Finanzas](https://siglo21online.com.ar/licenciatura-en-finanzas-detalle/). Lo que se vio ahí y vale evaluar: datos duros arriba y en una línea (duración, modalidad, título, validez con número de resolución), «¿Qué vas a lograr?» con cuatro resultados en tarjetas, comparación explícita de las dos modalidades de cursada (Educación Distribuida y Home) con encuentros y aperturas, plan de estudios plegado por año y cuatrimestre, y un bloque de «más posibilidades» con doble titulación, título intermedio y ámbitos profesionales. El formulario de WhatsApp ya llega con la carrera elegida. Revisar el resto de sus fichas antes de copiar cualquier cosa y decidir qué entra a `cloudflare/` sin inventar condiciones de cursada.
 
 14. **Rediseñar Identidad Argentina: los modales y la página principal** (53). Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
-
-15. **Pasar la carga diaria de precios a la nube** (57, 17/10/2026), si es posible: para no depender de que la PC esté prendida. Hoy corre con dos timers de systemd (Teclab e Identidad a las 9, Siglo 21 a las 10, reintento a las 14; ver [herramientas](docs/herramientas.md#actualización-diaria-desde-linux)). Antes de elegir dónde, resolver lo que hoy la ata a la máquina: la sesión SharePoint guardada para la planilla de CASA, que Cloudflare bloquea al portal de Teclab desde GitHub (por eso el robot de Teclab usa el runner `pc-sede`) y que la base comercial (`ventas/`, `carreras/`) no está en el repo.
 
 ## Media-alta
 
@@ -126,6 +124,8 @@ Las altas de Teclab van primero; después las demás.
 
 Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 
+- **Pasar la carga diaria de precios a la nube** (57; descartada el 20/11/2026): el usuario ya no quiere tenerla online. La carga sigue en la PC con los timers de systemd actuales.
+
 - **Revisar los plugins de ChatGPT y Claude** (28): el usuario ya trabaja full OpenCode y Hermes.
 - **Mostrar el precio dentro del formulario de preinscripción** (34): no se van a poner precios en el formulario. Siglo 21 y Teclab quedan como están.
 - **Autoinscripción de Siglo 21** (44): sólo agrega fricción; la atención la maneja el usuario.
@@ -145,6 +145,7 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Actualizar el folleto de carreras de Teclab para que refleje la oferta vigente de 25 tecnicaturas** (revisión del checklist, 19/11): cerrada con evidencia. Se agregó Gestión de Inteligencia Artificial y Transformación Digital —que en D1 figura en `Teclab - Tecnología`— a la lista de WhatsApp. El nombre completo no cabe en una fila, así que se parte en dos y la pieza pasó de 1080×1350 a 1080×1427; el generador calcula el alto y el botón y el pie bajan con las filas. Verificado: 25 filas, sin desbordes ni solapes. La fuente, la verificación y la captura quedaron juntas en `contenidos/teclab/aprobados/generales/whatsapp/2026-09-25-lista-carreras-whatsapp/`. Se actualizó también el webp del sitio y la dimensión que espera el carrusel. [Evidencia](referencias/2026-11-19-checklist-teclab-tres-carreras.md).
 
 - **Verificar los planes de estudio de todas las carreras** (09/11/2026): cerrada con evidencia. Se cotejaron las 25 tecnicaturas de Teclab contra `teclab.edu.ar` y las 69 carreras de Siglo 21 contra `21.edu.ar` ([evidencia](referencias/2026-11-20-planes-siglo21.md)). En Teclab se encontraron y publicaron cinco correcciones (`sql/2026-11-20-corregir-planes-teclab.sql`); en Siglo 21 no hubo cambios de materias. Las dos diferencias que aparecieron en un primer pasaje automático eran un error del extractor, descartado contra D1 antes de escribir. Queda fuera de alcance Identidad Argentina, cuyos planes se rehicieron el 09/11 desde los programas oficiales.
+- **Revisar el embudo del test vocacional** (12): cerrada con la primera lectura útil, 14 días después de repuesta la medición. `npm run leads -- --dias=15` y una consulta directa a `vocacional_embudo` mostraron eventos del 06/11 al 20/11: 17 iniciados y 9 completados (52,9%) en el general, con la caída repartida entre las preguntas 1 a 10 en lugar del escalón en las primeras tres de la lectura anterior; en Teclab, 2 iniciados y 2 completados, muestra demasiado chica para concluir. La nota que decía que faltaba publicar el emisor quedó desactualizada: los datos prueban que está publicado y acumulando desde el 06/11. [Detalle](docs/historial-pendientes.md#embudo-del-test-vocacional-20112026).
 
 ## Cerradas el 19/11/2026
 

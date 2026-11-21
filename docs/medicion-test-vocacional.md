@@ -88,3 +88,6 @@ Implementación: [controlador](../lib/vocacional-analytics.ts),
 [hook](../components/test-vocacional/use-analytics-vocacional.ts),
 [contador](../cloudflare/src/datos/vocacional-embudo.ts),
 [pruebas](../tests/vocacional-analytics.test.mjs).
+
+La primera lectura con datos acumulados (20/11/2026) está en
+[el historial](historial-pendientes.md#embudo-del-test-vocacional-20112026).
