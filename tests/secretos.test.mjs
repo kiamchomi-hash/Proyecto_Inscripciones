@@ -4,7 +4,8 @@ import { esEnlaceSkillPublicoValido, esRutaPrivada } from '../herramientas/secre
 test('rutas comerciales y credenciales se bloquean sin bloquear código público', () => {
   for (const p of ['carreras/precio.md', 'ventas/corpus.json', 'herramientas/ventas/rutas.mjs', 'notas-locales/a.md', '.env.local', 'folder/.env.production', 'credenciales.json', 'x-service_account.json', 'secrets/key.pem']) assert.equal(esRutaPrivada(p), true, p);
   for (const p of ['app/carreras/page.tsx', 'components/carreras/ficha.tsx', '.env.example', 'docs/variables-de-entorno.md', '.agents/skills/cau-brand']) assert.equal(esRutaPrivada(p), false, p);
-  assert.equal(esRutaPrivada('.agents/skills/modern-web-guidance'), true);
+  assert.equal(esRutaPrivada('.agents/skills/modern-web-guidance'), false);
+  assert.equal(esRutaPrivada('.agents/skills/security-audit'), false);
   assert.equal(esRutaPrivada('.agents/skills/CAU-BRAND'), true);
 });
 
