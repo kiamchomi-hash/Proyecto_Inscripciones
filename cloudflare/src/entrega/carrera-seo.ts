@@ -20,7 +20,7 @@ const ESPECIFICOS: Record<string, { title?: string; description: string }> = {
     description: 'Estudiá mercados, inversiones, riesgo y tecnología financiera. Conocé el plan de estudios y cómo inscribirte en la Licenciatura en Finanzas a distancia.',
   },
   'Tecnicatura Superior en Marketing Digital': {
-    title: 'Tecnicatura en Marketing Digital | Teclab Online',
+    title: 'Tecnicatura Superior en Marketing Digital | Teclab',
     description: 'Estudiá marketing digital, publicidad, contenidos, e-commerce y experiencia del cliente. Título oficial, 2 años y modalidad 100% online en Teclab.',
   },
   'Tecnicatura Superior en Cloud Administration': {

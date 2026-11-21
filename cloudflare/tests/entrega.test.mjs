@@ -316,6 +316,18 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     );
   }
 
+  await db.prepare(`INSERT INTO carreras
+    (id, nombre, nivel, modalidad, orden, prefix, nombre_corto, duracion, titulo)
+    VALUES (34, 'Tecnicatura Superior en Marketing Digital', 'Teclab - Gestión',
+      '100% online', 34, 'Tecnicatura Superior', 'Marketing Digital', '2 años',
+      'Técnico Superior en Marketing Digital')`).run();
+  const marketingTeclab = await astro.fetch('/carreras/tecnicatura-superior-en-marketing-digital');
+  assert.equal(marketingTeclab.status, 200);
+  assert.match(
+    (await marketingTeclab.text()).split('</head>', 1)[0],
+    /<title>Tecnicatura Superior en Marketing Digital \| Teclab<\/title>/,
+  );
+
   const robots = await astro.fetch('/robots.txt');
   assert.equal(robots.status, 200);
   assert.equal(robots.headers.get('content-type'), 'text/plain');
