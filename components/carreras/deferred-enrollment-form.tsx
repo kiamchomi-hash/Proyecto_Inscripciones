@@ -28,12 +28,9 @@ type FormProps = Props & { modo: Modo };
 let formPromise: Promise<{ default: ComponentType<FormProps> }> | undefined;
 
 function importarFormulario() {
-  // El CSS del formulario viaja con el chunk dinámico: en la ficha no se usa
-  // hasta que el observador se acerca al hueco o se toca «Quiero inscribirme».
-  formPromise ??= Promise.all([
-    import('@/components/formularios/formulario-lead'),
-    import('@/components/formularios/formulario-lead.css'),
-  ]).then(([modulo]) => modulo);
+  // El puente trae el componente y su CSS dentro del mismo chunk: en la ficha
+  // no se usan hasta que el observador se acerca al hueco o se toca el CTA.
+  formPromise ??= import('@/components/carreras/formulario-lead-diferido');
   return formPromise;
 }
 

@@ -1,4 +1,6 @@
-// Vite permite importar hojas de estilo desde módulos TS. `deferred-enrollment-form.tsx`
-// importa `formulario-lead.css` de forma dinámica para que viaje con el chunk
-// del formulario en lugar de bloquear el primer pintado de la ficha.
-declare module '*.css';
+// `?inline` devuelve el CSS como texto para inyectarlo cuando se carga el chunk
+// del formulario, en vez de registrar una hoja que Astro subiría al `<head>`.
+declare module '*.css?inline' {
+  const contenido: string;
+  export default contenido;
+}
