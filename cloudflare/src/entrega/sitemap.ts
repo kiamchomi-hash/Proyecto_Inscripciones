@@ -2,6 +2,7 @@ import {
   carreraToSlug, esCarreraVisible, type CarreraSlide,
 } from '../../../components/index/types.ts';
 import { esTeclab, getPortadaTeclab } from '../../../components/index/teclab.ts';
+import { CARRERAS_NO_INDEXADAS } from './noindex';
 import { BASE, type EntradaSitemap } from './sitemap-xml.ts';
 
 // Misma lista, mismo orden y mismos metadatos que `app/sitemap.ts`. Los datos
@@ -63,6 +64,7 @@ export function construirSitemap(datos: DatosSitemap): EntradaSitemap[] {
   // compartida.
   const carreras: EntradaSitemap[] = datos.carreras
     .filter(carrera => esCarreraVisible(carrera))
+    .filter(carrera => !CARRERAS_NO_INDEXADAS.has(`/carreras/${carreraToSlug(carrera)}`))
     .map(carrera => {
       const imagen = imagenDeCarrera(carrera);
       return {

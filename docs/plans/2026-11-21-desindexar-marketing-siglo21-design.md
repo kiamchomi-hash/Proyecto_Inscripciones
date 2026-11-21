@@ -9,6 +9,7 @@ búsquedas.
 ## Alcance acordado
 
 - Aplicar `noindex` únicamente a `/carreras/tecnicatura-en-marketing-y-publicidad-digital`.
+- Excluir esa URL del sitemap para no presentarla como indexable.
 - Mantener la URL publicada y accesible por enlace directo, incluido el acceso
   desde WhatsApp.
 - No modificar otras fichas de Siglo 21 ni la ficha de Teclab.
@@ -16,5 +17,6 @@ búsquedas.
 ## Verificación
 
 Confirmar en el HTML servido que la ruta objetivo expone `noindex`, las demás
-fichas conservan su directiva actual y la compilación del Worker termina bien.
-Search Console puede tardar en reflejar la exclusión.
+fichas conservan su directiva actual, la URL no aparece en el sitemap y la
+compilación del Worker termina bien. Search Console puede tardar en reflejar la
+exclusión.

@@ -270,6 +270,34 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   }
   assert.match(xml, /xmlns:image="http:\/\/www\.google\.com\/schemas\/sitemap-image\/1\.1"/);
 
+  const db = (await worker.getEnv()).DB;
+  await db.prepare(`INSERT INTO carreras
+    (id, nombre, nivel, modalidad, orden, prefix, nombre_corto, duracion)
+    VALUES (30, 'Marketing y Publicidad Digital', 'Pregrado', 'A distancia', 90,
+      'Tecnicatura', 'Marketing y Publicidad Digital', '2 años')`).run();
+
+  const sitemapActualizado = await astro.fetch('/sitemap.xml');
+  assert.equal(sitemapActualizado.status, 200);
+  assert.doesNotMatch(
+    await sitemapActualizado.text(),
+    /\/carreras\/tecnicatura-en-marketing-y-publicidad-digital(?:<|$)/,
+  );
+
+  for (const [ruta, robotsEsperado] of [
+    ['/carreras/tecnicatura-en-marketing-y-publicidad-digital', 'noindex, follow'],
+    ['/carreras/tecnicatura-superior-en-programacion', undefined],
+    ['/carreras/tecnicatura-en-programacion', undefined],
+  ]) {
+    const respuesta = await astro.fetch(ruta);
+    assert.equal(respuesta.status, 200, ruta);
+    const head = (await respuesta.text()).split('</head>', 1)[0];
+    assert.equal(
+      head.match(/<meta name="robots" content="([^"]+)">/)?.[1],
+      robotsEsperado,
+      ruta,
+    );
+  }
+
   const robots = await astro.fetch('/robots.txt');
   assert.equal(robots.status, 200);
   assert.equal(robots.headers.get('content-type'), 'text/plain');

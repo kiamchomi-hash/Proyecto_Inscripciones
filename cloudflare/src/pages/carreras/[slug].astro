@@ -4,6 +4,7 @@ import Sitio from '../../layouts/Sitio.astro';
 import PaginaCarrera, { relacionadasCarrera } from '../../entrega/PaginaCarrera';
 import { carreraEquivalente } from '@/components/carreras/carrera-equivalente';
 import { imagenHeroCarrera } from '@/components/carreras/career-content';
+import { robotsCarrera } from '../../entrega/noindex';
 import { encodeImagePath } from '@/lib/imagenes/rutas';
 import { srcSetDe } from '@/lib/imagenes/responsivas';
 import { carrerasPublicas, carreraPorSlug } from '../../datos/carreras';
@@ -55,7 +56,8 @@ const preloadFuente = carrera.nivel === 'Identidad Argentina' ? undefined
 <Sitio titulo={titulo} descripcion={descripcion} canonical={canonical} ruta={ruta} palabrasClave={palabrasClave}
   og={{ tipo: '', titulo, descripcion, url: canonical, imagen: { url: imagen } }}
   twitter={{ tarjeta: 'summary_large_image', titulo, descripcion, imagen }}
-  preloadImagen={preloadImagen} preloadFuente={preloadFuente}>
+  preloadImagen={preloadImagen} preloadFuente={preloadFuente}
+  robots={robotsCarrera(ruta)}>
   {/* `client:idle` y no `client:load`: la ficha viene renderizada del servidor
       y la isla arrastra 331 KB de JS (47 KB de chunk de página) que, con
       `client:load`, se pedían y ejecutaban durante la carga. Medido en red
