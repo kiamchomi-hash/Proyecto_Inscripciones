@@ -275,16 +275,34 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     (id, nombre, nivel, modalidad, orden, prefix, nombre_corto, duracion)
     VALUES (30, 'Marketing y Publicidad Digital', 'Pregrado', 'A distancia', 90,
       'Tecnicatura', 'Marketing y Publicidad Digital', '2 años')`).run();
+  for (const [id, nombre, nombreCorto] of [
+    [31, 'Relaciones Laborales', 'Relaciones Laborales'],
+    [32, 'Gestión Contable e Impositiva', 'Gestión Contable e Impositiva'],
+    [33, 'Redes Informáticas y Telecomunicaciones', 'Redes Informáticas y Telecomunicaciones'],
+  ]) {
+    await db.prepare(`INSERT INTO carreras
+      (id, nombre, nivel, modalidad, orden, prefix, nombre_corto, duracion)
+      VALUES (?, ?, 'Pregrado', 'A distancia', ?, 'Tecnicatura', ?, '2 años')`)
+      .bind(id, nombre, id, nombreCorto).run();
+  }
 
   const sitemapActualizado = await astro.fetch('/sitemap.xml');
   assert.equal(sitemapActualizado.status, 200);
-  assert.doesNotMatch(
-    await sitemapActualizado.text(),
-    /\/carreras\/tecnicatura-en-marketing-y-publicidad-digital(?:<|$)/,
-  );
+  const sitemapTexto = await sitemapActualizado.text();
+  for (const ruta of [
+    '/carreras/tecnicatura-en-marketing-y-publicidad-digital',
+    '/carreras/tecnicatura-en-relaciones-laborales',
+    '/carreras/tecnicatura-en-gestion-contable-e-impositiva',
+    '/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones',
+  ]) {
+    assert.ok(!sitemapTexto.includes(ruta), `${ruta} no debe aparecer en el sitemap`);
+  }
 
   for (const [ruta, robotsEsperado] of [
     ['/carreras/tecnicatura-en-marketing-y-publicidad-digital', 'noindex, follow'],
+    ['/carreras/tecnicatura-en-relaciones-laborales', 'noindex, follow'],
+    ['/carreras/tecnicatura-en-gestion-contable-e-impositiva', 'noindex, follow'],
+    ['/carreras/tecnicatura-en-redes-informaticas-y-telecomunicaciones', 'noindex, follow'],
     ['/carreras/tecnicatura-superior-en-programacion', undefined],
     ['/carreras/tecnicatura-en-programacion', undefined],
   ]) {
