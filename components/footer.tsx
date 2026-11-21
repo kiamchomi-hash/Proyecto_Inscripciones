@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
-import { MAPS_URL } from '@/lib/sede';
 import './footer-teclab.css';
 
 /**
@@ -56,9 +55,8 @@ const COLUMNA = 'py-7 border-t border-[rgba(0,199,177,0.12)] lg:py-0 lg:border-t
  * porque una direccion se lee como un requisito de asistencia y frena al lead
  * que vive lejos. WhatsApp usa el número de la casa; el teléfono conserva el de la sede.
  */
-export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = false }: {
+export default function SiteFooter({ casa = 'cau', fuente = '' }: {
   casa?: 'cau' | 'teclab';
-  sinUbicacion?: boolean;
   /** Clase que expone la tipografía de la casa (`--font-poppins` en Teclab). */
   fuente?: string;
 } = {}) {
@@ -119,10 +117,6 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
                     loading="lazy"
                   />
                 </div>
-                <div className="text-center lg:text-left">
-                  <p className="text-[17px] font-black text-white uppercase tracking-tight leading-none lg:text-base">CAU ONLINE</p>
-                  <p className="text-[13px] text-[#48b3a4] mt-1.5 lg:text-xs">Universidad Siglo 21</p>
-                </div>
               </div>
             )}
             <p className="mx-auto mt-5 max-w-md text-[15px] leading-7 text-[#c0d5d0] lg:mx-0 lg:mt-4 lg:max-w-sm lg:text-sm lg:leading-relaxed">
@@ -152,19 +146,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
               en cada mitad. */}
           <div className={`${COLUMNA} lg:!pl-0`}>
             <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Contacto</h2>
-            <ul className={`grid w-full items-center text-left text-[13px] lg:mx-auto lg:block lg:w-fit lg:space-y-4 lg:text-sm ${teclab || sinUbicacion ? 'grid-cols-1 justify-items-center lg:justify-items-start' : 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'}`}>
-              {!teclab && !sinUbicacion && (
-              <li className="grid min-w-0 place-items-center border-r border-[rgba(0,199,177,0.12)] px-2 lg:block lg:justify-items-start lg:border-r-0 lg:px-0">
-                <div className="flex w-full min-w-0 flex-col items-center gap-2 text-center lg:w-fit lg:flex-row lg:items-start lg:gap-3 lg:text-left">
-                <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 lg:w-8 lg:h-8 lg:rounded-lg" style={{ background: 'rgba(0, 199, 177, 0.1)', border: '1px solid rgba(0, 199, 177, 0.2)' }}>
-                  <svg className="w-3.5 h-3.5 text-[#00c7b1]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                </span>
-                <a href={MAPS_URL} target="_blank" rel="noopener" className="min-w-0 py-0.5 text-[13px] leading-5 text-[#c0d5d0] transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white lg:py-0 lg:text-sm lg:leading-normal">
-                  Guaminí 4876, Piso 1<br />Villa Lugano, CABA
-                </a>
-                </div>
-              </li>
-              )}
+            <ul className="grid w-full grid-cols-1 items-center justify-items-center text-left text-[13px] lg:mx-auto lg:block lg:w-fit lg:space-y-4 lg:text-sm">
               <li className="grid min-w-0 place-items-center px-2 lg:block lg:justify-items-start lg:px-0">
                 <div className={`flex min-w-0 items-center gap-2 lg:w-fit lg:flex-row lg:items-center lg:gap-3 lg:text-left ${teclab ? 'w-fit' : 'w-full flex-col text-center'}`}>
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 lg:w-8 lg:h-8 lg:rounded-lg" style={{ background: 'rgba(0, 199, 177, 0.1)', border: '1px solid rgba(0, 199, 177, 0.2)' }}>
@@ -225,7 +207,9 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
           style={{ borderTop: '1px solid rgba(0, 199, 177, 0.12)' }}
         >
           <p className="max-w-sm text-center text-xs leading-5 text-[#7ca19b]/80 sm:text-left sm:text-[11px] sm:leading-normal sm:text-[#7ca19b]/70">
-            &copy; 2027 {teclab ? 'Teclab' : 'CAU Online'} &mdash; Universidad Siglo 21. Todos los derechos reservados.
+            {teclab
+              ? '© 2027 Teclab — Universidad Siglo 21. Todos los derechos reservados.'
+              : '© 2027. Todos los derechos reservados.'}
           </p>
 
           <div className="flex items-center gap-3 sm:gap-2.5">
