@@ -4,6 +4,10 @@ Reorganizado y depurado el 30/09/2026. Los cierres y reformulaciones indican su 
 
 [Volver a los pendientes](../PENDIENTES.md).
 
+## Fichas de Teclab — comparación y carga, 21/11/2026
+
+- [x] **Comparar las fichas de Teclab contra `teclab.edu.ar` y `siglo21online.com.ar/teclab`.** Se recorrieron la ficha oficial de Programación y el catálogo de GRUPO BTC; lo revisado el 30/10 ya está en [el repaso anterior](#teclab--repaso-de-las-fichas-oficiales-30102026). El botón de descarga del plan y el bloque de resoluciones se aplicaron el 31/10. En esta última pasada se aplicó el diferimiento del CSS del formulario (`b097904`, `625ec44`): el CSS viaja como texto en el chunk del formulario y las reglas del hueco de 34 rem quedaron en `career-detail.css`. El primer intento con import dinámico de hoja no sirvió porque Astro la subía al `<head>` de la ruta; se comprobó en el manifest del build. Verificado: `npm run check` 328/328, build del Worker, workflow `Verificaciones` exitoso, `npm run smoke` verde y 6 hojas en el `<head>` de la ficha publicada, sin `formulario-lead.css`.
+
 ## Planes de estudio, 20/11/2026
 
 - [x] **Verificar los planes de todas las carreras.** Se compararon las 25 tecnicaturas de Teclab contra `teclab.edu.ar` y las 69 carreras de Siglo 21 contra `21.edu.ar`, materia por materia y cuatrimestre por cuatrimestre. En Teclab se encontraron cinco diferencias, corregidas en D1 con autorización y verificadas en las fichas publicadas (`sql/2026-11-20-corregir-planes-teclab.sql`, `referencias/2026-11-20-planes-teclab.md`). En Siglo 21 no hubo cambios: las 21 diferencias que señaló el cotejo automático son líneas partidas o unidas, abreviaturas, títulos intermedios y bloques comerciales de la fuente, revisadas una por una; dos tecnicaturas se compararon por año o semestre porque la fuente no usa cuatrimestres. Un primer pasaje marcó dos carreras de Teclab como incompletas por un filtro que descartaba las materias que empiezan con «Experiencia»: la consulta a D1 mostró que ya las tenían, se corrigió el extractor y no se escribió nada (el `UPDATE` devolvió `changes: 0`). Detalle y fuentes en `referencias/2026-11-20-planes-siglo21.md`.
