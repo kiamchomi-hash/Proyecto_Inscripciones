@@ -34,14 +34,6 @@ Las altas de Teclab van primero; después las demás.
 
 14. **Rediseñar Identidad Argentina: los modales y la página principal** (53). Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
 
-## Media-alta
-
-16. **Estudiar la venta exitosa de seguros** (19, 28/10/2026): ver cómo se vende un seguro —recorrido del asesor, objeciones, cierre y seguimiento— y qué se puede traer al trato con los leads del CAU.
-
-17. **Revisar si Bienestar Integral y Mindfulness siguen dentro del alcance del convenio** (31). Lo que se cobre por ahí entra como comisión de Identidad.
-
-18. **Reducir el formulario de preinscripción de Siglo 21** (36). Hoy pide 21 campos copiados de la ficha del portal (`components/formularios/casas.ts`). El usuario define cuáles quedan; la propuesta es el mínimo de contacto: nombre, apellido, DNI, email, teléfono y localidad. Antes de tocarlo, leer `docs/formularios-por-casa.md`.
-
 ## Media
 
 - **Ampliar la sección de Excel en las clases de apoyo de Computación** (19/11/2026): sumar funciones lógicas (`Y`, `O`, `SI`, `SI` con `Y` y con `O`) y búsquedas (`BUSCARV`, `INDICE`, `COINCIDIR` e `INDICE` con `COINCIDIR`). Falta retomar el diseño y decidirlo antes de implementar; la vista previa temporal se canceló.
@@ -126,6 +118,10 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 
 - **Pasar la carga diaria de precios a la nube** (57; descartada el 20/11/2026): el usuario ya no quiere tenerla online. La carga sigue en la PC con los timers de systemd actuales.
 
+- **Estudiar la venta exitosa de seguros** (16, 19; descartada el 20/11/2026): el usuario dice que no es necesario.
+
+- **Revisar si Bienestar Integral y Mindfulness siguen dentro del alcance del convenio** (17, 31; descartada el 20/11/2026): ya no le interesa al usuario.
+
 - **Revisar los plugins de ChatGPT y Claude** (28): el usuario ya trabaja full OpenCode y Hermes.
 - **Mostrar el precio dentro del formulario de preinscripción** (34): no se van a poner precios en el formulario. Siglo 21 y Teclab quedan como están.
 - **Autoinscripción de Siglo 21** (44): sólo agrega fricción; la atención la maneja el usuario.
@@ -139,6 +135,8 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Comparar las fichas de Teclab contra `teclab.edu.ar` y `siglo21online.com.ar/teclab` para mejorar el frontend** (11): cerrada con evidencia. Se aplicó el diferimiento del CSS del formulario en las fichas (`b097904` y `625ec44`). Verificado en producción: 6 hojas en el `<head>`, sin `formulario-lead.css`, `npm run smoke` todo verde y workflow `Verificaciones` exitoso.
 
 ## Cerradas el 20/11/2026
+
+- **Reducir el formulario de preinscripción de Siglo 21** (18, 36): cerrada con evidencia. El commit `89d5bc0` bajó la preinscripción de 21 a 11 campos en `components/formularios/casas.ts`: quedan tipoDocumento, dni, apellido, nombre, email, fechaNacimiento, nacionalidad, sexo, estadoCivil, lugarNacimiento y telefono; se retiraron los del domicilio, país de residencia y localidad. El recorte efectivo conserva los datos que pide el portal en lugar del mínimo de contacto que se proponía. [Detalle](docs/historial-pendientes.md#preinscripción-de-siglo-21-y-descartes-20112026).
 
 - **Revisar la indexación de Desarrollo de Videojuegos** (pendiente 2): cerrada con evidencia ya asentada el 15/11 en el [historial](docs/historial-pendientes.md#indexación--desarrollo-de-videojuegos-15112026) y reconfirmada el 20/11 con `npm run seo -- --inspeccion=` sobre las dos URLs vigentes: `/carreras/siglo-21-video-juegos` y `/carreras/tecnicatura-superior-en-desarrollo-de-videojuegos` dan `PASS` / «Enviada e indexada», `robots ALLOWED` y canónica de Google coincidente con cada URL (último rastreo 15/11 y 08/11 respectivamente). La URL antigua `/carreras/tecnicatura-en-videojuegos` sigue dando «Google no reconoce esta URL», pero es un 301 y no es la ficha vigente. La línea de aplazados estaba desactualizada; se retira de la cola. [Evidencia](referencias/2026-11-20-indexacion-videojuegos.md).
 
