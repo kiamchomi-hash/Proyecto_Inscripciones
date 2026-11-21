@@ -24,7 +24,6 @@ const ENLACES = [
   { href: '/clases-apoyo', label: 'Clases de Apoyo' },
   { href: '/novedades/1', label: 'Novedades' },
   { href: '/faq', label: 'Preguntas Frecuentes' },
-  { href: '/contacto', label: 'Contacto' },
 ];
 
 const REDES = [
@@ -101,17 +100,27 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
                 loading="lazy"
               />
             ) : (
-              <div className="flex items-center justify-center gap-3.5 lg:justify-start lg:gap-3">
-                <Image
-                  src="/imagenes/imagenes_cau/logo_cau-160.webp"
-                  alt=""
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 object-contain brightness-0 invert opacity-90 shrink-0 lg:w-11 lg:h-11"
-                  loading="lazy"
-                />
-                <div className="text-left">
-                  <p className="text-[17px] font-black text-white uppercase tracking-tight leading-none lg:text-base">{sinUbicacion ? 'CAU' : 'CAU Villa Lugano'}</p>
+              <div>
+                <div className="mb-4 flex items-center justify-center gap-3 lg:justify-start">
+                  <Image
+                    src="/imagenes/imagenes_cau/siglo21-marca.svg"
+                    alt="Universidad Siglo 21"
+                    width={206}
+                    height={75}
+                    className="h-7 w-auto opacity-90"
+                    loading="lazy"
+                  />
+                  <Image
+                    src="/imagenes/teclab/logo-teclab-oficial.svg"
+                    alt="Teclab"
+                    width={147}
+                    height={51}
+                    className="h-7 w-auto opacity-90"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="text-center lg:text-left">
+                  <p className="text-[17px] font-black text-white uppercase tracking-tight leading-none lg:text-base">CAU ONLINE</p>
                   <p className="text-[13px] text-[#48b3a4] mt-1.5 lg:text-xs">Universidad Siglo 21</p>
                 </div>
               </div>
@@ -119,7 +128,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
             <p className="mx-auto mt-5 max-w-md text-[15px] leading-7 text-[#c0d5d0] lg:mx-0 lg:mt-4 lg:max-w-sm lg:text-sm lg:leading-relaxed">
               {teclab
                 ? 'Tecnicaturas y cursos del Instituto Técnico Superior Teclab, 100% online y con articulación a Universidad Siglo 21. Te acompañamos de la inscripción al título.'
-                : sinUbicacion ? 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual.' : 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual y acompañamiento presencial en Villa Lugano.'}
+                : 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual.'}
             </p>
           </div>
 
@@ -216,7 +225,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '', sinUbicacion = f
           style={{ borderTop: '1px solid rgba(0, 199, 177, 0.12)' }}
         >
           <p className="max-w-sm text-center text-xs leading-5 text-[#7ca19b]/80 sm:text-left sm:text-[11px] sm:leading-normal sm:text-[#7ca19b]/70">
-            &copy; {new Date().getFullYear()} {teclab ? 'Teclab' : sinUbicacion ? 'CAU' : 'CAU Villa Lugano'} &mdash; Universidad Siglo 21. Todos los derechos reservados.
+            &copy; 2027 {teclab ? 'Teclab' : 'CAU Online'} &mdash; Universidad Siglo 21. Todos los derechos reservados.
           </p>
 
           <div className="flex items-center gap-3 sm:gap-2.5">

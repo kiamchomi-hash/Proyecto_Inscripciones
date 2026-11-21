@@ -17,7 +17,6 @@ const NAV_LINKS = [
   { href: '/clases-apoyo', label: 'Clases de Apoyo' },
   { href: '/novedades/1', label: 'Novedades' },
   { href: '/faq', label: 'FAQ' },
-  { href: '/contacto', label: 'Contacto' },
 ];
 
 const SOCIALS = [
