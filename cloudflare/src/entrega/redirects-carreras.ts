@@ -16,15 +16,24 @@ const BAJAS_301 = [
 // respondían 404 (Search Console, 22/11/2026: Gestión de Alimentos en posición
 // 5,8 con 16 clics al mes). Van a la landing de Teclab y no a la home: quien
 // buscaba una tecnicatura de Teclab encuentra ahí la oferta vigente.
+// Ninguna figura en el sitemap oficial de carreras de Teclab
+// (teclab.edu.ar/carrera-sitemap.xml, 19/11/2026) ni en la D1 de producción.
+// Cinco son de las altas de los bloques 2 y 3 del 16/10/2026; Agile Coaching
+// era además destino de un renombre, y el salto terminaba en 404.
 const BAJAS_TECLAB = [
   'tecnicatura-superior-en-gestion-de-alimentos',
+  'tecnicatura-superior-en-comercio-exterior',
+  'tecnicatura-superior-en-recursos-humanos',
+  'tecnicatura-superior-en-diseno-de-experiencia-de-usuario-user-experience',
+  'tecnicatura-superior-en-administracion-de-riesgos-empresariales',
+  'tecnicatura-superior-en-agile-coaching',
+  'tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',
 ];
 const BAJAS_308 = ['tecnicatura-superior-en-fintech', 'tecnicatura-superior-en-acompanamiento-terapeutico', 'tecnicatura-superior-en-producto-digital'];
 const BAJAS_302 = ['diplomatura-en-bienestar-integral-herramientas-para-transformar-te',
   'diplomatura-en-inteligencia-artificial', 'diplomatura-en-marketing-para-emprendedores-y-duenos-de-negocios',
   'diplomatura-en-management-hotelero'];
 const RENOMBRES: Record<string, [string, 301 | 308]> = {
-  'tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching': ['tecnicatura-superior-en-agile-coaching', 308],
   // La ficha de Videojuegos de Siglo 21 se publicó con URLs nuevas el 30/08 y el
   // 29/10/2026 sin redirección. La anterior `/inscripcion` sí quedó indexada
   // (rastreada el 15/10/2026) y desde el rename da 404: es la página en blanco

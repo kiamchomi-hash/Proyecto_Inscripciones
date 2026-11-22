@@ -204,15 +204,32 @@ test('cada fila trae descripción, enfoque, plan, competencias y FAQ con el form
   }
 });
 
-test('ningún redirect tapa los slugs nuevos', () => {
+// Cinco de las nueve salieron de la oferta de Teclab (no figuran en su sitemap
+// oficial de carreras del 19/11/2026) y redirigen a /teclab. Las cuatro que
+// siguen no pueden quedar tapadas por ningún redirect.
+const BAJAS = new Set([
+  'tecnicatura-superior-en-comercio-exterior',
+  'tecnicatura-superior-en-administracion-de-riesgos-empresariales',
+  'tecnicatura-superior-en-diseno-de-experiencia-de-usuario-user-experience',
+  'tecnicatura-superior-en-agile-coaching',
+  'tecnicatura-superior-en-recursos-humanos',
+]);
+
+test('ningún redirect tapa los slugs vigentes y las bajas van a /teclab', () => {
   const slugs = new Set();
   for (const fila of filasDeFixture()) {
     const slug = tipos.carreraToSlug({ ...fila, nombre: nombreActual(fila.nombre) });
-    assert.equal(buscarRedireccion(`/carreras/${slug}`), null, slug);
-    assert.equal(buscarRedireccion(`/carreras/${slug}/inscripcion`), null, slug);
+    if (BAJAS.has(slug)) {
+      assert.equal(buscarRedireccion(`/carreras/${slug}`)?.destino, '/teclab', slug);
+      assert.equal(buscarRedireccion(`/carreras/${slug}/inscripcion`)?.destino, '/teclab', slug);
+    } else {
+      assert.equal(buscarRedireccion(`/carreras/${slug}`), null, slug);
+      assert.equal(buscarRedireccion(`/carreras/${slug}/inscripcion`), null, slug);
+    }
     slugs.add(slug);
   }
   assert.equal(slugs.size, NUEVAS.length);
+  for (const baja of BAJAS) assert.ok(slugs.has(baja), baja);
 });
 
 // ── Ficha e inscripción ──
@@ -259,10 +276,10 @@ test('cada una tiene página de inscripción con un título que entra', () => {
   }
 });
 
-test('el slug largo de Agile Coaching redirige al corto', () => {
+test('el slug largo de Agile Coaching va directo a /teclab, sin pasar por el corto', () => {
   assert.deepEqual(buscarRedireccion('/carreras/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching'), {
     origen: '/carreras/tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching',
-    destino: '/carreras/tecnicatura-superior-en-agile-coaching',
-    estado: 308,
+    destino: '/teclab',
+    estado: 301,
   });
 });
