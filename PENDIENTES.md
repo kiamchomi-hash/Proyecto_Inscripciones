@@ -22,6 +22,8 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 Las altas de Teclab van primero; después las demás.
 
+4. **Mejorar los modales de Teclab** (22/11/2026): prioridad alta, pidieron atenderlos antes que el resto. Tienen errores que todavía no se enumeraron; primero relevarlos en escritorio y celular en las páginas donde aparecen y anotarlos acá antes de tocar nada.
+
 5. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
 
 8. **Crear folletos con CTA al frente y lista de carreras al dorso, empezando por Teclab** (41a).
