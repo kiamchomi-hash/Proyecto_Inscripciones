@@ -566,14 +566,13 @@
   z-index: 1;
 }
 
+/* Sin la trama de 42 px en ningun slide (22/11/2026): queda solo la luz del
+   acento sobre la tinta. */
 .teclab-slide {
   background-color: var(--teclab-ink);
   background-image:
-    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 50%),
-    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 22%, transparent), transparent 54%),
-    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
-    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-  background-size: auto, auto, auto, 42px 42px;
+    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 10%, transparent), transparent 50%),
+    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 16%, transparent), transparent 54%);
 }
 
 /* Portada (primer slide), 22/11/2026: sin la trama de 42 px y sin vidrio en
@@ -597,8 +596,21 @@
   }
 }
 
+/* Superficies planas y opacas, sin filete ni sombra (docs/criterios.md, «Nada
+   de glassmorfismo»). La honda es el fondo de un marco; la alta, lo que va
+   encima (tarjetas y botones apagados). */
 .teclab-superficie {
   background: color-mix(in srgb, #fff 7%, var(--teclab-ink));
+}
+
+/* El contenido del plan va en tinta oscura (22/11/2026). El indice lleva un
+   tono mas hondo todavia para que los dos lados se lean distintos. */
+.teclab-superficie-honda {
+  background: color-mix(in srgb, #000 28%, var(--teclab-ink));
+}
+
+.teclab-superficie-baja {
+  background: color-mix(in srgb, #000 45%, var(--teclab-ink));
 }
 
 /* Colores elegidos el 22/11/2026 (opcion A): el certificado intermedio en

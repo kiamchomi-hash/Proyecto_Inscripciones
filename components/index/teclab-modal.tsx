@@ -59,6 +59,12 @@ const CLARO: Record<string, string> = {
   '#f4aa22': '#ffd48a',
 };
 
+/** El mismo tono que .teclab-superficie, para los estilos en linea. */
+const SUPERFICIE = 'color-mix(in srgb, #fff 7%, var(--teclab-ink))';
+
+/** Color del borde del plan: el acento apagado, legible sobre la tinta. */
+const bordePlan = 'color-mix(in srgb, var(--teclab-accent) 45%, transparent)';
+
 /** Una competencia: numero en el acento y el texto de la ficha */
 function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: number; acento: string }) {
   const textoAcento = textoSobreAcentoTeclab(acento);
@@ -66,10 +72,7 @@ function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: 
     // min-h-fit: la tarjeta no baja de lo que mide su texto. Sin eso, en una
     // ventana muy baja las filas de la grilla se aprietan y los renglones se
     // salen de la caja, montandose sobre la tarjeta de abajo.
-    <div
-      className="flex items-start gap-3 rounded p-3 min-h-fit"
-      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
-    >
+    <div className="teclab-superficie flex items-start gap-3 rounded p-3 min-h-fit">
       <span
         className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[0.68rem] font-black"
         style={{ background: acento, color: textoAcento }}
@@ -332,10 +335,7 @@ function SlideCompetencias({
       {/* La salida laboral va arriba. Sin rotulo: el texto ya dice de que se
           trata y el filo del acento lo separa de la lista. */}
       {salida && (
-        <div
-          className="flex-shrink-0 rounded p-2.5"
-          style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', borderLeft: `3px solid ${acento}` }}
-        >
+        <div className="teclab-superficie flex-shrink-0 rounded p-2.5">
           <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug">{salida}</p>
         </div>
       )}
@@ -346,8 +346,7 @@ function SlideCompetencias({
           solo, las filas quedaban parejas por debajo del texto y la tarjeta
           mas larga se salia un par de pixeles: un scroll que no llevaba a nada. */}
       <div
-        data-scroll-lectura className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5 grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        data-scroll-lectura className="teclab-superficie-honda teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5 grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
       >
         {competencias.map((texto, i) => (
           <TarjetaCompetencia key={i} texto={texto} numero={i + 1} acento={acento} />
@@ -386,10 +385,11 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
   const visibles = activo === -1 ? años : [años[activo]];
   const titulo = activo === -1 ? 'Plan completo' : años[activo]?.año;
   const textoActivo = textoSobreAcentoTeclab(acento);
+  // Planos y opacos, sin filete (22/11/2026): el apagado es la superficie alta.
   const estiloBoton = (encendido: boolean) =>
     encendido
-      ? { background: acento, color: textoActivo, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
-      : { background: 'rgba(255,255,255,0.05)', color: CLARO[acento], boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' };
+      ? { background: acento, color: textoActivo }
+      : { background: SUPERFICIE, color: CLARO[acento] };
 
   // En mobile no hay indice al costado: el plan va entero y las pastillas de
   // arriba llevan a cada año. La que esta encendida y el boton flotante salen
@@ -440,35 +440,47 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
 
   return (
     <div className="teclab-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
+      {/* Rotulos a tamaño legible (22/11/2026): a 0,5-0,6 rem no se leian. */}
       <div className="flex-shrink-0 flex items-baseline justify-between gap-3">
-        <Rotulo acento={acento}>Plan de estudios</Rotulo>
-        <span className="text-5xs font-black uppercase tracking-etiqueta text-white/50">
-          {periodos.length} períodos · {carrera.duracion}
+        {/* nowrap: a 375 px, con «cuatrimestres», los dos rotulos se partian
+            en dos renglones. En el telefono van con menos espaciado. */}
+        <p className="whitespace-nowrap text-xs sm:text-sm font-black uppercase tracking-etiqueta sm:tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
+          Plan de estudios
+        </p>
+        <span className="whitespace-nowrap text-3xs sm:text-xs font-bold uppercase tracking-wide sm:tracking-etiqueta text-white/65">
+          {/* En el telefono sobra el conteo de cuatrimestres: lo que dice el
+              rotulo de arriba ya alcanza, y partia el renglon (22/11/2026). */}
+          <span className="sm:hidden">{carrera.duracion}</span>
+          <span className="hidden sm:inline">{periodos.length} cuatrimestres · {carrera.duracion}</span>
         </span>
       </div>
 
-      {/* Mobile: pastillas de año arriba y el plan completo abajo, con scroll */}
-      <div className="md:hidden flex-shrink-0 flex gap-1.5 overflow-x-auto">
-        {años.map((a, i) => (
-          <button
-            key={i}
-            onClick={() => irAlAño(i)}
-            className="flex-1 min-h-[2.5rem] whitespace-nowrap px-3 py-2 rounded text-3xs font-black uppercase tracking-amplio transition-all cursor-pointer"
-            style={estiloBoton(añoVisible === i)}
-          >
-            {a.año}
-          </button>
-        ))}
-      </div>
+      {/* Mobile: un solo borde para las pastillas y el contenido, con una
+          divisoria entre ambos (22/11/2026). */}
+      <div
+        className="md:hidden flex-1 min-h-0 flex flex-col overflow-hidden rounded-lg border"
+        style={{ borderColor: bordePlan }}
+      >
+        <div className="flex gap-1.5 overflow-x-auto p-1.5">
+          {años.map((a, i) => (
+            <button
+              key={i}
+              onClick={() => irAlAño(i)}
+              className="flex-1 min-h-[2.5rem] whitespace-nowrap px-3 py-2 rounded text-xs font-black uppercase tracking-amplio transition-all cursor-pointer"
+              style={estiloBoton(añoVisible === i)}
+            >
+              {a.año}
+            </button>
+          ))}
+        </div>
 
-      {/* El marco va aparte del scroll para que el boton flotante quede quieto
-          en la esquina en vez de irse con el contenido. */}
-      <div className="md:hidden relative flex-1 min-h-0">
-        <div
-          ref={marcoRef}
-          className="h-full overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
-          style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
-        >
+        {/* El marco va aparte del scroll para que el boton flotante quede quieto
+            en la esquina en vez de irse con el contenido. */}
+        <div className="relative flex-1 min-h-0 border-t" style={{ borderColor: bordePlan }}>
+          <div
+            ref={marcoRef}
+            className="teclab-superficie-honda h-full overflow-y-auto custom-scrollbar p-2.5 flex flex-col gap-2.5"
+          >
           {años.map((a, i) => {
             // El ultimo año ocupa el marco entero -min-h-full- para que su
             // rotulo pueda llegar arriba de todo: si no, "Ver ..." se queda a
@@ -487,16 +499,8 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
           })}
         </div>
 
-        {/* Velos arriba y abajo: avisan que el contenido sigue */}
-        <div
-          className="absolute top-0 left-0 right-0 h-4 rounded-t-lg pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(7,24,34,0.85) 0%, transparent 100%)' }}
-        />
-        <div
-          className="absolute bottom-0 left-0 right-0 h-10 rounded-b-lg pointer-events-none"
-          style={{ background: 'linear-gradient(to top, rgba(7,24,34,0.8) 0%, transparent 100%)' }}
-        />
-
+        {/* Sin velos con degradé arriba y abajo (22/11/2026): que el contenido
+            sigue ya lo avisan el boton flotante y la barra de scroll. */}
         {(siguienteAño || alFinal) && (
           <button
             onClick={() => {
@@ -504,22 +508,18 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
               else irAlAño(añoVisible + 1);
             }}
             className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3.5 py-2 rounded-full cursor-pointer transition-all"
-            style={{
-              background: acento,
-              color: textoActivo,
-              boxShadow: `0 4px 20px ${acento}4d, 0 2px 8px rgba(0,0,0,0.35)`,
-            }}
+            style={{ background: acento, color: textoActivo }}
           >
             {alFinal ? (
               <>
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                 </svg>
-                <span className="text-3xs font-black uppercase tracking-wider whitespace-nowrap">Inicio</span>
+                <span className="text-2xs font-black uppercase tracking-wider whitespace-nowrap">Inicio</span>
               </>
             ) : (
               <>
-                <span className="text-3xs font-black uppercase tracking-wider whitespace-nowrap">Ver {siguienteAño?.año}</span>
+                <span className="text-2xs font-black uppercase tracking-wider whitespace-nowrap">Ver {siguienteAño?.año}</span>
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -527,20 +527,23 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
             )}
           </button>
         )}
+        </div>
       </div>
 
       {/* Desktop: indice a la izquierda y el contenido a la derecha */}
+      {/* Marco plano: el indice va en un tono mas hondo y eso alcanza para
+          separarlo del contenido, sin filete ni barra de acento (22/11/2026). */}
       <div
-        className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        className="teclab-superficie-honda hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg border"
+        style={{ borderColor: bordePlan }}
       >
         <div
-          className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[10.5rem] custom-scrollbar"
-          style={{ background: 'rgba(0,0,0,0.22)' }}
+          className="teclab-superficie-baja flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[11.5rem] border-r custom-scrollbar"
+          style={{ borderColor: bordePlan }}
         >
           <button
             onClick={() => setActivo(-1)}
-            className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-2 rounded text-4xs font-black uppercase tracking-amplio text-left transition-all cursor-pointer"
+            className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-2 rounded text-2xs font-black uppercase tracking-amplio text-left transition-all cursor-pointer"
             style={estiloBoton(activo === -1)}
           >
             <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -549,16 +552,13 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
             Plan completo
           </button>
 
-          <div
-            className="flex-shrink-0 h-px mx-1 my-0.5"
-            style={{ background: `linear-gradient(90deg, ${acento}40 0%, transparent 85%)` }}
-          />
+          <div className="flex-shrink-0 h-px mx-1 my-0.5 bg-white/10" />
 
           {años.map((a, i) => (
             <button
               key={i}
               onClick={() => setActivo(i)}
-              className="flex-shrink-0 px-2.5 py-2 rounded text-4xs font-black uppercase tracking-amplio text-left transition-all cursor-pointer"
+              className="flex-shrink-0 px-2.5 py-2 rounded text-2xs font-black uppercase tracking-amplio text-left transition-all cursor-pointer"
               style={estiloBoton(activo === i)}
             >
               {a.año}
@@ -569,7 +569,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
         {/* El rotulo de lo que se esta viendo queda fijo arriba y el contenido
             arranca pegado a el: con el año centrado en el alto, uno de pocas
             materias flotaba en el medio del marco. */}
-        <div className="flex-1 min-h-0 flex flex-col" style={{ borderLeft: `3px solid ${acento}` }}>
+        <div className="flex-1 min-h-0 flex flex-col">
           <p className="flex-shrink-0 px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-white border-b border-white/10">
             {titulo}
           </p>
@@ -579,7 +579,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
                 <div key={i} className="flex-shrink-0 flex flex-col gap-4">
                   {/* Apilados uno abajo del otro, la linea es lo que separa un
                       año del siguiente. */}
-                  {i > 0 && <div className="h-px" style={{ background: `linear-gradient(90deg, ${acento}33 0%, transparent 60%)` }} />}
+                  {i > 0 && <div className="h-px bg-white/10" />}
                   {/* Con un solo año a la vista el rotulo ya esta en la barra de
                       arriba, asi que no se repite. */}
                   <AñoDetalle año={a} acento={acento} conTitulo={activo === -1} />
@@ -605,7 +605,7 @@ function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: st
       <div className="grid gap-5" style={{ gridTemplateColumns: `repeat(${año.cuatrimestres.length}, minmax(0,1fr))` }}>
         {año.cuatrimestres.map((c, i) => (
           <div key={i}>
-            <p className="text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
+            <p className="text-xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
               {c.label}
             </p>
             <ListaMaterias materias={c.materias} acento={acento} />
@@ -620,15 +620,9 @@ function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: st
  *  adentro: ya esta en el rotulo que encabeza al grupo. */
 function PeriodoDetalle({ periodo, acento }: { periodo: TeclabPeriodo; acento: string }) {
   return (
-    <div
-      className="flex-shrink-0 rounded p-3"
-      style={{
-        background: 'rgba(255,255,255,0.05)',
-        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
-        borderLeft: `3px solid ${acento}`,
-      }}
-    >
-      <p className="text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
+    // Plana y opaca, sin filete ni barra de acento (22/11/2026).
+    <div className="teclab-superficie flex-shrink-0 rounded p-3">
+      <p className="text-xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
         {periodo.label}
       </p>
       <ListaMaterias materias={periodo.materias} acento={acento} />
