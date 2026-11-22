@@ -436,6 +436,40 @@ const PORTADAS_ANUNCIADAS: { match: string; imagen: string }[] = [
   { match: 'recursos humanos', imagen: '/imagenes/teclab/carreras/recursos-humanos.webp' },
 ];
 
+/**
+ * Altura del encuadre de cada portada en el telefono, donde la foto es una
+ * banda ancha y baja que se recorta arriba y abajo: apunta a las caras (o, sin
+ * personas, al motivo). Medido sobre cada imagen el 22/11/2026. Sin entrada,
+ * centrada.
+ */
+const FOCO_MOVIL: Record<string, string> = {
+  'data-science': '8%',
+  'quality-assurance': '20%',
+  'redes-informaticas': '15%',
+  'seguridad-informatica': '5%',
+  'cloud-administration': '10%',
+  'gestion-inteligencia-artificial': '5%',
+  'curso-ia': '10%',
+  'marketing-digital': '5%',
+  'inbound-marketing': '5%',
+  'customer-experience': '10%',
+  'gestion-contable': '10%',
+  seguros: '20%',
+  'gestion-agraria': '10%',
+  'relaciones-laborales': '5%',
+  'gestion-hotelera': '5%',
+  eventos: '5%',
+  periodismo: '30%',
+  'higiene-y-seguridad-en-el-trabajo': '15%',
+  'administracion-de-empresas': '10%',
+  'comercio-electronico': '5%',
+};
+
+export function focoMovilTeclab(imagen: string): string {
+  const archivo = imagen.split('/').pop()?.replace(/\.[a-z0-9]+$/i, '') ?? '';
+  return `center ${FOCO_MOVIL[archivo] ?? '50%'}`;
+}
+
 /** Foto de portada de una carrera de Teclab: la de su ficha oficial o, si no la tiene, la de stock. */
 export function getPortadaTeclab(carrera: Pick<Carrera, 'nombre'> & Partial<Pick<Carrera, 'nombre_corto'>>): string | null {
   const ficha = getFichaTeclab(carrera);
@@ -541,6 +575,161 @@ export function partirDescripcionTeclab(descripcion: string | null): { perfil: s
     perfil: oraciones.slice(0, -1).join(' '),
     salida: oraciones[oraciones.length - 1],
   };
+}
+
+/**
+ * Parrafo unico de la portada del modal (22/11/2026). Resume, sin agregar
+ * datos, el perfil, las competencias y la salida laboral de la base; la pagina
+ * /carreras/<slug> sigue con el texto completo. Se busca por nombre, como
+ * FICHAS: el primer `match` contenido en el nombre gana.
+ * El largo lo cuidan DESCRIPCION_MODAL_MIN/MAX y tests/teclab-modal.test.mjs:
+ * mas corto queda vacio en escritorio, mas largo no entra sin scroll en 375x740
+ * (medido el 22/11/2026 con el titulo mas largo y el cuadro de cocreacion).
+ */
+export const DESCRIPCION_MODAL_MIN = 250;
+export const DESCRIPCION_MODAL_MAX = 300;
+
+export const DESCRIPCIONES_MODAL: { match: string; texto: string }[] = [
+  {
+    match: "programación",
+    texto:
+      "Estudiá programación a distancia: aplicaciones web y mobile completas, del front end al back end, con bases de datos SQL, servicios en la nube e inteligencia artificial, con proyectos reales. Podés trabajar en empresas de software, áreas de sistemas, el sector público o como freelance.",
+  },
+  {
+    match: "data science",
+    texto:
+      "Estudiá ciencia de datos a distancia: análisis y visualización de datos, estadística aplicada, Big Data y machine learning, con modelos que entrenás en la nube para generar predicciones. Podés trabajar como Data Analyst o Data Scientist en tecnología, banca, retail y consultoría.",
+  },
+  {
+    match: "quality assurance",
+    texto:
+      "Estudiá testing de software a distancia y formate como QA Tester: planes de prueba, registro de bugs y automatización de pruebas en web y mobile, en equipos ágiles. Podés trabajar como Analista de Testing, QA Tester o QA Automatizador Junior en empresas tecnológicas y consultoras.",
+  },
+  {
+    match: "redes informáticas",
+    texto:
+      "Estudiá redes informáticas a distancia: diseño y administración de redes, switching, routing, servidores Windows y Linux, seguridad de redes y automatización con scripts. Podés trabajar como administrador de redes, en soporte técnico corporativo o como especialista en conectividad.",
+  },
+  {
+    match: "seguridad informática",
+    texto:
+      "Estudiá ciberseguridad a distancia: análisis de vulnerabilidades, gestión de riesgos, criptografía y respuesta ante incidentes, con herramientas como SIEM e IDS/IPS. Podés trabajar como especialista en ciberseguridad, analista de vulnerabilidades o analista de incidentes.",
+  },
+  {
+    match: "cloud administration",
+    texto:
+      "Estudiá administración de servicios en la nube a distancia: AWS, Microsoft Azure y Google Cloud, redes, bases de datos y arquitecturas escalables y seguras. Podés trabajar como administrador cloud, analista de infraestructura IT o especialista en automatización de servidores.",
+  },
+  {
+    match: "videojuegos",
+    texto:
+      "Estudiá desarrollo de videojuegos a distancia: programación orientada a objetos, motores de desarrollo, integración de escenas y assets, pruebas y diseño de la experiencia de juego. Podés trabajar en estudios de videojuegos, empresas de software, agencias y proyectos educativos.",
+  },
+  {
+    match: "diseño de producto digital",
+    texto:
+      "Estudiá diseño de producto digital a distancia: investigación de usuarios, UX/UI, roadmaps con equipos ágiles, métricas de uso e inteligencia artificial aplicada al producto. Podés trabajar en startups, empresas tecnológicas, e-commerce, consultoras y equipos de producto.",
+  },
+  {
+    match: "gestión de inteligencia artificial",
+    texto:
+      "Estudiá gestión de IA y transformación digital a distancia: automatización de procesos, herramientas sin código, asistentes inteligentes y análisis de datos para decidir. Podés trabajar en áreas de tecnología, innovación y operaciones, consultoras, agencias, startups y PyMEs.",
+  },
+  {
+    match: "diseño y desarrollo de inteligencia artificial",
+    texto:
+      "Estudiá diseño y desarrollo de inteligencia artificial a distancia: programación, estadística, machine learning, IA generativa, agentes inteligentes y MLOps para entrenar e integrar modelos. Podés trabajar en empresas tecnológicas, startups, laboratorios de innovación y consultoras.",
+  },
+  {
+    match: "marketing digital",
+    texto:
+      "Estudiá marketing digital a distancia: estrategia, SEO, SEM, publicidad en buscadores y redes sociales, contenidos y gestión de marca, con campañas medidas por KPIs. Podés trabajar en agencias digitales, equipos de marketing de pymes y empresas, ONG o de forma independiente.",
+  },
+  {
+    match: "inbound marketing",
+    texto:
+      "Estudiá inbound marketing a distancia: contenidos, SEO, email marketing, landing pages y copywriting para atraer clientes, con CRM y automatizaciones en HubSpot. Podés trabajar como especialista en generación de leads, nurturing manager o estratega de contenidos.",
+  },
+  {
+    match: "customer experience",
+    texto:
+      "Estudiá experiencia del cliente a distancia: atención al cliente, customer journey, diseño de servicios, fidelización y customer success, con CRM e indicadores como el NPS. Podés trabajar en empresas de servicios, e-commerce, banca, telecomunicaciones y startups.",
+  },
+  {
+    match: "gestión contable",
+    texto:
+      "Estudiá contabilidad a distancia: registración de operaciones, estados contables, impuestos y liquidación de sueldos, con software contable, sistemas ERP e inteligencia artificial. Podés trabajar en estudios contables, pymes y áreas administrativas o impositivas de empresas.",
+  },
+  {
+    match: "negocios digitales financieros",
+    texto:
+      "Estudiá negocios digitales financieros a distancia: transacciones y medios de pago, conciliaciones, riesgos, prevención de fraude, regulación y blockchain. Podés trabajar en fintechs, billeteras virtuales, neobancos, pasarelas de pago, exchanges y bancos.",
+  },
+  {
+    match: "seguros",
+    texto:
+      "Estudiá seguros a distancia y formate como productor asesor: al recibirte podés pedir tu matrícula ante la SSN sin rendir el examen que se exige al resto. Podés trabajar en aseguradoras, brokers, oficinas de productores o con tu propia cartera de clientes.",
+  },
+  {
+    match: "gestión agraria",
+    texto:
+      "Estudiá gestión agropecuaria a distancia: administración de la empresa agraria, producción, costos y comercialización de granos y hacienda, con herramientas AgTech de agricultura digital. Podés trabajar en empresas rurales, acopios, cooperativas o tu propio emprendimiento.",
+  },
+  {
+    match: "relaciones laborales",
+    texto:
+      "Estudiá relaciones laborales y recursos humanos a distancia: derecho laboral, convenios colectivos, liquidación de sueldos, reclutamiento y selección y People Analytics. Podés trabajar en RRHH de pymes y empresas, organismos públicos y consultoras de selección.",
+  },
+  {
+    match: "gestión hotelera",
+    texto:
+      "Estudiá hotelería a distancia: reservas, front desk, housekeeping, alimentos y bebidas, eventos y revenue management para definir tarifas y cuidar la experiencia del huésped. Podés trabajar en hoteles, cadenas de alojamiento, turismo receptivo y servicios.",
+  },
+  {
+    match: "eventos",
+    texto:
+      "Estudiá organización de eventos a distancia: producción y logística, ceremonial y protocolo, presupuestos y proveedores, para eventos presenciales, virtuales e híbridos. Podés trabajar en eventos corporativos, congresos y celebraciones sociales, culturales y turísticas.",
+  },
+  {
+    match: "periodismo",
+    texto:
+      "Estudiá periodismo digital a distancia: redacción para medios digitales, podcast, radio y video, redes sociales y periodismo de datos, verificando información con inteligencia artificial. Podés trabajar en medios digitales, productoras de contenido y comunicación institucional.",
+  },
+  {
+    match: "proyectos mineros",
+    texto:
+      "Estudiá gestión de proyectos mineros a distancia: planificación y control de proyectos, cronogramas, datos técnicos y operativos, contratistas y legislación minera. Podés trabajar en empresas operadoras, proveedores y contratistas, consultoras y áreas de compras y logística.",
+  },
+  {
+    match: "gestión ambiental",
+    texto:
+      "Estudiá gestión ambiental a distancia: legislación, evaluación de impacto, residuos, emisiones y recursos, cambio climático, sistemas de gestión y auditorías ambientales. Podés trabajar en empresas e industrias, consultoras ambientales y organismos públicos.",
+  },
+  {
+    match: "higiene y seguridad",
+    texto:
+      "Estudiá higiene y seguridad en el trabajo a distancia: evaluación de riesgos, mediciones de puestos de trabajo, salud ocupacional, planes de emergencia e investigación de incidentes. Podés trabajar en empresas e industrias, organismos públicos, salud, educación y consultoras.",
+  },
+  {
+    match: "administración de empresas",
+    texto:
+      "Estudiá administración de empresas a distancia: contabilidad, impuestos, finanzas, presupuestos y costos, con inteligencia de negocios para apoyar las decisiones. Podés trabajar en empresas privadas, organismos públicos, consultoría o tu propio emprendimiento.",
+  },
+  {
+    match: "logística",
+    texto:
+      "Estudiá logística a distancia: transporte, almacenamiento y distribución, control de stock, régimen courier y regímenes aduaneros, equilibrando costos y tiempos de entrega. Podés trabajar en transporte, industria y comercio, comercio electrónico y comercio exterior.",
+  },
+  {
+    match: "comercio electrónico",
+    texto:
+      "Estudiá comercio electrónico a distancia: tiendas online y marketplaces, publicidad digital, medios de pago, logística, posventa y análisis de ventas. Podés trabajar en áreas de e-commerce y marketing digital, retailers, marketplaces, agencias, startups y fintech.",
+  },
+];
+
+export function getDescripcionModalTeclab(carrera: Pick<Carrera, 'nombre'> & Partial<Pick<Carrera, 'nombre_corto'>>): string | null {
+  const nombre = `${carrera.nombre} ${carrera.nombre_corto ?? ''}`.toLowerCase();
+  return DESCRIPCIONES_MODAL.find(d => nombre.includes(d.match))?.texto ?? null;
 }
 
 /** seccion_modalidad: competencias profesionales, una por linea con vineta. */

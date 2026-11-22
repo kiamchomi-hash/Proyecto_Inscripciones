@@ -30,8 +30,9 @@ import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/i
 import {
   credencialTeclab,
   datoTeclab,
-  destacarCompetencias,
   esCursoTeclab,
+  focoMovilTeclab,
+  getDescripcionModalTeclab,
   getFichaTeclab,
   getPortadaTeclab,
   getMarcoTeclab,
@@ -65,7 +66,10 @@ function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: 
     // min-h-fit: la tarjeta no baja de lo que mide su texto. Sin eso, en una
     // ventana muy baja las filas de la grilla se aprietan y los renglones se
     // salen de la caja, montandose sobre la tarjeta de abajo.
-    <div className="teclab-superficie flex items-start gap-3 rounded p-3 min-h-fit">
+    <div
+      className="flex items-start gap-3 rounded p-3 min-h-fit"
+      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+    >
       <span
         className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[0.68rem] font-black"
         style={{ background: acento, color: textoAcento }}
@@ -86,7 +90,11 @@ function FotoFicha({ imagen, acento, className = '' }: { imagen: string; acento:
     // Marco liso en el acento. La sombra dura desplazada de las tarjetas aca no
     // funciona: con las esquinas redondeadas asoma corrida y, al cambiar de
     // tamaño la foto, se lee como un borde mal alineado.
-    <div className={`teclab-foto ${className}`} style={{ borderColor: acento }}>
+    // --foco-movil: altura del encuadre en el telefono (FOCO_MOVIL, ./teclab).
+    <div
+      className={`teclab-foto ${className}`}
+      style={{ borderColor: acento, '--foco-movil': focoMovilTeclab(imagen) } as React.CSSProperties}
+    >
       <Image
         src={imagen}
         alt=""
@@ -109,22 +117,36 @@ function FotoFicha({ imagen, acento, className = '' }: { imagen: string; acento:
  * cambia mucho de proporcion segun la empresa y, alineado a la izquierda,
  * dejaba un hueco distinto en cada carrera.
  *
- * Superficie plana y opaca (.teclab-superficie): sirve igual en la portada y
- * en el cierre, que va sobre una foto.
+ * `solido` es para el cierre, que va sobre una foto: ahi el relleno translucido
+ * dejaba ver la imagen a traves del cuadro.
  */
 function BloqueCocreacion({
   ficha,
   acento,
+  solido,
   className = '',
 }: {
   ficha: TeclabFicha;
   acento: string;
+  solido?: boolean;
   className?: string;
 }) {
   if (!ficha.partner) return null;
   return (
-    <div className={`teclab-superficie rounded px-2.5 py-2 flex flex-col items-center text-center ${className}`}>
-      <span className="block text-4xs font-black uppercase tracking-etiqueta" style={{ color: CLARO[acento] }}>
+    // En la portada va en el azul de Teclab (.teclab-cocreacion, 22/11/2026);
+    // el cierre conserva su relleno opaco con filete.
+    <div
+      className={`rounded px-2.5 py-1.5 flex flex-col items-center text-center ${solido ? '' : 'teclab-cocreacion'} ${className}`}
+      style={
+        solido
+          ? { background: 'color-mix(in srgb, #fff 6%, var(--teclab-ink))', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }
+          : undefined
+      }
+    >
+      <span
+        className="teclab-dato-rotulo block text-4xs font-black uppercase tracking-etiqueta"
+        style={solido ? { color: CLARO[acento] } : undefined}
+      >
         Carrera cocreada con
       </span>
       {ficha.partner.logo ? (
@@ -171,18 +193,18 @@ function BloqueDato({
   const textoPrincipal = textoSobreAcentoTeclab(acento);
   return (
     <div
-      className={`rounded px-2.5 py-1.5 ${principal ? '' : 'teclab-superficie'} ${className}`}
+      className={`rounded px-2.5 py-1.5 ${principal ? '' : 'teclab-dato-secundario'} ${className}`}
       style={principal ? { background: acento } : undefined}
     >
       <span
-        className="block text-4xs font-black uppercase tracking-etiqueta"
-        style={{ color: principal ? `${textoPrincipal}b3` : CLARO[acento] }}
+        className="teclab-dato-rotulo block text-4xs font-black uppercase tracking-etiqueta"
+        style={principal ? { color: `${textoPrincipal}b3` } : undefined}
       >
         {label}
       </span>
       <span
-        className="block text-[0.78rem] sm:text-sm font-bold leading-tight mt-0.5"
-        style={{ color: principal ? textoPrincipal : '#fff' }}
+        className="teclab-dato-valor block text-[0.78rem] sm:text-sm font-bold leading-tight mt-0.5"
+        style={principal ? { color: textoPrincipal } : undefined}
       >
         {valor}
       </span>
@@ -195,21 +217,20 @@ function SlidePortada({
   carrera,
   acento,
   ficha,
-  salida = '',
 }: {
   carrera: Carrera;
   acento: string;
   ficha: TeclabFicha | null;
-  /** Solo cuando no hay slide de competencias que la muestre (una anunciada). */
-  salida?: string;
 }) {
   const { modalidad, certificado } = parseEnfoqueTeclab(carrera.enfoque);
   const curso = esCursoTeclab(carrera);
-  // Un curso no entrega titulo: el chip y el cuadro hablan de certificado, como
-  // la ficha de /carreras. El chip de tipo lo escribe la tarjeta del catalogo.
+  // Un curso no entrega titulo: el chip y el cuadro hablan de certificado.
   const tipo = curso ? 'Curso' : getTipoTeclab(carrera);
   const nombre = carrera.nombre_corto || carrera.nombre;
-  const { perfil } = partirDescripcionTeclab(carrera.descripcion);
+  // Desde el 22/11/2026 el slide de competencias no existe: la portada lleva un
+  // solo parrafo que resume perfil, competencias y salida, con largo acotado
+  // (DESCRIPCIONES_MODAL en ./teclab). Sin version corta, el perfil de la base.
+  const descripcion = getDescripcionModalTeclab(carrera) ?? partirDescripcionTeclab(carrera.descripcion).perfil;
   const portada = getPortadaTeclab(carrera);
 
   return (
@@ -220,11 +241,12 @@ function SlidePortada({
     // el alto que sobra (ver modales.css), asi no queda hueco al pie con textos
     // cortos ni empuja el resto fuera de la pantalla con textos largos.
     <div data-scroll-lectura className="teclab-slide teclab-portada h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-7 overflow-y-auto custom-scrollbar">
-      <div className="teclab-portada-titulo flex-shrink-0">
+      {/* Mas grande desde el 22/11/2026, y centrado en el telefono. */}
+      <div className="teclab-portada-titulo flex-shrink-0 text-center md:text-left">
         <div className="min-w-0">
           {carrera.prefix && (
             <p
-              className="text-3xs sm:text-xs font-black uppercase tracking-etiqueta-ancha mb-1"
+              className="text-xs sm:text-sm font-black uppercase tracking-etiqueta-ancha mb-1"
               style={{ color: acento }}
             >
               {carrera.prefix}
@@ -232,7 +254,7 @@ function SlidePortada({
           )}
           <h2
             className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
-              nombre.length > 38 ? 'text-lg sm:text-3xl' : 'text-2xl sm:text-4xl'
+              nombre.length > 38 ? 'text-xl sm:text-4xl' : 'text-[1.75rem] sm:text-5xl'
             }`}
           >
             {nombre}
@@ -240,7 +262,7 @@ function SlidePortada({
         </div>
       </div>
 
-      <div className="teclab-portada-chips flex-shrink-0 flex flex-wrap gap-1.5">
+      <div className="teclab-portada-chips flex-shrink-0 flex flex-wrap justify-center md:justify-start gap-1.5">
         {tipo && <span className="teclab-chip teclab-chip-tipo">{tipo}</span>}
         <span className="teclab-chip">{modalidad}</span>
         {/* Una anunciada no tiene duracion: el chip vacio se leia como error. */}
@@ -254,25 +276,24 @@ function SlidePortada({
         </div>
       )}
 
-      {(perfil || salida || ficha?.partner) && (
-        <div className="teclab-portada-perfil flex-shrink-0 flex flex-col gap-2">
-          {perfil && (
-            <>
-              <Rotulo acento={acento}>Perfil profesional</Rotulo>
-              <p className="text-[0.85rem] sm:text-[0.95rem] text-[#c3d8e6] leading-relaxed">{perfil}</p>
-            </>
-          )}
-          {salida && (
-            <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug">{salida}</p>
-          )}
-          {ficha && <BloqueCocreacion ficha={ficha} acento={acento} className="mt-0.5" />}
+      {descripcion && (
+        <div className="teclab-portada-perfil flex-shrink-0 flex flex-col gap-1">
+          <Rotulo acento={acento}>Perfil profesional</Rotulo>
+          <p className="teclab-portada-descripcion">{descripcion}</p>
         </div>
       )}
 
-      {/* Los dos cuadros van del mismo ancho y cada uno con su alto: si se
-          estiran para igualarse, el del titulo queda enorme al lado de un
-          certificado de dos lineas. */}
-      <div className="teclab-portada-datos flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
+      {/* En escritorio va al pie de la columna del texto, arriba de los datos y
+          al costado de la foto (22/11/2026). */}
+      {ficha?.partner && (
+        <div className="teclab-portada-coc flex-shrink-0">
+          <BloqueCocreacion ficha={ficha} acento={acento} />
+        </div>
+      )}
+
+      {/* En escritorio los dos cuadros van del mismo ancho y del mismo alto
+          (22/11/2026); en el telefono, apilados, cada uno con el suyo. */}
+      <div className="teclab-portada-datos flex-shrink-0 grid grid-cols-1 md:grid-cols-2 gap-2 items-start md:items-stretch">
         <BloqueDato label={curso ? 'Certificado' : 'Título'} valor={datoTeclab(carrera.titulo)} acento={acento} principal />
         {certificado && <BloqueDato label="Certificado intermedio" valor={certificado} acento={acento} />}
       </div>
@@ -311,7 +332,10 @@ function SlideCompetencias({
       {/* La salida laboral va arriba. Sin rotulo: el texto ya dice de que se
           trata y el filo del acento lo separa de la lista. */}
       {salida && (
-        <div className="teclab-superficie flex-shrink-0 rounded p-2.5">
+        <div
+          className="flex-shrink-0 rounded p-2.5"
+          style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', borderLeft: `3px solid ${acento}` }}
+        >
           <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug">{salida}</p>
         </div>
       )}
@@ -322,7 +346,8 @@ function SlideCompetencias({
           solo, las filas quedaban parejas por debajo del texto y la tarjeta
           mas larga se salia un par de pixeles: un scroll que no llevaba a nada. */}
       <div
-        data-scroll-lectura className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
+        data-scroll-lectura className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5 grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
+        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
       >
         {competencias.map((texto, i) => (
           <TarjetaCompetencia key={i} texto={texto} numero={i + 1} acento={acento} />
@@ -363,8 +388,8 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
   const textoActivo = textoSobreAcentoTeclab(acento);
   const estiloBoton = (encendido: boolean) =>
     encendido
-      ? { background: acento, color: textoActivo }
-      : { background: 'color-mix(in srgb, #fff 7%, var(--teclab-ink))', color: CLARO[acento] };
+      ? { background: acento, color: textoActivo, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
+      : { background: 'rgba(255,255,255,0.05)', color: CLARO[acento], boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' };
 
   // En mobile no hay indice al costado: el plan va entero y las pastillas de
   // arriba llevan a cada año. La que esta encendida y el boton flotante salen
@@ -441,7 +466,8 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
       <div className="md:hidden relative flex-1 min-h-0">
         <div
           ref={marcoRef}
-          className="h-full overflow-y-auto custom-scrollbar flex flex-col gap-2.5"
+          className="h-full overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
+          style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
         >
           {años.map((a, i) => {
             // El ultimo año ocupa el marco entero -min-h-full- para que su
@@ -505,11 +531,12 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
 
       {/* Desktop: indice a la izquierda y el contenido a la derecha */}
       <div
-        className="teclab-superficie hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
+        className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
+        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
       >
         <div
           className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[10.5rem] custom-scrollbar"
-          style={{ background: 'var(--teclab-ink)' }}
+          style={{ background: 'rgba(0,0,0,0.22)' }}
         >
           <button
             onClick={() => setActivo(-1)}
@@ -542,7 +569,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
         {/* El rotulo de lo que se esta viendo queda fijo arriba y el contenido
             arranca pegado a el: con el año centrado en el alto, uno de pocas
             materias flotaba en el medio del marco. */}
-        <div className="flex-1 min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col" style={{ borderLeft: `3px solid ${acento}` }}>
           <p className="flex-shrink-0 px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-white border-b border-white/10">
             {titulo}
           </p>
@@ -593,7 +620,14 @@ function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: st
  *  adentro: ya esta en el rotulo que encabeza al grupo. */
 function PeriodoDetalle({ periodo, acento }: { periodo: TeclabPeriodo; acento: string }) {
   return (
-    <div className="teclab-superficie flex-shrink-0 rounded p-3">
+    <div
+      className="flex-shrink-0 rounded p-3"
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+        borderLeft: `3px solid ${acento}`,
+      }}
+    >
       <p className="text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
         {periodo.label}
       </p>
@@ -686,7 +720,7 @@ function SlideCierre({
           mas altos y en una columna: a media pantalla cada uno se leia como un
           boton chico perdido abajo de una foto grande. */}
       <div className="flex-shrink-0 flex flex-col gap-2.5">
-        {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} />}
+        {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} solido />}
 
         {/* Un solo boton. Al lado habia otro con la direccion de la sede, que
             abria Google Maps: la carrera se cursa 100% online y a un lead que
@@ -784,10 +818,6 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const textoAcento = textoSobreAcentoTeclab(acento);
 
   const ficha = useMemo(() => getFichaTeclab(carrera), [carrera]);
-  const competencias = useMemo(
-    () => destacarCompetencias(parseCompetenciasTeclab(carrera.seccion_modalidad), carrera),
-    [carrera],
-  );
   // En los cursos plan_estudios no es un temario por cuatrimestre sino como se
   // cursa: una lista de vinetas, del mismo formato que las competencias.
   const periodos = useMemo(
@@ -798,7 +828,6 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     () => (curso ? parseCompetenciasTeclab(carrera.plan_estudios) : []),
     [carrera.plan_estudios, curso],
   );
-  const salida = useMemo(() => partirDescripcionTeclab(carrera.descripcion).salida, [carrera.descripcion]);
 
   const [idx, setIdx] = useState(0);
   const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose });
@@ -817,22 +846,11 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     const s: { key: string; node: React.ReactNode | ((activo: boolean) => React.ReactNode) }[] = [
       {
         key: 'portada',
-        node: <SlidePortada carrera={carrera} acento={acento} ficha={ficha} salida={competencias.length ? '' : salida} />,
+        node: (
+          <SlidePortada carrera={carrera} acento={acento} ficha={ficha} />
+        ),
       },
     ];
-    if (competencias.length) {
-      s.push({
-        key: 'competencias',
-        node: (
-          <SlideCompetencias
-            rotulo={curso ? 'Qué vas a aprender' : 'Competencias profesionales'}
-            competencias={competencias}
-            salida={salida}
-            acento={acento}
-          />
-        ),
-      });
-    }
     if (cursada.length) {
       s.push({
         key: 'cursada',
@@ -866,7 +884,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       });
     }
     return s;
-  }, [carrera, acento, competencias, cursada, curso, ficha, periodos, salida, pedidoPrecio, handleClose, sinPrecio]);
+  }, [carrera, acento, cursada, ficha, periodos, pedidoPrecio, handleClose, sinPrecio]);
 
   const nombre = carrera.nombre_corto || carrera.nombre;
 

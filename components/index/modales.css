@@ -274,7 +274,8 @@
   padding: 0.2rem 0.55rem;
   border-radius: 4px;
   color: rgba(255, 255, 255, 0.82);
-  background: color-mix(in srgb, #fff 8%, var(--teclab-ink));
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   line-height: 1.25;
   max-width: 100%;
 }
@@ -283,6 +284,7 @@
 .teclab-chip-tipo {
   color: var(--teclab-on-accent);
   background: var(--teclab-accent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 
 /* Aviso de inicio de clases en la portada: misma anatomia que el cuadro de
@@ -325,7 +327,9 @@
   overflow: hidden;
   background-image:
     radial-gradient(ellipse at 22% 18%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 48%),
-    radial-gradient(ellipse at 82% 70%, color-mix(in srgb, var(--teclab-accent) 20%, transparent), transparent 52%);
+    radial-gradient(ellipse at 82% 70%, color-mix(in srgb, var(--teclab-accent) 20%, transparent), transparent 52%),
+    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+  background-size: auto, auto, 42px 42px;
 }
 
 .teclab-modal-header::after {
@@ -361,7 +365,9 @@
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    /* El mismo piso que la foto: con 0, al llegar a su minimo la foto se salia
+       del contenedor y tapaba el rotulo de abajo. */
+    min-height: 6rem;
     /* Techo alto a proposito: la foto solo crece hacia el espacio libre, asi
        que el tope no genera scroll, y con uno bajo quedaba un hueco al pie en
        las carreras de perfil corto. Lo mas alto que llega es un retrato. */
@@ -373,38 +379,68 @@
     aspect-ratio: auto;
     min-height: 6rem;
   }
+
+  /* La banda recorta arriba y abajo: el encuadre apunta a las caras. */
+  .teclab-portada-foto .teclab-foto img {
+    object-position: var(--foco-movil, center);
+  }
 }
 
-/* Portada en desktop: dos columnas. A la izquierda todo el texto, con los
-   cuadros de datos pegados al perfil y el bloque centrado en el alto por las
-   dos filas 1fr de las puntas; a la derecha la foto, de punta a punta. Antes
-   la fila del perfil era 1fr y, con un perfil corto, dejaba un hueco entre el
-   texto y los datos (22/11/2026). Si el texto no entra, las filas 1fr quedan
-   en cero y el slide scrollea. */
+/* Parrafo unico de la portada (22/11/2026). Su largo esta acotado en
+   DESCRIPCIONES_MODAL (./teclab) para que entre sin scroll en 375x740.
+   Va en Poppins, la letra de marca de Teclab, con sombra para leerse sobre el
+   fondo. La home no carga poppins.css, asi que la cara de 400 se declara aca:
+   el archivo se baja recien cuando se abre el modal. */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fuentes/poppins-latin-400.woff2) format('woff2');
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304,
+    U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+.teclab-portada-descripcion {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #eef5fa;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* En escritorio sobra alto: el largo del texto lo pone el telefono, asi que
+   aca la letra crece para llenar la columna en vez de dejar aire. */
+@media (min-width: 768px) {
+  .teclab-portada-descripcion {
+    font-size: 1.4rem;
+    line-height: 1.55;
+  }
+}
+
+/* Portada en desktop: dos columnas. La foto empieza a la altura del titulo y
+   se estira hasta los cuadros de datos, que van abajo a todo el ancho. Asi el
+   alto sobrante lo toma la foto en vez de quedar como un hueco al pie. */
 @media (min-width: 768px) {
   .teclab-portada {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(19rem, 40%);
-    grid-template-rows: 1fr auto auto auto auto 1fr;
+    grid-template-columns: minmax(0, 1fr) 19rem;
+    grid-template-rows: auto auto 1fr auto auto;
     grid-template-areas:
-      ".      foto"
       "titulo foto"
       "chips  foto"
       "perfil foto"
-      "datos  foto"
-      ".      foto";
-    gap: 0 1.75rem;
-  }
-
-  .teclab-portada-chips,
-  .teclab-portada-perfil,
-  .teclab-portada-datos {
-    margin-top: 0.75rem;
+      "coc    foto"
+      "datos  datos";
+    align-content: start;
+    gap: 0.75rem 1.5rem;
   }
 
   .teclab-portada-titulo { grid-area: titulo; }
   .teclab-portada-chips { grid-area: chips; }
   .teclab-portada-perfil { grid-area: perfil; }
+  .teclab-portada-coc { grid-area: coc; }
   .teclab-portada-datos { grid-area: datos; }
 
   .teclab-portada-foto {
@@ -419,7 +455,9 @@
   .teclab-portada-foto .teclab-foto {
     flex: 1;
     aspect-ratio: auto;
-    min-height: 16rem;
+    min-height: 11rem;
+    /* Sin tope de alto: con uno, la foto no llegaba a los cuadros de datos y
+       quedaba un hueco entre ambos (22/11/2026). */
   }
 }
 
@@ -432,7 +470,7 @@
    Va al final para ganarle por orden a los dos bloques de arriba. */
 @media (max-height: 470px) {
   .teclab-portada {
-    grid-template-rows: 0 auto auto auto auto 0;
+    grid-template-rows: auto auto auto auto auto;
   }
 
   .teclab-portada-foto {
@@ -528,19 +566,77 @@
   z-index: 1;
 }
 
-/* Sin la trama de 42 px que venia del render: el usuario la descarto el
-   22/11/2026. Queda solo la luz abstracta del acento sobre la tinta. */
 .teclab-slide {
   background-color: var(--teclab-ink);
   background-image:
-    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 10%, transparent), transparent 50%),
-    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 54%);
+    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 50%),
+    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 22%, transparent), transparent 54%),
+    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: auto, auto, auto, 42px 42px;
 }
 
-/* Superficie de las tarjetas del modal: plana y opaca, sin borde ni sombra
-   (docs/criterios.md, «Nada de glassmorfismo»). */
+/* Portada (primer slide), 22/11/2026: sin la trama de 42 px y sin vidrio en
+   chips y cuadros (docs/criterios.md, «Nada de glassmorfismo»). El resto de
+   los slides queda como estaba. */
+/* Iluminacion: el fondo se oscurece detras del texto y deja la luz del acento
+   del lado de la foto (opcion elegida el 22/11/2026). En el telefono la zona
+   oscura baja a donde queda el parrafo, debajo de la foto. */
+.teclab-slide.teclab-portada {
+  background-image:
+    radial-gradient(ellipse 80% 45% at 50% 75%, rgba(2, 8, 13, 0.82), transparent 75%),
+    radial-gradient(ellipse at 84% 30%, color-mix(in srgb, var(--teclab-accent) 22%, transparent), transparent 54%);
+  background-size: auto;
+}
+
+@media (min-width: 768px) {
+  .teclab-slide.teclab-portada {
+    background-image:
+      radial-gradient(ellipse 55% 60% at 30% 55%, rgba(2, 8, 13, 0.82), transparent 75%),
+      radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 22%, transparent), transparent 54%);
+  }
+}
+
 .teclab-superficie {
   background: color-mix(in srgb, #fff 7%, var(--teclab-ink));
+}
+
+/* Colores elegidos el 22/11/2026 (opcion A): el certificado intermedio en
+   papel claro y la cocreacion en el azul de marca de Teclab. */
+.teclab-portada .teclab-dato-secundario {
+  background: #f0f0f6;
+}
+
+.teclab-portada .teclab-dato-secundario .teclab-dato-rotulo {
+  color: #3a4a5c;
+}
+
+.teclab-portada .teclab-dato-secundario .teclab-dato-valor {
+  color: #071822;
+}
+
+.teclab-portada .teclab-cocreacion {
+  background: #0055f0;
+}
+
+.teclab-portada .teclab-cocreacion .teclab-dato-rotulo {
+  color: #cfe0ff;
+}
+
+.teclab-portada .teclab-chip {
+  box-shadow: none;
+}
+
+/* El perfil va centrado en su fila (la 1fr): con un perfil corto el hueco se
+   reparte arriba y abajo, en vez de quedar todo entre el texto y los datos. */
+@media (min-width: 768px) {
+  .teclab-portada .teclab-portada-perfil {
+    align-self: center;
+  }
+}
+
+.teclab-portada .teclab-chip:not(.teclab-chip-tipo) {
+  background: color-mix(in srgb, #fff 8%, var(--teclab-ink));
 }
 
 /* ── Ver precio (modal de Teclab) ──
