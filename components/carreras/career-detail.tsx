@@ -802,7 +802,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
         <section className="career-related career-reveal">
           <div className="career-related-heading">
             <div>
-              <span>Seguí explorando</span>
               {/* El curso es el unico de su nivel: sus enlaces son las carreras
                   del instituto, no otros cursos. */}
               <h2>{isTeclabCourse ? 'Otras carreras de Teclab' : `Otras carreras de ${carrera.nivel}`}</h2>

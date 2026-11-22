@@ -1155,13 +1155,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   }, [conPaneles, listo, paso]);
 
   const titulo = esPreinscripcion ? 'PREINSCRIPCIÓN' : 'CONTACTO';
-  // El encabezado es uno solo para todos los pasos y sólo cambia la bajada:
-  // así no salta. Los textos son cortos para que no ocupen otra línea.
+  // Bajada sólo cuando informa algo: las frases orientativas del paso de datos
+  // se sacaron (pendiente 39), queda la confirmación del envío.
   const bajada = paso === 'confirmacion' || paso === 'verPrecio'
     ? 'Tu preinscripción ya fue enviada.'
-    : esPreinscripcion
-    ? 'Completá tus datos y adelantamos tu preinscripción.'
-    : 'Dejanos tus datos y te contactamos para orientarte.';
+    : null;
 
   return (
     <section
@@ -1216,10 +1214,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
 
           <div className="form-card-header px-3 pb-3 pt-4 sm:px-4" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }} aria-hidden={listo}>
             <h2 className="text-center text-xl font-black uppercase leading-none tracking-tighter sm:text-2xl">
-              <span className="text-white">FORMULARIO DE </span>
-              <span className="text-[var(--catalogo-acento)]">{titulo}</span>
+              <span className="text-white">FORMULARIO DE {titulo}</span>
             </h2>
-            <p className="mt-1 text-center text-xs text-[var(--catalogo-texto-suave)]">{bajada}</p>
+            {bajada && <p className="mt-1 text-center text-xs text-[var(--catalogo-texto-suave)]">{bajada}</p>}
           </div>
 
           {/* El carrusel de la autoinscripción. Quieto en el paso 1 no hay
@@ -1411,7 +1408,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
             {/* Por dónde te contestamos. Va último para que el que abandona a
                 mitad ya lo haya dado. */}
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
-              <div role="group" aria-label="Datos de contacto" className={`space-y-1.5 rounded-lg p-2 ${alinearAlLlegar ? 'form-contacto-compacto' : ''}`} style={{ border: '1.5px solid var(--catalogo-acento)' }}>
+              <div role="group" aria-label="Datos de contacto" className={`space-y-1.5 py-2 ${alinearAlLlegar ? 'form-contacto-compacto' : ''}`}>
                 {esPreinscripcion ? (
                   <p className={ROTULO_BLOQUE}>{ROTULO_GRUPO.contacto}</p>
                 ) : !alinearAlLlegar && (
@@ -1491,8 +1488,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 ref={botonRef}
                 type="submit"
                 disabled={enviando || enFrio}
-                className="w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 hover:shadow-[0_6px_18px_rgba(var(--catalogo-acento-rgb),0.35)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 disabled:hover:shadow-none"
-                style={{ background: 'linear-gradient(90deg, var(--catalogo-acento), var(--catalogo-acento-oscuro))', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
+                className="w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-[filter] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100"
+                style={{ background: 'var(--catalogo-acento)', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
                 {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
               </button>
