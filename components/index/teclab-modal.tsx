@@ -65,10 +65,7 @@ function TarjetaCompetencia({ texto, numero, acento }: { texto: string; numero: 
     // min-h-fit: la tarjeta no baja de lo que mide su texto. Sin eso, en una
     // ventana muy baja las filas de la grilla se aprietan y los renglones se
     // salen de la caja, montandose sobre la tarjeta de abajo.
-    <div
-      className="flex items-start gap-3 rounded p-3 min-h-fit"
-      style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
-    >
+    <div className="teclab-superficie flex items-start gap-3 rounded p-3 min-h-fit">
       <span
         className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[0.68rem] font-black"
         style={{ background: acento, color: textoAcento }}
@@ -112,29 +109,21 @@ function FotoFicha({ imagen, acento, className = '' }: { imagen: string; acento:
  * cambia mucho de proporcion segun la empresa y, alineado a la izquierda,
  * dejaba un hueco distinto en cada carrera.
  *
- * `solido` es para el cierre, que va sobre una foto: ahi el relleno translucido
- * dejaba ver la imagen a traves del cuadro.
+ * Superficie plana y opaca (.teclab-superficie): sirve igual en la portada y
+ * en el cierre, que va sobre una foto.
  */
 function BloqueCocreacion({
   ficha,
   acento,
-  solido,
   className = '',
 }: {
   ficha: TeclabFicha;
   acento: string;
-  solido?: boolean;
   className?: string;
 }) {
   if (!ficha.partner) return null;
   return (
-    <div
-      className={`rounded px-2.5 py-1.5 flex flex-col items-center text-center ${className}`}
-      style={{
-        background: solido ? 'color-mix(in srgb, #fff 6%, var(--teclab-ink))' : 'rgba(255,255,255,0.05)',
-        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
-      }}
-    >
+    <div className={`teclab-superficie rounded px-2.5 py-2 flex flex-col items-center text-center ${className}`}>
       <span className="block text-4xs font-black uppercase tracking-etiqueta" style={{ color: CLARO[acento] }}>
         Carrera cocreada con
       </span>
@@ -182,12 +171,8 @@ function BloqueDato({
   const textoPrincipal = textoSobreAcentoTeclab(acento);
   return (
     <div
-      className={`rounded px-2.5 py-1.5 ${className}`}
-      style={
-        principal
-          ? { background: acento, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
-          : { background: 'rgba(255,255,255,0.075)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.12)' }
-      }
+      className={`rounded px-2.5 py-1.5 ${principal ? '' : 'teclab-superficie'} ${className}`}
+      style={principal ? { background: acento } : undefined}
     >
       <span
         className="block text-4xs font-black uppercase tracking-etiqueta"
@@ -235,8 +220,7 @@ function SlidePortada({
     // el alto que sobra (ver modales.css), asi no queda hueco al pie con textos
     // cortos ni empuja el resto fuera de la pantalla con textos largos.
     <div data-scroll-lectura className="teclab-slide teclab-portada h-full flex flex-col gap-2.5 sm:gap-3 p-4 sm:p-7 overflow-y-auto custom-scrollbar">
-      <div className="teclab-portada-titulo flex-shrink-0 flex gap-3">
-        <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: acento }} />
+      <div className="teclab-portada-titulo flex-shrink-0">
         <div className="min-w-0">
           {carrera.prefix && (
             <p
@@ -327,10 +311,7 @@ function SlideCompetencias({
       {/* La salida laboral va arriba. Sin rotulo: el texto ya dice de que se
           trata y el filo del acento lo separa de la lista. */}
       {salida && (
-        <div
-          className="flex-shrink-0 rounded p-2.5"
-          style={{ background: 'rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', borderLeft: `3px solid ${acento}` }}
-        >
+        <div className="teclab-superficie flex-shrink-0 rounded p-2.5">
           <p className="text-[0.8rem] sm:text-[0.85rem] text-white leading-snug">{salida}</p>
         </div>
       )}
@@ -341,8 +322,7 @@ function SlideCompetencias({
           solo, las filas quedaban parejas por debajo del texto y la tarjeta
           mas larga se salia un par de pixeles: un scroll que no llevaba a nada. */}
       <div
-        data-scroll-lectura className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2 sm:p-2.5 grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        data-scroll-lectura className="teclab-competencias flex-1 min-h-0 overflow-y-auto custom-scrollbar grid grid-cols-1 auto-rows-[minmax(min-content,1fr)] gap-2"
       >
         {competencias.map((texto, i) => (
           <TarjetaCompetencia key={i} texto={texto} numero={i + 1} acento={acento} />
@@ -383,8 +363,8 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
   const textoActivo = textoSobreAcentoTeclab(acento);
   const estiloBoton = (encendido: boolean) =>
     encendido
-      ? { background: acento, color: textoActivo, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
-      : { background: 'rgba(255,255,255,0.05)', color: CLARO[acento], boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' };
+      ? { background: acento, color: textoActivo }
+      : { background: 'color-mix(in srgb, #fff 7%, var(--teclab-ink))', color: CLARO[acento] };
 
   // En mobile no hay indice al costado: el plan va entero y las pastillas de
   // arriba llevan a cada año. La que esta encendida y el boton flotante salen
@@ -461,8 +441,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
       <div className="md:hidden relative flex-1 min-h-0">
         <div
           ref={marcoRef}
-          className="h-full overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
-          style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+          className="h-full overflow-y-auto custom-scrollbar flex flex-col gap-2.5"
         >
           {años.map((a, i) => {
             // El ultimo año ocupa el marco entero -min-h-full- para que su
@@ -526,12 +505,11 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
 
       {/* Desktop: indice a la izquierda y el contenido a la derecha */}
       <div
-        className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        className="teclab-superficie hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
       >
         <div
           className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[10.5rem] custom-scrollbar"
-          style={{ background: 'rgba(0,0,0,0.22)' }}
+          style={{ background: 'var(--teclab-ink)' }}
         >
           <button
             onClick={() => setActivo(-1)}
@@ -564,7 +542,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
         {/* El rotulo de lo que se esta viendo queda fijo arriba y el contenido
             arranca pegado a el: con el año centrado en el alto, uno de pocas
             materias flotaba en el medio del marco. */}
-        <div className="flex-1 min-h-0 flex flex-col" style={{ borderLeft: `3px solid ${acento}` }}>
+        <div className="flex-1 min-h-0 flex flex-col">
           <p className="flex-shrink-0 px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-white border-b border-white/10">
             {titulo}
           </p>
@@ -615,14 +593,7 @@ function AñoDetalle({ año, acento, conTitulo }: { año: TeclabAño; acento: st
  *  adentro: ya esta en el rotulo que encabeza al grupo. */
 function PeriodoDetalle({ periodo, acento }: { periodo: TeclabPeriodo; acento: string }) {
   return (
-    <div
-      className="flex-shrink-0 rounded p-3"
-      style={{
-        background: 'rgba(255,255,255,0.05)',
-        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
-        borderLeft: `3px solid ${acento}`,
-      }}
-    >
+    <div className="teclab-superficie flex-shrink-0 rounded p-3">
       <p className="text-3xs font-black uppercase tracking-etiqueta-ancha" style={{ color: CLARO[acento] }}>
         {periodo.label}
       </p>
@@ -715,7 +686,7 @@ function SlideCierre({
           mas altos y en una columna: a media pantalla cada uno se leia como un
           boton chico perdido abajo de una foto grande. */}
       <div className="flex-shrink-0 flex flex-col gap-2.5">
-        {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} solido />}
+        {ficha?.partner && <BloqueCocreacion ficha={ficha} acento={acento} />}
 
         {/* Un solo boton. Al lado habia otro con la direccion de la sede, que
             abria Google Maps: la carrera se cursa 100% online y a un lead que

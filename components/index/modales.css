@@ -274,8 +274,7 @@
   padding: 0.2rem 0.55rem;
   border-radius: 4px;
   color: rgba(255, 255, 255, 0.82);
-  background: rgba(255, 255, 255, 0.075);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, #fff 8%, var(--teclab-ink));
   line-height: 1.25;
   max-width: 100%;
 }
@@ -284,7 +283,6 @@
 .teclab-chip-tipo {
   color: var(--teclab-on-accent);
   background: var(--teclab-accent);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 
 /* Aviso de inicio de clases en la portada: misma anatomia que el cuadro de
@@ -327,9 +325,7 @@
   overflow: hidden;
   background-image:
     radial-gradient(ellipse at 22% 18%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 48%),
-    radial-gradient(ellipse at 82% 70%, color-mix(in srgb, var(--teclab-accent) 20%, transparent), transparent 52%),
-    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px);
-  background-size: auto, auto, 42px 42px;
+    radial-gradient(ellipse at 82% 70%, color-mix(in srgb, var(--teclab-accent) 20%, transparent), transparent 52%);
 }
 
 .teclab-modal-header::after {
@@ -379,21 +375,31 @@
   }
 }
 
-/* Portada en desktop: dos columnas. La foto empieza a la altura del titulo y
-   se estira hasta los cuadros de datos, que van abajo a todo el ancho. Asi el
-   alto sobrante lo toma la foto en vez de quedar como un hueco al pie. */
+/* Portada en desktop: dos columnas. A la izquierda todo el texto, con los
+   cuadros de datos pegados al perfil y el bloque centrado en el alto por las
+   dos filas 1fr de las puntas; a la derecha la foto, de punta a punta. Antes
+   la fila del perfil era 1fr y, con un perfil corto, dejaba un hueco entre el
+   texto y los datos (22/11/2026). Si el texto no entra, las filas 1fr quedan
+   en cero y el slide scrollea. */
 @media (min-width: 768px) {
   .teclab-portada {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 19rem;
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr) minmax(19rem, 40%);
+    grid-template-rows: 1fr auto auto auto auto 1fr;
     grid-template-areas:
+      ".      foto"
       "titulo foto"
       "chips  foto"
       "perfil foto"
-      "datos  datos";
-    align-content: start;
-    gap: 0.75rem 1.5rem;
+      "datos  foto"
+      ".      foto";
+    gap: 0 1.75rem;
+  }
+
+  .teclab-portada-chips,
+  .teclab-portada-perfil,
+  .teclab-portada-datos {
+    margin-top: 0.75rem;
   }
 
   .teclab-portada-titulo { grid-area: titulo; }
@@ -413,8 +419,7 @@
   .teclab-portada-foto .teclab-foto {
     flex: 1;
     aspect-ratio: auto;
-    min-height: 11rem;
-    max-height: 28rem;
+    min-height: 16rem;
   }
 }
 
@@ -427,7 +432,7 @@
    Va al final para ganarle por orden a los dos bloques de arriba. */
 @media (max-height: 470px) {
   .teclab-portada {
-    grid-template-rows: auto auto auto auto;
+    grid-template-rows: 0 auto auto auto auto 0;
   }
 
   .teclab-portada-foto {
@@ -523,14 +528,19 @@
   z-index: 1;
 }
 
+/* Sin la trama de 42 px que venia del render: el usuario la descarto el
+   22/11/2026. Queda solo la luz abstracta del acento sobre la tinta. */
 .teclab-slide {
   background-color: var(--teclab-ink);
   background-image:
-    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 50%),
-    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 22%, transparent), transparent 54%),
-    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
-    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-  background-size: auto, auto, auto, 42px 42px;
+    radial-gradient(ellipse at 22% 26%, color-mix(in srgb, var(--teclab-accent) 10%, transparent), transparent 50%),
+    radial-gradient(ellipse at 84% 44%, color-mix(in srgb, var(--teclab-accent) 14%, transparent), transparent 54%);
+}
+
+/* Superficie de las tarjetas del modal: plana y opaca, sin borde ni sombra
+   (docs/criterios.md, «Nada de glassmorfismo»). */
+.teclab-superficie {
+  background: color-mix(in srgb, #fff 7%, var(--teclab-ink));
 }
 
 /* ── Ver precio (modal de Teclab) ──
