@@ -19,9 +19,13 @@ const ESPECIFICOS: Record<string, { title?: string; description: string }> = {
     title: 'Licenciatura en Finanzas a Distancia | Siglo 21',
     description: 'Estudiá mercados, inversiones, riesgo y tecnología financiera. Conocé el plan de estudios y cómo inscribirte en la Licenciatura en Finanzas a distancia.',
   },
+  // Es la ficha de marketing que vende: la de Siglo 21 lleva noindex desde el
+  // 21/11/2026. El título conserva «Superior» (docs/plans/2026-11-21-titulo-
+  // marketing-digital-teclab-design.md); la descripción abre con «tecnicatura
+  // en marketing digital», que estaba en posición 10,5 en noviembre de 2026.
   'Tecnicatura Superior en Marketing Digital': {
     title: 'Tecnicatura Superior en Marketing Digital | Teclab',
-    description: 'Estudiá marketing digital, publicidad, contenidos, e-commerce y experiencia del cliente. Título oficial, 2 años y modalidad 100% online en Teclab.',
+    description: 'Tecnicatura en marketing digital cocreada con Google: recibite de Técnico Superior en Marketing Digital en 2 años, 100% online. Publicidad, contenidos y e-commerce.',
   },
   'Tecnicatura Superior en Cloud Administration': {
     title: 'Técnico Superior en Cloud Administration online | Teclab',

@@ -176,8 +176,11 @@ test('_headers de assets lleva seguridad y cache, sin cabeceras de HTML', () => 
   assert.match(contenido, /\/derivados\/\*\n  Cache-Control: public, max-age=31536000, immutable/);
   assert.match(contenido, /\/imagenes\/\*\n  Cache-Control: public, max-age=86400/);
   // Los programas de Teclab son archivos pesados que se sirven tal cual.
-  assert.match(contenido, /\/planes\/\*\n  Cache-Control: public, max-age=86400, stale-while-revalidate=604800/);
-  assert.doesNotMatch(contenido, /X-Robots-Tag|no-store/i);
+  assert.match(contenido, /\/planes\/\*\n  Cache-Control: public, max-age=86400, stale-while-revalidate=604800\n  X-Robots-Tag: noindex\n/);
+  // Los PDF de los planes competían con la ficha en Google: son la única
+  // excepción. Ningún otro asset lleva X-Robots-Tag ni no-store.
+  const sinPlanes = contenido.replace(/\/planes\/\*\n(  .*\n)+/, '');
+  assert.doesNotMatch(sinPlanes, /X-Robots-Tag|no-store/i);
 });
 
 test('precarga sólo la fuente del título que corresponde a cada ficha', async t => {

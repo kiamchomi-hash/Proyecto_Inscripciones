@@ -12,18 +12,25 @@ const BAJAS_301 = [
   'tecnicatura-superior-en-energias-renovables',
   'tecnicatura-superior-en-gestion-de-energias-renovables',
 ];
+// Fichas de Teclab fuera de la oferta que seguían recibiendo búsquedas y
+// respondían 404 (Search Console, 22/11/2026: Gestión de Alimentos en posición
+// 5,8 con 16 clics al mes). Van a la landing de Teclab y no a la home: quien
+// buscaba una tecnicatura de Teclab encuentra ahí la oferta vigente.
+const BAJAS_TECLAB = [
+  'tecnicatura-superior-en-gestion-de-alimentos',
+];
 const BAJAS_308 = ['tecnicatura-superior-en-fintech', 'tecnicatura-superior-en-acompanamiento-terapeutico', 'tecnicatura-superior-en-producto-digital'];
 const BAJAS_302 = ['diplomatura-en-bienestar-integral-herramientas-para-transformar-te',
   'diplomatura-en-inteligencia-artificial', 'diplomatura-en-marketing-para-emprendedores-y-duenos-de-negocios',
   'diplomatura-en-management-hotelero'];
 const RENOMBRES: Record<string, [string, 301 | 308]> = {
+  'tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching': ['tecnicatura-superior-en-agile-coaching', 308],
   // La ficha de Videojuegos de Siglo 21 se publicó con URLs nuevas el 30/08 y el
   // 29/10/2026 sin redirección. La anterior `/inscripcion` sí quedó indexada
   // (rastreada el 15/10/2026) y desde el rename da 404: es la página en blanco
   // que aparecía en Google. Va a la ficha vigente, que es la que hay que
   // indexar; la de inscripción es noindex a propósito.
   'tecnicatura-en-videojuegos': ['siglo-21-video-juegos', 301],
-  'tecnicatura-superior-en-gestion-de-equipos-agiles-agile-coaching': ['tecnicatura-superior-en-agile-coaching', 308],
   'diplomatura-en-fraude-financiero-y-digital': ['diplomatura-en-prevencion-de-fraude-financiero-y-digital', 301],
   'tecnicatura-superior-en-customer-experience': ['tecnicatura-superior-en-experiencia-del-cliente', 301],
   'curso-de-mindfulness-y-tecnicas-de-gestion-del-estres': ['diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos', 301],
@@ -31,6 +38,7 @@ const RENOMBRES: Record<string, [string, 301 | 308]> = {
 export function redirectCarrera(slug: string): { destino: string; status: 301 | 302 | 308 } | null {
   slug = slug.toLowerCase();
   if (BAJAS_301.includes(slug)) return { destino: '/', status: 301 };
+  if (BAJAS_TECLAB.includes(slug)) return { destino: '/teclab', status: 301 };
   if (BAJAS_302.includes(slug)) return { destino: '/', status: 302 };
   if (BAJAS_308.includes(slug)) return { destino: '/', status: 308 };
   const renombre = RENOMBRES[slug];

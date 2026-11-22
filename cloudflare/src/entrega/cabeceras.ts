@@ -134,7 +134,8 @@ export function aplicarCabeceras(respuesta: Response, { ruta, estado }: Contexto
  * Contenido de `_headers` para los assets estáticos. Workers Assets los sirve
  * sin pasar por el Worker, así que el middleware no puede tocarlos: esta regla
  * lleva las mismas cabeceras globales que Next aplica también a sus archivos.
- * No incluye `X-Robots-Tag` ni `no-store`: un asset no es una página.
+ * No incluye `X-Robots-Tag` ni `no-store`: un asset no es una página (salvo
+ * los PDF de `/planes/`, ver abajo).
  *
  * Las imágenes y las fuentes salen con TTL propio. Workers Assets responde
  * `public, max-age=0, must-revalidate` por defecto, así que cada visita volvía a
@@ -147,6 +148,12 @@ export function aplicarCabeceras(respuesta: Response, { ruta, estado }: Contexto
  * cachean como las imágenes y no como `/_astro/*`: el archivo se reemplaza en el
  * mismo lugar cuando Teclab actualiza un plan, así que un año de `immutable`
  * dejaría el programa viejo pegado en el navegador de quien ya lo bajó.
+ *
+ * Son la única excepción al «sin X-Robots-Tag»: Google los indexaba y competían
+ * con la ficha (Search Console, 22/11/2026: 14 PDF con impresiones y
+ * `seguros.pdf` en posición 8 para la misma consulta en la que la ficha está
+ * primera). Con `noindex` se siguen descargando desde la ficha, pero el
+ * resultado de búsqueda es la ficha, que es la que tiene el formulario.
  */
 export function cabecerasAssets(): string {
   const lineas = ['/*'];
@@ -168,5 +175,6 @@ ${cacheImagenes}
 
 /planes/*
 ${cacheImagenes}
+  X-Robots-Tag: noindex
 `;
 }
