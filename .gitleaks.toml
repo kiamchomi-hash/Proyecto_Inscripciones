@@ -16,3 +16,14 @@ regexes = ['''^797fb61c1ace165de4ba56d8d37ad9c5$''']
 [[allowlists]]
 description = "Token público del beacon de Cloudflare Web Analytics"
 regexes = ['''^28aced3641ba4a7d81cb1b8722ebb2f3$''']
+
+# Clave pública de Google AMP que viene dentro del analytics.js original de
+# una ficha de Siglo 21 descargada en 2021. El archivo se borró en 1728dda;
+# el barrido histórico del workflow programado seguía encontrándolo. Es una
+# clave de un servicio de Google distribuida públicamente en ese script, no
+# una credencial del CAU. Excepción acotada a ese archivo y ese valor exactos.
+[[allowlists]]
+description = "Clave pública de Google AMP en analytics.js histórico"
+condition = "AND"
+paths = ['''^imagenes/Modales/Abogacía/Universidad Siglo 21 - Diseño Shakespear_files/analytics\.js$''']
+regexes = ['''^AIzaSyA65lEHUEizIsNtlbNo-l2K18dT680nsaM$''']

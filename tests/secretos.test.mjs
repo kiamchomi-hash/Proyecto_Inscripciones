@@ -9,10 +9,10 @@ test('rutas comerciales y credenciales se bloquean sin bloquear código público
   assert.equal(esRutaPrivada('.agents/skills/CAU-BRAND'), true);
 });
 
-import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { randomBytes } from 'node:crypto';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { revisarSecretos, verificarBinario } from '../herramientas/secretos.mjs';
 const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
@@ -179,4 +179,23 @@ test('un JWT borrado sigue detectándose en la historia pendiente', t => {
   writeFileSync(join(cwd, 'publico.txt'), `key=${jwt('service_role')}\n`); git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: alta');
   writeFileSync(join(cwd, 'publico.txt'), `key=${jwt('anon')}\n`); git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: reemplazo');
   assert.throws(() => revisarSecretos({ cwd }), /jwt/);
+});
+test('la excepción del analytics.js histórico es por archivo y valor exactos', t => {
+  const cwd = fixture(t);
+  const politica = readFileSync(join(process.cwd(), '.gitleaks.toml'), 'utf8');
+  const clave = politica.match(/\^\s*(AIza[\w-]{35})\s*\$/)?.[1];
+  assert.ok(clave, 'la política debe declarar la clave pública exacta');
+  writeFileSync(join(cwd, '.gitleaks.toml'), politica);
+  const archivo = 'imagenes/Modales/Abogacía/Universidad Siglo 21 - Diseño Shakespear_files/analytics.js';
+  mkdirSync(join(cwd, dirname(archivo)), { recursive: true });
+  writeFileSync(join(cwd, archivo), `var key="${clave}";\n`);
+  git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: alta analytics');
+  git(cwd, 'rm', archivo); git(cwd, 'commit', '-m', 'test: baja analytics');
+  assert.doesNotThrow(() => revisarSecretos({ cwd, base: '' }));
+
+  // El mismo valor en otro archivo no ampara la excepción.
+  const otro = 'publico.js';
+  writeFileSync(join(cwd, otro), `var key="${clave}";\n`);
+  git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: clave en otro archivo');
+  assert.throws(() => revisarSecretos({ cwd, base: '' }), /Posibles secretos/);
 });

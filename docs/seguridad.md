@@ -302,3 +302,10 @@ otros commits; cualquier otra aparición de una ruta privada sigue bloqueando.
 No se reescribió historia ni se tocó el sitio publicado. El barrido completo
 vuelve a pasar y la excepción quedó documentada en
 [`publicacion-sin-secretos.md`](publicacion-sin-secretos.md).
+
+Apareció un segundo hallazgo del barrido: un `analytics.js` de una ficha de
+Siglo 21 descargada en 2021 contenía una clave pública de Google AMP. El
+archivo se borró en `1728dda`. Se agregó en `.gitleaks.toml` una excepción
+acotada a **ese archivo y ese valor exactos**, con `condition = "AND"`: sin
+ella, Gitleaks combina los criterios con OR y la clave quedaría permitida en
+cualquier archivo. Hay una prueba que verifica los dos casos.
