@@ -97,10 +97,28 @@ export function descripcionCarrera(c: Carrera): string {
     return juntar([`${c.nombre_corto || nombre}: curso de Teclab de ${c.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`, 'Certificado oficial. Consultá la modalidad y cómo inscribirte.']);
   }
   if (esTeclab(c)) {
-    const { titulo, modalidad } = parseEnfoqueTeclab(c.enfoque);
+    // Abre con la carrera y no con la marca: Google corta el final, y «Carrera
+    // de Teclab.» era lo mismo en las 27 fichas. «Tecnicatura en X» y «Técnico
+    // Superior en X» son las dos formas en que se la busca (Search Console,
+    // noviembre de 2026). Lo que se cae primero si no entra es el cierre.
+    const { titulo, modalidad, certificado } = parseEnfoqueTeclab(c.enfoque);
     const grado = (titulo || nombre).replace(/\s*\([^)]*\)/g, '').replace(/\.$/, '');
+    const carrera = nombre.replace(/^Tecnicatura Superior en /, 'Tecnicatura en ').replace(/\s*\([^)]*\)/g, '');
     const partner = getFichaTeclab(c)?.partner?.nombre;
-    return juntar([`Carrera de Teclab. Recibite de ${grado} en ${c.duracion}, ${(modalidad || 'a distancia').toLowerCase()}.`, partner && `Cocreada con ${partner}.`, cierre]);
+    const intermedio = certificado.replace(/\s*\([^)]*\)/g, '').replace(/\.$/, '');
+    const forma = (modalidad || 'a distancia').toLowerCase();
+    // Con los nombres largos la apertura completa no deja lugar para nada más:
+    // se nombra la carrera una sola vez.
+    const completa = `${carrera} ${forma}: recibite de ${grado} en ${c.duracion}.`;
+    const apertura = completa.length <= 135 ? completa : `${carrera} ${forma}, en ${c.duracion}.`;
+    // A diferencia de `juntar`, una parte que no entra se saltea y se prueba la
+    // siguiente: el cierre suele entrar aunque el certificado intermedio no.
+    let texto = apertura;
+    for (const parte of [partner && `Cocreada con ${partner}.`, 'Título oficial de Teclab.',
+      intermedio && `Certificado intermedio de ${intermedio}.`, cierre]) {
+      if (parte && texto.length + 1 + parte.length <= 165) texto = `${texto} ${parte}`;
+    }
+    return texto;
   }
   return juntar([`${c.enfoque.trim().replace(/\.$/, '')}.`, 'A distancia con Universidad Siglo 21.', cierre, `Duración: ${c.duracion}.`]);
 }
