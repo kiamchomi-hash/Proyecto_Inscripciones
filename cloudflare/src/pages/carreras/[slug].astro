@@ -13,6 +13,14 @@ import { configTurnstile } from '../../entrega/entorno-publico';
 import { redirectCarrera } from '../../entrega/redirects-carreras';
 import { carreraToSlug } from '@/components/index/types';
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
+import { leerPrecioPrivado } from '../../datos/repositorio';
+import { promoTeclab, hoyArgentina, type PromoTeclab } from '@/components/carreras/descuentos-teclab';
+import type { GrupoTeclab } from '@/lib/teclab-embudo';
+import {
+  COOKIE_AB_TICKET, DURACION_AB_TICKET_S, esVarianteTicket, ticketsSegunVariante, sortearVarianteTicket,
+  type TicketsVisibles, type VarianteTicket,
+} from '@/lib/ab-ticket-teclab';
+import '@/estilos/carreras/ticket-descuento.css';
 import '@/estilos/poppins.css';
 import '@/estilos/dm-sans.css';
 import '@/estilos/carreras/career-detail.css';
@@ -40,6 +48,38 @@ const relacionadas = relacionadasCarrera(carrera, carreras);
 const equivalente = carreraEquivalente(carrera, carreras);
 const opciones = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion,
   ...(c.proximamente ? { proximamente: true } : {}) }));
+// Tickets de descuento de Teclab, en prueba A/B (lib/ab-ticket-teclab.ts). Del
+// precio privado viajan sólo los porcentajes y la vigencia; los montos siguen
+// detrás de «Ver precio». Si la lectura falla, la ficha sale igual, sin tickets.
+let tickets: TicketsVisibles | null = null;
+let grupo: GrupoTeclab = 'sin-prueba';
+if (esTeclab(carrera) && !carrera.proximamente) {
+  const forzada = Astro.url.searchParams.get('ticket');
+  const guardada = Astro.cookies.get(COOKIE_AB_TICKET)?.value;
+  let variante: VarianteTicket;
+  if (esVarianteTicket(forzada)) variante = forzada;
+  else if (esVarianteTicket(guardada)) variante = guardada;
+  else {
+    variante = sortearVarianteTicket();
+    Astro.cookies.set(COOKIE_AB_TICKET, variante, {
+      path: '/', maxAge: DURACION_AB_TICKET_S, sameSite: 'lax', secure: Astro.url.protocol === 'https:',
+    });
+  }
+  // El precio se lee también para el grupo sin tickets: una ficha sin descuento
+  // vigente no puede mostrar ticket, y si contara como «control» lo inflaría.
+  let promo: PromoTeclab | null = null;
+  try {
+    const precio = await leerPrecioPrivado(env.DB, carrera.id);
+    if (precio) promo = promoTeclab(precio.conceptos, precio.vigente_hasta, hoyArgentina());
+  } catch {
+    promo = null;
+  }
+  tickets = ticketsSegunVariante(promo, variante);
+  // Grupo para la medición: las revisiones con `?ticket=` aparte, y fuera de la
+  // prueba las fichas sin descuento de bimestres vigente (el ticket que tienen
+  // todos los grupos), para que los cuatro se comparen sobre las mismas fichas.
+  grupo = esVarianteTicket(forzada) ? 'revision' : promo?.bimestres != null ? variante : 'sin-prueba';
+}
 // La foto del encabezado se precarga en el `<head>`: el HTML de la ficha llega
 // en streaming y el `<img>` del hero aparece muy tarde en el documento, así
 // que sin la pista el navegador recién la baja cuando el parser llega a él.
@@ -64,6 +104,6 @@ const preloadFuente = carrera.nivel === 'Identidad Argentina' ? undefined
       lenta, el LCP no cambia —lo que lo retrasa es el CSS—, pero la
       hidratación queda para la primera ventana de ocio, después del `load`.
       Igual que en la home. */}
-  <PaginaCarrera carrera={carrera} relacionadas={relacionadas} equivalente={equivalente} opciones={opciones}
+  <PaginaCarrera carrera={carrera} relacionadas={relacionadas} equivalente={equivalente} opciones={opciones} tickets={tickets} grupo={grupo}
     turnstile={configTurnstile(env as unknown as Record<string, unknown>)} client:idle />
 </Sitio>

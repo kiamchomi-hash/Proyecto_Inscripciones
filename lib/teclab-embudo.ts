@@ -51,6 +51,20 @@ export const EVENTOS_TECLAB = ['alcanzado', 'cerrado', 'whatsapp', 'inscripcion'
 export type EventoTeclab = (typeof EVENTOS_TECLAB)[number];
 export type CtaTeclab = Exclude<EventoTeclab, 'alcanzado' | 'cerrado'>;
 
+/**
+ * Grupo de la prueba A/B de los tickets (`lib/ab-ticket-teclab.ts`).
+ * `sin-prueba`: el modal, las filas anteriores a la prueba y las fichas sin
+ * precio cargado (no pueden mostrar ticket, así que no cuentan para ningún
+ * grupo). `revision`: una visita con `?ticket=` forzado, para no mezclar las
+ * revisiones a mano con las visitas reales.
+ */
+export const GRUPOS_TECLAB = ['sin-prueba', 'control', 'bimestres', 'bimestres-azul', 'revision'] as const;
+export type GrupoTeclab = (typeof GRUPOS_TECLAB)[number];
+
+export function grupoValido(valor: unknown): valor is GrupoTeclab {
+  return typeof valor === 'string' && (GRUPOS_TECLAB as readonly string[]).includes(valor);
+}
+
 export const TOPE_SLUG = 120;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 

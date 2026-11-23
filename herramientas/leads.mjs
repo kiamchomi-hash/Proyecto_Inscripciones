@@ -117,6 +117,17 @@ async function leerEmbudoTeclab() {
     GROUP BY superficie, carrera, evento, paso, movil`);
 }
 
+// Prueba A/B de los tickets de descuento (lib/ab-ticket-teclab.ts): sólo la
+// ficha y sólo computadora, porque en el celular ningún grupo ve ticket. Antes
+// de aplicar la migración 0017 la columna `grupo` no existe y esto falla solo.
+async function leerPruebaTickets() {
+  return consultar(`SELECT grupo, evento, paso, sum(veces) AS veces
+    FROM teclab_embudo
+    WHERE fecha BETWEEN '${DESDE}' AND '${HASTA}' AND superficie = 'ficha' AND movil = 0
+      AND grupo NOT IN ('sin-prueba', 'revision')
+    GROUP BY grupo, evento, paso`);
+}
+
 // ── D1: las consultas que entraron de verdad ────────────────────────────────
 
 async function leerConsultas() {
@@ -247,7 +258,7 @@ console.log(`LEADS - ultimos ${DIAS} dias (${dm(DESDE)} al ${dm(HASTA)})`);
 // Cada fuente se lee aparte: son tres servicios distintos y ninguno depende de
 // otro. El error se guarda como valor en vez de cortar, para que la caida de
 // uno no se lleve puestos los otros.
-const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario, embudoVocacional, embudoTeclab] = await Promise.all([
+const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario, embudoVocacional, embudoTeclab, pruebaTickets] = await Promise.all([
   leerClicksWhatsapp().then(d => (fuentesLeidas.push('d1'), d), e => e),
   leerAvisos().catch(e => e),
   leerConsultas().catch(e => e),
@@ -256,6 +267,7 @@ const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario, embu
   leerSalidasCalendario().catch(e => e),
   leerEmbudoVocacional().catch(e => e),
   leerEmbudoTeclab().catch(e => e),
+  leerPruebaTickets().catch(e => e),
 ]);
 
 // ── 1. Clics a WhatsApp ─────────────────────────────────────────────────────
@@ -453,6 +465,37 @@ if (embudoTeclab instanceof Error) {
   console.log('  visible; en la ficha, la sección más honda que vio. En la ficha «inscribirse»');
   console.log('  sólo baja al formulario: lo que cuenta como resultado es la consulta enviada.');
   console.log('  El cierre de la pestaña desde el celular no siempre llega: «se fueron» es un piso.');
+}
+
+// ── 3 ter. Prueba A/B de los tickets de descuento en la ficha de Teclab ─────
+
+titulo('Prueba del ticket de Teclab', 'D1, en vivo: ficha, sólo computadora, por grupo');
+
+if (pruebaTickets instanceof Error) {
+  noDisponible(pruebaTickets);
+} else if (pruebaTickets.length === 0) {
+  console.log('  Ninguna visita de la prueba en la ventana.');
+} else {
+  const GRUPOS = ['control', 'bimestres', 'bimestres-azul'];
+  const suma = (grupo, filtro) => pruebaTickets
+    .filter(f => f.grupo === grupo && filtro(f)).reduce((a, f) => a + Number(f.veces), 0);
+  console.log(`    ${'grupo'.padEnd(16)}${['visitas', 'inscribirse', 'desde arriba', 'consultas', 'WhatsApp'].map(c => c.padStart(13)).join('')}`);
+  for (const grupo of GRUPOS) {
+    const visitas = suma(grupo, f => f.evento === 'alcanzado' && f.paso === 'portada');
+    if (visitas === 0) continue;
+    const consultas = suma(grupo, f => f.evento === 'consulta');
+    const valores = [
+      num(visitas),
+      num(suma(grupo, f => f.evento === 'inscripcion')),
+      num(suma(grupo, f => f.evento === 'inscripcion' && f.paso === 'portada')),
+      `${num(consultas)} (${pct(consultas, visitas)})`,
+      num(suma(grupo, f => f.evento === 'whatsapp')),
+    ];
+    console.log(`    ${grupo.padEnd(16)}${valores.map(v => String(v).padStart(13)).join('')}`);
+  }
+  console.log('\n  Lo que decide es «consultas»: el formulario enviado. «Desde arriba» es tocar');
+  console.log('  inscribirse o el ticket sin bajar de la portada. Con pocas visitas por grupo la');
+  console.log('  diferencia es ruido: esperar a que cada grupo tenga algunos cientos.');
 }
 
 // ── 4. Consultas del formulario ─────────────────────────────────────────────

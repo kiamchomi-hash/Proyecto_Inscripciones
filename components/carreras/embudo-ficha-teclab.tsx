@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { EVENTO_CONSULTA_ENVIADA, trackEmbudoTeclab } from '@/lib/analytics';
 import {
   PASOS_FICHA_TECLAB, SECCIONES_FICHA_TECLAB,
-  crearMedicionTeclab, ctaDelEnlace, type PasoTeclab,
+  crearMedicionTeclab, ctaDelEnlace, type GrupoTeclab, type PasoTeclab,
 } from '@/lib/teclab-embudo';
 
 /**
@@ -23,11 +23,11 @@ import {
  */
 const PERMANENCIA_MS = 700;
 
-export default function EmbudoFichaTeclab({ slug }: { slug: string }) {
+export default function EmbudoFichaTeclab({ slug, grupo = 'sin-prueba' }: { slug: string; grupo?: GrupoTeclab }) {
   useEffect(() => {
     const ruta = `/carreras/${slug}`;
     const medicion = crearMedicionTeclab(
-      (evento, paso) => trackEmbudoTeclab('ficha', slug, evento, paso),
+      (evento, paso) => trackEmbudoTeclab('ficha', slug, evento, paso, grupo),
       ['whatsapp', 'relacionada', 'consulta'],
     );
     const orden = (paso: PasoTeclab) => (PASOS_FICHA_TECLAB as readonly string[]).indexOf(paso);
@@ -107,7 +107,7 @@ export default function EmbudoFichaTeclab({ slug }: { slug: string }) {
       window.removeEventListener(EVENTO_CONSULTA_ENVIADA, alConsultar);
       window.removeEventListener('pagehide', alSalir);
     };
-  }, [slug]);
+  }, [slug, grupo]);
 
   return null;
 }

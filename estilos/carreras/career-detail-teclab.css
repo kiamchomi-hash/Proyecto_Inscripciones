@@ -367,54 +367,207 @@
   color: var(--career-accent);
 }
 
+/* Salida laboral: ícono en bloque azul y la frase entera en cuerpo grande.
+   Superficie plana, sin borde de acento. */
 .career-page--teclab .career-salida {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  margin-top: 2.5rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
   border: 0;
   border-radius: var(--teclab-esquina);
   background: var(--teclab-navy-claro);
   box-shadow: none;
 }
 
-.career-page--teclab .career-salida p {
+.career-page--teclab .career-salida-icono {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  aspect-ratio: 1;
+  border-radius: var(--teclab-esquina);
+  background: var(--teclab-azul);
   color: #fff;
 }
 
-/* ── Plan de estudios por año ─────────────────────────── */
-.career-page--teclab .career-year-title span {
-  color: var(--career-accent);
-  font-weight: 700;
+.career-page--teclab .career-salida-icono svg {
+  width: 1.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
+.career-page--teclab .career-salida h3 {
+  margin: .2rem 0 .6rem;
+  color: var(--career-accent);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.career-page--teclab .career-salida p {
+  color: #fff;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ── Plan de estudios por año ─────────────────────────── */
+/* Cada año es una tarjeta con cabecera sobria, cuatrimestres separados y
+   materias numeradas en filas. Lo que resalta es el pie: lo que se obtiene. */
 .career-page--teclab .career-years > section {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
   border: 0;
   border-radius: var(--teclab-esquina);
   background: var(--teclab-navy-claro);
+  counter-reset: materia;
 }
 
 .career-page--teclab .career-years > section:hover {
-  border-color: var(--career-accent);
+  border-color: transparent;
 }
 
+/* Sólo el nombre del año, centrado, sobre el mismo fondo que el pie: la
+   tarjeta queda enmarcada arriba y abajo. */
 .career-page--teclab .career-year-title {
-  border-bottom-color: rgba(0, 85, 240, 0.7);
+  display: block;
+  padding: 1rem 1.5rem;
+  /* Borde neutro y leve, no de acento. */
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--teclab-esquina) var(--teclab-esquina) 0 0;
+  background: var(--teclab-navy-hondo);
 }
 
 .career-page--teclab .career-year-title h3 {
   color: #fff;
+  font-family: var(--teclab-fuente);
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.career-page--teclab .career-term {
+  padding: 1.25rem 1.5rem .5rem;
+}
+
+.career-page--teclab .career-term + .career-term {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .career-page--teclab .career-term h4 {
+  margin-bottom: .4rem;
   color: var(--career-accent);
-  font-weight: 600;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .14em;
 }
 
-.career-page--teclab .career-term li,
+.career-page--teclab .career-term li {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  padding: .6rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: .92rem;
+}
+
+.career-page--teclab .career-term li:last-child {
+  border-bottom: 0;
+}
+
+/* El número de materia corre por todo el año. */
+.career-page--teclab .career-term li::before {
+  counter-increment: materia;
+  content: counter(materia, decimal-leading-zero);
+  position: static;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  color: var(--career-soft);
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* El certificado intermedio cierra la tarjeta del primer año, y el título la
+   del último. */
+.career-page--teclab .career-year-hito {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  margin-top: auto;
+  /* Alto del caso de dos líneas: «Auxiliar en Programación» entra en una y
+     el título ocupa dos; con menos, los pies arrancaban a distinta altura. */
+  min-height: 7rem;
+  padding: 1.1rem 1.5rem;
+  /* Superficie oscura y no el celeste lleno: el color fuerte de la página es
+     de «Quiero inscribirme», y el pie no tiene que competir con él. */
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--teclab-navy-hondo);
+  color: var(--career-accent);
+}
+
+/* En celular las tarjetas van una abajo de la otra: no hay nada que alinear. */
+@media (max-width: 640px) {
+  .career-page--teclab .career-year-hito {
+    min-height: 0;
+  }
+}
+
+.career-page--teclab .career-year-hito svg {
+  width: 3rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* El sello y el birrete llevan relleno: se leen como objeto, no como dibujo
+   de línea. La tilde del sello se recorta en el color del fondo. */
+.career-page--teclab .career-year-hito--certificado circle,
+.career-page--teclab .career-year-hito--titulo path:first-of-type {
+  fill: currentColor;
+}
+
+.career-page--teclab .career-year-hito--certificado path:last-of-type {
+  stroke: var(--teclab-navy-hondo);
+}
+
+.career-page--teclab .career-year-hito p {
+  display: grid;
+  gap: .2rem;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.career-page--teclab .career-year-hito span {
+  color: var(--career-soft);
+  font-size: .66rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
 .career-page--teclab .career-extras li {
   color: var(--teclab-texto);
 }
 
-.career-page--teclab .career-term li::before,
 .career-page--teclab .career-extras li::before {
   background: var(--career-accent);
 }
@@ -861,6 +1014,16 @@
    movimiento no se corta ni "salta" al pasar el puntero. */
 
 /* El verde de WhatsApp se mantiene (es el de la plataforma). */
+
+/* Aclaración de pago, pegada al formulario de preinscripción. */
+.career-page--teclab .career-sin-pago {
+  width: min(100% - 2rem, 46rem);
+  margin: 1rem auto 0;
+  color: var(--career-soft);
+  font-size: .9rem;
+  line-height: 1.55;
+  text-align: center;
+}
 
 /* ── Relacionadas ─────────────────────────────────────── */
 .career-page--teclab .career-related {

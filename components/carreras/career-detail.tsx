@@ -47,6 +47,8 @@ import {
 } from './career-content';
 import { rutaInscripcion, tieneInscripcionPropia } from './inscripcion-carrera';
 import type { Equivalente } from './carrera-equivalente';
+import TicketsDescuento from './ticket-descuento';
+import type { TicketsVisibles } from '@/lib/ab-ticket-teclab';
 
 interface Props {
   carrera: Carrera;
@@ -145,7 +147,60 @@ function CheckIcon() {
   );
 }
 
-export default function CareerDetail({ carrera, relacionadas, equivalente = null, preinscripcion, contacto }: Props & { preinscripcion?: ReactNode; contacto?: ReactNode }) {
+/**
+ * Salida laboral de Teclab. La frase va entera: partirla por comas cambia el
+ * sentido en varias carreras («Data Analyst… en empresas de tecnología, banca…»).
+ */
+function SalidaLaboral({ texto }: { texto: string }) {
+  return (
+    <div className="career-salida">
+      <span className="career-salida-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="7" width="18" height="13" rx="2" />
+          <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18" />
+        </svg>
+      </span>
+      <div>
+        <h3>Salida laboral</h3>
+        <p>{texto}</p>
+      </div>
+    </div>
+  );
+}
+
+/** Pie de una tarjeta del plan: lo que se obtiene al cerrar ese año. */
+function Hito({ tipo, rotulo, valor }: { tipo: 'certificado' | 'titulo'; rotulo: string; valor: string }) {
+  return (
+    <div className={`career-year-hito career-year-hito--${tipo}`}>
+      <svg aria-hidden="true" viewBox="0 0 48 48">
+        {tipo === 'certificado' ? (
+          <>
+            {/* Diploma con sello y cintas */}
+            <path d="M8 8h32v22H8z" />
+            <path d="M14 15h20M14 21h12" />
+            <circle cx="32" cy="30" r="6" />
+            <path d="m29 35-2 8 5-3 5 3-2-8" />
+            <path d="m29.5 30 1.7 1.7 3.3-3.4" />
+          </>
+        ) : (
+          <>
+            {/* Birrete con borla */}
+            <path d="M4 18 24 9l20 9-20 9z" />
+            <path d="M12 22v9c0 3 5.4 6 12 6s12-3 12-6v-9" />
+            <path d="M44 18v11" />
+            <path d="m41.5 33 2.5-4 2.5 4z" />
+          </>
+        )}
+      </svg>
+      <p>
+        <span>{rotulo}</span>
+        {valor}
+      </p>
+    </div>
+  );
+}
+
+export default function CareerDetail({ carrera, relacionadas, equivalente = null, preinscripcion, contacto, tickets = null }: Props & { preinscripcion?: ReactNode; contacto?: ReactNode; tickets?: TicketsVisibles | null }) {
   const isIA = carrera.nivel === 'Identidad Argentina';
   const isTeclabCourse = esCursoTeclab(carrera);
   // Las carreras de Teclab traen su material de la ficha oficial del instituto:
@@ -206,6 +261,8 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
 
   const iaMeta = isIA ? parseIAMeta(carrera.enfoque || '') : null;
   const teclabMeta = isTeclab ? parseEnfoqueTeclab(carrera.enfoque) : null;
+  // Sólo el título publicado: una anunciada llega sin él o con «Consultar».
+  const tituloTeclab = isTeclab && carrera.titulo && carrera.titulo !== 'Consultar' ? carrera.titulo : null;
   const metaItems = isIA
     ? [
         { label: 'Escuela', value: getEscuelaIA(carrera) || carrera.prefix || 'Diplomatura' },
@@ -271,6 +328,45 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
   // "que es la carrera" y aquella "como me inscribo".
   const inscripcionHref = tieneInscripcionPropia(carrera) ? rutaInscripcion(carrera) : null;
 
+  // Competencias y salida laboral de Teclab: van debajo del formulario, como
+  // lectura para quien todavía no se decidió.
+  const perfilTeclab = (
+    <>
+      {teclabCompetencias.length > 0 && (
+        <section id="perfil" className="career-section career-reveal" aria-label="Competencias profesionales">
+          {/* La tecnicatura va sin rótulo: la lista se explica sola y el
+              renglón en mayúsculas sumaba un título vacío. El curso sí lo
+              conserva, porque «Qué vas a aprender» dice algo distinto. */}
+          {isTeclabCourse && <SectionHeading eyebrow="Qué vas a aprender" />}
+          <ul className="career-learning-list">
+            {teclabCompetencias.map((competencia, index) => (
+              <li key={index}>
+                <span><CheckIcon /></span>
+                <p>{competencia}</p>
+              </li>
+            ))}
+          </ul>
+          {teclabSalida && <SalidaLaboral texto={teclabSalida} />}
+        </section>
+      )}
+
+      {/* Salida laboral sola: la ultima oracion de la descripcion se pinta
+          junto a las competencias, y una carrera anunciada todavia no las
+          tiene. Sin esto, el dato se perdia. */}
+      {teclabCompetencias.length === 0 && teclabSalida && (
+        <section id="perfil" className="career-section career-reveal">
+          <SalidaLaboral texto={teclabSalida} />
+        </section>
+      )}
+    </>
+  );
+
+  // Ticket del descuento de los bimestres (prueba A/B, lib/ab-ticket-teclab.ts):
+  // en escritorio va en la portada; en tablet, antes del formulario; en
+  // celular no va.
+  const ticketsMostrados = conMaterialTeclab && tickets ? tickets.promo : null;
+  const claseBorde = tickets?.borde === 'azul' ? ' td-borde-azul' : '';
+
   const waMsg = mensajeWhatsAppInfo(carrera);
   const waHref = `https://wa.me/${numeroWhatsAppDe(isIA ? 'identidad' : isTeclab ? 'teclab' : 'siglo21')}?text=${encodeURIComponent(waMsg)}`;
 
@@ -301,7 +397,7 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
           </>
         )}
 
-        <div className="career-hero-inner">
+        <div className={`career-hero-inner${ticketsMostrados ? ' career-hero-inner--promo' : ''}`}>
           <div className="career-hero-nav-row">
             {/* El payload RSC de la home pesa ~75 KB (el catalogo entero con sus
                 slides). Precargarlo desde cada carrera roba ancho de banda justo
@@ -384,7 +480,9 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               </p>
             )}
             <div className="career-hero-actions">
-              {!isIA && (
+              {/* En Teclab la inscripción va primero: es lo que se lee antes, y
+                  WhatsApp queda segundo con su verde de plataforma. */}
+              {!isIA && !conMaterialTeclab && (
                 <a href={waHref} target="_blank" rel="noopener nofollow" className="career-button career-button--whatsapp">
                   Consultar por WhatsApp
                 </a>
@@ -399,6 +497,11 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               >
                 {carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'} <ArrowIcon />
               </a>
+              {conMaterialTeclab && (
+                <a href={waHref} target="_blank" rel="noopener nofollow" className="career-button career-button--whatsapp">
+                  Consultar por WhatsApp
+                </a>
+              )}
               {isIA && (
                 <a href={waHref} target="_blank" rel="noopener nofollow" className="career-button career-button--ghost">
                   Hacer una consulta
@@ -419,6 +522,9 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               </p>
             )}
           </div>
+          {/* Descuento vigente de los bimestres (Teclab), a la derecha del
+              título. Sólo en escritorio: en celular va antes del formulario. */}
+          {ticketsMostrados && <TicketsDescuento promo={ticketsMostrados} className={`td-grupo--hero${claseBorde}`} />}
         </div>
       </header>
 
@@ -523,7 +629,8 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
                   {anios.map((year, index) => (
                     <section key={index}>
                       <div className="career-year-title">
-                        <span>{String(index + 1).padStart(2, '0')}</span>
+                        {/* En Teclab sin numeral: «Primer año» ya lo dice. */}
+                        {!conMaterialTeclab && <span>{String(index + 1).padStart(2, '0')}</span>}
                         <h3>{year.anio}</h3>
                       </div>
                       {year.cuatrimestres.map((term, termIndex) => (
@@ -536,6 +643,16 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
                           </ul>
                         </div>
                       ))}
+                      {/* El certificado intermedio se entrega al cerrar el primer
+                          año (ver «Certificado intermedio» en career-facts): el
+                          primer hito queda a la vista antes del segundo año. */}
+                      {index === 0 && anios.length > 1 && teclabMeta?.certificado && (
+                        <Hito tipo="certificado" rotulo="Certificado intermedio" valor={teclabMeta.certificado} />
+                      )}
+                      {/* Y el último año, con el título que se recibe. */}
+                      {isTeclab && index === anios.length - 1 && tituloTeclab && (
+                        <Hito tipo="titulo" rotulo="Título" valor={tituloTeclab} />
+                      )}
                     </section>
                   ))}
                 </div>
@@ -642,7 +759,18 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
         </aside>
       </div>
 
+      {/* En tablet la portada es baja para el ticket: va antes del formulario. */}
+      {ticketsMostrados && (
+        <TicketsDescuento promo={ticketsMostrados} className={`td-grupo--celular${claseBorde}`} />
+      )}
       {preinscripcion}
+      {/* Pegado al formulario: hay quien no completa por miedo a que le
+          cobren. Mismo texto que la página de inscripción de Teclab. */}
+      {preinscripcion && conMaterialTeclab && (
+        <p className="career-sin-pago">
+          Completar este formulario no realiza ningún pago: sólo registra tu solicitud. El pago lo hacés después, desde el portal del alumno.
+        </p>
+      )}
       {contacto}
 
       {/* Competencias, «lo que vas a aprender» y salida laboral: debajo de los
@@ -650,6 +778,8 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
           vacía) para que las líneas no se estiren a todo el ancho. */}
       <div className="career-layout career-layout--checks">
         <div className="career-content">
+          {perfilTeclab}
+
           {(portada?.bullets.length ?? 0) > 0 && (
             <section id="perfil" className="career-section career-reveal">
               <SectionHeading eyebrow="Tu futuro profesional">
@@ -663,40 +793,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
                   </li>
                 ))}
               </ul>
-            </section>
-          )}
-
-          {teclabCompetencias.length > 0 && (
-            <section id="perfil" className="career-section career-reveal" aria-label="Competencias profesionales">
-              {/* La tecnicatura va sin rótulo: la lista se explica sola y el
-                  renglón en mayúsculas sumaba un título vacío. El curso sí lo
-                  conserva, porque «Qué vas a aprender» dice algo distinto. */}
-              {isTeclabCourse && <SectionHeading eyebrow="Qué vas a aprender" />}
-              <ul className="career-learning-list">
-                {teclabCompetencias.map((competencia, index) => (
-                  <li key={index}>
-                    <span><CheckIcon /></span>
-                    <p>{competencia}</p>
-                  </li>
-                ))}
-              </ul>
-              {teclabSalida && (
-                <div className="career-salida">
-                  <p>{teclabSalida}</p>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Salida laboral sola: la ultima oracion de la descripcion se pinta
-              junto a las competencias, y una carrera anunciada todavia no las
-              tiene. Sin esto, el dato se perdia. */}
-          {teclabCompetencias.length === 0 && teclabSalida && (
-            <section id="perfil" className="career-section career-reveal">
-              <SectionHeading eyebrow="Salida laboral" />
-              <div className="career-salida">
-                <p>{teclabSalida}</p>
-              </div>
             </section>
           )}
 
@@ -787,8 +883,10 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
                   </a>.
                 </p>
               )}
-              <a href="#formulario">
-                Solicitar información
+              {/* Sin formulario de contacto en la ficha: la franja lleva a la
+                  preinscripción, que es el único formulario. */}
+              <a href="#preinscripcion">
+                {carrera.proximamente ? 'Preinscribite' : 'Quiero inscribirme'}
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
