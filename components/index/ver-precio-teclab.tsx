@@ -102,13 +102,6 @@ function EnlaceWhatsApp({ href, texto, principal = false }: { href: string; text
 /** Mensaje con el que se abre WhatsApp desde el botón de financiación. */
 export const MENSAJE_FINANCIACION = 'Quiero conocer la financiación';
 
-/** Reemplaza el texto del enlace de WhatsApp conservando el número de la casa. */
-function hrefFinanciacion(waHref: string): string {
-  const url = new URL(waHref);
-  url.searchParams.set('text', MENSAJE_FINANCIACION);
-  return url.toString();
-}
-
 /**
  * La financiación no se despliega: se consulta por WhatsApp. El mensaje ya
  * dice qué quiere, así que en el chat saben por dónde arrancar sin preguntar.
@@ -506,16 +499,22 @@ export function PanelVerPrecio({
             {error?.largo}
           </p>
 
-          <EnlaceWhatsApp href={waHref} texto="Escribinos por WhatsApp" />
+          {/* En Teclab, verde lleno desde el 23/11/2026: con borde se perdía
+              sobre el navy del slide. Siglo 21 conserva el contorno. */}
+          <EnlaceWhatsApp href={waHref} texto="Escribinos por WhatsApp" principal={casa === 'teclab'} />
         </form>
       )}
 
       {vista === 'precio' && precio && (
         <div ref={resultadoRef} className="vp-cuerpo" aria-live="polite">
-          {/* La vigencia arriba; la financiación y qué cubre el pago van
-              debajo de los botones: abiertos no los empujan fuera de la vista. */}
-          <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
-          <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={false} />
+          {/* La vigencia arriba; qué cubre el pago va debajo de los botones:
+              así no los empuja fuera de la vista. */}
+          {/* Vigencia y tabla en una sola tarjeta: sueltas sobre el fondo no
+              se leían como un bloque (23/11/2026). */}
+          <div className="vp-tarjeta">
+            <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
+            <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={false} />
+          </div>
           {slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
@@ -524,7 +523,9 @@ export function PanelVerPrecio({
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
-          {casa === 'teclab' && <Financiacion href={hrefFinanciacion(waHrefPrecioVisto ?? waHref)} />}
+          {/* Sin «Quiero conocer la financiación» desde el 23/11/2026: con
+              «Quiero inscribirme» ya hay una salida a WhatsApp. El formulario
+              de preinscripción la conserva (`PrecioEnFormulario`). */}
           <NotaCobertura precio={precio} casa={casa} />
         </div>
       )}

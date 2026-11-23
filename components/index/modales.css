@@ -1055,26 +1055,137 @@
   background: #1d3a3a;
 }
 
-/* Opción azul institucional aprobada para el precio de Teclab. Siglo 21
-   conserva sus verdes con las reglas de abajo. */
-.vp-slide:not(.vp-siglo21) .vp-vigente {
+/* Slide del precio de Teclab (mail y precio), 23/11/2026. La paleta es la del
+   mail de precio (`components/formularios/mail-precio.ts`): lo que se ve acá
+   y lo que llega al correo se reconocen como lo mismo. Fondo navy de Teclab
+   con luz abstracta de la paleta: azul Teclab desde la esquina de abajo a la
+   derecha y un toque de cian arriba a la izquierda (opción A, elegida el
+   23/11/2026 frente al navy liso con trama, el pleno azul y la foto del
+   cierre). Superficies planas, sin bordes de color ni vidrio
+   (docs/criterios.md). Siglo 21 conserva sus verdes con las reglas de abajo. */
+.teclab-slide.vp-slide {
+  background-color: #0c1824;
+  background-image:
+    radial-gradient(ellipse 70% 60% at 100% 100%, rgba(0, 85, 240, 0.45), transparent 70%),
+    radial-gradient(ellipse 50% 45% at 0% 0%, rgba(74, 226, 231, 0.1), transparent 70%);
+}
+
+.teclab-slide.vp-slide .vp-campo {
+  background: #13243a;
+  box-shadow: inset 0 0 0 1px #24405e;
+}
+
+.teclab-slide.vp-slide .vp-whatsapp:not(.vp-whatsapp-lleno) {
+  background: transparent;
+}
+
+/* Vigencia, conceptos y total en una sola tarjeta plana, como la caja del
+   precio en el mail (23/11/2026): sueltos sobre el fondo no se leían como un
+   bloque. La vigencia es el encabezado de la tarjeta, no una píldora aparte. */
+.vp-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.teclab-slide.vp-slide .vp-tarjeta {
+  gap: 0;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  background: #13243a;
+}
+
+.teclab-slide.vp-slide .vp-vigente {
+  padding: 0.65rem 1rem;
   border-left: 0;
-  background: #23485a;
-  color: #d6e9f2;
+  border-radius: 0;
+  /* Encabezado azul Teclab con texto blanco y total sin banda: la combinación
+     elegida el 23/11/2026, frente al encabezado cian y al total en banda azul. */
+  background: #0055f0;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
 }
 
-.vp-slide:not(.vp-siglo21) .vp-linea {
-  background: #20313a;
+/* Conceptos como filas de tabla, separadas por una línea, en vez de cajas. */
+/* Las líneas llegan a los bordes de la tarjeta: el margen va en cada fila. */
+.teclab-slide.vp-slide .vp-lineas {
+  row-gap: 0;
 }
 
-.vp-slide:not(.vp-siglo21) .vp-descuento {
-  background: #315766;
-  color: #e0f2f7;
+.teclab-slide.vp-slide .vp-linea {
+  padding: 0.8rem 1rem;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  border-bottom: 1px solid #2e4e6e;
 }
 
-.vp-slide:not(.vp-siglo21) .vp-total {
-  background: #17455b;
-  box-shadow: inset 0 0 0 1px #386179;
+/* Texto de lectura casi blanco y a 16 px: con el gris azulado y a 14 px no se
+   leía bien sobre el navy (23/11/2026). */
+.teclab-slide.vp-slide .vp-concepto {
+  font-size: 1rem;
+  color: #f0f0f6;
+}
+
+.teclab-slide.vp-slide .vp-monto {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.teclab-slide.vp-slide .vp-descuento {
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: #0055f0;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* El total cierra la tarjeta sin banda: pesa por el tamaño del monto. */
+.teclab-slide.vp-slide .vp-total {
+  align-items: center;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+}
+
+.teclab-slide.vp-slide .vp-total-rotulo {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.teclab-slide.vp-slide .vp-total-monto {
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.teclab-slide.vp-slide .vp-nota {
+  padding: 0.7rem 0.85rem;
+  background: #13243a;
+  box-shadow: none;
+  color: #f0f0f6;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  text-shadow: none;
+}
+
+.teclab-slide.vp-slide .vp-check {
+  color: #f0f0f6;
+  font-size: 0.88rem;
+}
+
+/* Las líneas que separan las filas, un poco más visibles. */
+.teclab-slide.vp-slide .vp-linea,
+.teclab-slide.vp-slide .vp-linea:first-child {
+  border-color: #2e4e6e;
 }
 
 /* La vigencia va arriba del precio, en el mismo contenedor que el aviso de
