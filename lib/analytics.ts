@@ -217,19 +217,17 @@ export function trackWhatsapp(origen: string) {
 /**
  * Recorrido de una carrera de Teclab (modal o ficha), contado en
  * `teclab_embudo` sin aviso. Va el slug de la carrera porque el modal no
- * cambia la URL: sin él, todo figuraría como `/`. `grupo` es el de la prueba
- * A/B de los tickets; el modal no participa y va `sin-prueba`.
+ * cambia la URL: sin él, todo figuraría como `/`.
  */
 export function trackEmbudoTeclab(
   superficie: import('./teclab-embudo').SuperficieTeclab,
   carrera: string,
   evento: import('./teclab-embudo').EventoTeclab,
   paso: import('./teclab-embudo').PasoTeclab,
-  grupo: import('./teclab-embudo').GrupoTeclab = 'sin-prueba',
 ) {
   const movil = esDispositivoMovil() ? 1 : 0;
-  track('teclab-embudo', { superficie, carrera, evento, paso, movil, grupo });
-  enviarEventoServidor('teclab-embudo', { superficie, carrera, evento, paso, movil, grupo });
+  track('teclab-embudo', { superficie, carrera, evento, paso, movil });
+  enviarEventoServidor('teclab-embudo', { superficie, carrera, evento, paso, movil });
 }
 
 /** El evento de `window` que dispara cada formulario cuando el servidor confirmó la consulta. */

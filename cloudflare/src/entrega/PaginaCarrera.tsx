@@ -3,8 +3,6 @@ import { carreraFullName, carreraToSlug, getAreaForCarrera } from '@/components/
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
 import CareerDetail from '@/components/carreras/career-detail';
 import type { Equivalente } from '@/components/carreras/carrera-equivalente';
-import type { TicketsVisibles } from '@/lib/ab-ticket-teclab';
-import type { GrupoTeclab } from '@/lib/teclab-embudo';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import DirectCareerOpenTracker from '@/components/carreras/direct-career-open-tracker';
 import EmbudoFichaTeclab from '@/components/carreras/embudo-ficha-teclab';
@@ -34,9 +32,9 @@ export function relacionadasCarrera(carrera: Carrera, carreras: Carrera[]) {
     .map(c => ({ id: c.id, nombre: c.nombre, prefix: c.prefix }));
 }
 
-export default function PaginaCarrera({ carrera, relacionadas, equivalente, opciones, turnstile, tickets = null, grupo = 'sin-prueba' }: {
+export default function PaginaCarrera({ carrera, relacionadas, equivalente, opciones, turnstile }: {
   carrera: Carrera; relacionadas: CarreraEnlace[]; equivalente: Equivalente | null;
-  opciones: CarreraOpcion[]; turnstile: ConfigTurnstile; tickets?: TicketsVisibles | null; grupo?: GrupoTeclab;
+  opciones: CarreraOpcion[]; turnstile: ConfigTurnstile;
 }) {
   const ia = carrera.nivel === 'Identidad Argentina';
   const curso = esCursoTeclab(carrera);
@@ -67,8 +65,8 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumb) }} />
     <main className={teclab ? 'flex-1 ficha-teclab fuente-poppins' : ia ? 'flex-1' : 'flex-1 fuente-dm-sans'}>
       <DirectCareerOpenTracker carrera={carreraFullName(carrera)} />
-      {teclab && <EmbudoFichaTeclab slug={carreraToSlug(carrera)} grupo={grupo} />}
-      <CareerDetail carrera={carrera} relacionadas={relacionadas} equivalente={equivalente} tickets={tickets}
+      {teclab && <EmbudoFichaTeclab slug={carreraToSlug(carrera)} />}
+      <CareerDetail carrera={carrera} relacionadas={relacionadas} equivalente={equivalente}
         preinscripcion={teclab ? <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} modoUnico="preinscripcion" /> : undefined}
       />
       {!teclab && <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} />}

@@ -47,8 +47,6 @@ import {
 } from './career-content';
 import { rutaInscripcion, tieneInscripcionPropia } from './inscripcion-carrera';
 import type { Equivalente } from './carrera-equivalente';
-import TicketsDescuento from './ticket-descuento';
-import type { TicketsVisibles } from '@/lib/ab-ticket-teclab';
 
 interface Props {
   carrera: Carrera;
@@ -200,7 +198,7 @@ function Hito({ tipo, rotulo, valor }: { tipo: 'certificado' | 'titulo'; rotulo:
   );
 }
 
-export default function CareerDetail({ carrera, relacionadas, equivalente = null, preinscripcion, contacto, tickets = null }: Props & { preinscripcion?: ReactNode; contacto?: ReactNode; tickets?: TicketsVisibles | null }) {
+export default function CareerDetail({ carrera, relacionadas, equivalente = null, preinscripcion, contacto }: Props & { preinscripcion?: ReactNode; contacto?: ReactNode }) {
   const isIA = carrera.nivel === 'Identidad Argentina';
   const isTeclabCourse = esCursoTeclab(carrera);
   // Las carreras de Teclab traen su material de la ficha oficial del instituto:
@@ -361,12 +359,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
     </>
   );
 
-  // Ticket del descuento de los bimestres (prueba A/B, lib/ab-ticket-teclab.ts):
-  // en escritorio va en la portada; en tablet, antes del formulario; en
-  // celular no va.
-  const ticketsMostrados = conMaterialTeclab && tickets ? tickets.promo : null;
-  const claseBorde = tickets?.borde === 'azul' ? ' td-borde-azul' : '';
-
   const waMsg = mensajeWhatsAppInfo(carrera);
   const waHref = `https://wa.me/${numeroWhatsAppDe(isIA ? 'identidad' : isTeclab ? 'teclab' : 'siglo21')}?text=${encodeURIComponent(waMsg)}`;
 
@@ -397,7 +389,7 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
           </>
         )}
 
-        <div className={`career-hero-inner${ticketsMostrados ? ' career-hero-inner--promo' : ''}`}>
+        <div className={`career-hero-inner`}>
           <div className="career-hero-nav-row">
             {/* El payload RSC de la home pesa ~75 KB (el catalogo entero con sus
                 slides). Precargarlo desde cada carrera roba ancho de banda justo
@@ -524,7 +516,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
           </div>
           {/* Descuento vigente de los bimestres (Teclab), a la derecha del
               título. Sólo en escritorio: en celular va antes del formulario. */}
-          {ticketsMostrados && <TicketsDescuento promo={ticketsMostrados} className={`td-grupo--hero${claseBorde}`} />}
         </div>
       </header>
 
@@ -759,10 +750,6 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
         </aside>
       </div>
 
-      {/* En tablet la portada es baja para el ticket: va antes del formulario. */}
-      {ticketsMostrados && (
-        <TicketsDescuento promo={ticketsMostrados} className={`td-grupo--celular${claseBorde}`} />
-      )}
       {preinscripcion}
       {/* Pegado al formulario: hay quien no completa por miedo a que le
           cobren. Mismo texto que la página de inscripción de Teclab. */}
