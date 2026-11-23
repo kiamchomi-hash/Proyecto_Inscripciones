@@ -27,6 +27,8 @@ import { AccesoAviso, AccesoVerPrecio, PanelVerPrecio } from './ver-precio-tecla
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import { precioPendiente } from '@/components/formularios/casas';
 import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
+import { trackEmbudoTeclab } from '@/lib/analytics';
+import { crearMedicionTeclab, ctaDelEnlace, pasoValido, type PasoTeclab } from '@/lib/teclab-embudo';
 import {
   credencialTeclab,
   datoTeclab,
@@ -827,6 +829,18 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose });
   const precioRef = useRef<HTMLDivElement>(null);
 
+  // Recorrido de esta apertura: a qué slide llega, en cuál se cierra sin hacer
+  // nada y desde cuál toca una CTA. Una medición por montaje del modal.
+  const [medicion] = useState(() => {
+    const slug = carreraToSlug(carrera);
+    // En el modal, inscribirse cierra el modal: después ya no hay «cerrado».
+    return crearMedicionTeclab(
+      (evento, paso) => trackEmbudoTeclab('modal', slug, evento, paso),
+      ['whatsapp', 'inscripcion'],
+    );
+  });
+  const pasoRef = useRef<PasoTeclab>('portada');
+
   // Cuenta los toques de «Ver precio» del cierre. Con un mail ya recordado, el
   // slide del precio lo pide solo; llegar con «Siguiente» no lo pide.
   const [pedidoPrecio, setPedidoPrecio] = useState(0);
@@ -863,6 +877,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     // Igual que «Preinscribite» del pie: la carrera viaja elegida al
     // formulario de preinscripción y el modal se cierra.
     const avisar = () => {
+      medicion.cta('inscripcion', 'cierre');
       pedirCarreraEnFormulario(carrera.id);
       handleClose();
       setTimeout(() => {
@@ -878,9 +893,42 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       });
     }
     return s;
-  }, [carrera, acento, cursada, ficha, periodos, pedidoPrecio, handleClose, sinPrecio]);
+  }, [carrera, acento, cursada, ficha, periodos, pedidoPrecio, handleClose, sinPrecio, medicion]);
 
   const nombre = carrera.nombre_corto || carrera.nombre;
+
+  const pasoActual = slides[idx]?.key;
+  useEffect(() => {
+    if (!pasoValido('modal', pasoActual)) return;
+    pasoRef.current = pasoActual;
+    medicion.alcanzar(pasoActual);
+  }, [pasoActual, medicion]);
+
+  // Las CTA son enlaces repartidos por varios slides y el pie: un solo
+  // listener en captura las ve todas, antes de que la de inscripción cierre el
+  // modal. Cerrar la pestaña con el modal abierto también es irse sin escribir.
+  useEffect(() => {
+    const dialogo = dialogRef.current;
+    const alHacerClic = (evento: MouseEvent) => {
+      const enlace = (evento.target as Element | null)?.closest?.('a[href]');
+      const destino = enlace ? ctaDelEnlace(enlace.getAttribute('href') ?? '') : null;
+      if (destino === 'whatsapp' || destino === 'inscripcion') medicion.cta(destino, pasoRef.current);
+    };
+    const alSalir = (evento: PageTransitionEvent) => {
+      if (!evento.persisted) medicion.cerrar(pasoRef.current);
+    };
+    dialogo?.addEventListener('click', alHacerClic, true);
+    window.addEventListener('pagehide', alSalir);
+    return () => {
+      dialogo?.removeEventListener('click', alHacerClic, true);
+      window.removeEventListener('pagehide', alSalir);
+    };
+  }, [dialogRef, medicion]);
+
+  const cerrarMidiendo = useCallback(() => {
+    medicion.cerrar(pasoRef.current);
+    handleClose();
+  }, [medicion, handleClose]);
 
   // Escape y Tab los maneja useFocoModal; las flechas pasan de slide.
   useEffect(() => {
@@ -910,7 +958,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     <ModalShell
       dialogRef={dialogRef}
       abierto={abierto}
-      onCerrar={handleClose}
+      onCerrar={cerrarMidiendo}
       aria-label={`Detalles de ${carrera.nombre}`}
       colorVelo="rgba(3,10,16,0.86)"
       className={clase}
@@ -947,7 +995,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
             </div>
             <button
               ref={closeBtnRef}
-              onClick={handleClose}
+              onClick={cerrarMidiendo}
               className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-red-600/20 text-red-500 hover:bg-red-600/40 hover:text-red-400 transition-colors"
               aria-label="Cerrar"
             >

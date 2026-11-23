@@ -5,6 +5,7 @@ import CareerDetail from '@/components/carreras/career-detail';
 import type { Equivalente } from '@/components/carreras/carrera-equivalente';
 import DeferredEnrollmentForm from '@/components/carreras/deferred-enrollment-form';
 import DirectCareerOpenTracker from '@/components/carreras/direct-career-open-tracker';
+import EmbudoFichaTeclab from '@/components/carreras/embudo-ficha-teclab';
 import SiteFooter from '@/components/footer';
 import { jsonLdScript } from '@/lib/json-ld';
 import { POSTAL_ADDRESS } from '@/lib/sede';
@@ -64,6 +65,7 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumb) }} />
     <main className={teclab ? 'flex-1 ficha-teclab fuente-poppins' : ia ? 'flex-1' : 'flex-1 fuente-dm-sans'}>
       <DirectCareerOpenTracker carrera={carreraFullName(carrera)} />
+      {teclab && <EmbudoFichaTeclab slug={carreraToSlug(carrera)} />}
       <CareerDetail carrera={carrera} relacionadas={relacionadas} equivalente={equivalente}
         preinscripcion={teclab ? <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} modoUnico="preinscripcion" /> : undefined}
         contacto={teclab ? <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} modoUnico="contacto" /> : undefined}

@@ -1,6 +1,7 @@
 import { consumirCupoAlerta } from '../datos/control.ts';
 import { registrarSalidaCalendario } from '../datos/calendario.ts';
 import { registrarEventoVocacional } from '../datos/vocacional-embudo.ts';
+import { registrarEventoTeclab } from '../datos/teclab-embudo.ts';
 import { registrarClickWhatsapp } from '../datos/whatsapp.ts';
 import { ipConfiable } from './ip.ts';
 
@@ -134,6 +135,14 @@ export async function manejarAlertaAnalytics(
     if (evento.startsWith('vocacional-')) {
       if (!db) return respuesta({ ok: false });
       const contado = await registrarEventoVocacional(db, evento, cuerpo.datos, ipConfiable(request));
+      return respuesta({ ok: contado });
+    }
+
+    // Recorrido de Teclab (modal y ficha): igual que el test, se cuenta y no
+    // avisa. El clic a WhatsApp ya avisa por su propio evento.
+    if (evento === 'teclab-embudo') {
+      if (!db) return respuesta({ ok: false });
+      const contado = await registrarEventoTeclab(db, cuerpo.datos, ipConfiable(request));
       return respuesta({ ok: contado });
     }
 

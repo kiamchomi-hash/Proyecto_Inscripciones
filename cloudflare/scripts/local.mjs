@@ -66,7 +66,8 @@ export function comandoLocal(nombre) {
       'tests/recordatorio-planes-siglo21.test.mjs'],
     // Telemetría agregada, alertas, revalidación y registrador local de analítica.
     telemetria: ['--test', '--test-concurrency=1', 'tests/telemetria.test.mjs', 'tests/analitica.test.mjs',
-      'tests/whatsapp-clicks.test.mjs', 'tests/calendario-salidas.test.mjs', 'tests/vocacional-embudo.test.mjs'],
+      'tests/whatsapp-clicks.test.mjs', 'tests/calendario-salidas.test.mjs', 'tests/vocacional-embudo.test.mjs',
+      'tests/teclab-embudo.test.mjs', 'tests/digest-teclab.test.mjs'],
     identidad: ['--test', 'tests/turnstile.test.mjs'],
     // Widget de Turnstile con dobles del documento y del entorno público:
     // ni red ni DOM real.

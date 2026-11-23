@@ -108,6 +108,15 @@ async function leerEmbudoVocacional() {
     ORDER BY test, evento, pregunta`);
 }
 
+// ── D1: el recorrido de Teclab (modal y ficha) ──────────────────────────────
+
+async function leerEmbudoTeclab() {
+  return consultar(`SELECT superficie, carrera, evento, paso, movil, sum(veces) AS veces
+    FROM teclab_embudo
+    WHERE fecha BETWEEN '${DESDE}' AND '${HASTA}'
+    GROUP BY superficie, carrera, evento, paso, movil`);
+}
+
 // ── D1: las consultas que entraron de verdad ────────────────────────────────
 
 async function leerConsultas() {
@@ -238,7 +247,7 @@ console.log(`LEADS - ultimos ${DIAS} dias (${dm(DESDE)} al ${dm(HASTA)})`);
 // Cada fuente se lee aparte: son tres servicios distintos y ninguno depende de
 // otro. El error se guarda como valor en vez de cortar, para que la caida de
 // uno no se lleve puestos los otros.
-const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario, embudoVocacional] = await Promise.all([
+const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario, embudoVocacional, embudoTeclab] = await Promise.all([
   leerClicksWhatsapp().then(d => (fuentesLeidas.push('d1'), d), e => e),
   leerAvisos().catch(e => e),
   leerConsultas().catch(e => e),
@@ -246,6 +255,7 @@ const [clicks, avisosLeidos, consultas, visitas, google, salidasCalendario, embu
   leerGoogle().then(d => (fuentesLeidas.push('gsc'), d), e => e),
   leerSalidasCalendario().catch(e => e),
   leerEmbudoVocacional().catch(e => e),
+  leerEmbudoTeclab().catch(e => e),
 ]);
 
 // ── 1. Clics a WhatsApp ─────────────────────────────────────────────────────
@@ -378,6 +388,73 @@ if (embudoVocacional instanceof Error) {
   console.log('  Una salida es una salida observable: no prueba que la persona no vuelva.');
 }
 
+// ── 3 bis. Recorrido de Teclab: modal y ficha ───────────────────────────────
+
+titulo('Recorrido de Teclab', 'D1, en vivo: hasta dónde llegan, dónde se van y desde dónde escriben');
+
+const visitasTeclab = { modal: null, ficha: null };
+
+if (embudoTeclab instanceof Error) {
+  noDisponible(embudoTeclab);
+} else if (embudoTeclab.length === 0) {
+  console.log('  Ninguna visita en la ventana (se mide desde que se publicó la tabla).');
+} else {
+  const SUPERFICIES = {
+    modal: {
+      nombre: 'Modal de la home', unidad: ['apertura', 'aperturas'],
+      pasos: ['portada', 'cursada', 'plan', 'cierre', 'precio'],
+      columnas: ['whatsapp', 'inscripcion'],
+    },
+    ficha: {
+      nombre: 'Ficha /carreras/...', unidad: ['visita', 'visitas'],
+      pasos: ['portada', 'plan', 'faq', 'formulario', 'perfil', 'oficial', 'relacionadas'],
+      columnas: ['whatsapp', 'inscripcion', 'consulta', 'relacionada'],
+    },
+  };
+  const ROTULO = { whatsapp: 'WhatsApp', inscripcion: 'inscribirse', consulta: 'consulta', relacionada: 'otra carrera' };
+
+  for (const [superficie, conf] of Object.entries(SUPERFICIES)) {
+    const filas = embudoTeclab.filter(f => f.superficie === superficie);
+    if (filas.length === 0) continue;
+    const suma = (filtro) => filas.filter(filtro).reduce((a, f) => a + Number(f.veces), 0);
+    const entradas = suma(f => f.evento === 'alcanzado' && f.paso === 'portada');
+    const entradasMovil = suma(f => f.evento === 'alcanzado' && f.paso === 'portada' && Number(f.movil) === 1);
+    visitasTeclab[superficie] = entradas;
+
+    console.log(`\n  ${conf.nombre}: ${plural(entradas, ...conf.unidad)}, ${num(entradasMovil)} desde el movil`);
+    const cabecera = ['llegaron', 'se fueron', ...conf.columnas.map(c => ROTULO[c])];
+    console.log(`    ${'paso'.padEnd(12)}${cabecera.map(c => c.padStart(13)).join('')}`);
+    for (const paso of conf.pasos) {
+      const valores = [
+        suma(f => f.evento === 'alcanzado' && f.paso === paso),
+        suma(f => f.evento === 'cerrado' && f.paso === paso),
+        ...conf.columnas.map(c => suma(f => f.evento === c && f.paso === paso)),
+      ];
+      if (valores.every(v => v === 0)) continue;
+      console.log(`    ${paso.padEnd(12)}${valores.map(v => String(num(v)).padStart(13)).join('')}`);
+    }
+
+    // Por carrera: qué parte de las entradas termina en WhatsApp o en una consulta.
+    const porCarrera = new Map();
+    for (const f of filas) {
+      const c = porCarrera.get(f.carrera) ?? { entradas: 0, wa: 0, consultas: 0 };
+      if (f.evento === 'alcanzado' && f.paso === 'portada') c.entradas += Number(f.veces);
+      if (f.evento === 'whatsapp') c.wa += Number(f.veces);
+      if (f.evento === 'consulta') c.consultas += Number(f.veces);
+      porCarrera.set(f.carrera, c);
+    }
+    console.log(`    Por carrera (${conf.unidad[1]}, WhatsApp${superficie === 'ficha' ? ', consultas' : ''})`);
+    for (const [carrera, c] of [...porCarrera].sort((a, b) => b[1].entradas - a[1].entradas).slice(0, 10)) {
+      const extra = superficie === 'ficha' ? `  ${String(num(c.consultas)).padStart(3)}` : '';
+      console.log(`      ${String(num(c.entradas)).padStart(4)}  ${String(num(c.wa)).padStart(3)} (${pct(c.wa, c.entradas)})${extra}  ${carrera}`);
+    }
+  }
+  console.log('\n  «Se fueron»: cerró el modal o la página sin escribir. En el modal es el slide');
+  console.log('  visible; en la ficha, la sección más honda que vio. En la ficha «inscribirse»');
+  console.log('  sólo baja al formulario: lo que cuenta como resultado es la consulta enviada.');
+  console.log('  El cierre de la pestaña desde el celular no siempre llega: «se fueron» es un piso.');
+}
+
 // ── 4. Consultas del formulario ─────────────────────────────────────────────
 
 titulo('Consultas del formulario', 'D1, en vivo');
@@ -451,6 +528,8 @@ if (!(salidasCalendario instanceof Error) && salidasCalendario.length) {
   fila(salidasCalendario.reduce((a, f) => a + Number(f.salidas), 0), 'salieron del calendario hacia la oferta');
 }
 if (iniciadosVocacional) fila(iniciadosVocacional, 'iniciaron el test vocacional');
+if (visitasTeclab.modal) fila(visitasTeclab.modal, 'abrieron el modal de una carrera de Teclab');
+if (visitasTeclab.ficha) fila(visitasTeclab.ficha, 'entraron a la ficha de una carrera de Teclab');
 if (!(consultas instanceof Error)) {
   fila(consultas.length, `dejaron el formulario${visitantes ? `  (${pct(consultas.length, visitantes)})` : ''}`);
 }

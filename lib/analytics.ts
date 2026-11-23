@@ -143,6 +143,7 @@ export function trackConsulta(
     carrera: carrera || 'sin especificar',
     tipo: tipo || 'sin especificar',
   });
+  avisarConsultaEnviada();
 }
 
 export function trackPreguntaFaq(modo: string) {
@@ -211,6 +212,36 @@ export function trackWhatsapp(origen: string) {
   // El dispositivo se envía sólo para el informe de leads, no para filtrar el
   // aviso.
   enviarEventoServidor('whatsapp', { origen, movil: esDispositivoMovil() ? 1 : 0 });
+}
+
+/**
+ * Recorrido de una carrera de Teclab (modal o ficha), contado en
+ * `teclab_embudo` sin aviso. Va el slug de la carrera porque el modal no
+ * cambia la URL: sin él, todo figuraría como `/`.
+ */
+export function trackEmbudoTeclab(
+  superficie: import('./teclab-embudo').SuperficieTeclab,
+  carrera: string,
+  evento: import('./teclab-embudo').EventoTeclab,
+  paso: import('./teclab-embudo').PasoTeclab,
+) {
+  const movil = esDispositivoMovil() ? 1 : 0;
+  track('teclab-embudo', { superficie, carrera, evento, paso, movil });
+  enviarEventoServidor('teclab-embudo', { superficie, carrera, evento, paso, movil });
+}
+
+/** El evento de `window` que dispara cada formulario cuando el servidor confirmó la consulta. */
+export const EVENTO_CONSULTA_ENVIADA = 'cau:consulta-enviada';
+
+/**
+ * Avisa a la página que una consulta entró: la medición de la ficha de Teclab
+ * lo escucha para no contar como «se fue» a quien dejó sus datos.
+ */
+export function avisarConsultaEnviada() {
+  if (typeof window === 'undefined') return;
+  try {
+    window.dispatchEvent(new Event(EVENTO_CONSULTA_ENVIADA));
+  } catch { /* sin efecto en el envío */ }
 }
 
 /** Embudo vocacional sin respuestas ni avisos de Telegram. */

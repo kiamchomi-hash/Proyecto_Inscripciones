@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { EMAIL_VALIDO, TELEFONO_VALIDO } from '@/components/formularios/casas';
+import { avisarConsultaEnviada } from '@/lib/analytics';
 
 /**
  * Formulario corto del lateral de la ficha: nombre, apellido y un solo dato de
@@ -76,6 +77,7 @@ export default function FormularioRapido({
         }),
       });
       if (!respuesta.ok) throw new Error(String(respuesta.status));
+      avisarConsultaEnviada();
       setListo(true);
       setValores({ nombre: '', apellido: '', contacto: '' });
     } catch {

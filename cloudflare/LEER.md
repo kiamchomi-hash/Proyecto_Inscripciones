@@ -1155,6 +1155,42 @@ cloudflare/migrations/0014_vocacional_embudo.sql --escribir` el 06/11/2026 y
 comprobada con un `SELECT` a `sqlite_master`. Falta publicar el código que manda
 los pasos: hasta que el Worker nuevo esté arriba, la tabla queda vacía.
 
+## Recorrido de las carreras de Teclab en D1 (23/11/2026)
+
+`whatsapp_clicks` dice cuántos tocaron WhatsApp y desde qué ruta, pero no en
+qué parte: el modal de la home no cambia la URL (todo figura como `/`) y la
+ficha es una sola página larga. No se sabía en qué slide o sección se iba la
+gente ni desde cuál escribía.
+
+- `migrations/0016_teclab_embudo.sql` agrega `teclab_embudo (fecha,
+  superficie, carrera, evento, paso, movil, veces)`: agregados por día, sin
+  mail ni identificadores. `superficie` es `modal` o `ficha`.
+- Todo se declara una vez en `lib/teclab-embudo.ts`: superficies, pasos de
+  cada una (slides del modal; secciones de la ficha con su selector) y
+  eventos. `alcanzado` cuenta una vez por visita y paso; `cerrado`, dónde se
+  fue sin escribir (el slide visible o la sección más honda vista);
+  `whatsapp`, `inscripcion`, `relacionada` y `consulta`, desde dónde ocurrió
+  cada una, una vez por visita. En la ficha «inscribirse» sólo baja al
+  formulario y no termina la visita; la consulta enviada sí (los formularios
+  disparan `cau:consulta-enviada` en `window`).
+- Lo emiten `components/index/teclab-modal.tsx` y
+  `components/carreras/embudo-ficha-teclab.tsx` (montado sólo en fichas de
+  Teclab desde `src/entrega/PaginaCarrera.tsx`).
+- `src/datos/teclab-embudo.ts` valida cada paso contra su superficie, cobra
+  el cupo por IP (`teclab-embudo:<digest>`, 240 cada 600 s) y suma el paso del
+  día. `POST /api/alertas-analytics` con `evento: 'teclab-embudo'` lo cuenta
+  sin aviso de Telegram.
+- `npm run leads` trae la sección «Recorrido de Teclab».
+- El resumen diario de Telegram (cron `digest`, 09:00, datos de ayer) suma un
+  mensaje «Recorrido de Teclab» armado en `src/operativa/digest-teclab.ts`:
+  por superficie, entradas, a qué paso llegaron, dónde se fueron sin escribir,
+  desde dónde tocaron cada CTA y las tres carreras con más entradas. Sin
+  actividad no sale; si la tabla falla, el resto del resumen sale igual.
+
+**Ya aplicada en producción** con `node herramientas/d1.mjs --archivo
+cloudflare/migrations/0016_teclab_embudo.sql --escribir` el 23/11/2026 y
+comprobada con un `SELECT` a `sqlite_master`.
+
 ## `/llms.txt` y la cabecera `Link` (11/11/2026)
 
 El mapa del sitio para los agentes de IA, con la convención de llmstxt.org.

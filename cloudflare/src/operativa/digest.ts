@@ -11,6 +11,8 @@
  * hay un lector configurado.
  */
 
+import { construirDigestTeclab, leerEmbudoTeclabDia } from './digest-teclab.ts';
+
 export const TOP_N = 10;
 
 export interface FilaClick {
@@ -66,6 +68,8 @@ export interface ResultadoDigest {
   directas: number;
   enviados: number;
   usuariosActivos: number | null;
+  /** Si salió el mensaje del recorrido de Teclab. */
+  teclab: boolean;
 }
 
 export interface DependenciasDigest {
@@ -95,11 +99,21 @@ export async function enviarDigest({ db, telegram, usuariosActivos, fecha }: Dep
   if (await telegram(construirDigest(dia, modales)) === 'enviado') enviados += 1;
   if (directas.length > 0 && await telegram(construirDigestDirectas(dia, directas)) === 'enviado') enviados += 1;
 
+  // El recorrido de Teclab va en su propio mensaje. Si la tabla falla, el resto
+  // del resumen sale igual: es un agregado, no la razón del cron.
+  let teclab = false;
+  try {
+    const texto = construirDigestTeclab(dia, await leerEmbudoTeclabDia(db, dia));
+    if (texto && await telegram(texto) === 'enviado') { enviados += 1; teclab = true; }
+  } catch (error) {
+    console.error('[digest] Recorrido de Teclab', { code: error instanceof Error ? error.name : 'desconocido' });
+  }
+
   let activos: number | null = null;
   if (usuariosActivos) {
     try { activos = await usuariosActivos(dia); } catch { activos = null; }
     if (activos !== null && await telegram(`Usuarios activos del ${dia}: ${activos}.`) === 'enviado') enviados += 1;
   }
 
-  return { fecha: dia, carreras: modales.length, directas: directas.length, enviados, usuariosActivos: activos };
+  return { fecha: dia, carreras: modales.length, directas: directas.length, enviados, usuariosActivos: activos, teclab };
 }
