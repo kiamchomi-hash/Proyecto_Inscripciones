@@ -18,6 +18,7 @@ import {
 } from '../operativa/outbox.ts';
 import { publicarEfectos, type ProductorCola } from '../operativa/colas.ts';
 import { respuestaDemo } from './demo.ts';
+import { ipConfiable } from './ip.ts';
 
 /**
  * API de formularios: el sobre, la autenticación y los códigos de estado son los
@@ -48,14 +49,12 @@ const respuesta = (cuerpo: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(cuerpo), { status, headers: { 'Content-Type': 'application/json' } });
 
 /**
- * IP de confianza del borde de Cloudflare. `cf-connecting-ip` la pone el borde y
- * no el cliente; por eso manda sobre `x-forwarded-for`, que sí es falsificable.
+ * IP de confianza del borde de Cloudflare. Igual que la telemetría: sólo
+ * `cf-connecting-ip`, que escribe el borde; `x-forwarded-for` y `x-real-ip` son
+ * del cliente y falsearían la cuota. Sin cabecera se agrupa en `unknown`.
  */
 export function ipDeCliente(request: Request): string {
-  return request.headers.get('cf-connecting-ip')
-    || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || request.headers.get('x-real-ip')
-    || 'unknown';
+  return ipConfiable(request);
 }
 
 type Carrera = {

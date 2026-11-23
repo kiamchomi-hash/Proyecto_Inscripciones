@@ -69,6 +69,44 @@ export default defineConfig({
   integrations: [react(), integracionCabecerasAssets, integracionDerivadas],
   session: false,
   devToolbar: { enabled: false },
+  // CSP con hashes generados en el build: los scripts inline de Astro y de las
+  // islas se autorizan por su hash, no con 'unsafe-inline'. La cabecera HTTP no
+  // puede llevar esos hashes (se decide antes de renderizar), así que en las
+  // páginas HTML rige este `<meta>` y la cabecera aporta frame-ancestors/XFO.
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data: blob: https://i.ytimg.com https://images.unsplash.com",
+        "font-src 'self'",
+        "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com",
+        "frame-src https://challenges.cloudflare.com https://www.google.com https://www.youtube-nocookie.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        'upgrade-insecure-requests',
+      ],
+      scriptDirective: {
+        resources: [
+          "'self'",
+          'https://challenges.cloudflare.com',
+          'https://static.cloudflareinsights.com',
+        ],
+        // Astro no hashea los scripts `is:inline`; el de Sitio.astro (marca del
+        // modal al volver de la home) se autoriza por este hash. Cambiar ese
+        // script exige recalcularlo; el smoke de navegador lo detecta.
+        hashes: ['sha256-DBHjmpHfs7IBQWm6uaIhjr5xOCXIW9Eno/AeJfzOOAo='],
+      },
+      styleDirective: {
+        resources: [
+          "'self'",
+          // React pinta estilos por atributo; se permiten ahí, no en <style>.
+          { resource: "'unsafe-inline'", kind: 'attribute' },
+        ],
+      },
+    },
+  },
   // Las fuentes pequeñas deben salir como assets del mismo origen: la CSP no
   // autoriza data: en font-src y no se debilita para aceptar el inline de Vite.
   vite: {

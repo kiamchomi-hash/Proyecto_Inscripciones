@@ -13,7 +13,10 @@
 // `/sobre-nosotros` los embeben igual que el sitio vigente.
 export const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+  // Sin 'unsafe-inline': las páginas HTML se rigen por el `<meta>` que Astro
+  // genera con hashes. Esta cabecera cubre assets y respuestas no HTML, donde
+  // no hay scripts inline que autorizar.
+  "script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://i.ytimg.com https://images.unsplash.com",
   "font-src 'self'",
@@ -112,10 +115,16 @@ export interface ContextoCabeceras {
  * de Next en desarrollo.
  */
 export function aplicarCabeceras(respuesta: Response, { ruta, estado }: ContextoCabeceras): Response {
+  const esHtml = (respuesta.headers.get('Content-Type') ?? '').includes('text/html');
   for (const [nombre, valor] of Object.entries(CABECERAS_SEGURIDAD)) {
     if (nombre === 'Referrer-Policy' && respuesta.headers.has(nombre)) continue;
+    // Astro genera la CSP de cada página SSR con los hashes de sus scripts.
+    // No se puede reemplazar por una cabecera fija: ésta no conoce los hashes
+    // y con 'unsafe-inline' dejaría pasar cualquier script inyectado.
+    if (nombre === 'Content-Security-Policy' && respuesta.headers.has(nombre)) continue;
     respuesta.headers.set(nombre, valor);
   }
+  if (esHtml) respuesta.headers.set('X-Frame-Options', 'DENY');
   if (!respuesta.headers.has('Cache-Control')) respuesta.headers.set('Cache-Control', 'no-store');
   const robots = robotsDeRuta(ruta, estado);
   if (robots) respuesta.headers.set('X-Robots-Tag', robots);

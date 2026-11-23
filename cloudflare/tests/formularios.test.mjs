@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { crearD1, insertarCarrera, insertarPrecio } from './helpers/d1.mjs';
 import { CAMPOS, CASAS, camposDe } from '../../components/formularios/casas.ts';
-import { manejarFormulario } from '../src/api/formularios.ts';
+import { ipDeCliente, manejarFormulario } from '../src/api/formularios.ts';
 import { insertarMateria, MATERIA_ID, OTRA_MATERIA_ID } from './helpers/materias.mjs';
 
 // Sólo fixtures sintéticos: el captcha es un puerto doble y ningún efecto
@@ -72,6 +72,16 @@ test('sobre: los 400 del handler vigente y el 503 sin servicio', async t => {
   });
   assert.equal(sinCaptcha.status, 503);
   assert.equal((await db.prepare('SELECT count(*) AS n FROM consultas').first('n')), 0);
+});
+
+test('la IP de formularios ignora cabeceras falsificables', () => {
+  const peticion = (cabeceras) => new Request('https://local.test/api/formularios', {
+    method: 'POST', headers: { 'content-type': 'application/json', ...cabeceras },
+  });
+  assert.equal(ipDeCliente(peticion({ 'cf-connecting-ip': '198.51.100.1', 'x-forwarded-for': '203.0.113.9' })), '198.51.100.1');
+  // Sin la cabecera del borde, todo cae en la misma clave: no se puede elegir IP.
+  assert.equal(ipDeCliente(peticion({ 'x-forwarded-for': '203.0.113.9' })), 'unknown');
+  assert.equal(ipDeCliente(peticion({ 'x-real-ip': '203.0.113.10' })), 'unknown');
 });
 
 test('captcha y cuota: 403, 429 y el intento concedido no se reembolsa', async t => {

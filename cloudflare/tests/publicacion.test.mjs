@@ -79,6 +79,10 @@ test('la configuración apunta al Worker, la base y los dominios de producción'
     migrations_dir: '../migrations',
   }]);
   assert.deepEqual(config.routes.map(r => r.pattern).sort(), ['siglo21sur.com', 'www.siglo21sur.com']);
+  // El Worker de producción no tiene dirección pública alternativa: los
+  // endpoints con D1 y secretos sólo existen en los dos dominios propios.
+  assert.equal(config.workers_dev, false);
+  assert.equal(config.preview_urls, false);
   assert.equal(config.vars.APP_STAGE, 'produccion');
   assert.equal(config.vars.DB_STAGE, 'produccion');
 });

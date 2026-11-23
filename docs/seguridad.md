@@ -309,3 +309,29 @@ archivo se borró en `1728dda`. Se agregó en `.gitleaks.toml` una excepción
 acotada a **ese archivo y ese valor exactos**, con `condition = "AND"`: sin
 ella, Gitleaks combina los criterios con OR y la clave quedaría permitida en
 cualquier archivo. Hay una prueba que verifica los dos casos.
+
+### 23/11/2026, cinco puntos flojos
+
+Revisión pedida por el usuario. Se corrigieron:
+
+- **`workers.dev` de producción**: `cloudflare/produccion/wrangler.json` pasa a
+  `workers_dev: false` (y `preview_urls` ya era `false`). La API confirmó que el
+  subdominio estaba habilitado. Hay una prueba de contrato en
+  `cloudflare/tests/publicacion.test.mjs`.
+- **CSP con `unsafe-inline`**: Astro ya genera la cabecera CSP con hashes por
+  página en SSR (`security.csp` en `astro.config.mjs`); el middleware la pisaba
+  con una cabecera fija. Ahora `aplicarCabeceras` conserva la cabecera de Astro y
+  sólo aplica la propia si la respuesta no trae una. Para HTML agrega
+  `X-Frame-Options: DENY`, porque `frame-ancestors` no se puede poner en `<meta>`.
+- **IP de formularios**: `ipDeCliente` usa `ipConfiable`, que falla cerrado con
+  `unknown` en vez de aceptar `x-forwarded-for` o `x-real-ip` falsificables.
+- **Dos factores en Cloudflare**: la API confirmó que el único miembro de la
+  cuenta tiene 2FA activo. El flag de cuenta `enforce_twofactor` sigue en
+  `false` y no se tocó: no hay una herramienta de edición expuesta para ese
+  ajuste y, con un solo miembro que ya lo tiene, no cambia la exposición real.
+- **Publicación**: el environment `produccion` de GitHub ahora tiene un
+  revisor requerido y un temporizador de 30 minutos. Es configuración remota,
+  no del repositorio.
+
+La revisión no encontró secretos nuevos ni vulnerabilidades en dependencias de
+producción (`npm audit --omit=dev` en cero en los dos paquetes).

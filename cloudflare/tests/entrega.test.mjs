@@ -128,6 +128,27 @@ test('X-Robots-Tag se decide por ruta: público sin noindex, privado y 404 con n
     'max-age=63072000; includeSubDomains; preload');
 });
 
+test('la CSP con hashes que genera Astro no se pisa con unsafe-inline', () => {
+  const construida = "script-src 'self' 'sha256-abc'; object-src 'none'";
+  const html = new Response('<html></html>', {
+    status: 200, headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Security-Policy': construida,
+    },
+  });
+  const pagina = aplicarCabeceras(html, { ruta: '/', estado: 200 });
+  assert.equal(pagina.headers.get('Content-Security-Policy'), construida);
+  assert.equal(pagina.headers.get('X-Frame-Options'), 'DENY');
+
+  const api = aplicarCabeceras(new Response('{}', {
+    status: 200, headers: { 'Content-Type': 'application/json' },
+  }), { ruta: '/api/estado', estado: 200 });
+  const csp = api.headers.get('Content-Security-Policy');
+  assert.doesNotMatch(csp, /script-src[^;]*unsafe-inline/);
+  assert.match(csp, /script-src 'self' https:\/\/challenges\.cloudflare\.com/);
+  assert.match(csp, /frame-ancestors 'none'/);
+});
+
 test('la cabecera Link apunta al llms.txt en las páginas y en nada más', () => {
   const html = new Response('<html></html>', {
     status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' },
