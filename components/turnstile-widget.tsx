@@ -19,6 +19,11 @@ type TurnstileWidgetProps = {
    * reservado, porque casi nunca se ve nada.
    */
   invisible?: boolean;
+  /**
+   * En `false` se pinta el marcador con su hueco pero no se pide el script de
+   * Cloudflare: el formulario lo enciende cuando la persona entra a escribir.
+   */
+  cargar?: boolean;
 };
 
 /** La marca de la casa, para el marcador. Identidad va en su isotipo propio. */
@@ -66,7 +71,7 @@ const ESPERA_MAXIMA_MS = 10000;
  */
 const ANCHO_MINIMO_FLEXIBLE = 300;
 
-export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21', invisible = false }: TurnstileWidgetProps) {
+export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21', invisible = false, cargar = true }: TurnstileWidgetProps) {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   // Modo demo (sólo desarrollo): no se carga Cloudflare aunque haya site key,
   // y el token sale solo. No se pinta nada, así que tampoco hay lugar
@@ -101,6 +106,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
       }
       return;
     }
+    if (!cargar) return;
 
     const container = containerRef.current;
     if (!container) return;
@@ -213,7 +219,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
         turnstileWindow.turnstile.remove(widgetId);
       }
     };
-  }, [demo, sitekey, invisible]);
+  }, [demo, sitekey, invisible, cargar]);
 
   if (demo || !sitekey) return null;
 

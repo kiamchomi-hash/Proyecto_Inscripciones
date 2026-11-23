@@ -580,6 +580,12 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const [captchaKey, setCaptchaKey] = useState(0);
   // El token vence a los 300 s; sin avisar, el botón se apaga sin motivo visible.
   const [captchaVencido, setCaptchaVencido] = useState(false);
+  // El script de Turnstile se pide recién cuando la persona entra al
+  // formulario (foco o toque); el marcador y su hueco se pintan igual desde el
+  // HTML. Cargado de entrada bajaba ~400 KB de Cloudflare y bloqueaba el hilo
+  // principal en cada página con formulario, aunque nadie fuera a escribir:
+  // en /teclab el TBT medido era de 1,6 s (Lighthouse, 22/11/2026).
+  const [captchaActivo, setCaptchaActivo] = useState(false);
   // Se enciende al primer intento de envío. Antes de eso nada se pinta en rojo:
   // un formulario que te reta por lo que todavía no llenaste es hostil.
   const [intentado, setIntentado] = useState(false);
@@ -1234,7 +1240,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
           <form
             ref={panelDatosRef}
             onSubmit={enviar}
-            onFocusCapture={acercarElBoton}
+            onFocusCapture={evento => { setCaptchaActivo(true); acercarElBoton(evento); }}
+            onPointerDownCapture={() => setCaptchaActivo(true)}
             noValidate
             className={[conPaneles ? 'form-carrusel-panel' : '', listo ? 'invisible' : ''].filter(Boolean).join(' ') || undefined}
             aria-hidden={listo || paso !== 'datos'}
@@ -1479,6 +1486,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
               {captchaDatos && (
                 <TurnstileWidget
                   key={captchaKey}
+                  cargar={captchaActivo}
                   marca={casaActiva ?? 'siglo21'}
                   onVerify={nuevo => { setToken(nuevo); setCaptchaVencido(false); }}
                   onExpire={() => { setToken(''); setCaptchaVencido(true); }}

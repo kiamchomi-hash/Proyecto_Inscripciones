@@ -18,6 +18,11 @@ type Props = {
   marca?: 'siglo21' | 'teclab' | 'identidad';
   /** Modo invisible de Cloudflare: casi nunca pinta nada, sin marcador. */
   invisible?: boolean;
+  /**
+   * En `false` se pinta el marcador con su hueco pero no se pide el script de
+   * Cloudflare: el formulario lo enciende cuando la persona entra a escribir.
+   */
+  cargar?: boolean;
 };
 
 /** La marca de la casa, para el marcador. Identidad va en su isotipo propio. */
@@ -43,7 +48,7 @@ function Marca({ marca }: { marca: 'siglo21' | 'teclab' | 'identidad' }) {
  * el marcador «Verificación de seguridad» hasta que carga el iframe); en demo
  * no se toca Cloudflare y el token sale solo.
  */
-export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21', invisible = false }: Props) {
+export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21', invisible = false, cargar = true }: Props) {
   const config = useContext(ContextoTurnstile);
   // En el servidor la configuración viene del contexto; el meta es el respaldo
   // para una página que no lo provea (se lee recién en el cliente).
@@ -79,7 +84,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
   }, [demo]);
 
   useEffect(() => {
-    if (demo || !sitio || !contenedor.current) return;
+    if (demo || !sitio || !cargar || !contenedor.current) return;
     const documento = document as unknown as DocumentoMinimo;
     const ventana = window as unknown as VentanaMinima;
     let vigente = true;
@@ -121,7 +126,7 @@ export default function TurnstileWidget({ onVerify, onExpire, marca = 'siglo21',
       medidor?.disconnect();
       control.desmontar();
     };
-  }, [demo, invisible, sitio]);
+  }, [cargar, demo, invisible, sitio]);
 
   if (demo || !sitio) return null;
 

@@ -1513,6 +1513,15 @@ test('e2e de navegador: fuentes, imágenes, capturas y Turnstile', { timeout: 2_
     assert.match(html, /min-h-\[71px\]/, 'el HTML del servidor debe reservar 71 px');
     assert.equal(await pagina.evaluate(() => document.body.textContent.includes('Verificación de seguridad')), true);
 
+    // El script de Cloudflare no se pide hasta que la persona entra al
+    // formulario: el marcador se ve, pero sin foco no hay pedido.
+    await pagina.waitForTimeout(500);
+    let pedidoAntes = false;
+    void scriptPedido.then(() => { pedidoAntes = true; });
+    await pagina.waitForTimeout(0);
+    assert.equal(pedidoAntes, false, 'Turnstile no tiene que cargarse antes de tocar el formulario');
+    await pagina.locator('form input').first().focus();
+
     const rutaScript = await scriptPedido;
     await rutaScript.fulfill({ status: 200, contentType: 'application/javascript', body: DOBLE_TURNSTILE });
     await pagina.waitForFunction(() => window.__turnstile?.render.length === 1, null, { timeout: 30_000 });

@@ -811,18 +811,13 @@
   to { background-position: 100% 50%; }
 }
 
+/* El halo respira con la opacidad de una capa y no animando box-shadow: la
+   sombra animada (y el degradé infinito) repintaban el botón en cada cuadro,
+   ~450 ms de trabajo cada 5 s con la ficha quieta (medido el 22/11/2026). La
+   opacidad la resuelve el compositor: en reposo quedan ~15 ms. */
 @keyframes teclab-cta-halo {
-  0%, 100% {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.22),
-      0 8px 24px -8px rgba(74, 226, 231, 0.45);
-  }
-  50% {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.34),
-      0 10px 34px -6px rgba(74, 226, 231, 0.8),
-      0 0 22px -4px rgba(0, 85, 240, 0.55);
-  }
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
 .career-page--teclab :is(.career-button--primary, .career-aside-cta > a:first-of-type) {
@@ -837,9 +832,29 @@
   background-size: 220% 100%;
   background-position: 0% 50%;
   color: var(--teclab-navy);
-  animation:
-    teclab-cta-degrade 6s ease-in-out infinite alternate,
-    teclab-cta-halo 3.4s ease-in-out infinite;
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    0 8px 24px -8px rgba(74, 226, 231, 0.45);
+  /* Dos pasadas al llegar y queda quieto: un degradé que no para repinta para
+     siempre. */
+  animation: teclab-cta-degrade 6s ease-in-out 2 alternate;
+}
+
+.career-page--teclab :is(.career-button--primary, .career-aside-cta > a:first-of-type)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow:
+    0 10px 34px -6px rgba(74, 226, 231, 0.8),
+    0 0 22px -4px rgba(0, 85, 240, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  animation: teclab-cta-halo 3.4s ease-in-out infinite;
 }
 
 /* Sin cambio de color en hover: el degradé y el halo siguen igual, así el
@@ -1018,7 +1033,9 @@
   .career-page--teclab .career-related li > a:hover,
 
   /* El halo y el degradé quedan quietos: el color está, el movimiento no. */
-  .career-page--teclab .career-aside-cta > a:first-of-type {
+  .career-page--teclab .career-aside-cta > a:first-of-type,
+  .career-page--teclab .career-button--primary,
+  .career-page--teclab :is(.career-button--primary, .career-aside-cta > a:first-of-type)::after {
     animation: none;
   }
 }
