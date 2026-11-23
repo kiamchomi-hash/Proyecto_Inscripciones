@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { esEnlaceSkillPublicoValido, esRutaPrivada } from '../herramientas/secretos.mjs';
+import { esEnlaceSkillPublicoValido, esRutaPrivada, rutaPrivadaEliminadaHistoricamente } from '../herramientas/secretos.mjs';
 test('rutas comerciales y credenciales se bloquean sin bloquear código público', () => {
   for (const p of ['carreras/precio.md', 'ventas/corpus.json', 'herramientas/ventas/rutas.mjs', 'notas-locales/a.md', '.env.local', 'folder/.env.production', 'credenciales.json', 'x-service_account.json', 'secrets/key.pem']) assert.equal(esRutaPrivada(p), true, p);
   for (const p of ['app/carreras/page.tsx', 'components/carreras/ficha.tsx', '.env.example', 'docs/variables-de-entorno.md', '.agents/skills/cau-brand']) assert.equal(esRutaPrivada(p), false, p);
@@ -124,6 +124,14 @@ test('un privado borrado de HEAD pero presente en commits pendientes sigue bloqu
   git(cwd, 'add', '.'); git(cwd, 'commit', '-m', 'test: alta');
   git(cwd, 'rm', 'notas-locales/nota.md'); git(cwd, 'commit', '-m', 'test: baja');
   assert.throws(() => revisarSecretos({ cwd }), /Archivos privados/);
+});
+test('la excepción histórica es exacta: un solo commit, una sola ruta, nunca el árbol actual', () => {
+  const commit = '4c78cb4339429b8bb2558803b9380b6eafda76fa';
+  assert.equal(rutaPrivadaEliminadaHistoricamente(commit, '.agents/skills'), true);
+  assert.equal(rutaPrivadaEliminadaHistoricamente(commit, '.agents/skills/cau-brand'), false);
+  assert.equal(rutaPrivadaEliminadaHistoricamente(commit, 'ventas/precio.md'), false);
+  assert.equal(rutaPrivadaEliminadaHistoricamente('abc', '.agents/skills'), false);
+  assert.equal(esRutaPrivada('.agents/skills'), true);
 });
 test('referencia base inexistente falla cerrado sin tocar index', t => {
   const cwd = fixture(t);

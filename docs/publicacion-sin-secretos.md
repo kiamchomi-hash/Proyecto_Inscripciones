@@ -36,6 +36,11 @@ incompleto, **se bloquea la publicación**. No se interpreta un error como
   su destino exacto dentro de `.claude/skills/` y tener un `SKILL.md` versionado
   en el mismo árbol Git. El control escanea también el blob del enlace y el
   contenido del destino; no admite otros symlinks bajo `.agents/`.
+- El barrido programado, al no tener base, recorre toda la historia. Tiene una
+  sola excepción nominal en `ELIMINADOS_HISTORICOS`: `.agents/skills` en el
+  commit `4c78cb4` del 16/02/2026, un enlace a una ruta local ajena que se retiró
+  enseguida. No se aplica al árbol seleccionado ni a otros commits; si esa ruta
+  apareciera en cualquier otro lado, sigue bloqueando. No reescribe historia.
 - Archivos `.env` excepto `.env.example`, credenciales de servicio, claves
   privadas y archivos de configuración local sensibles. Un `git add -f` no
   alcanza para saltear esta comprobación.

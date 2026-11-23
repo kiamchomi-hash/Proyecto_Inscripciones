@@ -287,3 +287,18 @@ panel.
 No se borraron tablas, cuentas, el bucket `ventas-privadas` ni secretos remotos de
 Supabase/Vercel: el código simplemente deja de usarlos. Los datos y RLS permanecen
 intactos. `npm run check` y `npm run build` quedaron en verde.
+
+### 23/11/2026, barrido histórico de secretos
+
+El workflow programado `Verificaciones` falló porque, sin `github.event.before`,
+escanea toda la historia y encontró `.agents/skills` versionado el 16/02/2026
+(commit `4c78cb4`) como enlace a una ruta local de otra máquina. El enlace ya
+estaba retirado y los controles de cada push no lo veían: comparan sólo desde
+`origin/main`.
+
+Se agregó en `herramientas/secretos.mjs` una excepción **nominal** para ese par
+commit/ruta en `ELIMINADOS_HISTORICOS`. No aplica al árbol seleccionado ni a
+otros commits; cualquier otra aparición de una ruta privada sigue bloqueando.
+No se reescribió historia ni se tocó el sitio publicado. El barrido completo
+vuelve a pasar y la excepción quedó documentada en
+[`publicacion-sin-secretos.md`](publicacion-sin-secretos.md).

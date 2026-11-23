@@ -27,6 +27,25 @@ const ENLACES_SKILLS_PUBLICOS = Object.freeze({
   '.agents/skills/security-audit': '../../.claude/skills/security-audit',
 });
 
+/**
+ * Excepción histórica, no política general: el 16/02/2026 el commit
+ * `4c78cb4` versionó `.agents/skills` como un enlace a una ruta local de otra
+ * máquina. Se retiró enseguida y hoy los enlaces son los de
+ * `ENLACES_SKILLS_PUBLICOS`. El barrido programado (sin `github.event.before`)
+ * recorre toda la historia y seguía tropezando con ese enlace muerto.
+ *
+ * Aplica sólo a ese par commit/ruta en commits ya publicados, nunca al árbol
+ * seleccionado ni a otros commits. No cubre secretos ni contenido: la ruta
+ * privada sigue bloqueándose si apareciera en cualquier otro lado.
+ */
+const ELIMINADOS_HISTORICOS = Object.freeze({
+  '4c78cb4339429b8bb2558803b9380b6eafda76fa': ['.agents/skills'],
+});
+
+export function rutaPrivadaEliminadaHistoricamente(commit, path) {
+  return (ELIMINADOS_HISTORICOS[commit] ?? []).includes(path);
+}
+
 export function esEnlaceSkillPublico(path) {
   return Object.hasOwn(ENLACES_SKILLS_PUBLICOS, path);
 }
@@ -107,7 +126,12 @@ export function revisarSecretos({ cwd, tree = valor(cwd, 'write-tree'), base = v
   const commits = valor(cwd, 'rev-list', rango).split('\n').filter(Boolean);
   // Inspeccionar todas las rutas de cada commit, incluso si después se borraron.
   const trees = [tree, ...commits];
-  const entries = trees.map(ref => partes(git(cwd, 'ls-tree', '-r', '-z', ref).toString('utf8')));
+  const entries = trees.map((ref, i) => {
+    const lista = partes(git(cwd, 'ls-tree', '-r', '-z', ref).toString('utf8'));
+    // Sólo commits del rango: el árbol seleccionado (i = 0) no tiene excepciones.
+    return i === 0 ? lista : lista.filter(entry =>
+      !rutaPrivadaEliminadaHistoricamente(ref, entry.slice(entry.indexOf('\t') + 1)));
+  });
   const privatePaths = [];
   for (const treeEntries of entries) {
     const rutas = new Set(treeEntries.map(entry => entry.slice(entry.indexOf('\t') + 1)));
