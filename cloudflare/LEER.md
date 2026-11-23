@@ -1078,9 +1078,10 @@ salió un solo aviso de Telegram del móvil.
   movil, clicks)`: agregados por día, página y dispositivo, nunca filas por
   visita. `fecha` es el día argentino, igual que `career_clicks`.
 - El navegador manda el evento en los dos dispositivos a
-  `POST /api/alertas-analytics`; el Worker cuenta siempre y manda Telegram sólo
-  si es móvil. Si el cupo de la IP corta el clic, tampoco avisa: no se alerta de
-  algo que el informe no va a mostrar.
+  `POST /api/alertas-analytics`; el Worker cuenta siempre y manda Telegram por
+  cada clic en cualquier dispositivo (desde el 23/11/2026, sin clasificar).
+  Si el cupo de la IP corta el clic, tampoco avisa: no se alerta de algo que el
+  informe no va a mostrar.
 - `src/datos/whatsapp.ts` valida el origen (pathname, sin query ni hash), deriva
   la clave de cuota con SHA-256 y usa el cupo `whatsapp:<digest>` (60 / 600 s).
 - `npm run leads` lee los clics y las consultas de D1; las visitas salen de

@@ -202,14 +202,14 @@ export function tipoFalloTecnicoFormulario(estadoRespuesta: number | null): 'red
  * ensuciaria el total.
  *
  * El evento viaja al servidor en los dos dispositivos: ahi se cuenta en
- * `whatsapp_clicks` y solo se manda el aviso de Telegram si es movil.
+ * `whatsapp_clicks` y cada clic avisa por Telegram, sea del dispositivo que sea.
  */
 export function trackWhatsapp(origen: string) {
   track('whatsapp', { origen });
   // Se manda siempre y el servidor decide: suma el clic al agregado de D1 en
-  // cualquier dispositivo y sólo alerta por Telegram cuando es móvil. Si el
-  // aviso se filtrara acá —como antes—, los clics de escritorio no existirían
-  // para el informe de leads.
+  // cualquier dispositivo y avisa por Telegram cada vez que entra al contador.
+  // El dispositivo se envía sólo para el informe de leads, no para filtrar el
+  // aviso.
   enviarEventoServidor('whatsapp', { origen, movil: esDispositivoMovil() ? 1 : 0 });
 }
 

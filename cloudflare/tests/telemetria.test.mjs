@@ -141,7 +141,7 @@ test('alertas-analytics: allowlist por evento y campo, sin datos extra', async t
   const ip = n => ({ 'cf-connecting-ip': `198.51.100.${n}` });
 
   const casos = [
-    ['whatsapp', { origen: '/carreras/x', movil: 1, extra: 'no-debe-salir' }, /Clic móvil a WhatsApp\nPágina: \/carreras\/x/],
+    ['whatsapp', { origen: '/carreras/x', movil: 1, extra: 'no-debe-salir' }, /Clic a WhatsApp\nPágina: \/carreras\/x/],
     ['clase-whatsapp', { materia: 'Matemática', telefono: 'no' }, /Clic a WhatsApp de clases\nMateria: Matemática/],
     ['formulario-fallo', { origen: 'contacto', motivo: 'red' }, /Origen: contacto\nTipo: red/],
     ['formulario-intento', { origen: 'home', modo: 'contacto', resultado: 'captcha' }, /Resultado: captcha/],

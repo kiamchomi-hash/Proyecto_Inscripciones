@@ -8,8 +8,9 @@ import { normalizarOrigen, registrarClickWhatsapp } from '../src/datos/whatsapp.
 
 // El clic a WhatsApp es la conversión más transitada del sitio y desde el corte
 // a Cloudflare no la medía nadie. Estos tests fijan las tres reglas que la
-// sostienen: se cuenta en los dos dispositivos, el aviso de Telegram sigue
-// siendo sólo del móvil, y nada de esto puede romper la navegación.
+// sostienen: se cuenta en los dos dispositivos, el aviso de Telegram sale por
+// cada clic que entra al contador en cualquier dispositivo, y nada de esto
+// puede romper la navegación.
 
 const hash = ip => createHash('sha256').update(ip).digest('hex');
 
@@ -46,8 +47,8 @@ test('el clic se cuenta desde móvil y desde escritorio, con el día de Argentin
     { fecha: hoy, origen: '/carreras/x', movil: 1, clicks: 2 },
   ]);
 
-  // Dos clics de móvil, un aviso cada uno; el de escritorio no avisa.
-  assert.equal(enviados.length, 2);
+  // Tres clics, tres avisos: el de escritorio también avisa.
+  assert.equal(enviados.length, 3);
 });
 
 test('el origen se normaliza: sin query ni hash, y sólo rutas del sitio', async t => {
@@ -60,7 +61,7 @@ test('el origen se normaliza: sin query ni hash, y sólo rutas del sitio', async
   );
   const [fila] = await filas(db);
   assert.equal(fila.origen, '/teclab');
-  assert.equal(enviados.length, 0);
+  assert.equal(enviados.length, 1);
 
   assert.equal(normalizarOrigen('https://evil.example/x'), null);
   assert.equal(normalizarOrigen(''), null);

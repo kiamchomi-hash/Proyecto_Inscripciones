@@ -12,9 +12,9 @@ import { ipConfiable } from './ip.ts';
  * fuera de la lista llega al aviso.
  *
  * Dos eventos se cuentan en D1 sin avisar: el clic a WhatsApp de cualquier
- * dispositivo y las salidas del calendario académico hacia la oferta. El aviso
- * de Telegram sigue siendo sólo del clic móvil a WhatsApp y de los casos de la
- * allowlist. Los pasos del test vocacional también se cuentan en D1, sin aviso.
+ * dispositivo y las salidas del calendario académico hacia la oferta. El clic a
+ * WhatsApp avisa por Telegram en cualquier dispositivo (si entró al contador) y
+ * los demás casos, sólo los de la allowlist. Los pasos del test vocacional también se cuentan en D1, sin aviso.
  *
  * El envío es un puerto: sin configuración responde 502 `{ ok: false }`, un
  * rechazo del proveedor también, y una excepción de red la absorbe el `catch`
@@ -49,7 +49,7 @@ export function prepararAlerta(evento: string, datos: Record<string, unknown>): 
 
   if (evento === 'whatsapp') {
     if (!origen.startsWith('/')) return null;
-    return { texto: ['Clic móvil a WhatsApp', `Página: ${origen}`].join('\n'), maximo: 5 };
+    return { texto: ['Clic a WhatsApp', `Página: ${origen}`].join('\n'), maximo: 5 };
   }
   if (evento === 'clase-whatsapp') {
     const materia = textoSeguro(datos.materia);
@@ -152,12 +152,11 @@ export async function manejarAlertaAnalytics(
     // —porque ya se mandaron cinco en diez minutos—, el dato igual queda.
     if (evento === 'whatsapp') {
       const contado = await registrarClickWhatsapp(db, cuerpo.datos.origen, movil, ip);
-      // El aviso por Telegram sigue siendo sólo del móvil. En escritorio wa.me
-      // abre WhatsApp Web y quien no tiene la sesión iniciada se queda en la
-      // pantalla de descarga: avisar por cada clic de escritorio es ruido.
-      // Tampoco se avisa de un clic que no entró al contador (cupo agotado):
-      // alertar de algo que el informe no va a mostrar descuadra las dos cosas.
-      if (!contado || !movil) return respuesta({ ok: true });
+      // Todo clic que entra al contador avisa, sea del dispositivo que sea: el
+      // aviso no depende de la clasificación del dispositivo. Tampoco se avisa
+      // de un clic que no entró al contador (cupo agotado): alertar de algo que
+      // el informe no va a mostrar descuadra las dos cosas.
+      if (!contado) return respuesta({ ok: true });
     }
 
     const permitido = await consumirCupoAlerta(db, evento, ip);

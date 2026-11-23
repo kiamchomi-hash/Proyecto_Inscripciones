@@ -201,8 +201,7 @@ test('APIs nuevas compiladas: métodos, autenticación y configuración ausente'
   const { DB } = await worker.getEnv();
   assert.equal((await DB.prepare("SELECT clicks FROM career_clicks WHERE origen='modal'").first('clicks')), 1);
 
-  // Un clic de móvil llega hasta el envío; sin transporte configurado es 502.
-  // (Desde escritorio el handler contesta 200 sin avisar, a propósito.)
+  // Un clic de WhatsApp llega hasta el envío; sin transporte configurado es 502.
   const alerta = await server.fetch('/api/alertas-analytics', {
     method: 'POST', headers: { 'content-type': 'application/json', 'cf-connecting-ip': '203.0.113.51' },
     body: JSON.stringify({ evento: 'whatsapp', datos: { origen: '/carreras/x', movil: 1 } }),
