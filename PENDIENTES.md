@@ -16,13 +16,15 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 - Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): **Diseño y Desarrollo de IA cargado el 20/11/2026** (id 251, con el alta de Administración de Negocios Digitales Financieros, id 252) tras confirmarlo el asesor; sigue pendiente Comunicación Digital, esperar a que Teclab la publique. Quedan sin precio y sin resolución las dos del 20/11.
 - Completar la FAQ de las carreras de Teclab (pendiente 3): al final de la cola; requiere trabajar bien las keywords y se espera a contar con un modelo de confianza para redactarlas.
 
-**Reservados para Claude Code (20/11/2026):** los pendientes 5, 8, 9, 13 y 14 se dejan para cuando el usuario tenga Claude; no se abordan desde OpenCode. Siguen en su nivel de prioridad original.
+**Reservados para Claude Code (20/11/2026, revisado el 22/11/2026):** los pendientes 5, 8, 9 y 14 se dejan para cuando el usuario tenga Claude; no se abordan desde OpenCode. Siguen en su nivel de prioridad original.
 
 ## Alta
 
 Las altas de Teclab van primero; después las demás.
 
 4. **Mejorar los modales de Teclab** (22/11/2026): prioridad alta, pidieron atenderlos antes que el resto. Tienen errores que todavía no se enumeraron; primero relevarlos en escritorio y celular en las páginas donde aparecen y anotarlos acá antes de tocar nada.
+
+4b. **Modificar el frontend de los `/slugs` de carreras de Teclab** (22/11/2026): sobre todo el **plan de estudio** y el **test vocacional** en las fichas de cada carrera. Relevar primero en escritorio y celular antes de tocar nada.
 
 5. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
 
@@ -32,8 +34,6 @@ Las altas de Teclab van primero; después las demás.
 
 10. **Migrar las carreras de Teclab a un dominio propio** (20/11/2026): el plan está en [`docs/plans/2026-11-20-migracion-teclab-dominio-propio.md`](docs/plans/2026-11-20-migracion-teclab-dominio-propio.md). Se hace de a una carrera por deploy, con 301 desde `siglo21sur.com`, canónicas y sitemap por host, sin tocar Siglo 21 ni las páginas `/teclab`, `/teclab/inscripcion` y `/teclab/test-vocacional`. El plan asume `teclab-lugano.com`: hay que confirmar el nombre antes de empezar. La Tarea 5 (compra del dominio, zona en Cloudflare, token y Turnstile) requiere autorización explícita y pasos del usuario.
 
-13. **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3, 28/10/2026): es el sitio de GRUPO BTC S.A. (Av. Córdoba 1551, CABA), no el oficial de la universidad, y resuelve la ficha de otra manera. Ejemplo anotado: [Licenciatura en Finanzas](https://siglo21online.com.ar/licenciatura-en-finanzas-detalle/). Lo que se vio ahí y vale evaluar: datos duros arriba y en una línea (duración, modalidad, título, validez con número de resolución), «¿Qué vas a lograr?» con cuatro resultados en tarjetas, comparación explícita de las dos modalidades de cursada (Educación Distribuida y Home) con encuentros y aperturas, plan de estudios plegado por año y cuatrimestre, y un bloque de «más posibilidades» con doble titulación, título intermedio y ámbitos profesionales. El formulario de WhatsApp ya llega con la carrera elegida. Revisar el resto de sus fichas antes de copiar cualquier cosa y decidir qué entra a `cloudflare/` sin inventar condiciones de cursada.
-
 14. **Rediseñar Identidad Argentina: los modales y la página principal** (53). Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
 
 ## Media
@@ -42,13 +42,13 @@ Las altas de Teclab van primero; después las demás.
 
 - **Continuar la revisión estética del sitio** (19/11/2026): revisar la portada, la página de cada carrera y los modales de Teclab en escritorio y celular.
 
+- **Modificar la parte del modal del precio** (22/11/2026): pendiente de relevamiento; todavía no se enumeró qué cambiar.
+
 20. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
 
 23. **Confirmar becas, doble carrera y las dudas restantes de requisitos** (30), que hoy el bot responde con «lo confirmo y te aviso». [Detalle](docs/pendientes-detalle.md#pendiente-11).
 
 25. **Revisar el flujo de inscripción de Siglo 21** de punta a punta (35b).
-
-26. **Relevar la financiación de Siglo 21 con una preinscripción propia** (37, 19/10/2026). La web de Siglo 21 no publica cuotas, tarjetas ni medios de pago. El usuario hace una preinscripción con su mail y llega hasta la pantalla de pago; se lee sin cargar datos y se sacan tarjetas, cuotas, bancos y medios para armar el mensaje de financiación a los leads. Antes, avisar o marcar como prueba el lead que se genera en HubSpot. Lo que se vea vale para esa carrera y ese momento; las promos bancarias cambian seguido.
 
 27. **Imagen OG propia por carrera en Siglo 21 e Identidad Argentina** (47b, 18/10/2026): hoy siguen con la genérica de su categoría (por ejemplo, Administración usa `/imagenes/og/default.jpg`).
 
@@ -106,8 +106,6 @@ Las altas de Teclab van primero; después las demás.
 
 ## Ratos muertos
 
-48. **Revisar distintas tipografías para agregar al UIverse local** (27). Es la primera de estas: faltan tipografías.
-
 49. **Terminar de revisar el UIverse local** (25).
 
 50. **Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración** (29).
@@ -117,6 +115,8 @@ Las altas de Teclab van primero; después las demás.
 ## Descartadas
 
 Se dejan anotadas para que no vuelvan a aparecer como pendientes.
+
+- **Relevar la financiación de Siglo 21 con una preinscripción propia** (26, 37; descartada el 24/11/2026): de Siglo 21 se encarga otra persona, así que no se relevan cuotas, tarjetas ni medios de pago desde acá. La financiación se maneja por WhatsApp.
 
 - **Pasar la carga diaria de precios a la nube** (57; descartada el 20/11/2026): el usuario ya no quiere tenerla online. La carga sigue en la PC con los timers de systemd actuales.
 
@@ -130,9 +130,13 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Folleto de carreras relevantes para Siglo 21 e Identidad** (52b): sólo Teclab.
 - **Dar imágenes a las carreras de Identidad Argentina** (46c).
 
+- **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3; descartada el 22/11/2026 a pedido del usuario): se retira sin incorporar ideas de ese sitio a las fichas. No confundir con la revisión de las fichas de Teclab contra `siglo21online.com.ar/teclab` (pendiente 11), cerrada el 21/11/2026 con el diferimiento del CSS del formulario.
+
 ## Cerradas el 06/11/2026
 
 ## Cerradas el 21/11/2026
+
+- **Revisar distintas tipografías para agregar al UIverse local** (48, 27): cerrada con evidencia. Se agregaron seis familias a `biblioteca/mias/`: JetBrains Mono, IBM Plex Mono, Literata, Newsreader, Atkinson Hyperlegible y Lexend. Todas son SIL Open Font License 1.1, verificada una por una en el `OFL.txt` del repo oficial de Google Fonts; ninguna permite exigir pago. Syne se descartó a pedido del usuario. Lexend, la favorita, quedó marcada en `biblioteca/estado.json` y su espécimen muestra la escalera de pesos 300–700 en vez de un solo párrafo. Verificado con `leerMias()`, que indexa las seis, y en la galería local: 17 tipografías, con el botón de favorita de Lexend en `aria-pressed=true`.
 
 - **Comparar las fichas de Teclab contra `teclab.edu.ar` y `siglo21online.com.ar/teclab` para mejorar el frontend** (11): cerrada con evidencia. Se aplicó el diferimiento del CSS del formulario en las fichas (`b097904` y `625ec44`). Verificado en producción: 6 hojas en el `<head>`, sin `formulario-lead.css`, `npm run smoke` todo verde y workflow `Verificaciones` exitoso.
 

@@ -356,3 +356,30 @@ Recuperación real parent21/10:49863230847 pasó de Nuevo/logs0 a En Gestión/lo
 - [x] La pausa de las 17:08 (`leer_asignaciones · no_clasificado · Error`) no volvió a aparecer: la lectura siguiente terminó bien y el estado quedó `automatico: { pausado: false, categoria: 'ok' }`, `diagnostico: null`, `sesionHubspot: activa` y `actualizado 19:20:07`.
 - [x] Se disparó con `POST /api/actualizar` desde la pestaña Tickets («Actualizar lista»). En Seguimientos el botón sólo refresca el estado local, no lee HubSpot; eso explica por qué antes no se reanudaba.
 - [x] El ciclo quedó programado cada 5 minutos y sigue en sólo lectura (`soloListar: true`, `activity.habilitada: false`): lee, combina filas y poda seguimientos, sin escribir en HubSpot. 13 negocios, 0 tickets, 22 filas de Activity y 11 trabajados sin cambios.
+
+### T38 — lectura de negocios restablecida y fichas ilegibles que frenaban la lista (23/11/2026)
+
+- Sesión del perfil `perfil-hubspot` vencida desde el 03/11/2026: la lista quedó en cero filas y el diagnóstico mostraba `notificaciones_timeout` en `leer_asignaciones`, que era consecuencia del logout y no lentitud. Se resolvió con login manual en el perfil del robot; el panel no lee credenciales ni códigos.
+- Dos defectos que impedían publicar la lista aunque la sesión funcionara:
+  - Los ciclos de complementación del CRM llegan como «… - Ciclo de Complementación Curricular», mientras el manifiesto los nombra «(CCC)». `aliasCicloComplementacion` agrega ese alias en `cargarCatalogo`, sin tocar el manifiesto ni las fichas.
+  - Una ficha ilegible abortaba toda la lectura y pausaba la automatización con `categoria: error`: carrera sin coincidencia, teléfono o contacto ambiguos, título fuera de patrón. Ahora `LIMITACIONES_FICHA` bloquea sólo ese negocio con motivo visible, continúa el resto y la categoría se libera sola cuando la ficha vuelve a leerse completa.
+- Verificación: 179 pruebas privadas HubSpot en verde (`aliasCicloComplementacion`, teléfono ambiguo que no aborta, EDH y sesión perdida conservadas). Corrida real del 23/11 15:30: siete filas, cinco con enlace de WhatsApp, dos señaladas por teléfono (`68574128787` y `68546557757`, Martillero). `diagnostico` nulo y `actualizado` del día.
+- Pendientes: definir qué número manda en los dos Martillero señalados (el CRM tiene más de un teléfono o ninguno confiable); el aviso «La lectura de notificaciones demoró demasiado» sigue ocultando la sesión vencida; la automatización de escritura continúa apagada por decisión del usuario.
+
+#### T38 — complemento del 23/11: sesión y arranque
+
+- El timeout de la campana de notificaciones ahora comprueba la URL real: si HubSpot ya redirigió al login, se informa «Hace falta iniciar sesión» y el panel lo clasifica como `sesion` en vez de `lectura_temporal`. Lo mismo en la ficha del negocio. Antes un logout podía pasar 20 días disfrazado de lentitud.
+- Al reiniciar con filas señaladas sin enlace, `repararEnlaces` llamaba a `new URL(null)` y el servicio entraba en reinicio continuo. Ahora toda fila `Revisión requerida:` sin enlace se conserva tal cual; las demás siguen exigiendo un `wa.me` válido.
+- Verificación final: 181 pruebas privadas en verde, servicio activo, HTTP 200 y lectura real con siete filas, una sin enlace por teléfono, `diagnostico: null`, `automatico: ok`.
+
+#### T38 — vigilancia diaria instalada (23/11)
+
+`herramientas/ventas/hubspot-vigilancia.mjs` + timer de usuario `cau-hubspot-vigilancia.timer` (09:15, `Persistent=true`): comprueba sesión y frescura de `actualizado` sólo si el interruptor está activo; avisa por escritorio y Telegram, nunca escribe en HubSpot. Independiente del interruptor de la app. Cuatro pruebas nuevas; 185/185 pruebas privadas en verde. Prueba real del servicio: `code=exited, status=0/SUCCESS` sin avisos.
+
+### T39 — editor de tareas nuevo y escrituras reconciliadas (23/11/2026)
+
+- Al activar la escritura apareció un cambio de HubSpot no detectado en las lecturas: el editor de tareas dejó el iframe `/object-builder/.../0-27/embed` y pasó a un diálogo en la página. `crearTarea` esperaba el iframe, creaba la nota y fallaba antes de la tarea; tres negocios quedaron con intención de tarea sin verificar. `completarFechaTareaDialogo` usa ahora el diálogo (título, datepicker, guardar) y falla cerrado: si no puede fijar la fecha personalizada, sólo acepta el preset de tres días laborables cuando cae exactamente en la fecha pedida (`coincidePresetTresDiasLaborables`, con prueba).
+- El interruptor de la app no desactivaba `soloListar`, así que seguir andando en modo lectura aunque dijera «activado». `/api/automatizacion` ahora alterna ambos-estados sin tocar `activity.habilitada`: Activity sigue en vista previa, sin correos ni cambios de estado. Prueba actualizada.
+- Las filas «Revisión requerida» de negocios ya reconciliados se refrescan a «Ya trabajado» tras un ciclo con escritura.
+- Tres negocios con intención huérfana (68548238160, 68545343847, 68560205077) se reconciliaron con lectura previa y escritura supervisada: uno solo `asesoro` y un `seguimiento` 26/11/2026 08:00 en cada uno, sin duplicados. No se envió WhatsApp.
+- Estado final verificado: automatización activa, sesión activa, `diagnostico: null`, «Sin negocios pendientes», cinco negocios con nota y seguimiento comprobados y uno señalado por teléfono. 186/186 pruebas privadas en verde y sintaxis correcta.
