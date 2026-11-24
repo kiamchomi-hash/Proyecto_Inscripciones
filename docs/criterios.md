@@ -214,6 +214,16 @@ UIverse van con su URL de `uiverse.io`, no con la ruta local.
 
 ## Decisiones tomadas: no volver a proponerlas
 
+### El precio de Siglo 21 no se muestra en los modales
+
+Decidido el 24/11/2026. Los modales de la home ya no ofrecen ver el precio en
+Siglo 21: se sacaron el botón «Ver precios» y su panel (`career-modal.tsx`) y el
+slide del precio con su botón en el cierre (`carousel-modal.tsx`). El precio
+sigue donde estaba: la preinscripción lo devuelve y con eso sale el mail de
+precio, y Teclab conserva su «Ver precio». Tampoco se manda a la página de
+inscripción: «Inscribite ya» baja al formulario de la misma página y le deja la
+carrera elegida. No reproponerlo en los modales.
+
 ### No se muestran precios en el formulario de preinscripción
 
 Decidido el 30/10/2026. El precio se muestra en las fichas, en el buscador y en

@@ -42,7 +42,7 @@ Las altas de Teclab van primero; después las demás.
 
 - **Continuar la revisión estética del sitio** (19/11/2026): revisar la portada, la página de cada carrera y los modales de Teclab en escritorio y celular.
 
-- **Modificar la parte del modal del precio** (22/11/2026): pendiente de relevamiento; todavía no se enumeró qué cambiar.
+- **Modificar la parte del modal del precio** (22/11/2026): pendiente de relevamiento; todavía no se enumeró qué cambiar. El 24/11/2026 se sacó el precio de Siglo 21 de los modales (botón «Ver precios», panel y slide): Teclab sigue como estaba.
 
 20. **Enfocar las clases de apoyo de computación en secundario y adultos mayores**, no en universitarios (1): es el público más fuerte y las clases facturan.
 

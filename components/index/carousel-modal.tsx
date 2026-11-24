@@ -9,8 +9,8 @@ import { mensajeWhatsAppInfo, mensajeWhatsAppPrecios, modalidadCorta } from '@/c
 import { useCompartir, textoCompartir } from './use-compartir';
 import AvisoCompartir from './aviso-compartir';
 import IconoCompartir from './icono-compartir';
-import { PanelVerPrecio, AccesoVerPrecio } from './ver-precio-teclab';
-import { carreraConPrecio, casaDeCarrera } from '@/components/formularios/casas';
+import { AccesoAviso, AccesoVerPrecio } from './ver-precio-teclab';
+import { casaDeCarrera } from '@/components/formularios/casas';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import { descargarPlanPDF } from '@/lib/plan-pdf';
 import ImagenResponsiva from '@/components/imagenes/imagen-responsiva';
@@ -734,10 +734,7 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
 
   const [slideIdx, setSlideIdx] = useState(0);
   const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose, initiallyVisible });
-  const conPrecio = carreraConPrecio(carrera);
-  const [pedidoPrecio, setPedidoPrecio] = useState(0);
-  const verPrecio = () => { setSlideIdx(slides.length); setPedidoPrecio(n => n + 1); };
-  const totalSlides = slides.length + (conPrecio ? 1 : 0);
+  const totalSlides = slides.length;
   const { cleanName } = getCleanName(carrera);
 
   // La carrera viaja con el clic: abajo el formulario la elige sola, en vez
@@ -788,14 +785,9 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
           <div className="flex h-full will-change-transform transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)]" style={{ transform: `translateX(-${slideIdx * 100}%)` }}>
             {slides.map((slide, si) => (
               <div key={si} className="flex-shrink-0 w-full h-full overflow-hidden" style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
-                {renderSlide(slide, carrera, si === slideIdx, inscribir, conPrecio ? verPrecio : undefined)}
+                {renderSlide(slide, carrera, si === slideIdx, inscribir)}
               </div>
             ))}
-            {conPrecio && <div data-scroll-lectura className="vp-slide vp-siglo21 flex-shrink-0 w-full h-full overflow-y-auto flex flex-col justify-center p-6">
-              <PanelVerPrecio carreraId={carrera.id} nombreCarrera={cleanName} casa={casaDeCarrera(carrera) ?? 'siglo21'}
-                acento="#00c7b1" acentoClaro="#00ffe1" textoAcento="#013729" waHref={waHref}
-                slug={carreraToSlug(carrera)} duracion={carrera.duracion} activo={slideIdx === slides.length} pedido={pedidoPrecio} />
-            </div>}
           </div>
         </div>
 
@@ -829,9 +821,9 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
                 </svg>
                 WhatsApp
               </a>
-              {/* La carrera viaja con el clic: abajo el formulario la elige
-                  sola, en vez de dejar al lead buscando lo que ya eligio. */}
-              <a href={conPrecio ? `/carreras/${carreraToSlug(carrera)}/inscripcion` : "#preinscripcion"} onClick={(e) => { if (conPrecio) return; e.preventDefault(); inscribir(); }}
+              {/* La carrera viaja con el clic: abajo el formulario de la misma
+                  página la elige sola, en vez de mandar a otra pantalla. */}
+              <a href="#preinscripcion" onClick={(e) => { e.preventDefault(); inscribir(); }}
                 className="flex-1 sm:flex-none sm:w-36 flex items-center justify-center gap-2 py-2 bg-[#6c2381] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -856,13 +848,13 @@ export default function CarouselModal({ carrera, onClose, initiallyVisible = fal
 }
 
 // ── Render individual slide by type ──
-function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean, onInscribir: () => void, onVerPrecio?: () => void) {
+function renderSlide(slide: CarreraSlide, carrera: Carrera, isVisible: boolean, onInscribir: () => void) {
   switch (slide.type) {
     case 'portada': return <SlidePortadaView slide={slide} carrera={carrera} />;
     case 'modalidad': return <SlideModalidadView slide={slide} />;
     case 'evaluacion': return <SlideEvaluacionView slide={slide} />;
     case 'plan_estudios': return <SlidePlanView slide={slide} carrera={carrera} isVisible={isVisible} />;
-    case 'cierre': return <SlideCierreView slide={slide} carrera={carrera} onInscribir={onInscribir} onVerPrecio={onVerPrecio} />;
+    case 'cierre': return <SlideCierreView slide={slide} carrera={carrera} onInscribir={onInscribir} />;
     default: return null;
   }
 }
@@ -1145,6 +1137,12 @@ export function SlideCierreView({ slide, carrera, onInscribir, onVerPrecio }: { 
             <AccesoVerPrecio acento="#00c7b1" textoAcento="#013729"
               waHref={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
               onVerPrecio={onVerPrecio} />
+          ) : carrera ? (
+            /* Sin precio a la vista (todo Siglo 21 desde el 24/11/2026, y las
+               anunciadas): la consulta de precios y fechas sigue por WhatsApp. */
+            <AccesoAviso acento="#00c7b1" textoAcento="#013729"
+              waHref={`https://wa.me/5491132973801?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`}
+              onAvisame={onInscribir} />
           ) : <a href="#preinscripcion" onClick={e => { e.preventDefault(); onInscribir(); }} className="vp-boton">Preinscribite</a>}
 
         </div>

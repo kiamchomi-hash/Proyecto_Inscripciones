@@ -18,12 +18,25 @@ const { SlideCierreView } = cargarTypescript('components/index/carousel-modal.ts
   '@/components/formularios/casas': casas,
   './ver-precio-teclab': { AccesoVerPrecio: () => React.createElement(React.Fragment, null,
     React.createElement('button', { className: 'vp-boton' }, 'Ver precio'),
+    React.createElement('a', { className: 'vp-whatsapp vp-whatsapp-lleno', href: '#whatsapp' }, 'Consultar por WhatsApp')),
+  AccesoAviso: () => React.createElement(React.Fragment, null,
+    React.createElement('button', { className: 'vp-boton' }, 'Preinscribite'),
     React.createElement('a', { className: 'vp-whatsapp vp-whatsapp-lleno', href: '#whatsapp' }, 'Consultar por WhatsApp')) },
 });
 const slide = { type: 'cierre', imagen: '/imagenes/sede.jpg', titulo: 'Estudiá con nosotros', beneficios: [] };
-const pintar = nivel => renderToStaticMarkup(React.createElement(SlideCierreView, {
-  slide, carrera: { nivel, nombre: 'Prueba' }, onInscribir() {}, onVerPrecio() {},
+const pintarBase = (nivel, conPrecio) => renderToStaticMarkup(React.createElement(SlideCierreView, {
+  slide, carrera: { nivel, nombre: 'Prueba' }, onInscribir() {},
+  ...(conPrecio ? { onVerPrecio() {} } : {}),
 }));
+const pintar = nivel => pintarBase(nivel, true);
+
+test('el cierre de Siglo 21 sin precio ofrece preinscribirse y WhatsApp, nunca «Ver precio»', () => {
+  const html = pintarBase('Grado', false);
+  assert.doesNotMatch(html, /Ver precio/);
+  assert.match(html, /Preinscribite/);
+  assert.match(html, /Consultar por WhatsApp/);
+  assert.match(html, /siglo21-cierre-acciones/);
+});
 
 test('el cierre de Siglo 21 muestra estudio a distancia en ambos encuadres', () => {
   const html = pintar('Grado');
