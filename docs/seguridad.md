@@ -329,9 +329,13 @@ Revisión pedida por el usuario. Se corrigieron:
   cuenta tiene 2FA activo. El flag de cuenta `enforce_twofactor` sigue en
   `false` y no se tocó: no hay una herramienta de edición expuesta para ese
   ajuste y, con un solo miembro que ya lo tiene, no cambia la exposición real.
-- **Publicación**: el environment `produccion` de GitHub ahora tiene un
+- **Publicación**: el environment `produccion` de GitHub tiene un
   revisor requerido y un temporizador de 30 minutos. Es configuración remota,
   no del repositorio.
+- **Publicación, 24/11/2026**: se sacaron ese revisor y ese temporizador a
+  pedido del usuario, para que un push a `main` publique apenas pasan los
+  controles. Queda el mismo secreto y la comprobación de que el SHA sea la
+  punta de `main` antes de desplegar.
 
 La revisión no encontró secretos nuevos ni vulnerabilidades en dependencias de
 producción (`npm audit --omit=dev` en cero en los dos paquetes).

@@ -49,7 +49,7 @@ GitHub Actions (`.github/workflows/verificar.yml`) corre en cada push a `main` e
 
 ### Deploy
 
-**Push a `main` publica el sitio después de verificar y de tu aprobación.** El workflow `Verificaciones` corre los controles y, si ambos pasan, el job `Publicar Worker después de verificar` queda esperando: el environment `produccion` de GitHub pide un revisor (el dueño del repo) y una espera de 30 minutos (desde el 23/11/2026). Aprobado, despliega ese mismo commit con el secreto `CLOUDFLARE_API_TOKEN`. Antes de desplegar comprueba que el SHA siga siendo la punta de `main`; si llegó un push nuevo, no publica el viejo. El grupo de concurrencia `publicar-worker` es el mismo del workflow manual, así que dos deploys nunca corren a la vez.
+**Push a `main` publica el sitio después de verificar, sin paso de aprobación.** El workflow `Verificaciones` corre los controles y, si pasan, el job `Publicar Worker después de verificar` despliega ese mismo commit con el secreto `CLOUDFLARE_API_TOKEN`. Desde el 24/11/2026 el environment `produccion` no pide revisor ni espera: entre el 23 y el 24/11/2026 tuvo un revisor y 30 minutos de espera. Antes de desplegar comprueba que el SHA siga siendo la punta de `main`; si llegó un push nuevo, no publica el viejo. El grupo de concurrencia `publicar-worker` es el mismo del workflow manual, así que dos deploys nunca corren a la vez.
 
 - **Manual**: el workflow `Publicar el Worker` (`.github/workflows/publicar.yml`) conserva el `ensayo` (por defecto, no publica) y el `produccion` desde Actions. Se niega a correr fuera de `main` y verifica rutas fijas, cabeceras y redirects.
 - **Local**, desde `cloudflare/`:

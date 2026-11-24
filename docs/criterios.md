@@ -282,10 +282,9 @@ commit si pasan sus dos controles, comprueba que siga siendo la punta de `main`
 y comparte la concurrencia del publicador manual, que queda para ensayo o deploy
 explícito. No volver a proponer el deploy sólo a mano.
 
-**Actualizado el 23/11/2026, a pedido del usuario:** el job de publicación sigue
-saliendo solo del push, pero el environment `produccion` exige su aprobación y
-espera 30 minutos. Es la ventana para revisar un commit antes de que llegue al
-sitio; dice «no me importa que tarde en deployar».
+**Actualizado el 24/11/2026, a pedido del usuario:** se sacó la ventana del
+23/11. El environment `produccion` de GitHub ya no pide revisor ni espera 30
+minutos, así que un push a `main` publica solo cuando pasan los controles.
 
 **Controles para ajustes visuales, acordado el 29/10/2026:** verificar en
 escritorio y celular y compilar el Worker, además del `check` de la raíz antes
