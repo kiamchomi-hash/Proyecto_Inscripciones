@@ -12,7 +12,11 @@ Antes de agregar un campo, verificar la columna en las migraciones de
 enviar una consulta de prueba a producción.
 
 Para «Ver precio», el servidor consulta `precios_privados` en D1 y devuelve el
-precio sólo cuando está vigente. Los correos se procesan mediante el outbox.
+precio sólo cuando está vigente. El formulario pide el mail en las dos casas y,
+en Teclab, también el celular (obligatorio); el lead se guarda en `consultas`
+con `tipo_formulario = 'precio'`. En Teclab ese registro dispara el aviso de
+Telegram «Vio el precio»; en Siglo 21 se guarda sin aviso (24/11/2026). Los
+correos se procesan mediante el outbox.
 Las suscripciones y bajas se implementan en `cloudflare/src/datos/newsletter.ts`;
 el envío programado vive en `cloudflare/src/api/newsletter.ts`.
 

@@ -721,8 +721,8 @@ function SlideCierre({
         {/* Un solo boton. Al lado habia otro con la direccion de la sede, que
             abria Google Maps: la carrera se cursa 100% online y a un lead que
             vive lejos una direccion le lee como un requisito de asistencia.
-            El precio se ve a cambio del mail en el slide siguiente, al que
-            lleva este boton; WhatsApp queda a la vista abajo. */}
+            El precio se ve a cambio del mail y el celular en el slide
+            siguiente, al que lleva este boton; WhatsApp queda a la vista abajo. */}
         {/* Una anunciada no tiene precio que mostrar: en su lugar, el aviso de
             apertura y WhatsApp, a la vista en el cuerpo y no sólo en el pie. */}
         {carrera.proximamente || sinPrecio ? (
@@ -841,10 +841,11 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   });
   const pasoRef = useRef<PasoTeclab>('portada');
 
-  // Cuenta los toques de «Ver precio» del cierre. Con un mail ya recordado, el
-  // slide del precio lo pide solo; llegar con «Siguiente» no lo pide.
+  // Cuenta los toques de «Ver precio» del cierre. Con el mail y el celular ya
+  // recordados, el slide del precio lo pide solo; llegar con «Siguiente» no lo
+  // pide.
   const [pedidoPrecio, setPedidoPrecio] = useState(0);
-  // Sin precio publicado por la casa no se pide el mail: se rotula pendiente.
+  // Sin precio publicado por la casa no se piden los datos: se rotula pendiente.
   const sinPrecio = carrera.proximamente || precioPendiente(carrera);
 
   // El slide del precio es una funcion del slide activo (monta el captcha

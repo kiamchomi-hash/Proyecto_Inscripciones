@@ -323,7 +323,7 @@ export function armarPayload(
 
 // ── Ver precio ──
 //
-// El modal de Teclab ofrece ver el precio a cambio del mail. El registro
+// El modal de Teclab ofrece ver el precio a cambio del mail y el celular. El registro
 // entra en `consultas` como cualquier lead —así llega el aviso de Telegram— y
 // recién después la API lee el precio de una tabla privada
 // de D1. Vive acá y no en un módulo aparte por
@@ -337,9 +337,9 @@ export const FORMULARIO_PRECIO = 'precio';
 export const TIPO_PRECIO = 'Ver precio';
 
 /** Los campos que pide, con su columna declarada en `CAMPOS`. */
-// Sólo el mail: es lo que se cambia por el precio, y pedir más frenaba a quien
-// sólo quería ver cuánto sale. `consultas.nombre` admite null.
-export const CAMPOS_PRECIO = ['email'] as const satisfies readonly CampoId[];
+// El mail siempre; el celular se guarda si llega, y sólo Teclab lo exige (ver
+// `telefonoObligatorioEnPrecio`).
+export const CAMPOS_PRECIO = ['email', 'telefono'] as const satisfies readonly CampoId[];
 
 /** Las casas que permiten consultar precios; Identidad todavía no. */
 export const CASAS_CON_PRECIO: CasaId[] = ['teclab', 'siglo21'];
@@ -352,23 +352,40 @@ export const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export interface PayloadPrecio {
   carreraId: number;
   email: string;
+  /** Vacío cuando la casa no lo pide. */
+  telefono: string;
   newsletter: boolean;
 }
 
 /**
+ * En Teclab «Ver precio» pide también el celular, obligatorio: es con lo que el
+ * CAU le escribe a la persona. En Siglo 21 sigue bastando el mail.
+ */
+export const telefonoObligatorioEnPrecio = (casa: CasaId | null): boolean => casa === 'teclab';
+
+/**
  * Valida el payload de `kind: 'precio'`. Devuelve `null` si no sirve.
  *
- * A diferencia de la consulta, acá el mail es obligatorio: es el dato que se
- * cambia por el precio, y sin él el registro no vale nada. El nombre no se
- * pide; si llega, se ignora.
+ * A diferencia de la consulta, acá el mail es obligatorio. El celular se valida
+ * siempre que venga, y es obligatorio sólo cuando la casa lo exige
+ * (`telefonoObligatorio`). El nombre no se pide; si llega, se ignora.
  */
-export function validarPayloadPrecio(payload: Record<string, unknown>): PayloadPrecio | null {
+export function validarPayloadPrecio(
+  payload: Record<string, unknown>,
+  opciones: { telefonoObligatorio?: boolean } = {},
+): PayloadPrecio | null {
   const carreraId = payload.carreraId;
   const email = typeof payload.email === 'string' ? payload.email.trim().slice(0, CAMPOS.email.max) : '';
+  const telefono = typeof payload.telefono === 'string' ? payload.telefono.trim().slice(0, CAMPOS.telefono.max) : '';
   if (typeof carreraId !== 'number' || !Number.isInteger(carreraId) || carreraId < 1) return null;
   if (!EMAIL_VALIDO.test(email)) return null;
+  if (telefono) {
+    if (!TELEFONO_VALIDO.test(telefono)) return null;
+  } else if (opciones.telefonoObligatorio) {
+    return null;
+  }
   // Opt-in: sólo un `true` explícito suscribe.
-  return { carreraId, email, newsletter: payload.newsletter === true };
+  return { carreraId, email, telefono, newsletter: payload.newsletter === true };
 }
 
 /**

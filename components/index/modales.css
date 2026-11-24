@@ -885,7 +885,7 @@
 }
 
 .vp-check {
-  /* Pegada al mail: la casilla habla de ese dato, no flota sola */
+  /* Pegada al campo de arriba: la casilla habla del mail, no flota sola */
   margin-top: -0.3rem;
   display: flex;
   align-items: flex-start;

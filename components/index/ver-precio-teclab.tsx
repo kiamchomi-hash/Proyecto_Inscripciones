@@ -2,7 +2,8 @@
 
 // "Ver precio" del modal de Teclab. Es un slide mas del carrusel, el ultimo,
 // despues del cierre: el boton «Ver precio» del cierre lleva hasta aca. Muestra
-// de entrada los dos caminos: dejar el mail y ver el precio ahi mismo, o hablar
+// de entrada los dos caminos: dejar el mail y el celular (el celular sólo en
+// Teclab) y ver el precio ahi mismo, o hablar
 // por WhatsApp. El precio no viaja en el HTML: lo devuelve `POST /api/formularios`
 // (kind `precio`) recien despues de registrar el lead; vencido se muestra sólo como referencia.
 //
@@ -12,7 +13,7 @@
 
 import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
-import { CAMPOS, EMAIL_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type CasaId, type LineaPrecio } from '@/components/formularios/casas';
+import { CAMPOS, EMAIL_VALIDO, TELEFONO_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type CasaId, type LineaPrecio } from '@/components/formularios/casas';
 import { COBERTURA_PAGO, coberturaDelPago } from '@/components/formularios/cobertura-pago';
 
 /** Desde cuándo «Verificando…» pasa a pedir unos segundos más. */
@@ -35,27 +36,31 @@ type Respuesta =
 
 const FOCOABLES = 'button:not([disabled]), a[href], input:not([disabled])';
 
-// El mail con el que ya se vio un precio queda en el navegador: la próxima
-// carrera arranca con el campo completo y basta con tocar «Ver precio». No se
-// pide solo: cada pedido registra un lead y avisa por Telegram, y pasar por el
-// slide con «Siguiente» no es pedir el precio.
+// El mail y el celular con los que ya se vio un precio quedan en el navegador:
+// la próxima carrera arranca con los campos completos y basta con tocar «Ver
+// precio». No se pide solo: cada pedido registra un lead y avisa por Telegram,
+// y pasar por el slide con «Siguiente» no es pedir el precio.
 const CLAVE_MAIL = 'teclab-precio-mail';
+const CLAVE_TELEFONO = 'teclab-precio-telefono';
 
-function mailGuardado(): string {
+function leerClave(clave: string): string {
   try {
-    return localStorage.getItem(CLAVE_MAIL) ?? '';
+    return localStorage.getItem(clave) ?? '';
   } catch {
     return ''; // Navegación privada o storage bloqueado: se tipea como siempre.
   }
 }
 
-function guardarMail(email: string) {
+function guardarClave(clave: string, valor: string) {
   try {
-    localStorage.setItem(CLAVE_MAIL, email);
+    localStorage.setItem(clave, valor);
   } catch {
     // Sin storage no se recuerda, y nada más.
   }
 }
+
+const mailGuardado = () => leerClave(CLAVE_MAIL);
+const telefonoGuardado = () => leerClave(CLAVE_TELEFONO);
 
 /** `AAAA-MM-DD` -> `DD/MM`, sin pasar por `Date` (se correria un dia por UTC). */
 function diaMes(fecha: string): string {
@@ -73,7 +78,7 @@ interface ErrorPrecio {
 function mensajeDeError(status: number | null): ErrorPrecio {
   if (status === 429) return { corto: 'Probá en unos minutos', largo: 'Recibimos varias consultas desde tu conexión. Esperá unos minutos o escribinos por WhatsApp.' };
   if (status === 403) return { corto: 'No se verificó, reintentá', largo: 'No pudimos completar la verificación de seguridad. Probá de nuevo.' };
-  if (status === 400) return { corto: 'Revisá el mail', largo: 'Revisá el mail e intentá de nuevo.' };
+  if (status === 400) return { corto: 'Revisá los datos', largo: 'Revisá los datos e intentá de nuevo.' };
   return { corto: 'No se pudo, reintentá', largo: 'No pudimos mostrar el precio en este momento. Probá de nuevo o escribinos por WhatsApp.' };
 }
 
@@ -306,6 +311,7 @@ export function PanelVerPrecio({
   // El panel sólo se monta en el navegador (modal con import dinámico), así
   // que leer el storage al iniciar no desarma la hidratación.
   const [email, setEmail] = useState(mailGuardado);
+  const [telefono, setTelefono] = useState(telefonoGuardado);
   const [newsletter, setNewsletter] = useState(true);
   const [token, setToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (son de un solo uso).
@@ -329,6 +335,7 @@ export function PanelVerPrecio({
   const resultadoRef = useRef<HTMLDivElement>(null);
   const tituloId = useId();
   const emailId = useId();
+  const telefonoId = useId();
   const errorId = useId();
 
   // Al pasar al resultado, el foco va a su primer boton: el lector de pantalla
@@ -339,7 +346,10 @@ export function PanelVerPrecio({
     resultadoRef.current?.querySelector<HTMLElement>(FOCOABLES)?.focus({ preventScroll: true });
   }, [vista]);
 
+  // Sólo Teclab pide el celular además del mail; Siglo 21 sigue con el mail.
+  const pideCelular = casa === 'teclab';
   const emailValido = EMAIL_VALIDO.test(email.trim());
+  const telefonoValido = !pideCelular || TELEFONO_VALIDO.test(telefono.trim());
 
   /**
    * `conNewsletter` es falso en el pedido automático: la casilla ya se
@@ -349,7 +359,10 @@ export function PanelVerPrecio({
   const pedirPrecio = async (conNewsletter: boolean) => {
     setIntentado(true);
     setError(null);
-    const payload = validarPayloadPrecio({ carreraId, email, newsletter: conNewsletter && newsletter });
+    const payload = validarPayloadPrecio(
+      { carreraId, email, telefono, newsletter: conNewsletter && newsletter },
+      { telefonoObligatorio: pideCelular },
+    );
     if (!payload || enviando) return;
     if (!token) {
       setEsperandoToken(true);
@@ -367,7 +380,8 @@ export function PanelVerPrecio({
       });
       status = respuesta.status;
       if (!respuesta.ok) throw new Error('submit_failed');
-      guardarMail(payload.email);
+      guardarClave(CLAVE_MAIL, payload.email);
+      if (pideCelular) guardarClave(CLAVE_TELEFONO, payload.telefono);
       const datos = (await respuesta.json()) as Respuesta;
       if ((datos.estado === 'vigente' || datos.estado === 'vencido') && datos.precio) {
         setPrecio(datos.precio);
@@ -390,9 +404,10 @@ export function PanelVerPrecio({
     void pedirPrecio(true);
   };
 
-  // El pedido automático: un toque nuevo de «Ver precio», el mail recordado
-  // todavía en el campo y el token del captcha. Si el token tarda, espera a que
-  // llegue. Un toque se atiende una sola vez, salga bien o mal.
+  // El pedido automático: un toque nuevo de «Ver precio», los datos recordados
+  // todavía en sus campos (mail y, en Teclab, celular) y el token del captcha.
+  // Si el token tarda, espera a que llegue. Un toque se atiende una sola vez,
+  // salga bien o mal.
   useEffect(() => {
     if (esperandoToken && token) void pedirPrecio(true);
   });
@@ -414,6 +429,8 @@ export function PanelVerPrecio({
       return;
     }
     if (!email.trim() || email.trim() !== mailGuardado().trim() || !token) return;
+    // El celular recordado también tiene que seguir en su campo (sólo Teclab).
+    if (pideCelular && (!telefono.trim() || telefono.trim() !== telefonoGuardado().trim())) return;
     atendidoRef.current = pedido;
     void pedirPrecio(false);
   });
@@ -458,6 +475,31 @@ export function PanelVerPrecio({
             aria-describedby={intentado && !emailValido ? `${emailId}-error` : undefined}
             className="vp-campo"
           />
+
+          {pideCelular && (
+            <>
+              <div className="vp-fila-etiqueta">
+                <label htmlFor={telefonoId} className="vp-etiqueta">Celular</label>
+                {intentado && !telefonoValido && <span id={`${telefonoId}-error`} className="vp-error-campo">Revisá el celular.</span>}
+              </div>
+              <input
+                id={telefonoId}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                value={telefono}
+                maxLength={CAMPOS.telefono.max}
+                placeholder={CAMPOS.telefono.placeholder}
+                onChange={e => {
+                  setTelefono(e.target.value);
+                  setError(null);
+                }}
+                aria-invalid={intentado && !telefonoValido}
+                aria-describedby={intentado && !telefonoValido ? `${telefonoId}-error` : undefined}
+                className="vp-campo"
+              />
+            </>
+          )}
 
           <label className="vp-check">
             <input type="checkbox" checked={newsletter} onChange={e => setNewsletter(e.target.checked)} />

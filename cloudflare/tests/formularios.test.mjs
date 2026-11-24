@@ -225,25 +225,48 @@ test('precio: validación, carrera sin precio y mail con reserva de 168 h', asyn
   await insertarCarrera(db, 2, { nivel: 'Posgrado' });
   await insertarPrecio(db, 1, { vigente_hasta: '2999-01-01' });
 
-  const invalido = await pedir(sobre('precio', { carreraId: 1, email: 'no-es-mail' }), { db });
+  const invalido = await pedir(sobre('precio', { carreraId: 1, email: 'no-es-mail', telefono: '11 5555 5555' }), { db });
   assert.equal(invalido.status, 400);
   assert.equal((await invalido.json()).error, 'Datos inválidos');
 
-  const sinPrecio = await pedir(sobre('precio', { carreraId: 2, email: 'lead@example.invalid' }), { db });
+  // El celular también es obligatorio: sin él no se registra el lead.
+  const sinTelefono = await pedir(sobre('precio', { carreraId: 1, email: 'lead@example.invalid' }), { db });
+  assert.equal(sinTelefono.status, 400);
+  assert.equal((await sinTelefono.json()).error, 'Datos inválidos');
+
+  const telefonoInvalido = await pedir(sobre('precio', { carreraId: 1, email: 'lead@example.invalid', telefono: 'abc' }), { db });
+  assert.equal(telefonoInvalido.status, 400);
+  assert.equal((await telefonoInvalido.json()).error, 'Datos inválidos');
+
+  const sinPrecio = await pedir(sobre('precio', { carreraId: 2, email: 'lead@example.invalid', telefono: '11 5555 5555' }), { db });
   assert.equal(sinPrecio.status, 400);
   assert.equal((await sinPrecio.json()).error, 'Carrera inválida');
 
-  const ok = await pedir(sobre('precio', { carreraId: 1, email: 'Precio@Example.invalid', newsletter: true }), { db });
+  const ok = await pedir(sobre('precio', { carreraId: 1, email: 'Precio@Example.invalid', telefono: '11 5555 5555', newsletter: true }), { db });
   assert.equal(ok.status, 201);
   const cuerpo = await ok.json();
   assert.equal(cuerpo.estado, 'vigente');
   const fila = await db.prepare('SELECT * FROM consultas').first();
   assert.equal(fila.tipo, 'Ver precio');
   assert.equal(fila.tipo_formulario, 'precio');
+  assert.equal(fila.telefono, '11 5555 5555');
   assert.equal(fila.equivalencias, 0);
   const mail = (await filas(db)).find(f => f.tipo === 'mail-precio');
   assert.deepEqual(JSON.parse(mail.detalle), { carreraId: 1, limitar: true, newsletter: true });
   assert.deepEqual((await filas(db)).map(f => f.tipo).sort(), ['aviso-lead', 'mail-precio', 'newsletter-alta']);
+
+  // Siglo 21: basta el mail y el aviso de «vio el precio» no va a Telegram.
+  await insertarCarrera(db, 3, { nivel: 'Grado' });
+  await insertarPrecio(db, 3, { vigente_hasta: '2999-01-01' });
+  const avisosAntes = (await filas(db)).filter(f => f.tipo === 'aviso-lead').length;
+  const siglo = await pedir(sobre('precio', { carreraId: 3, email: 'lead@example.invalid' }), { db });
+  assert.equal(siglo.status, 201);
+  assert.equal((await siglo.json()).estado, 'vigente');
+  assert.equal((await filas(db)).filter(f => f.tipo === 'aviso-lead').length, avisosAntes);
+  const filaSiglo = await db.prepare('SELECT * FROM consultas ORDER BY id DESC LIMIT 1').first();
+  assert.equal(filaSiglo.casa, 'siglo21');
+  assert.equal(filaSiglo.tipo_formulario, 'precio');
+  assert.equal(filaSiglo.telefono, null);
 });
 
 test('fallo del alta: el batch revierte y no queda ni consulta ni efecto', async t => {
@@ -376,7 +399,7 @@ test('modo demo: 201 con la misma forma y sin tocar base, cuota ni outbox', asyn
       consulta: legajoTeclab({ carrera: 'Carrera sintética' }),
       faq: { titulo: 'Pregunta sintética', contacto: 'lead@example.invalid' },
       clase: { rows: [{ materia_id: '11111111-1111-1111-1111-111111111111', telefono: '1111111111', dias: ['lunes'], horarios: ['18:00-20:00'] }] },
-      precio: { carreraId: 1, email: 'lead@example.invalid' },
+      precio: { carreraId: 1, email: 'lead@example.invalid', telefono: '11 5555 5555' },
     }[kind];
     const respuesta = await pedir({ kind, token: 'demo', payload }, { db, entorno: demo });
     assert.equal(respuesta.status, 201, kind);

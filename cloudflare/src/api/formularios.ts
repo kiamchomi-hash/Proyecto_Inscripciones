@@ -2,7 +2,7 @@ import {
   CASAS_CON_PRECIO, CAMPOS_PRECIO, FORMULARIO_PRECIO,
   TIPO_PRECIO, carreraConPrecio,
   carreraIdDe, casaDeCarrera, columnaDe, mailParaNewsletter,
-  resultadoPrecio, validarPayloadPrecio,
+  resultadoPrecio, telefonoObligatorioEnPrecio, validarPayloadPrecio,
   type FilaPrecio, type ResultadoPrecio,
 } from '../../../components/formularios/casas.ts';
 import { comprobarEntradaFormulario } from '../datos/control.ts';
@@ -191,7 +191,10 @@ async function registrarConsulta(db: D1Database, payload: JsonRecord, entorno: E
   return { resultado: precio, efectos: encolados };
 }
 
-/** `kind: 'precio'`: el mail es obligatorio y la carrera tiene que publicar precio. */
+/**
+ * `kind: 'precio'`: el mail es obligatorio y la carrera tiene que publicar
+ * precio. El celular es obligatorio en Teclab y opcional en Siglo 21.
+ */
 async function registrarPrecio(db: D1Database, payload: JsonRecord) {
   const datos = validarPayloadPrecio(payload);
   if (!datos) throw new TypeError('Datos inválidos');
@@ -199,18 +202,24 @@ async function registrarPrecio(db: D1Database, payload: JsonRecord) {
   const carrera = await conBase(() => leerCarrera(db, datos.carreraId));
   if (!carrera || !carreraConPrecio(carrera)) throw new TypeError('Carrera inválida');
 
+  // La casa sale de la base, no del navegador: el celular se exige según ella.
+  const casa = casaDeCarrera(carrera);
+  if (telefonoObligatorioEnPrecio(casa) && !datos.telefono) throw new TypeError('Datos inválidos');
+
   const fila: FilaConsulta = {
     carrera: carrera.nombre,
     tipo: TIPO_PRECIO,
-    casa: casaDeCarrera(carrera),
+    casa,
     tipo_formulario: FORMULARIO_PRECIO,
   };
-  for (const campo of CAMPOS_PRECIO) fila[columnaDe(campo)] = datos.email;
+  for (const campo of CAMPOS_PRECIO) fila[columnaDe(campo)] = campo === 'telefono' ? datos.telefono || null : datos.email;
   // Los booleanos van siempre: omitir uno NOT NULL rompe el INSERT entero.
   completarBooleanos(fila, CAMPOS_PRECIO);
 
   const resultado = await leerPrecio(db, carrera.id);
-  const efectos: Efecto[] = [{ tipo: 'aviso-lead' }];
+  // El aviso de Telegram de «Vio el precio» se manda sólo en Teclab: en Siglo 21
+  // el lead se guarda igual, sin notificar (pedido del 24/11/2026).
+  const efectos: Efecto[] = casa === 'siglo21' ? [] : [{ tipo: 'aviso-lead' }];
   if (datos.newsletter) efectos.push({ tipo: 'newsletter-alta' });
   if (resultado.estado === 'vigente') {
     efectos.push({
