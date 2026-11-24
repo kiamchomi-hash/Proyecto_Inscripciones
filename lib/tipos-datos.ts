@@ -65,6 +65,7 @@ interface Filas {
 
 interface Altas {
   consultas: {
+    anio_egreso?: string | null
     apellido?: string | null
     barrio?: string | null
     carrera?: string | null

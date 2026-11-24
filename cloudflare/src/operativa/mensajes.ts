@@ -42,6 +42,7 @@ const ETIQUETAS: Record<string, string> = {
   nivel_estudios: '🎓 *Nivel de estudios:*',
   colegio: '🏫 *Colegio:*',
   colegio_localidad: '🏫 *Localidad del colegio:*',
+  anio_egreso: '📅 *Año de egreso:*',
 };
 
 const ORDEN_LEGAJO_PREINSCRIPCION = [
@@ -49,7 +50,7 @@ const ORDEN_LEGAJO_PREINSCRIPCION = [
   'tipo_documento', 'dni', 'sexo', 'estado_civil', 'tipo_domicilio',
   'direccion', 'direccion_numero', 'direccion_piso', 'direccion_departamento',
   'torre', 'barrio', 'codigo_postal', 'provincia', 'localidad',
-  'nivel_estudios', 'colegio_localidad', 'colegio',
+  'nivel_estudios', 'colegio_localidad', 'colegio', 'anio_egreso',
 ];
 const ORDEN_LEGAJO_PREINSCRIPCION_INDICE = new Map(
   ORDEN_LEGAJO_PREINSCRIPCION.map((columna, indice) => [columna, indice]),
@@ -58,7 +59,7 @@ const CAMPOS_DOMICILIO = new Set([
   'tipo_domicilio', 'direccion', 'direccion_numero', 'direccion_piso',
   'direccion_departamento', 'torre', 'barrio', 'codigo_postal', 'provincia', 'localidad',
 ]);
-const CAMPOS_ESTUDIOS = new Set(['nivel_estudios', 'colegio_localidad', 'colegio']);
+const CAMPOS_ESTUDIOS = new Set(['nivel_estudios', 'colegio_localidad', 'colegio', 'anio_egreso']);
 
 function fechaNacimientoLegible(valor: unknown): unknown {
   if (typeof valor !== 'string') return valor;

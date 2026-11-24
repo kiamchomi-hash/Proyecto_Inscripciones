@@ -32,7 +32,7 @@ export type CampoId =
   | 'paisResidencia' | 'tipoDomicilio' | 'domicilio' | 'domicilioNumero'
   | 'domicilioPiso' | 'domicilioDepartamento' | 'torre' | 'barrio'
   | 'codigoPostal' | 'provincia' | 'localidad'
-  | 'nivelEstudios' | 'colegio' | 'colegioLocalidad'
+  | 'nivelEstudios' | 'colegio' | 'colegioLocalidad' | 'anioEgreso'
   | 'equivalencias' | 'email' | 'telefono';
 
 type InsertConsulta = TablesInsert<'consultas'>;
@@ -142,6 +142,7 @@ const CAMPOS_DECLARADOS = {
   nivelEstudios:    { columna: 'nivel_estudios', grupo: 'estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
   colegio:          { columna: 'colegio', grupo: 'estudios',           label: 'Colegio',               placeholder: 'Nombre del colegio', max: 160 },
   colegioLocalidad: { columna: 'colegio_localidad', grupo: 'estudios', label: 'Localidad del colegio', placeholder: 'Ciudad o localidad', max: 120 },
+  anioEgreso:       { columna: 'anio_egreso', grupo: 'estudios',       label: 'Año de egreso',         placeholder: 'AAAA', max: 4, numerico: true },
 
   equivalencias: { columna: 'equivalencias', grupo: 'consulta', ancho: 'completo', label: 'Quiero acreditar equivalencias', max: 0, tipo: 'checkbox' },
   email:         { columna: 'email', grupo: 'contacto',         label: 'Email',     placeholder: 'Ejemplo: tu@correo.com', max: 254, autocompletar: 'email' },
@@ -205,7 +206,7 @@ export const CASAS: Record<CasaId, Casa> = {
       'nacionalidad', 'estadoCivil',
       'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento',
       'codigoPostal', 'localidad',
-      'nivelEstudios', 'colegio', 'colegioLocalidad',
+      'nivelEstudios', 'colegio', 'colegioLocalidad', 'anioEgreso',
       'email', 'telefono',
     ],
     // El portal administrativo crea la preinscripción sin código postal
