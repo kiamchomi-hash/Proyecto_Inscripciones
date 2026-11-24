@@ -1,6 +1,7 @@
-// `?inline` devuelve el CSS como texto para inyectarlo cuando se carga el chunk
-// del formulario, en vez de registrar una hoja que Astro subiría al `<head>`.
-declare module '*.css?inline' {
-  const contenido: string;
-  export default contenido;
+// `?url` devuelve la URL pública del CSS compilado: el chunk diferido la carga
+// como `<link rel="stylesheet">` cuando se monta (ver formulario-lead-diferido.tsx).
+// No se usa `?inline` + `<style>`: la CSP de las páginas lo bloquea.
+declare module '*.css?url' {
+  const url: string;
+  export default url;
 }
