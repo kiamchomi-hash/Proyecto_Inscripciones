@@ -19,6 +19,9 @@ import { COBERTURA_PAGO, coberturaDelPago } from '@/components/formularios/cober
 /** Desde cuándo «Verificando…» pasa a pedir unos segundos más. */
 const DEMORA_TOKEN_MS = 5000;
 
+/** Lo que el aviso del campo queda en el placeholder antes de volver. */
+const AVISO_CAMPO_MS = 6000;
+
 
 type Vista = 'formulario' | 'precio' | 'vencido' | 'actualizando';
 
@@ -331,12 +334,29 @@ export function PanelVerPrecio({
   const [demorado, setDemorado] = useState(false);
   const [error, setError] = useState<ErrorPrecio | null>(null);
   const [precio, setPrecio] = useState<PrecioVigente | null>(null);
+  // El aviso de un dato que falta va en el placeholder por unos segundos, en
+  // vez de un texto al lado de la etiqueta: no corre nada de lugar, se ve aun
+  // con el campo vacío y, pintado de rojo, se lee como error. El borde rojo lo
+  // pone `aria-invalid` mientras el dato siga mal.
+  const [aviso, setAviso] = useState<'email' | 'telefono' | null>(null);
+  const avisoRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resultadoRef = useRef<HTMLDivElement>(null);
   const tituloId = useId();
   const emailId = useId();
   const telefonoId = useId();
   const errorId = useId();
+
+  useEffect(() => () => {
+    if (avisoRef.current) clearTimeout(avisoRef.current);
+  }, []);
+
+  /** El aviso del campo que falta, seis segundos y se va. */
+  const avisarCampo = (campo: 'email' | 'telefono') => {
+    setAviso(campo);
+    if (avisoRef.current) clearTimeout(avisoRef.current);
+    avisoRef.current = setTimeout(() => setAviso(null), AVISO_CAMPO_MS);
+  };
 
   // Al pasar al resultado, el foco va a su primer boton: el lector de pantalla
   // anuncia el cambio y el teclado no arranca de cero. `preventScroll` para no
@@ -359,6 +379,8 @@ export function PanelVerPrecio({
   const pedirPrecio = async (conNewsletter: boolean) => {
     setIntentado(true);
     setError(null);
+    if (!emailValido) avisarCampo('email');
+    else if (pideCelular && !telefonoValido) avisarCampo('telefono');
     const payload = validarPayloadPrecio(
       { carreraId, email, telefono, newsletter: conNewsletter && newsletter },
       { telefonoObligatorio: pideCelular },
@@ -454,11 +476,10 @@ export function PanelVerPrecio({
 
       {vista === 'formulario' && (
         <form className="vp-cuerpo" onSubmit={enviar} noValidate>
-          {/* El error va en la misma fila que la etiqueta: aparece sin correr
-              nada de lugar. */}
+          {/* El aviso del dato que falta va en el placeholder, en rojo: no corre
+              nada de lugar y se ve con el campo vacío. */}
           <div className="vp-fila-etiqueta">
             <label htmlFor={emailId} className="vp-etiqueta">{CAMPOS.email.label}</label>
-            {intentado && !emailValido && <span id={`${emailId}-error`} className="vp-error-campo">Revisá el mail.</span>}
           </div>
           <input
             id={emailId}
@@ -467,20 +488,20 @@ export function PanelVerPrecio({
             autoComplete="email"
             value={email}
             maxLength={CAMPOS.email.max}
+            placeholder={aviso === 'email' ? 'Ingresá el mail' : CAMPOS.email.placeholder}
             onChange={e => {
               setEmail(e.target.value);
               setError(null);
+              setAviso(null);
             }}
             aria-invalid={intentado && !emailValido}
-            aria-describedby={intentado && !emailValido ? `${emailId}-error` : undefined}
-            className="vp-campo"
+            className={aviso === 'email' ? 'vp-campo vp-campo-aviso' : 'vp-campo'}
           />
 
           {pideCelular && (
             <>
               <div className="vp-fila-etiqueta">
                 <label htmlFor={telefonoId} className="vp-etiqueta">Celular</label>
-                {intentado && !telefonoValido && <span id={`${telefonoId}-error`} className="vp-error-campo">Revisá el celular.</span>}
               </div>
               <input
                 id={telefonoId}
@@ -489,17 +510,21 @@ export function PanelVerPrecio({
                 autoComplete="tel"
                 value={telefono}
                 maxLength={CAMPOS.telefono.max}
-                placeholder={CAMPOS.telefono.placeholder}
+                placeholder={aviso === 'telefono' ? 'Ingresá el número' : CAMPOS.telefono.placeholder}
                 onChange={e => {
                   setTelefono(e.target.value);
                   setError(null);
+                  setAviso(null);
                 }}
                 aria-invalid={intentado && !telefonoValido}
-                aria-describedby={intentado && !telefonoValido ? `${telefonoId}-error` : undefined}
-                className="vp-campo"
+                className={aviso === 'telefono' ? 'vp-campo vp-campo-aviso' : 'vp-campo'}
               />
             </>
           )}
+
+          <span className="sr-only" role="alert">
+            {aviso === 'email' ? 'Ingresá el mail.' : aviso === 'telefono' ? 'Ingresá el número.' : ''}
+          </span>
 
           <label className="vp-check">
             <input type="checkbox" checked={newsletter} onChange={e => setNewsletter(e.target.checked)} />

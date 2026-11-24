@@ -861,8 +861,13 @@
   box-shadow: inset 0 0 0 2px #f87171;
 }
 
-/* Etiqueta y error comparten una fila de alto fijo: el error entra sin mover
-   nada. */
+/* El aviso del dato que falta, en el placeholder: mismo rojo que el borde. */
+.vp-campo-aviso::placeholder {
+  color: #fca5a5;
+  opacity: 1;
+}
+
+/* Etiqueta del campo, en su fila de alto fijo. */
 .vp-fila-etiqueta {
   display: flex;
   align-items: center;
@@ -875,13 +880,6 @@
 .vp-fila-etiqueta .vp-etiqueta {
   margin-bottom: 0;
   line-height: 1rem;
-}
-
-.vp-error-campo {
-  font-size: 0.72rem;
-  font-weight: 600;
-  line-height: 1rem;
-  color: #fca5a5;
 }
 
 .vp-check {
@@ -1073,6 +1071,13 @@
 .teclab-slide.vp-slide .vp-campo {
   background: #13243a;
   box-shadow: inset 0 0 0 1px #24405e;
+}
+
+/* Dato inválido: el borde rojo de `.vp-campo[aria-invalid='true']` no llegaba
+   acá porque la regla de arriba pesa más. Va sin transición para que el rojo se
+   vea en el mismo instante en que se toca «Ver precio». */
+.teclab-slide.vp-slide .vp-campo[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 2px #f87171;
 }
 
 .teclab-slide.vp-slide .vp-whatsapp:not(.vp-whatsapp-lleno) {
