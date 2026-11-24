@@ -58,13 +58,13 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
   sesión o credencial explícitamente autorizados. No modificar `main`, hacer
   merge ni push sin autorización.
 - T3 expone la selección de modelo de una conversación y de proveedor por
-  tarea. No se comprobó equivalencia con `/auto`, `/codex` o `/free` de
+  tarea. No se comprobó equivalencia con `/codex-go`, `/codex-go-terra` o `/free` de
   OpenCode ni conservación del contexto al cambiar de proveedor; los perfiles
   y enlaces no implementan esos comandos.
 
 ### Reparto solicitado para T3
 
-Los nombres `/auto` y `/free` identifican aquí el reparto de OpenCode que se
+Los nombres `/codex-go` y `/free` identifican aquí el reparto de OpenCode que se
 quiere reproducir; **no son comandos de T3**. Esta guía no cambia el proveedor o
 modelo del coordinador en el turno actual ni configura un selector de modos.
 El coordinador conserva el proveedor y modelo que ya tiene; el reparto elegido
@@ -73,12 +73,12 @@ ni bloqueos técnicos.
 
 | Reparto | Función | Proveedor y modelo | Límite de la tarea |
 | --- | --- | --- | --- |
-| auto | Coordinador original de OpenCode | `opencode-go/deepseek-v4.1-flash` | Referencia; T3 no necesita cambiar de coordinador. |
-| auto | `borrador` | `opencode-go/claude-haiku-5-5` | Texto; sin edición ni shell, hasta 12 pasos. |
-| auto | `dificil` | `opencode-go/claude-haiku-5-5` | Depuración y revisión; un intento por pedido, hasta 20 pasos; puede reproducir con comandos, no editar. |
-| auto | `lote` | `opencode-go/qwen3.8-flash` | Clasificar, extraer y resumir; sin edición ni shell, hasta 8 pasos. |
-| auto | `codex_rapido` | Luna, OpenAI/ChatGPT | Segunda opinión breve; sin edición, hasta 6 pasos. |
-| auto | `revision_final` | Terra, OpenAI/ChatGPT | Revisión final cuando corresponda; sin edición, hasta 12 pasos. |
+| codex-go | Coordinador original de OpenCode | `opencode-go/deepseek-v4.1-flash` | Referencia; T3 no necesita cambiar de coordinador. |
+| codex-go | `borrador` | `opencode-go/claude-haiku-5-5` | Texto; sin edición ni shell, hasta 12 pasos. |
+| codex-go | `dificil` | `opencode-go/glm-5.3` | Depuración y revisión; un intento por pedido, hasta 20 pasos; puede reproducir con comandos, no editar. |
+| codex-go | `lote` | `opencode-go/qwen3.8-flash` | Clasificar, extraer y resumir; sin edición ni shell, hasta 8 pasos. |
+| codex-go | `codex_rapido` | Luna, OpenAI/ChatGPT | Segunda opinión breve; sin edición, hasta 6 pasos. |
+| codex-go | `revision_final` | Terra, OpenAI/ChatGPT | Revisión final cuando corresponda; sin edición, hasta 12 pasos. |
 | free | Coordinador original de OpenCode | `opencode/deepseek-v4.1-flash-free` | Referencia; T3 no necesita cambiar de coordinador. |
 | free | `free_lote` | `opencode/glm-5.3-flash-free` | Clasificar, extraer, resumir y redactar en volumen; sin edición ni shell, hasta 8 pasos. |
 | free | `free_opinion` | `opencode/beam-free` | Segunda opinión breve; sin edición, hasta 6 pasos. |
@@ -99,7 +99,7 @@ ni bloqueos técnicos.
 3. En free delegar exclusivamente a las filas gratuitas, sin OpenCode Go ni
    ChatGPT para esas delegaciones; el coordinador conserva su propio modelo y
    cuota. Verificar los resultados gratuitos; no confiarles escrituras
-   ni decisiones irreversibles. En auto, no ejecutar `revision_final` si el
+   ni decisiones irreversibles. En codex-go, no ejecutar `revision_final` si el
    coordinador ya es Codex ni duplicar una revisión ya realizada.
 4. Si el proveedor o modelo elegido no está disponible o falla, informar el
    resultado y no sustituirlo ni cambiar de reparto automáticamente. No usar Sol
