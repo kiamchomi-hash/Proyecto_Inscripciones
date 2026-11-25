@@ -42,6 +42,18 @@
   }
 }
 
+/* La portada y su contenido aparecen completos desde el primer cuadro, igual
+   que en las fichas de Teclab: sin fundidos con desplazamiento de la foto, la
+   sombra y el texto, y sin revelado de las secciones al hacer scroll. */
+.career-page--siglo21 :is(.career-hero-media, .career-all-careers, .career-breadcrumb, .career-hero-marca, .career-kicker, .career-hero-intro, .career-aviso-inicio, .career-hero-actions) {
+  animation: none;
+}
+
+.career-page--siglo21 .career-reveal {
+  animation: none;
+  transform: none;
+}
+
 /* El sistema titula liviano: DM Sans Medium, sin la negra del sitio. */
 .career-page--siglo21 .career-hero h1 {
   font-family: 'Bricolage Grotesque', var(--s21-fuente);
