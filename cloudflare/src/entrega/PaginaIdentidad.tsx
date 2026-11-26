@@ -71,11 +71,9 @@ export default function PaginaIdentidad(
     <ContextoTurnstile.Provider value={turnstile}>
       <main className="flex-1 identidad-pagina">
         <header className="identidad-hero">
-          {/* Grilla y halos: mecánica de
-              ~/Documentos/uiverse/biblioteca/mias/fondo-cuadricula-luminosa-xai-oscuro
-              y del halo anclado fuera del bloque de
-              ~/.../hero-isometrico-halo-violeta-evervault, recoloreados. */}
-          <div className="identidad-hero__grid" aria-hidden="true" />
+          {/* Halos: mecánica de
+              ~/Documentos/uiverse/biblioteca/mias/hero-isometrico-halo-violeta-evervault,
+              recoloreados a azul/amarillo. Sin grilla ni piso en perspectiva. */}
           <div className="identidad-hero__contenido">
             <div className="identidad-hero__texto">
               <p className="identidad-hero__ceja">Academia Identidad Argentina</p>
@@ -83,7 +81,7 @@ export default function PaginaIdentidad(
                 Diplomaturas y cursos <span>100% online</span>
               </h1>
               <p className="identidad-hero__bajada">
-                Certificación nacional e internacional y clases en vivo, desde donde estés.
+                Certificación nacional e internacional y clases en vivo, desde todo el país.
               </p>
               <div className="identidad-hero__acciones">
                 <a className="ia-cta ia-cta--primario" href="#preinscripcion">
@@ -103,10 +101,6 @@ export default function PaginaIdentidad(
               </ul>
             </div>
             <div className="identidad-hero__visual" aria-hidden="true">
-              {/* Caja en perspectiva: la mecánica del túnel de
-                  ~/.../banner-tunel-de-grilla-lima-higgsfield, recoloreada a
-                  azul/tinta y sin el SVG pesado del original. */}
-              <div className="identidad-hero__tunel" />
               <IsotipoIA className="identidad-hero__isotipo" />
             </div>
           </div>
@@ -120,7 +114,7 @@ export default function PaginaIdentidad(
             </li>
             <li>
               <IconoEnVivo />
-              <span><strong>Modalidad</strong>100% online con clases en vivo</span>
+              <span><strong>Modalidad</strong>100% online con clases en vivo, desde todo el país</span>
             </li>
             <li>
               <IconoEmpleo />

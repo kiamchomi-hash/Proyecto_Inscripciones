@@ -852,7 +852,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           )}
         </div>
 
-        {isIdentidadArgentina && (
+        {isIdentidadArgentina && !soloIdentidad && (
           <p className="ia-section-context">
             Una propuesta de Academia Identidad Argentina, independiente de Universidad Siglo 21,
             disponible a través del Centro Educativo Villa Lugano.

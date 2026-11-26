@@ -71,13 +71,9 @@ body.tema-identidad::before {
     linear-gradient(170deg, #0a1118 0%, #101820 45%, #0b131a 100%);
 }
 
+/* La Academia va sin malla: se apaga la grilla global que el CAU sí usa. */
 body.tema-identidad::after {
-  background-image:
-    linear-gradient(rgba(126, 203, 230, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126, 203, 230, 0.055) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 74% 70% at 50% 38%, #000 28%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 74% 70% at 50% 38%, #000 28%, transparent 100%);
+  content: none;
 }
 
 /* ── Navbar ───────────────────────────────────────────────────────────── */
@@ -129,18 +125,6 @@ body.tema-identidad .menu-header {
   padding: clamp(2.5rem, 5vw, 5rem) 1rem clamp(2rem, 4vw, 4rem);
 }
 
-.identidad-hero__grid {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(126, 203, 230, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126, 203, 230, 0.08) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 62% 82% at 50% 44%, #000 20%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 62% 82% at 50% 44%, #000 20%, transparent 100%);
-}
 
 .identidad-hero::before {
   content: "";
@@ -247,18 +231,6 @@ body.tema-identidad .menu-header {
 
 /* Caja en perspectiva: la mecánica del túnel de higgsfield, sin su SVG. La
    grilla se aleja hacia el fondo y el isotipo queda en el centro. */
-.identidad-hero__tunel {
-  position: absolute;
-  inset: -35% -18%;
-  background-image:
-    linear-gradient(rgba(126, 203, 230, 0.2) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126, 203, 230, 0.2) 1px, transparent 1px);
-  background-size: 46px 46px;
-  transform: perspective(620px) rotateX(58deg) scale(1.45);
-  transform-origin: 50% 100%;
-  mask-image: radial-gradient(ellipse at 50% 46%, #000 8%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 46%, #000 8%, transparent 70%);
-}
 
 .identidad-hero__visual::after {
   content: "";
@@ -389,9 +361,9 @@ body.tema-identidad .menu-header {
 .identidad-banda ul {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0 1rem;
+  width: 100%;
+  margin: 0;
+  padding: 0 clamp(1rem, 5vw, 5rem);
   list-style: none;
 }
 
