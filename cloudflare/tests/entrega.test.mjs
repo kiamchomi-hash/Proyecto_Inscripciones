@@ -343,6 +343,11 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     VALUES (34, 'Tecnicatura Superior en Marketing Digital', 'Teclab - Gestión',
       '100% online', 34, 'Tecnicatura Superior', 'Marketing Digital', '2 años',
       'Técnico Superior en Marketing Digital')`).run();
+  // La ficha del CAU no nombra la Academia, ni siquiera en las islas: las
+  // relacionadas y el selector del formulario son de su casa.
+  const fichaCau = await astro.fetch('/carreras/licenciatura-en-administracion');
+  assert.doesNotMatch(await fichaCau.text(), /Identidad Argentina/);
+
   const marketingTeclab = await astro.fetch('/carreras/tecnicatura-superior-en-marketing-digital');
   assert.equal(marketingTeclab.status, 200);
   assert.match(

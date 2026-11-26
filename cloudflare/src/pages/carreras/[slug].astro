@@ -58,13 +58,14 @@ if (Astro.params.slug !== carreraToSlug(carrera)) return Astro.redirect(ruta, 30
 const base = baseDeSitio(sitio);
 const { titulo, descripcion, imagen, palabrasClave } = seoCarrera(carrera);
 const canonical = `${base}${ruta}`;
-// En topykly sólo se ofrecen las diplomaturas y cursos de la Academia: no se
-// cruzan carreras de Siglo 21 ni de Teclab.
-const carrerasDelSitio = sitio === 'identidad'
-  ? carreras.filter(c => c.nivel === 'Identidad Argentina')
-  : carreras;
+// Cada sitio ofrece sólo su casa. En el CAU no se cruza nada de la Academia:
+// Siglo 21 no la comercializa en su dominio, así que ni las relacionadas ni el
+// selector del formulario la nombran.
+const carrerasDelSitio = carreras.filter(
+  c => (c.nivel === 'Identidad Argentina') === (sitio === 'identidad'),
+);
 const relacionadas = relacionadasCarrera(carrera, carrerasDelSitio);
-const equivalente = sitio === 'identidad' ? null : carreraEquivalente(carrera, carreras);
+const equivalente = sitio === 'identidad' ? null : carreraEquivalente(carrera, carrerasDelSitio);
 const opciones = carrerasDelSitio.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion,
   ...(c.proximamente ? { proximamente: true } : {}) }));
 // La foto del encabezado se precarga en el `<head>`: el HTML de la ficha llega
