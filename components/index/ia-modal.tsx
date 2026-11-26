@@ -108,61 +108,81 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
           nada. En mobile no entra, igual que antes. */}
       <Isotipo className="ia-portada-isotipo" />
 
-      <div className="ia-portada relative min-h-full flex flex-col gap-4 p-5 sm:p-8">
-        <div className="flex-shrink-0 flex gap-3">
-          <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
-          <div className="min-w-0">
-            {carrera.prefix && (
-              <p className="text-3xs sm:text-xs font-black uppercase tracking-etiqueta-ancha mb-1" style={{ color: AMARILLO }}>
-                {carrera.prefix}
-              </p>
-            )}
-            <h2
-              className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
-                nombre.length > 38 ? 'text-xl sm:text-3xl' : 'text-2xl sm:text-4xl'
-              }`}
-            >
-              {nombre}
-            </h2>
+      <div className="relative min-h-full flex flex-col gap-4 p-5 sm:p-8">
+        {/* El texto se centra en el aire que dejan los bloques de dato del pie:
+            pegados arriba y abajo quedaba un hueco muerto en el medio. */}
+        <div className="ia-portada-texto flex flex-col gap-4">
+          <div className="flex-shrink-0 flex gap-3">
+            <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
+            <div className="min-w-0">
+              {carrera.prefix && (
+                <p className="text-3xs sm:text-xs font-black uppercase tracking-etiqueta-ancha mb-1" style={{ color: AMARILLO }}>
+                  {carrera.prefix}
+                </p>
+              )}
+              <h2
+                className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
+                  nombre.length > 38 ? 'text-xl sm:text-3xl' : 'text-2xl sm:text-4xl'
+                }`}
+              >
+                {nombre}
+              </h2>
+            </div>
           </div>
+
+          <p className="flex-shrink-0 text-sm sm:text-base font-black uppercase tracking-wider text-white">
+            {online ? '100% Online' : modalidad}
+          </p>
+
+          {cursada && <p className="ia-portada-cursada flex-shrink-0">{cursada}</p>}
+
+          {objetivos.length > 0 && (
+            <div className="flex-shrink-0">
+              <Rotulo>Objetivos</Rotulo>
+              <ul className="ia-portada-objetivos mt-2">
+                {objetivos.map((texto, i) => (
+                  <li key={i}>{texto}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
-        <p className="flex-shrink-0 text-sm sm:text-base font-black uppercase tracking-wider text-white">
-          {online ? '100% Online' : modalidad}
-        </p>
-
-        {cursada && <p className="ia-portada-cursada flex-shrink-0">{cursada}</p>}
-
-        {objetivos.length > 0 && (
-          <div className="flex-shrink-0">
-            <Rotulo>Objetivos</Rotulo>
-            <ul className="ia-portada-objetivos mt-2">
-              {objetivos.map((texto, i) => (
-                <li key={i}>{texto}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Los tres datos cierran el slide en una sola fila con filete arriba.
-            Antes cada uno era una caja -la de la escuela, llena de amarillo- y
-            competian con el titulo: eran lo mas fuerte de la pantalla para decir
-            lo menos importante. */}
-        <dl className="ia-portada-datos">
-          <div>
-            <dt>Escuela</dt>
-            <dd>{escuela || 'Academia'}</dd>
-          </div>
-          <div>
-            <dt>Duración</dt>
-            <dd>{carrera.duracion}</dd>
-          </div>
-          <div>
-            <dt>Certificación</dt>
-            <dd>{certificacion}</dd>
-          </div>
-        </dl>
+        {/* Bloques de dato: el principal (escuela) va lleno en amarillo. Van al
+            pie -mt-auto- para que el aire sobrante quede en un solo lugar y no
+            como un vacio abajo de todo. */}
+        <div className="flex-shrink-0 pt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <BloqueDato label="Escuela" valor={escuela || 'Academia'} principal />
+          <BloqueDato label="Duración" valor={carrera.duracion} />
+          <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
+        </div>
       </div>
+    </div>
+  );
+}
+
+function BloqueDato({ label, valor, principal, className = '' }: { label: string; valor: string; principal?: boolean; className?: string }) {
+  return (
+    <div
+      className={`rounded px-2.5 py-1.5 ${className}`}
+      style={
+        principal
+          ? { background: 'rgba(241,207,28,0.94)', boxShadow: 'inset 0 0 0 1px rgba(16,24,32,0.2)' }
+          : { background: '#1b2a36', boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.4)' }
+      }
+    >
+      <span
+        className="block text-4xs font-black uppercase tracking-etiqueta"
+        style={{ color: principal ? 'rgba(16,24,32,0.7)' : AZUL_CLARO }}
+      >
+        {label}
+      </span>
+      <span
+        className="block text-[0.78rem] sm:text-sm font-bold leading-tight mt-0.5"
+        style={{ color: principal ? '#101820' : '#fff' }}
+      >
+        {valor}
+      </span>
     </div>
   );
 }

@@ -27,9 +27,11 @@ ya está separado, pero el código sigue dentro de `proyecto-cau`.
 
 - El cierre («Estudiá con nosotros») se dejó igual: era el que funcionaba.
 - Portada: los objetivos dejaron de ser tarjetas con filo amarillo y se leen
-  como lista con viñeta azul; los tres datos (escuela, duración, certificación)
-  pasaron a una fila con filete arriba en vez de tres cajas, y la de la escuela
-  ya no va llena de amarillo. El slide se centra en el alto cuando sobra aire.
+  como lista con viñeta azul; el texto se centra en el aire que dejan los tres
+  bloques de dato del pie, que quedaron como estaban (la escuela llena en
+  amarillo).
+- Se quitó la trama de 42 px del fondo de los slides: quedan sólo los lavados
+  ambientales amarillo y azul sobre la tinta.
 - Plan: una sola superficie de lectura. El índice del escritorio perdió las
   cajas (el activo se marca con fondo y filo azul) y los módulos se separan con
   filetes; en el celular scrollea el slide completo, sin tarjeta dentro de

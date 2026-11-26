@@ -228,16 +228,15 @@
   }
 }
 
-/* Fondo de cada slide: lavados ambientales amarillo/azul sobre tinta + trama
-   fina, igual que el <Background> del render de Remotion. */
+/* Fondo de cada slide: lavados ambientales amarillo/azul sobre tinta. Se quitó
+   la trama de 42 px que cerraba el fondo (26/11/2026): el usuario no la quiere
+   en los slides de los modales. */
 .ia-slide {
   background-color: #101820;
   background-image:
     radial-gradient(ellipse at 22% 26%, rgba(241, 207, 28, 0.13), transparent 50%),
     radial-gradient(ellipse at 84% 44%, rgba(0, 144, 193, 0.22), transparent 54%),
-    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%),
-    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-  background-size: auto, auto, auto, 42px 42px;
+    radial-gradient(ellipse at 50% 96%, rgba(255, 255, 255, 0.06), transparent 44%);
 }
 
 /* ── Portada ──
@@ -261,11 +260,10 @@
   }
 }
 
-/* La portada se centra en el alto, como el cierre: si no entra, el centrado se
-   apaga y scrollea desde arriba. Con los datos pegados al pie quedaba un hueco
-   muerto en el medio del slide. */
-.ia-portada {
-  justify-content: safe center;
+/* El texto ocupa el aire que sobra: se centra entre el encabezado y los bloques
+   de dato, que siguen pegados al pie. */
+.ia-portada-texto {
+  margin-block: auto;
 }
 
 .ia-portada-cursada {
@@ -309,50 +307,6 @@
   height: 0.35rem;
   border-radius: 2px;
   background: var(--ia-blue);
-}
-
-/* Los tres datos cierran el slide: rotulo chico y valor, sobre un filete. */
-.ia-portada-datos {
-  flex-shrink: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem 1.25rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-@media (min-width: 640px) {
-  .ia-portada-datos {
-    grid-template-columns: 0.9fr 0.7fr 1.4fr;
-  }
-}
-
-.ia-portada-datos dt {
-  font-size: 0.6rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #7ecbe6;
-}
-
-.ia-portada-datos dd {
-  margin-top: 0.15rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  line-height: 1.25;
-  color: #fff;
-}
-
-/* En el telefono la certificacion ocupa el ancho entero: sola en su columna
-   quedaba partida en dos renglones. */
-.ia-portada-datos > div:last-child {
-  grid-column: span 2;
-}
-
-@media (min-width: 640px) {
-  .ia-portada-datos > div:last-child {
-    grid-column: auto;
-  }
 }
 
 /* ── Plan de estudios ──
