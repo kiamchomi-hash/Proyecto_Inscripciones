@@ -583,7 +583,6 @@ body.tema-identidad .career-card-ia .ia-chip-escuela {
 /* Anclas del navbar: no quedan debajo de la barra fija. */
 .identidad-banda,
 .identidad-programas,
-.identidad-testimonio,
 .identidad-formulario {
   scroll-margin-top: calc(var(--navbar-height) + 1rem);
 }
@@ -599,58 +598,6 @@ body.tema-identidad .section-category-pill:hover {
   border-color: var(--ia-yellow);
   background: var(--ia-blue);
   color: #fff;
-}
-
-/* ── Testimonio ───────────────────────────────────────────────────────── */
-
-.identidad-testimonio {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: clamp(2.5rem, 5vw, 4rem) 1rem 0;
-}
-
-.identidad-testimonio__card {
-  position: relative;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  border: 1px solid rgba(0, 144, 193, 0.45);
-  background: #16212b;
-  box-shadow: 10px 10px 0 rgba(0, 100, 138, 0.3);
-}
-
-.identidad-testimonio__comilla {
-  position: absolute;
-  top: -0.4rem;
-  left: 1.2rem;
-  color: var(--ia-yellow);
-  font-size: 5rem;
-  font-weight: 900;
-  line-height: 1;
-  opacity: 0.9;
-}
-
-.identidad-testimonio__titulo {
-  margin: 0 0 1rem;
-  color: var(--ia-yellow);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.identidad-testimonio blockquote {
-  margin: 0;
-  color: #dbeaf2;
-  font-size: clamp(1rem, 1.8vw, 1.18rem);
-  line-height: 1.6;
-}
-
-.identidad-testimonio footer {
-  margin-top: 1rem;
-  color: #9fb3c8;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 /* ── Formularios ──────────────────────────────────────────────────────── */
@@ -921,7 +868,6 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
 
   .identidad-banda,
   .identidad-programas,
-  .identidad-testimonio,
   .identidad-formulario {
     scroll-margin-top: 0.5rem;
   }
@@ -1049,22 +995,15 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
     border-top: 0;
   }
 
-  /* Doble filete vertical: dos líneas de 1 px separadas por 2 px, la mecánica
-     del pie de columnas de greptile, recoloreada al azul de la Academia. */
+  /* Un solo filete de 1 px entre columnas, sin la doble línea. */
   .identidad-footer__bloque::before {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
-    width: 4px;
-    background: linear-gradient(
-      90deg,
-      rgba(0, 144, 193, 0.42) 1px,
-      transparent 1px,
-      transparent 3px,
-      rgba(0, 144, 193, 0.42) 3px
-    );
+    width: 1px;
+    background: rgba(0, 144, 193, 0.28);
   }
 }
 
@@ -1113,8 +1052,7 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
   gap: 0.35rem;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 1rem 1rem calc(1.25rem + 78px + env(safe-area-inset-bottom));
-  border-top: 1px solid rgba(0, 144, 193, 0.22);
+  padding: 1rem 1rem calc(0.5rem + 72px + env(safe-area-inset-bottom));
   color: #7f93a8;
   font-size: 0.7rem;
 }

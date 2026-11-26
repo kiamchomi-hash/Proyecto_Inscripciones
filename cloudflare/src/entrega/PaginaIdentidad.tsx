@@ -15,9 +15,9 @@ import { ContextoTurnstile, type ConfigTurnstile } from './turnstile-contexto';
  * ofrecer las dos acciones. No hay buscador ni filtros: con ocho programas,
  * sólo agregan fricción.
  *
- * Los datos de la banda y el testimonio salen de la web oficial de la Academia
- * (26/11/2026); no se agregan precios, descuentos ni cifras que no estén
- * publicadas. El copy de los botones es funcional.
+ * Los datos de la banda salen de la web oficial de la Academia (26/11/2026);
+ * no se agregan precios, descuentos ni cifras que no estén publicadas. El copy
+ * de los botones es funcional.
  */
 
 const WA = `https://wa.me/${numeroWhatsAppDe('identidad')}?text=${encodeURIComponent(
@@ -133,21 +133,6 @@ export default function PaginaIdentidad(
           </div>
           <CareersCatalog carreras={carreras} compacto textoDetalle="Ver programa" />
         </div>
-
-        <section id="testimonios" className="identidad-testimonio" aria-labelledby="testimonio-titulo">
-          <div className="identidad-testimonio__card">
-            <span className="identidad-testimonio__comilla" aria-hidden="true">“</span>
-            <h2 id="testimonio-titulo" className="identidad-testimonio__titulo">Lo que dicen los alumnos</h2>
-            <blockquote>
-              Cursar en Academia Identidad Argentina fue una experiencia muy grata. Tiene una
-              llegada muy amena e interactiva todo el tiempo, el sector administrativo, siempre
-              predispuestos para solventar dudas. Excelente calidad de atención de parte de los
-              profesionales, viéndose el interés y preocupación por sus estudiantes. 100%
-              recomendado por mi parte.
-            </blockquote>
-            <footer>Mariano · Alumno de Ciberseguridad · Mendoza, Argentina</footer>
-          </div>
-        </section>
 
         <section id="preinscripcion" className="identidad-formulario">
           <p className="identidad-formulario__intro">

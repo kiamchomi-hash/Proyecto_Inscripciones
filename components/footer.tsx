@@ -114,7 +114,6 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', m
             <h2>Navegación</h2>
             <a href="/#carreras">Diplomaturas</a>
             <a href="/#como-se-cursa">Cómo se cursa</a>
-            <a href="/#testimonios">Alumnos</a>
             <a href="/#contacto">Contacto</a>
           </nav>
 

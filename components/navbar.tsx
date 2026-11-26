@@ -25,7 +25,6 @@ const NAV_LINKS = [
 const NAV_LINKS_IDENTIDAD = [
   { href: '/#carreras', label: 'Diplomaturas' },
   { href: '/#como-se-cursa', label: 'Cómo se cursa' },
-  { href: '/#testimonios', label: 'Alumnos' },
   { href: '/#contacto', label: 'Contacto' },
 ];
 
