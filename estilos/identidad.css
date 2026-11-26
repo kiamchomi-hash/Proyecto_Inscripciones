@@ -904,3 +904,34 @@ body.tema-identidad footer[data-marca="identidad"] a:hover {
 body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
   color: #101820;
 }
+
+
+@media (max-width: 899px) {
+  /* En el teléfono el logo grande del hero se va: el isotipo chico del navbar
+     ya identifica la marca y el primer pantallazo gana altura para el CTA. */
+  .identidad-hero__visual {
+    display: none;
+  }
+
+  /* La barra fija de acciones no tiene que tapar el cierre del pie. */
+  body.tema-identidad footer[data-marca="identidad"] {
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+}
+
+
+@media (max-width: 899px) {
+  /* El navbar no queda pegado arriba: en el teléfono la barra fija de acciones
+     ya cubre el pulgar y el navbar fijo tapaba el inicio del pie. */
+  body.tema-identidad .main-navbar {
+    position: relative;
+    top: auto;
+  }
+
+  .identidad-banda,
+  .identidad-programas,
+  .identidad-testimonio,
+  .identidad-formulario {
+    scroll-margin-top: 0.5rem;
+  }
+}
