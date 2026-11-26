@@ -5,7 +5,8 @@ import {
   buscarRedireccion, redireccionDeHost, ubicacionRedireccion,
 } from './entrega/redirects.ts';
 import {
-  BASE_IDENTIDAD, HOST_WWW_IDENTIDAD, destinoFueraDeIdentidad, normalizarHost, sitioDe,
+  BASE_IDENTIDAD, HOST_WWW_IDENTIDAD, destinoFueraDeIdentidad, esDestinoIdentidad,
+  normalizarHost, sitioDe,
 } from './entrega/sitios.ts';
 
 // Primero los redirects (host, después ruta, como el borde de producción) y
@@ -45,6 +46,12 @@ export const onRequest = defineMiddleware(async (contexto, siguiente) => {
 
     const redireccion = buscarRedireccion(pedida.pathname);
     if (redireccion) {
+      // Un renombre que aterriza en una ficha de la Academia no se sirve desde
+      // el CAU: la URL vieja responde 410 en vez de encadenar hasta una página
+      // que este dominio ya no ofrece.
+      if (esDestinoIdentidad(redireccion.destino)) {
+        return new Response(null, { status: 410 });
+      }
       return new Response(null, {
         status: redireccion.estado,
         headers: { Location: ubicacionRedireccion(redireccion, pedida.search) },

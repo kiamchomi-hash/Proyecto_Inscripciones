@@ -54,6 +54,24 @@ export const NOINDEX: Array<[string, RegExp]> = [
 ];
 
 /**
+ * URLs que ya no existen y no pueden volver a responder 200: las fichas de
+ * Identidad Argentina en el dominio de Siglo 21. Responden 410 desde el
+ * 26/11/2026 porque Siglo 21 no permite comercializar la Academia en su sitio;
+ * si alguna vuelve a servirse, salta la vigilancia y el smoke del deploy.
+ */
+export const GONE = [
+  '/carreras/diplomatura-en-compliance',
+  '/carreras/diplomatura-en-ciberseguridad-aplicada',
+  '/carreras/diplomatura-en-gestion-de-equipos-de-alto-desempeno',
+  '/carreras/diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos',
+  '/carreras/diplomatura-en-prevencion-de-fraude-financiero-y-digital',
+  '/carreras/diplomatura-integral-en-rrhh',
+  '/carreras/curso-de-constitucion-de-sociedades-sa-sas-srl',
+  '/carreras/masterclase-decisiones-inteligentes-en-inversion-hotelera',
+  '/carreras/diplomatura-en-oratoria',
+];
+
+/**
  * Sondas que no son GET, declaradas aca por el mismo motivo que RUTAS: los dos
  * vigilantes tienen que probar lo mismo.
  *

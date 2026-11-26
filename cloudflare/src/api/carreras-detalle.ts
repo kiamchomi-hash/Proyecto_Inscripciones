@@ -1,5 +1,6 @@
 import { ErrorDetalleCarrera, listarDetallePublico } from '../datos/detalles.ts';
 import type { CarreraDetalle } from '../../../components/index/types.ts';
+import type { Sitio } from '../entrega/sitios.ts';
 
 /**
  * `GET /api/carreras-detalle`: el mismo mapa `{ [id]: CarreraDetalle }` que
@@ -27,12 +28,15 @@ const CABECERAS_OK = {
 const json = (cuerpo: unknown, status: number, cabeceras?: Record<string, string>) =>
   new Response(JSON.stringify(cuerpo), { status, headers: { 'Content-Type': 'application/json', ...cabeceras } });
 
-export async function responderDetalle(db: D1Database | null): Promise<Response> {
+export async function responderDetalle(
+  db: D1Database | null,
+  sitio: Sitio = 'principal',
+): Promise<Response> {
   if (!db) return json({ error: 'Servicio temporalmente no disponible' }, 503);
 
   let detalle: Record<number, CarreraDetalle>;
   try {
-    detalle = await listarDetallePublico(db);
+    detalle = await listarDetallePublico(db, sitio);
   } catch (error) {
     if (!(error instanceof ErrorDetalleCarrera)) {
       // Lectura rota o JSON que el CHECK no dejó pasar: 502 como el handler y

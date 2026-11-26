@@ -30,6 +30,7 @@ import {
   BASE_PROD,
   CABECERAS_ESPERADAS,
   HSTS_ESPERADO,
+  GONE,
   NOINDEX,
   RUTAS,
   SONDAS,
@@ -185,7 +186,20 @@ for (const [ruta, esperado] of NOINDEX) {
   }
 }
 
-// ── 4. Sondas que no son GET ────────────────────────────────────────────────
+// ── 4. Fichas que ya no existen ─────────────────────────────────────────────
+
+console.log('\nfichas que no se sirven desde el CAU');
+for (const ruta of GONE.flatMap(r => [r, `${r}.md`])) {
+  try {
+    const r = await pedir(BASE + ruta);
+    if (r.status === 410) ok(`${ruta} → 410`);
+    else fallo(ruta, `HTTP ${r.status}, esperaba 410 — la Academia vuelve a ofrecerse desde Siglo 21`);
+  } catch (e) {
+    fallo(ruta, e.message);
+  }
+}
+
+// ── 5. Sondas que no son GET ────────────────────────────────────────────────
 
 console.log('\nSondas de escritura');
 for (const sonda of SONDAS) {
@@ -203,7 +217,7 @@ for (const sonda of SONDAS) {
   }
 }
 
-// ── 5. Redirects declarados ─────────────────────────────────────────────────
+// ── 6. Redirects declarados ─────────────────────────────────────────────────
 
 if (esProd) {
   console.log('\nRedirects');
@@ -225,7 +239,7 @@ if (esProd) {
   notas.push('Redirects salteados: solo se prueban contra el dominio propio.');
 }
 
-// ── 6. Barrido del sitemap ──────────────────────────────────────────────────
+// ── 7. Barrido del sitemap ──────────────────────────────────────────────────
 
 if (!RAPIDO) {
   console.log('\nSitemap');
@@ -255,7 +269,7 @@ if (!RAPIDO) {
   notas.push('Sitemap salteado por --rapido.');
 }
 
-// ── 7. Peso real del HTML ───────────────────────────────────────────────────
+// ── 8. Peso real del HTML ───────────────────────────────────────────────────
 
 console.log('\nPeso de la home');
 const kb = n => `${(n / 1024).toFixed(1)} KB`;

@@ -24,7 +24,10 @@ export const GET: APIRoute = async ({ params, url }) => {
   if (!carrera) {
     if (esCarreraIdentidadRetirada(slug)) {
       return sitio === 'identidad'
-        ? new Response(null, { status: 301, headers: { Location: '/' } })
+        ? new Response(null, {
+          status: 301,
+          headers: { Location: `${baseDeSitio('identidad')}/` },
+        })
         : new Response(null, { status: 410 });
     }
     return new Response(null, { status: 404 });

@@ -17,7 +17,6 @@ import {
   planSlideToAnios, planSlideToExtras, periodosTeclabToAnios, tienePlanDeEstudios,
 } from '@/components/carreras/career-content';
 import { numeroWhatsAppDe } from '../../../lib/whatsapp.ts';
-import { BASE } from './sitemap-xml.ts';
 
 /** Los rótulos que la ficha usa para los datos de arriba. */
 const INSTITUCIONES: Record<string, string> = {

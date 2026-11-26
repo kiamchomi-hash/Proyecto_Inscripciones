@@ -42,7 +42,23 @@ ya está separado, pero el código sigue dentro de `proyecto-cau`.
 - Capturas de control: `screenshots/topykly-modal-portada.png`,
   `topykly-modal-plan.png` y sus versiones `-mobile`.
 
-## 4. Separar Identidad de Siglo 21 en el escritorio
+## 4. Siglo 21 no comercializa la Academia en su sitio — 26/11/2026
+
+- Las ocho fichas de Identidad en `siglo21sur.com` responden **410**, no 301:
+  Siglo 21 no permite ofrecer la Academia desde su dominio, así que no se sirven
+  ni se redirigen hacia topykly. Vale para la ficha HTML y para su versión
+  markdown (`/carreras/<slug>.md`), que se salteaba el corte y publicaba la
+  ficha con «Institución: Academia Identidad Argentina» desde siglo21sur.com.
+- El `llms.txt` del CAU ya no nombra la Academia. El sitemap tampoco la lista.
+- En topykly, el markdown de cada ficha declara su propio dominio; antes decía
+  `www.siglo21sur.com`. Una ficha del CAU pedida en `.md` desde topykly responde
+  301 a siglo21sur.com.
+- **Falta hacer a mano:** en Search Console, «Eliminación de URLs» para las ocho
+  URLs viejas de siglo21sur.com (una por una: un prefijo ocultaría también las
+  carreras de Siglo 21 y Teclab). Dura seis meses y el 410 se encarga del resto.
+  La service account no puede hacerlo: es sólo por la interfaz.
+
+## 5. Separar Identidad de Siglo 21 en el escritorio
 
 - Mover todo lo de Identidad a una carpeta propia del escritorio, fuera de
   `proyecto-cau`, para que no se mezcle con Siglo 21 ni con el CAU.

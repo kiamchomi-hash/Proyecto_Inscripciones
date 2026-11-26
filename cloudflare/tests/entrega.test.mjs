@@ -609,6 +609,24 @@ test('topykly sirve la Academia y devuelve al CAU lo que no es suyo', async t =>
   assert.equal(robots.status, 200);
   assert.match(await robots.text(), /Sitemap: https:\/\/topykly\.com\/sitemap\.xml/);
 
+  // Un renombre que aterriza en una ficha de la Academia: en el CAU responde
+  // 410 (no se encadena hasta una página que ya no existe); en topykly sigue
+  // al slug nuevo.
+  await (await worker.getEnv()).DB.prepare(`INSERT INTO carreras
+    (id, nombre, nivel, modalidad, orden, prefix, nombre_corto, duracion, titulo)
+    VALUES (36, 'Diplomatura en Prevención de Fraude Financiero y Digital',
+      'Identidad Argentina', '100% online', 36, 'Diplomatura', 'Prevención de Fraude',
+      '3 meses', null)`).run();
+  const renombreCau = await astro.fetch(
+    'http://www.siglo21sur.com/carreras/diplomatura-en-fraude-financiero-y-digital',
+    { redirect: 'manual' });
+  assert.equal(renombreCau.status, 410);
+  const renombreIa = await astro.fetch(
+    'http://topykly.com/carreras/diplomatura-en-fraude-financiero-y-digital', { redirect: 'manual' });
+  assert.equal(renombreIa.status, 301);
+  assert.match(renombreIa.headers.get('location') ?? '',
+    /\/carreras\/diplomatura-en-prevencion-de-fraude-financiero-y-digital$/);
+
   // Una ficha retirada de la Academia no queda en 404: en topykly manda a su
   // portada; en el CAU responde 410 y no redirige a la Academia, que Siglo 21
   // no comercializa en su sitio.

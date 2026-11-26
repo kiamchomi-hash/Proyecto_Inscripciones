@@ -34,11 +34,18 @@ test('GET devuelve el mapa de fichas visibles, con la proyección exacta', async
   assert.match(respuesta.headers.get('content-type') ?? '', /^application\/json/);
 
   const mapa = await respuesta.json();
-  // Visibles: las de Grado, Pregrado, Teclab y la de Identidad Argentina. Quedan
-  // afuera el Posgrado (fuera de la taxonomía) y la que está apagada.
-  assert.deepEqual(Object.keys(mapa).sort(), ['11', '12', '13', '14', '15', '16', '19']);
+  // Visibles: las de Grado, Pregrado y Teclab. Quedan afuera el Posgrado (fuera
+  // de la taxonomía), la que está apagada y la de Identidad Argentina, que no
+  // se entrega desde el dominio del CAU (Siglo 21 no la comercializa).
+  assert.deepEqual(Object.keys(mapa).sort(), ['11', '12', '13', '14', '15', '19']);
+  assert.equal(mapa[16], undefined, 'la ficha de la Academia no viaja al CAU');
   assert.equal(mapa[17], undefined, 'el Posgrado no se publica');
   assert.equal(mapa[18], undefined, 'una carrera inactiva no se publica');
+
+  // En el dominio de la Academia el mapa es el espejo: sólo sus fichas.
+  const enAcademia = await server.fetch('http://topykly.com/api/carreras-detalle');
+  assert.equal(enAcademia.status, 200);
+  assert.deepEqual(Object.keys(await enAcademia.json()).sort(), ['16']);
 
   for (const [id, detalle] of Object.entries(mapa)) {
     assert.deepEqual(Object.keys(detalle).sort(), CAMPOS_DETALLE, `campos de ${id}`);
@@ -109,7 +116,7 @@ test('sólo GET: otro método responde 405 y no busca parámetros', async t => {
   // La ruta no recibe parámetros: un query inesperado no cambia el mapa (igual
   // que el handler vigente, que ignora la URL del pedido).
   const conQuery = await (await server.fetch('/api/carreras-detalle?id=11&slug=x')).json();
-  assert.deepEqual(Object.keys(conQuery).sort(), ['11', '12', '13', '14', '15', '16', '19']);
+  assert.deepEqual(Object.keys(conQuery).sort(), ['11', '12', '13', '14', '15', '19']);
 });
 
 test('el handler declara la caché pública del sitio antes de las guardas locales', async () => {

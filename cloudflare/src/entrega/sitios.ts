@@ -84,6 +84,21 @@ export function esCarreraIdentidadRetirada(slug: string): boolean {
 }
 
 /**
+ * Renombres del CAU que aterrizan en una ficha de la Academia. En el CAU la URL
+ * vieja responde 410 en vez de encadenar dos saltos hasta una ficha que ese
+ * dominio ya no sirve (Siglo 21 no comercializa la Academia).
+ */
+export const DESTINOS_IDENTIDAD = new Set([
+  'diplomatura-en-prevencion-de-fraude-financiero-y-digital',
+  'diplomatura-en-mindfulness-liderazgo-personal-y-gestion-de-vinculos',
+]);
+
+export function esDestinoIdentidad(destino: string): boolean {
+  const slug = /^\/carreras\/([^/]+)$/.exec(destino)?.[1];
+  return slug ? DESTINOS_IDENTIDAD.has(slug) : false;
+}
+
+/**
  * Adónde va una ruta que no pertenece al sitio de Identidad. `null` significa
  * que se sirve normalmente.
  */

@@ -39,7 +39,7 @@ if (!carrera) {
   // comercializa la Academia y su dominio no redirige hacia ella.
   if (esCarreraIdentidadRetirada(Astro.params.slug!)) {
     return sitio === 'identidad'
-      ? Astro.redirect('/', 301)
+      ? Astro.redirect(`${baseDeSitio('identidad')}/`, 301)
       : new Response(null, { status: 410 });
   }
   return new Response(null, { status: 404 });

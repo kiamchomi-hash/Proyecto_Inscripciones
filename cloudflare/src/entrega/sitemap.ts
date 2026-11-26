@@ -11,8 +11,8 @@ import { baseDeSitio, type Sitio } from './sitios.ts';
 // nueva ni de prueba entra al sitemap.
 //
 // Hay dos sitemaps: el del CAU, que ya no incluye las diplomaturas de
-// Identidad Argentina porque pasan al dominio propio, y el de topykly, que
-// publica sólo esas fichas y su portada.
+// Identidad Argentina porque en ese dominio responden 410, y el de topykly,
+// que publica sólo esas fichas y su portada.
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
 
@@ -71,8 +71,8 @@ export function construirSitemap(datos: DatosSitemap, { sitio = 'principal' }: O
   const identidad = sitio === 'identidad';
 
   // Identidad Argentina deja de listarse en el sitemap del CAU: sus fichas se
-  // sirven en topykly y desde acá sólo responden un 301. En el sitio nuevo son
-  // las únicas carreras que entran.
+  // sirven en topykly y desde acá responden 410. En el sitio nuevo son las
+  // únicas carreras que entran.
   const carreras: EntradaSitemap[] = datos.carreras
     .filter(carrera => esCarreraVisible(carrera))
     .filter(carrera => identidad

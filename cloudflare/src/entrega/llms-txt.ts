@@ -268,7 +268,7 @@ export function construirLlmsTxt(datos: DatosLlmsTxt): string {
   const grupos = new Map<string, CarreraLlms[]>();
   for (const carrera of datos.carreras) {
     if (!esCarreraVisible(carrera)) continue;
-    // Identidad Argentina se mudó a topykly.com: sus URLs del CAU responden 301
+    // Identidad Argentina se mudó a topykly.com: sus URLs del CAU responden 410
     // y no tienen que anunciarse como parte de este sitio.
     if (carrera.nivel === 'Identidad Argentina') continue;
     const id = getCategoryForCarrera(carrera);

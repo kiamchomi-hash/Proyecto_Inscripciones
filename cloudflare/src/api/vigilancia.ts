@@ -1,5 +1,5 @@
 import {
-  BASE_PROD, CABECERAS_ESPERADAS, HSTS_ESPERADO, NOINDEX, RUTAS, SONDAS, redirectsEsperados,
+  BASE_PROD, CABECERAS_ESPERADAS, GONE, HSTS_ESPERADO, NOINDEX, RUTAS, SONDAS, redirectsEsperados,
 } from '../../../lib/vigilancia-esperado.ts';
 import { preciosVencidos } from '../../../lib/vigilancia-precios.ts';
 import type { Buscar } from '../operativa/telegram.ts';
@@ -170,7 +170,18 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
     }
   });
 
-  // 4. Redirects declarados.
+  // 4. Fichas que tienen que responder 410: la Academia no se sirve desde el
+  // dominio de Siglo 21. Se prueban la ficha y su markdown.
+  await enTandas(GONE.flatMap(ruta => [ruta, `${ruta}.md`]), async ruta => {
+    try {
+      const r = await pedir(base + ruta);
+      if (r.status !== 410) falla(ruta, `HTTP ${r.status}, esperaba 410`);
+    } catch (e) {
+      falla(ruta, motivo(e));
+    }
+  });
+
+  // 5. Redirects declarados.
   await enTandas(redirectsEsperados(base), async ([desde, hasta, codigo]) => {
     try {
       const r = await pedir(desde);
@@ -186,7 +197,7 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
     }
   });
 
-  // 5. Barrido del sitemap. Una `<loc>` de otro origen no se pide: se informa.
+  // 6. Barrido del sitemap. Una `<loc>` de otro origen no se pide: se informa.
   let urlsSitemap = 0;
   try {
     const sm = await pedir(base + '/sitemap.xml');
@@ -222,7 +233,7 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
 
   const ahora = opciones.ahora?.() ?? new Date();
 
-  // 6. Sondas que no son GET. Mandan datos inexistentes: no escriben nada y lo
+  // 7. Sondas que no son GET. Mandan datos inexistentes: no escriben nada y lo
   // que se mide es que el endpoint resuelva su base en vez de devolver 503.
   await enTandas(SONDAS, async sonda => {
     try {
@@ -241,7 +252,7 @@ export async function correrChequeos(base: string, opciones: OpcionesChequeos) {
     }
   });
 
-  // 7. Precios vencidos hace más de un día.
+  // 8. Precios vencidos hace más de un día.
   if (!opciones.precios) {
     falla('precios vencidos', 'No se pudo revisar la vigencia de los precios: sin lector');
   } else {
