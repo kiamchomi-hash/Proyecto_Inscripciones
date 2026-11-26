@@ -34,7 +34,7 @@ Las altas de Teclab van primero; después las demás.
 
 10. **Migrar las carreras de Teclab a un dominio propio** (20/11/2026): el plan está en [`docs/plans/2026-11-20-migracion-teclab-dominio-propio.md`](docs/plans/2026-11-20-migracion-teclab-dominio-propio.md). Se hace de a una carrera por deploy, con 301 desde `siglo21sur.com`, canónicas y sitemap por host, sin tocar Siglo 21 ni las páginas `/teclab`, `/teclab/inscripcion` y `/teclab/test-vocacional`. El plan asume `teclab-lugano.com`: hay que confirmar el nombre antes de empezar. La Tarea 5 (compra del dominio, zona en Cloudflare, token y Turnstile) requiere autorización explícita y pasos del usuario.
 
-14. **Rediseñar Identidad Argentina: los modales y la página principal** (53). Tener presente la decisión vigente de migrarla a otro sitio, sin crear `/identidad` en este repo.
+14. **Identidad Argentina: footer, formulario, modales y carpeta propia** (53; ampliado el 26/11/2026). La Academia ya vive en `topykly.com` con el Worker `cau-identidad-20261126`; quedan pendientes el footer mobile, el formulario y los modales, y separar todo Identidad en una carpeta propia del escritorio, fuera de `proyecto-cau`, para no mezclarlo con Siglo 21. No crear `/identidad` en este repo. [Detalle](odd/tasks/identidad-pendientes.md).
 
 ## Media
 
@@ -105,6 +105,8 @@ Las altas de Teclab van primero; después las demás.
 - **Completar la FAQ de las carreras de Teclab** (pendiente 3; movida al final de Baja el 20/11/2026): llevar las preguntas frecuentes de cada ficha de 3 o 5 a 6-9, con contenido de `teclab.edu.ar` reescrito con palabras propias. Relevadas las 25 fichas oficiales y anotado qué falta en cada una en [`referencias/2026-11-20-faq-teclab-revision.md`](referencias/2026-11-20-faq-teclab-revision.md): 22 carreras necesitan preguntas, 3 ya cumplen el piso, y QA, Gestión Hotelera, Inbound Marketing y Customer Experience tienen un techo de 5 en la fuente oficial. Quedan afuera becas, sueldos y campañas. **Aplazado a pedido del usuario**: depende de trabajar bien las keywords y prefiere esperar a un modelo de confianza para redactarlas. No se escribió nada en D1.
 
 ## Ratos muertos
+
+- **Activar Penpot y su MCP para las piezas estáticas** (25/11/2026): Penpot autoalojado en `~/penpot/`, fuera del repo, con el compose oficial ajustado (clave propia, telemetría apagada, puertos sólo locales) y Penpot y MCP fijados en la **2.19.1**, porque npm no publica MCP para la 2.18. Se eligió el **MCP local** (`@penpot/mcp`) y no el integrado: el remoto no puede importar imágenes desde archivos de la máquina y las skills necesitan los logos oficiales y las fotos de `contenidos/` tal cual. El MCP ya está registrado en OpenCode como `penpot` (`http://localhost:4401/mcp`), con backup de la configuración. **Falta:** `sudo systemctl enable --now docker` (el servicio está instalado y apagado, y yo no tengo permisos), correr `~/penpot/penpot.sh up`, crear el usuario en `http://localhost:9001`, cargar el plugin con `http://localhost:4400/manifest.json` en un archivo abierto, conectarlo y reiniciar OpenCode. Después: prueba de lectura y adaptar `lienzo-de-diseno` y las skills de piezas para que dibujen en Penpot en vez de HTML. Los pasos y el motivo de cada decisión están en `~/penpot/penpot.sh` y en la memoria del agente.
 
 49. **Terminar de revisar el UIverse local** (25).
 
