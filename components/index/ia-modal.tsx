@@ -92,34 +92,6 @@ function Rotulo({ children }: { children: React.ReactNode }) {
   );
 }
 
-/**
- * Lista de objetivos, pegada al bloque de arriba. Cada uno en su tarjeta con el
- * filo amarillo, como los modulos del plan: en mobile, una fila de vinetas
- * sueltas una abajo de la otra quedaba como un apunte.
- */
-function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) {
-  return (
-    <div className="flex-shrink-0 flex flex-col gap-2">
-      {rotulo && <Rotulo>{rotulo}</Rotulo>}
-      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {items.map((texto, i) => (
-          <li
-            key={i}
-            className="rounded px-3 py-2 text-[0.85rem] sm:text-[0.92rem] text-[#c3d8e6] leading-snug"
-            style={{
-              background: '#16212b',
-              boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
-              borderLeft: `3px solid ${AMARILLO}`,
-            }}
-          >
-            {texto}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 // ── Slide 1: portada ──
 function SlidePortada({ carrera }: { carrera: Carrera }) {
   const { cursada, modalidad, certificacion } = parseEnfoque(carrera.enfoque);
@@ -132,11 +104,11 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
   // aparece una barra de scroll horizontal al pie del slide.
   return (
     <div data-scroll-lectura className="ia-slide relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
-      {/* El isotipo grande y apagado, como en el render: da fondo sin tapar
-          nada. En mobile va abajo a la derecha, que es donde queda el aire. */}
-      <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
+      {/* El isotipo grande y apagado, como en el cierre: da fondo sin tapar
+          nada. En mobile no entra, igual que antes. */}
+      <Isotipo className="ia-portada-isotipo" />
 
-      <div className="relative min-h-full flex flex-col gap-3 p-5 sm:p-7">
+      <div className="ia-portada relative min-h-full flex flex-col gap-4 p-5 sm:p-8">
         <div className="flex-shrink-0 flex gap-3">
           <div className="w-[3px] rounded-sm flex-shrink-0 self-stretch" style={{ background: AMARILLO }} />
           <div className="min-w-0">
@@ -147,7 +119,7 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
             )}
             <h2
               className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
-                nombre.length > 38 ? 'text-lg sm:text-3xl' : 'text-2xl sm:text-4xl'
+                nombre.length > 38 ? 'text-xl sm:text-3xl' : 'text-2xl sm:text-4xl'
               }`}
             >
               {nombre}
@@ -159,60 +131,47 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
           {online ? '100% Online' : modalidad}
         </p>
 
-        {cursada && (
-          <p className="flex-shrink-0 text-[0.78rem] sm:text-sm leading-snug text-white/70">
-            {cursada}
-          </p>
-        )}
+        {cursada && <p className="ia-portada-cursada flex-shrink-0">{cursada}</p>}
 
         {objetivos.length > 0 && (
-          <ListaAjustada items={objetivos} rotulo="Objetivos" />
+          <div className="flex-shrink-0">
+            <Rotulo>Objetivos</Rotulo>
+            <ul className="ia-portada-objetivos mt-2">
+              {objetivos.map((texto, i) => (
+                <li key={i}>{texto}</li>
+              ))}
+            </ul>
+          </div>
         )}
 
-
-        {/* Bloques de dato: el principal (escuela) va lleno en amarillo. Van al
-            pie -mt-auto- para que el aire sobrante quede en un solo lugar y no
-            como un vacio abajo de todo. */}
-        <div className="flex-shrink-0 mt-auto pt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <BloqueDato label="Escuela" valor={escuela || 'Academia'} principal />
-          <BloqueDato label="Duración" valor={carrera.duracion} />
-          <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
-        </div>
+        {/* Los tres datos cierran el slide en una sola fila con filete arriba.
+            Antes cada uno era una caja -la de la escuela, llena de amarillo- y
+            competian con el titulo: eran lo mas fuerte de la pantalla para decir
+            lo menos importante. */}
+        <dl className="ia-portada-datos">
+          <div>
+            <dt>Escuela</dt>
+            <dd>{escuela || 'Academia'}</dd>
+          </div>
+          <div>
+            <dt>Duración</dt>
+            <dd>{carrera.duracion}</dd>
+          </div>
+          <div>
+            <dt>Certificación</dt>
+            <dd>{certificacion}</dd>
+          </div>
+        </dl>
       </div>
     </div>
   );
 }
 
-function BloqueDato({ label, valor, principal, className = '' }: { label: string; valor: string; principal?: boolean; className?: string }) {
-  return (
-    <div
-      className={`rounded px-2.5 py-1.5 ${className}`}
-      style={
-        principal
-          ? { background: 'rgba(241,207,28,0.94)', boxShadow: 'inset 0 0 0 1px rgba(16,24,32,0.2)' }
-          : { background: '#1b2a36', boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.4)' }
-      }
-    >
-      <span
-        className="block text-4xs font-black uppercase tracking-etiqueta"
-        style={{ color: principal ? 'rgba(16,24,32,0.7)' : AZUL_CLARO }}
-      >
-        {label}
-      </span>
-      <span
-        className="block text-[0.78rem] sm:text-sm font-bold leading-tight mt-0.5"
-        style={{ color: principal ? '#101820' : '#fff' }}
-      >
-        {valor}
-      </span>
-    </div>
-  );
-}
-
 // ── Slide 3: plan de estudios ──
-// Mismo armado que el plan de las carreras de Siglo 21 (carousel-modal): indice
-// a la izquierda con "Programa completo" arriba, y a la derecha el contenido
-// arrancando desde el borde de arriba, no centrado.
+// Una sola superficie de lectura: indice a la izquierda -sin cajas, con el
+// activo marcado por un filo azul- y el contenido a la derecha, separados por
+// un filete. En el telefono scrollea el slide entero y los modulos se separan
+// con filetes: antes eran tarjetas dentro de otra tarjeta con scroll propio.
 function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }) {
   // -1 = programa completo, >= 0 = un modulo
   const [activo, setActivo] = useState(-1);
@@ -220,7 +179,7 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
   const titulo = activo === -1 ? 'Programa completo' : modulos[activo]?.etiqueta;
 
   return (
-    <div className="ia-slide h-full flex flex-col gap-3 p-4 sm:p-6 overflow-hidden">
+    <div data-scroll-lectura className="ia-slide ia-plan-slide h-full overflow-y-auto custom-scrollbar p-4 sm:p-6">
       <div className="flex-shrink-0 flex items-baseline justify-between gap-3">
         <Rotulo>Plan de estudios</Rotulo>
         <span className="text-5xs font-black uppercase tracking-etiqueta text-white/50">
@@ -228,25 +187,16 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
         </span>
       </div>
 
-      {/* Mobile: el programa completo, con scroll */}
-      <div
-        className="md:hidden flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)', background: '#0f1a22' }}
-      >
+      {/* Mobile: el programa completo, con el scroll del propio slide */}
+      <div className="md:hidden mt-4 flex flex-col gap-4">
         {modulos.map((m, i) => (
-          <ModuloDetalle key={i} modulo={m} enTarjeta />
+          <ModuloDetalle key={i} modulo={m} />
         ))}
       </div>
 
       {/* Desktop: indice a la izquierda, contenido a la derecha */}
-      <div
-        className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)', background: '#0f1a22' }}
-      >
-        <div
-          className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[9.5rem] custom-scrollbar"
-          style={{ background: 'rgba(0,0,0,0.22)' }}
-        >
+      <div className="hidden md:flex ia-plan">
+        <nav className="ia-plan-indice" aria-label="Módulos del plan">
           <BotonModulo activo={activo === -1} onClick={() => setActivo(-1)} texto="Programa completo" />
           {modulos.map((m, i) => (
             <BotonModulo
@@ -257,12 +207,10 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
               texto={m.etiqueta}
             />
           ))}
-        </div>
+        </nav>
 
-        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-4 py-3 flex flex-col gap-4">
-          <p className="flex-shrink-0 text-sm font-black uppercase tracking-[0.12em] text-white pb-2 border-b border-white/10">
-            {titulo}
-          </p>
+        <div data-scroll-lectura className="ia-plan-detalle custom-scrollbar">
+          <p className="ia-plan-titulo">{titulo}</p>
           {visibles.map((m, i) => m && <ModuloDetalle key={i} modulo={m} />)}
         </div>
       </div>
@@ -271,39 +219,17 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
 }
 
 /** Cabecera y contenidos de un modulo */
-function ModuloDetalle({ modulo, enTarjeta }: { modulo: Modulo; enTarjeta?: boolean }) {
-  const filo = `3px solid ${modulo.destacado ? AMARILLO : AZUL}`;
+function ModuloDetalle({ modulo }: { modulo: Modulo }) {
   return (
-    <div
-      className={enTarjeta ? 'flex-shrink-0 rounded p-3' : 'flex-shrink-0 pl-3'}
-      style={
-        enTarjeta
-          ? {
-              background: '#16212b',
-              boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
-              borderLeft: filo,
-            }
-          : // Apilados uno abajo del otro, el filo del color es lo que separa
-            // un modulo del siguiente.
-            { borderLeft: filo }
-      }
-    >
-      <p
-        className="text-4xs font-black uppercase tracking-etiqueta-ancha"
-        style={{ color: modulo.destacado ? AMARILLO : AZUL_CLARO }}
-      >
+    <div className="ia-modulo">
+      <p className="ia-modulo-etiqueta" style={modulo.destacado ? { color: AMARILLO } : undefined}>
         {modulo.etiqueta}
       </p>
-      {modulo.titulo && (
-        <p className="text-[0.9rem] md:text-lg font-bold text-white leading-snug mt-0.5">{modulo.titulo}</p>
-      )}
+      {modulo.titulo && <p className="ia-modulo-titulo">{modulo.titulo}</p>}
       {modulo.items.length > 0 && (
-        <ul className="flex flex-col gap-1.5 mt-2 md:mt-3">
+        <ul className="ia-modulo-items">
           {modulo.items.map((item, j) => (
-            <li key={j} className="flex items-start gap-2 text-[0.78rem] md:text-[0.92rem] text-[#a9c4d6] leading-snug">
-              <span className="mt-[0.5em] w-1 h-1 rounded-full flex-shrink-0" style={{ background: AZUL }} />
-              <span>{item}</span>
-            </li>
+            <li key={j}>{item}</li>
           ))}
         </ul>
       )}
@@ -314,21 +240,10 @@ function ModuloDetalle({ modulo, enTarjeta }: { modulo: Modulo; enTarjeta?: bool
 function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; destacado?: boolean; onClick: () => void; texto: string }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="flex-shrink-0 px-2.5 py-2 rounded text-4xs font-black uppercase tracking-amplio whitespace-nowrap md:whitespace-normal md:text-left transition-all cursor-pointer"
-      style={
-        activo
-          ? {
-              background: destacado ? AMARILLO : AZUL,
-              color: destacado ? '#101820' : '#fff',
-              boxShadow: 'inset 0 0 0 1px rgba(16,24,32,0.2)',
-            }
-          : {
-              background: '#16212b',
-              color: destacado ? AMARILLO : AZUL_CLARO,
-              boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
-            }
-      }
+      aria-current={activo ? 'true' : undefined}
+      className={`ia-plan-boton${activo ? ' is-activo' : ''}${destacado ? ' is-destacado' : ''}`}
     >
       {texto}
     </button>
@@ -569,62 +484,49 @@ export default function IAModal({ carrera, onClose }: Props) {
           </button>
         </div>
 
-        {/* Pie */}
-        <div className="flex-shrink-0 p-3 border-t flex flex-wrap gap-2 items-center" style={{ background: '#0a1219', borderColor: 'rgba(0,144,193,0.35)' }}>
-          <div className="order-1 sm:order-2 w-full sm:w-auto flex items-center gap-2 justify-end sm:flex-shrink-0">
-            <a
-              href={waHref}
-              target="_blank"
-              rel="noopener nofollow"
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D366] text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-              </svg>
-              WhatsApp
-            </a>
-            <a
-              href="#preinscripcion"
-              onClick={e => {
-                e.preventDefault();
-                // La carrera viaja con el clic: abajo el formulario la elige
-                // sola, en vez de dejar al lead buscando lo que ya eligio.
-                pedirCarreraEnFormulario(carrera.id);
-                handleClose();
-                setTimeout(() => {
-                  document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
-                }, 350);
-              }}
-              className="flex-1 sm:flex-none sm:w-36 flex items-center justify-center gap-2 py-2 text-white font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"
-              style={{ background: AZUL }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Inscribite ya
-            </a>
-          </div>
-
-          <div className="order-2 sm:order-1 w-full sm:flex-1 flex items-center gap-1.5 min-w-0">
-            <input
-              type="text"
-              readOnly
-              value={shareUrl}
-              onClick={e => (e.target as HTMLInputElement).select()}
-              className="flex-1 min-w-0 px-3 py-2 rounded-lg text-[11px] font-mono focus:outline-none cursor-text transition-colors truncate"
-              style={{ background: '#16242e', border: '1px solid rgba(0,144,193,0.35)', color: '#6b9fc0' }}
-            />
-            <button
-              onClick={compartir}
-              title="Compartir enlace"
-              className="w-36 flex-shrink-0 flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm"
-              style={{ background: 'transparent', border: `1px solid ${AZUL}`, color: AZUL_CLARO }}
-            >
-              <IconoCompartir estado={estadoCompartir} />
-              <span>{textoCompartir(estadoCompartir)}</span>
-            </button>
-            <AvisoCompartir estado={estadoCompartir} />
-          </div>
+        {/* Pie: una sola fila. Se fue el campo con la URL -ocupaba un renglon
+            entero en el telefono y repetia lo que hace "Compartir"- y los dos
+            botones quedaron como en el cierre: WhatsApp con borde verde, la
+            inscripcion llena en azul. */}
+        <div className="ia-modal-pie">
+          <button
+            type="button"
+            onClick={compartir}
+            title="Compartir enlace"
+            aria-label="Compartir enlace"
+            className="ia-pie-compartir"
+          >
+            <IconoCompartir estado={estadoCompartir} />
+            <span className="hidden sm:inline">{textoCompartir(estadoCompartir)}</span>
+          </button>
+          <AvisoCompartir estado={estadoCompartir} />
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener nofollow"
+            className="ia-pie-wa"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            WhatsApp
+          </a>
+          <a
+            href="#preinscripcion"
+            onClick={e => {
+              e.preventDefault();
+              // La carrera viaja con el clic: abajo el formulario la elige
+              // sola, en vez de dejar al lead buscando lo que ya eligio.
+              pedirCarreraEnFormulario(carrera.id);
+              handleClose();
+              setTimeout(() => {
+                document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
+              }, 350);
+            }}
+            className="ia-pie-cta"
+          >
+            Inscribite ya
+          </a>
         </div>
     </ModalShell>
   );

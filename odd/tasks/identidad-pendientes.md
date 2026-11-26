@@ -7,12 +7,13 @@ ya está separado, pero el código sigue dentro de `proyecto-cau`.
 
 ## 1. Footer — rehecho el 26/11/2026
 
-- Quedó un pie propio de columnas: marca, Navegación, Contacto y Modalidad,
-  con doble filete vertical en escritorio y dos columnas en mobile. Sin CTA
-  duplicados: la barra fija sigue siendo la acción principal.
+- Quedó un pie propio de columnas: marca, Navegación, Contacto y Modalidad, con
+  un filete vertical simple en escritorio y dos columnas centradas en mobile.
+  Sin CTA duplicados: la barra fija sigue siendo la acción principal.
 - No nombra Villa Lugano, el CAU ni Siglo 21. El WhatsApp va en verde y los
   enlaces no se ponen amarillos al pasar el puntero.
-- Captura de control: `screenshots/topykly-footer-columnas2.png`.
+- Capturas de control: `screenshots/topykly-footer-columnas2.png` y
+  `screenshots/topykly-footer-mobile-centrado.png`.
 
 ## 2. Formulario
 
@@ -22,12 +23,22 @@ ya está separado, pero el código sigue dentro de `proyecto-cau`.
   los campos, el copy de ayuda y el paso a WhatsApp.
 - Mantener el registro en la misma D1 y el aviso por el outbox.
 
-## 3. Modales
+## 3. Modales — rehechos el 26/11/2026
 
-- Mejorar los modales de las fichas de Identidad. Ya se sacó el slide del
-  profesor y quedó detalle + plan + cierre; falta revisar jerarquía, alturas,
-  tipografía, navegación y el CTA de inscripción.
-- Relevar primero en escritorio y celular antes de tocar, como en Teclab.
+- El cierre («Estudiá con nosotros») se dejó igual: era el que funcionaba.
+- Portada: los objetivos dejaron de ser tarjetas con filo amarillo y se leen
+  como lista con viñeta azul; los tres datos (escuela, duración, certificación)
+  pasaron a una fila con filete arriba en vez de tres cajas, y la de la escuela
+  ya no va llena de amarillo. El slide se centra en el alto cuando sobra aire.
+- Plan: una sola superficie de lectura. El índice del escritorio perdió las
+  cajas (el activo se marca con fondo y filo azul) y los módulos se separan con
+  filetes; en el celular scrollea el slide completo, sin tarjeta dentro de
+  tarjeta. Las masterclases conservan el rótulo amarillo.
+- Pie del modal: se fue el campo con la URL -ocupaba un renglón entero en el
+  teléfono y repetía lo que hace «Compartir»-. Quedó una fila: compartir,
+  WhatsApp con borde verde e «Inscribite ya» lleno en azul.
+- Capturas de control: `screenshots/topykly-modal-portada.png`,
+  `topykly-modal-plan.png` y sus versiones `-mobile`.
 
 ## 4. Separar Identidad de Siglo 21 en el escritorio
 
