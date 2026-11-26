@@ -55,6 +55,14 @@ export interface Props {
   palabrasClave?: string[];
   /** URL canónica completa. */
   canonical?: string;
+  /**
+   * Base pública del sitio que sirve la página. El paquete sirve el CAU y la
+   * Academia Identidad Argentina; sin esto, las URLs absolutas saldrían con el
+   * dominio equivocado.
+   */
+  base?: string;
+  /** `identidad` cambia la marca del armazón (topykly.com). */
+  marca?: 'principal' | 'identidad';
   /** Ruta del pedido, para el enlace activo del navbar. */
   ruta?: string;
   /** Sólo las páginas que declaran su propio `openGraph` en Next. */
@@ -74,20 +82,34 @@ export interface Props {
   preloadFuente?: string;
 }
 
-const { titulo, descripcion, canonical, ruta = '/', palabrasClave, og, twitter, robots, preloadImagen, preloadFuente } = Astro.props;
-const SITIO = 'https://www.siglo21sur.com';
+const { titulo, descripcion, canonical, base, marca = 'principal', ruta = '/', palabrasClave, og, twitter, robots, preloadImagen, preloadFuente } = Astro.props;
+const identidad = marca === 'identidad';
+const SITIO = base ?? 'https://www.siglo21sur.com';
 
 // Las palabras clave del layout son las de `app/layout.tsx`, escritas igual.
 // Next las une con coma y sin espacio; el texto tiene que ser el mismo byte a byte.
 const CLAVES = palabrasClave?.length
   ? palabrasClave.join(',')
-  : 'universidad,siglo 21,villa lugano,carreras a distancia,educación superior,estudiar online,CAU,CABA,GBA,zona sur';
+  : identidad
+    ? 'academia identidad argentina,diplomaturas,cursos online,villa lugano,CABA'
+    : 'universidad,siglo 21,villa lugano,carreras a distancia,educación superior,estudiar online,CAU,CABA,GBA,zona sur';
 
 // Valores del layout (`app/layout.tsx`) campo por campo. `openGraph` y `twitter`
 // de una página **reemplazan** el objeto del layout en Next (no se fusionan),
 // así que cuando la página los declara sólo se emite lo declarado.
 const absoluta = (url: string) => url.startsWith('http') ? url : `${SITIO}${url}`;
-const red: MetasSociales = og ? { tipo: 'website', ...og } : {
+const red: MetasSociales = og ? { tipo: 'website', ...og } : identidad ? {
+  tipo: 'website',
+  locale: 'es_AR',
+  url: `${SITIO}/`,
+  sitio: 'Academia Identidad Argentina',
+  titulo: 'Academia Identidad Argentina',
+  descripcion: 'Diplomaturas y cursos de la Academia Identidad Argentina.',
+  imagen: {
+    url: '/imagenes/og/default-identidad-argentina.jpg', ancho: 1200, alto: 630,
+    alt: 'Academia Identidad Argentina',
+  },
+} : {
   tipo: 'website',
   locale: 'es_AR',
   url: SITIO,
@@ -99,23 +121,36 @@ const red: MetasSociales = og ? { tipo: 'website', ...og } : {
     alt: 'Universidad Siglo 21 — CAU Online',
   },
 };
-const redes: MetasTwitter = twitter ?? {
+const redes: MetasTwitter = twitter ?? (identidad ? {
+  tarjeta: 'summary_large_image',
+  titulo: 'Academia Identidad Argentina',
+  descripcion: 'Diplomaturas y cursos de la Academia Identidad Argentina.',
+  imagen: '/imagenes/og/default-identidad-argentina.jpg',
+} : {
   tarjeta: 'summary_large_image',
   titulo: 'Universidad Siglo 21 | CAU Online',
   descripcion: 'Carreras universitarias online con acompañamiento para estudiantes de CABA y GBA. ¡Inscribite hoy!',
   imagen: '/imagenes/og/default.jpg',
-};
+});
 
 // Datos fijos del layout vigente, serializados con el mismo escapador que usa
 // Next (`lib/json-ld.ts`): el `<` se convierte en `\u003c` y no puede cerrar el
 // script antes de tiempo.
-const jsonLd = jsonLdScript([
+const jsonLd = identidad ? jsonLdScript([
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Academia Identidad Argentina',
+    alternateName: 'Identidad Argentina',
+    url: `${SITIO}/`,
+  },
+]) : jsonLdScript([
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Universidad Siglo 21',
     alternateName: 'Siglo 21',
-    url: 'https://www.siglo21sur.com/',
+    url: `${SITIO}/`,
   },
   {
     '@context': 'https://schema.org',
@@ -194,8 +229,8 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
     <meta name="keywords" content={CLAVES} />
-    <meta name="author" content="CAU Villa Lugano" />
-    <meta name="creator" content="Universidad Siglo 21" />
+    <meta name="author" content={identidad ? 'Academia Identidad Argentina' : 'CAU Villa Lugano'} />
+    <meta name="creator" content={identidad ? 'Academia Identidad Argentina' : 'Universidad Siglo 21'} />
     {robots && <meta name="robots" content={robots} />}
 
     {canonical && <link rel="canonical" href={canonical} />}
@@ -227,11 +262,17 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
     {redes.descripcion && <meta name="twitter:description" content={redes.descripcion} />}
     {redes.imagen && <meta name="twitter:image" content={absoluta(redes.imagen)} />}
 
-    <meta name="google-site-verification" content="google2ba266d8a709b848" />
-    <link rel="icon" href="/favicon.ico" sizes="48x48" />
-    <link rel="icon" href="/icon.png" type="image/png" sizes="48x48" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    {identidad ? (
+      <link rel="icon" href="/imagenes/identidad-isotipo.svg" type="image/svg+xml" />
+    ) : (
+      <>
+        <meta name="google-site-verification" content="google2ba266d8a709b848" />
+        <link rel="icon" href="/favicon.ico" sizes="48x48" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="48x48" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+      </>
+    )}
 
     {sitekeyTurnstile && <meta name="turnstile-site-key" content={sitekeyTurnstile} />}
     {demoFormularios && <meta name="formularios-demo" content="1" />}
@@ -283,7 +324,8 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#00c7b1] focus:text-black focus:rounded focus:font-bold">
       Saltar al contenido principal
     </a>
-    <NavbarIsla ruta={ruta} client:load />
+    <NavbarIsla ruta={ruta} baseHref={identidad ? 'https://www.siglo21sur.com' : ''}
+      marca={identidad ? 'identidad' : 'cau'} client:load />
     <AnalyticsInteractions client:load />
     {/* Mide el clic a WhatsApp y reparte el número si algún día hay más de un
         asesor. En Next vivía en `app/layout.tsx`; acá faltaba, así que desde el

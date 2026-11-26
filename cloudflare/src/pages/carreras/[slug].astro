@@ -11,6 +11,7 @@ import { carrerasPublicas, carreraPorSlug } from '../../datos/carreras';
 import { seoCarrera } from '../../entrega/carrera-seo';
 import { configTurnstile } from '../../entrega/entorno-publico';
 import { redirectCarrera } from '../../entrega/redirects-carreras';
+import { baseDeSitio, sitioDe } from '../../entrega/sitios';
 import { carreraToSlug } from '@/components/index/types';
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
 import '@/estilos/poppins.css';
@@ -33,12 +34,26 @@ const carreras = await carrerasPublicas(env.DB);
 const carrera = carreraPorSlug(carreras, Astro.params.slug!);
 if (!carrera) return new Response(null, { status: 404 });
 const ruta = `/carreras/${carreraToSlug(carrera)}`;
+const sitio = sitioDe(Astro.url.hostname, (env as unknown as { APP_SITIO?: string }).APP_SITIO);
+const esIdentidad = carrera.nivel === 'Identidad Argentina';
+// Cada casa vive en su dominio: la ficha que no pertenece a este sitio se
+// responde con un 301 permanente a su URL canónica, con la query intacta.
+if ((sitio === 'identidad') !== esIdentidad) {
+  const destino = baseDeSitio(esIdentidad ? 'identidad' : 'principal');
+  return Astro.redirect(`${destino}${ruta}${Astro.url.search}`, 301);
+}
 if (Astro.params.slug !== carreraToSlug(carrera)) return Astro.redirect(ruta, 308);
+const base = baseDeSitio(sitio);
 const { titulo, descripcion, imagen, palabrasClave } = seoCarrera(carrera);
-const canonical = `https://www.siglo21sur.com${ruta}`;
-const relacionadas = relacionadasCarrera(carrera, carreras);
-const equivalente = carreraEquivalente(carrera, carreras);
-const opciones = carreras.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion,
+const canonical = `${base}${ruta}`;
+// En topykly sólo se ofrecen las diplomaturas y cursos de la Academia: no se
+// cruzan carreras de Siglo 21 ni de Teclab.
+const carrerasDelSitio = sitio === 'identidad'
+  ? carreras.filter(c => c.nivel === 'Identidad Argentina')
+  : carreras;
+const relacionadas = relacionadasCarrera(carrera, carrerasDelSitio);
+const equivalente = sitio === 'identidad' ? null : carreraEquivalente(carrera, carreras);
+const opciones = carrerasDelSitio.map(c => ({ id: c.id, nombre: c.nombre, nivel: c.nivel, duracion: c.duracion,
   ...(c.proximamente ? { proximamente: true } : {}) }));
 // La foto del encabezado se precarga en el `<head>`: el HTML de la ficha llega
 // en streaming y el `<img>` del hero aparece muy tarde en el documento, así
@@ -53,7 +68,8 @@ const preloadFuente = carrera.nivel === 'Identidad Argentina' ? undefined
 ---
 {/* Las fichas de Identidad Argentina volvieron a indexarse el 26/10/2026 (commit
     b90fb95 del sitio): sin `robots`, igual que la ficha de Next. */}
-<Sitio titulo={titulo} descripcion={descripcion} canonical={canonical} ruta={ruta} palabrasClave={palabrasClave}
+<Sitio titulo={titulo} descripcion={descripcion} canonical={canonical} base={base} marca={sitio}
+  ruta={ruta} palabrasClave={palabrasClave}
   og={{ tipo: '', titulo, descripcion, url: canonical, imagen: { url: imagen } }}
   twitter={{ tarjeta: 'summary_large_image', titulo, descripcion, imagen }}
   preloadImagen={preloadImagen} preloadFuente={preloadFuente}
@@ -65,5 +81,5 @@ const preloadFuente = carrera.nivel === 'Identidad Argentina' ? undefined
       hidratación queda para la primera ventana de ocio, después del `load`.
       Igual que en la home. */}
   <PaginaCarrera carrera={carrera} relacionadas={relacionadas} equivalente={equivalente} opciones={opciones}
-    turnstile={configTurnstile(env as unknown as Record<string, unknown>)} client:idle />
+    url={canonical} turnstile={configTurnstile(env as unknown as Record<string, unknown>)} client:idle />
 </Sitio>

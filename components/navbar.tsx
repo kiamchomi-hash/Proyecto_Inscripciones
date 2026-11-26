@@ -7,6 +7,7 @@ import { esRutaPreinscripcion } from '@/lib/rutas-preinscripcion';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { WhatsAppIcon, FacebookIcon, InstagramIcon } from './icons';
+import IsotipoIA from './index/ia-isotipo';
 
 // «Sobre Nosotros» no va en el navbar (02/11/2026): es la página de la sede y
 // se llega a ella desde el pie (`components/footer.tsx`). En su lugar entra
@@ -44,7 +45,12 @@ function TeclabMarca({ grande = false }: { grande?: boolean }) {
   );
 }
 
-export default function Navbar() {
+export default function Navbar({ baseHref = '', marca = 'cau' }: {
+  /** Dominio del CAU cuando el navbar se sirve desde otro sitio (topykly). */
+  baseHref?: string;
+  /** `identidad` reemplaza la marca del CAU en el navbar móvil. */
+  marca?: 'cau' | 'identidad';
+} = {}) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
@@ -141,10 +147,19 @@ export default function Navbar() {
             están en el HTML y el CSS elige una según la página (ver
             `.marca-teclab` en navbar.css): así no hay parpadeo al hidratar. */}
         <span className="navbar-brand-mobile lg:hidden">
-          <span className="marca-cau">
-            CAU <span style={{ color: '#00c7b1' }}>Siglo 21</span>
-          </span>
-          <TeclabMarca />
+          {marca === 'identidad' ? (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'white' }}>
+              <IsotipoIA className="h-8 w-auto" />
+              <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 600 }}>Academia Identidad Argentina</span>
+            </span>
+          ) : (
+            <>
+              <span className="marca-cau">
+                CAU <span style={{ color: '#00c7b1' }}>Siglo 21</span>
+              </span>
+              <TeclabMarca />
+            </>
+          )}
         </span>
 
         {/* Menu */}
@@ -158,12 +173,21 @@ export default function Navbar() {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="menu-header lg:hidden">
-            <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
-              <span className="marca-cau">
-                CAU <span style={{ fontFamily: "'Inter',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
+            {marca === 'identidad' ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'white' }}>
+                <IsotipoIA className="h-9 w-auto" />
+                <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.25rem', fontWeight: 600, lineHeight: 1 }}>
+                  Academia Identidad Argentina
+                </span>
               </span>
-              <TeclabMarca grande />
-            </span>
+            ) : (
+              <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
+                <span className="marca-cau">
+                  CAU <span style={{ fontFamily: "'Inter',sans-serif", color: '#00c7b1' }}>Siglo 21</span>
+                </span>
+                <TeclabMarca grande />
+              </span>
+            )}
             <button className="menu-close-btn" aria-label="Cerrar menu" onClick={closeMenu}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -174,7 +198,7 @@ export default function Navbar() {
           {NAV_LINKS.map(({ href, label }) => (
             <Link
               key={href}
-              href={href}
+              href={baseHref ? `${baseHref}${href}` : href}
               // El menu movil cerrado sigue pegado al viewport (translateX(-100%)),
               // asi que entra en el rootMargin del prefetch y precarga las 6 rutas
               // de fondo en cada visita. Se navega igual, solo pide al hacer clic.

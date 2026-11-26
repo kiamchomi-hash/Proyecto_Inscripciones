@@ -7,6 +7,7 @@ import { usuariosActivos } from '../src/operativa/analytics.ts';
 import {
   CANONICO, claveDeCache, copiaParaGuardar, normalizarParaCache, servirDesdeCopia,
 } from '../src/entrega/cache-borde.ts';
+import { HOST_CANONICO_IDENTIDAD, HOST_WWW_IDENTIDAD } from '../src/entrega/sitios.ts';
 import { servirAssetR2, versionarRespuestaHtml } from '../src/entrega/assets-r2.ts';
 
 /**
@@ -55,6 +56,19 @@ export default {
           Location: destino.toString(),
           'Cache-Control': 'public, max-age=3600',
           'X-Robots-Tag': 'noindex, nofollow',
+        },
+      });
+    }
+    // En el dominio de Identidad el canónico es el ápice: `www` no compite.
+    if (url.hostname === HOST_WWW_IDENTIDAD) {
+      const destino = new URL(request.url);
+      destino.hostname = HOST_CANONICO_IDENTIDAD;
+      destino.protocol = 'https:';
+      return new Response(null, {
+        status: 301,
+        headers: {
+          Location: destino.toString(),
+          'Cache-Control': 'public, max-age=3600',
         },
       });
     }

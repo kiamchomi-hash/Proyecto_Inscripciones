@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { entornoWrangler, leerConfig, revisar, tokenDelEntorno } from '../scripts/publicar.mjs';
+import { leerConfigIdentidad, revisarIdentidad } from '../scripts/publicar-identidad.mjs';
 
 const raiz = fileURLToPath(new URL('../', import.meta.url));
 
@@ -199,4 +200,18 @@ test('el smoke admite sólo UUID para version override y fija el nombre del Work
   assert.match(smoke, /cloudflare-workers-version-overrides/);
   assert.match(smoke, /cau-produccion-20261026=/);
   assert.match(smoke, /Worker Version ID UUID/);
+});
+
+test('el Worker de Identidad comparte base y assets, sin crons ni consumidor', () => {
+  const config = leerConfigIdentidad();
+  const { problemas } = revisarIdentidad(config);
+  assert.deepEqual(problemas, []);
+  assert.equal(config.name, 'cau-identidad-20261126');
+  assert.equal(config.vars.APP_SITIO, 'identidad');
+  assert.match(config.vars.TURNSTILE_EXPECTED_HOSTNAME, /topykly\.com/);
+  assert.deepEqual(config.routes.map(r => r.pattern).sort(), ['topykly.com', 'www.topykly.com']);
+  assert.equal(config.d1_databases[0].database_id, '4a1cc90c-8c55-493f-9753-d40ac5cbc3cb');
+  assert.equal(config.assets.run_worker_first, true);
+  assert.deepEqual(config.queues.consumers ?? [], []);
+  assert.deepEqual(config.triggers?.crons ?? [], []);
 });

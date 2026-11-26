@@ -106,6 +106,12 @@ export function robotsDeRuta(ruta: string, estado: number): string | null {
 export interface ContextoCabeceras {
   ruta: string;
   estado: number;
+  /**
+   * El sitio de Identidad no publica `/llms.txt` ni las versiones markdown: su
+   * catálogo es de ocho fichas y todo lo demás vuelve al principal. Anunciar
+   * esas rutas desde topykly mandaría a un redirect.
+   */
+  sitio?: 'principal' | 'identidad';
 }
 
 /**
@@ -114,7 +120,7 @@ export interface ContextoCabeceras {
  * `Cache-Control`. Todo lo demás queda `no-store`, como las páginas dinámicas
  * de Next en desarrollo.
  */
-export function aplicarCabeceras(respuesta: Response, { ruta, estado }: ContextoCabeceras): Response {
+export function aplicarCabeceras(respuesta: Response, { ruta, estado, sitio = 'principal' }: ContextoCabeceras): Response {
   const esHtml = (respuesta.headers.get('Content-Type') ?? '').includes('text/html');
   for (const [nombre, valor] of Object.entries(CABECERAS_SEGURIDAD)) {
     if (nombre === 'Referrer-Policy' && respuesta.headers.has(nombre)) continue;
@@ -132,7 +138,7 @@ export function aplicarCabeceras(respuesta: Response, { ruta, estado }: Contexto
   // recursos que no son HTML no son páginas. El archivo markdown se describe a
   // sí mismo: la especificación dice que la cabecera también sirve para los
   // recursos que no son HTML.
-  if (estado === 200 && !respuesta.headers.has('Link')) {
+  if (estado === 200 && sitio === 'principal' && !respuesta.headers.has('Link')) {
     const enlace = cabeceraLink(ruta, respuesta.headers.get('Content-Type') ?? '');
     if (enlace) respuesta.headers.set('Link', enlace);
   }

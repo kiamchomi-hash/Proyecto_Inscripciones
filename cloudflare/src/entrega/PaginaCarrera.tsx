@@ -32,14 +32,17 @@ export function relacionadasCarrera(carrera: Carrera, carreras: Carrera[]) {
     .map(c => ({ id: c.id, nombre: c.nombre, prefix: c.prefix }));
 }
 
-export default function PaginaCarrera({ carrera, relacionadas, equivalente, opciones, turnstile }: {
+export default function PaginaCarrera({ carrera, relacionadas, equivalente, opciones, turnstile, url }: {
   carrera: Carrera; relacionadas: CarreraEnlace[]; equivalente: Equivalente | null;
-  opciones: CarreraOpcion[]; turnstile: ConfigTurnstile;
+  opciones: CarreraOpcion[]; turnstile: ConfigTurnstile; url: string;
 }) {
   const ia = carrera.nivel === 'Identidad Argentina';
   const curso = esCursoTeclab(carrera);
   const teclab = curso || esTeclab(carrera);
-  const url = `https://www.siglo21sur.com/carreras/${carreraToSlug(carrera)}`;
+  const base = new URL(url).origin;
+  // En topykly el pie enlaza al CAU con URLs absolutas: un href relativo daría
+  // un 301 por cada clic.
+  const baseHref = base === 'https://topykly.com' ? 'https://www.siglo21sur.com' : '';
   const provider = ia ? { '@type': 'Organization', name: 'Academia Identidad Argentina', url: 'https://identidadargentina.com.ar' }
     : teclab ? { '@type': 'EducationalOrganization', name: 'Teclab Instituto Técnico Superior', url: 'https://teclab.edu.ar' }
     : { '@type': 'CollegeOrUniversity', name: 'Universidad Siglo 21', url: 'https://21.edu.ar' };
@@ -57,7 +60,7 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
     inLanguage: 'es', ...(teclab ? { courseMode: 'online' } : { courseMode: 'blended', location: { '@type': 'Place', name: 'CAU Villa Lugano', address: POSTAL_ADDRESS } }),
   };
   const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://www.siglo21sur.com' },
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: base },
     { '@type': 'ListItem', position: 2, name: carreraFullName(carrera), item: url },
   ] };
   return <ContextoTurnstile.Provider value={turnstile}>
@@ -71,6 +74,6 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
       />
       {!teclab && <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} />}
     </main>
-    <SiteFooter casa={teclab ? 'teclab' : 'cau'} fuente={teclab ? 'fuente-poppins' : ''} />
+    <SiteFooter casa={teclab ? 'teclab' : 'cau'} fuente={teclab ? 'fuente-poppins' : ''} baseHref={baseHref} />
   </ContextoTurnstile.Provider>;
 }

@@ -4,10 +4,15 @@ import {
 import { esTeclab, getPortadaTeclab } from '../../../components/index/teclab.ts';
 import { CARRERAS_NO_INDEXADAS } from './noindex.ts';
 import { BASE, type EntradaSitemap } from './sitemap-xml.ts';
+import { baseDeSitio, type Sitio } from './sitios.ts';
 
 // Misma lista, mismo orden y mismos metadatos que `app/sitemap.ts`. Los datos
 // llegan de D1 (`src/datos/sitemap.ts`) y acá sólo se proyectan; ninguna ruta
 // nueva ni de prueba entra al sitemap.
+//
+// Hay dos sitemaps: el del CAU, que ya no incluye las diplomaturas de
+// Identidad Argentina porque pasan al dominio propio, y el de topykly, que
+// publica sólo esas fichas y su portada.
 const ITEMS_PAGE_1 = 3;
 const ITEMS_PER_PAGE = 6;
 
@@ -37,8 +42,12 @@ export interface DatosSitemap {
   articulos: NovedadSitemap[];
 }
 
+export interface OpcionesSitemap {
+  sitio?: Sitio;
+}
+
 /** URLs percent-encodeadas igual que `new URL(ruta, baseUrl).href` de Next. */
-export const urlImagen = (ruta: string) => new URL(ruta, BASE).href;
+export const urlImagen = (ruta: string, base = BASE) => new URL(ruta, base).href;
 
 /**
  * La portada de la ficha: la de Teclab si la tiene, si no la primera imagen de
@@ -57,29 +66,41 @@ export function totalPaginasNovedades(total: number): number {
   return Math.max(1, 1 + Math.ceil(Math.max(0, total - ITEMS_PAGE_1) / ITEMS_PER_PAGE));
 }
 
-export function construirSitemap(datos: DatosSitemap): EntradaSitemap[] {
-  // Las diplomaturas de Identidad Argentina se listan porque vuelven a indexarse
-  // desde el 26/10/2026 (commit b90fb95 del sitio), aunque no se enlacen desde
-  // ningún lado. Los niveles fuera de la oferta los descarta la taxonomía
-  // compartida.
+export function construirSitemap(datos: DatosSitemap, { sitio = 'principal' }: OpcionesSitemap = {}): EntradaSitemap[] {
+  const base = baseDeSitio(sitio);
+  const identidad = sitio === 'identidad';
+
+  // Identidad Argentina deja de listarse en el sitemap del CAU: sus fichas se
+  // sirven en topykly y desde acá sólo responden un 301. En el sitio nuevo son
+  // las únicas carreras que entran.
   const carreras: EntradaSitemap[] = datos.carreras
     .filter(carrera => esCarreraVisible(carrera))
+    .filter(carrera => identidad
+      ? carrera.nivel === 'Identidad Argentina'
+      : carrera.nivel !== 'Identidad Argentina')
     .filter(carrera => !CARRERAS_NO_INDEXADAS.has(`/carreras/${carreraToSlug(carrera)}`))
     .map(carrera => {
       const imagen = imagenDeCarrera(carrera);
       return {
-        url: `${BASE}/carreras/${carreraToSlug(carrera)}`,
+        url: `${base}/carreras/${carreraToSlug(carrera)}`,
         ...(carrera.updated_at ? { lastModified: new Date(carrera.updated_at).toISOString() } : {}),
         changeFrequency: 'monthly' as const,
         priority: 0.7,
-        ...(imagen ? { images: [urlImagen(imagen)] } : {}),
+        ...(imagen ? { images: [urlImagen(imagen, base)] } : {}),
       };
     });
+
+  if (identidad) {
+    return [
+      { url: `${base}/`, changeFrequency: 'monthly', priority: 1 },
+      ...carreras,
+    ];
+  }
 
   // Sin lastmod: `materias.updated_at` cambia cuando un profesor toca horarios,
   // aunque la página ya no muestre calendario.
   const materias: EntradaSitemap[] = datos.materias.map(materia => ({
-    url: `${BASE}/clases-apoyo/${materia.slug}`,
+    url: `${base}/clases-apoyo/${materia.slug}`,
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
@@ -87,7 +108,7 @@ export function construirSitemap(datos: DatosSitemap): EntradaSitemap[] {
   const paginasNovedades: EntradaSitemap[] = Array.from(
     { length: totalPaginasNovedades(datos.totalNovedades) },
     (_, i) => ({
-      url: `${BASE}/novedades/${i + 1}`,
+      url: `${base}/novedades/${i + 1}`,
       changeFrequency: 'weekly',
       priority: i === 0 ? 0.8 : 0.5,
     }),
@@ -95,34 +116,34 @@ export function construirSitemap(datos: DatosSitemap): EntradaSitemap[] {
 
   // La foto limpia del artículo, no la OG compuesta con el título encima.
   const articulos: EntradaSitemap[] = datos.articulos.map(articulo => ({
-    url: `${BASE}/novedades/articulo/${articulo.slug}`,
+    url: `${base}/novedades/articulo/${articulo.slug}`,
     ...(articulo.fecha ? { lastModified: new Date(articulo.fecha).toISOString() } : {}),
     changeFrequency: 'monthly',
     priority: 0.6,
-    ...(articulo.imagen_url ? { images: [urlImagen(articulo.imagen_url)] } : {}),
+    ...(articulo.imagen_url ? { images: [urlImagen(articulo.imagen_url, base)] } : {}),
   }));
 
   return [
-    { url: BASE, changeFrequency: 'monthly', priority: 1 },
+    { url: base, changeFrequency: 'monthly', priority: 1 },
     {
-      url: `${BASE}/teclab`,
+      url: `${base}/teclab`,
       changeFrequency: 'monthly',
       priority: 0.8,
-      images: [`${BASE}/imagenes/teclab/carreras/marketing-digital.webp`],
+      images: [`${base}/imagenes/teclab/carreras/marketing-digital.webp`],
     },
-    { url: `${BASE}/teclab/test-vocacional`, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${BASE}/clases-apoyo`, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE}/contacto`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE}/faq`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE}/test-vocacional`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE}/calendario-academico`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${base}/teclab/test-vocacional`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${base}/clases-apoyo`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${base}/contacto`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/faq`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/test-vocacional`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${base}/calendario-academico`, changeFrequency: 'monthly', priority: 0.7 },
     {
-      url: `${BASE}/sobre-nosotros`,
+      url: `${base}/sobre-nosotros`,
       changeFrequency: 'monthly',
       priority: 0.6,
       images: [
-        `${BASE}/imagenes/imagenes_cau/Foto-entrada.webp`,
-        `${BASE}/imagenes/imagenes_cau/logo_cau.png`,
+        `${base}/imagenes/imagenes_cau/Foto-entrada.webp`,
+        `${base}/imagenes/imagenes_cau/logo_cau.png`,
       ],
     },
     ...carreras,

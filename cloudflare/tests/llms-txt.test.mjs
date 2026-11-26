@@ -92,7 +92,7 @@ test('el archivo tiene la forma de llmstxt.org: H1, resumen y secciones con list
 });
 
 test('cada carrera visible sale con la URL que usa el sitio', () => {
-  for (const carrera of CARRERAS.filter(c => c.nivel !== 'Posgrado')) {
+  for (const carrera of CARRERAS.filter(c => c.nivel !== 'Posgrado' && c.nivel !== 'Identidad Argentina')) {
     const nombre = carreraFullName(carrera);
     const esperado = `- [${nombre}](https://www.siglo21sur.com/carreras/${carreraToSlug(carrera)}): `;
     assert.ok(markdown.includes(esperado), `${nombre} no sale con su URL`);
@@ -109,12 +109,14 @@ test('las secciones siguen el orden de la taxonomía compartida', () => {
   assert.deepEqual(titulos, [
     'Licenciaturas de Universidad Siglo 21',
     'Tecnicaturas de Universidad Siglo 21',
-    'Diplomaturas y cursos de Identidad Argentina',
     'Tecnicaturas y cursos de Teclab (Tecnología)',
     'Clases de apoyo',
     'Artículos',
     'Páginas del sitio',
   ]);
+  // Identidad Argentina dejó de listarse en el CAU: vive en topykly.com.
+  assert.ok(!markdown.includes('/carreras/diplomatura-en-oratoria'));
+  assert.ok(!markdown.includes('## Diplomaturas y cursos de Identidad Argentina'));
 });
 
 test('los artículos salen con su extracto y la fecha en que se publicaron', () => {
@@ -153,7 +155,19 @@ test('la nota lleva modalidad, duración y título cuando difiere del enlace', (
 });
 
 test('la cola con el docente no describe la carrera y no se publica', () => {
-  const linea = markdown.split('\n').find(l => l.includes('diplomatura-en-oratoria'));
+  // Identidad Argentina ya no forma parte de este archivo: su ficha vive en
+  // topykly.com y desde el CAU responde 301.
+  assert.ok(!markdown.includes('diplomatura-en-oratoria'));
+
+  const salida = construirLlmsTxt({
+    carreras: [{
+      nombre: 'Diplomatura en Prueba', prefix: null, nivel: 'Grado', duracion: '6 meses',
+      titulo: null, modalidad: 'Online', proximamente: false,
+      descripcion: 'Mejorar la confianza. Docente: Lic. X. Escuela de Liderazgo.',
+    }],
+    materias: [], articulos: [],
+  });
+  const linea = salida.split('\n').find(l => l.includes('diplomatura-en-prueba'));
   assert.ok(linea);
   assert.ok(!linea.includes('Docente:'));
   assert.ok(!linea.includes('Escuela de Liderazgo'));

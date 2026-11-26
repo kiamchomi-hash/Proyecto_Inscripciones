@@ -375,7 +375,11 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
   }, []);
   useEffect(() => {
     if (selectedCarrera) {
-      document.title = `${carreraFullName(selectedCarrera)} | Universidad Siglo 21 | CAU Online`;
+      // En topykly la marca es la Academia, no el CAU. Se mira el host en el
+      // cliente porque el modal también se abre desde el catálogo del CAU.
+      const marca = /(^|\.)topykly\.com$/.test(window.location.hostname)
+        ? 'Academia Identidad Argentina' : 'Universidad Siglo 21 | CAU Online';
+      document.title = `${carreraFullName(selectedCarrera)} | ${marca}`;
       const carreraPath = `/carreras/${carreraToSlug(selectedCarrera)}`;
       if (window.location.pathname !== carreraPath) {
         if (!modalOpenRef.current) {
@@ -793,6 +797,10 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
         ? 'var(--catalogo-titulo-gestion, #b578ff)'
         : 'var(--catalogo-acento)';
 
+  // En topykly la Academia es el sitio entero, no una sección «también» del CAU.
+  const soloIdentidad = carreras.length > 0
+    && carreras.every(c => c.nivel === 'Identidad Argentina');
+
   const titulo = accent ? (
     <span className="catalogo-titulo-partes">
       <span>{title}</span>{' '}
@@ -804,7 +812,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
   return (
     <section id={`section-${sectionId}`} className="mb-10">
       <div className="section-header-container">
-        {isIdentidadArgentina && (
+        {isIdentidadArgentina && !soloIdentidad && (
           <div className="mb-2">
             <span className="ia-section-badge">También en nuestra sede</span>
           </div>

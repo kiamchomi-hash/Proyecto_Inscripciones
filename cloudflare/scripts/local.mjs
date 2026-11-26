@@ -51,7 +51,7 @@ export function comandoLocal(nombre) {
     // y sembrado. Requiere build previo, igual que runtime y paridad.
     // `cache-produccion` cuida la caché de borde del entry de producción, que
     // no se puede importar desde node.
-    entrega: ['--test', 'tests/entrega.test.mjs', 'tests/cache-produccion.test.mjs',
+    entrega: ['--test', 'tests/entrega.test.mjs', 'tests/sitios.test.mjs', 'tests/cache-produccion.test.mjs',
       'tests/assets-r2.test.mjs', 'tests/assets-html.test.mjs',
       'tests/assets-build.test.mjs', 'tests/sincronizar-assets-r2.test.mjs', 'tests/inventario-imagenes.test.mjs',
       'tests/llms-txt.test.mjs', 'tests/markdown.test.mjs'],

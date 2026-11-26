@@ -16,6 +16,7 @@ const { default: Navbar } = cargarTypescript('components/navbar.tsx', {
   '@/lib/rutas-preinscripcion': { esRutaPreinscripcion: () => false },
   '@/lib/whatsapp': whatsapp,
   './icons': { WhatsAppIcon: componente('svg'), FacebookIcon: componente('svg'), InstagramIcon: componente('svg') },
+  './index/ia-isotipo': { default: componente('svg') },
 });
 
 test('navbar identifica la página exacta y la sección de rutas internas', () => {

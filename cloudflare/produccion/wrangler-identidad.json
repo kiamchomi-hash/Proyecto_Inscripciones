@@ -1,0 +1,43 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "cau-identidad-20261126",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "APP_STAGE": "produccion",
+    "DB_STAGE": "produccion",
+    "DB_NAME": "cau-produccion",
+    "APP_SITIO": "identidad",
+    "TURNSTILE_EXPECTED_HOSTNAME": "topykly.com,www.topykly.com",
+    "PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAFncCnVXxSdGTsIO"
+  },
+  "assets": {
+    "directory": "../dist/client",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "r2_buckets": [
+    { "binding": "ASSETS_HISTORICOS", "bucket_name": "cau-assets-historicos" }
+  ],
+  "version_metadata": { "binding": "CF_VERSION_METADATA" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cau-produccion",
+      "database_id": "4a1cc90c-8c55-493f-9753-d40ac5cbc3cb",
+      "migrations_dir": "../migrations"
+    }
+  ],
+  "queues": {
+    "producers": [{ "binding": "EFECTOS", "queue": "cau-efectos" }]
+  },
+  "routes": [
+    { "pattern": "topykly.com", "custom_domain": true },
+    { "pattern": "www.topykly.com", "custom_domain": true }
+  ],
+  "observability": { "enabled": true },
+  "upload_source_maps": false
+}

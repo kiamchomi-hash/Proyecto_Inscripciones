@@ -39,7 +39,10 @@
     "check": "node scripts/local.mjs check",
     "publicar": "node scripts/publicar.mjs",
     "publicar:ensayo": "node scripts/publicar.mjs --ensayo",
-    "publicar:produccion": "node scripts/publicar.mjs --publicar"
+    "publicar:produccion": "node scripts/publicar.mjs --publicar",
+    "publicar:identidad": "node scripts/publicar-identidad.mjs",
+    "publicar:identidad:ensayo": "node scripts/publicar-identidad.mjs --ensayo",
+    "publicar:identidad:produccion": "node scripts/publicar-identidad.mjs --publicar"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.4.2",

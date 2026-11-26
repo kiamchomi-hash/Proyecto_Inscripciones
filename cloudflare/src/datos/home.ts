@@ -24,3 +24,14 @@ export async function carrerasDeHome(db: D1Database): Promise<CarreraCatalogo[]>
     .filter(fila => fila.nivel !== 'Identidad Argentina')
     .map(aCatalogo);
 }
+
+/**
+ * La portada de topykly: sólo las diplomaturas y cursos de la Academia. Es la
+ * lista inversa de `carrerasDeHome`, sin compartir estado ni inventar campos.
+ */
+export async function carrerasDeIdentidad(db: D1Database): Promise<CarreraCatalogo[]> {
+  const filas = await listarCatalogoPublico(db);
+  return filas
+    .filter(fila => fila.nivel === 'Identidad Argentina')
+    .map(aCatalogo);
+}

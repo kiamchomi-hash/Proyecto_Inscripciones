@@ -6,6 +6,7 @@ import { carrerasPublicas, carreraPorSlug } from '../../../datos/carreras';
 import { configTurnstile } from '../../../entrega/entorno-publico';
 import { casaDeCarrera } from '@/components/formularios/casas';
 import { SITIO, tieneInscripcionPropia, rutaInscripcion, tituloInscripcion, descripcionInscripcion, ogInscripcion } from '@/components/carreras/inscripcion-carrera';
+import { sitioDe } from '../../../entrega/sitios';
 import '@/estilos/poppins.css';
 import '@/estilos/carreras/career-detail.css';
 import '@/components/index/modales.css';
@@ -17,6 +18,10 @@ const slug = Astro.params.slug!;
 const carrera = carreraPorSlug(carreras, slug);
 if (!carrera || !tieneInscripcionPropia(carrera)) return new Response(null, { status: 404 });
 const ruta = rutaInscripcion(carrera);
+const sitio = sitioDe(Astro.url.hostname, (env as unknown as { APP_SITIO?: string }).APP_SITIO);
+// Ninguna diplomatura de Identidad tiene página de inscripción propia. Si el
+// pedido llega por topykly, esta página no le corresponde: vuelve al CAU.
+if (sitio === 'identidad') return Astro.redirect(`${SITIO}${ruta}${Astro.url.search}`, 301);
 if (`/carreras/${slug}/inscripcion` !== ruta) return Astro.redirect(ruta, 308);
 const casa = casaDeCarrera(carrera) === 'siglo21' ? 'siglo21' : 'teclab';
 const opciones = carreras.filter(c => tieneInscripcionPropia(c) && casaDeCarrera(c) === casa)

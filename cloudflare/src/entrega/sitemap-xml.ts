@@ -43,6 +43,6 @@ export function generarSitemap(entradas: readonly EntradaSitemap[]): string {
 }
 
 /** Mismo texto que produce `app/robots.ts` al serializarlo Next. */
-export function generarRobots(): string {
-  return `User-Agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${BASE}/sitemap.xml\n`;
+export function generarRobots(base = BASE): string {
+  return `User-Agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${base}/sitemap.xml\n`;
 }

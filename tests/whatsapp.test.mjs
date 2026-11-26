@@ -23,6 +23,7 @@ const { default: Navbar } = cargarTypescript('components/navbar.tsx', {
   '@/lib/rutas-preinscripcion': { esRutaPreinscripcion: () => false },
   '@/lib/whatsapp': whatsapp,
   './icons': { WhatsAppIcon: icono, FacebookIcon: icono, InstagramIcon: icono },
+  './index/ia-isotipo': { default: icono },
 });
 
 function enlacesWhatsApp(html) {

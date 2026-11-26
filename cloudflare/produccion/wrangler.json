@@ -10,6 +10,7 @@
     "APP_STAGE": "produccion",
     "DB_STAGE": "produccion",
     "DB_NAME": "cau-produccion",
+    "APP_SITIO": "principal",
     "TURNSTILE_EXPECTED_HOSTNAME": "www.siglo21sur.com",
     "PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAFncCnVXxSdGTsIO",
     "CF_ACCOUNT_TAG": "e4854090127ccb31fb50321d83411613",

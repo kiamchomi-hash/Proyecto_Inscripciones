@@ -216,7 +216,6 @@ test('precarga sólo la fuente del título que corresponde a cada ficha', async 
     ['/carreras/licenciatura-en-administracion', 'bricolage-grotesque-latin-700.woff2'],
     ['/carreras/tecnicatura-en-programacion', 'manrope-latin-700.woff2'],
     ['/carreras/curso-de-inteligencia-artificial', 'manrope-latin-700.woff2'],
-    ['/carreras/diplomatura-en-oratoria', null],
     ['/', null],
   ]) {
     const respuesta = await astro.fetch(ruta);
@@ -273,8 +272,7 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     'https://www.siglo21sur.com/carreras/tecnicatura-superior-en-programacion',
     'https://www.siglo21sur.com/carreras/tecnicatura-en-desarrollo-de-software',
     'https://www.siglo21sur.com/carreras/curso-de-inteligencia-artificial',
-    // Identidad Argentina vuelve a indexarse desde el 26/10/2026: va al sitemap.
-    'https://www.siglo21sur.com/carreras/diplomatura-en-oratoria',
+    // Identidad Argentina se mudó a topykly.com: desde el CAU sólo responde 301.
     'https://www.siglo21sur.com/carreras/tecnicatura-en-programacion',
     'https://www.siglo21sur.com/clases-apoyo/matematica',
     'https://www.siglo21sur.com/clases-apoyo/computacion',
@@ -352,9 +350,15 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     /<title>Tecnicatura Superior en Marketing Digital \| Teclab<\/title>/,
   );
 
+  // La ficha de Identidad Argentina se mudó a topykly: 301 permanente con la
+  // query intacta, y sin cabeceras de seguridad de página en la respuesta.
+  const oratoria = await astro.fetch('/carreras/diplomatura-en-oratoria?q=1', { redirect: 'manual' });
+  assert.equal(oratoria.status, 301);
+  assert.equal(oratoria.headers.get('location'),
+    'https://topykly.com/carreras/diplomatura-en-oratoria?q=1');
+
   const robots = await astro.fetch('/robots.txt');
-  assert.equal(robots.status, 200);
-  assert.equal(robots.headers.get('content-type'), 'text/plain');
+  assert.equal(robots.status, 200);  assert.equal(robots.headers.get('content-type'), 'text/plain');
   assert.equal(robots.headers.get('x-robots-tag'), null);
   assert.equal(robots.headers.get('cache-control'), 'public, max-age=0, must-revalidate');
   assert.equal(await robots.text(), generarRobots());
@@ -375,7 +379,6 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
   assert.match(markdown, /\n## Artículos\n/);
   for (const esperado of [
     '- [Licenciatura en Administración](https://www.siglo21sur.com/carreras/licenciatura-en-administracion):',
-    '- [Diplomatura en Oratoria](https://www.siglo21sur.com/carreras/diplomatura-en-oratoria):',
     '- [Matemática](https://www.siglo21sur.com/clases-apoyo/matematica):',
     '- [Novedad destacada sintética](https://www.siglo21sur.com/novedades/articulo/novedad-sintetica-1):',
     '- [Contacto](https://www.siglo21sur.com/contacto):',
@@ -513,4 +516,70 @@ test('redirects y códigos reales desde el Worker, con query y sin seguir el sal
     assert.equal(respuesta.headers.get('content-security-policy'), null, ruta);
     assert.equal(respuesta.headers.get('x-robots-tag'), null, ruta);
   }
+});
+
+test('topykly sirve la Academia y devuelve al CAU lo que no es suyo', async t => {
+  assert.ok(existsSync(CONFIG), 'Falta el build de Astro.');
+  const astro = createTestHarness({ workers: [{ configPath: CONFIG }] });
+  t.after(() => astro.close());
+  await astro.listen();
+  const worker = astro.getWorker();
+  await worker.applyD1Migrations('DB');
+  await insertarCatalogo((await worker.getEnv()).DB);
+
+  const home = await astro.fetch('http://topykly.com/');
+  assert.equal(home.status, 200);
+  const html = await home.text();
+  assert.match(html, /<h1[^>]*>\s*Academia Identidad Argentina\s*<\/h1>/);
+  assert.match(html, /href="\/carreras\/diplomatura-en-oratoria"/);
+  assert.doesNotMatch(html, /Licenciatura en Administración/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/topykly\.com\/">/);
+
+  const ficha = await astro.fetch('http://topykly.com/carreras/diplomatura-en-oratoria');
+  assert.equal(ficha.status, 200);
+  const fichaHtml = await ficha.text();
+  assert.match(fichaHtml,
+    /<link rel="canonical" href="https:\/\/topykly\.com\/carreras\/diplomatura-en-oratoria">/);
+  assert.match(fichaHtml, /"url":"https:\/\/topykly\.com\/carreras\/diplomatura-en-oratoria"/);
+  assert.doesNotMatch(fichaHtml, /"item":"https:\/\/www\.siglo21sur\.com"/);
+
+  const ajena = await astro.fetch('http://topykly.com/carreras/licenciatura-en-administracion',
+    { redirect: 'manual' });
+  assert.equal(ajena.status, 301);
+  assert.equal(ajena.headers.get('location'),
+    'https://www.siglo21sur.com/carreras/licenciatura-en-administracion');
+
+  for (const [ruta, destino] of [
+    ['/contacto', 'https://www.siglo21sur.com/contacto'],
+    ['/teclab', 'https://www.siglo21sur.com/teclab'],
+    ['/tema/123/una-charla', 'https://topykly.com/'],
+    ['/index.md', 'https://topykly.com/'],
+  ]) {
+    const respuesta = await astro.fetch(`http://topykly.com${ruta}`, { redirect: 'manual' });
+    assert.equal(respuesta.status, 301, ruta);
+    // El harness resuelve un Location absoluto del mismo host contra el pedido
+    // http; se compara host y ruta, que es lo que decide el middleware.
+    const recibido = new URL(respuesta.headers.get('location'), 'http://topykly.com');
+    const esperado = new URL(destino);
+    assert.equal(recibido.host, esperado.host, ruta);
+    assert.equal(recibido.pathname, esperado.pathname, ruta);
+  }
+
+  const www = await astro.fetch('http://www.topykly.com/carreras/diplomatura-en-oratoria',
+    { redirect: 'manual' });
+  assert.equal(www.status, 301);
+  assert.equal(www.headers.get('location'),
+    'https://topykly.com/carreras/diplomatura-en-oratoria');
+
+  const sitemap = await astro.fetch('http://topykly.com/sitemap.xml');
+  assert.equal(sitemap.status, 200);
+  const locs = [...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url);
+  assert.deepEqual(locs, [
+    'https://topykly.com/',
+    'https://topykly.com/carreras/diplomatura-en-oratoria',
+  ]);
+
+  const robots = await astro.fetch('http://topykly.com/robots.txt');
+  assert.equal(robots.status, 200);
+  assert.match(await robots.text(), /Sitemap: https:\/\/topykly\.com\/sitemap\.xml/);
 });

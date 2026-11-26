@@ -55,12 +55,20 @@ const COLUMNA = 'py-7 border-t border-[rgba(0,199,177,0.12)] lg:py-0 lg:border-t
  * porque una direccion se lee como un requisito de asistencia y frena al lead
  * que vive lejos. WhatsApp usa el número de la casa; el teléfono conserva el de la sede.
  */
-export default function SiteFooter({ casa = 'cau', fuente = '' }: {
+export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '' }: {
   casa?: 'cau' | 'teclab';
   /** Clase que expone la tipografía de la casa (`--font-poppins` en Teclab). */
   fuente?: string;
+  /** Dominio del CAU cuando el pie se sirve desde otro sitio (topykly). */
+  baseHref?: string;
 } = {}) {
   const teclab = casa === 'teclab';
+  // En topykly los enlaces internos van directo al CAU: un href relativo daría
+  // un 301 intermedio por cada clic.
+  const enlaces = ENLACES.map(enlace => ({
+    ...enlace,
+    href: baseHref ? `${baseHref}${enlace.href}` : enlace.href,
+  }));
   // La sede tiene cuenta propia de Teclab desde el 10/10/2026: en /teclab el
   // ícono de Instagram lleva ahí y no a la cuenta del CAU.
   const redes = teclab
@@ -130,7 +138,7 @@ export default function SiteFooter({ casa = 'cau', fuente = '' }: {
           <nav className={`${COLUMNA} pb-3 lg:pb-0 lg:!pl-0 lg:text-center`} aria-label="Enlaces del sitio">
             <h2 className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:mb-4 lg:text-xs lg:tracking-widest">Navegación</h2>
             <ul className="grid grid-cols-2 gap-x-4 text-[15px] lg:grid-cols-1 lg:text-sm">
-              {ENLACES.map(({ href, label }) => (
+              {enlaces.map(({ href, label }) => (
                 <li key={href} className="border-b border-[rgba(0,199,177,0.1)] [&:nth-last-child(-n+2)]:border-b-0 lg:relative lg:border-b-0 lg:after:absolute lg:after:inset-x-4 lg:after:bottom-0 lg:after:h-px lg:after:bg-[rgba(0,199,177,0.1)] lg:last:after:hidden">
                   <Link href={href} className="block min-h-11 px-1 py-3 text-[#c0d5d0] transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:text-white lg:min-h-0 lg:px-0 lg:py-2.5">
                     {label}
