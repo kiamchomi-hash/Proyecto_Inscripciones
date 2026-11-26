@@ -1083,3 +1083,19 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
     display: none;
   }
 }
+
+
+@media (max-width: 899px) {
+  /* El pie en el teléfono va centrado en sus dos columnas: el texto suelto a
+     la izquierda dejaba la mitad derecha vacía y se leía desalineado. */
+  .identidad-footer__bloque,
+  .identidad-footer__bloque h2,
+  .identidad-footer__bloque a,
+  .identidad-footer__bloque p {
+    text-align: center;
+  }
+
+  .identidad-footer__bloque .identidad-footer__wa {
+    justify-content: center;
+  }
+}
