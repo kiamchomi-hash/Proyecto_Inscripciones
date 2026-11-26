@@ -126,8 +126,7 @@ body.tema-identidad .menu-header {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: clamp(3rem, 7vw, 5.5rem) 1rem clamp(2rem, 5vw, 3.5rem);
-  text-align: center;
+  padding: clamp(2.5rem, 5vw, 5rem) 1rem clamp(2rem, 4vw, 4rem);
 }
 
 .identidad-hero__grid {
@@ -156,48 +155,130 @@ body.tema-identidad .menu-header {
 
 .identidad-hero__contenido {
   position: relative;
-  max-width: 72rem;
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+  max-width: 80rem;
   margin: 0 auto;
 }
 
-.identidad-hero__isotipo {
-  display: block;
-  width: clamp(76px, 10vw, 124px);
-  height: auto;
-  margin: 0 auto 1.25rem;
-  filter: drop-shadow(0 12px 34px rgba(0, 144, 193, 0.35));
+@media (min-width: 900px) {
+  .identidad-hero__contenido {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+}
+
+.identidad-hero__texto {
+  position: relative;
+  z-index: 1;
+  text-align: left;
+}
+
+.identidad-hero__ceja {
+  margin: 0 0 0.9rem;
+  color: var(--ia-yellow);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .identidad-hero__titulo {
-  font-size: clamp(2rem, 6vw, 4.25rem);
-  line-height: 0.98;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  margin: 0;
   color: #f2f7fa;
-  text-shadow: 0 2px 26px rgba(0, 144, 193, 0.35);
+  font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-transform: uppercase;
   text-wrap: balance;
 }
 
-.identidad-hero__bajada {
-  margin-top: 0.9rem;
-  font-size: clamp(0.82rem, 1.8vw, 1.05rem);
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+.identidad-hero__titulo span {
+  display: block;
   color: var(--ia-yellow);
 }
 
-.identidad-hero__regla {
-  display: block;
-  width: 92px;
-  height: 3px;
-  margin: 1.5rem auto 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--ia-blue), var(--ia-yellow));
+.identidad-hero__bajada {
+  max-width: 34rem;
+  margin: 1.1rem 0 0;
+  color: #cfe3ee;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  line-height: 1.55;
 }
 
-/* Un solo barrido fino, de la misma familia que los brillos de x.ai. */
+.identidad-hero__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+
+.identidad-hero__pruebas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  color: #9fb3c8;
+  font-size: 0.78rem;
+  list-style: none;
+}
+
+.identidad-hero__pruebas li::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.45rem;
+  background: var(--ia-yellow);
+}
+
+.identidad-hero__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 144, 193, 0.55);
+  background: linear-gradient(150deg, #0d2430 0%, #101820 55%, #0a1a22 100%);
+  box-shadow: 12px 12px 0 rgba(0, 100, 138, 0.35);
+}
+
+/* Caja en perspectiva: la mecánica del túnel de higgsfield, sin su SVG. La
+   grilla se aleja hacia el fondo y el isotipo queda en el centro. */
+.identidad-hero__tunel {
+  position: absolute;
+  inset: -35% -18%;
+  background-image:
+    linear-gradient(rgba(126, 203, 230, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(126, 203, 230, 0.2) 1px, transparent 1px);
+  background-size: 46px 46px;
+  transform: perspective(620px) rotateX(58deg) scale(1.45);
+  transform-origin: 50% 100%;
+  mask-image: radial-gradient(ellipse at 50% 46%, #000 8%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 46%, #000 8%, transparent 70%);
+}
+
+.identidad-hero__visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(55% 46% at 72% 18%, rgba(0, 144, 193, 0.5), transparent 70%),
+    radial-gradient(42% 36% at 18% 86%, rgba(241, 207, 28, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.identidad-hero__isotipo {
+  position: relative;
+  z-index: 1;
+  width: clamp(112px, 18vw, 190px);
+  height: auto;
+  filter: drop-shadow(0 14px 36px rgba(0, 144, 193, 0.45));
+}
+
+/* Barrido fino, de la misma familia que los brillos de x.ai. */
 .identidad-hero::after {
   content: "";
   position: absolute;
@@ -224,10 +305,456 @@ body.tema-identidad .menu-header {
   }
 }
 
+/* ── CTA con canto duro ───────────────────────────────────────────────── */
+
+/* Mecánica de las teclas de ferndesk (botones-tecla-canto-duro-ferndesk-oscuro):
+   canto macizo de 3px, el botón baja al presionar y el foco es un anillo, no un
+   halo difuso. Recoloreado a amarillo/azul de la Academia. */
+.ia-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3.25rem;
+  padding: 0.8rem 1.3rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.ia-cta svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
+
+.ia-cta--primario {
+  border-color: #b99c08;
+  background: var(--ia-yellow);
+  color: #101820;
+  box-shadow: 0 4px 0 #8a7404;
+}
+
+.ia-cta--primario:hover {
+  background: #f7dc4a;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 #8a7404;
+}
+
+.ia-cta--primario:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #8a7404;
+}
+
+.ia-cta--whatsapp {
+  border-color: rgba(0, 144, 193, 0.55);
+  background: #0f1a22;
+  color: #eaf2f7;
+  box-shadow: 0 4px 0 rgba(0, 100, 138, 0.6);
+}
+
+.ia-cta--whatsapp:hover {
+  background: #16212b;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 rgba(0, 100, 138, 0.6);
+}
+
+.ia-cta--whatsapp:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 100, 138, 0.6);
+}
+
+.ia-cta:focus-visible {
+  outline: 2px solid var(--ia-yellow);
+  outline-offset: 3px;
+}
+
+/* ── Banda de datos ───────────────────────────────────────────────────── */
+
+/* La inversión de la banda amarilla de ClickHouse
+   (banda-amarilla-tarjetas-icono-clickhouse): el acento pasa a fondo y todo el
+   texto va en tinta. Sin tarjetas flotantes ni blur. */
+.identidad-banda {
+  border-top: 1px solid #8a7404;
+  border-bottom: 1px solid #8a7404;
+  background: var(--ia-yellow);
+  color: #101820;
+}
+
+.identidad-banda ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  list-style: none;
+}
+
+@media (min-width: 900px) {
+  .identidad-banda ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.identidad-banda li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 1rem 0.8rem;
+  border-left: 1px solid rgba(16, 24, 32, 0.18);
+}
+
+@media (max-width: 899px) {
+  .identidad-banda li:nth-child(odd) {
+    border-left: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .identidad-banda li:first-child {
+    border-left: 0;
+  }
+}
+
+.identidad-banda svg {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  margin-top: 0.1rem;
+}
+
+.identidad-banda strong {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.identidad-banda span {
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+/* ── Programas ────────────────────────────────────────────────────────── */
+
+.identidad-programas {
+  padding-top: clamp(2rem, 4vw, 3rem);
+}
+
+/* Tarjetas sólidas: se va el panel blanco translúcido y el filo interior; queda
+   una tarjeta de tinta con canto azul duro. Mecánica del borde + sombra
+   desplazada de alexruix-loud-baboon-79, con la paleta de la Academia. */
+body.tema-identidad .career-card-ia {
+  background-color: #16212b !important;
+  background-image: linear-gradient(150deg, #16212b 0%, #101820 100%) !important;
+  border: 1px solid rgba(0, 144, 193, 0.45) !important;
+  border-radius: 4px !important;
+  box-shadow: 7px 7px 0 rgba(0, 100, 138, 0.45) !important;
+}
+
+body.tema-identidad .career-card-ia:hover {
+  background-color: #1b2a36 !important;
+  border-color: var(--ia-yellow) !important;
+  box-shadow: 9px 9px 0 rgba(241, 207, 28, 0.25) !important;
+  transform: translate(-2px, -2px);
+}
+
+body.tema-identidad .career-card-ia::before,
+body.tema-identidad .career-card-ia::after {
+  display: none !important;
+}
+
+body.tema-identidad .ia-chip {
+  background: #0f1a22 !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 144, 193, 0.4) !important;
+  color: #dbeaf2 !important;
+}
+
+body.tema-identidad .ia-chip-escuela {
+  background: var(--ia-yellow) !important;
+  color: #101820 !important;
+  box-shadow: inset 0 0 0 1px rgba(16, 24, 32, 0.18) !important;
+}
+
+body.tema-identidad .career-card-ia .detail-link {
+  background: var(--ia-blue) !important;
+  border: 1px solid #00648a !important;
+  color: #fff !important;
+  box-shadow: 0 3px 0 #00648a !important;
+}
+
+body.tema-identidad .career-card-ia .detail-link:hover {
+  background: var(--ia-yellow) !important;
+  border-color: #8a7404 !important;
+  color: #101820 !important;
+  box-shadow: 0 3px 0 #8a7404 !important;
+}
+
+body.tema-identidad .section-category-pill {
+  border: 1px solid rgba(0, 144, 193, 0.35);
+  background: #16212b;
+  color: #dbeaf2;
+}
+
+body.tema-identidad .section-category-pill.active,
+body.tema-identidad .section-category-pill:hover {
+  border-color: var(--ia-yellow);
+  background: var(--ia-blue);
+  color: #fff;
+}
+
+/* ── Testimonio ───────────────────────────────────────────────────────── */
+
+.identidad-testimonio {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 4rem) 1rem 0;
+}
+
+.identidad-testimonio__card {
+  position: relative;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid rgba(0, 144, 193, 0.45);
+  background: #16212b;
+  box-shadow: 10px 10px 0 rgba(0, 100, 138, 0.3);
+}
+
+.identidad-testimonio__comilla {
+  position: absolute;
+  top: -0.4rem;
+  left: 1.2rem;
+  color: var(--ia-yellow);
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.identidad-testimonio__titulo {
+  margin: 0 0 1rem;
+  color: var(--ia-yellow);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.identidad-testimonio blockquote {
+  margin: 0;
+  color: #dbeaf2;
+  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  line-height: 1.6;
+}
+
+.identidad-testimonio footer {
+  margin-top: 1rem;
+  color: #9fb3c8;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Formularios ──────────────────────────────────────────────────────── */
+
+.identidad-formulario {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 4rem) 1rem 0;
+  scroll-margin-top: calc(var(--navbar-height) + 1.5rem);
+}
+
+.identidad-formulario--contacto {
+  padding-top: clamp(1.5rem, 3vw, 2rem);
+}
+
+.identidad-formulario__intro {
+  max-width: 44rem;
+  margin: 0 auto 1rem;
+  color: #cfe3ee;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.identidad-formulario__wa {
+  margin: 1rem 0 0;
+  color: #9fb3c8;
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.identidad-formulario__wa a {
+  color: var(--ia-yellow);
+  font-weight: 800;
+}
+
+/* ── Acciones fijas ───────────────────────────────────────────────────── */
+
+.identidad-sticky {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .identidad-sticky {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2500;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-top: 2px solid var(--ia-blue);
+    background: #0b1218;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  .identidad-pagina {
+    padding-bottom: 84px;
+  }
+}
+
+.identidad-sticky a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.identidad-sticky__primario {
+  border: 1px solid #b99c08;
+  background: var(--ia-yellow);
+  color: #101820;
+  box-shadow: 0 3px 0 #8a7404;
+}
+
+.identidad-sticky__primario:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #8a7404;
+}
+
+.identidad-sticky__wa {
+  border: 1px solid #128c4a;
+  background: #25d366;
+  color: #07130c;
+  box-shadow: 0 3px 0 #0d6b39;
+}
+
+.identidad-sticky__wa:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #0d6b39;
+}
+
+.identidad-wa-flotante {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 2500;
+  display: flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #128c4a;
+  border-radius: 999px;
+  background: #25d366;
+  color: #07130c;
+  box-shadow: 0 5px 0 #0d6b39, 0 12px 28px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.identidad-wa-flotante:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #0d6b39, 0 14px 32px rgba(0, 0, 0, 0.4);
+}
+
+.identidad-wa-flotante:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0d6b39;
+}
+
+@media (max-width: 899px) {
+  .identidad-wa-flotante {
+    display: none;
+  }
+}
+
+/* ── Navbar: CTA de escritorio ────────────────────────────────────────── */
+
+.navbar-cta-ia {
+  display: none;
+}
+
+@media (min-width: 1025px) {
+  .navbar-cta-ia {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    margin-left: 0.5rem;
+    padding: 0 1rem;
+    border: 1px solid #b99c08;
+    border-radius: 4px;
+    background: var(--ia-yellow);
+    color: #101820;
+    box-shadow: 0 3px 0 #8a7404;
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .navbar-cta-ia:hover {
+    background: #f7dc4a;
+  }
+
+  .navbar-cta-ia:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #8a7404;
+  }
+}
+
+/* ── Sin glass: ficha y modal ─────────────────────────────────────────── */
+
+body.tema-identidad .career-breadcrumb,
+body.tema-identidad .career-all-careers,
+body.tema-identidad .career-hero-marca,
+body.tema-identidad .career-aviso-inicio,
+body.tema-identidad .career-mobile-cta {
+  backdrop-filter: none !important;
+  background: #16212b !important;
+}
+
+body.tema-identidad .career-hero-marca {
+  border-color: rgba(0, 144, 193, 0.5) !important;
+}
+
+body.tema-identidad .career-mobile-cta {
+  background: #0b1218 !important;
+  border-top-color: var(--ia-blue) !important;
+}
+
+body.tema-identidad .modal-raiz > div[aria-hidden="true"] {
+  backdrop-filter: none !important;
+}
+
 /* ── Catálogo ─────────────────────────────────────────────────────────── */
 
-/* Los pills del catálogo tienen el verde del CAU escrito a mano; en la
-   Academia el activo va en azul con filo amarillo. */
 body.tema-identidad .filter-pill.filter-pill-all.active,
 body.tema-identidad .filter-pill.active,
 body.tema-identidad .filter-pill.featured {

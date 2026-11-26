@@ -102,6 +102,13 @@ interface Props {
   initialCarreraSlug?: string;
   /** Enlace opcional para convertir los encabezados Teclab de la home en acceso a su landing. */
   teclabLandingHref?: string;
+  /**
+   * Landing de la Academia: sin buscador ni filtros. Con ocho programas, los
+   * controles agregan fricción y una barra sticky con blur que no queremos.
+   */
+  compacto?: boolean;
+  /** Texto del CTA de cada tarjeta. Por defecto, "Ver detalles". */
+  textoDetalle?: string;
 }
 
 // Identidad sigue dentro del catálogo general, pero no ocupa una píldora propia.
@@ -112,7 +119,7 @@ const FILTROS_CATALOGO = [
   { id: 'curso_ia', label: 'Curso de IA', niveles: ['Teclab - Curso'], featured: true },
 ];
 
-export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLandingHref }: Props) {
+export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLandingHref, compacto = false, textoDetalle }: Props) {
   // El texto largo de las fichas baja aparte, después del primer pintado.
   const detalle = useDetalleCarreras();
   const [activeCategory, setActiveCategory] = useState('all');
@@ -431,6 +438,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
         <div ref={scrollAnchorRef} aria-hidden="true" />
 
         {/* Sticky search + filters */}
+        {!compacto && (
         <div className="sticky-search-wrapper">
           <div className="sticky-pills-zone">
             {/* Search bar + filter button (right side) */}
@@ -610,6 +618,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
             </div>
           </div>
         </div>
+        )}
 
         {/* Acá iba la banda de beneficios, sólo desktop. Se retiró el 10/08/2026:
             empujaba las tarjetas hacia abajo justo en el espacio que se mira
@@ -639,7 +648,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                 {searchResults.length > 0 ? (
                   <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-w-0">
                     {searchResults.map(c => (
-                      <CareerCard key={c.id} carrera={c} onClick={handleCareerClick} />
+                      <CareerCard key={c.id} carrera={c} onClick={handleCareerClick} textoDetalle={textoDetalle} />
                     ))}
                   </ul>
                 ) : (
@@ -701,6 +710,8 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
                   }
                   searchPlaceholder={section.placeholder}
                   titleHref={sectionId.startsWith('teclab_') ? teclabLandingHref : undefined}
+                  compacto={compacto}
+                  textoDetalle={textoDetalle}
                 />
               );
             })}
@@ -750,7 +761,7 @@ function getOrdenCategorias(sectionId: string): readonly { id: string; label: st
 }
 
 // Career section component
-function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab, searchPlaceholder, titleHref }: {
+function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isIdentidadArgentina, familiaTeclab, searchPlaceholder, titleHref, compacto = false, textoDetalle }: {
   sectionId: string;
   title: string;
   accent?: string;
@@ -760,6 +771,8 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
   familiaTeclab?: TeclabFamilia;
   searchPlaceholder: string;
   titleHref?: string;
+  compacto?: boolean;
+  textoDetalle?: string;
 }) {
   const [sectionSearch, setSectionSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
@@ -825,6 +838,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
               </Link>
             ) : titulo}
           </h2>
+          {!compacto && (
           <button
             onClick={() => setShowSearch(!showSearch)}
             className={`p-1.5 rounded-lg shadow-sm transition-colors shrink-0 ${showSearch ? 'bg-[var(--catalogo-acento)] hover:bg-[var(--catalogo-acento)]/80' : 'bg-white/90 hover:bg-white/60'}`}
@@ -835,6 +849,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
+          )}
         </div>
 
         {isIdentidadArgentina && (
@@ -844,7 +859,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
           </p>
         )}
 
-        {showSearch && (
+        {!compacto && showSearch && (
           <div className="flex items-center gap-2 mb-3">
             <input
               type="text"
@@ -892,7 +907,7 @@ function CareerSection({ sectionId, title, accent, carreras, onCareerClick, isId
         className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-w-0 mb-6 ${isIdentidadArgentina ? 'ia-section-cards' : ''} ${familiaTeclab ? 'teclab-section-cards' : ''}`}
       >
         {filteredCarreras.map(c => (
-          <CareerCard key={c.id} carrera={c} onClick={onCareerClick} />
+          <CareerCard key={c.id} carrera={c} onClick={onCareerClick} textoDetalle={textoDetalle} />
         ))}
       </ul>
     </section>
@@ -924,7 +939,7 @@ async function prefetchImages(carrera: CarreraCatalogo) {
 }
 
 // Individual career card
-function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (c: CarreraCatalogo) => void }) {
+function CareerCard({ carrera, onClick, textoDetalle }: { carrera: CarreraCatalogo; onClick: (c: CarreraCatalogo) => void; textoDetalle?: string }) {
   const { prefix, cleanName } = getCareerInfo(carrera);
   const badge = carrera.proximamente ? 'Próximamente' : carrera.nueva ? 'Nueva' : carrera.destacada ? 'Más buscada' : null;
   const isIA = getCategoryForCarrera(carrera) === 'identidad_argentina';
@@ -1020,7 +1035,7 @@ function CareerCard({ carrera, onClick }: { carrera: CarreraCatalogo; onClick: (
           )}
         </div>
         <span className="text-[0.65rem] min-[380px]:text-xs font-bold detail-link px-2 min-[380px]:px-4 py-1.5 min-[380px]:py-2 rounded-lg cursor-pointer text-center self-center">
-          Ver detalles
+          {textoDetalle ?? 'Ver detalles'}
         </span>
         {isIA && (
           <div className="ia-card-meta">

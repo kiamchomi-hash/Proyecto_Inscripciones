@@ -229,6 +229,10 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
           </div>
         </div>
 
+        {marca === 'identidad' && (
+          <a href="/#preinscripcion" className="navbar-cta-ia">Preinscribirme</a>
+        )}
+
         {/* Desktop socials */}
         <div className="navbar-social hidden lg:flex items-center flex-shrink-0" style={{ marginLeft: 8, alignSelf: 'stretch' }}>
           {SOCIALS.map(({ href, label, Icon, cssClass }) => (

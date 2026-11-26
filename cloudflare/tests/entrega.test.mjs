@@ -530,7 +530,10 @@ test('topykly sirve la Academia y devuelve al CAU lo que no es suyo', async t =>
   const home = await astro.fetch('http://topykly.com/');
   assert.equal(home.status, 200);
   const html = await home.text();
-  assert.match(html, /<h1[^>]*>\s*Academia Identidad Argentina\s*<\/h1>/);
+  assert.match(html, /<h1[^>]*>\s*Diplomaturas y cursos/);
+  assert.match(html, /Academia Identidad Argentina/);
+  assert.match(html, /href="#preinscripcion"/);
+  assert.match(html, /https:\/\/wa\.me\//);
   assert.match(html, /href="\/carreras\/diplomatura-en-oratoria"/);
   assert.doesNotMatch(html, /Licenciatura en Administración/);
   // En topykly no se ofrece Teclab ni clases de apoyo: esas son secciones del CAU.

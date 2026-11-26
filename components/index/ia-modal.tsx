@@ -133,8 +133,8 @@ function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) 
             key={i}
             className="rounded px-3 py-2 text-[0.85rem] sm:text-[0.92rem] text-[#c3d8e6] leading-snug"
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              background: '#16212b',
+              boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
               borderLeft: `3px solid ${AMARILLO}`,
             }}
           >
@@ -159,7 +159,7 @@ function PlacaSede() {
   return (
     <div
       className="ia-placa flex-1 min-h-[4.5rem] rounded-lg flex-col items-center justify-center gap-2.5 px-4 text-center"
-      style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.025)' }}
+      style={{ boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.3)', background: '#0f1a22' }}
     >
       <Isotipo className="w-14 max-h-12 opacity-90" />
       <p className="text-[0.58rem] font-black uppercase tracking-[0.12em] leading-relaxed text-white/60">
@@ -236,8 +236,8 @@ function BloqueDato({ label, valor, principal, className = '' }: { label: string
       className={`rounded px-2.5 py-1.5 ${className}`}
       style={
         principal
-          ? { background: 'rgba(241,207,28,0.94)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)' }
-          : { background: 'rgba(255,255,255,0.075)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.12)' }
+          ? { background: 'rgba(241,207,28,0.94)', boxShadow: 'inset 0 0 0 1px rgba(16,24,32,0.2)' }
+          : { background: '#1b2a36', boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.4)' }
       }
     >
       <span
@@ -295,8 +295,8 @@ function SlideDocente({ carrera }: { carrera: Carrera }) {
                 key={i}
                 className="rounded px-3 py-2 text-[0.82rem] sm:text-[0.88rem] text-white leading-snug"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+                  background: '#16212b',
+                  boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
                   borderLeft: `3px solid ${AMARILLO}`,
                 }}
               >
@@ -343,7 +343,7 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
       {/* Mobile: el programa completo, con scroll */}
       <div
         className="md:hidden flex-1 min-h-0 overflow-y-auto custom-scrollbar rounded-lg p-2.5 flex flex-col gap-2.5"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        style={{ boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)', background: '#0f1a22' }}
       >
         {modulos.map((m, i) => (
           <ModuloDetalle key={i} modulo={m} enTarjeta />
@@ -353,7 +353,7 @@ function SlidePlan({ carrera, modulos }: { carrera: Carrera; modulos: Modulo[] }
       {/* Desktop: indice a la izquierda, contenido a la derecha */}
       <div
         className="hidden md:flex flex-1 min-h-0 flex-row overflow-hidden rounded-lg"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.035)' }}
+        style={{ boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)', background: '#0f1a22' }}
       >
         <div
           className="flex-shrink-0 flex flex-col gap-1 p-1.5 overflow-y-auto w-[9.5rem] custom-scrollbar"
@@ -391,8 +391,8 @@ function ModuloDetalle({ modulo, enTarjeta }: { modulo: Modulo; enTarjeta?: bool
       style={
         enTarjeta
           ? {
-              background: 'rgba(255,255,255,0.05)',
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              background: '#16212b',
+              boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
               borderLeft: filo,
             }
           : // Apilados uno abajo del otro, el filo del color es lo que separa
@@ -433,12 +433,12 @@ function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; d
           ? {
               background: destacado ? AMARILLO : AZUL,
               color: destacado ? '#101820' : '#fff',
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.22)',
+              boxShadow: 'inset 0 0 0 1px rgba(16,24,32,0.2)',
             }
           : {
-              background: 'rgba(255,255,255,0.05)',
+              background: '#16212b',
               color: destacado ? AMARILLO : AZUL_CLARO,
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
             }
       }
     >
@@ -673,8 +673,8 @@ export default function IAModal({ carrera, onClose }: Props) {
             onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))}
             disabled={idx === slides.length - 1}
             aria-label="Slide siguiente"
-            className="flex items-center gap-1 sm:gap-2 text-white text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
-            style={{ background: 'rgba(255,255,255,0.09)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.25)' }}
+            className="flex items-center gap-1 sm:gap-2 text-white text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-[#00648a]"
+            style={{ background: '#1b2a36', boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.5)' }}
           >
             <span className="hidden min-[360px]:inline">Siguiente</span>
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
