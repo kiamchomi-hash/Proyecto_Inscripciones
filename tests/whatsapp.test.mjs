@@ -14,6 +14,7 @@ const { default: Footer } = cargarTypescript('components/footer.tsx', {
   'next/image': { default: imagen },
   '@/lib/sede': { MAPS_URL: 'https://example.test/mapa' },
   '@/lib/whatsapp': whatsapp,
+  './icons': { WhatsAppIcon: icono, FacebookIcon: icono, InstagramIcon: icono },
   './index/ia-isotipo': { default: icono },
   './footer-teclab.css': {},
 });
