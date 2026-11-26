@@ -188,12 +188,7 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
         >
           <div className="menu-header lg:hidden">
             {marca === 'identidad' ? (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'white' }}>
-                <IsotipoIA className="h-9 w-auto" />
-                <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.25rem', fontWeight: 600, lineHeight: 1 }}>
-                  Academia Identidad Argentina
-                </span>
-              </span>
+              <IsotipoIA className="h-9 w-auto" />
             ) : (
               <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.875rem', fontWeight: 600, color: 'white', lineHeight: 1 }}>
                 <span className="marca-cau">
