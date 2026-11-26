@@ -128,9 +128,6 @@ export default function PaginaIdentidad(
         </section>
 
         <div id="carreras" className="identidad-programas">
-          <div className="identidad-programas__rotulo">
-            <p className="identidad-programas__3d">Oferta académica</p>
-          </div>
           <CareersCatalog carreras={carreras} compacto textoDetalle="Ver programa" />
         </div>
 
