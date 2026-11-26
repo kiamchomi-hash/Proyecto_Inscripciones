@@ -43,7 +43,12 @@ export default {
     const url = new URL(request.url);
     const asset = await servirAssetR2(request, env.ASSETS_HISTORICOS, caches?.default, ctx);
     if (asset) return asset;
-    const version = env.CF_VERSION_METADATA?.id;
+    // El sitio de Identidad no usa el HTML versionado contra R2: sus assets
+    // viven en Workers Assets y el manifest histórico no se sube en su deploy.
+    // Versionar acá dejaba cada CSS/JS apuntando a `/__assets/<version>/...`,
+    // que respondía 404 (las páginas salían sin estilos).
+    const identidad = (env as unknown as { APP_SITIO?: string }).APP_SITIO === 'identidad';
+    const version = identidad ? undefined : env.CF_VERSION_METADATA?.id;
     // El dominio ápice no sirve contenido: manda a `www` con 308 y conserva la
     // ruta y la query.
     if (url.hostname === RAIZ) {

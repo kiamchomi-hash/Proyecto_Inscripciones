@@ -105,6 +105,14 @@ async function smoke() {
       if (!html.includes(`<link rel="canonical" href="${BASE}/">`)) {
         throw new Error('la home no declara el canónico de topykly');
       }
+      // El sitio de Identidad no usa el HTML versionado contra R2: si un CSS
+      // sale con `/__assets/...`, el deploy quedó sin estilos.
+      const hoja = /<link rel="stylesheet" href="([^"]+)"/.exec(html)?.[1];
+      if (!hoja) throw new Error('la home no declara ninguna hoja de estilos');
+      const css = await fetch(hoja.startsWith('http') ? hoja : `${BASE}${hoja}`, { redirect: 'manual' });
+      if (css.status !== 200 || !(css.headers.get('content-type') ?? '').includes('text/css')) {
+        throw new Error(`la hoja de estilos ${hoja} respondió ${css.status}`);
+      }
     }
     if (ruta === '/contacto') {
       const destino = respuesta.headers.get('location') ?? '';

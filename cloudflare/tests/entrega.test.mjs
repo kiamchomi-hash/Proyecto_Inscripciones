@@ -536,6 +536,12 @@ test('topykly sirve la Academia y devuelve al CAU lo que no es suyo', async t =>
   // En topykly no se ofrece Teclab ni clases de apoyo: esas son secciones del CAU.
   assert.doesNotMatch(html, /href="[^"]*\/(?:teclab|clases-apoyo)(?:[/"]|$)/);
   assert.match(html, /<link rel="canonical" href="https:\/\/topykly\.com\/">/);
+  // Sin versionado contra R2: las hojas salen de Workers Assets y se sirven.
+  const hoja = /<link rel="stylesheet" href="([^"]+)"/.exec(html)?.[1];
+  assert.ok(hoja, 'la home no declara hoja de estilos');
+  assert.ok(!hoja.includes('/__assets/'), `la hoja quedó versionada: ${hoja}`);
+  const css = await astro.fetch(`http://topykly.com${hoja}`);
+  assert.equal(css.status, 200, hoja);
 
   const ficha = await astro.fetch('http://topykly.com/carreras/diplomatura-en-oratoria');
   assert.equal(ficha.status, 200);
