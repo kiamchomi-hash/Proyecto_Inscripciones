@@ -50,6 +50,15 @@ ya está separado, pero el código sigue dentro de `proyecto-cau`.
   markdown (`/carreras/<slug>.md`), que se salteaba el corte y publicaba la
   ficha con «Institución: Academia Identidad Argentina» desde siglo21sur.com.
 - El `llms.txt` del CAU ya no nombra la Academia. El sitemap tampoco la lista.
+- La API `/api/carreras-detalle` se acota al dominio: en siglo21sur.com no viajan
+  los detalles de la Academia (y en topykly viajan sólo los suyos).
+- Los renombres viejos del CAU que aterrizaban en una ficha de la Academia
+  (`diplomatura-en-fraude-financiero-y-digital` y
+  `curso-de-mindfulness-y-tecnicas-de-gestion-del-estres`) responden 410 en vez
+  de encadenar dos saltos.
+- La lista de `lib/vigilancia-esperado.ts` (`GONE`) hace fallar el smoke y el
+  cron de vigilancia si alguna de esas URLs vuelve a responder algo distinto de
+  410, ficha o `.md`.
 - En topykly, el markdown de cada ficha declara su propio dominio; antes decía
   `www.siglo21sur.com`. Una ficha del CAU pedida en `.md` desde topykly responde
   301 a siglo21sur.com.
