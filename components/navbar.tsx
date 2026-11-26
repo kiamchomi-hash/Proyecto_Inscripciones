@@ -158,10 +158,7 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
             `.marca-teclab` en navbar.css): así no hay parpadeo al hidratar. */}
         <span className="navbar-brand-mobile lg:hidden">
           {marca === 'identidad' ? (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'white', fontSize: '1rem', fontWeight: 600 }}>
-              <IsotipoIA className="h-7 w-auto" />
-              <span style={{ fontFamily: "'Inter',sans-serif" }}>Identidad Argentina</span>
-            </span>
+            <IsotipoIA className="h-8 w-auto" />
           ) : (
             <>
               <span className="marca-cau">

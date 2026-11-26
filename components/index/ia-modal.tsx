@@ -62,32 +62,6 @@ function parseObjetivos(descripcion: string | null): string[] {
     .filter(s => s.length > 12);
 }
 
-/**
- * seccion_modalidad: primera linea el nombre, el resto la bio.
- * Algunas fichas traen la bio en lineas "· item" y otras en una sola linea con
- * los items separados por "·", asi que se normalizan los dos casos.
- */
-function parseDocente(raw: string | null): { nombre: string; bio: string[] } | null {
-  const lines = (raw || '').split('\n').map(l => l.trim()).filter(Boolean);
-  if (!lines.length) return null;
-  const bio = lines
-    .slice(1)
-    .flatMap(l => l.split('·'))
-    .map(l => l.trim())
-    .filter(Boolean);
-  return { nombre: lines[0], bio };
-}
-
-/** Iniciales del docente para la placa amarilla, salteando el titulo (Lic., Dr.) */
-function inicialesDocente(nombre: string): string {
-  return nombre
-    .split(/\s+/)
-    .filter(p => !/^(lic|dr|dra|prof|mg|ing|cr|cra|esp)\.?$/i.test(p))
-    .slice(0, 2)
-    .map(p => p.charAt(0).toUpperCase())
-    .join('');
-}
-
 /** plan_estudios: bloques "Módulo N: titulo" + lineas "• contenido" */
 interface Modulo { etiqueta: string; titulo: string; items: string[]; destacado: boolean }
 
@@ -146,35 +120,9 @@ function ListaAjustada({ items, rotulo }: { items: string[]; rotulo?: string }) 
   );
 }
 
-/**
- * Placa institucional para el aire que queda en mobile. Las diplomaturas son
- * cortas -cuatro objetivos y tres datos- y en una pantalla de telefono sobraba
- * media pantalla vacia abajo del contenido. En vez de repartir ese aire en
- * huecos, se ocupa con la marca de la Academia y se aclara su independencia. En
- * desktop no hace falta: ahi sobra poco y esta el isotipo de fondo, y en un
- * telefono chico tampoco aparece porque el contenido ya llena el slide (la
- * regla .ia-placa de modales.css decide cuando se muestra).
- */
-function PlacaSede() {
-  return (
-    <div
-      className="ia-placa flex-1 min-h-[4.5rem] rounded-lg flex-col items-center justify-center gap-2.5 px-4 text-center"
-      style={{ boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.3)', background: '#0f1a22' }}
-    >
-      <Isotipo className="w-14 max-h-12 opacity-90" />
-      <p className="text-[0.58rem] font-black uppercase tracking-[0.12em] leading-relaxed text-white/60">
-        También en nuestra sede
-        <span className="block normal-case tracking-normal font-semibold text-white/45">
-          Propuesta independiente de Universidad Siglo 21
-        </span>
-      </p>
-    </div>
-  );
-}
-
 // ── Slide 1: portada ──
 function SlidePortada({ carrera }: { carrera: Carrera }) {
-  const { modalidad, certificacion } = parseEnfoque(carrera.enfoque);
+  const { cursada, modalidad, certificacion } = parseEnfoque(carrera.enfoque);
   const objetivos = parseObjetivos(carrera.descripcion);
   const escuela = getEscuelaIA(carrera);
   const nombre = carrera.nombre_corto || carrera.nombre;
@@ -211,11 +159,16 @@ function SlidePortada({ carrera }: { carrera: Carrera }) {
           {online ? '100% Online' : modalidad}
         </p>
 
+        {cursada && (
+          <p className="flex-shrink-0 text-[0.78rem] sm:text-sm leading-snug text-white/70">
+            {cursada}
+          </p>
+        )}
+
         {objetivos.length > 0 && (
           <ListaAjustada items={objetivos} rotulo="Objetivos" />
         )}
 
-        <PlacaSede />
 
         {/* Bloques de dato: el principal (escuela) va lleno en amarillo. Van al
             pie -mt-auto- para que el aire sobrante quede en un solo lugar y no
@@ -252,71 +205,6 @@ function BloqueDato({ label, valor, principal, className = '' }: { label: string
       >
         {valor}
       </span>
-    </div>
-  );
-}
-
-// ── Slide 2: docente y cursada ──
-function SlideDocente({ carrera }: { carrera: Carrera }) {
-  const docente = parseDocente(carrera.seccion_modalidad);
-  const { cursada, modalidad, certificacion } = parseEnfoque(carrera.enfoque);
-
-  return (
-    // relative + overflow-x-hidden por el isotipo, que se sale por la derecha
-    <div data-scroll-lectura className="ia-slide relative h-full flex flex-col gap-3 p-5 sm:p-7 overflow-y-auto overflow-x-hidden custom-scrollbar">
-      <Isotipo className="hidden sm:block pointer-events-none absolute -right-12 top-1/2 -translate-y-1/2 w-64 opacity-[0.07]" />
-      <Rotulo>A cargo de</Rotulo>
-
-      {docente && (
-        <div className="flex-shrink-0 flex items-center gap-3">
-          {/* Placa con las iniciales: la ficha del convenio no trae foto */}
-          <span
-            className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center font-black text-xl sm:text-2xl"
-            style={{ background: AMARILLO, color: '#101820' }}
-            aria-hidden="true"
-          >
-            {inicialesDocente(docente.nombre)}
-          </span>
-          <h3 className="text-xl sm:text-3xl font-black text-white uppercase leading-tight tracking-tight min-w-0">
-            {docente.nombre}
-          </h3>
-        </div>
-      )}
-
-      {/* La bio son credenciales sueltas y cortas: cada una en su tarjeta con
-          el filo amarillo, que es lo que las separa. La vineta adentro de la
-          tarjeta sobraba y en mobile se leia como una lista de apunte. */}
-      {docente && docente.bio.length > 0 && (
-        <div className="flex-shrink-0 flex flex-col gap-2">
-          <Rotulo>Trayectoria</Rotulo>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {docente.bio.map((texto, i) => (
-              <li
-                key={i}
-                className="rounded px-3 py-2 text-[0.82rem] sm:text-[0.88rem] text-white leading-snug"
-                style={{
-                  background: '#16212b',
-                  boxShadow: 'inset 0 0 0 1px rgba(0,144,193,0.35)',
-                  borderLeft: `3px solid ${AMARILLO}`,
-                }}
-              >
-                {texto}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <PlacaSede />
-
-      {/* Al pie, como en la portada: el aire queda en un solo lugar. En mobile
-          van de a dos -son datos de dos palabras- y no cuatro cintas apiladas. */}
-      <div className="flex-shrink-0 mt-auto pt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <BloqueDato label="Cursada" valor={cursada} className="col-span-2 sm:col-span-3" />
-        <BloqueDato label="Modalidad" valor={modalidad} />
-        <BloqueDato label="Duración" valor={carrera.duracion} />
-        <BloqueDato label="Certificación" valor={certificacion} className="col-span-2 sm:col-span-1" />
-      </div>
     </div>
   );
 }
@@ -455,7 +343,7 @@ function BotonModulo({ activo, destacado, onClick, texto }: { activo: boolean; d
 function SlideCierre({ carrera, onInscribir }: { carrera: Carrera; onInscribir: () => void }) {
   const { modalidad, certificacion } = parseEnfoque(carrera.enfoque);
   // La cursada no entra: es una frase, no un dato de dos palabras. Queda en la
-  // portada y en el slide del docente.
+  // portada.
   // El chip no lleva rotulo como el cuadro de la portada, asi que "Nacional e
   // Internacional" a secas no decia de que hablaba: va con la palabra adelante.
   const chipCertificacion =
@@ -523,7 +411,6 @@ function SlideCierre({ carrera, onInscribir }: { carrera: Carrera; onInscribir: 
 // ── Modal ──
 export default function IAModal({ carrera, onClose }: Props) {
   const modulos = useMemo(() => parsePlan(carrera.plan_estudios), [carrera.plan_estudios]);
-  const docente = useMemo(() => parseDocente(carrera.seccion_modalidad), [carrera.seccion_modalidad]);
 
   // El slide de cierre se arma antes que handleClose: llama por ref a la
   // inscripción, que se completa en el efecto de abajo.
@@ -532,11 +419,10 @@ export default function IAModal({ carrera, onClose }: Props) {
     const s: { key: string; node: React.ReactNode }[] = [
       { key: 'portada', node: <SlidePortada carrera={carrera} /> },
     ];
-    if (docente) s.push({ key: 'docente', node: <SlideDocente carrera={carrera} /> });
     if (modulos.length) s.push({ key: 'plan', node: <SlidePlan carrera={carrera} modulos={modulos} /> });
     s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} onInscribir={() => inscribirRef.current()} /> });
     return s;
-  }, [carrera, docente, modulos]);
+  }, [carrera, modulos]);
 
   const [idx, setIdx] = useState(0);
   const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose });
