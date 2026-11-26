@@ -78,17 +78,19 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', m
     }));
   // La sede tiene cuenta propia de Teclab desde el 10/10/2026: en /teclab el
   // ícono de Instagram lleva ahí y no a la cuenta del CAU.
-  const redes = teclab
-    ? REDES.map(red => red.label === 'Instagram'
-      ? { ...red, href: 'https://www.instagram.com/teclab.villalugano/' }
-      : red.label === 'WhatsApp'
-        ? { ...red, href: red.href.replace('5491132973801', numeroWhatsAppDe('teclab')) }
-        : red)
-    : REDES;
+  const redes = identidad
+    ? REDES.filter(red => red.label === 'WhatsApp')
+    : teclab
+      ? REDES.map(red => red.label === 'Instagram'
+        ? { ...red, href: 'https://www.instagram.com/teclab.villalugano/' }
+        : red.label === 'WhatsApp'
+          ? { ...red, href: red.href.replace('5491132973801', numeroWhatsAppDe('teclab')) }
+          : red)
+      : REDES;
 
   return (
     <footer
-      data-casa={casa}
+      data-casa={identidad ? 'identidad' : casa}
       data-marca={identidad ? 'identidad' : 'cau'}
       className={`relative overflow-hidden ${fuente}`}
       style={{
@@ -207,7 +209,8 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', m
 
           {/* Horarios y modalidad */}
           <div className={COLUMNA}>
-            <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:-ml-8 lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">Horarios</h2>
+            <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00c7b1] lg:-ml-8 lg:mb-4 lg:text-center lg:text-xs lg:tracking-widest">{identidad ? 'Modalidad' : 'Horarios'}</h2>
+            {!identidad && (
             <div className="grid w-full grid-cols-[auto_auto] items-baseline justify-center gap-x-4 gap-y-3.5 rounded-xl px-4 py-4 text-left lg:block lg:max-w-xs lg:space-y-3.5 lg:py-3.5" style={{ background: 'rgba(0, 199, 177, 0.05)', border: '1px solid rgba(0, 199, 177, 0.12)' }}>
               <div className="contents text-[15px] lg:flex lg:items-baseline lg:justify-between lg:gap-3 lg:text-sm">
                 <span className="text-[#c0d5d0]">Lunes a Viernes</span>
@@ -219,12 +222,18 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', m
               </div>
             </div>
 
-            <div className="mt-3 flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left lg:max-w-xs lg:gap-2.5 lg:py-3" style={{ background: 'rgba(0, 85, 135, 0.12)', border: '1px solid rgba(0, 85, 135, 0.25)' }}>
+            )}
+
+            <div className={`mt-3 flex w-full items-center gap-3 rounded-xl px-4 py-3.5 ${identidad ? 'justify-center text-center' : 'text-left'} lg:max-w-xs lg:gap-2.5 lg:py-3`} style={{ background: 'rgba(0, 85, 135, 0.12)', border: '1px solid rgba(0, 85, 135, 0.25)' }}>
               <svg className="w-5 h-5 text-[#48b3a4] shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A8.966 8.966 0 013 12c0-1.264.26-2.467.732-3.558" /></svg>
-              <div>
+              <div className={identidad ? 'text-center' : undefined}>
                 <p className="text-[13px] font-semibold text-white lg:text-xs">Modalidad Virtual</p>
                 <p className="mt-1 text-[13px] leading-5 text-[#c0d5d0] lg:mt-0.5 lg:text-xs lg:leading-normal">
-                  {teclab ? 'Cursás y rendís 100% online, desde donde estés' : 'Cursá online, exámenes desde casa o en el CAU'}
+                  {teclab
+                  ? 'Cursás y rendís 100% online, desde donde estés'
+                  : identidad
+                    ? 'Cursá online, desde todo el país'
+                    : 'Cursá online, exámenes desde casa o en el CAU'}
                 </p>
               </div>
             </div>

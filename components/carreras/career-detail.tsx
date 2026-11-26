@@ -508,7 +508,9 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
                     cursos) es el instituto, no la universidad. */}
                 {conMaterialTeclab
                   ? `Teclab anunció ${isTeclabCourse ? 'este curso' : 'esta carrera'}`
-                  : 'Universidad Siglo 21 anunció esta carrera'}
+                  : isIA
+                    ? 'Academia Identidad Argentina anunció este programa'
+                    : 'Universidad Siglo 21 anunció esta carrera'}
                 , pero todavía no abrió la inscripción. Dejanos tus datos y te
                 avisamos apenas se habilite.
               </p>
@@ -793,9 +795,8 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
             <section className="career-oficial career-oficial--ia career-reveal">
               <IsotipoIA className="career-oficial-isotipo" />
               <p>
-                Propuesta académica de Academia Identidad Argentina, independiente de Universidad
-                Siglo 21. También disponible a través del Centro Educativo Villa Lugano. Se cursa
-                por la plataforma Innova Virtual, con certificación nacional e internacional.
+                Academia Identidad Argentina. Se cursa por la plataforma Innova Virtual, con
+                certificación nacional e internacional.
               </p>
               <a href="#formulario">
                 Solicitar información

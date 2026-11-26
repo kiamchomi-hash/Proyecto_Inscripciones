@@ -61,6 +61,9 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
   marca?: 'cau' | 'identidad';
 } = {}) {
   const enlaces = marca === 'identidad' ? NAV_LINKS_IDENTIDAD : NAV_LINKS;
+  const redes = marca === 'identidad'
+    ? SOCIALS.filter(red => red.label === 'WhatsApp' && red.cssClass.includes('marca-cau'))
+    : SOCIALS;
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
@@ -222,7 +225,7 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
 
           <div className="menu-footer lg:hidden">
             <div className="menu-footer-social" style={{ justifyContent: 'center' }}>
-              {SOCIALS.map(({ href, label, Icon, cssClass }) => (
+              {redes.map(({ href, label, Icon, cssClass }) => (
                 <a key={`${label}-${cssClass}`} href={href} target="_blank" rel="noopener nofollow" aria-label={label} className={cssClass}>
                   <Icon />
                 </a>
@@ -237,7 +240,7 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
 
         {/* Desktop socials */}
         <div className="navbar-social hidden lg:flex items-center flex-shrink-0" style={{ marginLeft: 8, alignSelf: 'stretch' }}>
-          {SOCIALS.map(({ href, label, Icon, cssClass }) => (
+          {redes.map(({ href, label, Icon, cssClass }) => (
             <a key={`${label}-${cssClass}`} href={href} target="_blank" rel="noopener nofollow" aria-label={label} className={`navbar-social-icon ${cssClass}`}>
               <Icon className="w-4 h-4" />
             </a>

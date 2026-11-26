@@ -58,7 +58,9 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
     provider, educationalLevel: curso ? 'Curso' : carrera.nivel,
     ...(duracion ? { timeToComplete: duracion } : {}),
     ...(carrera.titulo && carrera.titulo !== 'Consultar' ? { educationalCredentialAwarded: carrera.titulo } : {}),
-    inLanguage: 'es', ...(teclab ? { courseMode: 'online' } : { courseMode: 'blended', location: { '@type': 'Place', name: 'CAU Villa Lugano', address: POSTAL_ADDRESS } }),
+    inLanguage: 'es', ...(teclab || ia
+      ? { courseMode: 'online' }
+      : { courseMode: 'blended', location: { '@type': 'Place', name: 'CAU Villa Lugano', address: POSTAL_ADDRESS } }),
   };
   const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Inicio', item: base },

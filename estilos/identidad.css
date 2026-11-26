@@ -935,3 +935,33 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
     scroll-margin-top: 0.5rem;
   }
 }
+
+
+@media (max-width: 899px) {
+  .identidad-hero__texto {
+    text-align: center;
+  }
+
+  .identidad-hero__bajada {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .identidad-hero__acciones,
+  .identidad-hero__pruebas {
+    justify-content: center;
+  }
+
+  body.tema-identidad footer[data-marca="identidad"] nav ul {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  body.tema-identidad footer[data-marca="identidad"] nav a {
+    text-align: center;
+  }
+}
+
+body.tema-identidad footer[data-marca="identidad"] a[href^="https://wa.me"]:hover {
+  color: #fff !important;
+}

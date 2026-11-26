@@ -133,7 +133,7 @@ export function seoCarrera(c: Carrera) {
     : ogTeclab.slugs.includes(slug) ? `/imagenes/og/teclab/${slug}.jpg`
     : familia ? `/imagenes/og/default-teclab-${familia}.jpg` : '/imagenes/og/default.jpg';
   const palabrasClave = c.nivel === 'Identidad Argentina'
-    ? [nombre, c.nombre, 'academia identidad argentina', 'diplomatura online', 'villa lugano', c.nivel, 'CABA']
+    ? [nombre, c.nombre, 'academia identidad argentina', 'diplomatura online', c.nivel, 'argentina']
     : esTeclab(c) || esCursoTeclab(c)
       ? [nombre, c.nombre, 'teclab', 'instituto tecnico superior teclab', 'universidad siglo 21', c.nivel, 'estudiar online']
       : [nombre, c.nombre, 'universidad siglo 21', 'villa lugano', c.nivel, 'estudiar a distancia', 'CABA'];
