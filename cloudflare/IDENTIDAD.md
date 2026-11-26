@@ -10,7 +10,7 @@ y el dominio pasa a un segundo Worker de este paquete.
 
 | Dominio | Worker | Contenido |
 | --- | --- | --- |
-| `www.siglo21sur.com` y `siglo21sur.com` | `cau-produccion-20261026` | Todo el CAU. Las ocho fichas de Identidad responden **301** a topykly. |
+| `www.siglo21sur.com` y `siglo21sur.com` | `cau-produccion-20261026` | Todo el CAU. Las ocho fichas de Identidad responden **410** (no se sirven ni se redirigen desde el dominio de Siglo 21). |
 | `topykly.com` y `www.topykly.com` | `cau-identidad-20261126` | Portada de la Academia, sus ocho fichas, formularios y assets. Todo lo demás vuelve al CAU (o a la portada nueva si era una URL del chat). |
 
 La decisión se toma por `APP_SITIO` en producción y por el host en local. El
@@ -19,8 +19,10 @@ producción (`produccion/worker.ts`) manda `www.topykly.com` al ápice.
 
 ## SEO
 
-- Las fichas del CAU responden 301 permanente con la ruta y la query intactas;
-  no llevan `noindex` para no mandar señales contradictorias.
+- Las fichas de Identidad en el CAU responden **410**: Siglo 21 no permite
+  comercializar la Academia en su sitio, así que no se sirven, no se redirigen
+  hacia topykly y Google las retira. La versión markdown (`.md`) sigue la misma
+  regla; antes se salteaba el corte y publicaba la ficha en siglo21sur.com.
 - El sitemap del CAU ya no lista Identidad Argentina; el de topykly lista sólo
   su portada y sus ocho fichas, con `https://topykly.com` como base.
 - El canónico, `og:url`, JSON-LD y el breadcrumb de cada ficha usan el dominio
@@ -28,9 +30,9 @@ producción (`produccion/worker.ts`) manda `www.topykly.com` al ápice.
 - La portada del CAU no enlaza las fichas (el catálogo las excluye desde antes);
   la de topykly sí, con tarjetas enlazadas de verdad.
 - En Search Console hay que dar de alta `topykly.com`, enviar
-  `https://topykly.com/sitemap.xml` y pedir la indexación de la portada. No
-  corresponde «Cambio de dirección»: es para un sitio entero, no para ocho URLs;
-  el 301 se encarga de la transferencia.
+  `https://topykly.com/sitemap.xml` y pedir la indexación de la portada. Para que
+  las URLs viejas del CAU salgan rápido del índice queda «Eliminación de URLs»,
+  que se hace a mano y dura unos seis meses; el 410 se encarga del resto.
 
 ## Publicación
 
@@ -64,6 +66,6 @@ Worker de producción del CAU.
 ## Vuelta atrás
 
 Si hay que volver al estado anterior, el orden es: quitar las rutas/custom
-domains del Worker de Identidad, volver a publicar el Worker del CAU sin el 301
+domains del Worker de Identidad, volver a publicar el Worker del CAU sin el 410
 (revertir el commit) y, si se quiere, reponer los registros de Vercel. El
 repositorio de topykly nunca se modifica.

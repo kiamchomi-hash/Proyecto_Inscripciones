@@ -11,7 +11,7 @@ import { carrerasPublicas, carreraPorSlug } from '../../datos/carreras';
 import { seoCarrera } from '../../entrega/carrera-seo';
 import { configTurnstile } from '../../entrega/entorno-publico';
 import { redirectCarrera } from '../../entrega/redirects-carreras';
-import { baseDeSitio, sitioDe, BASE_IDENTIDAD, esCarreraIdentidadRetirada } from '../../entrega/sitios';
+import { baseDeSitio, sitioDe, esCarreraIdentidadRetirada } from '../../entrega/sitios';
 import { carreraToSlug } from '@/components/index/types';
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
 import '@/estilos/poppins.css';
@@ -31,23 +31,28 @@ if (redirect) {
   return Astro.redirect(`${redirect.destino}${query}`, redirect.status);
 }
 const carreras = await carrerasPublicas(env.DB);
+const sitio = sitioDe(Astro.url.hostname, (env as unknown as { APP_SITIO?: string }).APP_SITIO);
 const carrera = carreraPorSlug(carreras, Astro.params.slug!);
 if (!carrera) {
-  // Una ficha de Identidad que la Academia retiró no se renderiza, pero su URL
-  // vieja no queda en 404: manda a la portada de la Academia.
+  // Una ficha de Identidad que la Academia retiró no se renderiza. En topykly
+  // su URL vieja va a la portada; en el CAU responde 410: Siglo 21 no
+  // comercializa la Academia y su dominio no redirige hacia ella.
   if (esCarreraIdentidadRetirada(Astro.params.slug!)) {
-    return Astro.redirect(`${BASE_IDENTIDAD}/`, 301);
+    return sitio === 'identidad'
+      ? Astro.redirect('/', 301)
+      : new Response(null, { status: 410 });
   }
   return new Response(null, { status: 404 });
 }
 const ruta = `/carreras/${carreraToSlug(carrera)}`;
-const sitio = sitioDe(Astro.url.hostname, (env as unknown as { APP_SITIO?: string }).APP_SITIO);
 const esIdentidad = carrera.nivel === 'Identidad Argentina';
-// Cada casa vive en su dominio: la ficha que no pertenece a este sitio se
-// responde con un 301 permanente a su URL canónica, con la query intacta.
+// Cada casa vive en su dominio. En topykly, una ficha del CAU se manda a su URL
+// canónica con la query intacta. En el CAU, una ficha de Identidad no se ofrece
+// ni se redirige: Siglo 21 no permite comercializar la Academia en su sitio, así
+// que la URL responde 410 y Google la retira.
 if ((sitio === 'identidad') !== esIdentidad) {
-  const destino = baseDeSitio(esIdentidad ? 'identidad' : 'principal');
-  return Astro.redirect(`${destino}${ruta}${Astro.url.search}`, 301);
+  if (esIdentidad) return new Response(null, { status: 410 });
+  return Astro.redirect(`${baseDeSitio('principal')}${ruta}${Astro.url.search}`, 301);
 }
 if (Astro.params.slug !== carreraToSlug(carrera)) return Astro.redirect(ruta, 308);
 const base = baseDeSitio(sitio);

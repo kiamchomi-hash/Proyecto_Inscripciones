@@ -61,7 +61,7 @@ const TITULO = 'Universidad Siglo 21 — CAU Villa Lugano';
 const RESUMEN = '> Centro de Aprendizaje Universitario (CAU) de Universidad Siglo 21, en Guaminí 4876, '
   + 'Villa Lugano, Comuna 8, CABA. El sitio publica la oferta académica de Siglo 21 (licenciaturas y '
   + 'tecnicaturas a distancia) y las tecnicaturas de Teclab, además de las clases de apoyo presenciales '
-  + 'del CAU. Las diplomaturas y cursos de Identidad Argentina se publican en topykly.com. '
+  + 'del CAU. '
   + 'Los aranceles no se publican: se consultan por WhatsApp o desde el formulario de inscripción de cada carrera.';
 
 const CONTEXTO = 'El contenido está en español (es-AR). El mapa completo de URLs del sitio está en '
@@ -77,7 +77,6 @@ const CONTEXTO = 'El contenido está en español (es-AR). El mapa completo de UR
 const SECCIONES: ReadonlyArray<{ id: string; titulo: string }> = [
   { id: 'licenciaturas', titulo: 'Licenciaturas de Universidad Siglo 21' },
   { id: 'tecnicaturas', titulo: 'Tecnicaturas de Universidad Siglo 21' },
-  { id: 'identidad_argentina', titulo: 'Diplomaturas y cursos de Identidad Argentina' },
   { id: 'teclab_tecnologia', titulo: 'Tecnicaturas y cursos de Teclab (Tecnología)' },
   { id: 'teclab_gestion', titulo: 'Tecnicaturas de Teclab (Gestión)' },
 ];

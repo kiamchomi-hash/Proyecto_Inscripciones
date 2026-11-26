@@ -350,12 +350,14 @@ test('sitemap, robots y cabeceras reales en el build compilado', async t => {
     /<title>Tecnicatura Superior en Marketing Digital \| Teclab<\/title>/,
   );
 
-  // La ficha de Identidad Argentina se mudó a topykly: 301 permanente con la
-  // query intacta, y sin cabeceras de seguridad de página en la respuesta.
+  // Las fichas de Identidad Argentina no se sirven desde el CAU: Siglo 21 no
+  // permite comercializar la Academia en su sitio, así que la URL responde 410
+  // (antes redirigía a topykly) y Google la retira. Vale también para el .md.
   const oratoria = await astro.fetch('/carreras/diplomatura-en-oratoria?q=1', { redirect: 'manual' });
-  assert.equal(oratoria.status, 301);
-  assert.equal(oratoria.headers.get('location'),
-    'https://topykly.com/carreras/diplomatura-en-oratoria?q=1');
+  assert.equal(oratoria.status, 410);
+  assert.equal(oratoria.headers.get('location'), null);
+  const oratoriaMd = await astro.fetch('/carreras/diplomatura-en-oratoria.md', { redirect: 'manual' });
+  assert.equal(oratoriaMd.status, 410);
 
   const robots = await astro.fetch('/robots.txt');
   assert.equal(robots.status, 200);  assert.equal(robots.headers.get('content-type'), 'text/plain');
@@ -560,6 +562,19 @@ test('topykly sirve la Academia y devuelve al CAU lo que no es suyo', async t =>
   assert.equal(ajena.headers.get('location'),
     'https://www.siglo21sur.com/carreras/licenciatura-en-administracion');
 
+  // El markdown sigue la misma regla que la ficha, y su URL es la del dominio
+  // que lo sirve: antes el de topykly decía `www.siglo21sur.com` (26/11/2026).
+  const propiaMd = await astro.fetch('http://topykly.com/carreras/diplomatura-en-oratoria.md');
+  assert.equal(propiaMd.status, 200);
+  const md = await propiaMd.text();
+  assert.match(md, /\*\*Página:\*\* https:\/\/topykly\.com\/carreras\/diplomatura-en-oratoria/);
+  assert.doesNotMatch(md, /siglo21sur\.com/);
+  const ajenaMd = await astro.fetch('http://topykly.com/carreras/licenciatura-en-administracion.md',
+    { redirect: 'manual' });
+  assert.equal(ajenaMd.status, 301);
+  assert.equal(ajenaMd.headers.get('location'),
+    'https://www.siglo21sur.com/carreras/licenciatura-en-administracion.md');
+
   for (const [ruta, destino] of [
     ['/contacto', 'https://www.siglo21sur.com/contacto'],
     ['/teclab', 'https://www.siglo21sur.com/teclab'],
@@ -594,16 +609,19 @@ test('topykly sirve la Academia y devuelve al CAU lo que no es suyo', async t =>
   assert.equal(robots.status, 200);
   assert.match(await robots.text(), /Sitemap: https:\/\/topykly\.com\/sitemap\.xml/);
 
-  // Una ficha retirada de la Academia no queda en 404: desde los dos dominios
-  // manda a la portada de topykly.
+  // Una ficha retirada de la Academia no queda en 404: en topykly manda a su
+  // portada; en el CAU responde 410 y no redirige a la Academia, que Siglo 21
+  // no comercializa en su sitio.
   await (await worker.getEnv()).DB
     .prepare("UPDATE carreras SET activa = 0 WHERE nombre = 'Diplomatura en Oratoria'").run();
-  for (const host of ['topykly.com', 'www.siglo21sur.com']) {
-    const retirada = await astro.fetch(`http://${host}/carreras/diplomatura-en-oratoria`,
-      { redirect: 'manual' });
-    assert.equal(retirada.status, 301, host);
-    const recibido = new URL(retirada.headers.get('location'), `http://${host}`);
-    assert.equal(recibido.host, 'topykly.com', host);
-    assert.equal(recibido.pathname, '/', host);
-  }
+  const retirada = await astro.fetch('http://topykly.com/carreras/diplomatura-en-oratoria',
+    { redirect: 'manual' });
+  assert.equal(retirada.status, 301);
+  const recibido = new URL(retirada.headers.get('location'), 'http://topykly.com');
+  assert.equal(recibido.host, 'topykly.com');
+  assert.equal(recibido.pathname, '/');
+  const retiradaEnElCau = await astro.fetch(
+    'http://www.siglo21sur.com/carreras/diplomatura-en-oratoria', { redirect: 'manual' });
+  assert.equal(retiradaEnElCau.status, 410);
+  assert.equal(retiradaEnElCau.headers.get('location'), null);
 });

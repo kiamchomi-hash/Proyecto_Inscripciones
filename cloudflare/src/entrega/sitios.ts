@@ -70,9 +70,10 @@ export function rutaConocidaDelPrincipal(ruta: string): boolean {
 
 /**
  * Fichas de Identidad que la Academia dejó de ofrecer. No están activas en D1,
- * así que la ficha no se renderiza; su URL vieja se manda a la portada de
- * topykly para no perder el tráfico en un 404. Si alguna vuelve, basta con
- * activarla en la base: la ficha existe y esta lista deja de aplicarse.
+ * así que la ficha no se renderiza; en topykly su URL vieja va a la portada y
+ * en el CAU responde 410, porque Siglo 21 no comercializa la Academia. Si
+ * alguna vuelve, basta con activarla en la base: la ficha existe y esta lista
+ * deja de aplicarse.
  */
 export const CARRERAS_IDENTIDAD_RETIRADAS = new Set([
   'diplomatura-en-oratoria',

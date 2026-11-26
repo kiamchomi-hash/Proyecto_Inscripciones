@@ -117,6 +117,8 @@ test('las secciones siguen el orden de la taxonomía compartida', () => {
   // Identidad Argentina dejó de listarse en el CAU: vive en topykly.com.
   assert.ok(!markdown.includes('/carreras/diplomatura-en-oratoria'));
   assert.ok(!markdown.includes('## Diplomaturas y cursos de Identidad Argentina'));
+  // Tampoco se nombra en el encabezado: Siglo 21 no comercializa la Academia.
+  assert.ok(!markdown.includes('Identidad Argentina'));
 });
 
 test('los artículos salen con su extracto y la fecha en que se publicaron', () => {
