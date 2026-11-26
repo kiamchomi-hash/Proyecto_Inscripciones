@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
+import IsotipoIA from './index/ia-isotipo';
 import './footer-teclab.css';
 
 /**
@@ -55,20 +56,26 @@ const COLUMNA = 'py-7 border-t border-[rgba(0,199,177,0.12)] lg:py-0 lg:border-t
  * porque una direccion se lee como un requisito de asistencia y frena al lead
  * que vive lejos. WhatsApp usa el número de la casa; el teléfono conserva el de la sede.
  */
-export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '' }: {
+export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', marca = 'cau' }: {
   casa?: 'cau' | 'teclab';
   /** Clase que expone la tipografía de la casa (`--font-poppins` en Teclab). */
   fuente?: string;
   /** Dominio del CAU cuando el pie se sirve desde otro sitio (topykly). */
   baseHref?: string;
+  /** `identidad` deja el pie de la Academia: sin navegación del CAU. */
+  marca?: 'cau' | 'identidad';
 } = {}) {
   const teclab = casa === 'teclab';
-  // En topykly los enlaces internos van directo al CAU: un href relativo daría
-  // un 301 intermedio por cada clic.
-  const enlaces = ENLACES.map(enlace => ({
-    ...enlace,
-    href: baseHref ? `${baseHref}${enlace.href}` : enlace.href,
-  }));
+  const identidad = marca === 'identidad';
+  // En topykly el pie no ofrece Teclab ni clases de apoyo: es el sitio de la
+  // Academia. En el CAU los enlaces internos van directo al dominio del CAU,
+  // sin un 301 intermedio.
+  const enlaces = identidad
+    ? [{ href: '/', label: 'Inicio' }]
+    : ENLACES.map(enlace => ({
+      ...enlace,
+      href: baseHref ? `${baseHref}${enlace.href}` : enlace.href,
+    }));
   // La sede tiene cuenta propia de Teclab desde el 10/10/2026: en /teclab el
   // ícono de Instagram lleva ahí y no a la cuenta del CAU.
   const redes = teclab
@@ -96,7 +103,12 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '' }:
 
           {/* Marca */}
           <div className="pb-8 lg:pb-0 lg:pr-8">
-            {teclab ? (
+            {identidad ? (
+              <div className="mb-4 flex items-center justify-center gap-3 lg:justify-start">
+                <IsotipoIA className="h-9 w-auto" />
+                <span className="text-lg font-semibold text-white">Academia Identidad Argentina</span>
+              </div>
+            ) : teclab ? (
               <Image
                 src="/imagenes/teclab/logo-teclab-siglo21.webp"
                 alt="Teclab, Instituto Técnico Superior — Universidad Siglo 21"
@@ -128,9 +140,11 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '' }:
               </div>
             )}
             <p className="mx-auto mt-5 max-w-md text-[15px] leading-7 text-[#c0d5d0] lg:mx-0 lg:mt-4 lg:max-w-sm lg:text-sm lg:leading-relaxed">
-              {teclab
-                ? 'Tecnicaturas y cursos del Instituto Técnico Superior Teclab, 100% online y con articulación a Universidad Siglo 21. Te acompañamos de la inscripción al título.'
-                : 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual.'}
+              {identidad
+                ? 'Diplomaturas y cursos de la Academia Identidad Argentina.'
+                : teclab
+                  ? 'Tecnicaturas y cursos del Instituto Técnico Superior Teclab, 100% online y con articulación a Universidad Siglo 21. Te acompañamos de la inscripción al título.'
+                  : 'Centro de Aprendizaje Universitario. Formación universitaria con modalidad virtual.'}
             </p>
           </div>
 

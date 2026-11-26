@@ -43,6 +43,7 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
   // En topykly el pie enlaza al CAU con URLs absolutas: un href relativo daría
   // un 301 por cada clic.
   const baseHref = base === 'https://topykly.com' ? 'https://www.siglo21sur.com' : '';
+  const esIdentidad = base === 'https://topykly.com';
   const provider = ia ? { '@type': 'Organization', name: 'Academia Identidad Argentina', url: 'https://identidadargentina.com.ar' }
     : teclab ? { '@type': 'EducationalOrganization', name: 'Teclab Instituto Técnico Superior', url: 'https://teclab.edu.ar' }
     : { '@type': 'CollegeOrUniversity', name: 'Universidad Siglo 21', url: 'https://21.edu.ar' };
@@ -74,6 +75,7 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
       />
       {!teclab && <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} />}
     </main>
-    <SiteFooter casa={teclab ? 'teclab' : 'cau'} fuente={teclab ? 'fuente-poppins' : ''} baseHref={baseHref} />
+    <SiteFooter casa={teclab ? 'teclab' : 'cau'} fuente={teclab ? 'fuente-poppins' : ''}
+      baseHref={baseHref} marca={esIdentidad ? 'identidad' : 'cau'} />
   </ContextoTurnstile.Provider>;
 }

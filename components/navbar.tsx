@@ -20,6 +20,12 @@ const NAV_LINKS = [
   { href: '/faq', label: 'FAQ' },
 ];
 
+// En topykly el sitio es de la Academia: ni Teclab ni clases de apoyo ni las
+// páginas del CAU. La única sección es la portada con las diplomaturas.
+const NAV_LINKS_IDENTIDAD = [
+  { href: '/', label: 'Diplomaturas' },
+];
+
 const SOCIALS = [
   { href: 'https://wa.me/5491132973801?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta', label: 'WhatsApp', Icon: WhatsAppIcon, cssClass: 'social-whatsapp marca-cau' },
   { href: `https://wa.me/${numeroWhatsAppDe('teclab')}?text=Hola%2C%20me%20gustar%C3%ADa%20realizar%20una%20consulta`, label: 'WhatsApp', Icon: WhatsAppIcon, cssClass: 'social-whatsapp marca-teclab' },
@@ -51,6 +57,7 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
   /** `identidad` reemplaza la marca del CAU en el navbar móvil. */
   marca?: 'cau' | 'identidad';
 } = {}) {
+  const enlaces = marca === 'identidad' ? NAV_LINKS_IDENTIDAD : NAV_LINKS;
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
@@ -195,10 +202,10 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
             </button>
           </div>
 
-          {NAV_LINKS.map(({ href, label }) => (
+          {enlaces.map(({ href, label }) => (
             <Link
               key={href}
-              href={baseHref ? `${baseHref}${href}` : href}
+              href={marca === 'identidad' ? href : baseHref ? `${baseHref}${href}` : href}
               // El menu movil cerrado sigue pegado al viewport (translateX(-100%)),
               // asi que entra en el rootMargin del prefetch y precarga las 6 rutas
               // de fondo en cada visita. Se navega igual, solo pide al hacer clic.

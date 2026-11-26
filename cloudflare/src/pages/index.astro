@@ -40,7 +40,7 @@ const turnstile = configTurnstile(env as unknown as Record<string, unknown>);
     ruta="/"
   >
     <PaginaIdentidad carreras={carreras} turnstile={turnstile} client:idle />
-    <SiteFooter baseHref="https://www.siglo21sur.com" />
+    <SiteFooter baseHref="https://www.siglo21sur.com" marca="identidad" />
   </Sitio>
 ) : (
   <Sitio
