@@ -5,15 +5,14 @@ Estado: la Academia vive en `https://topykly.com` con el Worker
 `cau-identidad-20261126`, la misma D1 y el mismo código que el CAU. El dominio
 ya está separado, pero el código sigue dentro de `proyecto-cau`.
 
-## 1. Footer
+## 1. Footer — rehecho el 26/11/2026
 
-- Rehacer el footer mobile de Identidad. Hoy es un pie propio y compacto
-  (marca, enlaces, modalidad, teléfono y copyright) para no arrastrar el pie del
-  CAU, pero el usuario lo sigue considerando mejorable.
-- No debe nombrar Villa Lugano, el CAU ni Siglo 21, ni repetir los CTA que ya
-  están en la barra fija.
-- Revisar los hovers: nada de texto amarillo; el WhatsApp va en verde y la
-  preinscripción sigue siendo la acción principal.
+- Quedó un pie propio de columnas: marca, Navegación, Contacto y Modalidad,
+  con doble filete vertical en escritorio y dos columnas en mobile. Sin CTA
+  duplicados: la barra fija sigue siendo la acción principal.
+- No nombra Villa Lugano, el CAU ni Siglo 21. El WhatsApp va en verde y los
+  enlaces no se ponen amarillos al pasar el puntero.
+- Captura de control: `screenshots/topykly-footer-columnas2.png`.
 
 ## 2. Formulario
 

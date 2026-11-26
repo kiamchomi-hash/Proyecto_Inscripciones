@@ -101,34 +101,43 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', m
           borderTop: '2px solid rgba(0, 144, 193, 0.5)',
         }}
       >
-        <div className="identidad-footer__marca">
-          <IsotipoIA className="identidad-footer__isotipo" />
-          <p className="identidad-footer__nombre">Academia Identidad Argentina</p>
-          <p className="identidad-footer__bajada">
-            Diplomaturas y cursos de la Academia Identidad Argentina.
-          </p>
+        <div className="identidad-footer__reja">
+          <div className="identidad-footer__marca">
+            <IsotipoIA className="identidad-footer__isotipo" />
+            <p className="identidad-footer__nombre">Academia Identidad Argentina</p>
+            <p className="identidad-footer__bajada">
+              Diplomaturas y cursos de la Academia Identidad Argentina.
+            </p>
+          </div>
+
+          <nav className="identidad-footer__bloque identidad-footer__bloque--nav" aria-label="Navegación">
+            <h2>Navegación</h2>
+            <a href="/#carreras">Diplomaturas</a>
+            <a href="/#como-se-cursa">Cómo se cursa</a>
+            <a href="/#testimonios">Alumnos</a>
+            <a href="/#contacto">Contacto</a>
+          </nav>
+
+          <div className="identidad-footer__bloque identidad-footer__bloque--contacto">
+            <h2>Contacto</h2>
+            <a href="tel:+5491132973801">11 3297-3801</a>
+            <a className="identidad-footer__wa" href={wa} target="_blank" rel="noopener nofollow">
+              <WhatsAppIcon className="h-4 w-4" />
+              WhatsApp
+            </a>
+          </div>
+
+          <div className="identidad-footer__bloque identidad-footer__bloque--modalidad">
+            <h2>Modalidad</h2>
+            <p>100% online, desde todo el país.</p>
+            <p>Certificación nacional e internacional.</p>
+          </div>
         </div>
 
-        <nav className="identidad-footer__nav" aria-label="Enlaces de la Academia">
-          <a href="/#carreras">Diplomaturas</a>
-          <a href="/#como-se-cursa">Cómo se cursa</a>
-          <a href="/#testimonios">Alumnos</a>
-          <a href="/#contacto">Contacto</a>
-        </nav>
-
-        <div className="identidad-footer__acciones">
-          <a className="identidad-footer__cta" href="/#preinscripcion">Preinscribirme</a>
-          <a className="identidad-footer__wa" href={wa} target="_blank" rel="noopener nofollow">
-            <WhatsAppIcon className="h-5 w-5" />
-            WhatsApp
-          </a>
+        <div className="identidad-footer__legal">
+          <p>© 2027 Academia Identidad Argentina.</p>
+          <a href="/#preinscripcion">Preinscribirme</a>
         </div>
-
-        <p className="identidad-footer__dato">Modalidad 100% online, desde todo el país.</p>
-        <p className="identidad-footer__tel">
-          Consultas: <a href="tel:+5491132973801">11 3297-3801</a>
-        </p>
-        <p className="identidad-footer__copy">© 2027 Academia Identidad Argentina.</p>
       </footer>
     );
   }

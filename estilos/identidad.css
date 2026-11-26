@@ -908,11 +908,6 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
   .identidad-hero__visual {
     display: none;
   }
-
-  /* La barra fija de acciones no tiene que tapar el cierre del pie. */
-  body.tema-identidad footer[data-marca="identidad"] {
-    padding-bottom: calc(78px + env(safe-area-inset-bottom));
-  }
 }
 
 
@@ -947,19 +942,10 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
   .identidad-hero__pruebas {
     justify-content: center;
   }
-
-  body.tema-identidad footer[data-marca="identidad"] nav ul {
-    grid-template-columns: 1fr;
-    justify-items: center;
-  }
-
-  body.tema-identidad footer[data-marca="identidad"] nav a {
-    text-align: center;
-  }
 }
 
 
-/* ── Rótulo 3D de la oferta ───────────────────────────────────────────── */
+/* ── Rótulo de la oferta ──────────────────────────────────────────────── */
 
 .identidad-programas__rotulo {
   max-width: 80rem;
@@ -988,154 +974,174 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
 /* ── Pie propio de la Academia ────────────────────────────────────────── */
 
 .identidad-footer {
-  padding: 2.25rem 1.25rem 1.5rem;
   color: #eaf2f7;
-  text-align: center;
+}
+
+.identidad-footer__reja {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 0;
+}
+
+@media (min-width: 900px) {
+  .identidad-footer__reja {
+    grid-template-columns: 1.55fr 1fr 1fr 1.2fr;
+    padding: 2.5rem 2rem 0;
+  }
 }
 
 .identidad-footer__marca {
   display: flex;
   flex-direction: column;
+  grid-column: 1 / -1;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
+  padding: 0.5rem 0 1.25rem;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .identidad-footer__marca {
+    grid-column: auto;
+    align-items: flex-start;
+    padding: 0 2rem 0 0;
+    text-align: left;
+  }
 }
 
 .identidad-footer__isotipo {
-  width: 44px;
+  width: 42px;
   height: auto;
 }
 
 .identidad-footer__nombre {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
 .identidad-footer__bajada {
-  max-width: 26rem;
-  margin: 0 auto;
+  max-width: 24rem;
+  margin: 0;
   color: #9fb3c8;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   line-height: 1.5;
 }
 
-.identidad-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.4rem 1rem;
-  max-width: 38rem;
-  margin: 1.4rem auto 0;
-  padding-top: 1.2rem;
-  border-top: 1px solid rgba(0, 144, 193, 0.25);
+.identidad-footer__bloque {
+  padding: 1rem 0;
+  border-top: 1px solid rgba(0, 144, 193, 0.22);
 }
 
-.identidad-footer__nav a {
-  color: #dbeaf2;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-decoration: none;
-  text-transform: uppercase;
+.identidad-footer__bloque--modalidad {
+  grid-column: 1 / -1;
 }
 
-.identidad-footer__nav a:hover {
-  color: #fff;
-  text-decoration: underline;
-}
+@media (min-width: 900px) {
+  .identidad-footer__bloque {
+    position: relative;
+    grid-column: auto;
+    padding: 0 1.4rem;
+    border-top: 0;
+  }
 
-.identidad-footer__acciones {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.55rem;
-  max-width: 22rem;
-  margin: 1.2rem auto 0;
-}
-
-@media (min-width: 640px) {
-  .identidad-footer__acciones {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    max-width: none;
+  /* Doble filete vertical: dos líneas de 1 px separadas por 2 px, la mecánica
+     del pie de columnas de greptile, recoloreada al azul de la Academia. */
+  .identidad-footer__bloque::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 144, 193, 0.42) 1px,
+      transparent 1px,
+      transparent 3px,
+      rgba(0, 144, 193, 0.42) 3px
+    );
   }
 }
 
-.identidad-footer__cta,
-.identidad-footer__wa {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  min-height: 46px;
-  padding: 0.6rem 1.3rem;
-  border-radius: 4px;
-  font-size: 0.76rem;
-  font-weight: 850;
-  letter-spacing: 0.04em;
-  text-align: center;
-  text-decoration: none;
+.identidad-footer__bloque h2 {
+  margin: 0 0 0.55rem;
+  color: var(--ia-yellow);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.identidad-footer__cta {
-  border: 1px solid #b99c08;
-  background: var(--ia-yellow);
-  color: #101820;
-  box-shadow: 0 3px 0 #8a7404;
-}
-
-.identidad-footer__cta:hover {
-  background: #f7dc4a;
-}
-
-.identidad-footer__wa {
-  border: 1px solid #25d366;
-  background: transparent;
-  color: #25d366;
-}
-
-.identidad-footer__wa:hover {
-  background: rgba(37, 211, 102, 0.12);
-  color: #25d366;
-}
-
-.identidad-footer__dato {
-  margin: 1.15rem 0 0;
-  color: #9fb3c8;
-  font-size: 0.78rem;
-}
-
-.identidad-footer__tel {
-  margin: 0.3rem 0 0;
-  color: #9fb3c8;
-  font-size: 0.78rem;
-}
-
-.identidad-footer__tel a {
-  color: #dbeaf2;
-  font-weight: 700;
+.identidad-footer__bloque a,
+.identidad-footer__bloque p {
+  display: block;
+  margin: 0.28rem 0 0;
+  color: #cfe3ee;
+  font-size: 0.8rem;
+  line-height: 1.45;
   text-decoration: none;
 }
 
-.identidad-footer__tel a:hover {
+.identidad-footer__bloque a:hover {
   color: #fff;
   text-decoration: underline;
 }
 
-.identidad-footer__copy {
-  margin: 1rem 0 0;
+.identidad-footer__bloque .identidad-footer__wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #25d366;
+  font-weight: 700;
+}
+
+.identidad-footer__bloque .identidad-footer__wa:hover {
+  color: #25d366;
+}
+
+.identidad-footer__legal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem 1rem calc(1.25rem + 78px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(0, 144, 193, 0.22);
   color: #7f93a8;
   font-size: 0.7rem;
 }
 
+@media (min-width: 900px) {
+  .identidad-footer__legal {
+    flex-direction: row;
+    padding: 1.1rem 2rem 1.5rem;
+  }
+}
+
+.identidad-footer__legal p {
+  margin: 0;
+}
+
+.identidad-footer__legal a {
+  color: var(--ia-yellow);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.identidad-footer__legal a:hover {
+  color: #f7dc4a;
+}
 
 @media (max-width: 899px) {
-  /* La barra fija ya ofrece Preinscribirme y WhatsApp: el pie no los repite. */
-  .identidad-footer__acciones {
+  .identidad-footer__legal a {
     display: none;
   }
 }

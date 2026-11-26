@@ -34,7 +34,7 @@ Las altas de Teclab van primero; después las demás.
 
 10. **Migrar las carreras de Teclab a un dominio propio** (20/11/2026): el plan está en [`docs/plans/2026-11-20-migracion-teclab-dominio-propio.md`](docs/plans/2026-11-20-migracion-teclab-dominio-propio.md). Se hace de a una carrera por deploy, con 301 desde `siglo21sur.com`, canónicas y sitemap por host, sin tocar Siglo 21 ni las páginas `/teclab`, `/teclab/inscripcion` y `/teclab/test-vocacional`. El plan asume `teclab-lugano.com`: hay que confirmar el nombre antes de empezar. La Tarea 5 (compra del dominio, zona en Cloudflare, token y Turnstile) requiere autorización explícita y pasos del usuario.
 
-14. **Identidad Argentina: footer, formulario, modales y carpeta propia** (53; ampliado el 26/11/2026). La Academia ya vive en `topykly.com` con el Worker `cau-identidad-20261126`; quedan pendientes el footer mobile, el formulario y los modales, y separar todo Identidad en una carpeta propia del escritorio, fuera de `proyecto-cau`, para no mezclarlo con Siglo 21. No crear `/identidad` en este repo. [Detalle](odd/tasks/identidad-pendientes.md).
+14. **Identidad Argentina: formulario, modales y carpeta propia** (53; footer rehecho el 26/11/2026). La Academia ya vive en `topykly.com` con el Worker `cau-identidad-20261126`; quedan pendientes el formulario y los modales, y separar todo Identidad en una carpeta propia del escritorio, fuera de `proyecto-cau`, para no mezclarlo con Siglo 21. No crear `/identidad` en este repo. [Detalle](odd/tasks/identidad-pendientes.md).
 
 ## Media
 
