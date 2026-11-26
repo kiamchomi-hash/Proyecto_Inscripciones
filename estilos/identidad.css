@@ -324,21 +324,21 @@ body.tema-identidad .menu-header {
 }
 
 .ia-cta--whatsapp {
-  border-color: rgba(0, 144, 193, 0.55);
-  background: #0f1a22;
-  color: #eaf2f7;
-  box-shadow: 0 4px 0 rgba(0, 100, 138, 0.6);
+  border: 1px solid #25d366;
+  background: transparent;
+  color: #25d366;
+  box-shadow: none;
 }
 
 .ia-cta--whatsapp:hover {
-  background: #16212b;
-  transform: translateY(-1px);
-  box-shadow: 0 5px 0 rgba(0, 100, 138, 0.6);
+  background: rgba(37, 211, 102, 0.12);
+  color: #25d366;
+  box-shadow: none;
 }
 
 .ia-cta--whatsapp:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 rgba(0, 100, 138, 0.6);
+  transform: translateY(1px);
+  box-shadow: none;
 }
 
 .ia-cta:focus-visible {
@@ -741,15 +741,15 @@ body.tema-identidad .section-category-pill:hover {
 }
 
 .identidad-sticky__wa {
-  border: 1px solid #128c4a;
-  background: #25d366;
-  color: #07130c;
-  box-shadow: 0 3px 0 #0d6b39;
+  border: 1px solid #25d366;
+  background: #0b1218;
+  color: #25d366;
+  box-shadow: none;
 }
 
 .identidad-sticky__wa:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #0d6b39;
+  transform: translateY(1px);
+  box-shadow: none;
 }
 
 .identidad-wa-flotante {
@@ -847,7 +847,7 @@ body.tema-identidad .section-category-pill:hover {
   }
 
   .navbar-marca-ia:hover {
-    color: var(--ia-yellow);
+    color: #fff;
   }
 }
 
@@ -894,10 +894,6 @@ body.tema-identidad .filter-pill.featured:hover {
 /* ── Pie ──────────────────────────────────────────────────────────────── */
 
 body.tema-identidad footer[data-marca="identidad"] h2 {
-  color: var(--ia-yellow);
-}
-
-body.tema-identidad footer[data-marca="identidad"] a:hover {
   color: var(--ia-yellow);
 }
 
@@ -962,6 +958,184 @@ body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
   }
 }
 
-body.tema-identidad footer[data-marca="identidad"] a[href^="https://wa.me"]:hover {
-  color: #fff !important;
+
+/* ── Rótulo 3D de la oferta ───────────────────────────────────────────── */
+
+.identidad-programas__rotulo {
+  max-width: 80rem;
+  margin: 0 auto 1.25rem;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.identidad-programas__3d {
+  display: inline-block;
+  margin: 0;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgba(241, 207, 28, 0.4);
+  border-radius: 4px;
+  background: #101820;
+  color: var(--ia-yellow);
+  font-size: clamp(0.8rem, 1.4vw, 1rem);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+/* ── Pie propio de la Academia ────────────────────────────────────────── */
+
+.identidad-footer {
+  padding: 2.25rem 1.25rem 1.5rem;
+  color: #eaf2f7;
+  text-align: center;
+}
+
+.identidad-footer__marca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.identidad-footer__isotipo {
+  width: 44px;
+  height: auto;
+}
+
+.identidad-footer__nombre {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.identidad-footer__bajada {
+  max-width: 26rem;
+  margin: 0 auto;
+  color: #9fb3c8;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.identidad-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1rem;
+  max-width: 38rem;
+  margin: 1.4rem auto 0;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(0, 144, 193, 0.25);
+}
+
+.identidad-footer__nav a {
+  color: #dbeaf2;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.identidad-footer__nav a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.identidad-footer__acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+  max-width: 22rem;
+  margin: 1.2rem auto 0;
+}
+
+@media (min-width: 640px) {
+  .identidad-footer__acciones {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    max-width: none;
+  }
+}
+
+.identidad-footer__cta,
+.identidad-footer__wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 46px;
+  padding: 0.6rem 1.3rem;
+  border-radius: 4px;
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.identidad-footer__cta {
+  border: 1px solid #b99c08;
+  background: var(--ia-yellow);
+  color: #101820;
+  box-shadow: 0 3px 0 #8a7404;
+}
+
+.identidad-footer__cta:hover {
+  background: #f7dc4a;
+}
+
+.identidad-footer__wa {
+  border: 1px solid #25d366;
+  background: transparent;
+  color: #25d366;
+}
+
+.identidad-footer__wa:hover {
+  background: rgba(37, 211, 102, 0.12);
+  color: #25d366;
+}
+
+.identidad-footer__dato {
+  margin: 1.15rem 0 0;
+  color: #9fb3c8;
+  font-size: 0.78rem;
+}
+
+.identidad-footer__tel {
+  margin: 0.3rem 0 0;
+  color: #9fb3c8;
+  font-size: 0.78rem;
+}
+
+.identidad-footer__tel a {
+  color: #dbeaf2;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.identidad-footer__tel a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.identidad-footer__copy {
+  margin: 1rem 0 0;
+  color: #7f93a8;
+  font-size: 0.7rem;
+}
+
+
+@media (max-width: 899px) {
+  /* La barra fija ya ofrece Preinscribirme y WhatsApp: el pie no los repite. */
+  .identidad-footer__acciones {
+    display: none;
+  }
 }

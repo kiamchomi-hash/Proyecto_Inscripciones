@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { numeroWhatsAppDe } from '@/lib/whatsapp';
 import IsotipoIA from './index/ia-isotipo';
+import { WhatsAppIcon } from './icons';
 import './footer-teclab.css';
 
 /**
@@ -88,9 +89,53 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', m
           : red)
       : REDES;
 
+  if (identidad) {
+    const wa = redes[0]?.href ?? 'https://wa.me/5491132973801';
+    return (
+      <footer
+        data-casa="identidad"
+        data-marca="identidad"
+        className="identidad-footer"
+        style={{
+          background: 'linear-gradient(180deg, #0b1218 0%, #101820 100%)',
+          borderTop: '2px solid rgba(0, 144, 193, 0.5)',
+        }}
+      >
+        <div className="identidad-footer__marca">
+          <IsotipoIA className="identidad-footer__isotipo" />
+          <p className="identidad-footer__nombre">Academia Identidad Argentina</p>
+          <p className="identidad-footer__bajada">
+            Diplomaturas y cursos de la Academia Identidad Argentina.
+          </p>
+        </div>
+
+        <nav className="identidad-footer__nav" aria-label="Enlaces de la Academia">
+          <a href="/#carreras">Diplomaturas</a>
+          <a href="/#como-se-cursa">Cómo se cursa</a>
+          <a href="/#testimonios">Alumnos</a>
+          <a href="/#contacto">Contacto</a>
+        </nav>
+
+        <div className="identidad-footer__acciones">
+          <a className="identidad-footer__cta" href="/#preinscripcion">Preinscribirme</a>
+          <a className="identidad-footer__wa" href={wa} target="_blank" rel="noopener nofollow">
+            <WhatsAppIcon className="h-5 w-5" />
+            WhatsApp
+          </a>
+        </div>
+
+        <p className="identidad-footer__dato">Modalidad 100% online, desde todo el país.</p>
+        <p className="identidad-footer__tel">
+          Consultas: <a href="tel:+5491132973801">11 3297-3801</a>
+        </p>
+        <p className="identidad-footer__copy">© 2027 Academia Identidad Argentina.</p>
+      </footer>
+    );
+  }
+
   return (
     <footer
-      data-casa={identidad ? 'identidad' : casa}
+      data-casa={casa}
       data-marca={identidad ? 'identidad' : 'cau'}
       className={`relative overflow-hidden ${fuente}`}
       style={{
