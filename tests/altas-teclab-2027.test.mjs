@@ -32,12 +32,12 @@ test('Diseño y Desarrollo de IA: área, categoría, portada, sin resolución ni
   assert.ok(existsSync(`public${portada}`));
 });
 
-test('el precio de las dos altas 2027 queda pendiente, sin pedir el mail', () => {
-  for (const carrera of [ia, negocios]) {
-    const fila = { ...carrera, activa: true };
-    assert.equal(precioPendiente(fila), true);
-    assert.equal(carreraConPrecio(fila), false);
-  }
+test('el precio de Fintech queda pendiente y el de Diseño y Desarrollo de IA ya se publica', () => {
+  assert.equal(precioPendiente({ ...ia, activa: true }), false);
+  assert.equal(carreraConPrecio({ ...ia, activa: true }), true);
+  const fila = { ...negocios, activa: true };
+  assert.equal(precioPendiente(fila), true);
+  assert.equal(carreraConPrecio(fila), false);
   assert.equal(precioPendiente({ nombre: 'Tecnicatura Superior en Programación' }), false);
 });
 

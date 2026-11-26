@@ -397,7 +397,6 @@ export function validarPayloadPrecio(
 // Carreras abiertas cuyo precio todavía no publica la casa. No se inventa un
 // número: se muestra «Precio pendiente» y se mantiene la consulta por WhatsApp.
 const PRECIOS_PENDIENTES = new Set([
-  'Tecnicatura Superior en Diseño y Desarrollo de Inteligencia Artificial',
   'Tecnicatura Superior en Administración de Negocios Digitales Financieros',
 ]);
 
