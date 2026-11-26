@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   BASE_IDENTIDAD, BASE_PRINCIPAL, baseDeSitio, destinoFueraDeIdentidad,
-  normalizarHost, rutaConocidaDelPrincipal, rutaDeIdentidadPermitida, sitioDe,
+  esCarreraIdentidadRetirada, normalizarHost, rutaConocidaDelPrincipal,
+  rutaDeIdentidadPermitida, sitioDe,
 } from '../src/entrega/sitios.ts';
 import { generarRobots } from '../src/entrega/sitemap-xml.ts';
 
@@ -69,4 +70,9 @@ test('los prefijos del CAU no se confunden con rutas de topykly', () => {
   for (const ruta of ['/contacto2', '/teclabx', '/tema/1/x', '/']) {
     assert.equal(rutaConocidaDelPrincipal(ruta), false, ruta);
   }
+});
+
+test('las fichas retiradas de la Academia se reconocen por slug', () => {
+  assert.equal(esCarreraIdentidadRetirada('diplomatura-en-oratoria'), true);
+  assert.equal(esCarreraIdentidadRetirada('diplomatura-en-compliance'), false);
 });

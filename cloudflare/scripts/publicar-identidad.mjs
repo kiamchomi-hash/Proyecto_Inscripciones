@@ -89,7 +89,8 @@ function credencial() {
 async function smoke() {
   const casos = [
     ['/', 200],
-    ['/carreras/diplomatura-en-oratoria', 200],
+    ['/carreras/diplomatura-en-compliance', 200],
+    ['/carreras/diplomatura-en-oratoria', 301],
     ['/contacto', 301],
   ];
   for (const [ruta, estado] of casos) {
@@ -120,8 +121,14 @@ async function smoke() {
         throw new Error(`/contacto redirige a ${destino}`);
       }
     }
+    if (ruta === '/carreras/diplomatura-en-oratoria') {
+      const destino = respuesta.headers.get('location') ?? '';
+      if (!destino.startsWith(`${BASE}/`)) {
+        throw new Error(`la ficha retirada redirige a ${destino}`);
+      }
+    }
   }
-  console.log(`Smoke de ${BASE}: home, ficha y redirect al CAU.`);
+  console.log(`Smoke de ${BASE}: home, ficha, ficha retirada y redirect al CAU.`);
 }
 
 async function main() {

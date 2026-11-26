@@ -11,7 +11,7 @@ import { carrerasPublicas, carreraPorSlug } from '../../datos/carreras';
 import { seoCarrera } from '../../entrega/carrera-seo';
 import { configTurnstile } from '../../entrega/entorno-publico';
 import { redirectCarrera } from '../../entrega/redirects-carreras';
-import { baseDeSitio, sitioDe } from '../../entrega/sitios';
+import { baseDeSitio, sitioDe, BASE_IDENTIDAD, esCarreraIdentidadRetirada } from '../../entrega/sitios';
 import { carreraToSlug } from '@/components/index/types';
 import { esCursoTeclab, esTeclab } from '@/components/index/teclab';
 import '@/estilos/poppins.css';
@@ -32,7 +32,14 @@ if (redirect) {
 }
 const carreras = await carrerasPublicas(env.DB);
 const carrera = carreraPorSlug(carreras, Astro.params.slug!);
-if (!carrera) return new Response(null, { status: 404 });
+if (!carrera) {
+  // Una ficha de Identidad que la Academia retiró no se renderiza, pero su URL
+  // vieja no queda en 404: manda a la portada de la Academia.
+  if (esCarreraIdentidadRetirada(Astro.params.slug!)) {
+    return Astro.redirect(`${BASE_IDENTIDAD}/`, 301);
+  }
+  return new Response(null, { status: 404 });
+}
 const ruta = `/carreras/${carreraToSlug(carrera)}`;
 const sitio = sitioDe(Astro.url.hostname, (env as unknown as { APP_SITIO?: string }).APP_SITIO);
 const esIdentidad = carrera.nivel === 'Identidad Argentina';

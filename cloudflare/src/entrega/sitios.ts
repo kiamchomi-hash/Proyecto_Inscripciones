@@ -69,6 +69,20 @@ export function rutaConocidaDelPrincipal(ruta: string): boolean {
 }
 
 /**
+ * Fichas de Identidad que la Academia dejó de ofrecer. No están activas en D1,
+ * así que la ficha no se renderiza; su URL vieja se manda a la portada de
+ * topykly para no perder el tráfico en un 404. Si alguna vuelve, basta con
+ * activarla en la base: la ficha existe y esta lista deja de aplicarse.
+ */
+export const CARRERAS_IDENTIDAD_RETIRADAS = new Set([
+  'diplomatura-en-oratoria',
+]);
+
+export function esCarreraIdentidadRetirada(slug: string): boolean {
+  return CARRERAS_IDENTIDAD_RETIRADAS.has(slug);
+}
+
+/**
  * Adónde va una ruta que no pertenece al sitio de Identidad. `null` significa
  * que se sirve normalmente.
  */

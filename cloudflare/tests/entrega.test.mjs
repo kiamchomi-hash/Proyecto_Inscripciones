@@ -590,4 +590,17 @@ test('topykly sirve la Academia y devuelve al CAU lo que no es suyo', async t =>
   const robots = await astro.fetch('http://topykly.com/robots.txt');
   assert.equal(robots.status, 200);
   assert.match(await robots.text(), /Sitemap: https:\/\/topykly\.com\/sitemap\.xml/);
+
+  // Una ficha retirada de la Academia no queda en 404: desde los dos dominios
+  // manda a la portada de topykly.
+  await (await worker.getEnv()).DB
+    .prepare("UPDATE carreras SET activa = 0 WHERE nombre = 'Diplomatura en Oratoria'").run();
+  for (const host of ['topykly.com', 'www.siglo21sur.com']) {
+    const retirada = await astro.fetch(`http://${host}/carreras/diplomatura-en-oratoria`,
+      { redirect: 'manual' });
+    assert.equal(retirada.status, 301, host);
+    const recibido = new URL(retirada.headers.get('location'), `http://${host}`);
+    assert.equal(recibido.host, 'topykly.com', host);
+    assert.equal(recibido.pathname, '/', host);
+  }
 });
