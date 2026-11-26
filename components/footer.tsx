@@ -89,8 +89,16 @@ export default function SiteFooter({ casa = 'cau', fuente = '', baseHref = '', m
   return (
     <footer
       data-casa={casa}
+      data-marca={identidad ? 'identidad' : 'cau'}
       className={`relative overflow-hidden ${fuente}`}
-      style={{ background: 'linear-gradient(180deg, #06221f 0%, #071a18 100%)', borderTop: '2px solid rgba(0, 199, 177, 0.26)' }}
+      style={{
+        background: identidad
+          ? 'linear-gradient(180deg, #0b1218 0%, #101820 100%)'
+          : 'linear-gradient(180deg, #06221f 0%, #071a18 100%)',
+        borderTop: identidad
+          ? '2px solid rgba(0, 144, 193, 0.5)'
+          : '2px solid rgba(0, 199, 177, 0.26)',
+      }}
     >
       {/* Resplandor decorativo */}
       <div

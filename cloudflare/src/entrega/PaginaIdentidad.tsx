@@ -1,5 +1,6 @@
 import CareersCatalog from '@/components/index/careers-catalog';
 import FormularioLead from '@/components/formularios/formulario-lead';
+import IsotipoIA from '@/components/index/ia-isotipo';
 import type { CarreraCatalogo } from '@/components/index/types';
 import { ContextoTurnstile, type ConfigTurnstile } from './turnstile-contexto';
 
@@ -8,8 +9,8 @@ import { ContextoTurnstile, type ConfigTurnstile } from './turnstile-contexto';
  *
  * No reusa la home del CAU porque el héroe, las estadísticas y los formularios
  * hablan de Universidad Siglo 21. El catálogo, en cambio, es el mismo: con sólo
- * las ocho fichas de la Academia, la sección queda como única oferta. Los
- * títulos y la bajada son etiquetas de la casa y de los datos, no copy nuevo.
+ * las fichas de la Academia, la sección queda como única oferta. Los títulos y
+ * la bajada son etiquetas de la casa y de los datos, no copy nuevo.
  */
 export default function PaginaIdentidad(
   { carreras, turnstile }: { carreras: CarreraCatalogo[]; turnstile: ConfigTurnstile },
@@ -17,17 +18,25 @@ export default function PaginaIdentidad(
   return (
     <ContextoTurnstile.Provider value={turnstile}>
       <main className="flex-1">
-        <header className="mx-auto w-full max-w-[2400px] px-4 pb-2 pt-12 text-center sm:px-8 sm:pt-16 xl:px-20">
-          <h1 className="text-3xl font-black uppercase tracking-tighter text-white min-[380px]:text-4xl sm:text-5xl">
-            Academia Identidad Argentina
-          </h1>
-          <p className="mt-3 text-sm text-white/70 sm:text-base">Diplomaturas y cursos</p>
+        <header className="identidad-hero">
+          {/* Grilla y halos: mecánica de
+              ~/Documentos/uiverse/biblioteca/mias/fondo-cuadricula-luminosa-xai-oscuro
+              y del halo anclado fuera del bloque de
+              ~/.../hero-isometrico-halo-violeta-evervault, recoloreados a la
+              paleta de la Academia. */}
+          <div className="identidad-hero__grid" aria-hidden="true" />
+          <div className="identidad-hero__contenido">
+            <IsotipoIA className="identidad-hero__isotipo" />
+            <h1 className="identidad-hero__titulo">Academia Identidad Argentina</h1>
+            <p className="identidad-hero__bajada">Diplomaturas y cursos</p>
+            <span className="identidad-hero__regla" aria-hidden="true" />
+          </div>
         </header>
         <CareersCatalog carreras={carreras} />
         {/* Los mismos dos formularios de la home del CAU, con la oferta acotada
             a la Academia: el contacto general y la preinscripción. */}
-        <FormularioLead carreras={carreras} modo="contacto" origen="home" />
-        <FormularioLead carreras={carreras} modo="preinscripcion" origen="home" />
+        <FormularioLead carreras={carreras} modo="contacto" origen="home" casa="identidad" />
+        <FormularioLead carreras={carreras} modo="preinscripcion" origen="home" casa="identidad" />
       </main>
     </ContextoTurnstile.Provider>
   );

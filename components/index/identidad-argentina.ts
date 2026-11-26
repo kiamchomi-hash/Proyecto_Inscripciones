@@ -19,6 +19,7 @@ const ESCUELAS: { match: string; escuela: string }[] = [
   { match: 'marketing para emprendedores', escuela: 'Negocios' },
   { match: 'compliance', escuela: 'Negocios' },
   { match: 'constitución de sociedades', escuela: 'Derecho' },
+  { match: 'inversión hotelera', escuela: 'Administración' },
   { match: 'management hotelero', escuela: 'Administración' },
 ];
 

@@ -1,0 +1,257 @@
+/* Tema de la Academia Identidad Argentina.
+ *
+ * Sólo se aplica al sitio de topykly: el CAU conserva su paleta verde. Todo lo
+ * de acá cuelga de `html.tema-identidad` / `body.tema-identidad`, que el layout
+ * agrega cuando `marca="identidad"`.
+ *
+ * Paleta de marca: tinta #101820, azul #0090C1, amarillo #F1CF1C.
+ *
+ * Mecánicas tomadas de la biblioteca local de UIverse (no se pegó ninguna pieza
+ * completa; se conservó la mecánica y se recoloreó):
+ *  - grilla luminosa con máscara y brillos:
+ *    ~/Documentos/uiverse/biblioteca/mias/fondo-cuadricula-luminosa-xai-oscuro
+ *  - halo anclado fuera del bloque, para que una esquina quede encendida:
+ *    ~/Documentos/uiverse/biblioteca/mias/hero-isometrico-halo-violeta-evervault
+ *  - anillo cónico del botón primario (se usa sólo el trazo, sin los halos):
+ *    ~/Documentos/uiverse/biblioteca/mias/botones-aurora-conica-graphite
+ */
+
+html.tema-identidad {
+  background-color: #0b1218;
+  scrollbar-color: var(--ia-blue) #0b1218;
+}
+
+html.tema-identidad ::-webkit-scrollbar-track {
+  background: #0b1218;
+}
+
+html.tema-identidad ::-webkit-scrollbar-thumb {
+  background: var(--ia-blue);
+}
+
+html.tema-identidad ::-webkit-scrollbar-thumb:hover {
+  background: var(--ia-yellow);
+}
+
+body.tema-identidad {
+  --color-deep-dark-bg: #101820;
+  --color-card-bg: #16212b;
+  --color-highlight: #0090c1;
+  --color-secondary-highlight: #7ecbe6;
+  --color-text-light: #9fb3c8;
+  --color-accent: #f1cf1c;
+  --color-surface: #16212b;
+  --cau-brand-blue: #0090c1;
+  --cau-brand-green: #0090c1;
+  --catalogo-acento: #0090c1;
+  --catalogo-acento-vivo: #f1cf1c;
+  --catalogo-acento-suave: #7ecbe6;
+  --catalogo-acento-oscuro: #00648a;
+  --catalogo-acento-tinta: #101820;
+  --catalogo-acento-rgb: 0, 144, 193;
+  --catalogo-tarjeta: #16212b;
+  --catalogo-tarjeta-hover: #1b2a36;
+  --catalogo-barra: rgba(11, 18, 24, 0.97);
+  --catalogo-form-fondo: #0c141b;
+  --catalogo-form-tarjeta: #16212b;
+  --catalogo-form-panel: #1b2a36;
+  --catalogo-form-campo: #0f1a22;
+  --catalogo-texto-suave: #9fb3c8;
+  --catalogo-etiqueta: #7ecbe6;
+  color: #eaf2f7;
+}
+
+/* Fondo: los dos halos son de la misma familia que el hero de evervault —uno
+   entra por arriba a la derecha, el otro por abajo a la izquierda— y la grilla
+   es la de x.ai, bajada a un 5% para que no compita con las tarjetas. */
+body.tema-identidad::before {
+  background:
+    radial-gradient(1000px 700px at 88% -10%, rgba(0, 144, 193, 0.32) 0%, rgba(0, 144, 193, 0) 60%),
+    radial-gradient(900px 650px at 4% 108%, rgba(241, 207, 28, 0.14) 0%, rgba(241, 207, 28, 0) 62%),
+    linear-gradient(170deg, #0a1118 0%, #101820 45%, #0b131a 100%);
+}
+
+body.tema-identidad::after {
+  background-image:
+    linear-gradient(rgba(126, 203, 230, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(126, 203, 230, 0.055) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 74% 70% at 50% 38%, #000 28%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 74% 70% at 50% 38%, #000 28%, transparent 100%);
+}
+
+/* ── Navbar ───────────────────────────────────────────────────────────── */
+
+body.tema-identidad .main-navbar {
+  background-color: #0b1218;
+  border-bottom-color: var(--ia-blue);
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45);
+}
+
+body.tema-identidad .main-navbar::after {
+  background-color: #0b1218;
+}
+
+body.tema-identidad .navbar-link {
+  color: #dbeaf2;
+  flex: 0 0 auto;
+}
+
+body.tema-identidad .navbar-menu {
+  justify-content: center;
+  padding-left: 0;
+}
+
+body.tema-identidad .navbar-link:hover {
+  background-color: var(--ia-blue);
+  color: #fff;
+}
+
+body.tema-identidad .navbar-link.active {
+  background-color: var(--ia-yellow);
+  color: #101820;
+}
+
+body.tema-identidad .navbar-menu {
+  background-color: #0b1218;
+}
+
+body.tema-identidad .menu-header {
+  background: #0b1218;
+}
+
+/* ── Hero de la portada ───────────────────────────────────────────────── */
+
+.identidad-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(3rem, 7vw, 5.5rem) 1rem clamp(2rem, 5vw, 3.5rem);
+  text-align: center;
+}
+
+.identidad-hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(126, 203, 230, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(126, 203, 230, 0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 62% 82% at 50% 44%, #000 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 62% 82% at 50% 44%, #000 20%, transparent 100%);
+}
+
+.identidad-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(720px 460px at 110% -12%, rgba(0, 144, 193, 0.42) 0%, transparent 64%),
+    radial-gradient(620px 420px at -12% 112%, rgba(241, 207, 28, 0.18) 0%, transparent 62%);
+}
+
+.identidad-hero__contenido {
+  position: relative;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.identidad-hero__isotipo {
+  display: block;
+  width: clamp(76px, 10vw, 124px);
+  height: auto;
+  margin: 0 auto 1.25rem;
+  filter: drop-shadow(0 12px 34px rgba(0, 144, 193, 0.35));
+}
+
+.identidad-hero__titulo {
+  font-size: clamp(2rem, 6vw, 4.25rem);
+  line-height: 0.98;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: #f2f7fa;
+  text-shadow: 0 2px 26px rgba(0, 144, 193, 0.35);
+  text-wrap: balance;
+}
+
+.identidad-hero__bajada {
+  margin-top: 0.9rem;
+  font-size: clamp(0.82rem, 1.8vw, 1.05rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ia-yellow);
+}
+
+.identidad-hero__regla {
+  display: block;
+  width: 92px;
+  height: 3px;
+  margin: 1.5rem auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--ia-blue), var(--ia-yellow));
+}
+
+/* Un solo barrido fino, de la misma familia que los brillos de x.ai. */
+.identidad-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -30%;
+  z-index: 1;
+  width: 30%;
+  height: 1px;
+  pointer-events: none;
+  opacity: 0.6;
+  background: linear-gradient(90deg, transparent, var(--ia-blue), var(--ia-yellow), transparent);
+  animation: identidad-barrido 7s linear infinite;
+}
+
+@keyframes identidad-barrido {
+  from { transform: translateX(0); }
+  to { transform: translateX(440%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identidad-hero::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ── Catálogo ─────────────────────────────────────────────────────────── */
+
+/* Los pills del catálogo tienen el verde del CAU escrito a mano; en la
+   Academia el activo va en azul con filo amarillo. */
+body.tema-identidad .filter-pill.filter-pill-all.active,
+body.tema-identidad .filter-pill.active,
+body.tema-identidad .filter-pill.featured {
+  background-color: var(--ia-blue) !important;
+  border-color: var(--ia-yellow) !important;
+  color: #fff !important;
+}
+
+body.tema-identidad .filter-pill.filter-pill-all.active:hover,
+body.tema-identidad .filter-pill.active:hover,
+body.tema-identidad .filter-pill.featured:hover {
+  background-color: var(--ia-blue-deep) !important;
+}
+
+/* ── Pie ──────────────────────────────────────────────────────────────── */
+
+body.tema-identidad footer[data-marca="identidad"] h2 {
+  color: var(--ia-yellow);
+}
+
+body.tema-identidad footer[data-marca="identidad"] a:hover {
+  color: var(--ia-yellow);
+}
+
+body.tema-identidad footer[data-marca="identidad"] .ia-chip-escuela {
+  color: #101820;
+}

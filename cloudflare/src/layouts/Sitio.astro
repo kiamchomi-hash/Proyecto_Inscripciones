@@ -10,6 +10,7 @@ import WhatsappReparto from '@/components/whatsapp-reparto';
 import '@/estilos/globals.css';
 import '@/estilos/navbar.css';
 import '@/estilos/fuentes.css';
+import '@/estilos/identidad.css';
 
 // Cabeza y armazón equivalentes a `app/layout.tsx`: mismo título, descripción,
 // Open Graph, locale, iconos y datos estructurados. Los textos salen de ese
@@ -222,7 +223,7 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" class={identidad ? 'tema-identidad' : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -320,7 +321,7 @@ const beaconAnalytics = /(^|\.)siglo21sur\.com$/.test(Astro.url.hostname) ? BEAC
       </script>
     )}
   </head>
-  <body>
+  <body class={identidad ? 'tema-identidad' : undefined}>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#00c7b1] focus:text-black focus:rounded focus:font-bold">
       Saltar al contenido principal
     </a>
