@@ -463,43 +463,49 @@ body.tema-identidad .careers-catalog--compacto .section-header-container {
   font-size: 0.92rem;
 }
 
-/* Alturas parejas y CTA al pie: la tarjeta pasa de grilla a columna, con el
-   botón empujado al fondo por `margin-top: auto`. */
+/* Tarjeta centrada: el nombre, las píldoras de área y duración y el CTA van
+   en el eje. La altura se mantiene corta y pareja; el botón queda al pie, no
+   arriba ni a todo el ancho. */
 body.tema-identidad .career-card-ia {
   display: flex !important;
   flex-direction: column;
-  align-items: stretch;
-  min-height: 198px;
+  align-items: center;
+  min-height: 162px;
+  padding: 1.1rem 1.2rem;
+  text-align: center;
 }
 
 body.tema-identidad .career-card-ia .career-card-text {
   width: 100%;
+  text-align: center;
+}
+
+body.tema-identidad .career-card-ia .career-card-name {
+  font-size: 1.02rem;
+  line-height: 1.25;
 }
 
 body.tema-identidad .career-card-ia .ia-card-meta {
   order: 2;
-  margin-top: 0.55rem;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.35rem;
 }
 
 body.tema-identidad .career-card-ia .detail-link {
   order: 3;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-top: auto;
+  align-self: center;
+  width: auto;
+  margin: auto 0 0;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.78rem;
   text-align: center;
+  white-space: nowrap;
 }
 
-/* En una columna no hace falta reservar la altura de la fila: la tarjeta se
-   ajusta a su título y el CTA queda debajo de los chips. */
 @media (max-width: 639px) {
   body.tema-identidad .career-card-ia {
     min-height: 0;
-  }
-
-  body.tema-identidad .career-card-ia .detail-link {
-    margin-top: 0.8rem;
   }
 }
 

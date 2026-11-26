@@ -1024,7 +1024,10 @@ function CareerCard({ carrera, onClick, textoDetalle }: { carrera: CarreraCatalo
           </div>
         )}
         <div className="career-card-text flex-grow relative min-w-0">
-          {prefix && (
+          {/* En Identidad Argentina todas las fichas son diplomaturas o cursos:
+              repetir el tipo arriba del nombre no agrega nada. Se conserva en
+              Siglo 21 y Teclab, donde sí distingue la oferta. */}
+          {prefix && !isIA && (
             <span className="career-prefix block mb-0.5">{prefix}</span>
           )}
           <span className={`career-card-name block min-w-0 font-semibold text-[1.1rem] leading-tight ${familiaTeclab || isTeclabCourse ? 'text-[#071822]' : 'text-white'}`}>
