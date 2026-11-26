@@ -23,7 +23,10 @@ const NAV_LINKS = [
 // En topykly el sitio es de la Academia: ni Teclab ni clases de apoyo ni las
 // páginas del CAU. La única sección es la portada con las diplomaturas.
 const NAV_LINKS_IDENTIDAD = [
-  { href: '/', label: 'Diplomaturas' },
+  { href: '/#carreras', label: 'Diplomaturas' },
+  { href: '/#como-se-cursa', label: 'Cómo se cursa' },
+  { href: '/#testimonios', label: 'Alumnos' },
+  { href: '/#contacto', label: 'Contacto' },
 ];
 
 const SOCIALS = [
@@ -168,6 +171,13 @@ export default function Navbar({ baseHref = '', marca = 'cau' }: {
             </>
           )}
         </span>
+
+        {marca === 'identidad' && (
+          <a className="navbar-marca-ia" href="/" aria-label="Academia Identidad Argentina">
+            <IsotipoIA className="navbar-marca-ia__isotipo" />
+            <span>Identidad Argentina</span>
+          </a>
+        )}
 
         {/* Menu */}
         <div

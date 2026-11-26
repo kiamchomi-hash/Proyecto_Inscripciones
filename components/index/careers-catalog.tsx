@@ -432,7 +432,7 @@ export default function CareersCatalog({ carreras, initialCarreraSlug, teclabLan
 
   return (
     <>
-      <div className="mx-auto w-full max-w-[2400px] pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20" data-testid="careers-catalog">
+      <div className={`mx-auto w-full max-w-[2400px] pt-0 px-4 pb-4 sm:pt-0 sm:px-8 sm:pb-8 xl:px-20 ${compacto ? 'careers-catalog--compacto' : ''}`} data-testid="careers-catalog">
 
         {/* Scroll anchor (non-sticky, keeps its natural position) */}
         <div ref={scrollAnchorRef} aria-hidden="true" />

@@ -106,7 +106,7 @@ export default function PaginaIdentidad(
           </div>
         </header>
 
-        <section className="identidad-banda" aria-label="Datos de la Academia">
+        <section id="como-se-cursa" className="identidad-banda" aria-label="Datos de la Academia">
           <ul>
             <li>
               <IconoCertificado />
@@ -127,11 +127,18 @@ export default function PaginaIdentidad(
           </ul>
         </section>
 
-        <div className="identidad-programas">
+        <div id="carreras" className="identidad-programas">
+          <div className="identidad-programas__encabezado">
+            <p className="identidad-seccion__ceja">Oferta académica</p>
+            <h2 className="identidad-seccion__titulo">Elegí tu programa</h2>
+            <p className="identidad-seccion__bajada">
+              {carreras.length} programas cortos, 100% online.
+            </p>
+          </div>
           <CareersCatalog carreras={carreras} compacto textoDetalle="Ver programa" />
         </div>
 
-        <section className="identidad-testimonio" aria-labelledby="testimonio-titulo">
+        <section id="testimonios" className="identidad-testimonio" aria-labelledby="testimonio-titulo">
           <div className="identidad-testimonio__card">
             <span className="identidad-testimonio__comilla" aria-hidden="true">“</span>
             <h2 id="testimonio-titulo" className="identidad-testimonio__titulo">Lo que dicen los alumnos</h2>
@@ -157,7 +164,7 @@ export default function PaginaIdentidad(
           </p>
         </section>
 
-        <section className="identidad-formulario identidad-formulario--contacto">
+        <section id="contacto" className="identidad-formulario identidad-formulario--contacto">
           <FormularioLead carreras={carreras} modo="contacto" origen="home" casa="identidad" />
         </section>
 
