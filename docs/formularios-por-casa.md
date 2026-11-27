@@ -18,7 +18,7 @@ teléfono, provincia y carrera. La provincia (`provinciaTeclab`) es un
 desplegable con las 23 opciones del formulario de vinculación de Teclab en
 HubSpot (CABA va como «Buenos Aires») y escribe la misma columna `provincia`
 que Identidad usa en texto libre. El legajo completo es el modo `usuario`,
-«Generá tu usuario de Teclab» (ancla `#usuario-teclab`), que va debajo de la
+«Generar usuario» (ancla `#usuario-teclab`), que va debajo de la
 preinscripción en `/teclab` y en las fichas de Teclab; no devuelve precio y el
 aviso de Telegram llega como «GENERAR USUARIO». Diseño en
 `docs/plans/2026-11-27-preinscripcion-corta-teclab-design.md`.

@@ -660,7 +660,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
   const tiposRef = useRef<HTMLDivElement>(null);
 
   const esPreinscripcion = modo === 'preinscripcion';
-  // La preinscripción y «Generá tu usuario de Teclab» se pintan y se validan
+  // La preinscripción y «Generar usuario» de Teclab se pintan y se validan
   // igual: carrera obligatoria y los campos que la casa exige. Lo que es sólo
   // de la preinscripción (su ancla, el precio y los pasos de la confirmación)
   // sigue mirando `esPreinscripcion`.
@@ -1222,7 +1222,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
   }, [conPaneles, listo, paso]);
 
   const titulo = esPreinscripcion ? 'FORMULARIO DE PREINSCRIPCIÓN'
-    : modo === 'usuario' ? 'GENERÁ TU USUARIO DE TECLAB'
+    : modo === 'usuario' ? 'GENERAR USUARIO'
     : 'FORMULARIO DE CONTACTO';
   // Bajada sólo cuando informa algo: las frases orientativas del paso de datos
   // se sacaron (pendiente 39), queda la confirmación del envío.

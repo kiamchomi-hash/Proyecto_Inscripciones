@@ -230,7 +230,7 @@ export const CASAS: Record<CasaId, Casa> = {
     contacto: ['nombre', 'apellido', 'email', 'telefono'],
     // Lo justo para la vinculación (decidido el 27/11/2026); el legajo va aparte.
     preinscripcion: ['nombre', 'apellido', 'email', 'telefono', 'provinciaTeclab'],
-    // «Generá tu usuario de Teclab»: el legajo que antes era la preinscripción.
+    // «Generar usuario»: el legajo que antes era la preinscripción.
     usuario: [
       'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
       'nacionalidad', 'estadoCivil',

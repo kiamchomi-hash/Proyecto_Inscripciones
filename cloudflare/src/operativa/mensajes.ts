@@ -85,7 +85,7 @@ function cabecera(fila: Fila): string {
   if (fila.tipo_formulario === 'preinscripcion') {
     return `📝 *PREINSCRIPCIÓN${casa ? ` — ${casa}` : ''}*`;
   }
-  // «Generá tu usuario de Teclab»: el legajo completo, desde el 27/11/2026.
+  // «Generar usuario» de Teclab: el legajo completo, desde el 27/11/2026.
   if (fila.tipo_formulario === 'usuario') {
     return `🪪 *GENERAR USUARIO${casa ? ` — ${casa}` : ''}*`;
   }

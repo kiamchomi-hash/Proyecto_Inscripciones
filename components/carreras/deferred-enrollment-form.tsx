@@ -20,8 +20,8 @@ interface Props {
   carreraInicial?: number;
   modoUnico?: Modo;
   /**
-   * Fichas de Teclab: debajo de la preinscripción va «Generá tu usuario de
-   * Teclab», con la casa fija porque sólo Teclab declara ese formulario.
+   * Fichas de Teclab: debajo de la preinscripción va «Generar usuario», el
+   * legajo, con la casa fija porque sólo Teclab declara ese formulario.
    */
   conUsuarioTeclab?: boolean;
 }
@@ -116,7 +116,7 @@ export default function DeferredEnrollmentForm({ carreras, carreraInicial, modoU
 
   const usuario = conUsuarioTeclab
     ? (Form ? <Form carreras={carreras} modo="usuario" casa="teclab" carreraInicial={carreraInicial} />
-      : <Hueco id="usuario-teclab" titulo="Generá tu usuario de Teclab" />)
+      : <Hueco id="usuario-teclab" titulo="Generar usuario" />)
     : null;
 
   // Los dos, igual que en la home: el contacto es la puerta general y la
