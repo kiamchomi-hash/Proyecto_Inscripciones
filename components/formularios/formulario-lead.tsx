@@ -46,6 +46,10 @@ const BORDE_OK = 'border-[var(--catalogo-acento)]/25 focus:border-[var(--catalog
 // Un campo que frena el envío tiene que verse de un vistazo: borde pleno,
 // tinte de fondo y halo. Con el borde al 60% solo, pasaba desapercibido.
 const BORDE_MAL = '!border-red-400 !bg-red-500/10 ring-2 ring-red-400/30';
+// El aviso adentro del campo: todo en rojo, relleno incluido, y lo escrito
+// oculto mientras se lee el aviso. Dura dos segundos (decidido el 27/11/2026).
+const AVISO_ADENTRO = '!border-red-400 !bg-red-500/35 !text-transparent';
+const AVISO_ADENTRO_MS = 2000;
 
 const SPAN: Record<NonNullable<CampoDef['ancho']>, string> = {
   completo: 'col-span-6',
@@ -455,7 +459,7 @@ function CampoFecha({ id, valor, onChange, invalido }: {
   );
 }
 
-function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
+function Campo({ prefijo, id, valor, onChange, opcional, invalido, error, aviso }: {
   /**
    * Distingue los `id` de un formulario de los del otro. La home monta dos
    * —contacto y preinscripción— y sin esto los dos usarían `form-carrera`:
@@ -476,6 +480,11 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
   /** Pinta el borde en rojo: es obligatorio y está vacío al intentar enviar. */
   invalido?: boolean;
   error?: string;
+  /**
+   * Aviso que va adentro del campo, con todo el campo en rojo, mientras dura
+   * (`AVISO_ADENTRO_MS`). Es la forma de Teclab: sin línea reservada debajo.
+   */
+  aviso?: string;
 }) {
   const campo = CAMPOS[id];
   const htmlId = `${prefijo}-${id}`;
@@ -536,19 +545,28 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
   return (
     <div>
       <label className={ETIQUETA} htmlFor={htmlId}>{campo.label}{marca}</label>
+      <div className="relative">
       <input
         type={id === 'email' ? 'email' : id === 'telefono' ? 'tel' : 'text'}
         id={htmlId}
         inputMode={campo.numerico ? 'numeric' : undefined}
         autoComplete={campo.autocompletar}
-        placeholder={campo.placeholder}
+        placeholder={aviso ? '' : campo.placeholder}
         value={typeof valor === 'string' ? valor : ''}
         onChange={event => onChange(event.target.value)}
         maxLength={campo.max}
-        aria-invalid={error || invalido ? true : undefined}
+        aria-invalid={error || invalido || aviso ? true : undefined}
         aria-describedby={error ? `${htmlId}-error` : undefined}
-        className={`${CAMPO} ${error || invalido ? BORDE_MAL : BORDE_OK}`}
+        className={`${CAMPO} ${aviso ? AVISO_ADENTRO : error || invalido ? BORDE_MAL : BORDE_OK}`}
       />
+      {/* El aviso tapa lo escrito un momento y se va solo: lo que la persona
+          escribió sigue en el campo para que lo corrija. */}
+      {aviso && (
+        <span role="alert" className="pointer-events-none absolute inset-y-0 left-3 right-3 flex items-center truncate text-sm text-red-100">
+          {aviso}
+        </span>
+      )}
+      </div>
       {/* El hueco existe siempre en los campos que reportan error —`error`
           llega definido, aunque sea vacío—, así el mensaje aparece y
           desaparece sin mover el resto del formulario. Por eso los textos van
@@ -607,6 +625,12 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
   // Tildado de entrada (decisión del 02/10/2026). No es un campo de `CAMPOS`:
   // no va a `consultas` sino a `suscripciones_newsletter`, y sólo si hay mail.
   const [newsletter, setNewsletter] = useState(true);
+  // Los avisos que van adentro del campo en Teclab, por dos segundos.
+  const [avisos, setAvisos] = useState<Partial<Record<CampoId, string>>>({});
+  const avisosRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (avisosRef.current) clearTimeout(avisosRef.current);
+  }, []);
   const [paso, setPaso] = useState<Paso>('datos');
   // El paso del que se está saliendo mientras dura el deslizamiento; `null`
   // quieto. Con movimiento reducido no hay deslizamiento y queda en `null`.
@@ -658,6 +682,10 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
   // La casa que manda: la fija de la página, o la que trae la carrera elegida.
   const casaActiva = casa ?? casaDeCarrera(carrera);
   const casaDeLaCarrera = casaDeCarrera(carrera);
+  // La preinscripción y el legajo de Teclab, desde el 27/11/2026: sin rótulos
+  // de bloque, sin el check del newsletter y con los avisos de mail y teléfono
+  // adentro del campo en vez de en una línea reservada debajo.
+  const formularioTeclab = esLegajo && casaActiva === 'teclab';
   // Mientras no hay carrera, se muestran los campos de Siglo 21; al elegir una
   // carrera se usa la casa real. La elección sigue siendo obligatoria para enviar.
   const casaVisual = casaActiva ?? (esLegajo ? 'siglo21' : null);
@@ -817,6 +845,13 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
 
   const poner = useCallback((id: CampoId, valor: string | boolean) => {
     setValores(previos => ({ ...previos, [id]: valor }));
+    // Si escribe mientras dura el aviso, el aviso se va: lo escrito tiene que verse.
+    setAvisos(previos => {
+      if (!(id in previos)) return previos;
+      const resto = { ...previos };
+      delete resto[id];
+      return resto;
+    });
   }, []);
 
   const texto = (id: CampoId) => (typeof valores[id] === 'string' ? (valores[id] as string).trim() : '');
@@ -1042,6 +1077,20 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
     setToken(''); setCaptchaKey(key => key + 1); setCaptchaVencido(false);
   };
 
+  /**
+   * En Teclab, el aviso del mail y del teléfono va adentro del campo: vacío,
+   * pide el dato; mal escrito, dice qué revisar. A los dos segundos vuelve lo
+   * que la persona escribió, o el ejemplo si estaba vacío.
+   */
+  const avisarAdentro = (problemas: CampoId[]) => {
+    const nuevos: Partial<Record<CampoId, string>> = {};
+    if (problemas.includes('email')) nuevos.email = email ? 'Revisá el formato del mail' : 'Ingresá el mail';
+    if (problemas.includes('telefono')) nuevos.telefono = telefono ? (errorTelefono || 'Revisá el número') : 'Ingresá el número';
+    setAvisos(nuevos);
+    if (avisosRef.current) clearTimeout(avisosRef.current);
+    avisosRef.current = setTimeout(() => setAvisos({}), AVISO_ADENTRO_MS);
+  };
+
   const enviar = async (evento: React.FormEvent) => {
     evento.preventDefault();
     if (enviando) return;
@@ -1064,6 +1113,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
       const problemas: CampoId[] = [...faltanObligatorios, ...malEscritos];
       if (errorEmail || !hayContacto) problemas.push('email');
       if (errorTelefono || !hayContacto) problemas.push('telefono');
+      if (formularioTeclab) avisarAdentro(problemas);
       irAlPrimerProblema(problemas);
       return;
     }
@@ -1090,7 +1140,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
           token,
           // `carreraId` es para la suscripción: la API busca el nombre en la
           // base. Ninguno de los dos llega a la fila de `consultas`.
-          payload: { ...base, carrera: carreraElegida || null, tipo: etiquetaTipo, carreraId: carrera?.id ?? null, newsletter },
+          payload: { ...base, carrera: carreraElegida || null, tipo: etiquetaTipo, carreraId: carrera?.id ?? null, newsletter: formularioTeclab ? false : newsletter },
         }),
       });
       estadoRespuesta = respuesta.status;
@@ -1387,7 +1437,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                       const conLinea = columna === 1 || indiceBloque > 0;
                       return (
                         <div key={indiceBloque} className="space-y-1.5">
-                          {bloque.grupo && !(columna === 2 && indiceBloque === 0 && columnas[0].length > 0 && grupoDe(columnas[0][columnas[0].length - 1]) === bloque.grupo) && (
+                          {bloque.grupo && !formularioTeclab && !(columna === 2 && indiceBloque === 0 && columnas[0].length > 0 && grupoDe(columnas[0][columnas[0].length - 1]) === bloque.grupo) && (
                             <p className={conLinea ? `${ROTULO_BLOQUE} border-t border-[var(--catalogo-acento)]/15 pt-2` : ROTULO_BLOQUE}>{ROTULO_GRUPO[bloque.grupo]}</p>
                           )}
                     <div className="grid grid-cols-6 gap-1.5">
@@ -1430,7 +1480,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <div role="group" aria-label="Datos de contacto" className={`space-y-1.5 py-2 ${alinearAlLlegar ? 'form-contacto-compacto' : ''}`}>
                 {esLegajo ? (
-                  <p className={ROTULO_BLOQUE}>{ROTULO_GRUPO.contacto}</p>
+                  !formularioTeclab && <p className={ROTULO_BLOQUE}>{ROTULO_GRUPO.contacto}</p>
                 ) : !alinearAlLlegar && (
                 <p className="flex items-center gap-2 text-[12px] leading-snug text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--catalogo-acento)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -1461,14 +1511,16 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                       valor={valores[id]}
                       onChange={valor => poner(id, valor)}
                       opcional={esOpcional(id)}
-                      invalido={intentado && (faltanObligatorios.includes(id) || malEscritos.includes(id) || !hayContacto)}
-                      error={id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : ''}
+                      invalido={!formularioTeclab && intentado && (faltanObligatorios.includes(id) || malEscritos.includes(id) || !hayContacto)}
+                      error={formularioTeclab ? undefined : id === 'email' ? errorEmail : id === 'telefono' ? errorTelefono : ''}
+                      aviso={formularioTeclab ? avisos[id] : undefined}
                     />
                   ))}
                 </div>
                 {/* Mismo dibujo que el checkbox de equivalencias. Va al lado del
-                    mail porque es a donde llegan las novedades. */}
-                <div className="flex items-center gap-2 py-0.5">
+                    mail porque es a donde llegan las novedades. Teclab no lo
+                    lleva desde el 27/11/2026, y sin el check no se suscribe. */}
+                {!formularioTeclab && <div className="flex items-center gap-2 py-0.5">
                   <div className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
                     <input
                       type="checkbox"
@@ -1484,7 +1536,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                   <label htmlFor={`${prefijo}-newsletter`} className="cursor-pointer text-xs text-[var(--catalogo-etiqueta)]">
                     {carrera ? 'Quiero recibir novedades de la carrera por mail' : 'Quiero recibir novedades por mail'}
                   </label>
-                </div>
+                </div>}
               </div>
             </div>
 

@@ -19,7 +19,7 @@ test('si el envío falla, no confirma y conserva los datos para reintentar', asy
     const confirmaciones = [];
     let error = '';
     const contexto = {
-      casaActiva: 'teclab', modo: 'preinscripcion', esPreinscripcion: true, valores,
+      casaActiva: 'teclab', modo: 'preinscripcion', esPreinscripcion: true, formularioTeclab: true, valores,
       filtro: null, CATEGORIES: [], carreraElegida: 'Carrera', carrera: { id: 7 }, token: 'seguro',
       newsletter: true, origen: 'normal', setEnviando: () => {}, setError: e => { error = e; },
       armarPayload: (_c, _m, v) => v,
@@ -58,6 +58,7 @@ test('una opción fuera de su lista, o un obligatorio vacío, frenan el envío y
       valido: caso.malEscritos.length === 0 && caso.faltanObligatorios.length === 0,
       ...caso, token: 'seguro', hayContacto: true, errorEmail: '', errorTelefono: '',
       origen: 'dedicada', modo: 'preinscripcion', esPreinscripcion: true, esLegajo: true, carrera: { id: 1 }, trackIntentoFormulario: () => {},
+      formularioTeclab: false, avisarAdentro: () => assert.fail('sólo Teclab avisa adentro del campo'),
       setIntentado: v => { intentado = v; }, setEnFrio: () => {},
       frioRef: { current: null }, setTimeout: () => 1, clearTimeout: () => {},
       irAlPrimerProblema: p => { problemas = p; },
@@ -93,13 +94,31 @@ test('los avisos de captcha del formulario piden reintentar sin nombrar un botó
   assert.doesNotMatch(formulario, /AVISO_VERIFICAR|captcha invisible/);
 });
 
+test('en Teclab, el mail y el teléfono avisan adentro del campo y el aviso se va solo', async () => {
+  const guardia = fuente.slice(fuente.indexOf('    if (!valido) {'), fuente.indexOf('    setEnviando(true);'));
+  let avisados = null;
+  const contexto = {
+    valido: false, malEscritos: [], faltanObligatorios: [], token: 'seguro', hayContacto: true,
+    errorEmail: 'El formato del email no es válido.', errorTelefono: '',
+    origen: 'teclab', modo: 'preinscripcion', esLegajo: true, carrera: { id: 1 }, trackIntentoFormulario: () => {},
+    setIntentado: () => {}, setEnFrio: () => {}, frioRef: { current: null }, setTimeout: () => 1, clearTimeout: () => {},
+    irAlPrimerProblema: () => {}, formularioTeclab: true, avisarAdentro: p => { avisados = p; },
+  };
+  await new Function(...Object.keys(contexto), js(`return (async()=>{${guardia}})();`))(...Object.values(contexto));
+  assert.deepEqual(avisados, ['email']);
+  // Dos segundos, con el campo entero en rojo; después vuelve lo escrito.
+  assert.match(fuente, /const AVISO_ADENTRO_MS = 2000;/);
+  assert.match(fuente, /!bg-red-500\/35 !text-transparent/);
+  assert.match(fuente, /setTimeout\(\(\) => setAvisos\(\{\}\), AVISO_ADENTRO_MS\)/);
+});
+
 test('el formulario de usuario de Teclab confirma con el aviso simple, sin precio ni pasos', async () => {
   const inicio = fuente.indexOf('    setEnviando(true);', fuente.indexOf('  const enviar = async'));
   const fin = fuente.indexOf('\n  // Sólo los datos montan el captcha', inicio);
   const cuerpo = fuente.slice(inicio, fin);
   const pasos = []; let listo = false;
   const contexto = {
-    casaActiva: 'teclab', modo: 'usuario', esPreinscripcion: false, valores: { nombre: 'Ana' },
+    casaActiva: 'teclab', modo: 'usuario', esPreinscripcion: false, formularioTeclab: true, valores: { nombre: 'Ana' },
     filtro: null, CATEGORIES: [], carreraElegida: 'Carrera', carrera: { id: 7 }, token: 'seguro', newsletter: true, origen: 'teclab',
     setEnviando: () => {}, setError: () => {}, armarPayload: (_c, m, v) => ({ ...v, tipoFormulario: m }),
     setPreinscripcionEnviada: () => assert.fail('no es una preinscripción'), setPrecioCarrera: () => assert.fail('no trae precio'),
@@ -130,7 +149,7 @@ test('el submit normal conserva una consulta por casa y confirma sin depender de
     for (const respuesta of [{ok:true}, {estado:'vigente',precio:{total:'$ 1'}}, null]) {
       const solicitudes = []; const pasos = []; const precios = []; let confirmada = false;
       const contexto = {
-        casaActiva, modo:'preinscripcion', esPreinscripcion:true, valores:{nombre:'Ana'},
+        casaActiva, modo:'preinscripcion', esPreinscripcion:true, formularioTeclab: casaActiva === 'teclab', valores:{nombre:'Ana'},
         filtro:null, CATEGORIES:[], carreraElegida:'Carrera', carrera:{id:7}, token:'seguro', newsletter:true, origen:'normal',
         setEnviando:()=>{}, setError:()=>{}, armarPayload:(_c,_m,v)=>v,
         setPreinscripcionEnviada:v=>{confirmada=v;}, setPrecioCarrera:p=>precios.push(p),
@@ -141,7 +160,8 @@ test('el submit normal conserva una consulta por casa y confirma sin depender de
       await new Function(...Object.keys(contexto), js(`return (async()=>{${cuerpo.slice(0, cuerpo.lastIndexOf('  };'))}})();`))(...Object.values(contexto));
       assert.equal(solicitudes.length,1);
       assert.equal(solicitudes[0].kind,'consulta');
-      assert.equal(solicitudes[0].payload.newsletter,true);
+      // Teclab ya no ofrece el check: sin él, nadie se suscribe desde ahí.
+      assert.equal(solicitudes[0].payload.newsletter, casaActiva !== 'teclab');
       assert.equal(confirmada,true);
       assert.deepEqual(pasos,['confirmacion']);
       assert.deepEqual(precios,[respuesta?.precio ?? null]);

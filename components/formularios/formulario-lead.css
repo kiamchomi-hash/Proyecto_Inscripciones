@@ -158,6 +158,24 @@
   }
 }
 
+/* ── Preinscripción y legajo de Teclab ──
+   Elegidos con el usuario el 27/11/2026 en la página real. La tarjeta navy de
+   la marca sobre un fondo propio de cada formulario: azul Teclab apagado para la
+   preinscripción, que es la acción principal, e índigo apagado para el legajo,
+   el paso secundario. El contacto conserva los tokens de la página. */
+:is(.teclab-page, .ficha-teclab, .inscripcion-teclab) :is(#preinscripcion, #usuario-teclab) {
+  --catalogo-form-tarjeta: #0c1824;
+  --catalogo-form-campo: #16293f;
+}
+
+:is(.teclab-page, .ficha-teclab, .inscripcion-teclab) #preinscripcion {
+  --catalogo-form-fondo: #173b6c;
+}
+
+:is(.teclab-page, .ficha-teclab, .inscripcion-teclab) #usuario-teclab {
+  --catalogo-form-fondo: #25305a;
+}
+
 /* El ancho de cada campo lo calcula el componente, para que no queden huecos a
    mitad de fila. Va en CSS y no en el estilo del elemento porque sólo vale de
    `sm` para arriba: en mobile las columnas se apilan y cada campo ya ocupa el
