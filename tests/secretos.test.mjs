@@ -6,6 +6,7 @@ test('rutas comerciales y credenciales se bloquean sin bloquear código público
   for (const p of ['app/carreras/page.tsx', 'components/carreras/ficha.tsx', '.env.example', 'docs/variables-de-entorno.md', '.agents/skills/cau-brand']) assert.equal(esRutaPrivada(p), false, p);
   assert.equal(esRutaPrivada('.agents/skills/modern-web-guidance'), false);
   assert.equal(esRutaPrivada('.agents/skills/security-audit'), false);
+  assert.equal(esRutaPrivada('.agents/skills/reels'), false);
   assert.equal(esRutaPrivada('.agents/skills/CAU-BRAND'), true);
 });
 

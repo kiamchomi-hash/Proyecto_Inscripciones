@@ -23,6 +23,7 @@ const ENLACES_SKILLS_PUBLICOS = Object.freeze({
   '.agents/skills/piezas_teclab2': '../../.claude/skills/piezas_teclab2',
   '.agents/skills/preview-real-ui': '../../.claude/skills/preview-real-ui',
   '.agents/skills/remotion': '../../.claude/skills/remotion',
+  '.agents/skills/reels': '../../.claude/skills/reels',
   '.agents/skills/modern-web-guidance': '../../.claude/skills/modern-web-guidance',
   '.agents/skills/security-audit': '../../.claude/skills/security-audit',
 });
