@@ -4,7 +4,7 @@ App de escritorio independiente para cargar leads en HubSpot. Pide nombre, apell
 
 ## Puesta en marcha
 
-1. Iniciar sesión en HubSpot. Al abrir la app, el botón *Sesión no iniciada* (ámbar) o *Sesión iniciada* (verde) muestra el estado. Si está ámbar, pulsarlo: se abre **una** ventana de Brave en `carga-leads-app/perfil-hubspot` con una sola pestaña, que entra directo a **Mis contactos** (`/contacts/44080364/objects/0-1/views/my/list`). Iniciá sesión con calma: la ventana **no se cierra sola**. Cuando termines, pulsá **Ya inicié sesión** en la app; recién ahí se cierra Brave y el botón pasa a verde. Mientras esa ventana esté abierta, el botón sigue mostrando **Ya inicié sesión** en lugar de un estado: eso significa que la ventana sigue abierta, no que la sesión se haya perdido. El perfil no viaja por git.
+1. Iniciar sesión en HubSpot. El botón **Abrir sesión de HubSpot** abre una ventana de Brave con el perfil de la app en la página de **Mis contactos** (`/contacts/44080364/objects/0-1/views/my/list`). **La ventana queda abierta hasta que la cerrés**: la app no detecta el login, no cierra pestañas y no tiene límite de tiempo. Cuando termines, cerrala; el botón vuelve a quedar disponible. Mientras esté abierta, la app muestra **Cerrá la ventana de HubSpot** y no permite cargar leads, porque el perfil no puede usarse en dos ventanas a la vez. El perfil no viaja por git.
 
    También se puede abrir directamente con:
 
@@ -27,7 +27,7 @@ App de escritorio independiente para cargar leads en HubSpot. Pide nombre, apell
 
 ## Botones
 
-- **Sesión iniciada / Sesión no iniciada**: muestra el estado y abre el login al pulsarlo. Mientras la ventana está abierta aparece **Ya inicié sesión**, que es el único modo de cerrarla desde la app.
+- **Abrir sesión de HubSpot**: abre la ventana de Brave con el perfil de la app. No se cierra sola ni verifica el login: la cerrás vos y el botón vuelve a quedar disponible.
 - **Cargar lead**: abre Brave en segundo plano, busca o crea el contacto y muestra su ID en el estado. No crea el negocio.
 - **Cargar negocio**: usa el correo y la carrera del formulario, abre la ficha del contacto existente, completa el negocio y pulsa **Enviar** una vez. Si el contacto no existe, avisa.
 - **Cargar lead viendo**: igual que Cargar lead, pero con Brave visible.
@@ -35,7 +35,7 @@ App de escritorio independiente para cargar leads en HubSpot. Pide nombre, apell
 
 Los cuatro botones muestran cada paso en el panel **Estado**.
 
-Los pasos se acumulan en el panel y quedan visibles cuando termina. Los errores aparecen en rojo dentro de la misma ventana. Si la ventana de sesión sigue abierta, la carga se detiene y pide cerrarla primero con **Ya inicié sesión**: el perfil no puede usarse en dos ventanas a la vez.
+Los pasos se acumulan en el panel y quedan visibles cuando termina. Los errores aparecen en rojo dentro de la misma ventana. Si la ventana de sesión sigue abierta, la carga se detiene y pide cerrarla primero: el perfil no puede usarse en dos ventanas a la vez.
 
 ## Pruebas
 

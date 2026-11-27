@@ -62,25 +62,14 @@ enum Evento {
     Paso(String),
     Ok,
     Error(String, String),
-    Sesion(bool),
-    SesionOcupada,
+    SesionCerrada,
 }
 
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 enum Sesion {
     #[default]
-    Desconocida,
-    Verificando,
-    Iniciada,
-    NoIniciada,
-}
-
-fn iniciada_de(texto: &str) -> bool {
-    texto.contains("\"iniciada\":true")
-}
-
-fn ocupado_de(texto: &str) -> bool {
-    texto.contains("\"ocupado\":true")
+    Cerrada,
+    Abierta,
 }
 
 impl Evento {
@@ -150,7 +139,7 @@ impl AppCarga {
             paso: String::new(),
             error: String::new(),
             registro: Vec::new(),
-            sesion: Sesion::Desconocida,
+            sesion: Sesion::Cerrada,
             rx,
             tx,
             estilo_aplicado: false,
@@ -173,52 +162,40 @@ impl AppCarga {
                 self.error = format!("{}: {}", etapa, mensaje);
                 self.registro.push(format!("Error: {}", self.error));
             }
-            Evento::Sesion(iniciada) => {
-                self.sesion = if iniciada { Sesion::Iniciada } else { Sesion::NoIniciada };
-            }
-            Evento::SesionOcupada => {
-                self.sesion = Sesion::Verificando;
+            Evento::SesionCerrada => {
+                self.sesion = Sesion::Cerrada;
             }
         }
     }
 
-    fn verificar_sesion(&mut self) {
-        self.sesion = Sesion::Verificando;
-        let tx = self.tx.clone();
-        std::thread::spawn(move || comprobar_sesion(tx));
-    }
-
     fn iniciar_sesion(&mut self) {
-        self.sesion = Sesion::Verificando;
+        self.sesion = Sesion::Abierta;
+        self.error.clear();
         let tx = self.tx.clone();
         std::thread::spawn(move || {
             let aux = concat!(env!("CARGO_MANIFEST_DIR"), "/aux/iniciar-sesion.mjs");
-            if let Ok(mut hijo) = Command::new("node")
+            match Command::new("node")
                 .arg(aux)
                 .stdout(Stdio::null())
-                .stderr(Stdio::null())
-                .spawn()
+                .stderr(Stdio::piped())
+                .output()
             {
-                let limite = std::time::Instant::now() + std::time::Duration::from_secs(1800);
-                while std::time::Instant::now() < limite {
-                    match hijo.try_wait() {
-                        Ok(Some(_)) => break,
-                        Ok(None) => std::thread::sleep(std::time::Duration::from_millis(500)),
-                        Err(_) => break,
-                    }
+                Ok(salida) if salida.status.success() => {}
+                Ok(salida) => {
+                    let mensaje = String::from_utf8_lossy(&salida.stderr).trim().to_string();
+                    let mensaje = if mensaje.is_empty() {
+                        "No se pudo abrir la ventana de HubSpot.".to_string()
+                    } else {
+                        mensaje
+                    };
+                    let _ = tx.send(Evento::Error("sesión".into(), mensaje));
                 }
-                if std::time::Instant::now() >= limite {
-                    let _ = hijo.kill();
-                    let _ = hijo.wait();
+                Err(error) => {
+                    let _ = tx.send(Evento::Error("sesión".into(), error.to_string()));
                 }
             }
-            comprobar_sesion(tx);
+            let _ = tx.send(Evento::SesionCerrada);
         });
-    }
-
-    fn pedir_cierre_sesion(&self) {
-        let flag = concat!(env!("CARGO_MANIFEST_DIR"), "/perfil-hubspot/cerrar.flag");
-        let _ = std::fs::write(flag, "1");
     }
 
     fn cargar(&mut self, modo: Modo, ver: bool) {
@@ -293,31 +270,15 @@ impl AppCarga {
     }
 }
 
-fn comprobar_sesion(tx: Sender<Evento>) {
-    let aux = concat!(env!("CARGO_MANIFEST_DIR"), "/aux/estado-sesion.mjs");
-    let salida = Command::new("node")
-        .arg(aux)
-        .output()
-        .map(|salida| String::from_utf8_lossy(&salida.stdout).to_string())
-        .unwrap_or_default();
-    let evento = if ocupado_de(&salida) {
-        Evento::SesionOcupada
-    } else {
-        Evento::Sesion(iniciada_de(&salida))
-    };
-    let _ = tx.send(evento);
-}
-
 impl eframe::App for AppCarga {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.aplicar_estilo(ctx);
-        if self.sesion == Sesion::Desconocida { self.verificar_sesion(); }
         let eventos: Vec<_> = self.rx.try_iter().collect();
         for evento in eventos {
             self.registrar(evento);
         }
-        if self.estado == Estado::Cargando || self.sesion == Sesion::Verificando {
-            ctx.request_repaint();
+        if self.estado == Estado::Cargando || self.sesion == Sesion::Abierta {
+            ctx.request_repaint_after(std::time::Duration::from_millis(300));
         }
 
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -326,21 +287,14 @@ impl eframe::App for AppCarga {
                     egui::RichText::new("Carga de leads").size(24.0).color(ACENTO).strong(),
                 ));
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if self.sesion == Sesion::Verificando {
-                        let cerrar = egui::Button::new(
-                            egui::RichText::new("Ya inicié sesión").color(TEXTO).small(),
-                        ).fill(DORADO).min_size(egui::vec2(150.0, 30.0));
-                        if ui.add(cerrar).clicked() { self.pedir_cierre_sesion(); }
-                    }
                     let (texto, color) = match self.sesion {
-                        Sesion::Iniciada => ("Sesión iniciada", VERDE),
-                        Sesion::NoIniciada => ("Sesión no iniciada", DORADO),
-                        Sesion::Verificando | Sesion::Desconocida => ("Verificando sesión…", GRIS),
+                        Sesion::Abierta => ("Cerrá la ventana de HubSpot", GRIS),
+                        Sesion::Cerrada => ("Abrir sesión de HubSpot", AZUL),
                     };
                     let boton = egui::Button::new(
                         egui::RichText::new(texto).color(TEXTO).small(),
-                    ).fill(color).min_size(egui::vec2(156.0, 30.0));
-                    if ui.add_enabled(self.sesion != Sesion::Verificando, boton).clicked() {
+                    ).fill(color).min_size(egui::vec2(200.0, 30.0));
+                    if ui.add_enabled(self.sesion == Sesion::Cerrada, boton).clicked() {
                         self.iniciar_sesion();
                     }
                 });
@@ -490,12 +444,12 @@ mod pruebas {
     }
 
     #[test]
-    fn lee_el_estado_de_la_sesion() {
-        assert!(iniciada_de(r#"{"iniciada":true}"#));
-        assert!(!iniciada_de(r#"{"iniciada":false}"#));
-        assert!(!iniciada_de("no es json"));
-        assert!(ocupado_de(r#"{"ocupado":true}"#));
-        assert!(!ocupado_de(r#"{"iniciada":true}"#));
+    fn al_cerrar_la_ventana_la_sesion_vuelve_a_cerrada() {
+        let (tx, rx) = mpsc::channel();
+        let mut app = AppCarga::nueva(tx, rx);
+        app.sesion = Sesion::Abierta;
+        app.registrar(Evento::SesionCerrada);
+        assert_eq!(app.sesion, Sesion::Cerrada);
     }
 
     #[test]

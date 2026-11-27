@@ -75,7 +75,7 @@ async function main() {
 
     if (await perfilOcupado()) {
       throw Object.assign(
-        new Error('Cerrá la ventana de sesión con «Ya inicié sesión» antes de cargar el lead.'),
+        new Error('Cerrá la ventana de HubSpot antes de cargar el lead.'),
         { etapa: 'sesion' },
       );
     }

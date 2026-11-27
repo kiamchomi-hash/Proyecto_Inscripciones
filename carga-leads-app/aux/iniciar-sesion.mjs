@@ -1,57 +1,58 @@
 import { existsSync } from 'node:fs';
-import { readFile, writeFile, rm } from 'node:fs/promises';
+import { readlink } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chromium } from 'playwright';
+import { pidDeSingleton } from './dominio.mjs';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const PERFIL = path.join(AQUI, '..', 'perfil-hubspot');
-const FLAG = path.join(PERFIL, 'cerrar.flag');
+const LOGIN = 'https://app.hubspot.com/contacts/44080364/objects/0-1/views/my/list';
 const RUTAS_BRAVE = [
   '/usr/bin/brave-browser', '/usr/bin/brave-browser-stable',
   '/opt/brave.com/brave/brave', '/snap/bin/brave',
 ];
-const LIMITE_MS = 30 * 60 * 1000;
-const LOGIN = 'https://app.hubspot.com/contacts/44080364/objects/0-1/views/my/list';
+
+async function perfilOcupado() {
+  try {
+    const destino = await readlink(path.join(PERFIL, 'SingletonLock'));
+    const pid = pidDeSingleton(destino);
+    if (!pid) return false;
+    process.kill(Number(pid), 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+if (await perfilOcupado()) {
+  console.error('Ya hay una ventana de HubSpot abierta con este perfil. Cerrála y volvé a intentar.');
+  process.exit(1);
+}
 
 const brave = process.env.BRAVE_EJECUTABLE || RUTAS_BRAVE.find(existsSync);
-if (!brave) throw new Error('No se encontró Brave instalado.');
+if (!brave) {
+  console.error('No se encontró Brave instalado.');
+  process.exit(1);
+}
 
-// Brave restaura las pestañas guardadas al abrir el perfil. Sin esto se
-// acumulan pestañas about:blank cada vez que se pulsa el botón de sesión.
-const preferencias = path.join(PERFIL, 'Default', 'Preferences');
-try {
-  const datos = JSON.parse(await readFile(preferencias, 'utf8'));
-  datos.session = { ...(datos.session ?? {}), restore_on_startup: 5 };
-  await writeFile(preferencias, JSON.stringify(datos));
-} catch { /* Perfil nuevo: Brave crea las preferencias al abrirse. */ }
+// Brave se abre como una ventana normal, sin Playwright: no cierra pestañas,
+// no detecta el login y no tiene límite de tiempo. Termina cuando la cerrás.
+// Las dos primeras banderas mantienen el mismo almacén de cookies que usa
+// cargar.mjs con Playwright; sin ellas Brave no puede leer la sesión guardada.
+const hijo = spawn(brave, [
+  '--password-store=basic',
+  '--use-mock-keychain',
+  '--no-first-run',
+  '--no-default-browser-check',
+  `--user-data-dir=${PERFIL}`,
+  '--new-window',
+  LOGIN,
+], { stdio: 'ignore' });
 
-const contexto = await chromium.launchPersistentContext(PERFIL, {
-  executablePath: brave,
-  headless: false,
-  viewport: { width: 1280, height: 900 },
-  locale: 'es-AR',
+hijo.on('error', error => {
+  console.error(`No se pudo abrir Brave: ${error.message}`);
+  process.exit(1);
 });
 
-try {
-  const paginas = contexto.pages();
-  const pagina = paginas[0] ?? await contexto.newPage();
-  for (const extra of paginas.slice(1)) await extra.close().catch(() => {});
-  contexto.on('page', otra => { if (otra !== pagina) otra.close().catch(() => {}); });
-  await pagina.goto(LOGIN, { waitUntil: 'domcontentloaded' });
-  await pagina.bringToFront();
-  console.log('Entrá a HubSpot, a Mis contactos. La ventana se cierra cuando pulses «Ya inicié sesión» en la app.');
-
-  const limite = Date.now() + LIMITE_MS;
-  while (Date.now() < limite && !pagina.isClosed()) {
-    await pagina.waitForTimeout(1000);
-    if (existsSync(FLAG)) {
-      await rm(FLAG, { force: true }).catch(() => {});
-      console.log('Cerrando la ventana a pedido.');
-      break;
-    }
-  }
-} finally {
-  await contexto.close().catch(() => {});
-  await rm(FLAG, { force: true }).catch(() => {});
-}
+hijo.on('exit', () => process.exit(0));
