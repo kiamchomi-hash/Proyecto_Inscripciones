@@ -27,7 +27,7 @@ export const PAGINAS: Record<string, PaginaFija> = {
   home: {
     titulo: 'Inicio',
     descripcion: 'Oferta académica online de Universidad Siglo 21, con acompañamiento para '
-      + 'estudiantes de CABA, GBA y otras zonas. Consultá carreras e inscripciones.',
+      + 'estudiantes de todo el país. Consultá carreras e inscripciones.',
   },
   teclab: {
     titulo: 'Teclab',

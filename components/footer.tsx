@@ -21,7 +21,10 @@ import './footer-teclab.css';
 
 const ENLACES = [
   { href: '/', label: 'Inicio' },
-  { href: '/sobre-nosotros', label: 'Sobre Nosotros' },
+  // El texto del enlace nombra el barrio: la home no dice «Villa Lugano» en
+  // ningún texto visible y este enlace le indica a Google qué página responde
+  // esa búsqueda (27/11/2026).
+  { href: '/sobre-nosotros', label: 'Sede en Villa Lugano' },
   { href: '/clases-apoyo', label: 'Clases de Apoyo' },
   { href: '/novedades/1', label: 'Novedades' },
   { href: '/faq', label: 'Preguntas Frecuentes' },

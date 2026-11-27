@@ -12,7 +12,7 @@ export const metadata = {
   // y cero clics: "Sobre Nosotros | Siglo 21" no le decia a nadie que aca hay una
   // sede fisica con direccion. El titulo va absolute para no arrastrar el
   // template del layout.
-  title: { absolute: 'CAU Siglo 21 en CABA | Villa Lugano, Guaminí 4876' },
+  title: { absolute: 'Universidad Siglo 21 en Villa Lugano | CAU, Guaminí 4876' },
   description: 'Centro de Aprendizaje Universitario de Universidad Siglo 21 en el sur de CABA: Guaminí 4876, Villa Lugano, Comuna 8. Inscripciones y tutorías presenciales.',
   keywords: ['CAU CABA', 'CAU villa lugano', 'centro de aprendizaje universitario', 'universidad siglo 21 caba', 'comuna 8', 'CABA zona sur'],
   alternates: {

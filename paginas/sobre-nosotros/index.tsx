@@ -41,7 +41,7 @@ export default function SobreNosotrosPage() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            en el sur de CABA
+            en Villa Lugano
           </span>
         </h1>
 

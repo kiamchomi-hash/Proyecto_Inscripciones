@@ -7,7 +7,7 @@ import { bibliotecaImagenes } from '../datos/imagenes';
 import '@/estilos/imagenes/imagenes.css';
 const datos = await bibliotecaImagenes(env.DB, archivos);
 ---
-<Sitio titulo="Biblioteca de imágenes | Siglo 21" descripcion="Carreras universitarias online de Universidad Siglo 21, con acompañamiento del CAU para estudiantes de CABA y GBA. Inscribite hoy."
+<Sitio titulo="Biblioteca de imágenes | Siglo 21" descripcion="Carreras universitarias online de Universidad Siglo 21, con acompañamiento para estudiantes de todo el país. Inscribite hoy."
   ruta="/imagenes" robots="noindex, nofollow">
   <Biblioteca {...datos} client:load />
 </Sitio>
