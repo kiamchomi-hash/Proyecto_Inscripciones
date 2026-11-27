@@ -134,10 +134,12 @@ entra es contenido: cajas, imágenes, texto, logo.
   lo dice): más presente en los bordes y en las zonas que van a quedar libres,
   más suave donde después van el titular o la foto, para que no compita con
   ellos.
-- **En papel manda la tinta.** Un fondo oscuro a sangre en un A4 chupa tinta y
-  sale manchado en una impresora común: en papel el fondo suele ser claro y la
-  atmósfera va en trazos finos y tintas claras; una aurora a sangre en un A4 es
-  tinta. En pantalla hay más libertad.
+- **La tinta no es un criterio.** Los folletos se imprimen en imprenta y
+  cuestan lo mismo con mucha tinta o con poca (usuario, 27/11/2026): un fondo
+  oscuro o de color a sangre vale igual que uno claro, en papel y en pantalla.
+  Claro u oscuro se decide por la marca y por la lectura, nunca por ahorrar
+  tinta. Lo que sí se cuida en papel es que el texto chico sobre fondo oscuro
+  tenga cuerpo y peso suficientes para no empastarse.
 - Blancos y negros puros no: cremas y negros teñidos hacia la paleta.
 - Etiquetas para filtrar la lista de UIverse: `fondo`, `aurora`, `líneas`,
   `halo`, `patrón`, `textura`, `trama`, `grilla`, `papel`, `ruido`,

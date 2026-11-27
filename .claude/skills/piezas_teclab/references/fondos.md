@@ -87,3 +87,13 @@ del nombre de la carrera y del aval, con un núcleo cian.
   - barras que salen del borde (inventado);
   - haces de luz de ventana en diagonal (inventado).
 - Bokeh, reflectores de escenario y guirnaldas (02/10/2026): «demasiado raras». Ningún fondo temático.
+- Frente navy `#0C1824` en el folleto A5 de CTA + carreras (27/11/2026): «quedó espantoso» en ese caso, con el panel de foto azul y el celular azul encima. **El navy sigue valiendo como fondo**: el usuario aclaró que funciona en otras piezas, no en ésta. No descartarlo en general.
+- Fondos cuadriculados en folleto (malla técnica y medio tono de puntos, 27/11/2026): «las opciones cuadriculadas no van».
+
+## Usado: ondas (27/11/2026)
+
+Folleto A5 con CTA y lista de carreras: líneas finas paralelas que ondulan y se
+juntan por zonas, en azul `#0055F0` al 9 %, parejas en toda la hoja, con grano
+fino en multiply. Sale de la textura de las tarjetas «Elegí el día» del folleto
+de computación aprobado (`cau/aprobados/materias/computacion/`). Generador:
+`ondas()` en `en-curso/2026-11-27-folleto-cta-carreras/textura.mjs`.
