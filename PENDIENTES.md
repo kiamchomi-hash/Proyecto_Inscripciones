@@ -10,13 +10,12 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 **Aplazados en la cola actual (20/11/2026):**
 
-- Dar imágenes a todas las carreras de Teclab (pendiente 5): bajado al final de la cola.
 - Crear folletos de Teclab con CTA al frente y lista de carreras al dorso (pendiente 8): bajado al final de la cola.
 - Crear un folleto de carreras relevantes de Teclab (pendiente 9): bajado al final de la cola.
 - Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): **Diseño y Desarrollo de IA cargado el 20/11/2026** (id 251, con el alta de Administración de Negocios Digitales Financieros, id 252) tras confirmarlo el asesor; sigue pendiente Comunicación Digital, esperar a que Teclab la publique. Quedan sin precio y sin resolución las dos del 20/11.
 - Completar la FAQ de las carreras de Teclab (pendiente 3): al final de la cola; requiere trabajar bien las keywords y se espera a contar con un modelo de confianza para redactarlas.
 
-**Reservados para Claude Code (20/11/2026, revisado el 22/11/2026):** los pendientes 5, 8, 9 y 14 se dejan para cuando el usuario tenga Claude; no se abordan desde OpenCode. Siguen en su nivel de prioridad original.
+**Reservados para Claude Code (20/11/2026, revisado el 22/11/2026):** los pendientes 8, 9 y 14 se dejan (el 5 se cerró el 27/11/2026) para cuando el usuario tenga Claude; no se abordan desde OpenCode. Siguen en su nivel de prioridad original.
 
 ## Alta
 
@@ -25,8 +24,6 @@ Las altas de Teclab van primero; después las demás.
 4. **Mejorar los modales de Teclab** (22/11/2026): prioridad alta, pidieron atenderlos antes que el resto. Tienen errores que todavía no se enumeraron; primero relevarlos en escritorio y celular en las páginas donde aparecen y anotarlos acá antes de tocar nada.
 
 4b. **Modificar el frontend de los `/slugs` de carreras de Teclab** (22/11/2026): sobre todo el **plan de estudio** y el **test vocacional** en las fichas de cada carrera. Relevar primero en escritorio y celular antes de tocar nada.
-
-5. **Dar imágenes a todas las carreras de Teclab** (46a). [Detalle del pedido original](docs/pendientes-detalle.md).
 
 8. **Crear folletos con CTA al frente y lista de carreras al dorso, empezando por Teclab** (41a).
 
@@ -108,6 +105,8 @@ Las altas de Teclab van primero; después las demás.
 
 - **Activar Penpot y su MCP para las piezas estáticas** (25/11/2026): Penpot autoalojado en `~/penpot/`, fuera del repo, con el compose oficial ajustado (clave propia, telemetría apagada, puertos sólo locales) y Penpot y MCP fijados en la **2.19.1**, porque npm no publica MCP para la 2.18. Se eligió el **MCP local** (`@penpot/mcp`) y no el integrado: el remoto no puede importar imágenes desde archivos de la máquina y las skills necesitan los logos oficiales y las fotos de `contenidos/` tal cual. El MCP ya está registrado en OpenCode como `penpot` (`http://localhost:4401/mcp`), con backup de la configuración. **Falta:** `sudo systemctl enable --now docker` (el servicio está instalado y apagado, y yo no tengo permisos), correr `~/penpot/penpot.sh up`, crear el usuario en `http://localhost:9001`, cargar el plugin con `http://localhost:4400/manifest.json` en un archivo abierto, conectarlo y reiniciar OpenCode. Después: prueba de lectura y adaptar `lienzo-de-diseno` y las skills de piezas para que dibujen en Penpot en vez de HTML. Los pasos y el motivo de cada decisión están en `~/penpot/penpot.sh` y en la memoria del agente.
 
+- **Ubicar los 183 modelos de Kenney en la UIverse local** (26/11/2026): se bajaron y quedaron en `~/Documentos/uiverse/biblioteca/isometricos/kenney/` (140 muebles y 43 personajes, CC0, en GLB con previsualización) y se ven en `http://localhost:4321/isometricos/visor.html`, pero el usuario no los encuentra dentro de la galería. Los 40 íconos de minutechreview sí quedaron como piezas sueltas en `biblioteca/mias/isotipo-*`. Falta decidir si los de Kenney se separan uno por uno, solo los muebles, o se dejan dentro de la colección con su visor. Ojo: la galería arma el índice al arrancar, hay que reabrirla para ver piezas nuevas.
+
 49. **Terminar de revisar el UIverse local** (25).
 
 50. **Crear una cuenta en Twitter para ver videos de Hipermotion y Remotion y traer inspiración** (29).
@@ -133,6 +132,10 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Dar imágenes a las carreras de Identidad Argentina** (46c).
 
 - **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3; descartada el 22/11/2026 a pedido del usuario): se retira sin incorporar ideas de ese sitio a las fichas. No confundir con la revisión de las fichas de Teclab contra `siglo21online.com.ar/teclab` (pendiente 11), cerrada el 21/11/2026 con el diferimiento del CSS del formulario.
+
+## Cerradas el 27/11/2026
+
+- **Dar imágenes a todas las carreras de Teclab** (5, 46a): cerrada con evidencia. Cada carrera tiene portada en `components/index/teclab.ts`: la foto de la ficha oficial de teclab.edu.ar (`FICHAS`) o, si no tiene ficha, una foto libre de Unsplash o Wikimedia con la fuente anotada (`PORTADAS_ANUNCIADAS`). Los 52 archivos referenciados existen en `public/imagenes/teclab/carreras/` y el sitemap publicado lista 26 fichas de Teclab con su foto. Queda un detalle aparte, sin arreglar: la ficha de Customer Experience muestra su foto, pero el sitemap la publica sin imagen, porque `CarreraSitemap` (`cloudflare/src/entrega/sitemap.ts`) no trae `nombre_corto` y el nombre de la base («Experiencia del Cliente») no coincide con el de `FICHAS`. El enlace al «detalle del pedido original» apuntaba a una sección que no existe en `docs/pendientes-detalle.md`.
 
 ## Cerradas el 06/11/2026
 
