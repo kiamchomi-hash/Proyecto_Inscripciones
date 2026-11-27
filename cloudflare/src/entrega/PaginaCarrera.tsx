@@ -73,7 +73,7 @@ export default function PaginaCarrera({ carrera, relacionadas, equivalente, opci
       <DirectCareerOpenTracker carrera={carreraFullName(carrera)} />
       {teclab && <EmbudoFichaTeclab slug={carreraToSlug(carrera)} />}
       <CareerDetail carrera={carrera} relacionadas={relacionadas} equivalente={equivalente}
-        preinscripcion={teclab ? <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} modoUnico="preinscripcion" /> : undefined}
+        preinscripcion={teclab ? <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} modoUnico="preinscripcion" conUsuarioTeclab /> : undefined}
       />
       {!teclab && <DeferredEnrollmentForm carreras={opciones} carreraInicial={carrera.id} />}
     </main>

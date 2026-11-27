@@ -38,6 +38,7 @@ const ETIQUETAS: Record<string, string> = {
   torre: '🏢 *Torre:*',
   barrio: '📍 *Barrio:*',
   codigo_postal: '📮 *Código postal:*',
+  provincia: '🗺 *Provincia:*',
   localidad: '📍 *Localidad:*',
   nivel_estudios: '🎓 *Nivel de estudios:*',
   colegio: '🏫 *Colegio:*',
@@ -84,6 +85,10 @@ function cabecera(fila: Fila): string {
   if (fila.tipo_formulario === 'preinscripcion') {
     return `📝 *PREINSCRIPCIÓN${casa ? ` — ${casa}` : ''}*`;
   }
+  // «Generá tu usuario de Teclab»: el legajo completo, desde el 27/11/2026.
+  if (fila.tipo_formulario === 'usuario') {
+    return `🪪 *GENERAR USUARIO${casa ? ` — ${casa}` : ''}*`;
+  }
   // Ni «Ver precio» ni la autoinscripción son una pregunta: el título dice qué
   // hizo la persona. `autoinscripcion` ya no se produce desde la baja del
   // 27/10/2026, pero las filas viejas de `consultas` lo conservan y se rotulan.
@@ -110,7 +115,8 @@ export function buildConsultaMessage(fila: Fila, { precioVisto = null, inscripci
 
   // Sólo lo que el lead completó: un contacto suelto llega con casi todo vacío
   // y llenar el aviso de guiones lo vuelve ilegible.
-  const esPreinscripcion = fila.tipo_formulario === 'preinscripcion';
+  // La preinscripción y el legajo para el usuario se arman igual, por bloques.
+  const esPreinscripcion = fila.tipo_formulario === 'preinscripcion' || fila.tipo_formulario === 'usuario';
   const datosLegajo = Object.entries(fila)
     .filter(([columna, valor]) =>
       (!EN_CABECERA.has(columna) || (esPreinscripcion && columna === 'localidad'))

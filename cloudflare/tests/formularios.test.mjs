@@ -269,6 +269,42 @@ test('precio: validación, carrera sin precio y mail con reserva de 168 h', asyn
   assert.equal(filaSiglo.telefono, null);
 });
 
+test('teclab: la preinscripción corta guarda la provincia y el legajo va como «usuario»', async t => {
+  const { db } = await crearD1(t);
+  await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });
+
+  const corta = await pedir(sobre('consulta', legajoTeclab({ provinciaTeclab: 'Cordoba' })), { db });
+  assert.equal(corta.status, 201);
+  const rara = await pedir(sobre('consulta', legajoTeclab({ provinciaTeclab: 'Narnia' })), { db });
+  assert.equal(rara.status, 201, 'una provincia fuera de la lista no rebota el lead');
+
+  const usuario = {};
+  for (const campo of camposDe('teclab', 'usuario')) {
+    usuario[campo] = CAMPOS[campo].opciones?.[0] ?? 'Fixture sintético';
+  }
+  const legajo = await pedir(sobre('consulta', {
+    ...usuario, casa: 'teclab', tipoFormulario: 'usuario',
+    dni: '30156456', email: 'lead@example.invalid', telefono: '11 1234-5678', carreraId: 1,
+  }), { db });
+  assert.equal(legajo.status, 201);
+  assert.deepEqual(await legajo.json(), { ok: true }, 'el legajo no devuelve precio');
+
+  const guardadas = (await db.prepare('SELECT tipo_formulario, provincia, dni, colegio FROM consultas ORDER BY id').all()).results;
+  assert.deepEqual(guardadas.map(f => [f.tipo_formulario, f.provincia]), [
+    ['preinscripcion', 'Cordoba'], ['preinscripcion', null], ['usuario', null],
+  ]);
+  assert.equal(guardadas[0].dni, null, 'la preinscripción corta no guarda el legajo');
+  assert.equal(guardadas[2].dni, '30156456');
+  assert.equal(guardadas[2].colegio, 'Fixture sintético');
+
+  // `usuario` es sólo de Teclab: con otra casa entra sin modo.
+  const ajena = await pedir(sobre('consulta', {
+    casa: 'siglo21', tipoFormulario: 'usuario', email: 'lead@example.invalid', carreraId: 1,
+  }), { db });
+  assert.equal(ajena.status, 201);
+  assert.equal(await db.prepare('SELECT tipo_formulario FROM consultas ORDER BY id DESC LIMIT 1').first('tipo_formulario'), null);
+});
+
 test('fallo del alta: el batch revierte y no queda ni consulta ni efecto', async t => {
   const { db } = await crearD1(t);
   await insertarCarrera(db, 1, { nivel: 'Teclab - Tecnología' });

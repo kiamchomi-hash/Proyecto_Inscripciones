@@ -57,7 +57,7 @@ test('una opción fuera de su lista, o un obligatorio vacío, frenan el envío y
     const contexto = {
       valido: caso.malEscritos.length === 0 && caso.faltanObligatorios.length === 0,
       ...caso, token: 'seguro', hayContacto: true, errorEmail: '', errorTelefono: '',
-      origen: 'dedicada', modo: 'preinscripcion', esPreinscripcion: true, carrera: { id: 1 }, trackIntentoFormulario: () => {},
+      origen: 'dedicada', modo: 'preinscripcion', esPreinscripcion: true, esLegajo: true, carrera: { id: 1 }, trackIntentoFormulario: () => {},
       setIntentado: v => { intentado = v; }, setEnFrio: () => {},
       frioRef: { current: null }, setTimeout: () => 1, clearTimeout: () => {},
       irAlPrimerProblema: p => { problemas = p; },
@@ -93,7 +93,29 @@ test('los avisos de captcha del formulario piden reintentar sin nombrar un botó
   assert.doesNotMatch(formulario, /AVISO_VERIFICAR|captcha invisible/);
 });
 
- test('toda preinscripción normal confirma directamente sin una segunda decisión', () => {
+test('el formulario de usuario de Teclab confirma con el aviso simple, sin precio ni pasos', async () => {
+  const inicio = fuente.indexOf('    setEnviando(true);', fuente.indexOf('  const enviar = async'));
+  const fin = fuente.indexOf('\n  // Sólo los datos montan el captcha', inicio);
+  const cuerpo = fuente.slice(inicio, fin);
+  const pasos = []; let listo = false;
+  const contexto = {
+    casaActiva: 'teclab', modo: 'usuario', esPreinscripcion: false, valores: { nombre: 'Ana' },
+    filtro: null, CATEGORIES: [], carreraElegida: 'Carrera', carrera: { id: 7 }, token: 'seguro', newsletter: true, origen: 'teclab',
+    setEnviando: () => {}, setError: () => {}, armarPayload: (_c, m, v) => ({ ...v, tipoFormulario: m }),
+    setPreinscripcionEnviada: () => assert.fail('no es una preinscripción'), setPrecioCarrera: () => assert.fail('no trae precio'),
+    irAPaso: p => pasos.push(p), setListo: v => { listo = v; },
+    trackConsulta: () => {}, tipoFalloTecnicoFormulario: () => null,
+    fetch: async (_url, opciones) => {
+      assert.equal(JSON.parse(opciones.body).payload.tipoFormulario, 'usuario');
+      return { ok: true, status: 201, json: async () => ({ ok: true }) };
+    },
+  };
+  await new Function(...Object.keys(contexto), js(`return (async()=>{${cuerpo.slice(0, cuerpo.lastIndexOf('  };'))}})();`))(...Object.values(contexto));
+  assert.equal(listo, true);
+  assert.deepEqual(pasos, []);
+});
+
+test('toda preinscripción normal confirma directamente sin una segunda decisión', () => {
   const fin = fuente.slice(fuente.indexOf('    trackConsulta(origen, carreraElegida || null, etiquetaTipo);'), fuente.indexOf('  const precioParaVer ='));
   assert.match(fin, /if \(esPreinscripcion\) \{[\s\S]*irAPaso\('confirmacion'\)/);
   assert.doesNotMatch(fuente, /onSaltear|saltearAutoinscripcion|'gestionar'|Paso 1 de 2|Acceso y próximos pasos/);

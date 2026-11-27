@@ -3,12 +3,13 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ComponentType,
 } from 'react';
 import type { CarreraOpcion } from '@/components/index/types';
-import type { Modo } from '@/components/formularios/casas';
+import type { CasaId, Modo } from '@/components/formularios/casas';
 
 interface Props {
   carreras: CarreraOpcion[];
@@ -18,12 +19,17 @@ interface Props {
    */
   carreraInicial?: number;
   modoUnico?: Modo;
+  /**
+   * Fichas de Teclab: debajo de la preinscripción va «Generá tu usuario de
+   * Teclab», con la casa fija porque sólo Teclab declara ese formulario.
+   */
+  conUsuarioTeclab?: boolean;
 }
 
 // El formulario no fija casa: la ficha ofrece toda la oferta en su buscador, así
 // que la casa la decide la carrera que el lead termine eligiendo, igual que en
-// la home.
-type FormProps = Props & { modo: Modo };
+// la home. La excepción es el formulario de usuario de Teclab.
+type FormProps = Omit<Props, 'conUsuarioTeclab'> & { modo: Modo; casa?: CasaId };
 
 let formPromise: Promise<{ default: ComponentType<FormProps> }> | undefined;
 
@@ -50,8 +56,13 @@ function Hueco({ id, titulo }: { id: string; titulo: string }) {
   );
 }
 
-export default function DeferredEnrollmentForm({ carreras, carreraInicial, modoUnico }: Props) {
+export default function DeferredEnrollmentForm({ carreras, carreraInicial, modoUnico, conUsuarioTeclab = false }: Props) {
   const placeholderRef = useRef<HTMLElement>(null);
+  // Las anclas que este bloque atiende cuando monta un solo modo.
+  const propios = useMemo(() => [
+    modoUnico === 'contacto' ? '#formulario' : '#preinscripcion',
+    ...(conUsuarioTeclab ? ['#usuario-teclab'] : []),
+  ], [modoUnico, conUsuarioTeclab]);
   const [Form, setForm] = useState<ComponentType<FormProps> | null>(null);
 
   const loadForm = useCallback(() => {
@@ -88,25 +99,30 @@ export default function DeferredEnrollmentForm({ carreras, carreraInicial, modoU
   useEffect(() => {
     if (Form) return;
     const alTocar = (event: MouseEvent) => {
-      const enlace = (event.target as Element | null)?.closest?.('a[href="#formulario"], a[href="#preinscripcion"]');
-      if (enlace && (!modoUnico || enlace.getAttribute('href') === (modoUnico === 'contacto' ? '#formulario' : '#preinscripcion'))) loadForm();
+      const enlace = (event.target as Element | null)?.closest?.('a[href="#formulario"], a[href="#preinscripcion"], a[href="#usuario-teclab"]');
+      if (enlace && (!modoUnico || propios.includes(enlace.getAttribute('href') ?? ''))) loadForm();
     };
     document.addEventListener('click', alTocar, true);
     return () => document.removeEventListener('click', alTocar, true);
-  }, [Form, loadForm, modoUnico]);
+  }, [Form, loadForm, modoUnico, propios]);
 
   useEffect(() => {
     if (!Form) return;
     const destino = window.location.hash;
-    if (destino !== '#formulario' && destino !== '#preinscripcion') return;
-    if (modoUnico && destino !== (modoUnico === 'contacto' ? '#formulario' : '#preinscripcion')) return;
+    if (destino !== '#formulario' && destino !== '#preinscripcion' && destino !== '#usuario-teclab') return;
+    if (modoUnico && !propios.includes(destino)) return;
     document.getElementById(destino.slice(1))?.scrollIntoView({ behavior: 'smooth' });
-  }, [Form, modoUnico]);
+  }, [Form, modoUnico, propios]);
+
+  const usuario = conUsuarioTeclab
+    ? (Form ? <Form carreras={carreras} modo="usuario" casa="teclab" carreraInicial={carreraInicial} />
+      : <Hueco id="usuario-teclab" titulo="Generá tu usuario de Teclab" />)
+    : null;
 
   // Los dos, igual que en la home: el contacto es la puerta general y la
   // preinscripción arma el legajo. "Quiero inscribirme" baja a la segunda.
   if (Form) {
-    if (modoUnico) return <Form carreras={carreras} modo={modoUnico} carreraInicial={carreraInicial} />;
+    if (modoUnico) return <><Form carreras={carreras} modo={modoUnico} carreraInicial={carreraInicial} />{usuario}</>;
     return (
       <>
         <Form carreras={carreras} modo="contacto" carreraInicial={carreraInicial} />
@@ -119,6 +135,7 @@ export default function DeferredEnrollmentForm({ carreras, carreraInicial, modoU
     return (
       <section ref={placeholderRef} aria-label={modoUnico === 'contacto' ? 'Formulario de contacto' : 'Preinscripción'}>
         <Hueco id={modoUnico === 'contacto' ? 'formulario' : 'preinscripcion'} titulo={modoUnico === 'contacto' ? 'Formulario de contacto' : 'Preinscripción'} />
+        {usuario}
       </section>
     );
   }

@@ -6,8 +6,8 @@ import { camposDe, CAMPOS } from '../components/formularios/casas.ts';
 
 const grupoDe = id => CAMPOS[id].grupo;
 
-test('la preinscripcion de Teclab se parte en Tus datos, Domicilio y Estudios', () => {
-  const campos = camposDe('teclab', 'preinscripcion').filter(id => id !== 'email' && id !== 'telefono');
+test('el legajo de usuario de Teclab se parte en Tus datos, Domicilio y Estudios', () => {
+  const campos = camposDe('teclab', 'usuario').filter(id => id !== 'email' && id !== 'telefono');
   const bloques = bloquesDe(campos, grupoDe);
   assert.deepEqual(bloques.map(b => ROTULO_GRUPO[b.grupo]), ['Tus datos', 'Domicilio', 'Estudios']);
   assert.deepEqual(bloques.flatMap(b => b.campos), campos);

@@ -14,6 +14,20 @@ test('el aviso dice de una si es preinscripcion y de que casa', () => {
   assert.ok(consulta.startsWith('💬 *Consulta — Siglo 21*'), consulta.split('\n')[0]);
 });
 
+test('el legajo para el usuario de Teclab se distingue de la preinscripción', () => {
+  const usuario = buildConsultaMessage({
+    ...base, casa: 'teclab', tipo_formulario: 'usuario',
+    dni: '30111222', direccion: 'Mariano Moreno', colegio: 'Normal 5',
+  });
+  assert.ok(usuario.startsWith('🪪 *GENERAR USUARIO — Teclab*'), usuario.split('\n')[0]);
+  assert.match(usuario, /📝 \*Datos del postulante\*/);
+  assert.match(usuario, /🏠 \*Domicilio\*/);
+  assert.match(usuario, /🎓 \*Estudios previos\*/);
+
+  const corta = buildConsultaMessage({ ...base, casa: 'teclab', tipo_formulario: 'preinscripcion', provincia: 'Cordoba' });
+  assert.match(corta, /🗺 \*Provincia:\* Cordoba/);
+});
+
 test('«Ver precio» y la autoinscripción no llegan como consulta', () => {
   const precio = buildConsultaMessage({ ...base, casa: 'teclab', tipo_formulario: 'precio' });
   assert.ok(precio.startsWith('👀 *Vio el precio — Teclab*'), precio.split('\n')[0]);

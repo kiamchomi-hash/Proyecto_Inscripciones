@@ -33,7 +33,7 @@ const soloDni = (valor: unknown) => {
   return digitos.length >= 7 && digitos.length <= 9 ? digitos : null;
 };
 
-const MODOS: Modo[] = ['contacto', 'preinscripcion'];
+const MODOS: Modo[] = ['contacto', 'preinscripcion', 'usuario'];
 
 export const esCasa = (valor: unknown): valor is CasaId =>
   typeof valor === 'string' && Object.hasOwn(CASAS, valor);
@@ -50,18 +50,23 @@ export type FilaConsulta = Record<string, string | number | boolean | null>;
 export function camposAceptados(casa: CasaId | null, modo: Modo | null): CampoId[] {
   if (casa && modo) return camposDe(casa, modo);
   const todos = (Object.keys(CASAS) as CasaId[])
-    .flatMap(id => [...CASAS[id].contacto, ...CASAS[id].preinscripcion]);
+    .flatMap(id => [...CASAS[id].contacto, ...CASAS[id].preinscripcion, ...(CASAS[id].usuario ?? [])]);
   return [...new Set(todos)];
 }
 
 function asignarCampo(fila: FilaConsulta, campo: CampoId, payload: JsonRecord) {
   const definicion = CAMPOS[campo];
+  const columna = columnaDe(definicion);
   if (definicion.tipo === 'checkbox') {
-    fila[columnaDe(definicion)] = payload[campo] === true;
+    fila[columna] = payload[campo] === true;
   } else {
-    fila[columnaDe(definicion)] = definicion.opciones
+    const valor = definicion.opciones
       ? unaOpcionDe(payload[campo], definicion.opciones)
       : campo === 'dni' ? soloDni(payload[campo]) : nullableText(payload[campo], definicion.max);
+    // `provincia` y `provinciaTeclab` escriben la misma columna: con el sobre
+    // plano se aceptan las dos y gana la primera con valor, que es la de
+    // Teclab, validada contra su lista (Teclab va antes que Identidad).
+    if (fila[columna] == null) fila[columna] = valor;
   }
 }
 
@@ -84,7 +89,11 @@ export function filaConsulta(payload: JsonRecord): FilaConsulta {
   }
   // Un discriminador mal formado no rebota el envío: se guarda en null.
   const casa = esCasa(payload.casa) ? payload.casa : null;
-  const modo = esModo(payload.tipoFormulario) ? payload.tipoFormulario : null;
+  // `usuario` sólo existe en la casa que lo declara (Teclab): con otra casa se
+  // guarda sin modo, igual que un discriminador mal formado.
+  const modo = esModo(payload.tipoFormulario)
+    && (payload.tipoFormulario !== 'usuario' || (casa !== null && camposDe(casa, 'usuario').length > 0))
+    ? payload.tipoFormulario : null;
   const fila: FilaConsulta = {
     carrera: nullableText(payload.carrera, 160),
     tipo: nullableText(payload.tipo, 80),

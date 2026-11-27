@@ -168,6 +168,7 @@ export default function PaginaTeclab(
             va fija y no hay nada dinámico: los campos son siempre los de Teclab. */}
         <FormularioLead carreras={carreras} modo="contacto" casa="teclab" origen="teclab" />
         <FormularioLead carreras={carreras} modo="preinscripcion" casa="teclab" origen="teclab" />
+        <FormularioLead carreras={carreras} modo="usuario" casa="teclab" origen="teclab" />
 
         <section className="teclab-continuity" aria-labelledby="teclab-continuity-title">
           <div className="teclab-continuity-copy">

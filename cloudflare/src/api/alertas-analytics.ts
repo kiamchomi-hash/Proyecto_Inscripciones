@@ -24,7 +24,7 @@ import { ipConfiable } from './ip.ts';
  */
 
 const ORIGENES_FORMULARIO = new Set(['home', 'teclab', 'contacto']);
-const MODOS_FORMULARIO = new Set(['contacto', 'preinscripcion']);
+const MODOS_FORMULARIO = new Set(['contacto', 'preinscripcion', 'usuario']);
 
 const esRegistro = (valor: unknown): valor is Record<string, unknown> =>
   valor !== null && typeof valor === 'object' && !Array.isArray(valor);

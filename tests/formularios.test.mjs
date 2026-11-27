@@ -16,9 +16,48 @@ test('cada campo declara la columna real de la tabla', () => {
   assert.equal(columnaDe('domicilio'), 'direccion');
 });
 
-test('ningun campo comparte columna con otro', () => {
-  const columnas = Object.values(CAMPOS).map(campo => campo.columna);
+test('ningun campo comparte columna con otro, salvo la provincia de Teclab', () => {
+  // `provinciaTeclab` es la columna `provincia` como desplegable: Identidad la
+  // pide en texto libre y Teclab con la lista de su formulario de vinculación.
+  const columnas = Object.entries(CAMPOS)
+    .filter(([id]) => id !== 'provinciaTeclab')
+    .map(([, campo]) => campo.columna);
   assert.equal(new Set(columnas).size, columnas.length);
+  assert.equal(columnaDe('provinciaTeclab'), 'provincia');
+  for (const casa of ['siglo21', 'teclab', 'identidad']) {
+    for (const modo of ['contacto', 'preinscripcion', 'usuario']) {
+      const campos = camposDe(casa, modo);
+      assert.ok(!(campos.includes('provincia') && campos.includes('provinciaTeclab')), `${casa}.${modo} pide la provincia dos veces`);
+    }
+  }
+});
+
+test('la preinscripcion de Teclab es corta y el legajo pasa a «usuario»', () => {
+  assert.deepEqual(camposDe('teclab', 'preinscripcion'), ['nombre', 'apellido', 'email', 'telefono', 'provinciaTeclab']);
+  assert.deepEqual(camposDe('teclab', 'usuario'), [
+    'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
+    'nacionalidad', 'estadoCivil',
+    'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento',
+    'codigoPostal', 'localidad',
+    'nivelEstudios', 'colegio', 'colegioLocalidad', 'anioEgreso',
+    'email', 'telefono',
+  ]);
+  assert.deepEqual(camposDe('siglo21', 'usuario'), []);
+  assert.deepEqual(camposDe('identidad', 'usuario'), []);
+  assert.deepEqual(obligatoriosDe('teclab', 'preinscripcion'), camposDe('teclab', 'preinscripcion'));
+  assert.equal(armarPayload('teclab', 'usuario', {}).tipoFormulario, 'usuario');
+});
+
+test('la provincia de Teclab es la lista de su formulario de vinculación', () => {
+  assert.deepEqual([...CAMPOS.provinciaTeclab.opciones], [
+    'Buenos Aires', 'Catamarca', 'Chaco', 'Chubut', 'Cordoba', 'Corrientes', 'Entre Rios',
+    'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquen', 'Río Negro',
+    'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero',
+    'Tierra del Fuego', 'Tucuman',
+  ]);
+  assert.equal(CAMPOS.provinciaTeclab.etiquetasOpciones.Cordoba, 'Córdoba');
+  assert.equal(CAMPOS.provinciaTeclab.etiquetasOpciones.Tucuman, 'Tucumán');
+  assert.equal(armarPayload('teclab', 'preinscripcion', { provinciaTeclab: 'Cordoba' }).provinciaTeclab, 'Cordoba');
 });
 
 test('la casa sale del nivel de la carrera', () => {
@@ -63,7 +102,7 @@ test('el contacto es corto en las tres casas', () => {
 
 test('todo campo declarado por una casa existe en el registro', () => {
   for (const casa of ['siglo21', 'teclab', 'identidad']) {
-    for (const modo of ['contacto', 'preinscripcion']) {
+    for (const modo of ['contacto', 'preinscripcion', 'usuario']) {
       for (const campo of camposDe(casa, modo)) {
         assert.ok(CAMPOS[campo], `${casa}.${modo} declara un campo inexistente: ${campo}`);
       }
@@ -133,7 +172,7 @@ test('la preinscripcion de Siglo 21 no pide datos de residencia', () => {
 
 test('los obligatorios de una casa son campos que esa casa pide', () => {
   for (const casa of ['siglo21', 'teclab', 'identidad']) {
-    for (const modo of ['contacto', 'preinscripcion']) {
+    for (const modo of ['contacto', 'preinscripcion', 'usuario']) {
       const campos = camposDe(casa, modo);
       for (const campo of obligatoriosDe(casa, modo)) {
         assert.ok(campos.includes(campo), `${casa}.${modo} exige ${campo} sin pedirlo`);
@@ -220,8 +259,8 @@ test('en una preinscripcion se pide todo, salvo lo que depende del domicilio o e
       }
     }
   }
-  // Teclab ya no queda sin exigir nada por no tener su ficha cargada.
-  assert.ok(obligatoriosDe('teclab', 'preinscripcion').length > 10);
+  // El legajo de Teclab exige lo mismo que antes exigía su preinscripción.
+  assert.ok(obligatoriosDe('teclab', 'usuario').length > 10);
   assert.ok(obligatoriosDe('siglo21', 'preinscripcion').includes('telefono'));
   assert.ok(!obligatoriosDe('siglo21', 'preinscripcion').includes('codigoPostal'));
 });
@@ -229,9 +268,9 @@ test('en una preinscripcion se pide todo, salvo lo que depende del domicilio o e
 test('teclab pide el codigo postal sin exigirlo, como su portal', () => {
   // Relevado el 19/10/2026: el portal administrativo deja crear la
   // preinscripcion sin codigo postal. Piso y depto ya son siempre opcionales.
-  assert.ok(camposDe('teclab', 'preinscripcion').includes('codigoPostal'));
-  assert.ok(!obligatoriosDe('teclab', 'preinscripcion').includes('codigoPostal'));
-  assert.ok(obligatoriosDe('teclab', 'preinscripcion').includes('domicilioNumero'));
+  assert.ok(camposDe('teclab', 'usuario').includes('codigoPostal'));
+  assert.ok(!obligatoriosDe('teclab', 'usuario').includes('codigoPostal'));
+  assert.ok(obligatoriosDe('teclab', 'usuario').includes('domicilioNumero'));
 });
 
 test('el medio de pago no se pregunta: se habla con el lead', () => {
@@ -251,8 +290,10 @@ test('piso, depto y torre son opcionales por lo que son, no por la casa', () => 
   }
   // Y ninguna casa puede exigirlos.
   for (const casa of ['siglo21', 'teclab', 'identidad']) {
-    for (const id of obligatoriosDe(casa, 'preinscripcion')) {
-      assert.ok(!CAMPOS[id].siempreOpcional, `${casa} exige ${id}, que es siempre opcional`);
+    for (const modo of ['preinscripcion', 'usuario']) {
+      for (const id of obligatoriosDe(casa, modo)) {
+        assert.ok(!CAMPOS[id].siempreOpcional, `${casa}.${modo} exige ${id}, que es siempre opcional`);
+      }
     }
   }
 });
@@ -275,7 +316,7 @@ test('«Otra» sigue siendo una nacionalidad válida y viaja tal cual', () => {
   // arma con `armarPayload` y el endpoint descarta lo que no es una opción. Por
   // eso lo que importa es que «Otra» esté en la lista y no se transforme.
   assert.ok(CAMPOS.nacionalidad.opciones.includes('Otra'));
-  assert.equal(armarPayload('teclab', 'preinscripcion', { nacionalidad: 'Otra', dni: '30111222' }).nacionalidad, 'Otra');
+  assert.equal(armarPayload('teclab', 'usuario', { nacionalidad: 'Otra', dni: '30111222' }).nacionalidad, 'Otra');
 });
 
 test('las etiquetas son países sin cambiar valores históricos del legajo', () => {
@@ -287,7 +328,7 @@ test('las etiquetas son países sin cambiar valores históricos del legajo', () 
   for (const nacionalidad of ['Boliviana', 'Peruana', 'Otra']) {
     assert.ok(CAMPOS.nacionalidad.opciones.includes(nacionalidad), nacionalidad);
     // La etiqueta es sólo de pantalla: al legajo viaja el valor histórico.
-    assert.equal(armarPayload('teclab', 'preinscripcion', { nacionalidad }).nacionalidad, nacionalidad);
+    assert.equal(armarPayload('teclab', 'usuario', { nacionalidad }).nacionalidad, nacionalidad);
   }
 });
 

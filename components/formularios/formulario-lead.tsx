@@ -560,7 +560,13 @@ function Campo({ prefijo, id, valor, onChange, opcional, invalido, error }: {
   );
 }
 
-export default function FormularioLead({ carreras, modo, casa, origen = 'home', carreraInicial, alinearAlLlegar = false }: Props) {
+export default function FormularioLead({ carreras: todas, modo, casa, origen = 'home', carreraInicial, alinearAlLlegar = false }: Props) {
+  // El formulario de usuario es de una sola casa: en la ficha llega toda la
+  // oferta, y elegir ahí una carrera de otra casa guardaría un legajo cruzado.
+  const carreras = useMemo(
+    () => (modo === 'usuario' && casa ? todas.filter(opcion => casaDeCarrera(opcion) === casa) : todas),
+    [todas, modo, casa],
+  );
   // La carrera con la que arranca, si la página la fijó. Es el valor inicial de
   // dos estados y nada más: después manda el estado, porque el lead la cambia.
   const nombreInicial = () => (carreraInicial != null
@@ -630,12 +636,17 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const tiposRef = useRef<HTMLDivElement>(null);
 
   const esPreinscripcion = modo === 'preinscripcion';
+  // La preinscripción y «Generá tu usuario de Teclab» se pintan y se validan
+  // igual: carrera obligatoria y los campos que la casa exige. Lo que es sólo
+  // de la preinscripción (su ancla, el precio y los pasos de la confirmación)
+  // sigue mirando `esPreinscripcion`.
+  const esLegajo = modo !== 'contacto';
   const prefijo = modo;
-  const idDestino = esPreinscripcion ? 'preinscripcion' : 'formulario';
+  const idDestino = esPreinscripcion ? 'preinscripcion' : modo === 'usuario' ? 'usuario-teclab' : 'formulario';
   const nombreCarreraWhatsApp = carreraElegida === 'Tecnicatura Superior en Experiencia del Cliente'
     ? 'Tecnicatura Superior en Customer Experience'
     : carreraElegida;
-  const mensajeWhatsAppFormulario = esPreinscripcion && carreraElegida
+  const mensajeWhatsAppFormulario = esLegajo && carreraElegida
     ? `Hola, me gustaría conocer más información sobre la carrera ${nombreCarreraWhatsApp.toUpperCase()}`
     : 'Hola, me gustaría realizar una consulta';
 
@@ -649,7 +660,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   const casaDeLaCarrera = casaDeCarrera(carrera);
   // Mientras no hay carrera, se muestran los campos de Siglo 21; al elegir una
   // carrera se usa la casa real. La elección sigue siendo obligatoria para enviar.
-  const casaVisual = casaActiva ?? (esPreinscripcion ? 'siglo21' : null);
+  const casaVisual = casaActiva ?? (esLegajo ? 'siglo21' : null);
   const esperandoCarrera = false;
   const campos = casaVisual ? camposDe(casaVisual, modo) : camposComunes(modo);
   const obligatorios = casaVisual ? obligatoriosDe(casaVisual, modo) : [];
@@ -679,7 +690,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     // de lo que pida la casa. Sin esto, en Teclab —que todavía no declaró sus
     // obligatorios— se leían como obligatorios.
     CAMPOS[id].siempreOpcional
-    || (esPreinscripcion
+    || (esLegajo
       ? hayObligatorios && !obligatorios.includes(id)
       : CAMPOS[id].grupo !== 'contacto');
 
@@ -692,7 +703,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // casa puede cambiar: en la home, al elegir carrera. Con la casa fija por
   // props (`/teclab`) el checkbox de equivalencias no va a aparecer nunca, así
   // que guardarle una fila vacía es un hueco que no paga nada.
-  const enPantalla = esPreinscripcion || casa ? campos : camposPosibles(modo);
+  const enPantalla = esLegajo || casa ? campos : camposPosibles(modo);
   const pide = (id: CampoId) => campos.includes(id);
   // El mail y el teléfono van juntos en su propia caja, en los dos modos: es
   // por dónde se contesta, y ponerlo aparte lo saca de la lista de datos donde
@@ -700,8 +711,8 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   // en una preinscripción hacen falta los dos— y eso lo dice la caja.
   const columnas = repartirColumnas(
     enPantalla.filter(id => CAMPOS[id].grupo !== 'contacto'),
-    esPreinscripcion,
-    esPreinscripcion && casaVisual === 'siglo21',
+    esLegajo,
+    esLegajo && casaVisual === 'siglo21',
   );
 
   const categorias = useMemo(() => categoriasPresentes(carreras), [carreras]);
@@ -839,7 +850,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   });
 
   const hayContacto = Boolean(email || telefono);
-  const datosValidos = (!esPreinscripcion || Boolean(carrera)) && hayContacto && !errorEmail && !errorTelefono
+  const datosValidos = (!esLegajo || Boolean(carrera)) && hayContacto && !errorEmail && !errorTelefono
     && !faltanObligatorios.length && !malEscritos.length;
   const valido = datosValidos && Boolean(token);
 
@@ -1043,7 +1054,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
       setEnFrio(true);
       if (frioRef.current) clearTimeout(frioRef.current);
       frioRef.current = setTimeout(() => setEnFrio(false), 5000);
-      if (esPreinscripcion && !carrera) {
+      if (esLegajo && !carrera) {
         document.getElementById(`${prefijo}-carrera`)?.focus();
         return;
       }
@@ -1160,7 +1171,9 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
     return () => observador.disconnect();
   }, [conPaneles, listo, paso]);
 
-  const titulo = esPreinscripcion ? 'PREINSCRIPCIÓN' : 'CONTACTO';
+  const titulo = esPreinscripcion ? 'FORMULARIO DE PREINSCRIPCIÓN'
+    : modo === 'usuario' ? 'GENERÁ TU USUARIO DE TECLAB'
+    : 'FORMULARIO DE CONTACTO';
   // Bajada sólo cuando informa algo: las frases orientativas del paso de datos
   // se sacaron (pendiente 39), queda la confirmación del envío.
   const bajada = paso === 'confirmacion' || paso === 'verPrecio'
@@ -1170,11 +1183,11 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
   return (
     <section
       ref={seccionRef}
-      id={esPreinscripcion ? 'preinscripcion' : 'formulario'}
+      id={idDestino}
       className="relative"
       style={{ borderTop: '2px solid var(--catalogo-acento)', background: 'var(--catalogo-form-fondo)', scrollMarginTop: 'var(--navbar-height, 60px)' }}
     >
-      <div className={`${esPreinscripcion ? '' : 'contact-form-layout'} mx-auto w-full max-w-[2400px] px-4 py-4 sm:px-8 sm:py-6 xl:px-20`}>
+      <div className={`${esLegajo ? '' : 'contact-form-layout'} mx-auto w-full max-w-[2400px] px-4 py-4 sm:px-8 sm:py-6 xl:px-20`}>
         <div className="form-content-col">
         <div
           // Sin `overflow-hidden`: recortaba la lista del buscador de carrera
@@ -1202,7 +1215,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                   className="text-xl font-black uppercase tracking-tight text-white"
                   style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 0.7s forwards' }}
                 >
-                  {esPreinscripcion ? 'Preinscripción enviada' : 'Consulta enviada'}
+                  {esPreinscripcion ? 'Preinscripción enviada' : modo === 'usuario' ? 'Datos enviados' : 'Consulta enviada'}
                 </p>
                 <p className="text-sm text-[var(--catalogo-texto-suave)]" style={{ opacity: 0, animation: 'formSuccessFade 0.3s ease 0.85s forwards' }}>
                   Nos comunicamos a la brevedad
@@ -1220,7 +1233,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
 
           <div className="form-card-header px-3 pb-3 pt-4 sm:px-4" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }} aria-hidden={listo}>
             <h2 className="text-center text-xl font-black uppercase leading-none tracking-tighter sm:text-2xl">
-              <span className="text-white">FORMULARIO DE {titulo}</span>
+              <span className="text-white">{titulo}</span>
             </h2>
             {bajada && <p className="mt-1 text-center text-xs text-[var(--catalogo-texto-suave)]">{bajada}</p>}
           </div>
@@ -1285,7 +1298,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                         general y al elegirla cambia sólo el texto. */}
                     <div className="mb-0.5 flex items-baseline justify-between gap-2">
                       <label className={`${ETIQUETA} mb-0`} htmlFor={`${prefijo}-carrera`}>Carrera</label>
-                      {esPreinscripcion && (
+                      {esLegajo && (
                         <span className="flex items-center gap-1 whitespace-nowrap text-[10px] font-black uppercase tracking-wider text-white">
                           <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--catalogo-acento)]" />
                           {carrera ? modalidadCorta(carrera) : casaActiva === 'teclab' ? '100% online' : 'Cursada online'}
@@ -1310,7 +1323,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                         placeholder="Buscar carrera..."
                         autoComplete="off"
                         maxLength={100}
-                      className={`${CAMPO} ${esPreinscripcion && !carrera ? (intentado ? BORDE_MAL : 'border-[var(--catalogo-acento)] focus:border-[var(--catalogo-acento)]') : BORDE_OK} pr-8`}
+                      className={`${CAMPO} ${esLegajo && !carrera ? (intentado ? BORDE_MAL : 'border-[var(--catalogo-acento)] focus:border-[var(--catalogo-acento)]') : BORDE_OK} pr-8`}
                       />
                       <svg className="pointer-events-none absolute right-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--catalogo-acento)]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1367,7 +1380,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                     {/* En la preinscripción, un bloque por grupo con su rótulo;
                         en el contacto, la grilla de siempre. Los anchos se
                         calculan por bloque, así cada uno cierra sus filas. */}
-                    {(esPreinscripcion ? bloquesDe(suyos, grupoDe) : [{ grupo: null, campos: suyos }]).map((bloque, indiceBloque) => {
+                    {(esLegajo ? bloquesDe(suyos, grupoDe) : [{ grupo: null, campos: suyos }]).map((bloque, indiceBloque) => {
                       const lista = bloque.campos;
                       // La línea separa del bloque de arriba: en la columna 1 es el
                       // buscador de carrera; la columna 2 arranca sin nada encima.
@@ -1385,7 +1398,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                           // un bloque fijo y verla crecer y encogerse molesta.
                           // En mobile las columnas se apilan y el hueco quedaría
                           // a la vista, peor que el salto: ahí no está.
-                          className={`${!esPreinscripcion && (id === 'nombre' || id === 'apellido') ? SPAN.completo : SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'} celda-ancho`}
+                          className={`${!esLegajo && (id === 'nombre' || id === 'apellido') ? SPAN.completo : SPAN[CAMPOS[id].ancho ?? 'medio']} ${pide(id) ? '' : 'hidden sm:block'} celda-ancho`}
                           style={{
                             ...(pide(id) ? null : { visibility: 'hidden' as const }),
                             ['--ancho' as string]: anchosDeColumna(todos)[indice],
@@ -1416,7 +1429,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 mitad ya lo haya dado. */}
             <div className="px-3 pb-1 pt-3 sm:px-4" style={{ borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }}>
               <div role="group" aria-label="Datos de contacto" className={`space-y-1.5 py-2 ${alinearAlLlegar ? 'form-contacto-compacto' : ''}`}>
-                {esPreinscripcion ? (
+                {esLegajo ? (
                   <p className={ROTULO_BLOQUE}>{ROTULO_GRUPO.contacto}</p>
                 ) : !alinearAlLlegar && (
                 <p className="flex items-center gap-2 text-[12px] leading-snug text-white">
@@ -1428,7 +1441,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                       demás y no hace falta aclararlo. En el contacto sí, porque
                       ahí la regla es otra: con uno de los dos alcanza. */}
                   <span>
-                    {esPreinscripcion ? (
+                    {esLegajo ? (
                       <strong className="text-[var(--catalogo-acento)]">Datos de contacto</strong>
                     ) : (
                       <>
@@ -1499,7 +1512,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
                 className="w-full cursor-pointer rounded-lg py-2 text-sm font-black uppercase tracking-widest transition-[filter] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100"
                 style={{ background: 'var(--catalogo-acento)', color: 'var(--catalogo-acento-tinta)', letterSpacing: '0.12em' }}
               >
-                {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : 'Enviar consulta'}
+                {enviando ? 'Enviando...' : esPreinscripcion ? 'Enviar preinscripción' : modo === 'usuario' ? 'Enviar datos' : 'Enviar consulta'}
               </button>
 
             </div>
@@ -1603,7 +1616,7 @@ export default function FormularioLead({ carreras, modo, casa, origen = 'home', 
           </div>
         </div>
         </div>
-        {!esPreinscripcion && (
+        {!esLegajo && (
           <div className="contact-form-side-image relative" data-casa={casaActiva ?? 'siglo21'} aria-hidden="true" />
         )}
       </div>

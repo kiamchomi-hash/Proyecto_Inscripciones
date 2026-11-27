@@ -31,7 +31,7 @@ export type CampoId =
   | 'fechaNacimiento' | 'lugarNacimiento' | 'nacionalidad' | 'estadoCivil'
   | 'paisResidencia' | 'tipoDomicilio' | 'domicilio' | 'domicilioNumero'
   | 'domicilioPiso' | 'domicilioDepartamento' | 'torre' | 'barrio'
-  | 'codigoPostal' | 'provincia' | 'localidad'
+  | 'codigoPostal' | 'provincia' | 'provinciaTeclab' | 'localidad'
   | 'nivelEstudios' | 'colegio' | 'colegioLocalidad' | 'anioEgreso'
   | 'equivalencias' | 'email' | 'telefono';
 
@@ -102,6 +102,24 @@ const PAISES_NACIONALIDAD: Readonly<Record<string, string>> = {
   Dominicana: 'República Dominicana', Otra: 'Otro país',
 };
 
+/**
+ * Las provincias del formulario de vinculación de Teclab (HubSpot, portal
+ * 5880041, form `a19c1564-e23a-475c-a16a-11aa244c1b9e`, campo `provincia`),
+ * copiadas el 27/11/2026. Son los valores que guarda; la Ciudad no va aparte:
+ * es «Buenos Aires». También es la lista de la landing de la sede.
+ */
+const PROVINCIAS_HUBSPOT = [
+  'Buenos Aires', 'Catamarca', 'Chaco', 'Chubut', 'Cordoba', 'Corrientes', 'Entre Rios',
+  'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquen', 'Río Negro',
+  'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero',
+  'Tierra del Fuego', 'Tucuman',
+] as const;
+
+// Las etiquetas del mismo formulario: el valor va sin tilde, la pantalla con.
+const ETIQUETAS_PROVINCIA: Readonly<Record<string, string>> = {
+  Cordoba: 'Córdoba', 'Entre Rios': 'Entre Ríos', Neuquen: 'Neuquén', Tucuman: 'Tucumán',
+};
+
 const CAMPOS_DECLARADOS = {
   nombre:   { columna: 'nombre', grupo: 'personales',   label: 'Nombre',   placeholder: 'Nombre',   max: 100, autocompletar: 'given-name' },
   apellido: { columna: 'apellido', grupo: 'personales', label: 'Apellido', placeholder: 'Apellido', max: 100, autocompletar: 'family-name' },
@@ -137,6 +155,10 @@ const CAMPOS_DECLARADOS = {
   barrio:       { columna: 'barrio', grupo: 'domicilio', ancho: 'tercio',        label: 'Barrio',        placeholder: 'Barrio', max: 120 },
   codigoPostal: { columna: 'codigo_postal', grupo: 'domicilio', ancho: 'tercio', label: 'Código postal', placeholder: 'Código postal', max: 20, autocompletar: 'postal-code' },
   provincia:    { columna: 'provincia', grupo: 'domicilio', label: 'Provincia', placeholder: 'Provincia', max: 80, autocompletar: 'address-level1' },
+  // La misma columna que `provincia`, como desplegable: Teclab vincula con la
+  // lista de su formulario, e Identidad sigue con texto libre. Ninguna casa
+  // pide los dos en el mismo modo.
+  provinciaTeclab: { columna: 'provincia', grupo: 'personales', label: 'Provincia', max: 80, tipo: 'select', opciones: PROVINCIAS_HUBSPOT, etiquetasOpciones: ETIQUETAS_PROVINCIA },
   localidad:    { columna: 'localidad', grupo: 'domicilio', ancho: 'completo',     label: 'Localidad',     placeholder: 'Ciudad o localidad', max: 120, autocompletar: 'address-level2' },
 
   nivelEstudios:    { columna: 'nivel_estudios', grupo: 'estudios',    label: 'Nivel de estudios',     placeholder: 'Secundario completo', max: 80 },
@@ -164,7 +186,11 @@ export function columnaDe(campo: CampoId | Campo): Campo['columna'] {
 // ── Las casas ──
 
 export type CasaId = 'siglo21' | 'teclab' | 'identidad';
-export type Modo = 'contacto' | 'preinscripcion';
+/**
+ * `usuario` es el legajo completo para generar el usuario de Teclab; sólo esa
+ * casa lo declara. Se guarda tal cual en `consultas.tipo_formulario`.
+ */
+export type Modo = 'contacto' | 'preinscripcion' | 'usuario';
 
 export interface Casa {
   nombre: string;
@@ -172,6 +198,7 @@ export interface Casa {
   niveles: string[];
   contacto: CampoId[];
   preinscripcion: CampoId[];
+  usuario?: CampoId[];
   /**
    * Campos que la casa pide en la preinscripción pero su portal no exige. Se
    * muestran igual y no bloquean el envío.
@@ -201,7 +228,10 @@ export const CASAS: Record<CasaId, Casa> = {
     niveles: ['Teclab - Tecnología', 'Teclab - Gestión', 'Teclab - Curso'],
     // Teclab no acredita equivalencias.
     contacto: ['nombre', 'apellido', 'email', 'telefono'],
-    preinscripcion: [
+    // Lo justo para la vinculación (decidido el 27/11/2026); el legajo va aparte.
+    preinscripcion: ['nombre', 'apellido', 'email', 'telefono', 'provinciaTeclab'],
+    // «Generá tu usuario de Teclab»: el legajo que antes era la preinscripción.
+    usuario: [
       'nombre', 'apellido', 'dni', 'sexo', 'fechaNacimiento', 'lugarNacimiento',
       'nacionalidad', 'estadoCivil',
       'domicilio', 'domicilioNumero', 'domicilioPiso', 'domicilioDepartamento',
@@ -239,7 +269,7 @@ const CASA_POR_NIVEL = new Map<string, CasaId>(
 export const casaDeCarrera = (carrera: { nivel: string } | null | undefined): CasaId | null =>
   (carrera && CASA_POR_NIVEL.get(carrera.nivel)) || null;
 
-export const camposDe = (casa: CasaId, modo: Modo): CampoId[] => CASAS[casa][modo];
+export const camposDe = (casa: CasaId, modo: Modo): CampoId[] => CASAS[casa][modo] ?? [];
 
 /**
  * Los campos que toda casa pide en ese modo. Es lo que se muestra en la home
@@ -589,13 +619,7 @@ export function carreraHubspotDe(nombre: unknown): string | null {
   return fila ? fila[1] : null;
 }
 
-const PROVINCIAS_HUBSPOT = [
-  'Buenos Aires', 'Catamarca', 'Chaco', 'Chubut', 'Cordoba', 'Corrientes', 'Entre Rios',
-  'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquen', 'Río Negro',
-  'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero',
-  'Tierra del Fuego', 'Tucuman',
-];
-
+// `PROVINCIAS_HUBSPOT` está declarada arriba, junto a los campos.
 const PROVINCIA_POR_TEXTO = new Map<string, string>([
   ...PROVINCIAS_HUBSPOT.map(p => [normalizar(p), p] as [string, string]),
   // La landing no separa la Ciudad: va como Buenos Aires.
