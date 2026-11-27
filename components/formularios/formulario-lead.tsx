@@ -1283,7 +1283,12 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
 
           <div className="form-card-header px-3 pb-3 pt-4 sm:px-4" style={{ background: 'rgba(0,0,0,0.35)', borderBottom: '1px solid rgba(var(--catalogo-acento-rgb), 0.15)' }} aria-hidden={listo}>
             <h2 className="text-center text-xl font-black uppercase leading-none tracking-tighter sm:text-2xl">
-              <span className="text-white">{titulo}</span>
+              {/* En Teclab la palabra que importa va en el cian de la marca. */}
+              {esPreinscripcion && casaActiva === 'teclab' ? (
+                <span className="text-white">FORMULARIO DE <span className="text-[var(--catalogo-acento)]">PREINSCRIPCIÓN</span></span>
+              ) : (
+                <span className="text-white">{titulo}</span>
+              )}
             </h2>
             {bajada && <p className="mt-1 text-center text-xs text-[var(--catalogo-texto-suave)]">{bajada}</p>}
           </div>
@@ -1502,7 +1507,11 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                   </span>
                 </p>
                 )}
-                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                {/* En Teclab, mail y teléfono siguen las dos columnas de arriba:
+                    el mail termina donde terminan los de la izquierda y el
+                    teléfono arranca donde arrancan los de la derecha. La
+                    separación es el relleno de las dos columnas (2 × 1rem). */}
+                <div className={`grid grid-cols-1 gap-1.5 sm:grid-cols-2 ${formularioTeclab ? 'md:gap-x-8' : ''}`}>
                   {enPantalla.filter(id => CAMPOS[id].grupo === 'contacto').map(id => (
                     <Campo
                       key={id}
