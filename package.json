@@ -23,7 +23,8 @@
     "leads": "node --env-file-if-exists=.env.local herramientas/leads.mjs",
     "indexnow": "node herramientas/indexnow.mjs",
     "db:d1": "node herramientas/d1.mjs",
-    "db:respaldo": "node herramientas/respaldo-d1.mjs"
+    "db:respaldo": "node herramientas/respaldo-d1.mjs",
+    "respaldo:nube": "node herramientas/respaldo-nube.mjs"
   },
   "repository": {
     "type": "git",

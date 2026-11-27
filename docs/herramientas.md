@@ -180,6 +180,27 @@ Lo corre un timer de systemd de usuario todos los días a las 08:30 de Argentina
 
 Time Travel de D1 conserva hasta 30 días en Workers Paid (7 en Free); no reemplaza la copia local: vive en la misma cuenta. Restaurarlo sobrescribe la base de producción.
 
+## Respaldo del conocimiento local en Google Drive
+
+`npm run respaldo:nube` (`herramientas/respaldo-nube.mjs`) sube a Google Drive lo que no viaja por git y que no se puede reconstruir desde el repo: `ventas/` (corpus del bot, fuentes y precios), `carreras/`, `conocimiento/`, `notas-locales/`, `herramientas/ventas/`, el código de las tres apps de HubSpot, el historial SQLite y la planilla ODS de Revisión de pagos, `uiverse/`, las skills de Claude Code y los agentes de OpenCode.
+
+- **Destino:** `gdrive:CAU-Backup/`, con `conocimiento/`, `apps/`, `uiverse/` y `contenidos/`. Se puede cambiar con `CAU_RESPALDO_REMOTO=otro:ruta`.
+- **Qué no sube:** `node_modules/`, `target/` (builds), `temp/`, los perfiles de navegador logueados y todo lo que ya está versionado en el repo público.
+- **Contenidos:** `--solo=contenidos` sube los 11,6 GiB de material gráfico y video (sin `node_modules`). Por defecto el comando sube todo; en una cuenta gratuita de 15 GB conviene correr las dos partes por separado y mirar el espacio libre.
+- **Ensayar:** `--ensayo` hace `--dry-run` y no sube nada; `--listar` sólo muestra las piezas.
+- **Espejo, no historial:** usa `rclone sync`, así que lo que se borra en local se borra en Drive (va a la papelera de Drive, que ocupa cuota hasta vaciarla). No reemplaza al respaldo de D1: son datos distintos.
+
+**Preparación, una vez por máquina:**
+
+```bash
+sudo apt install rclone
+rclone config create gdrive drive scope=drive config_is_local=true
+```
+
+Autorizar en el navegador con la cuenta de Google que tenga el espacio. Comprobar con `rclone about gdrive:` (tiene que mostrar el total y lo libre) y probar `npm run respaldo:nube -- --listar`.
+
+**Restaurar:** `rclone copy gdrive:CAU-Backup/conocimiento/ventas ./ventas` (o la pieza que haga falta). El SQLite se restaura con la app cerrada.
+
 
 ## Control preventivo de secretos y archivos privados
 
