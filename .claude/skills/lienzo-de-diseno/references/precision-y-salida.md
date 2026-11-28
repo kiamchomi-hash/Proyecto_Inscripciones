@@ -135,6 +135,21 @@ Antes de revisar estética, comprobar:
     dentro de la zona segura;
 12. el flujo vertical no deja huecos accidentales entre contenido y CTA.
 
+Dos trampas de la exportación con Playwright (28/11/2026):
+
+- Una captura a escala no entera (por ejemplo 1748/592) puede dejar la última
+  columna o fila más clara. Si el sangrado se arma repitiendo el borde, esa
+  línea se estira en una franja: medir el rango de color de cada borde y
+  reemplazar la línea mala por la vecina antes de extender.
+- Para el PDF vectorial no sacar el artboard de su contenedor: hay estilos que
+  dependen de clases de los ancestros y la pieza se desarma. Se conservan los
+  ancestros, se oculta el resto y se fija el artboard en la página. Mejor
+  declarar el tamaño físico sin escalar (ver arriba); si un artboard armado en
+  px obliga a escalar, después se verifican con `pdfinfo` el tamaño de página,
+  los boxes y el sangrado contra lo que pide la imprenta. En el folleto CTA de
+  Teclab Chromium entregó 154,18 × 216,24 mm en vez de 154 × 216: se informa y
+  se decide con la imprenta, no se da por tolerado.
+
 Usar `scripts/medidas-impresion.mjs` para calcular medidas y validar PNG. La
 comprobación numérica no reemplaza una revisión visual al 100 %, al 25 %, en
 escala de grises y, cuando corresponda, una prueba impresa.

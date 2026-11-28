@@ -39,7 +39,7 @@ En mensajes comerciales no usar nunca el emoji de bolsa de dinero (💰): puede 
   descubrimiento en un nuevo prompt local se comprobó en este worktree; eso no
   prueba la ejecución ni la disponibilidad en otras conversaciones.
 - Los enlaces selectivos en `.agents/skills/` apuntan a skills propias de
-  `.claude/skills/`. Git permite incluir únicamente los trece enlaces declarados; el
+  `.claude/skills/`. Git permite incluir únicamente los dieciocho enlaces declarados; el
   resto de `.agents/` sigue ignorado. Los enlaces están versionados y viajan
   con el repositorio. El descubrimiento depende de la
   sesión; se comprobó en un nuevo prompt local de este worktree, no en otras
@@ -114,7 +114,7 @@ ni bloqueos técnicos.
 npm run lint         # eslint
 npm run typecheck    # tsc --noEmit
 npm test             # node --test tests/*.test.mjs
-npm run check        # lint + typecheck + test — correr esto antes de commitear
+npm run check        # skills + lint + typecheck + test — correr esto antes de commitear
 ```
 
 Un test suelto: `node --test tests/security.test.mjs`. Un caso puntual: `node --test --test-name-pattern "JSON-LD" tests/security.test.mjs`.
@@ -212,7 +212,7 @@ y ejecutar los controles correspondientes.
 - `odd/tasks/` son los documentos de seguimiento de cada funcionalidad (objetivo, tareas y verificación).
 - `contenidos/` es el material gráfico y de video por casa (`cau/`, `siglo21/`, `teclab/`, `identidad/`; lo general y lo de la sede es del CAU; cada una con `oficial/`, `en-curso/`, `aprobados/` y `remotion/`, donde viven sus proyectos de video). Pesa más de 11 GB y está fuera de git, de TypeScript y de ESLint. **No se explora, no se lista ni se busca adentro salvo que el usuario lo pida** o que el trabajo sea una pieza gráfica o un video (ahí mandan las skills `lienzo-de-diseno`, `piezas_teclab` y `remotion`). Cómo se usa: `contenidos/LEER.md`.
 - `scripts/` son utilitarios de una sola vez (descarga de assets de Teclab, generadores de folletos); no participan del build ni de `check`.
-- `.claude/skills/` es una biblioteca local de skills: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), piezas gráficas por casa, SEO, y guías generales de Next/React. Las instrucciones de los agentes de revisión del proyecto (`auditor-contenido`, `auditor-dependencias`, `auditor-web`, `estratega-seo`, `verificador-produccion`) viven en `~/.config/opencode/agents/`, fuera del repo; ninguno escribe ni commitea.
+- `.claude/skills/` es una biblioteca local de skills: marca y patrones de diseño del CAU (`cau_brand`, `cau_design_patterns`), el procedimiento de carga de carreras (`cargar_carrera`), piezas gráficas por casa, SEO, y guías generales de Next/React. `npm run skills` (ya incluido en `check`) revisa frontmatter, tamaño del `SKILL.md`, rutas absolutas, referencias locales y los enlaces de `.agents/skills`; sale con código 1 si algo se rompió. Las instrucciones de los agentes de revisión del proyecto (`auditor-contenido`, `auditor-dependencias`, `auditor-web`, `estratega-seo`, `verificador-produccion`) viven en `~/.config/opencode/agents/`, fuera del repo; ninguno escribe ni commitea.
 - `docs/plans/` es donde escriben planes nuevos las skills `brainstorming` y `writing-plans`. `docs/resumen-proyecto.md` es un resumen para reutilizar patrones en otros proyectos — ante una contradicción, manda este archivo y el código.
 - `carreras/`, `ventas/` y `herramientas/ventas/` son la base de conocimiento comercial (precios, corpus del bot de WhatsApp, fichas), **no las usa el sitio**. Las tres están gitignoradas y ancladas con `/` (si no se comerían `app/carreras/` y `components/carreras/`): **el repo es público y ahí hay precios, no commitearlas**. Grep no las ve; buscar ahí con Bash. Ningún script arma rutas a mano: el mapa está en `herramientas/ventas/rutas.mjs`. Detalle en `docs/material-comercial.md`.
 - `conocimiento/` es la versión versionada y sin precios de esa base (información académica de las tres casas, para piezas). La genera `herramientas/ventas/exportar-conocimiento.mjs`: no se edita a mano. Ver `conocimiento/LEER.md`.

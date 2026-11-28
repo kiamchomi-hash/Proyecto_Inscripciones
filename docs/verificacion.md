@@ -86,6 +86,7 @@ falta `{ html: true }`.
 | E2E o paridad del Worker | `npm --prefix cloudflare run test:e2e` o `test:paridad`, según el comportamiento tocado. Ambos están incluidos en el `check` de ese paquete. |
 | Rutas, redirects, metadatos o SEO | Ejecutá `npm run check` y la prueba de rutas/regresión afectada; si el cambio toca la entrega del Worker, sumá su prueba correspondiente. |
 | Workflow, publicación o contrato de configuración | Corré el test del contrato afectado y revisá el diff del workflow/configuración. El CI valida el contrato del publicador, pero no ejecuta el `check` completo de Cloudflare. |
+| Skills de `.claude/skills` | `npm run skills` (ya lo corre `check`): frontmatter, tamaño, rutas absolutas, referencias y enlaces de `.agents/skills`. Si cambió un `name`, corré además `node herramientas/sincronizar-skills.mjs` y revisá el enlace de `.agents/skills`. |
 | Sólo documentación | Revisá enlaces relativos, comandos y afirmaciones contra la fuente vigente; no hace falta correr suites de aplicación. |
 
 El publicador local (`herramientas/5 - Subir cambios (deploy).sh`) informa el

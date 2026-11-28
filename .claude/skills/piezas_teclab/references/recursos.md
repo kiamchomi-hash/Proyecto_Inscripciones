@@ -22,7 +22,10 @@ la bajada y la píldora de la familia.
 }
 ```
 
-## Flechas de la marca (guardada, sin usar)
+## Flechas de la marca
+
+Usada en: dorso del folleto CTA de carreras (28/11/2026), debajo de la trama,
+apuntando a la tarjeta de contacto.
 
 El triángulo de play del logo de Teclab repetido tres veces, cada vez más
 opaco, apuntando hacia lo que sigue. Guardada el 02/10/2026.
@@ -60,3 +63,6 @@ SEGUROS»). Guardado el 18/10/2026: el usuario lo marcó como buen recurso.
 ## Descartado
 
 - Riel: línea fina con un punto al inicio, de la bajada a la píldora (02/10/2026).
+- Malla abstracta de líneas y joystick isométrico en contorno para llenar un
+  hueco del dorso: no dicen nada de la marca (28/11/2026). Lo que funcionó fue
+  agrandar el cuerpo de las listas y, en lo que quedó, trama de puntos + flechas.

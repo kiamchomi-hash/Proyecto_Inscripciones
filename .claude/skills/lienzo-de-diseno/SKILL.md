@@ -225,7 +225,11 @@ responde leyendo el caso aunque el pedido no lo diga.
   caja, o no va.
 - **Las zonas que quedaron vacías se llenan con gráfica**, no esperando al
   texto: rieles, marca de la casa, numerales, reglas, anclados a los bordes y en
-  el mismo lenguaje que el resto.
+  el mismo lenguaje que el resto. Ese relleno sale de los recursos aprobados de
+  la casa, no de un dibujo inventado sólo para ocupar espacio: una malla
+  abstracta y un joystick se rechazaron por no decir nada de la marca
+  (28/11/2026). Ya con el texto (paso 4), probar si más cuerpo o interlineado
+  ocupa el hueco antes de conservar la gráfica de relleno.
 - Un solo lenguaje óptico: la misma luz en todos los elementos 3D, el mismo
   trazo en todos los íconos. Íconos en SVG inline, nunca emojis.
 - **En pixel art el contorno va sólo por fuera.** Una línea de contorno que
@@ -260,6 +264,10 @@ rótulos del paso 2 que quedaban.
   que no se lea. Si la caja tiene que cambiar, eso es tocar el paso 2: se
   pregunta.
 - Números que se comparan en columna, con `font-variant-numeric: tabular-nums`.
+- **Agrupar no esconde.** Si una lista se agrupa bajo rótulos, todo lo que
+  alguien pueda buscar por su nombre sigue a la vista, y el total se contrasta
+  con la fuente: Data Science quedó oculta bajo «Inteligencia Artificial»
+  (28/11/2026).
 - Etiquetas: `tracking`, `versalita`, `titular`, `monoespaciada`, `resaltado`,
   `subrayado`, `editorial`.
 
@@ -287,7 +295,9 @@ que se lea como una sola cosa y no como capas apiladas:
   ojo hacia donde sigue la lectura, marcar de dónde viene la luz (siempre del
   mismo lado en toda la pieza) o asentar un bloque (sombra al pie). Un
   degradado que no hace ninguna de esas cosas es decoración y no va. Nunca se
-  degrada de un color de la paleta a otro.
+  degrada de un color de la paleta a otro. Sobre papel claro el overlay no se
+  ve: ahí va en `multiply` (~14%), y dos tarjetas con grano se igualan midiendo
+  el desvío de una zona vacía de cada una, no a ojo.
 
 El mensaje dice qué se ajustó, en una lista corta.
 
@@ -348,6 +358,14 @@ sostiene esas vueltas:
   la caja del renglón—, si una cifra se pasa de su caja, dónde cae el centro de
   un dibujo. La captura muestra que algo está corrido; la medición dice cuánto
   y hacia dónde. Sin eso se corrige por tanteo y se corrige al revés.
+- **Alinear es por el dibujo, no por la caja.** Dos íconos con la misma caja
+  pueden tener distinto ancho de trazo y verse corridos: se ajusta el `viewBox`
+  al dibujo y se mide la tinta. Y «alinear» puede querer decir a la izquierda o
+  centrado: se muestra el recorte con la medida antes de suponer (28/11/2026,
+  tres vueltas por esto).
+- **Después de inyectar una variante, se lee cada texto en la captura.** Una
+  regla previa con `!important` y más específica le ganó al cambio y dejó
+  «27 carreras» navy sobre navy, invisible en la hoja de conjunto.
 - **Mostrar el recorte de la zona, no la hoja entera.** Cada vuelta va con un
   recorte ampliado de lo que se tocó; la hoja completa se manda cuando el
   cambio afecta al conjunto. Un detalle de 40 px no se discute mirando un A5.
