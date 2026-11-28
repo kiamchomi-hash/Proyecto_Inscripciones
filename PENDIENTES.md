@@ -24,8 +24,6 @@ Las altas de Teclab van primero; después las demás.
 
 9. **Crear un folleto de carreras relevantes de Teclab** (52a).
 
-10. **Migrar las carreras de Teclab a un dominio propio** (20/11/2026): el plan está en [`docs/plans/2026-11-20-migracion-teclab-dominio-propio.md`](docs/plans/2026-11-20-migracion-teclab-dominio-propio.md). Se hace de a una carrera por deploy, con 301 desde `siglo21sur.com`, canónicas y sitemap por host, sin tocar Siglo 21 ni las páginas `/teclab`, `/teclab/inscripcion` y `/teclab/test-vocacional`. El plan asume `teclab-lugano.com`: hay que confirmar el nombre antes de empezar. La Tarea 5 (compra del dominio, zona en Cloudflare, token y Turnstile) requiere autorización explícita y pasos del usuario.
-
 14. **Identidad Argentina: formulario y carpeta propia** (53; footer y modales rehechos el 26/11/2026). La Academia ya vive en `topykly.com` con el Worker `cau-identidad-20261126`; quedan pendientes el formulario, y separar todo Identidad en una carpeta propia del escritorio, fuera de `proyecto-cau`, para no mezclarlo con Siglo 21. No crear `/identidad` en este repo. [Detalle](odd/tasks/identidad-pendientes.md).
 
 ## Media
@@ -97,6 +95,8 @@ Las altas de Teclab van primero; después las demás.
 47. **Dar imágenes a todas las carreras de Siglo 21** (46b).
 
 - **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40; bajada de Altísima a Baja el 20/11/2026 y movida a la última posición de Baja el 20/11/2026): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 y cotizó el 18/11/2026. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39). Sigue al final de la cola activa, a la espera de que Teclab las publique.
+
+- **Migrar las carreras de Teclab a un dominio propio** (pendiente 10; bajada al fondo el 28/11/2026 a pedido del usuario, que no tiene apuro). El plan está en [`docs/plans/2026-11-20-migracion-teclab-dominio-propio.md`](docs/plans/2026-11-20-migracion-teclab-dominio-propio.md). Se hace de a una carrera por deploy, con 301 desde `siglo21sur.com`, canónicas y sitemap por host, sin tocar Siglo 21 ni las páginas `/teclab`, `/teclab/inscripcion` y `/teclab/test-vocacional`. El plan asume `teclab-lugano.com`: hay que confirmar el nombre antes de empezar. La Tarea 5 (compra del dominio, zona en Cloudflare, token y Turnstile) requiere autorización explícita y pasos del usuario. No se retoma hasta que el usuario lo pida.
 
 ## Ratos muertos
 
