@@ -252,15 +252,15 @@ function SlidePortada({
         <div className="min-w-0">
           {carrera.prefix && (
             <p
-              className="text-xs sm:text-sm font-black uppercase tracking-etiqueta-ancha mb-1"
+              className="teclab-portada-prefijo text-xs sm:text-sm font-black uppercase tracking-etiqueta-ancha mb-1"
               style={{ color: acento }}
             >
               {carrera.prefix}
             </p>
           )}
           <h2
-            className={`font-black text-white uppercase leading-[1.03] tracking-tight ${
-              nombre.length > 38 ? 'text-xl sm:text-4xl' : 'text-[1.75rem] sm:text-5xl'
+            className={`teclab-portada-nombre font-black text-white uppercase leading-[1.03] tracking-tight ${
+              nombre.length > 38 ? 'is-largo text-xl sm:text-4xl' : 'text-[1.75rem] sm:text-5xl'
             }`}
           >
             {nombre}

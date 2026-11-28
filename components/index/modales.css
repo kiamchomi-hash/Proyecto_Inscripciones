@@ -798,6 +798,158 @@
   }
 }
 
+/* Portada sin scroll (28/11/2026). La letra del sitio crece con el ancho de la
+   ventana (13 a 19 px) y el alto del panel no la acompaña: a 1920x900 el
+   parrafo solo se llevaba 272 px y el slide scrolleaba 58. La portada es un
+   contenedor de tamaño -tiene alto propio, el del slide- y lo que pesa en el
+   alto se mide contra ese espacio y no contra la raiz. */
+.teclab-portada {
+  container: portada / size;
+}
+
+/* Escritorio: titulo, parrafo, margen y separacion se miden con --u, un «rem»
+   que nunca supera al real y que baja con el alto del slide (3cqh) y con su
+   ancho (1.5cqi: en una ventana angosta el parrafo ocupa mas renglones). Los
+   coeficientes salen de 1366x650, donde la portada entraba justa, ajustados
+   con la carrera de texto mas largo en una grilla de tamaños. Chips y cuadros quedan en rem: son chicos y casi no suman alto.
+   El margen y la separacion van en los hijos y no en la portada: un `cqh`
+   declarado en la portada se mediria contra el panel, que no tiene alto de
+   contenedor. */
+@media (min-width: 768px) {
+  .teclab-portada {
+    --u: min(1rem, 2.9cqh, 1.5cqi);
+    padding: 0;
+    gap: 0;
+  }
+
+  .teclab-portada > * {
+    margin-inline: calc(1.75 * var(--u));
+  }
+
+  /* La foto arranca a la altura del titulo y baja hasta la fila de los cuadros,
+     que ponen la separacion con su margen de arriba. */
+  .teclab-portada > .teclab-portada-foto {
+    margin: calc(1.75 * var(--u)) calc(1.75 * var(--u)) 0 0;
+  }
+
+  .teclab-portada > :not(.teclab-portada-foto) {
+    margin-top: calc(0.75 * var(--u));
+  }
+
+  .teclab-portada > .teclab-portada-titulo {
+    margin-top: calc(1.75 * var(--u));
+  }
+
+  .teclab-portada > .teclab-portada-datos {
+    margin-bottom: calc(1.75 * var(--u));
+  }
+
+  .teclab-portada .teclab-portada-prefijo {
+    font-size: calc(0.875 * var(--u));
+  }
+
+  .teclab-portada .teclab-portada-nombre {
+    font-size: calc(3 * var(--u));
+  }
+
+  .teclab-portada .teclab-portada-nombre.is-largo {
+    font-size: calc(2.25 * var(--u));
+  }
+
+  .teclab-portada .teclab-portada-descripcion {
+    font-size: calc(1.4 * var(--u));
+  }
+
+  /* Chips y cuadros siguen al resto: en una ventana ancha y baja (1920x600)
+     eran lo unico que quedaba a 19 px y alcanzaban para desbordar. */
+  .teclab-portada .teclab-chip {
+    font-size: calc(0.63 * var(--u));
+  }
+
+  .teclab-portada .teclab-dato-valor {
+    font-size: calc(0.875 * var(--u));
+  }
+
+  .teclab-portada .teclab-dato-rotulo {
+    font-size: calc(0.55 * var(--u));
+  }
+
+  .teclab-portada .teclab-cocreacion img {
+    height: calc(1.25 * var(--u));
+  }
+
+  .teclab-portada .teclab-portada-foto .teclab-foto {
+    min-height: calc(11 * var(--u));
+  }
+}
+
+/* Telefono: la letra ya esta en su piso de lectura, asi que cede la foto.
+   Baja hasta una banda fina y, si el slide es tan bajo que ni esa entra, se
+   saca: el texto y los cuadros entran sin scroll en vez de empujarse al pie. */
+@media (max-width: 767px) {
+  .teclab-portada-foto,
+  .teclab-portada-foto .teclab-foto {
+    min-height: 3.5rem;
+  }
+
+  /* La separacion entre bloques tambien cede: 10 px en un slide alto y menos
+     en uno bajo. Va como margen de los hijos por lo mismo que en escritorio. */
+  .teclab-portada {
+    row-gap: 0;
+  }
+
+  .teclab-portada > * + * {
+    margin-top: min(0.625rem, 1.6cqh);
+  }
+
+  /* En un telefono angosto (320 o 360) el texto ocupa mas renglones, asi que
+     el corte llega antes. */
+  @container portada (max-height: 31rem) or ((max-width: 26rem) and (max-height: 35rem)) {
+    .teclab-portada-foto {
+      display: none;
+    }
+  }
+
+  /* iPhone SE con las barras de Safari (375x560) y telefonos de 360x600: sin
+     foto todavia faltaban hasta 20 px. Se achica el titulo, que es lo unico
+     que tiene margen para bajar sin pasar el piso de lectura, el interlineado
+     del parrafo y el aire de arriba y abajo. */
+  @container portada (max-height: 30rem) or ((max-width: 26rem) and (max-height: 33rem)) {
+    .teclab-portada-nombre {
+      font-size: 1.4rem;
+    }
+
+    .teclab-portada-nombre.is-largo {
+      font-size: 1.1rem;
+    }
+
+    .teclab-portada > :first-child {
+      margin-top: -0.4rem;
+    }
+
+    .teclab-portada > :last-child {
+      margin-bottom: -0.4rem;
+    }
+
+    .teclab-portada-descripcion {
+      line-height: 1.42;
+    }
+
+    .teclab-portada > * + * {
+      margin-top: 1.3cqh;
+    }
+
+    .teclab-portada-chips {
+      gap: 0.25rem;
+    }
+
+    .teclab-portada-coc > div,
+    .teclab-portada-datos > div {
+      padding-block: 0.25rem;
+    }
+  }
+}
+
 /* Competencias en una pantalla baja: el texto de arriba se come el alto y el
    marco quedaba en una ranura de 77 px, con un renglon por tarjeta. Ahi el
    marco toma su alto natural y el que scrollea es el slide entero, asi hay una
