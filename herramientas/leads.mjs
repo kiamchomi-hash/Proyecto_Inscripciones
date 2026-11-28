@@ -402,7 +402,7 @@ if (embudoTeclab instanceof Error) {
   const SUPERFICIES = {
     modal: {
       nombre: 'Modal de la home', unidad: ['apertura', 'aperturas'],
-      pasos: ['portada', 'cursada', 'plan', 'cierre', 'precio'],
+      pasos: ['portada', 'cursada', 'plan', 'cierre', 'precio', 'preinscripcion'],
       columnas: ['whatsapp', 'inscripcion'],
     },
     ficha: {

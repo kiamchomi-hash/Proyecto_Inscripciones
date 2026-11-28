@@ -13,7 +13,7 @@ export const SUPERFICIES_TECLAB = ['modal', 'ficha'] as const;
 export type SuperficieTeclab = (typeof SUPERFICIES_TECLAB)[number];
 
 /** Las claves de los slides de `teclab-modal.tsx`, en el orden en que aparecen. */
-export const PASOS_MODAL_TECLAB = ['portada', 'cursada', 'plan', 'cierre', 'precio'] as const;
+export const PASOS_MODAL_TECLAB = ['portada', 'cursada', 'plan', 'cierre', 'precio', 'preinscripcion'] as const;
 
 /**
  * Las secciones de la ficha de Teclab, en el orden de la página, con el
@@ -31,9 +31,13 @@ export const SECCIONES_FICHA_TECLAB = [
 ] as const;
 export const PASOS_FICHA_TECLAB = SECCIONES_FICHA_TECLAB.map(([paso]) => paso);
 
-/** La unión, en el orden que acepta la base. */
+/**
+ * La unión, en el orden que acepta la base. `preinscripcion` entró con la
+ * migración 0018: hay que aplicarla en D1 antes de publicar el código que lo
+ * manda, o esos eventos no se guardan.
+ */
 export const PASOS_TECLAB = [
-  'portada', 'cursada', 'plan', 'cierre', 'precio', 'faq', 'formulario', 'perfil', 'oficial', 'relacionadas',
+  'portada', 'cursada', 'plan', 'cierre', 'precio', 'preinscripcion', 'faq', 'formulario', 'perfil', 'oficial', 'relacionadas',
 ] as const;
 export type PasoTeclab = (typeof PASOS_TECLAB)[number];
 export type PasoModalTeclab = (typeof PASOS_MODAL_TECLAB)[number];

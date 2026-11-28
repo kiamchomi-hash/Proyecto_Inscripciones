@@ -91,7 +91,8 @@ test('un dato fuera de la lista, o de la otra superficie, no se guarda', async t
 });
 
 test('la migración acepta exactamente lo que manda el navegador', () => {
-  const migracion = readFileSync(new URL('../migrations/0016_teclab_embudo.sql', import.meta.url), 'utf8');
+  // La última migración que define la tabla (0018 rehízo el CHECK de pasos).
+  const migracion = readFileSync(new URL('../migrations/0018_teclab_embudo_preinscripcion.sql', import.meta.url), 'utf8');
   const lista = nombre => migracion.match(new RegExp(`${nombre} IN \\(([^)]*)\\)`))[1]
     .split(',').map(v => v.trim().replace(/'/g, ''));
   assert.deepEqual(lista('superficie'), [...SUPERFICIES_TECLAB]);

@@ -881,6 +881,23 @@ export default function CareerDetail({ carrera, relacionadas, equivalente = null
               </a>
             </section>
           )}
+
+          {/* Sólo en las tecnicaturas de Teclab, al final de la columna y
+              antes de las relacionadas: ahí llega quien todavía no se decide.
+              Además es el enlace interno que le faltaba al test para que
+              Google lo indexe (28/11/2026). Mismos textos que en /teclab.
+              Dentro de la columna, para tener su mismo ancho. */}
+          {isTeclab && (
+            <section className="career-test" aria-labelledby="career-test-titulo">
+              <div>
+                <h2 id="career-test-titulo">¿Qué carrera elegir?</h2>
+                <p>Respondé siete preguntas y conocé las carreras más afines a tus intereses.</p>
+              </div>
+              <Link href="/teclab/test-vocacional" prefetch={false}>
+                Hacer el test vocacional <ArrowIcon />
+              </Link>
+            </section>
+          )}
         </div>
       </div>
 

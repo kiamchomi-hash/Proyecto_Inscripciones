@@ -951,15 +951,15 @@ export default function TeclabModal({ carrera, onClose }: Props) {
           />
         ),
       });
-      // La preinscripción enviada es la conversión del modal: se cuenta como la
-      // inscripción desde el precio, igual que antes el enlace a la página.
+      // La preinscripción enviada es la conversión del modal: la inscripción
+      // desde este slide (paso propio desde la migración 0018).
       s.push({
         key: 'preinscripcion',
         node: (activo: boolean) => (
           <SlidePreinscripcion
             ref={preinscripcionRef}
             carrera={carrera} acento={acento} activo={activo}
-            onEnviada={() => medicion.cta('inscripcion', 'precio')}
+            onEnviada={() => medicion.cta('inscripcion', 'preinscripcion')}
           />
         ),
       });
