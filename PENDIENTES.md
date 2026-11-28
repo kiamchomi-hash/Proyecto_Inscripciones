@@ -20,17 +20,6 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 
 Las altas de Teclab van primero; después las demás.
 
-4. **Mejorar los modales de Teclab** (22/11/2026): prioridad alta, pidieron atenderlos antes que el resto. Tienen errores que todavía no se enumeraron; primero relevarlos en escritorio y celular en las páginas donde aparecen y anotarlos acá antes de tocar nada.
-
-4b. **Modificar el frontend de los `/slugs` de carreras de Teclab** (22/11/2026): sobre todo el **plan de estudio** y el **test vocacional** en las fichas de cada carrera. Relevar primero en escritorio y celular antes de tocar nada.
-    - **Test vocacional: hecho el 28/11/2026** (`b9f7e29`): las fichas de tecnicaturas enlazan a `/teclab/test-vocacional`. Falta que el usuario pida la indexación en Search Console.
-    - **Relevamiento del 28/11/2026** (local, Programación, Seguros y Logística, 1280 px y iPhone 13; embudo 29/10–27/11: 176 visitas, 116 al plan, 66 a la FAQ, 7 WhatsApp, 0 consultas):
-      1. **El plan en celular es largo**: 15-16 materias ocupan ~1.000 px (1,5 pantallas) y después se van 50 de 116. No es por falta de acción: la barra fija «Quiero inscribirme» (celular) y la columna fija de la derecha (escritorio) están siempre a la vista; descartado agregar otra franja de botones (usuario, 28/11/2026). En celular el botón de descarga es un ícono sin texto.
-      2. **FAQ corta en la ficha más visitada:** Programación tenía 3 preguntas (Seguros y Logística, 5). Era el pendiente 3, **cerrado el 28/11/2026**.
-      3. **Dos formularios seguidos.** La preinscripción (7 campos; Carrera y Tipo ya elegidos, se ven igual) y debajo «Generar usuario» (20 campos), agregado a propósito el 27/11/2026 (`9958438`). En celular suman ~1.700 px antes del perfil.
-      4. **El perfil y las competencias quedan después de los formularios**: lo que ayuda a decidir aparece después de pedir los datos.
-      5. Sin problema: las acciones fijas (barra en celular, columna derecha en escritorio) acompañan todo el recorrido.
-
 8. **Crear folletos con CTA al frente y lista de carreras al dorso, empezando por Teclab** (41a).
 
 9. **Crear un folleto de carreras relevantes de Teclab** (52a).
@@ -144,6 +133,8 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3; descartada el 22/11/2026 a pedido del usuario): se retira sin incorporar ideas de ese sitio a las fichas. No confundir con la revisión de las fichas de Teclab contra `siglo21online.com.ar/teclab` (pendiente 11), cerrada el 21/11/2026 con el diferimiento del CSS del formulario.
 
 ## Cerradas el 28/11/2026
+
+- **Mejorar los modales de Teclab** (4) **y el frontend de los `/slugs` de carreras de Teclab** (4b): cerradas por decisión del usuario el 28/11/2026, que no quiere más cambios en las fichas ni en el modal de Teclab salvo que los indique. Lo entregado: enlace al test vocacional en las fichas de tecnicaturas (`b9f7e29`), portada del modal sin desborde al redimensionar (`5edaace`) y accesibilidad del carrusel y de los formularios (`d6f32ad`). Los hallazgos del relevamiento —plan largo en celular, dos formularios seguidos, perfil y competencias después de pedir los datos— quedan como registro, no como tarea. Sólo sigue del lado del usuario pedir la indexación de `/teclab/test-vocacional` en Search Console. [Detalle](docs/historial-pendientes.md#fichas-y-modales-de-teclab-28112026).
 
 - **Completar la FAQ de las carreras de Teclab** (pendiente 3): cerrada con evidencia. Las 27 carreras activas de Teclab tienen 6 o más preguntas frecuentes (20 con 9, 7 entre 6 y 8), escritas con palabras propias desde la ficha oficial de cada carrera, el plan en D1 y las articulaciones. Se hizo en cinco tandas aprobadas por el usuario, con el SQL versionado en `sql/` y aplicado contra D1: Programación (`6eab4eb`), tandas 1 a 4b (`6e67173`, `850ebb8`, `7a7edfc`, `84e4008`, `451f410`). La recurrencia quedó cubierta: `docs/alta-de-carrera.md` §3 pide la FAQ en cada alta y `npm run auditar` marca las fichas de Teclab con menos de 6. [Detalle](docs/historial-pendientes.md#faq-de-las-fichas-de-teclab-28112026).
 

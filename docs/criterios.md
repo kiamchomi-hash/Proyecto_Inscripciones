@@ -214,6 +214,17 @@ UIverse van con su URL de `uiverse.io`, no con la ruta local.
 
 ## Decisiones tomadas: no volver a proponerlas
 
+### Las fichas y los modales de Teclab no se tocan más
+
+Decidido el 28/11/2026. Cerrados los pendientes 4 y 4b: no se hacen más cambios
+en los `/slugs` de carreras de Teclab ni en su modal salvo que el usuario los
+pida. Ya está hecho el relevamiento de escritorio y celular, las fichas enlazan
+al test vocacional (`b9f7e29`), la portada del modal dejó de desbordar al
+redimensionar (`5edaace`) y se corrigió la accesibilidad del carrusel y de los
+formularios (`d6f32ad`). Lo que quedó anotado del relevamiento —el plan largo en
+celular, los dos formularios seguidos y el perfil después de pedir los datos— no
+se vuelve a proponer.
+
 ### El precio de Siglo 21 no se muestra en los modales
 
 Decidido el 24/11/2026. Los modales de la home ya no ofrecen ver el precio en
