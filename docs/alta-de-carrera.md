@@ -81,6 +81,12 @@ Marcas: **A** = sale solo de la fila. **M** = hay que tocar código, datos o un 
   los `slides` (`public/imagenes/Modales/<Carrera>/`). Sin imagen cae en la genérica del
   sitio. Encuadre opcional en `HERO_POSITIONS` y similares
   (`components/carreras/career-detail.tsx`).
+- [ ] **M** — Preguntas frecuentes, en el slide `faq` de `slides` (6 a 9 preguntas).
+  Se escriben con palabras propias a partir de la ficha oficial de la carrera, el plan
+  y las articulaciones; nunca copiadas, y sin becas, sueldos ni campañas. Es lo que
+  atiende a quien llega desde el buscador con una duda concreta: con tres preguntas esa
+  consulta queda sin responder. `npm run auditar` marca las fichas de Teclab con menos
+  de 6. Referencia: [`referencias/2026-11-20-faq-teclab-revision.md`](../referencias/2026-11-20-faq-teclab-revision.md).
 - [ ] **M, opcional** — Ícono de portada móvil del modal de Siglo 21 (`COVER_OVERRIDES`,
   `components/index/carousel-modal.tsx`); si no, sale del área.
 - [ ] Verificar: ficha y modal a 1280 y 375 px, sin «null», sin palabras cortadas en el

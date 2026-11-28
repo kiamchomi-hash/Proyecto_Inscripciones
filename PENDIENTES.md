@@ -13,7 +13,6 @@ La prioridad de esta lista ordena el backlog; la cola ordena qué se propone hac
 - Crear folletos de Teclab con CTA al frente y lista de carreras al dorso (pendiente 8): bajado al final de la cola.
 - Crear un folleto de carreras relevantes de Teclab (pendiente 9): bajado al final de la cola.
 - Cargar Diseño y Desarrollo de IA y Comunicación Digital (pendiente 1): **Diseño y Desarrollo de IA cargado el 20/11/2026** (id 251, con el alta de Administración de Negocios Digitales Financieros, id 252) tras confirmarlo el asesor; sigue pendiente Comunicación Digital, esperar a que Teclab la publique. Quedan sin precio y sin resolución las dos del 20/11.
-- Completar la FAQ de las carreras de Teclab (pendiente 3): al final de la cola; requiere trabajar bien las keywords y se espera a contar con un modelo de confianza para redactarlas.
 
 **Reservados para Claude Code (20/11/2026, revisado el 22/11/2026):** los pendientes 8, 9 y 14 se dejan (el 5 se cerró el 27/11/2026) para cuando el usuario tenga Claude; no se abordan desde OpenCode. Siguen en su nivel de prioridad original.
 
@@ -24,6 +23,13 @@ Las altas de Teclab van primero; después las demás.
 4. **Mejorar los modales de Teclab** (22/11/2026): prioridad alta, pidieron atenderlos antes que el resto. Tienen errores que todavía no se enumeraron; primero relevarlos en escritorio y celular en las páginas donde aparecen y anotarlos acá antes de tocar nada.
 
 4b. **Modificar el frontend de los `/slugs` de carreras de Teclab** (22/11/2026): sobre todo el **plan de estudio** y el **test vocacional** en las fichas de cada carrera. Relevar primero en escritorio y celular antes de tocar nada.
+    - **Test vocacional: hecho el 28/11/2026** (`b9f7e29`): las fichas de tecnicaturas enlazan a `/teclab/test-vocacional`. Falta que el usuario pida la indexación en Search Console.
+    - **Relevamiento del 28/11/2026** (local, Programación, Seguros y Logística, 1280 px y iPhone 13; embudo 29/10–27/11: 176 visitas, 116 al plan, 66 a la FAQ, 7 WhatsApp, 0 consultas):
+      1. **El plan en celular es largo**: 15-16 materias ocupan ~1.000 px (1,5 pantallas) y después se van 50 de 116. No es por falta de acción: la barra fija «Quiero inscribirme» (celular) y la columna fija de la derecha (escritorio) están siempre a la vista; descartado agregar otra franja de botones (usuario, 28/11/2026). En celular el botón de descarga es un ícono sin texto.
+      2. **FAQ corta en la ficha más visitada:** Programación tenía 3 preguntas (Seguros y Logística, 5). Era el pendiente 3, **cerrado el 28/11/2026**.
+      3. **Dos formularios seguidos.** La preinscripción (7 campos; Carrera y Tipo ya elegidos, se ven igual) y debajo «Generar usuario» (20 campos), agregado a propósito el 27/11/2026 (`9958438`). En celular suman ~1.700 px antes del perfil.
+      4. **El perfil y las competencias quedan después de los formularios**: lo que ayuda a decidir aparece después de pedir los datos.
+      5. Sin problema: las acciones fijas (barra en celular, columna derecha en escritorio) acompañan todo el recorrido.
 
 8. **Crear folletos con CTA al frente y lista de carreras al dorso, empezando por Teclab** (41a).
 
@@ -34,6 +40,10 @@ Las altas de Teclab van primero; después las demás.
 14. **Identidad Argentina: formulario y carpeta propia** (53; footer y modales rehechos el 26/11/2026). La Academia ya vive en `topykly.com` con el Worker `cau-identidad-20261126`; quedan pendientes el formulario, y separar todo Identidad en una carpeta propia del escritorio, fuera de `proyecto-cau`, para no mezclarlo con Siglo 21. No crear `/identidad` en este repo. [Detalle](odd/tasks/identidad-pendientes.md).
 
 ## Media
+
+- **Automatizar la carga del contenido de Teclab a Instagram** (28/11/2026): publicar sin subir cada pieza a mano desde la app. Falta definir el alcance (qué contenido, con qué frecuencia y qué cuenta) antes de elegir el camino: programación desde la app, Meta Business Suite o la API de Instagram con cuenta profesional. Relacionado con las piezas ya generadas (`contenidos/teclab/aprobados/`, la skill `reels`) y con las [campañas de Instagram](docs/plans/2026-11-23-campanas-instagram-inscripciones.md), que hoy no cubren la publicación.
+
+- **Retomar el video de Teclab (reel de carreras)** (28/11/2026): la variante B quedó aprobada el 26/11/2026 y el render final está en `contenidos/teclab/en-curso/2026-11-24-reels-carreras-teclab/final-B-1080x1920.mp4` (1080×1920, 30 fps, 30 s). No se movió a `aprobados/` ni hay registro de que se haya publicado en `teclab.villalugano`. Las decisiones, los descartes y el comando de render están en el `proceso.md` de esa carpeta.
 
 - **Ampliar la sección de Excel en las clases de apoyo de Computación** (19/11/2026): sumar funciones lógicas (`Y`, `O`, `SI`, `SI` con `Y` y con `O`) y búsquedas (`BUSCARV`, `INDICE`, `COINCIDIR` e `INDICE` con `COINCIDIR`). Falta retomar el diseño y decidirlo antes de implementar; la vista previa temporal se canceló.
 
@@ -81,7 +91,7 @@ Las altas de Teclab van primero; después las demás.
 
 41. **Cargar las fechas del calendario académico 2027 cuando la universidad las publique** (9, 30/10/2026) y a las dos semanas mirar el reparto de `calendario_salidas` por destino. La página ya está publicada y rehecha como ciclo 2027; hoy `lanube.21.edu.ar` sigue mostrando el 2026.
 
-42. **15. Combinar varias respuestas del buscador, separadas por párrafos — parcialmente hecho** (16, 17/10/2026). Implementado localmente y habilitado para Siglo 21, con prueba focal aprobada; versión publicada sin verificar. Se retoma sólo cuando el usuario traiga una pregunta compleja de un lead que lo requiera: comprobar el caso real y ajustar si hace falta, sin extenderlo anticipadamente a otras casas.
+42. **15. Combinar varias respuestas del buscador, separadas por párrafos — hecho** (16, 17/10/2026; Teclab 27/11/2026). Habilitado para Siglo 21 y, desde el 27/11/2026, también en Teclab: el punto final de oración separa preguntas, el saludo pegado no arrastra la primera, y el pedido de "más información de la carrera" no se convierte en un tema falso. Probado con el mensaje real de Data Science (horarios, arancel y plan en párrafos separados) y con 18 pruebas de composición. Falta publicar el HTML del buscador con `npm run publicar` del flujo comercial.
 
 43. **Confirmar el ingreso con usuario a La Nube 21** (17). Dato aportado el 30/10/2026: con la cuenta de la asesora principal se puede ingresar a la Nube de un alumno usando el portal administrativo. [Revisión de acceso](docs/historial-pendientes.md#fuentes-de-las-casas--acceso-revisado-17102026).
 
@@ -99,9 +109,9 @@ Las altas de Teclab van primero; después las demás.
 
 - **Cargar las otras carreras del bloque 4 cuando Teclab las publique** (1.5 y 40; bajada de Altísima a Baja el 20/11/2026 y movida a la última posición de Baja el 20/11/2026): Diseño y Desarrollo de IA y Comunicación Digital. Al 31/10/2026 no estaban publicadas; usar el material de la presentación (`Descargas/Nuevas carreras Teclab Bloque 4 -.pptx`, 65 diapositivas). Gestión de IA y Transformación Digital se publicó el 16/11/2026 y cotizó el 18/11/2026. Absorbe «Empezar a revisar nuevas carreras de Teclab» (39). Sigue al final de la cola activa, a la espera de que Teclab las publique.
 
-- **Completar la FAQ de las carreras de Teclab** (pendiente 3; movida al final de Baja el 20/11/2026): llevar las preguntas frecuentes de cada ficha de 3 o 5 a 6-9, con contenido de `teclab.edu.ar` reescrito con palabras propias. Relevadas las 25 fichas oficiales y anotado qué falta en cada una en [`referencias/2026-11-20-faq-teclab-revision.md`](referencias/2026-11-20-faq-teclab-revision.md): 22 carreras necesitan preguntas, 3 ya cumplen el piso, y QA, Gestión Hotelera, Inbound Marketing y Customer Experience tienen un techo de 5 en la fuente oficial. Quedan afuera becas, sueldos y campañas. **Aplazado a pedido del usuario**: depende de trabajar bien las keywords y prefiere esperar a un modelo de confianza para redactarlas. No se escribió nada en D1.
-
 ## Ratos muertos
+
+- **Revisar si hay GCam para el celular del usuario** (28/11/2026): buscar un port de Google Camera para el modelo exacto antes de instalar. Depende del modelo y del chip, no de la marca: hay ports para muchas Snapdragon y también para varias MediaTek, y la misma familia en otra variante puede no tener nada. Falta el modelo del celular, no está anotado en ningún lado.
 
 - **Activar Penpot y su MCP para las piezas estáticas** (25/11/2026): Penpot autoalojado en `~/penpot/`, fuera del repo, con el compose oficial ajustado (clave propia, telemetría apagada, puertos sólo locales) y Penpot y MCP fijados en la **2.19.1**, porque npm no publica MCP para la 2.18. Se eligió el **MCP local** (`@penpot/mcp`) y no el integrado: el remoto no puede importar imágenes desde archivos de la máquina y las skills necesitan los logos oficiales y las fotos de `contenidos/` tal cual. El MCP ya está registrado en OpenCode como `penpot` (`http://localhost:4401/mcp`), con backup de la configuración. **Falta:** `sudo systemctl enable --now docker` (el servicio está instalado y apagado, y yo no tengo permisos), correr `~/penpot/penpot.sh up`, crear el usuario en `http://localhost:9001`, cargar el plugin con `http://localhost:4400/manifest.json` en un archivo abierto, conectarlo y reiniciar OpenCode. Después: prueba de lectura y adaptar `lienzo-de-diseno` y las skills de piezas para que dibujen en Penpot en vez de HTML. Los pasos y el motivo de cada decisión están en `~/penpot/penpot.sh` y en la memoria del agente.
 
@@ -132,6 +142,10 @@ Se dejan anotadas para que no vuelvan a aparecer como pendientes.
 - **Dar imágenes a las carreras de Identidad Argentina** (46c).
 
 - **Mirar las fichas de `siglo21online.com.ar` para sumar ideas a las páginas de carreras** (6.3; descartada el 22/11/2026 a pedido del usuario): se retira sin incorporar ideas de ese sitio a las fichas. No confundir con la revisión de las fichas de Teclab contra `siglo21online.com.ar/teclab` (pendiente 11), cerrada el 21/11/2026 con el diferimiento del CSS del formulario.
+
+## Cerradas el 28/11/2026
+
+- **Completar la FAQ de las carreras de Teclab** (pendiente 3): cerrada con evidencia. Las 27 carreras activas de Teclab tienen 6 o más preguntas frecuentes (20 con 9, 7 entre 6 y 8), escritas con palabras propias desde la ficha oficial de cada carrera, el plan en D1 y las articulaciones. Se hizo en cinco tandas aprobadas por el usuario, con el SQL versionado en `sql/` y aplicado contra D1: Programación (`6eab4eb`), tandas 1 a 4b (`6e67173`, `850ebb8`, `7a7edfc`, `84e4008`, `451f410`). La recurrencia quedó cubierta: `docs/alta-de-carrera.md` §3 pide la FAQ en cada alta y `npm run auditar` marca las fichas de Teclab con menos de 6. [Detalle](docs/historial-pendientes.md#faq-de-las-fichas-de-teclab-28112026).
 
 ## Cerradas el 27/11/2026
 

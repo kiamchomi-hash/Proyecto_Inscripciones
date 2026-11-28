@@ -45,6 +45,12 @@ const NIVELES_FUERA_DE_OFERTA = new Set([
 // no el temario real. Umbral a ojo, ajustable.
 const PLAN_MINIMO_CARACTERES = 200;
 
+// Piso de preguntas frecuentes de una ficha de Teclab. Viene del alta: la FAQ es
+// lo que atiende a quien llega desde el buscador con una duda concreta, y una
+// ficha con 3 preguntas deja esa consulta sin responder. En Siglo 21 no hay
+// piso definido, asi que solo se controla Teclab.
+const FAQ_MINIMO_PREGUNTAS = 6;
+
 const problemas = [];
 const avisos = [];
 
@@ -91,6 +97,7 @@ for (const c of visibles) {
   // Un curso corto tampoco: no tiene plan de estudios por cuatrimestre, y en su
   // columna plan_estudios va como se cursa, que es mas corto que el umbral.
   const curso = esCursoTeclab(c);
+  const categoria = getCategoryForCarrera(c);
   const registrar = c.proximamente || curso ? aviso : problema;
   const sufijo = c.proximamente ? ' (proximamente)' : curso ? ' (curso)' : '';
 
@@ -103,12 +110,22 @@ for (const c of visibles) {
   const slides = Array.isArray(c.slides) ? c.slides : null;
   if (!slides || slides.length === 0) {
     // Convenio y la oferta Teclab arman la ficha desde sus campos, sin slides.
-    const cat = getCategoryForCarrera(c);
-    const tieneModalPropio = cat === 'identidad_argentina' || cat === 'teclab_tecnologia' || cat === 'teclab_gestion';
+    const tieneModalPropio = categoria === 'identidad_argentina' || categoria === 'teclab_tecnologia' || categoria === 'teclab_gestion';
     if (!tieneModalPropio) {
       // Esta lista es la unica red que queda: hasta el 01/08/2026 habia ademas
       // un aviso por clic (/api/notificar-carrera), que se elimino.
       registrar('Carreras sin slides (la ficha se abre vacia)', nombre + sufijo);
+    }
+  }
+
+  // La FAQ de la ficha vive en el slide `faq` de `slides` y la lee
+  // components/carreras/career-detail.tsx. Se cuentan solo preguntas con sus dos
+  // partes cargadas: una entrada a medias no responde nada.
+  if (categoria === 'teclab_tecnologia' || categoria === 'teclab_gestion') {
+    const faq = slides?.find(s => s?.type === 'faq');
+    const preguntas = (faq?.items || []).filter(i => (i?.pregunta || '').trim() && (i?.respuesta || '').trim()).length;
+    if (preguntas < FAQ_MINIMO_PREGUNTAS) {
+      registrar(`Fichas de Teclab con menos de ${FAQ_MINIMO_PREGUNTAS} preguntas frecuentes`, `${nombre}${sufijo} — ${preguntas}`);
     }
   }
 
