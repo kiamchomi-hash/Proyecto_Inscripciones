@@ -29,6 +29,41 @@ const condicionTasa = (tasa: { interes: number; cft: number }) =>
 const cuotas = (grupo: typeof PREFERENCIAL) =>
   `3 cuotas: ${condicionTasa(grupo.tres)}; 6 cuotas: ${condicionTasa(grupo.seis)}`;
 
+/** "$ 1.007.500,00" → 1007500. null si no es un importe. */
+function importe(texto: string): number | null {
+  // Sólo el formato con que la base guarda los totales: "$ 1.234,56". Un
+  // texto con números sueltos ("a confirmar 2026") o un negativo no es un total.
+  const partes = /^\s*\$\s?(\d{1,3}(?:\.\d{3})*)(?:,(\d{1,2}))?\s*$/.exec(texto);
+  if (!partes) return null;
+  const valor = Number(`${partes[1].replace(/\./g, '')}.${partes[2] ?? '0'}`);
+  return valor > 0 ? valor : null;
+}
+
+const pesos = (valor: number) => `$ ${Math.round(valor).toLocaleString('es-AR')}`;
+
+export interface RangoCuotas {
+  desde: string;
+  hasta: string;
+  /** El CFT más alto de las 6 cuotas: la normativa lo pide visible. */
+  cftMaximo: string;
+}
+
+/**
+ * Lo que sale cada una de las 6 cuotas con tarjeta, de la más barata a la más
+ * cara. La más barata es Naranja X, sin interés (total / 6); la más cara, otros
+ * bancos con el interés de la placa sobre el total. Contra el simulador del
+ * portal: 616.586,78 × 1,1299 = 696.681,40, igual a su total financiado.
+ */
+export function rangoSeisCuotas(total: string): RangoCuotas | null {
+  const valor = importe(total);
+  if (valor === null) return null;
+  return {
+    desde: pesos(valor / 6),
+    hasta: pesos((valor * (1 + RESTO.seis.interes / 100)) / 6),
+    cftMaximo: porcentaje(Math.max(PREFERENCIAL.seis.cft, RESTO.seis.cft)),
+  };
+}
+
 export interface LineaFinanciacion {
   medio: string;
   detalle: string;

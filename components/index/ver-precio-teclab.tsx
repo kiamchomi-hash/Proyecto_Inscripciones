@@ -15,6 +15,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent 
 import TurnstileWidget from '@/components/turnstile-widget';
 import { CAMPOS, EMAIL_VALIDO, TELEFONO_VALIDO, validarPayloadPrecio, avisoActualizacionPrecio, type CasaId, type LineaPrecio } from '@/components/formularios/casas';
 import { COBERTURA_PAGO, coberturaDelPago } from '@/components/formularios/cobertura-pago';
+import { rangoSeisCuotas } from '@/components/formularios/financiacion-teclab';
 
 /** Desde cuándo «Verificando…» pasa a pedir unos segundos más. */
 const DEMORA_TOKEN_MS = 5000;
@@ -65,6 +66,9 @@ function guardarClave(clave: string, valor: string) {
 const mailGuardado = () => leerClave(CLAVE_MAIL);
 const telefonoGuardado = () => leerClave(CLAVE_TELEFONO);
 
+/** El mail y el celular con los que se vio el precio, para la preinscripción del modal. */
+export const contactoGuardado = () => ({ email: mailGuardado(), telefono: telefonoGuardado() });
+
 /** `AAAA-MM-DD` -> `DD/MM`, sin pasar por `Date` (se correria un dia por UTC). */
 function diaMes(fecha: string): string {
   const [, mes, dia] = fecha.split('-');
@@ -107,15 +111,27 @@ function EnlaceWhatsApp({ href, texto, principal = false }: { href: string; text
   );
 }
 
-/** Mensaje con el que se abre WhatsApp desde el botón de financiación. */
-export const MENSAJE_FINANCIACION = 'Quiero conocer la financiación';
-
 /**
- * La financiación no se despliega: se consulta por WhatsApp. El mensaje ya
- * dice qué quiere, así que en el chat saben por dónde arrancar sin preguntar.
+ * La financiación, resumida en lo que sale cada una de las 6 cuotas con
+ * tarjeta (desde el 27/11/2026; antes era un botón a WhatsApp). Reemplaza al
+ * botón porque muchos se iban en el precio: el total del cuatrimestre asusta
+ * más que la cuota. Sin el CFT a la vista desde el 27/11/2026, por pedido
+ * del usuario (`rangoSeisCuotas` lo sigue calculando).
  */
-function Financiacion({ href }: { href: string }) {
-  return <EnlaceWhatsApp href={href} texto={MENSAJE_FINANCIACION} />;
+function Financiacion({ total }: { total: string }) {
+  const rango = rangoSeisCuotas(total);
+  if (!rango) return null;
+  return (
+    <div className="vp-cuotas">
+      {/* Dos columnas: rótulo y nota a la izquierda; los importes a la
+          derecha, centrados en vertical respecto de las dos líneas. */}
+      <div className="vp-cuotas-texto">
+        <p className="vp-cuotas-rotulo">Hasta 6 cuotas*</p>
+        <p className="vp-cuotas-nota">*Según la tarjeta y el banco.</p>
+      </div>
+      <p className="vp-cuotas-rango">{rango.desde}<span className="vp-cuotas-separador" aria-label="a" />{rango.hasta}</p>
+    </div>
+  );
 }
 
 function AclaracionesPrecio({ precio, vencido = false, casa }: { precio: PrecioVigente; duracion?: string | null; vencido?: boolean; casa: CasaId }) {
@@ -144,12 +160,12 @@ function NotaCobertura({ precio, casa }: { precio: PrecioVigente; casa: CasaId }
 /**
  * El precio vigente: conceptos, total, qué cubre el pago y vigencia. Sin
  * acciones: cada lugar que lo muestra pone las suyas («Inscribite ya» acá,
- * «Inscribirme» en el formulario de preinscripción). La financiación se pide
- * por WhatsApp, con el enlace que pasa quien lo muestra.
+ * «Inscribirme» en el formulario de preinscripción). Con `financiacion`, en
+ * Teclab suma el rango de las 6 cuotas con tarjeta.
  * Toma los colores de `--vp-acento`, `--vp-acento-claro` y
  * `--vp-texto-acento`, que define el contenedor.
  */
-export function DetallePrecio({ precio, duracion, vencido = false, financiacion = false, waHrefFinanciacion, aclaraciones = true, casa = 'teclab' }: { casa?: CasaId; precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean; waHrefFinanciacion?: string; aclaraciones?: boolean }) {
+export function DetallePrecio({ precio, duracion, vencido = false, financiacion = false, aclaraciones = true, casa = 'teclab' }: { casa?: CasaId; precio: PrecioVigente; duracion?: string | null; vencido?: boolean; financiacion?: boolean; aclaraciones?: boolean }) {
   return (
     <>
       {precio.conceptos.length > 0 && (
@@ -172,7 +188,7 @@ export function DetallePrecio({ precio, duracion, vencido = false, financiacion 
         <span className="vp-total-monto">{precio.total}</span>
       </div>
       {aclaraciones && <AclaracionesPrecio precio={precio} duracion={duracion} vencido={vencido} casa={casa} />}
-      {!vencido && financiacion && casa === 'teclab' && waHrefFinanciacion && <Financiacion href={waHrefFinanciacion} />}
+      {!vencido && financiacion && casa === 'teclab' && <Financiacion total={precio.total} />}
     </>
   );
 }
@@ -181,10 +197,10 @@ export function DetallePrecio({ precio, duracion, vencido = false, financiacion 
  * El precio dentro del formulario de preinscripción (un paso del carrusel o la
  * confirmación), armado como lo muestra «Ver precio» en cada casa: Siglo 21
  * con la vigencia arriba y qué cubre el pago abajo, sin la nota de la
- * promoción; Teclab con sus aclaraciones y la financiación por WhatsApp.
+ * promoción; Teclab con sus aclaraciones y el rango de las 6 cuotas.
  */
-export function PrecioEnFormulario({ precio, duracion, casa, waHrefFinanciacion }: { precio: PrecioVigente; duracion?: string | null; casa: CasaId; waHrefFinanciacion?: string }) {
-  if (casa !== 'siglo21') return <DetallePrecio precio={precio} duracion={duracion} casa={casa} financiacion waHrefFinanciacion={waHrefFinanciacion} />;
+export function PrecioEnFormulario({ precio, duracion, casa }: { precio: PrecioVigente; duracion?: string | null; casa: CasaId }) {
+  if (casa !== 'siglo21') return <DetallePrecio precio={precio} duracion={duracion} casa={casa} financiacion />;
   return (
     <>
       <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
@@ -277,6 +293,7 @@ export function PanelVerPrecio({
   duracion,
   pedido = 0,
   casa = 'teclab',
+  onInscribirse,
 }: {
   casa?: CasaId;
   carreraId: number;
@@ -309,6 +326,11 @@ export function PanelVerPrecio({
    * «Ver precio» en el formulario.
    */
   pedido?: number;
+  /**
+   * Con él, «Inscribite ya» es un botón que lo llama (el modal de Teclab pasa
+   * al slide de preinscripción) en vez del enlace a la página de inscripción.
+   */
+  onInscribirse?: () => void;
 }) {
   const [vista, setVista] = useState<Vista>('formulario');
   // El panel sólo se monta en el navegador (modal con import dinámico), así
@@ -580,9 +602,14 @@ export function PanelVerPrecio({
               se leían como un bloque (23/11/2026). */}
           <div className="vp-tarjeta">
             <p className="vp-vigente">Precio vigente hasta el {diaMes(precio.vigenteHasta)}</p>
-            <DetallePrecio precio={precio} duracion={duracion} financiacion={false} casa={casa} aclaraciones={false} />
+            <DetallePrecio precio={precio} duracion={duracion} financiacion casa={casa} aclaraciones={false} />
           </div>
-          {slug ? (
+          {onInscribirse ? (
+            <>
+              <button type="button" onClick={onInscribirse} className="vp-primario">Inscribite ya</button>
+              <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />
+            </>
+          ) : slug ? (
             <>
               <a href={`/carreras/${slug}/inscripcion`} className="vp-primario">Inscribite ya</a>
               {/* Lleno en las dos casas: el verde de WhatsApp se reconoce mejor
@@ -590,10 +617,9 @@ export function PanelVerPrecio({
               <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />
             </>
           ) : <EnlaceWhatsApp href={waHrefPrecioVisto ?? waHref} texto="Quiero inscribirme" principal />}
-          {/* Sin «Quiero conocer la financiación» desde el 23/11/2026: con
-              «Quiero inscribirme» ya hay una salida a WhatsApp. El formulario
-              de preinscripción la conserva (`PrecioEnFormulario`). */}
-          <NotaCobertura precio={precio} casa={casa} />
+          {/* En Teclab, sin «Este pago cubre…» desde el 27/11/2026: el lugar
+              es para las cuotas, dentro de la tarjeta. */}
+          {casa !== 'teclab' && <NotaCobertura precio={precio} casa={casa} />}
         </div>
       )}
 

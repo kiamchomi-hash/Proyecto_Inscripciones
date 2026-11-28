@@ -24,6 +24,7 @@ import AvisoCompartir from './aviso-compartir';
 import IconoCompartir from './icono-compartir';
 import AvisoInicioTeclab from './aviso-inicio-teclab';
 import { AccesoAviso, AccesoVerPrecio, PanelVerPrecio } from './ver-precio-teclab';
+import PreinscripcionTeclab from './preinscripcion-teclab';
 import { pedirCarreraEnFormulario } from '@/components/formularios/elegir-carrera';
 import { precioPendiente } from '@/components/formularios/casas';
 import { rutaInscripcion, tieneInscripcionPropia } from '@/components/carreras/inscripcion-carrera';
@@ -764,6 +765,7 @@ function SlideVerPrecio({
   activo,
   pedido,
   ref,
+  onInscribirse,
 }: {
   carrera: Carrera;
   acento: string;
@@ -771,6 +773,7 @@ function SlideVerPrecio({
   /** Toques de «Ver precio» en el cierre (ver `pedidoPrecio`). */
   pedido: number;
   ref: React.Ref<HTMLDivElement>;
+  onInscribirse: () => void;
 }) {
   const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppPrecios(carrera))}`;
   // Con el precio ya a la vista, el mensaje dice que lo vio (ver `mensajeWhatsAppPrecioVisto`).
@@ -796,6 +799,49 @@ function SlideVerPrecio({
         waHrefPrecioVisto={waHrefPrecioVisto}
         activo={activo}
         pedido={pedido}
+        onInscribirse={onInscribirse}
+      />
+    </div>
+  );
+}
+
+// El que sigue al precio: la preinscripción ahí mismo, con el mail y el
+// celular que ya dejó (ver `preinscripcion-teclab.tsx`).
+function SlidePreinscripcion({
+  carrera,
+  acento,
+  activo,
+  onEnviada,
+  ref,
+}: {
+  carrera: Carrera;
+  acento: string;
+  activo: boolean;
+  onEnviada: () => void;
+  ref: React.Ref<HTMLDivElement>;
+}) {
+  const waHref = `https://wa.me/${numeroWhatsAppDe('teclab')}?text=${encodeURIComponent(mensajeWhatsAppPrecioVisto(carrera))}`;
+  // La foto de la carrera de fondo: alguien en la profesión, justo cuando se
+  // decide. El formulario va encima en una tarjeta sólida.
+  const fondo = getPortadaTeclab(carrera);
+  return (
+    <div ref={ref} tabIndex={-1} data-scroll-lectura className="teclab-slide vp-slide pt-slide h-full flex flex-col p-4 sm:p-7 overflow-y-auto custom-scrollbar outline-none">
+      {fondo && (
+        <div className="pt-fondo" aria-hidden="true">
+          <ImagenResponsiva ruta={fondo} alt="" fill sizes="(max-width: 768px) 100vw, 64rem" className="object-cover" />
+          <div className="pt-velo" />
+        </div>
+      )}
+      <PreinscripcionTeclab
+        carrera={carrera.nombre}
+        carreraId={carrera.id}
+        nombreCarrera={carrera.nombre_corto || carrera.nombre}
+        activo={activo}
+        acento={acento}
+        acentoClaro={CLARO[acento] ?? acento}
+        textoAcento={textoSobreAcentoTeclab(acento)}
+        waHref={waHref}
+        onEnviada={onEnviada}
       />
     </div>
   );
@@ -828,6 +874,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
   const [idx, setIdx] = useState(0);
   const { dialogRef, closeBtnRef, abierto, cerrar: handleClose } = useFocoModal({ onClose });
   const precioRef = useRef<HTMLDivElement>(null);
+  const preinscripcionRef = useRef<HTMLDivElement>(null);
 
   // Recorrido de esta apertura: a qué slide llega, en cuál se cierra sin hacer
   // nada y desde cuál toca una CTA. Una medición por montaje del modal.
@@ -872,8 +919,9 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       setPedidoPrecio(n => n + 1);
       setIdx(indicePrecio);
       // Sin `preventScroll` el navegador correria el carrusel para mostrar el
-      // slide de golpe, sin la transicion.
-      precioRef.current?.focus({ preventScroll: true });
+      // slide de golpe, sin la transicion. Un cuadro después: hasta que React
+      // aplica el cambio de slide, el del precio sigue `inert` y no toma foco.
+      requestAnimationFrame(() => precioRef.current?.focus({ preventScroll: true }));
     };
     // Igual que «Preinscribite» del pie: la carrera viaja elegida al
     // formulario de preinscripción y el modal se cierra.
@@ -888,9 +936,32 @@ export default function TeclabModal({ carrera, onClose }: Props) {
     s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} sinPrecio={sinPrecio} onVerPrecio={irAPrecio} onAvisame={avisar} /> });
     // Sin inscripcion abierta ni precio publicado no hay nada que pedir.
     if (!sinPrecio) {
+      const indicePreinscripcion = s.length + 1;
       s.push({
         key: 'precio',
-        node: (activo: boolean) => <SlideVerPrecio ref={precioRef} carrera={carrera} acento={acento} activo={activo} pedido={pedidoPrecio} />,
+        node: (activo: boolean) => (
+          <SlideVerPrecio
+            ref={precioRef} carrera={carrera} acento={acento} activo={activo} pedido={pedidoPrecio}
+            onInscribirse={() => {
+              setIdx(indicePreinscripcion);
+              // El botón que se tocó queda inert: el foco pasa al slide nuevo
+              // (al contenedor, no a un campo, para no abrir el teclado).
+              requestAnimationFrame(() => preinscripcionRef.current?.focus({ preventScroll: true }));
+            }}
+          />
+        ),
+      });
+      // La preinscripción enviada es la conversión del modal: se cuenta como la
+      // inscripción desde el precio, igual que antes el enlace a la página.
+      s.push({
+        key: 'preinscripcion',
+        node: (activo: boolean) => (
+          <SlidePreinscripcion
+            ref={preinscripcionRef}
+            carrera={carrera} acento={acento} activo={activo}
+            onEnviada={() => medicion.cta('inscripcion', 'precio')}
+          />
+        ),
       });
     }
     return s;
@@ -1014,8 +1085,12 @@ export default function TeclabModal({ carrera, onClose }: Props) {
             style={{ transform: `translateX(-${idx * 100}%)` }}
           >
             {slides.map((s, i) => (
+              // Los slides fuera de la vista quedan inertes: si no, el tabulador
+              // entraba a los campos de un formulario que no se ve.
               <div
                 key={s.key}
+                inert={idx !== i}
+                aria-hidden={idx !== i || undefined}
                 className="flex-shrink-0 w-full h-full overflow-hidden"
                 style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}
               >

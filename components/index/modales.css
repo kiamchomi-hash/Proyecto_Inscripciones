@@ -1330,6 +1330,277 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
+/* Rango de las 6 cuotas con tarjeta, debajo del total (27/11/2026). */
+/* Una fila más de la tabla, debajo del total: rótulo a la izquierda y los
+   importes a la derecha, alineados con los demás montos (27/11/2026). */
+.vp-cuotas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #2e4e6e;
+  color: #f0f0f6;
+}
+
+.vp-cuotas-texto p,
+.vp-cuotas-rotulo {
+  margin: 0;
+}
+
+.vp-cuotas-rango {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+}
+
+.vp-cuotas-separador {
+  align-self: stretch;
+  width: 1px;
+  margin: 0.1rem 0.6rem;
+  background: #2e4e6e;
+}
+
+.vp-cuotas-nota {
+  margin: 0.3rem 0 0;
+  font-size: 0.72rem;
+  color: #9fb6c4;
+}
+
+.vp-cuotas-rotulo {
+  font-size: 0.9rem;
+}
+
+.vp-cuotas-rango {
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Fondo del slide de preinscripción: la foto de la carrera bajo un velo
+   tinta, más abierto arriba y abajo para que se vea la foto, y la tarjeta
+   del formulario encima. */
+.pt-slide {
+  position: relative;
+  justify-content: safe center;
+}
+
+.pt-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.pt-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(12, 24, 36, 0.4), rgba(12, 24, 36, 0.7));
+}
+
+/* Tarjeta «acero» (elegida el 27/11/2026 entre once pruebas): un azul
+   grisáceo medio, más claro que el modal sin llegar al blanco. */
+.pt-slide > .pt-contenido {
+  position: relative;
+  z-index: 1;
+  padding: 1.4rem 1.3rem 1.2rem;
+  border-radius: 1rem;
+  background: #2a4563;
+  box-shadow: 0 0 0 1px #3d5d80, 0 24px 60px -12px rgba(0, 0, 0, 0.7);
+}
+
+.teclab-slide.vp-slide.pt-slide .vp-campo {
+  background: #35567a;
+  box-shadow: inset 0 0 0 1px #4a6f96;
+}
+
+.teclab-slide.vp-slide.pt-slide .vp-campo:focus {
+  box-shadow: inset 0 0 0 2px var(--vp-acento);
+}
+
+.teclab-slide.vp-slide.pt-slide .vp-campo[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 2px #f87171;
+}
+
+.pt-slide .vp-etiqueta {
+  color: #bcd6f5;
+}
+
+.pt-slide .pt-whatsapp {
+  color: #d6e2ee;
+}
+
+/* ── Preinscripción en el modal de Teclab (27/11/2026) ──
+   El slide que sigue al precio. Mismo ancho y tarjeta que el precio, para que
+   se lea como la continuación; el botón es lo único con color lleno. */
+.pt-contenido {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 26rem;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  color: #f0f0f6;
+}
+
+/* Franja de ancho completo, texto centrado y esquinas apenas redondeadas,
+   como la barra de vigencia del precio (27/11/2026). */
+.pt-paso {
+  align-self: stretch;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  background: var(--vp-acento);
+  color: var(--vp-texto-acento);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pt-titulo {
+  margin: -0.2rem 0 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+}
+
+.pt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+/* El fieldset sólo agrupa para bloquear durante el envío: sin marco propio. */
+.pt-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.pt-campos:disabled {
+  opacity: 0.75;
+}
+
+.pt-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.pt-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.pt-campo .vp-etiqueta {
+  margin-bottom: 0;
+}
+
+.pt-campo select.vp-campo {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #9fb6c4 50%), linear-gradient(135deg, #9fb6c4 50%, transparent 50%);
+  background-position: calc(100% - 1.1rem) 55%, calc(100% - 0.8rem) 55%;
+  background-size: 0.3rem 0.3rem;
+  background-repeat: no-repeat;
+}
+
+.pt-campo select.vp-campo:invalid,
+.pt-campo select.vp-campo option[value=''] {
+  color: #9fb6c4;
+}
+
+/* Mail y celular ya completos: el tilde verde va dentro del campo, a la
+   derecha, y el texto le deja lugar. */
+.pt-con-tilde {
+  position: relative;
+  display: block;
+}
+
+.pt-con-tilde .vp-campo {
+  padding-right: 2rem;
+  text-overflow: ellipsis;
+}
+
+.pt-tilde {
+  position: absolute;
+  top: 50%;
+  right: 0.65rem;
+  display: flex;
+  transform: translateY(-50%);
+  color: #22c55e;
+  pointer-events: none;
+}
+
+.pt-enviar {
+  margin-top: 0.2rem;
+  padding-block: 0.85rem;
+  font-size: 1.05rem;
+}
+
+.pt-error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #fca5a5;
+}
+
+.pt-whatsapp {
+  align-self: center;
+  font-size: 0.82rem;
+  color: #9fb6c4;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pt-whatsapp:hover {
+  color: #fff;
+}
+
+.pt-listo {
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+}
+
+.pt-listo-icono {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  background: #22c55e;
+  color: #fff;
+}
+
+.pt-listo-icono svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.pt-listo-titulo {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pt-listo-texto {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  color: #c6d8e2;
+}
+
+
 .vp-vigencia {
   font-size: 0.78rem;
   font-weight: 700;

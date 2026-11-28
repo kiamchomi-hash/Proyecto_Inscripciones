@@ -1,6 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { financiacionGeneral } from '../components/formularios/financiacion-teclab.ts';
+import { financiacionGeneral, rangoSeisCuotas } from '../components/formularios/financiacion-teclab.ts';
+
+// El rango de las 6 cuotas: Naranja X sin interés abajo, otros bancos con
+// 12,99% arriba. Con el total del simulador da su misma cuota (116.113,57).
+test('el rango de 6 cuotas va de sin interés al interés más alto, con el CFT', () => {
+  assert.deepEqual(rangoSeisCuotas('$ 616.586,78'), { desde: '$ 102.764', hasta: '$ 116.114', cftMaximo: '52,96%' });
+  assert.deepEqual(rangoSeisCuotas('$ 1.007.500,00'), { desde: '$ 167.917', hasta: '$ 189.729', cftMaximo: '52,96%' });
+  assert.equal(rangoSeisCuotas(''), null);
+  assert.equal(rangoSeisCuotas('a confirmar'), null);
+  assert.equal(rangoSeisCuotas('a confirmar 2026'), null);
+  assert.equal(rangoSeisCuotas('-$ 1.000,00'), null);
+  assert.equal(rangoSeisCuotas('$ 0,00'), null);
+  assert.deepEqual(rangoSeisCuotas('$ 600.000'), { desde: '$ 100.000', hasta: '$ 112.990', cftMaximo: '52,96%' });
+});
 
 // Lo que muestra la placa «Opciones de financiación» del período 1A (vigente
 // desde el 02/11/2026): Naranja X tiene 6 cuotas sin interés y Plan Z; Visa y
