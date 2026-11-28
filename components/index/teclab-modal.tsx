@@ -2,6 +2,7 @@
 
 import ModalShell from './modal-shell';
 import { useFocoModal } from './use-foco-modal';
+import { comportamientoScroll } from './movimiento';
 // Modal de las tecnicaturas de Teclab. Mismo formato de slides que el modal de
 // convenio (ia-modal), pero con el lenguaje visual del render de Remotion
 // (Desktop\Teclab Info\remotion-teclab-carreras): fondo tinta #071822, tarjetas
@@ -436,7 +437,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
   const irAlAño = useCallback((i: number) => {
     const marco = marcoRef.current;
     const el = marco?.querySelector<HTMLElement>(`[data-año="${i}"]`);
-    if (marco && el) marco.scrollTo({ top: Math.max(0, posicionDe(el, marco) - 10), behavior: 'smooth' });
+    if (marco && el) marco.scrollTo({ top: Math.max(0, posicionDe(el, marco) - 10), behavior: comportamientoScroll() });
   }, []);
 
   const siguienteAño = añoVisible + 1 < años.length ? años[añoVisible + 1] : null;
@@ -507,7 +508,7 @@ function SlidePlan({ carrera, periodos, acento }: { carrera: Carrera; periodos: 
         {(siguienteAño || alFinal) && (
           <button
             onClick={() => {
-              if (alFinal) marcoRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              if (alFinal) marcoRef.current?.scrollTo({ top: 0, behavior: comportamientoScroll() });
               else irAlAño(añoVisible + 1);
             }}
             className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3.5 py-2 rounded-full cursor-pointer transition-all"
@@ -930,7 +931,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
       pedirCarreraEnFormulario(carrera.id);
       handleClose();
       setTimeout(() => {
-        document.getElementById('preinscripcion')?.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('preinscripcion')?.scrollIntoView({ behavior: comportamientoScroll() });
       }, 350);
     };
     s.push({ key: 'cierre', node: <SlideCierre carrera={carrera} acento={acento} ficha={ficha} sinPrecio={sinPrecio} onVerPrecio={irAPrecio} onAvisame={avisar} /> });
@@ -1091,6 +1092,9 @@ export default function TeclabModal({ carrera, onClose }: Props) {
                 key={s.key}
                 inert={idx !== i}
                 aria-hidden={idx !== i || undefined}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${i + 1} de ${slides.length}`}
                 className="flex-shrink-0 w-full h-full overflow-hidden"
                 style={{ contain: 'layout paint', backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}
               >
@@ -1100,13 +1104,15 @@ export default function TeclabModal({ carrera, onClose }: Props) {
           </div>
         </div>
 
-        {/* Navegacion */}
+        {/* Navegacion. En los extremos, Anterior y Siguiente quedan con
+            aria-disabled y no con disabled: un boton deshabilitado suelta el
+            foco y el teclado volvia a arrancar desde el principio. */}
         <div className="flex-shrink-0 flex justify-between items-center px-2 py-2.5 sm:px-6 sm:py-3 border-t" style={{ background: '#04121a', borderColor: `${acento}40` }}>
           <button
             onClick={() => setIdx(i => Math.max(0, i - 1))}
-            disabled={idx === 0}
+            aria-disabled={idx === 0}
             aria-label="Slide anterior"
-            className="flex items-center gap-1 sm:gap-2 text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
+            className="flex items-center gap-1 sm:gap-2 text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all aria-disabled:opacity-30 aria-disabled:cursor-default"
             style={{ color: CLARO[acento], boxShadow: `inset 0 0 0 1px ${acento}73` }}
           >
             <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -1114,29 +1120,37 @@ export default function TeclabModal({ carrera, onClose }: Props) {
             </svg>
             <span className="hidden min-[360px]:inline">Anterior</span>
           </button>
-          <div className="flex justify-center items-center gap-1.5 sm:gap-2.5">
+          {/* El punto se ve de 8 px, pero el boton mide 24 de alto y de ancho
+              minimo: el blanco tactil que pide WCAG 2.5.8. En px y no en rem:
+              la raiz baja a 13 px y 1.5rem quedaba en 20. */}
+          <div className="flex justify-center items-center">
             {slides.map((s, i) => (
               <button
                 key={s.key}
                 onClick={() => setIdx(i)}
-                className="rounded-full transition-all cursor-pointer"
-                style={{
-                  width: idx === i ? 22 : 8,
-                  height: 8,
-                  background: idx === i ? acento : 'rgba(255,255,255,0.25)',
-                }}
+                className="flex items-center justify-center h-[24px] min-w-[24px] px-[8px] cursor-pointer"
                 aria-label={`Ir a slide ${i + 1}`}
                 aria-current={idx === i ? 'step' : undefined}
-              />
+              >
+                <span
+                  aria-hidden="true"
+                  className="block rounded-full transition-all"
+                  style={{
+                    width: idx === i ? 22 : 8,
+                    height: 8,
+                    background: idx === i ? acento : 'rgba(255,255,255,0.25)',
+                  }}
+                />
+              </button>
             ))}
           </div>
           {/* Navegar entre slides no compite con inscribirse: el relleno del
               acento queda para "Inscribite ya", el unico CTA del modal. */}
           <button
             onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))}
-            disabled={idx === slides.length - 1}
+            aria-disabled={idx === slides.length - 1}
             aria-label="Slide siguiente"
-            className="flex items-center gap-1 sm:gap-2 text-white text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-white/15"
+            className="flex items-center gap-1 sm:gap-2 text-white text-3xs sm:text-sm font-bold uppercase tracking-wider px-2 py-1.5 sm:px-4 sm:py-2 rounded transition-all aria-disabled:opacity-30 aria-disabled:cursor-default hover:bg-white/15 aria-disabled:hover:bg-transparent"
             style={{ background: 'rgba(255,255,255,0.09)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.25)' }}
           >
             <span className="hidden min-[360px]:inline">Siguiente</span>
@@ -1173,7 +1187,7 @@ export default function TeclabModal({ carrera, onClose }: Props) {
                 pedirCarreraEnFormulario(carrera.id);
                 handleClose();
                 setTimeout(() => {
-                  document.getElementById(destinoFormulario.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById(destinoFormulario.slice(1))?.scrollIntoView({ behavior: comportamientoScroll() });
                 }, 350);
               }}
               className="flex-1 sm:flex-none sm:w-36 flex items-center justify-center gap-2 py-2 font-bold rounded-lg hover:brightness-110 transition-colors text-sm whitespace-nowrap"

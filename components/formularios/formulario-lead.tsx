@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import TurnstileWidget from '@/components/turnstile-widget';
 import { WhatsAppIcon } from '@/components/icons';
 import { type CarreraOpcion, CATEGORIES, categoriasPresentes, getCategoryForCarrera, ordenarParaFormulario } from '@/components/index/types';
@@ -357,6 +357,7 @@ function Desplegable({ id, valor, onChange, opciones, etiquetasOpciones, invalid
         className={`${CAMPO} ${invalido || marcado ? BORDE_MAL : BORDE_OK} cursor-text pr-8`}
       />
       <svg
+        aria-hidden="true"
         onClick={() => { setAbierto(!abierto); setBusqueda(null); }}
         className={`absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 cursor-pointer text-[var(--catalogo-acento)]/60 transition-transform ${abierto ? 'rotate-180' : ''}`}
         fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
@@ -599,6 +600,7 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
   const [verLista, setVerLista] = useState(false);
   const [tipoElegido, setTipoElegido] = useState('');
   const [verTipos, setVerTipos] = useState(false);
+  const idTipo = useId();
   const [token, setToken] = useState('');
   // Cambiar la key remonta el widget y pide un token nuevo (son de un solo uso).
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -1402,9 +1404,11 @@ export default function FormularioLead({ carreras: todas, modo, casa, origen = '
                   </div>
 
                   <div ref={tiposRef} className="relative">
-                    <label className={ETIQUETA}>Tipo</label>
+                    <label htmlFor={idTipo} className={ETIQUETA}>Tipo</label>
                     <button
+                      id={idTipo}
                       type="button"
+                      aria-expanded={verTipos}
                       onClick={() => setVerTipos(!verTipos)}
                       className={`relative w-full cursor-pointer rounded-lg border bg-[var(--catalogo-form-campo)] py-1.5 pl-3 pr-7 text-left text-sm font-bold transition-colors focus:outline-none ${filtro ? 'border-[var(--catalogo-acento)]/50 text-[var(--catalogo-acento)]' : 'border-[var(--catalogo-acento)]/25 text-[var(--catalogo-texto-suave)]'}`}
                     >

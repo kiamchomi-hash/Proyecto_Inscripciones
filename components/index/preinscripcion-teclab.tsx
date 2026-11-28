@@ -46,6 +46,9 @@ function Tilde() {
   );
 }
 
+/** Orden en que se ven los campos: el foco va al primero que falte. */
+const ORDEN_CAMPOS = ['email', 'telefono', 'nombre', 'apellido', 'provincia'] as const;
+
 export default function PreinscripcionTeclab({
   carrera,
   carreraId,
@@ -83,7 +86,7 @@ export default function PreinscripcionTeclab({
   const [intentado, setIntentado] = useState(false);
   const [error, setError] = useState('');
   const [listo, setListo] = useState(false);
-  const ids = { nombre: useId(), apellido: useId(), provincia: useId(), email: useId(), telefono: useId(), titulo: useId() };
+  const ids = { nombre: useId(), apellido: useId(), provincia: useId(), email: useId(), telefono: useId(), titulo: useId(), faltantes: useId() };
 
   useEffect(() => {
     if (activo && !contactoTocado) setContacto(contactoGuardado());
@@ -101,6 +104,19 @@ export default function PreinscripcionTeclab({
     telefono: !telefonoValido,
   };
   const completo = !Object.values(faltan).some(Boolean);
+
+  // Envío con datos que faltan: el foco va al primero, en el orden en que se
+  // ven. Va en un efecto y no en el submit para que el campo ya tenga su
+  // aria-invalid y su mensaje cuando el lector de pantalla lo anuncie.
+  // `preventScroll` para no correr el carrusel.
+  const [pedidoFoco, setPedidoFoco] = useState(0);
+  useEffect(() => {
+    if (!pedidoFoco) return;
+    const primero = ORDEN_CAMPOS.find(c => faltan[c]);
+    if (primero) document.getElementById(ids[primero])?.focus({ preventScroll: true });
+    // Sólo cuando se pide; faltan e ids se leen del render que lo pidió.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pedidoFoco]);
 
   const enviar = useCallback(async () => {
     if (enviando) return;
@@ -174,7 +190,10 @@ export default function PreinscripcionTeclab({
   function alEnviar(e: FormEvent) {
     e.preventDefault();
     setIntentado(true);
-    if (!completo) return;
+    if (!completo) {
+      setPedidoFoco(n => n + 1);
+      return;
+    }
     if (!token) {
       setEsperandoToken(true);
       return;
@@ -216,6 +235,8 @@ export default function PreinscripcionTeclab({
   }
 
   const invalido = (campo: keyof typeof faltan) => intentado && faltan[campo];
+  // El campo marcado apunta al resumen de lo que falta, que es su mensaje.
+  const descripcion = (campo: keyof typeof faltan) => (invalido(campo) ? ids.faltantes : undefined);
 
   return (
     <section className="pt-contenido" style={estilos} aria-labelledby={ids.titulo}>
@@ -238,7 +259,7 @@ export default function PreinscripcionTeclab({
                 maxLength={CAMPOS.email.max} placeholder={CAMPOS.email.placeholder}
                 value={contacto.email}
                 onChange={cambiarContacto('email')}
-                aria-invalid={invalido('email')}
+                aria-invalid={invalido('email')} aria-describedby={descripcion('email')} required
                 className="vp-campo"
               />
               {emailValido && <span className="pt-tilde"><Tilde /></span>}
@@ -252,7 +273,7 @@ export default function PreinscripcionTeclab({
                 maxLength={CAMPOS.telefono.max} placeholder={CAMPOS.telefono.placeholder}
                 value={contacto.telefono}
                 onChange={cambiarContacto('telefono')}
-                aria-invalid={invalido('telefono')}
+                aria-invalid={invalido('telefono')} aria-describedby={descripcion('telefono')} required
                 className="vp-campo"
               />
               {telefonoValido && <span className="pt-tilde"><Tilde /></span>}
@@ -266,7 +287,7 @@ export default function PreinscripcionTeclab({
             <input
               id={ids.nombre} type="text" autoComplete="given-name" maxLength={CAMPOS.nombre.max}
               value={valores.nombre} onChange={cambiar('nombre')}
-              aria-invalid={invalido('nombre')} className="vp-campo"
+              aria-invalid={invalido('nombre')} aria-describedby={descripcion('nombre')} required className="vp-campo"
             />
           </label>
           <label className="pt-campo" htmlFor={ids.apellido}>
@@ -274,7 +295,7 @@ export default function PreinscripcionTeclab({
             <input
               id={ids.apellido} type="text" autoComplete="family-name" maxLength={CAMPOS.apellido.max}
               value={valores.apellido} onChange={cambiar('apellido')}
-              aria-invalid={invalido('apellido')} className="vp-campo"
+              aria-invalid={invalido('apellido')} aria-describedby={descripcion('apellido')} required className="vp-campo"
             />
           </label>
         </div>
@@ -282,8 +303,8 @@ export default function PreinscripcionTeclab({
         <label className="pt-campo" htmlFor={ids.provincia}>
           <span className="vp-etiqueta">Provincia</span>
           <select
-            id={ids.provincia} value={valores.provincia} onChange={cambiar('provincia')}
-            aria-invalid={invalido('provincia')} className="vp-campo"
+            id={ids.provincia} autoComplete="address-level1" value={valores.provincia} onChange={cambiar('provincia')}
+            aria-invalid={invalido('provincia')} aria-describedby={descripcion('provincia')} required className="vp-campo"
           >
             <option value="" disabled>Elegí tu provincia</option>
             {PROVINCIAS.map(p => <option key={p} value={p}>{ETIQUETAS[p] ?? p}</option>)}
@@ -312,7 +333,7 @@ export default function PreinscripcionTeclab({
           {enviando || esperandoToken ? 'Enviando…' : 'Preinscribirme'}
         </button>
         {intentado && !completo && (
-          <p className="pt-error" role="alert">
+          <p id={ids.faltantes} className="pt-error" role="alert">
             {mensajeFaltantes((Object.keys(faltan) as (keyof typeof faltan)[]).filter(c => faltan[c]).map(c => NOMBRE_CAMPO[c]))}
           </p>
         )}

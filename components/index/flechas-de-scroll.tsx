@@ -139,7 +139,7 @@ export default function FlechasDeScroll({ raiz }: { raiz: RefObject<HTMLElement 
           aria-label="Seguir leyendo"
           className="flecha-scroll"
           style={{ left: izquierda, top: arriba }}
-          onClick={() => zona.scrollBy({ top: zona.clientHeight * 0.8, behavior: 'smooth' })}
+          onClick={() => zona.scrollBy({ top: zona.clientHeight * 0.8, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
             <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />

@@ -443,8 +443,22 @@ export function PanelVerPrecio({
     }
   };
 
+  // Va en un efecto y no en el submit para que el campo ya tenga su
+  // aria-invalid y su aviso cuando el lector de pantalla lo anuncie.
+  const [pedidoFoco, setPedidoFoco] = useState(0);
+  useEffect(() => {
+    if (!pedidoFoco) return;
+    const campoMal = !emailValido ? emailId : !telefonoValido ? telefonoId : null;
+    if (campoMal) document.getElementById(campoMal)?.focus({ preventScroll: true });
+    // Sólo cuando se pide; el resto se lee del render que lo pidió.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pedidoFoco]);
+
   const enviar = (e: FormEvent) => {
     e.preventDefault();
+    // Con un dato que falta, el foco va a ese campo (efecto de abajo). Sólo en
+    // el envío a mano, no en el automático.
+    if (!emailValido || !telefonoValido) setPedidoFoco(n => n + 1);
     void pedirPrecio(true);
   };
 
@@ -517,6 +531,7 @@ export function PanelVerPrecio({
               setAviso(null);
             }}
             aria-invalid={intentado && !emailValido}
+            required
             className={aviso === 'email' ? 'vp-campo vp-campo-aviso' : 'vp-campo'}
           />
 
@@ -539,6 +554,7 @@ export function PanelVerPrecio({
                   setAviso(null);
                 }}
                 aria-invalid={intentado && !telefonoValido}
+                required
                 className={aviso === 'telefono' ? 'vp-campo vp-campo-aviso' : 'vp-campo'}
               />
             </>
